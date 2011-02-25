@@ -247,7 +247,7 @@ public class LoginServiceImpl implements LoginService {
     @SuppressWarnings("unchecked")
     @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(username);
+        LiteYukonUser user = yukonUserDao.findUserByUsername(username);
         if (user == null || StringUtils.isBlank(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user)))
             return null;
         

@@ -113,7 +113,7 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
+            LiteYukonUser user = DaoFactory.getYukonUserDao().findUserByUsername( userName );
             if( user == null )
                 setState( RET_FAILED, "USER_NOT_FOUND" );
             else

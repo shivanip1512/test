@@ -24,10 +24,10 @@ public class OperationsSetupTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         LiteYukonUser user = ServletUtil.getYukonUser(getPageContext().getRequest());
-        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean isEcOperator = energyCompanyService.isOperator(user);
-        boolean hasMultiSpeak = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
-        boolean hasUserGroupEditor = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
+        boolean hasMultiSpeak = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
+        boolean hasUserGroupEditor = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
         
         boolean showSystemAdmin = false;
         if ((superUser || isEcOperator)

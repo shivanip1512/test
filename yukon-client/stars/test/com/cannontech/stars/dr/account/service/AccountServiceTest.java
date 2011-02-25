@@ -239,7 +239,7 @@ public class AccountServiceTest {
         /*
          * Record what should happen
          */
-        expect(yukonUserDaoMock.getLiteYukonUser(dto.getUserName())).andReturn(null);
+        expect(yukonUserDaoMock.findUserByUsername(dto.getUserName())).andReturn(null);
         expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user)).andReturn(AuthType.NONE);
         expect(yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID)).andReturn(new LiteYukonGroup());
         expect(yukonGroupDaoMock.getLiteYukonGroupByName(dto.getLoginGroup())).andReturn(new LiteYukonGroup());

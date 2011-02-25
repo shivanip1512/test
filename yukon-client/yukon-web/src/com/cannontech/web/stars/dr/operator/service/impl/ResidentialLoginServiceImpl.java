@@ -42,9 +42,9 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     @Override
     public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user, final int accountId, final int energyCompanyId) {
 
-        Integer newUserId = (Integer) transactionTemplate.execute(new TransactionCallback() {
+        Integer newUserId = transactionTemplate.execute(new TransactionCallback<Integer>() {
             
-            public Object doInTransaction(TransactionStatus status) {
+            public Integer doInTransaction(TransactionStatus status) {
                 // Build up the groups needed to create an account
                 List<LiteYukonGroup> groups = Lists.newArrayList();
                 LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
@@ -76,7 +76,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 
                 // Update primaryContact to new loginId
                 LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-                int newUserId = yukonUserDao.getLiteYukonUser(newUser.getUsername()).getUserID();
+                int newUserId = yukonUserDao.findUserByUsername(newUser.getUsername()).getUserID();
                 primaryContact.setLoginID(newUserId);
                 contactDao.saveContact(primaryContact);
                 
@@ -92,7 +92,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                                         final LiteYukonUser residentialUser,
                                         final int energyCompanyId) {
 
-        transactionTemplate.execute(new TransactionCallback() {
+        transactionTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
     
                 checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
@@ -150,7 +150,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
      */
      private void updateResidentialCustomerGroup(String groupName, LiteYukonUser residentialUser) {
          LiteYukonGroup newUserGroup = yukonGroupDao.getLiteYukonGroupByName(groupName);
-         yukonGroupService.addUserToGroup(newUserGroup, residentialUser);
+         yukonGroupService.addUserToGroup(newUserGroup.getGroupID(), residentialUser.getUserID());
     }
     
     private void updateLoginStatus(LoginBackingBean loginBackingBean, LiteYukonUser residentialUser) {

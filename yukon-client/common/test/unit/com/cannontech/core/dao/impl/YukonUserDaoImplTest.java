@@ -13,21 +13,21 @@ public class YukonUserDaoImplTest {
 
 	private class testAlwaysPass extends YukonUserDaoImpl {
 		
-		public LiteYukonUser getLiteYukonUser(String username) {
+		public LiteYukonUser findUserByUsername(String username) {
 			return null;
 		}
 	}
 	
 	private class testAlwaysFail extends YukonUserDaoImpl {
 		
-		public LiteYukonUser getLiteYukonUser(String username) {
+		public LiteYukonUser findUserByUsername(String username) {
 			return new LiteYukonUser();
 		}
 	}
 	
 	private class testFailFirstRunOnly extends YukonUserDaoImpl {
 		boolean done = false;
-		public LiteYukonUser getLiteYukonUser(String username) {
+		public LiteYukonUser findUserByUsername(String username) {
 			if(!done) {
 				done = true;
 				return new LiteYukonUser();

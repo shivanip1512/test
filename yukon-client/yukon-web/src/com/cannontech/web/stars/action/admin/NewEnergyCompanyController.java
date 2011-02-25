@@ -104,11 +104,11 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                             custGroupIDs += "," + String.valueOf( group.getGroupID() );
                     }
                     
-                    if (yukonUserDao.getLiteYukonUser( request.getParameter("Username") ) != null)
+                    if (yukonUserDao.findUserByUsername( request.getParameter("Username") ) != null)
                         throw new WebClientException( "Username of default operator login already exists" );
                     
                     if (request.getParameter("Username2").length() > 0 &&
-                            yukonUserDao.getLiteYukonUser( request.getParameter("Username2") ) != null)
+                            yukonUserDao.findUserByUsername( request.getParameter("Username2") ) != null)
                         throw new WebClientException( "Username of second operator login already exists" );
                     
                     // Create a privilege group with EnergyCompany and Administrator role

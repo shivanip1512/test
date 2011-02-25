@@ -5,286 +5,250 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStringStatementBuilder;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Creation date: (10/18/2001 1:20:37 PM)
- */
-public class EnergyCompany extends com.cannontech.database.db.DBPersistent 
-{
+public class EnergyCompany extends DBPersistent {
+    
     public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
-    private static final String selectIdSql;
-    private static final String selectEnergyCompanySql;
-    private static final String nextIdSql;
-    private static final SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
-    private Integer energyCompanyID;
+    private static SimpleJdbcTemplate simpleJdbcTemplate;
+    private Integer energyCompanyId;
     private String name;
-    private Integer primaryContactID = Integer.valueOf(CtiUtilities.NONE_ZERO_ID);
-    private Integer userID = Integer.valueOf(CtiUtilities.NONE_ZERO_ID);
+    private Integer primaryContactId = CtiUtilities.NONE_ZERO_ID;
+    private Integer userId = CtiUtilities.NONE_ZERO_ID;
     
 	public static final String[] SETTER_COLUMNS = { "Name", "PrimaryContactID", "UserID" };
-	
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
-	
 	public static final String TABLE_NAME = "EnergyCompany";
 
-    static {
-        
-        selectIdSql = "SELECT EnergyCompanyID FROM EnergyCompany";
-
-        selectEnergyCompanySql = "SELECT EnergyCompanyID,Name,PrimaryContactID,UserID FROM EnergyCompany";
-        
-        nextIdSql = "SELECT MAX(EnergyCompanyID)+1 FROM EnergyCompany";
+    public EnergyCompany() {
+    	super();
     }
-	
-/**
- * EnergyCompany constructor comment.
- */
-public EnergyCompany() {
-	super();
-}
-/**
- * @exception java.sql.SQLException The exception description.
- */
-@Override
-public void add() throws java.sql.SQLException 
-{
-	if (getEnergyCompanyID() == null)
-		setEnergyCompanyID( getNextEnergyCompanyID() );
-	
-	Object[] addValues = 
-	{ 
-		getEnergyCompanyID(),
-		getName(),
-		getPrimaryContactID(),
-		getUserID()
-	};
-
-	//if any of the values are null, return
-	if( !isValidValues(addValues) )
-		return;
-	
-	add( TABLE_NAME, addValues );
-}
-/**
- */
-@Override
-public void delete() throws java.sql.SQLException 
-{
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getEnergyCompanyID() );
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/17/00 4:28:38 PM)
- * @return java.lang.String
- */
-@Override
-public boolean equals(Object o)
-{
-	if( o instanceof EnergyCompany )	
-		return ((EnergyCompany)o).getEnergyCompanyID().equals( getEnergyCompanyID() )
-			? true 
-			: false;
-	else
-		return false;
-}
-
-/**
- * Creation date: (6/11/2001 3:38:14 PM)
- * @return com.cannontech.database.db.web.EnergyCompany
- * @param dbAlias java.lang.String
- */
-public static long[] getAllEnergyCompanyIDs() {
-    try {
-        final List<Long> list = simpleJdbcTemplate.query(selectIdSql, new ParameterizedRowMapper<Long>() {
-            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Long id = Long.valueOf(rs.getLong("EnergyCompanyID"));
-                return id;
-            }
-        }, new Object[]{});
+    
+    @Override
+    public void retrieve() throws SQLException {
+        Object[] constraintValues =  { getEnergyCompanyId() };
+    
+        Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    
+        if( results.length == SETTER_COLUMNS.length ) {
+            setName( (String) results[0] );
+            setPrimaryContactId( (Integer)results[1] );
+            setUserId((Integer)results[2]);
+        } else throw new RuntimeException("Incorrect number of columns in result");
         
-        final long[] idArray = new long[list.size()];
-        for (int x = 0; x < list.size(); x++) {
-            Long id = list.get(x);
-            idArray[x] = id.longValue();
+    }
+    
+    @Override
+    public void add() throws SQLException {
+    	Object[] addValues = { 
+    		getEnergyCompanyId(),
+    		getName(),
+    		getPrimaryContactId(),
+    		getUserId()
+    	};
+    
+    	//if any of the values are null, return
+    	if(!isValidValues(addValues)) {
+    		return;
+    	}
+    	
+    	add(TABLE_NAME, addValues);
+    }
+    
+    @Override
+    public void update() throws SQLException {
+        Object[] setValues = {
+            getName(),
+            getPrimaryContactId(),
+            getUserId()
+        };
+    
+        //if any of the values are null, return
+        if( !isValidValues(setValues) ) {
+            return;
         }
-        return idArray;
         
-    } catch (DataAccessException e) {
-        CTILogger.error(e.getMessage(), e);
+        Object[] constraintValues =  { getEnergyCompanyId() };
+        update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
-    return new long[0];
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (8/24/2001 12:52:15 PM)
- * @ret int
- */
-public static final EnergyCompany[] getEnergyCompanies() {
-	try {
-	    List<EnergyCompany> list = simpleJdbcTemplate.query(selectEnergyCompanySql, new ParameterizedRowMapper<EnergyCompany>() {
-	        public EnergyCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
-	            final EnergyCompany company = new EnergyCompany();
-	            company.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));
-	            company.setName(rs.getString("Name"));
-	            company.setPrimaryContactID(rs.getInt("PrimaryContactID"));
-	            company.setUserID(rs.getInt("UserID"));
-	            return company;
-	        }
-	    }, new Object[]{});
-        
-        return list.toArray(new EnergyCompany[list.size()]);
-	} catch (DataAccessException e) {
-	    CTILogger.error(e.getMessage(), e);
-	}
-    return new EnergyCompany[0];
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getEnergyCompanyID() {
-	return energyCompanyID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @return java.lang.String
- */
-public java.lang.String getName() {
-	return name;
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public static final Integer getNextEnergyCompanyID() {
-    Integer id = null;
-    try {
-        int nextId = simpleJdbcTemplate.queryForInt(nextIdSql, new Object[]{});
-        return Integer.valueOf(nextId);
-    } catch (DataAccessException e) {
-        CTILogger.error(e.getMessage(), e);
+    
+    @Override
+    public void delete() throws SQLException {
+    	delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], getEnergyCompanyId());
     }
-    return id;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/27/2001 10:30:24 AM)
- * @return boolean
- */
-private boolean isValidValues( Object[] values ) 
-{
-	if( values == null )
-		return false;
-
-	for( int i = 0; i < values.length; i++ )
-		if( values[i] == null )
-			return false;
-
-
-	return true;
-}
-/**
- */
-public void retrieve() throws java.sql.SQLException 
-{
-	Object[] constraintValues =  { getEnergyCompanyID() };
-
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
-
-	if( results.length == SETTER_COLUMNS.length )
-	{
-		setName( (String) results[0] );
-		setPrimaryContactID( (Integer)results[1] );
-		setUserID((Integer)results[2]);
-	}
-	else
-		throw new RuntimeException("Incorrect number of columns in result");
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @param newEnergyCompanyID java.lang.Integer
- */
-public void setEnergyCompanyID(java.lang.Integer newEnergyCompanyID) {
-	energyCompanyID = newEnergyCompanyID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @param newName java.lang.String
- */
-public void setName(java.lang.String newName) {
-	name = newName;
-}
-/**
- * toString() override
- */
-public String toString()
-{
-	return getName();
-}
-/**
- * @exception java.sql.SQLException The exception description.
- */
-public void update() throws java.sql.SQLException 
-{
-	Object[] setValues = 
-	{
-		getName(),
-		getPrimaryContactID(),
-		getUserID()
-	};
-
-	//if any of the values are null, return
-	if( !isValidValues(setValues) )
-		return;
-
-	
-	Object[] constraintValues =  { getEnergyCompanyID() };
-
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
-
-	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-}
-	/**
-	 * Returns the primaryContactID.
-	 * @return Integer
-	 */
+    
+    /* Utility Methods */
+    
+    public static final Integer getNextEnergyCompanyID() {
+        NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        return nextValueHelper.getNextValue("EnergyCompany");
+    }
+    
+    public static long[] getAllEnergyCompanyIDs() {
+        try {
+            SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+            sql.append("SELECT EnergyCompanyId");
+            sql.append("FROM EnergyCompany");
+            
+            RowMapper<Long> longMapper = new RowMapper<Long>() {
+                @Override
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("EnergyCompanyId");
+                }
+            };
+            simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+            final List<Long> list = simpleJdbcTemplate.query(sql.toString(), longMapper);
+            
+            final long[] idArray = new long[list.size()];
+            for (int x = 0; x < list.size(); x++) {
+                Long id = list.get(x);
+                idArray[x] = id.longValue();
+            }
+            return idArray;
+            
+        } catch (DataAccessException e) {
+            CTILogger.error(e.getMessage(), e);
+        }
+        return new long[0];
+    }
+    
+    public static final EnergyCompany[] getEnergyCompanies() {
+    	try {
+    	    SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+            sql.append("SELECT EnergyCompanyId, Name, PrimaryContactId, UserId");
+            sql.append("FROM EnergyCompany");
+            
+            RowMapper<EnergyCompany> energyCompanyRowMapper = new RowMapper<EnergyCompany>() {
+                @Override
+                public EnergyCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    final EnergyCompany company = new EnergyCompany();
+                    company.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+                    company.setName(rs.getString("Name"));
+                    company.setPrimaryContactId(rs.getInt("PrimaryContactId"));
+                    company.setUserId(rs.getInt("UserId"));
+                    return company;
+                }
+            };
+            simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    	    List<EnergyCompany> list = simpleJdbcTemplate.query(sql.toString(), energyCompanyRowMapper);
+            
+            return list.toArray(new EnergyCompany[list.size()]);
+    	} catch (DataAccessException e) {
+    	    CTILogger.error(e.getMessage(), e);
+    	}
+        return new EnergyCompany[0];
+    }
+    
+    private boolean isValidValues( Object[] values ) {
+    	if( values == null )
+    		return false;
+    
+    	for( int i = 0; i < values.length; i++ )
+    		if( values[i] == null )
+    			return false;
+    
+    
+    	return true;
+    }
+    
+    /* Getters and Setters */
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String newName) {
+    	name = newName;
+    }
+    
+    /**
+     * @deprecated user getEnergyCompanyId()
+     */
+    public Integer getEnergyCompanyID() {
+        return energyCompanyId;
+    }
+    
+    /**
+     * @deprecated use setEnergyCompanyId()
+     */
+    public void setEnergyCompanyID(Integer newEnergyCompanyID) {
+        energyCompanyId = newEnergyCompanyID;
+    }
+    
+    public Integer getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+    
+    public void setEnergyCompanyId(Integer energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
+    
+    /**
+     * @deprecated use getPrimaryContactId
+     */
+    @Deprecated
 	public Integer getPrimaryContactID() {
-		return primaryContactID;
+		return primaryContactId;
 	}
-
-	/**
-	 * Sets the primaryContactID.
-	 * @param primaryContactID The primaryContactID to set
-	 */
+    
+    public Integer getPrimaryContactId() {
+        return primaryContactId;
+    }
+    
+    /**
+     * @deprecated use setPrimaryContactId
+     */
+    @Deprecated
 	public void setPrimaryContactID(Integer primaryContactID) {
-		this.primaryContactID = primaryContactID;
+		this.primaryContactId = primaryContactID;
 	}
-
+	
+	public void setPrimaryContactId(Integer primaryContactId) {
+	    this.primaryContactId = primaryContactId;
+	}
+	
 	/**
-	 * @return
+	 * @deprecated use getUserId
 	 */
 	public Integer getUserID() {
-		return userID;
+	    return userId;
+	}
+	
+	public Integer getUserId() {
+	    return userId;
+	}
+	
+	/**
+	 * @deprecated use setUserId
+	 */
+	public void setUserID(Integer userId) {
+	    this.userId = userId;
 	}
 
-	/**
-	 * @param integer
-	 */
-	public void setUserID(Integer integer) {
-		userID = integer;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
+
+    public String toString() {
+        return getName();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if( o instanceof EnergyCompany )    
+            return ((EnergyCompany)o).getEnergyCompanyId().equals( getEnergyCompanyId() )
+                ? true 
+                : false;
+        else
+            return false;
+    }
 
 }

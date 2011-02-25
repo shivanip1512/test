@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -22,7 +23,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.YNBoolean;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -37,6 +38,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
@@ -62,19 +64,19 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     @Transactional
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user,
-            Integer parentId) throws Exception {
+            Integer parentId) throws WebClientException, TransactionException, CommandExecutionException {
         /* Check energy company name availability */
         try {
             energyCompanyDao.getEnergyCompanyByName(energyCompanyDto.getName());
-            throw new EnergyCompanyNameUnavailableException("ec name unavailable");
+            throw new EnergyCompanyNameUnavailableException();
         } catch (NotFoundException e) {/* Ignore */}
         
         /* Check usernames availability */
-        if (yukonUserDao.getLiteYukonUser(energyCompanyDto.getAdminUsername()) != null) {
+        if (yukonUserDao.findUserByUsername(energyCompanyDto.getAdminUsername()) != null) {
             throw new UserNameUnavailableException("adminUsername");
         }
         if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username()) 
-            && yukonUserDao.getLiteYukonUser(energyCompanyDto.getAdmin2Username()) != null) {
+            && yukonUserDao.findUserByUsername(energyCompanyDto.getAdmin2Username()) != null) {
             throw new UserNameUnavailableException("admin2Username");
         }
         
@@ -103,24 +105,22 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         contactDao.saveContact(contact);
         if (StringUtils.isNotBlank(energyCompanyDto.getEmail())) {
             LiteContactNotification email = new LiteContactNotification(-1, contact.getContactID(), 
-                ContactNotificationType.EMAIL.getDefinitionId(), (String) YNBoolean.NO.getDatabaseRepresentation(), energyCompanyDto.getEmail());
+                ContactNotificationType.EMAIL.getDefinitionId(), "N", energyCompanyDto.getEmail());
             contactNotificationDao.saveNotification(email);
         }
         
         /* Create Energy Company */
-        int energyCompanyId = energyCompanyDao.createEnergyCompany(energyCompanyDto.getName(), 
-                                                                   contact.getContactID(), adminUser.getUserID());
         EnergyCompany energyCompany = new EnergyCompany();
-        energyCompany.setEnergyCompanyID(energyCompanyId);
         energyCompany.setName(energyCompanyDto.getName());
-        energyCompany.setPrimaryContactID(contact.getContactID());
-        energyCompany.setUserID(adminUser.getUserID());
+        energyCompany.setPrimaryContactId(contact.getContactID());
+        energyCompany.setUserId(adminUser.getUserID());
+         energyCompanyDao.save(energyCompany);
         
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
         
         /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
-        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.ENERGY_COMPANY, energyCompanyId);
+        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.ENERGY_COMPANY, energyCompany.getEnergyCompanyId());
         
         /* Add Secondary Operator */
         if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username())) {

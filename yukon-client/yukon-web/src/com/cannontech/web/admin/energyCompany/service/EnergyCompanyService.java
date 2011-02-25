@@ -2,8 +2,11 @@ package com.cannontech.web.admin.energyCompany.service;
 
 import java.util.Set;
 
+import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 
@@ -18,8 +21,8 @@ public interface EnergyCompanyService {
      * @return
      * @throws Exception
      */
-    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, 
-                                                      Integer parentId) throws Exception;
+    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId) 
+    throws WebClientException, TransactionException, CommandExecutionException;
     
     public void deleteEnergyCompany(int energyCompanyId);
 

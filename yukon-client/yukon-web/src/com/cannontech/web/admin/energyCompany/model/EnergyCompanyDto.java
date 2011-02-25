@@ -2,7 +2,6 @@ package com.cannontech.web.admin.energyCompany.model;
 
 public class EnergyCompanyDto {
     
-    private int energyCompanyId = -2; /* -1 is the Default EnergyCompany */
     private String name;
     private String email;
     private Integer primaryOperatorGroupId;
@@ -102,14 +101,6 @@ public class EnergyCompanyDto {
     
     public void setDefaultRouteId(int defaultRouteId) {
         this.defaultRouteId = defaultRouteId;
-    }
-
-    public int getEnergyCompanyId() {
-        return energyCompanyId;
-    }
-    
-    public void setEnergyCompanyId(int energyCompanyId) {
-        this.energyCompanyId = energyCompanyId;
     }
 
     public Integer getPrimaryOperatorGroupId() {

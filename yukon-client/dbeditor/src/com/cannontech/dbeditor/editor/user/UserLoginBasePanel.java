@@ -593,7 +593,7 @@ public boolean isInputValid()
 		return false;
 	}
 	
-	LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
+	LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername( userName );
 	
     //if we are trying to enter a username to one that already exists
 	if ( !userName.equals( initialUsername ) && liteYukonUser != null ) {

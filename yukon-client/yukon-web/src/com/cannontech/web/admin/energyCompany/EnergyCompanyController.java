@@ -23,7 +23,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator;
@@ -40,13 +42,15 @@ public class EnergyCompanyController {
     private RolePropertyDao rolePropertyDao;
     private EnergyCompanyDtoValidator energyCompanyDtoValidator;
     private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private PaoDao paoDao;
+    private ECMappingDao ecMappingDao;
     
     /* Energy Company Setup Home Page*/
     @RequestMapping("/energyCompany/home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         LiteYukonUser user = userContext.getYukonUser();
-        List<LiteStarsEnergyCompany> companies = Lists.newArrayList();
+        List<YukonEnergyCompany> companies = Lists.newArrayList();
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         
         if (superUser) {
@@ -55,11 +59,12 @@ public class EnergyCompanyController {
             return "energyCompany/home.jsp";
         }
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         
         if (energyCompany != null && energyCompany.getOperatorLoginIDs().contains(user.getUserID())) {
             /* If they belong to an energy company and are an operator, show energy company and all decendants. */
-            companies.addAll(ECUtils.getAllDescendants(energyCompany));
+            companies.addAll(ecMappingDao.getChildEnergyCompanies(energyCompany.getEnergyCompanyId()));
         }
         
         modelMap.addAttribute("companies", companies);
@@ -164,6 +169,16 @@ public class EnergyCompanyController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
     }
     
 }

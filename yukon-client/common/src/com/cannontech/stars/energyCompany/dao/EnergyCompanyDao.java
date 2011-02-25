@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl.DisplayableServiceCompany;
 
 public interface EnergyCompanyDao {
@@ -90,12 +91,8 @@ public interface EnergyCompanyDao {
     public void updateCompanyName(String name, int energyCompanyId);
     
     /**
-     * Creates an energy company with operator login and returns the new energy companies id.
-     * @param name
-     * @param primaryContactId
-     * @param userId
-     * @return
+     * Creates or updates energy company.
      */
-    public int createEnergyCompany(String name, int primaryContactId, int userId);
+    public void save(EnergyCompany energyCompany);
     
 }

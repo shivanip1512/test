@@ -451,7 +451,7 @@ public class OperatorAccountController {
 		/* LoginBackingBean */
 		LoginBackingBean loginBackingBean = new LoginBackingBean();
         LiteYukonGroup userResidentialGroupName = 
-            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser);
+            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
         if (userResidentialGroupName != null) {
             loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName.getGroupName());
         }
@@ -510,7 +510,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
         LiteYukonGroup originalLoginGroup = 
-            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser);
+            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
         
         /* 
          * Ignore the login fields if: 
@@ -747,7 +747,7 @@ public class OperatorAccountController {
     }
 	
 	private void checkEditingDefaultUser(String username) {
-        LiteYukonUser defaultUserCheck = yukonUserDao.getLiteYukonUser(username);
+        LiteYukonUser defaultUserCheck = yukonUserDao.findUserByUsername(username);
         
         if (defaultUserCheck != null && defaultUserCheck.getUserID() == UserUtils.USER_DEFAULT_ID) {
             throw new RuntimeException("You cannot edit the the default user.");

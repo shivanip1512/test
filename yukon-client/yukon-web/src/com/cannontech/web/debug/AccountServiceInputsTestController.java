@@ -112,7 +112,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         updatableAccount.getAccountDto().setLoginGroup(loginGroup);
         
         try {
-            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            LiteYukonUser yukonuser = yukonUserDao.findUserByUsername(user);
             accountService.addAccount(updatableAccount, yukonuser);
             results.add(accountNumber + " added successfully.");
         } catch (RuntimeException e) {
@@ -131,7 +131,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "delete_accountNumber");
         String user = ServletRequestUtils.getRequiredStringParameter(request, "delete_user");
         try {
-            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            LiteYukonUser yukonuser = yukonUserDao.findUserByUsername(user);
             accountService.deleteAccount(accountNumber, yukonuser);
             results.add(accountNumber + " deleted successfully.");
         } catch (RuntimeException e) {
@@ -222,7 +222,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         updatableAccount.getAccountDto().setLoginGroup(loginGroup);
         
         try {
-            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            LiteYukonUser yukonuser = yukonUserDao.findUserByUsername(user);
             UpdatableAccount account = accountServiceHelper.buildFullDto(updatableAccount, yukonuser);
             accountService.updateAccount(account, yukonuser);
             results.add(accountNumber + " updated successfully.");

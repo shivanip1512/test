@@ -3,6 +3,8 @@ package com.cannontech.web.stars.dr.operator.model;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 
 public class LoginBackingBean {
+    
+    private int userId;
     private String customerLoginGroupName;
     private boolean loginEnabled;
     private String username;
@@ -12,6 +14,7 @@ public class LoginBackingBean {
     public String getCustomerLoginGroupName() {
         return customerLoginGroupName;
     }
+    
     public void setCustomerLoginGroupName(String customerLoginGroupName) {
         this.customerLoginGroupName = customerLoginGroupName;
     }
@@ -19,9 +22,11 @@ public class LoginBackingBean {
     public boolean isLoginEnabled() {
         return loginEnabled;
     }
+    
     public void setLoginEnabled(boolean loginEnabled) {
         this.loginEnabled = loginEnabled;
     }
+    
     public void setLoginEnabled(LoginStatusEnum loginStatus) {
         if (loginStatus.isEnabled()) {
             this.loginEnabled = true;
@@ -34,6 +39,7 @@ public class LoginBackingBean {
     public String getUsername() {
         return username;
     }
+    
     public void setUsername(String username) {
         if (username.equalsIgnoreCase("(none")) {
             this.username = null;
@@ -45,6 +51,7 @@ public class LoginBackingBean {
     public String getPassword1() {
         return password1;
     }
+    
     public void setPassword1(String password1) {
         this.password1 = password1;
     }
@@ -52,10 +59,21 @@ public class LoginBackingBean {
     public String getPassword2() {
         return password2;
     }
+    
     public void setPassword2(String password2) {
         this.password2 = password2;
     }
+    
     public LoginStatusEnum getLoginStatus() {
         return loginEnabled ? LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED;
     }
+    
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+    
+    public int getUserId() {
+        return userId;
+    }
+    
 }

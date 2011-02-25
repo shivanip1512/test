@@ -149,7 +149,7 @@ public class AuthDaoImpl implements AuthDao {
 	
 	public boolean isAdminUser(String username_)
 	{
-		LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(username_);
+		LiteYukonUser liteUser = yukonUserDao.findUserByUsername(username_);
 		return isAdminUser(liteUser);
 	}
 

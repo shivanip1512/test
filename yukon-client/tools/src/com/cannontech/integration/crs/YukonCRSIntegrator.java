@@ -369,7 +369,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
 	        	
-	        	liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(crsLoggedUser);
+	        	liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername(crsLoggedUser);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
         	}
@@ -715,7 +715,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
 	        	
-	        	liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(username);
+	        	liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername(username);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid UserName found: " + username + "; ");
         	}

@@ -23,13 +23,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
-import com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 
 @RequestMapping("/energyCompany/serviceCompany/*")
 @Controller

@@ -95,7 +95,7 @@ public class IntegrationLoginController {
         if (!hash.equalsIgnoreCase(accountIdentifier)) return null;
         logger.debug("Hash validation successful");
 
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(premiseNumber);
+        LiteYukonUser user = yukonUserDao.findUserByUsername(premiseNumber);
         if (user == null) return null;
         logger.debug("User found for premise");
 

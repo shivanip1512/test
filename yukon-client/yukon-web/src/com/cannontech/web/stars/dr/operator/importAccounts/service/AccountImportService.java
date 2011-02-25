@@ -451,7 +451,7 @@ public class AccountImportService {
 
                                 if (removedUsernames.contains( username ))
                                     removedUsernames.remove( username );
-                                else if (yukonUserDao.getLiteYukonUser( username ) != null) {
+                                else if (yukonUserDao.findUserByUsername( username ) != null) {
                                     result.custFileErrors++;
                                     String[] value = result.getCustLines().get(lineNoKey);
                                     value[1] = "[line: " + lineNo + " error: Username already exists]";

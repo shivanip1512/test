@@ -131,7 +131,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         if (userName == null) {
             throw new NotAuthorizedException("Service requires username header");
         }
-        LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userName);
+        LiteYukonUser yukonUser = yukonUserDao.findUserByUsername(userName);
         if (yukonUser == null) {
             throw new NotFoundException("User " + userName + " is not known");
         }

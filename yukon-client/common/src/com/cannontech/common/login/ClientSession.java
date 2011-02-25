@@ -240,7 +240,7 @@ public class ClientSession {
                 YukonSpringHook.getContext();
                 
                 //Do not log in the user again
-                LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
+                LiteYukonUser u = DaoFactory.getYukonUserDao().findUserByUsername(lp.getUsername());
                 if(u != null) {
                     CTILogger.debug("Got not null user: " + u);
                     //score! we found them

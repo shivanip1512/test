@@ -33,7 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         authenticationThrottleHelper.loginAttempted(username);
 
         // find user in database
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(username);
+        LiteYukonUser liteYukonUser = yukonUserDao.findUserByUsername(username);
         if (liteYukonUser == null) {
             log.info("Authentication failed (unknown user): username=" + username);
             throw new BadAuthenticationException();

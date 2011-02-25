@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -25,6 +23,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -100,7 +99,8 @@ public class StarsAdminUtil {
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
 	
-	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, LiteYukonUser user) throws Exception {
+	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, LiteYukonUser user) 
+	throws CommandExecutionException, WebClientException {
 	    StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
 	    
 	    int previousRouteId = energyCompany.getDefaultRouteId();
@@ -192,7 +192,7 @@ public class StarsAdminUtil {
                     stmt.execute();
 				
     				if (stmt.getRowCount() == 0)
-    					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
+    					throw new WebClientException( "Not able to find the default route group, sql = \"" + sql + "\"" );
     				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
     				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
     				group.setLMGroupID( new Integer(groupID) );
@@ -217,7 +217,7 @@ public class StarsAdminUtil {
 		}
 	}
 	
-	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
+	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws CommandExecutionException {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if(! permittedPaoIDs.isEmpty()) {
@@ -898,7 +898,7 @@ public class StarsAdminUtil {
 		synchronized (routeIDs) { routeIDs.remove(rtID); }
 	}
 	
-	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws Exception {
+	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws TransactionException {
 		ECToGenericMapping map = new ECToGenericMapping();
 		map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		map.setItemID( member.getEnergyCompanyId() );
@@ -933,7 +933,7 @@ public class StarsAdminUtil {
 			ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
 	}
 	
-	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
+	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws TransactionException {
         List<Integer> loginIDs = energyCompany.getMemberLoginIDs();
 		
 		Iterator<LiteStarsEnergyCompany> it = energyCompany.getChildren().iterator();
@@ -1047,7 +1047,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteYukonGroup[] operGroups,
-		LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException
 	{
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
@@ -1057,7 +1057,7 @@ public class StarsAdminUtil {
 			throw new WebClientException( "Username cannot be empty" );
 		if (password.length() == 0)
 			throw new WebClientException( "Password cannot be empty" );
-		if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null)
+		if (DaoFactory.getYukonUserDao().findUserByUsername( username ) != null)
 			throw new WebClientException( "Username already exists" );
 		
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
@@ -1101,11 +1101,11 @@ public class StarsAdminUtil {
 	}
 	
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
-		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) throws Exception
-	{
+		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) 
+	throws WebClientException, TransactionException {
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    
-		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
+		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().findUserByUsername(username) != null)
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		
 		if (password.length() != 0) {

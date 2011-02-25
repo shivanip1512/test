@@ -9,7 +9,7 @@ import com.cannontech.user.YukonUserContext;
 @Controller
 public class UserGroupController {
     
-    /* User Group Editor Home Page*/
+    /* User Group Editor Home Page */
     @RequestMapping("/userGroupEditor/home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/home.jsp";

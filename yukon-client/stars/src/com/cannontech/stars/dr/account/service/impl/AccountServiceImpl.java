@@ -144,7 +144,7 @@ public class AccountServiceImpl implements AccountService {
         	// Account doesn't exist
         }
         
-        if(yukonUserDao.getLiteYukonUser( accountDto.getUserName() ) != null) {
+        if(yukonUserDao.findUserByUsername( accountDto.getUserName() ) != null) {
             log.error("Account " + accountNumber + " could not be added: The provided username already exists.");
             throw new UserNameUnavailableException("The provided username already exists.");
         }
@@ -584,7 +584,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Check for login info errors.
          */
-        LiteYukonUser tempUser = yukonUserDao.getLiteYukonUser( username ); 
+        LiteYukonUser tempUser = yukonUserDao.findUserByUsername( username ); 
         if(tempUser != null) {
             List<LiteContact> tempContacts = contactDao.getContactsByLoginId(tempUser.getUserID());
             boolean ourUsername = false;

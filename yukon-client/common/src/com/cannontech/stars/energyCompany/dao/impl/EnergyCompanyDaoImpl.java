@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -16,10 +19,13 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -38,6 +44,34 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private IDatabaseCache databaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private SimpleTableAccessTemplate<EnergyCompany> simpleTableTemplate;
+    private final static FieldMapper<EnergyCompany> fieldMapper = new FieldMapper<EnergyCompany>() {
+        @Override
+        public Number getPrimaryKey(EnergyCompany energyCompany) {
+            return energyCompany.getEnergyCompanyId();
+        }
+
+        @Override
+        public void setPrimaryKey(EnergyCompany energyCompany, int energyCompanyId) {
+            energyCompany.setEnergyCompanyId(energyCompanyId);
+        }
+
+        @Override
+        public void extractValues(MapSqlParameterSource parameterHolder, EnergyCompany energyCompany) {
+            parameterHolder.addValue("Name", energyCompany.getName());
+            parameterHolder.addValue("PrimaryContactId", energyCompany.getPrimaryContactId());
+            parameterHolder.addValue("UserId", energyCompany.getUserId());
+        }
+    };
+    
+    @PostConstruct
+    public void init() {
+        simpleTableTemplate = new SimpleTableAccessTemplate<EnergyCompany>(yukonJdbcTemplate, nextValueHelper);
+        simpleTableTemplate.setTableName("EnergyCompany");
+        simpleTableTemplate.setFieldMapper(fieldMapper);
+        simpleTableTemplate.setPrimaryKeyField("EnergyCompanyId");
+        simpleTableTemplate.setPrimaryKeyValidOver(DEFAULT_ENERGY_COMPANY_ID -1); /*TODO should default ec be editable? */
+    }
 
     private EnergyCompanyDaoImpl() {
         super();
@@ -77,7 +111,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
 
         return yukonJdbcTemplate.query(sql.getSql(),
-            new ParameterizedRowMapper<DisplayableServiceCompany>() {
+            new RowMapper<DisplayableServiceCompany>() {
                 @Override
                 public DisplayableServiceCompany mapRow(
                         ResultSet rs, int rowNum)
@@ -241,17 +275,15 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     
     @Override
     @Transactional
-    public int createEnergyCompany(String name, int primaryContactId, int userId) {
-        int energyCompanyId = nextValueHelper.getNextValue("EnergyCompany"); 
-        SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO EnergyCompany");
-        sql.values(energyCompanyId, name, primaryContactId, userId);
-        yukonJdbcTemplate.update(sql);
+    public void save(EnergyCompany energyCompany) {
+        boolean create = !simpleTableTemplate.saveWillUpdate(energyCompany);
+        simpleTableTemplate.save(energyCompany);
         
-        sql = new SqlStatementBuilder("INSERT INTO EnergyCompanyOperatorLoginList");
-        sql.values(energyCompanyId, userId);
-        yukonJdbcTemplate.update(sql);
-        
-        return energyCompanyId;
+        if (create) {
+            SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO EnergyCompanyOperatorLoginList");
+            sql.values(energyCompany.getEnergyCompanyId(), energyCompany.getUserId());
+            yukonJdbcTemplate.update(sql);
+        }
     }
 
     @Override
