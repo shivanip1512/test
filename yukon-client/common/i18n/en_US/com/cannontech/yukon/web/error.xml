@@ -3,7 +3,7 @@
 <properties>
 
     <entry key="yukon.web.error.errorStyles">/WebConfig/yukon/errorStyles.css</entry>
-    <entry key="yukon.web.error.logo">/CannonLogo.gif</entry>
+    <entry key="yukon.web.error.logo">/WebConfig/yukon/YukonBW.gif</entry>
     <entry key="yukon.web.error.detailedFriendlyMessage">{0}</entry>
     <entry key="yukon.web.error.genericMainMessage">An error occurred while processing your request</entry>
     <entry key="yukon.web.error.genericSubMessage">Try to execute your request again.</entry>
