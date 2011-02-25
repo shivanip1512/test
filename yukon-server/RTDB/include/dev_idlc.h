@@ -78,7 +78,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
 
             if(_trxInfo != NULL)
@@ -143,7 +143,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
 
         _idlc.DecodeDatabaseReader(rdr);
@@ -175,7 +175,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
 
             delete _trxInfo;

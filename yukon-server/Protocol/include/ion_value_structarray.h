@@ -21,6 +21,7 @@
 
 #include "ion_value.h"
 #include "ion_value_struct_types.h"
+#include "string_utility.h"
 
 
 class CtiIONStructArray : public CtiIONValue
@@ -128,7 +129,7 @@ private:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = false;

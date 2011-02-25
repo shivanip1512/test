@@ -62,7 +62,7 @@ private:
       _blank(0),
       ClientKnownPort(-1)
    {
-      std::cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << endl;
       std::cout << "**** Connection Manager!!! *****" << endl;
    }
 

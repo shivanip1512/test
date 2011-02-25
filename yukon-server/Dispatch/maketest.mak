@@ -124,12 +124,12 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		message.h collectable.h rwutil.h database_connection.h \
 		database_reader.h boost_time.h ptconnect.h hashkey.h \
 		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
-		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
-		server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
-		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h pt_status.h \
-		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_analog.h
+		thread.h CtiPCPtrQueue.h string_utility.h msg_multi.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h ctibase.h ctinexus.h server_b.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
+		tbl_rawpthistory.h pt_status.h tbl_pt_status.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h cticalls.h \
 		dsm2.h mutex.h guard.h utility.h ctitime.h queues.h numstr.h \

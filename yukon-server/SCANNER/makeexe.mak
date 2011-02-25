@@ -139,11 +139,12 @@ id_sgdll.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
 mgr_device_scannable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mgr_device_scannable.h mgr_device.h dlldefs.h rtdb.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h sorted_vector.h dllbase.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h boostutil.h tbl_paoexclusion.h \
-		row_reader.h rwutil.h database_connection.h dbaccess.h sema.h \
+		cticalls.h os2_2w32.h numstr.h sorted_vector.h \
+		string_utility.h dllbase.h dsm2.h mutex.h guard.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h sema.h \
 		database_reader.h boost_time.h config_device.h logger.h \
 		thread.h CtiPCPtrQueue.h rte_base.h dbmemobject.h ctibase.h \
 		ctinexus.h message.h collectable.h tbl_pao_lite.h \
@@ -172,13 +173,13 @@ scanmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		boostutil.h readers_writer_lock.h critical_section.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h sema.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h queue.h thread_register_data.h
+		configval.h queue.h string_utility.h thread_register_data.h
 scanner.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h dbaccess.h dllbase.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		elogger.h porter.h devicetypes.h scanner.h master.h dlldev.h \
-		scanglob.h rtdb.h hashkey.h hash_functions.h \
+		scanglob.h rtdb.h hashkey.h hash_functions.h string_utility.h \
 		mgr_device_scannable.h mgr_device.h dev_base.h cmdparse.h \
 		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
 		tbl_paoexclusion.h row_reader.h rwutil.h \

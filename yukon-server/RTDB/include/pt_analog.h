@@ -22,6 +22,7 @@
 #include "pt_numeric.h"
 #include "tbl_pt_analog.h"
 #include "logger.h"
+#include "string_utility.h"
 
 
 class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
@@ -74,7 +75,7 @@ public:
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
       }
 
       Inherited::DecodeDatabaseReader(rdr);

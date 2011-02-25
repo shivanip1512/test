@@ -259,7 +259,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
 
         _ied.DecodeDatabaseReader(getType(), rdr);
@@ -305,7 +305,7 @@ public:
             if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                 dout << "  Port has indicated a connected device swap. " << endl;
                 dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
             }

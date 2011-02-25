@@ -116,7 +116,7 @@ private:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " = operator is invalid for this device" << endl;
+            dout << FO(__FILE__) << " = operator is invalid for this device" << endl;
         }
         return *this;
     }
@@ -125,7 +125,7 @@ private:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " copy constructor is invalid for this device" << endl;
+            dout << FO(__FILE__) << " copy constructor is invalid for this device" << endl;
         }
     }
 

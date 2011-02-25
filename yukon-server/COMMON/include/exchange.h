@@ -37,6 +37,7 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "mutex.h"
+#include "string_utility.h"
 
 #define MULTIBUFFEREDEXCHANGE
 
@@ -86,7 +87,7 @@ public:
     }
 
     void close();
-    
+
     RWpistream & In()
     {
         CtiLockGuard<CtiMutex> guard( (_classMutex));
@@ -99,7 +100,7 @@ public:
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Exchange istream has bad status " << __FILE__ << " (" << __LINE__ << ") " << iStream << endl;
+                    dout << CtiTime() << " Exchange istream has bad status " << FO(__FILE__) << " (" << __LINE__ << ") " << iStream << endl;
                 }
 
                 RWxmsg   err("Exchange has problems on the inbound stream");
@@ -122,9 +123,9 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " oStream has BAD status " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " oStream has BAD status " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
- 
+
             RWxmsg   err("EXCEPTION: Exchange's outbound socket has a BAD status.  It will be reset.");
             err.raise();
         }

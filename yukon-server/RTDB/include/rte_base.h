@@ -31,6 +31,7 @@ using boost::shared_ptr;
 #include "tbl_rtcomm.h"
 #include "msg_signal.h"
 #include "yukon.h"
+#include "string_utility.h"
 #include <list>
 
 using std::list;
@@ -68,7 +69,7 @@ public:
             Inherited::operator=(aRef);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
 
         }

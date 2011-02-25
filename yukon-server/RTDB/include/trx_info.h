@@ -29,6 +29,7 @@
 #include "queues.h"
 #include "critical_section.h"
 #include "porter.h"
+#include "string_utility.h"
 
 
 class CtiTransmitterInfo
@@ -99,7 +100,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
         }
         return *this;
@@ -145,7 +146,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -157,7 +158,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
         }
 

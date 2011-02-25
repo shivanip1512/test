@@ -142,12 +142,12 @@ test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h ctidate.h logger.h thread.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h tbl_lmprogramhistory.h \
-		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
-		lmmessage.h clientconn.h ctdpcptrq.h ConstraintViolation.h \
-		executor.h msg_server_req.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h lmcicustomerbase.h
+		connection.h exchange.h string_utility.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		tbl_lmprogramhistory.h lmprogramcontrolwindow.h lmutility.h \
+		lmconstraint.h lmmessage.h clientconn.h ctdpcptrq.h \
+		ConstraintViolation.h executor.h msg_server_req.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h
 test_lm_constraintviolations.obj:	yukon.h precompiled.h types.h \
 		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h \
 		ctidate.h logger.h thread.h mutex.h guard.h utility.h \

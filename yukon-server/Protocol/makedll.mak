@@ -442,9 +442,9 @@ ion_datastream.obj:	yukon.h precompiled.h types.h ctidbgmem.h guard.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h ion_value_struct.h \
-		ion_value_structarray.h ion_value_struct_types.h \
-		ion_value_fixed_time.h
+		ion_value_fixed_intunsigned.h string_utility.h \
+		ion_value_struct.h ion_value_structarray.h \
+		ion_value_struct_types.h ion_value_fixed_time.h
 ion_net_application.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		guard.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h numstr.h sorted_vector.h logger.h thread.h mutex.h \
@@ -474,7 +474,7 @@ ion_value.obj:	yukon.h precompiled.h types.h ctidbgmem.h guard.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h
+		ion_value_fixed_intsigned.h string_utility.h
 ion_value_fixed.obj:	yukon.h precompiled.h types.h ctidbgmem.h guard.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		numstr.h sorted_vector.h logger.h thread.h mutex.h \
@@ -524,7 +524,7 @@ ion_value_struct.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h
+		ion_value_fixed_intsigned.h string_utility.h
 ion_value_structarray.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -536,7 +536,7 @@ ion_value_structarray.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h
+		ion_value_fixed_intsigned.h string_utility.h
 ion_value_struct_types.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ion_value_struct_types.h ion_value_struct.h ion_value.h \
 		dlldefs.h ion_serializable.h numstr.h \
@@ -545,7 +545,7 @@ ion_value_struct_types.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h
+		ion_value_fixed_intsigned.h string_utility.h
 ion_value_variable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		guard.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h numstr.h sorted_vector.h logger.h thread.h mutex.h \
@@ -556,7 +556,7 @@ ion_value_variable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ion_value_variable_program.h ion_value_variable_fixedarray.h \
 		ion_value_fixed_char.h ion_value_fixed.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h
+		ion_value_fixed_intunsigned.h string_utility.h
 ion_value_variable_boolean.obj:	yukon.h precompiled.h types.h \
 		ctidbgmem.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -573,7 +573,8 @@ ion_value_variable_fixedarray.obj:	yukon.h precompiled.h types.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_fixed.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
+		string_utility.h
 ion_value_variable_program.obj:	yukon.h precompiled.h types.h \
 		ctidbgmem.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -726,10 +727,10 @@ prot_ion.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h ion_value_struct.h \
-		ion_value_structarray.h ion_value_struct_types.h \
-		ion_value_fixed_time.h ion_net_application.h \
-		ion_net_network.h ion_net_datalink.h \
+		ion_value_fixed_intunsigned.h string_utility.h \
+		ion_value_struct.h ion_value_structarray.h \
+		ion_value_struct_types.h ion_value_fixed_time.h \
+		ion_net_application.h ion_net_network.h ion_net_datalink.h \
 		ion_value_variable_program.h
 prot_klondike.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
@@ -1019,14 +1020,14 @@ test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		dev_exclusion.h tbl_paoexclusion.h rte_base.h dbmemobject.h \
 		ctibase.h ctinexus.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
 		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h msg_signal.h tbl_base.h tbl_stats.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h tbl_static_paoinfo.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h tbl_dialup.h tbl_direct.h tbl_dv_address.h \
-		device_queue_interface.h
+		CtiPCPtrQueue.h msg_signal.h string_utility.h tbl_base.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		tbl_static_paoinfo.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_address.h device_queue_interface.h
 test_prot_xml.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		prot_xml.h cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h
 transdata_application.obj:	yukon.h precompiled.h types.h ctidbgmem.h \

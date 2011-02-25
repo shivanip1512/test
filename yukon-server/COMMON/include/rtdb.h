@@ -43,6 +43,7 @@
 #include "dlldefs.h"
 #include "hashkey.h"
 #include "utility.h"
+#include "string_utility.h"
 using std::list;
 using std::map;
 /*
@@ -122,7 +123,7 @@ public:
        }
        else
        {
-           std::cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           std::cout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
        }
 
        return status;

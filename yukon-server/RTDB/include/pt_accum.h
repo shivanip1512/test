@@ -24,6 +24,7 @@ using boost::shared_ptr;
 #include "pt_numeric.h"
 #include "tbl_pt_accum.h"
 #include "tbl_pt_accumhistory.h"
+#include "string_utility.h"
 
 class IM_EX_PNTDB CtiPointAccumulator : public CtiPointNumeric
 {
@@ -57,9 +58,9 @@ public:
 
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                  dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                   dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << endl;
-                  dout << "     ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                  dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                }
             }
          }
@@ -125,7 +126,7 @@ public:
           if(getDebugLevel() & DEBUGLEVEL_DATABASE)
           {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+             dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
           }
 
           _pointAccumulator.DecodeDatabaseReader(rdr);
@@ -134,7 +135,7 @@ public:
        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " " << getName() << " cannot decode this rdr " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
        }*/
    }
@@ -162,7 +163,7 @@ public:
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** MEMORY ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** MEMORY ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
          }
       }

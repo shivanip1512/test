@@ -68,6 +68,7 @@ rtdb.obj \
 sema.obj \
 statistics.obj \
 stdexcepthdlr.obj \
+string_utility.obj \
 thread.obj \
 ucttime.obj \
 date_utility.obj \
@@ -105,7 +106,7 @@ $(COMMON_FULLBUILD):
         @echo:
         @echo Compiling cpp to obj
         @echo:
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
@@ -167,7 +168,7 @@ id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 
@@ -289,7 +290,7 @@ dllbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h mutex.h \
 		configkey.h configval.h ctinexus.h logger.h thread.h \
 		CtiPCPtrQueue.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h critical_section.h queue.h \
-		thread_register_data.h
+		string_utility.h thread_register_data.h
 elog_cli.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
@@ -304,7 +305,7 @@ exchange.obj:	yukon.h precompiled.h types.h ctidbgmem.h exchange.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h logger.h \
-		thread.h CtiPCPtrQueue.h
+		thread.h CtiPCPtrQueue.h string_utility.h
 fileint.obj:	yukon.h precompiled.h types.h ctidbgmem.h fileint.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -362,7 +363,8 @@ queue.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h cparms.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
 		netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h
+		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h
 queues.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h logger.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -390,9 +392,9 @@ resolvers.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h \
 		thread.h CtiPCPtrQueue.h
 rtdb.obj:	yukon.h precompiled.h types.h ctidbgmem.h dlldefs.h rtdb.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h sorted_vector.h dllbase.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h
+		cticalls.h os2_2w32.h numstr.h sorted_vector.h \
+		string_utility.h dllbase.h dsm2.h mutex.h guard.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h
 sema.obj:	yukon.h precompiled.h types.h ctidbgmem.h sema.h dlldefs.h
 statistics.obj:	yukon.h precompiled.h types.h ctidbgmem.h row_reader.h \
 		ctitime.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
@@ -405,6 +407,8 @@ statistics.obj:	yukon.h precompiled.h types.h ctidbgmem.h row_reader.h \
 		row_writer.h
 stdexcepthdlr.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		stdexcepthdlr.h dlldefs.h
+string_utility.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		string_utility.h dlldefs.h
 test_cmdparse.obj:	boostutil.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
 		test_cmdparse_input.h test_cmdparse_output.h cmdparse.h \
@@ -450,7 +454,8 @@ test_queue.obj:	queue.h cparms.h dlldefs.h rwutil.h yukon.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h
+		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h
 test_readers_writer_lock.obj:	yukon.h precompiled.h types.h \
 		ctidbgmem.h readers_writer_lock.h dlldefs.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
@@ -493,7 +498,7 @@ threadstatuskeeper.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		readers_writer_lock.h critical_section.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h sema.h database_reader.h \
 		row_reader.h configkey.h configval.h queue.h logger.h \
-		thread.h CtiPCPtrQueue.h
+		thread.h CtiPCPtrQueue.h string_utility.h
 thread_listener.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		thread_listener.h thread.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -506,7 +511,7 @@ thread_monitor.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		boostutil.h readers_writer_lock.h critical_section.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h sema.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h queue.h thread_register_data.h
+		configval.h queue.h string_utility.h thread_register_data.h
 thread_register_data.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
 		dlldefs.h boostutil.h utility.h ctitime.h queues.h numstr.h \
@@ -535,8 +540,6 @@ verification_objects.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
 		optional.h boost_time.h
-wordbuilder.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		wordbuilder.h
 words.obj:	yukon.h precompiled.h types.h ctidbgmem.h words.h dlldefs.h \
 		cticalls.h os2_2w32.h optional.h cti_asmc.h dsm2err.h \
 		logger.h thread.h mutex.h guard.h utility.h ctitime.h \

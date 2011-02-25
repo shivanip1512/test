@@ -27,6 +27,7 @@
 #include "dev_single.h"
 #include "tbl_dialup.h"
 #include "tbl_direct.h"
+#include "string_utility.h"
 
 
 class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
@@ -187,7 +188,7 @@ public:
                                        "FROM Device DV, DeviceDirectCommSettings CS, YukonPAObject YP LEFT OUTER JOIN "
                                          "DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
                                        "WHERE YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
-    
+
         return sqlCore;
     }
 
@@ -200,7 +201,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
 
         Direct.DecodeDatabaseReader(rdr);

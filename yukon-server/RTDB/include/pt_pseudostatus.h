@@ -20,6 +20,7 @@
 #include "yukon.h"
 #include "dlldefs.h"
 #include "tbl_pt_status.h"
+#include "string_utility.h"
 
 class IM_EX_PNTDB CtiPointPseudoStatus : public CtiPointBase
 {
@@ -62,7 +63,7 @@ public:
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+          dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
       }
       _pointStatus.DecodeDatabaseReader(rdr);
    }

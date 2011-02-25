@@ -24,6 +24,7 @@
 
 #include "connection.h"
 #include "ctibase.h"
+#include "string_utility.h"
 
 class IM_EX_CTISVR CtiConnectionManager : public CtiConnection
 {
@@ -47,7 +48,7 @@ protected:
       ClientRegistered(FALSE),
       ClientName("DEFAULT")
    {
-      std::cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << endl;
       std::cout << "**** Connection Manager!!! *****" << endl;
    }
 

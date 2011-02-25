@@ -13,6 +13,7 @@
 #include "dlldefs.h"
 #include "logger.h"
 #include "utility.h"
+#include "string_utility.h"
 
 #include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
@@ -126,7 +127,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -141,7 +142,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -155,7 +156,7 @@ public:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ") q.size() " << getCollection().size() << endl;
+                            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ") q.size() " << getCollection().size() << endl;
                         }
                         resetCollection();     // Dump the queue?
                     }
@@ -166,7 +167,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
             resetCollection();     // Dump the queue?
         }
     }
@@ -190,7 +191,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
         }
 
         return pval;
@@ -232,7 +233,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
         }
         return pval;
     }
@@ -257,7 +258,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
         }
 
         return putWasDone;
@@ -367,7 +368,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -379,7 +380,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -390,7 +391,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -415,7 +416,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -447,7 +448,7 @@ private:
         }
         catch(...)
         {
-            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -480,7 +481,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -500,7 +501,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -542,7 +543,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -563,7 +564,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;

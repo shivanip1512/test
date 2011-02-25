@@ -12,6 +12,7 @@
 
 #include "con_mgr.h"
 #include "pil_conmgr.h"
+#include "string_utility.h"
 
 class IM_EX_CTIPIL CtiPILConnectionManager : public CtiConnectionManager
 {
@@ -25,7 +26,7 @@ public:
 
    CtiPILConnectionManager()
    {
-      std::cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << endl;
       std::cout << "**** Connection Manager!!! *****" << endl;
    }
 
