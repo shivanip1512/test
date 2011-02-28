@@ -1,11 +1,14 @@
 package com.cannontech.common.pao.service;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteStateGroup;
 
 /**
  * Class which provides functionality for manipulating and creating points
@@ -32,5 +35,7 @@ public interface PointService {
     
     
     public PreviousReadings getPreviousReadings(LitePoint lp);
+    
+    public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
 
 }

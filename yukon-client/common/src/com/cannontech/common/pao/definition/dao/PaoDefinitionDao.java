@@ -1,10 +1,12 @@
 package com.cannontech.common.pao.definition.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -14,6 +16,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Data access object for pao definition information
@@ -23,6 +26,10 @@ public interface PaoDefinitionDao {
 	// ATTRIBUTES
 	//============================================
     public abstract Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
+    
+    public Multimap<PaoType, Attribute> getAllDefinedAttributes();
+    
+    public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
     
     public abstract AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute) throws IllegalUseOfAttribute;
 

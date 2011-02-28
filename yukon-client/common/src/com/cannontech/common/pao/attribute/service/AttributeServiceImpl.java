@@ -1,7 +1,10 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,19 +16,26 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.MappableAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 public class AttributeServiceImpl implements AttributeService {
@@ -164,6 +174,53 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         return result;
+    }
+    
+    @Override
+    public SqlFragmentSource getAttributeLookupSql(Attribute attribute) {
+        Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
+        
+        SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
+        boolean haveMapped = false;
+        for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
+            AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
+            if (attributeDefinition == null) continue;
+            if (attributeDefinition instanceof BasicAttributeDefinition) {
+                PointIdentifier pointIdentifier = ((BasicAttributeDefinition) attributeDefinition).getPointTemplate().getPointIdentifier();
+                typesByPointIdentifier.put(pointIdentifier, entry.getKey());
+            } else if (attributeDefinition instanceof MappedAttributeDefinition) {
+                haveMapped = true;
+            }
+        }
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select pao_als.paObjectid, p_als.pointId");
+        sql.append("from YukonPAObject pao_als");
+        sql.append(  "join Point p_als on pao_als.paObjectId = p_als.paObjectId");
+        
+        SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
+        for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
+            SqlStatementBuilder clause1 = new SqlStatementBuilder();
+            clause1.append("(");
+            clause1.append("pao_als.Type").in(entry.getValue());
+            clause1.append(  "and p_als.pointType").eq_k(entry.getKey().getPointType());
+            clause1.append(  "and p_als.pointOffset").eq_k(entry.getKey().getOffset());
+            clause1.append(")");
+            orCollection.add(clause1);
+        }
+        
+        if (!orCollection.isEmpty()) {
+            sql.append("where").appendFragment(orCollection);
+        }
+        
+        if (haveMapped) {
+            sql.append("union");
+            sql.append("select eppa_als.paObjectId, eppa_als.pointId");
+            sql.append("from ExtraPaoPointAssignment eppa_als");
+            sql.append("where eppa_als.Attribute").eq(attribute.getKey()); //DRS???
+        }
+        
+        return sql;
     }
     
     @Override

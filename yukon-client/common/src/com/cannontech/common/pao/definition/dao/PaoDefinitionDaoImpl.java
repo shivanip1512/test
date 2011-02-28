@@ -88,11 +88,14 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * Implementation class for PaoDefinitionDao
@@ -163,6 +166,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
+    public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap() {
+        return paoAttributeAttrDefinitionMap;
+    }
+    
+    @Override
     public Set<AttributeDefinition> getDefinedAttributes(PaoType paoType) {
         Map<Attribute, AttributeDefinition> attributeLookupsForPao = paoAttributeAttrDefinitionMap.get(paoType);
         if (attributeLookupsForPao == null) {
@@ -170,6 +178,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         } else {
             return ImmutableSet.copyOf(attributeLookupsForPao.values());
         }
+    }
+
+    @Override
+    public Multimap<PaoType, Attribute> getAllDefinedAttributes() {
+        Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
+        
+        for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
+            builder.putAll(entry.getKey(), entry.getValue().keySet());
+        }
+        return builder.build();
     }
     
     @Override

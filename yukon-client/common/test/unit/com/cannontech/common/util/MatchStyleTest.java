@@ -12,138 +12,121 @@ public class MatchStyleTest {
     private Set<Integer> A = Sets.newHashSet(1);
     private Set<Integer> B = Sets.newHashSet(2);
     private Set<Integer> AB = Sets.newHashSet(1,2);
-    private Set<Integer> EMPTY = Sets.newHashSet();
+    private Set<Integer> E = Sets.newHashSet();
     
-    // none
-    @Test
-    public void test_none() {
-        Assert.assertEquals(false, MatchStyle.none.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.none.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.none.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.none.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.none.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.none.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.none.matches(EMPTY, EMPTY));
+    private final MatchStyle none = MatchStyle.none;
+    private final MatchStyle some = MatchStyle.some;
+    private final MatchStyle any = MatchStyle.any;
+    private final MatchStyle notany = MatchStyle.notany;
+    private final MatchStyle all = MatchStyle.all;
+    private final MatchStyle notall = MatchStyle.notall;
+    private final MatchStyle subset = MatchStyle.subset;
+    private final MatchStyle notsubset = MatchStyle.notsubset;
+    private final MatchStyle equal = MatchStyle.equal;
+    private final MatchStyle notequal = MatchStyle.notequal;
+    private final MatchStyle empty = MatchStyle.empty;
+    private final MatchStyle notempty = MatchStyle.notempty;
+
+    private void validate(Set<Integer> one, MatchStyle style, Set<Integer> two, boolean expectedResult) {
+        Assert.assertEquals(expectedResult, style.matches(one, two));
     }
-    // some
+
     @Test
-    public void test_some() {
-        Assert.assertEquals(true, MatchStyle.some.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.some.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.some.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.some.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.some.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.some.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.some.matches(EMPTY, EMPTY));
-    }
-    // any
-    @Test
-    public void test_any() {
-        Assert.assertEquals(true, MatchStyle.any.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.any.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.any.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.any.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.any.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.any.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.any.matches(EMPTY, EMPTY));
-    }
-    // notany
-    @Test
-    public void test_notany() {
-        Assert.assertEquals(false, MatchStyle.notany.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.notany.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.notany.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.notany.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.notany.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.notany.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.notany.matches(EMPTY, EMPTY));
-    }
-    // all
-    @Test
-    public void test_all() {
-        Assert.assertEquals(true, MatchStyle.all.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.all.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.all.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.all.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.all.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.all.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.all.matches(EMPTY, EMPTY));
-    }
-    // notall
-    @Test
-    public void test_notall() {
-        Assert.assertEquals(false, MatchStyle.notall.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.notall.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.notall.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.notall.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.notall.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.notall.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.notall.matches(EMPTY, EMPTY));
-    }
-    // subset
-    @Test
-    public void test_subset() {
-        Assert.assertEquals(true, MatchStyle.subset.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.subset.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.subset.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.subset.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.subset.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.subset.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.subset.matches(EMPTY, EMPTY));
-    }
-    // notsubset
-    @Test
-    public void test_notsubset() {
-        Assert.assertEquals(false, MatchStyle.notsubset.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.notsubset.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.notsubset.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.notsubset.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.notsubset.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.notsubset.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.notsubset.matches(EMPTY, EMPTY));
-    }
-    // equal
-    @Test
-    public void test_equal() {
-        Assert.assertEquals(true, MatchStyle.equal.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.equal.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.equal.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.equal.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.equal.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.equal.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.equal.matches(EMPTY, EMPTY));
-    }
-    // notequal
-    @Test
-    public void test_notequal() {
-        Assert.assertEquals(false, MatchStyle.notequal.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.notequal.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.notequal.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.notequal.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.notequal.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.notequal.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.notequal.matches(EMPTY, EMPTY));
-    }
-    // empty
-    @Test
-    public void test_empty() {
-        Assert.assertEquals(false, MatchStyle.empty.matches(A, A));
-        Assert.assertEquals(false, MatchStyle.empty.matches(AB, A));
-        Assert.assertEquals(false, MatchStyle.empty.matches(A, AB));
-        Assert.assertEquals(false, MatchStyle.empty.matches(A, B));
-        Assert.assertEquals(true, MatchStyle.empty.matches(EMPTY, A));
-        Assert.assertEquals(false, MatchStyle.empty.matches(A, EMPTY));
-        Assert.assertEquals(true, MatchStyle.empty.matches(EMPTY, EMPTY));
-    }
-    // notempty
-    @Test
-    public void test_notempty() {
-        Assert.assertEquals(true, MatchStyle.notempty.matches(A, A));
-        Assert.assertEquals(true, MatchStyle.notempty.matches(AB, A));
-        Assert.assertEquals(true, MatchStyle.notempty.matches(A, AB));
-        Assert.assertEquals(true, MatchStyle.notempty.matches(A, B));
-        Assert.assertEquals(false, MatchStyle.notempty.matches(EMPTY, A));
-        Assert.assertEquals(true, MatchStyle.notempty.matches(A, EMPTY));
-        Assert.assertEquals(false, MatchStyle.notempty.matches(EMPTY, EMPTY));
+    public void test() {
+        validate(A, none, A, false);
+        validate(AB,none, A, false);
+        validate(A, none, AB,false);
+        validate(A, none, B, true);
+        validate(E, none, A, true);
+        validate(A, none, E, true);
+        validate(E, none, E, true);
+        
+        validate(A, some, A, true);
+        validate(AB,some, A, true);
+        validate(A, some, AB,true);
+        validate(A, some, B, false);
+        validate(E, some, A, false);
+        validate(A, some, E, false);
+        validate(E, some, E, false);
+        
+        validate(A, any, A, true);
+        validate(AB,any, A, true);
+        validate(A, any, AB,true);
+        validate(A, any, B, false);
+        validate(E, any, A, false);
+        validate(A, any, E, true);
+        validate(E, any, E, true);
+        
+        validate(A, notany, A, false);
+        validate(AB,notany, A, false);
+        validate(A, notany, AB,false);
+        validate(A, notany, B, true);
+        validate(E, notany, A, true);
+        validate(A, notany, E, false);
+        validate(E, notany, E, false);
+        
+        validate(A, all, A, true);
+        validate(AB,all, A, true);
+        validate(A, all, AB,false);
+        validate(A, all, B, false);
+        validate(E, all, A, false);
+        validate(A, all, E, true);
+        validate(E, all, E, true);
+        
+        validate(A, notall, A, false);
+        validate(AB,notall, A, false);
+        validate(A, notall, AB,true);
+        validate(A, notall, B, true);
+        validate(E, notall, A, true);
+        validate(A, notall, E, false);
+        validate(E, notall, E, false);
+        
+        validate(A, subset, A, true);
+        validate(AB,subset, A, false);
+        validate(A, subset, AB,true);
+        validate(A, subset, B, false);
+        validate(E, subset, A, true);
+        validate(A, subset, E, false);
+        validate(E, subset, E, true);
+        
+        validate(A, notsubset, A, false);
+        validate(AB,notsubset, A, true);
+        validate(A, notsubset, AB,false);
+        validate(A, notsubset, B, true);
+        validate(E, notsubset, A, false);
+        validate(A, notsubset, E, true);
+        validate(E, notsubset, E, false);
+        
+        validate(A, equal, A, true);
+        validate(AB,equal, A, false);
+        validate(A, equal, AB,false);
+        validate(A, equal, B, false);
+        validate(E, equal, A, false);
+        validate(A, equal, E, false);
+        validate(E, equal, E, true);
+        
+        validate(A, notequal, A, false);
+        validate(AB,notequal, A, true);
+        validate(A, notequal, AB,true);
+        validate(A, notequal, B, true);
+        validate(E, notequal, A, true);
+        validate(A, notequal, E, true);
+        validate(E, notequal, E, false);
+        
+        validate(A, empty, A, false);
+        validate(AB,empty, A, false);
+        validate(A, empty, AB,false);
+        validate(A, empty, B, false);
+        validate(E, empty, A, true);
+        validate(A, empty, E, false);
+        validate(E, empty, E, true);
+        
+        validate(A, notempty, A, true);
+        validate(AB,notempty, A, true);
+        validate(A, notempty, AB,true);
+        validate(A, notempty, B, true);
+        validate(E, notempty, A, false);
+        validate(A, notempty, E, true);
+        validate(E, notempty, E, false);
     }
 }

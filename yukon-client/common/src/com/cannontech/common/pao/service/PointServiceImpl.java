@@ -9,17 +9,25 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -29,16 +37,9 @@ public class PointServiceImpl implements PointService {
 
     private PointDao pointDao = null;
     private RawPointHistoryDao rphDao = null;
-
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Autowired
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
+    private AttributeService attributeService;
+    private DeviceGroupService deviceGroupService;
+    private YukonJdbcOperations jdbcTemplate;
 
     public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
 
@@ -120,4 +121,47 @@ public class PointServiceImpl implements PointService {
         return previousReadings;
     }
     
+    @Override
+    public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute,
+                                                  LiteStateGroup stateGroup) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
+        sql.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
+        sql.append(  "join Point p on p.pointId = pao_point_lookup.pointId");
+        sql.append("where");
+        sql.append(  "p.stateGroupId").eq_k(stateGroup.getStateGroupID());
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
+        sql.append(  "and").appendFragment(groupSqlWhereClause);
+        
+        int result = jdbcTemplate.queryForInt(sql);
+        
+        return result;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
+    @Autowired
+    public void setRphDao(RawPointHistoryDao rphDao) {
+        this.rphDao = rphDao;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    
+    @Autowired
+    public void setJdbcTemplate(YukonJdbcOperations jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+    
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }    
 }

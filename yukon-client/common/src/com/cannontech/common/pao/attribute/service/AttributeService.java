@@ -8,6 +8,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.MappableAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.lite.LitePoint;
 
 public interface AttributeService {
@@ -90,4 +91,6 @@ public interface AttributeService {
      * (Currently this is designed to exclude "profile" attributes.)
      */
     public Set<Attribute> getReadableAttributes();
+    
+    public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
 }

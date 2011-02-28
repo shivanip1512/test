@@ -52,5 +52,9 @@ public class SqlFragmentCollection implements SqlFragmentSource {
         sql.add(fragment);
         return this;
     }
+
+    public boolean isEmpty() {
+        return sql.isEmpty();
+    }
     
 }

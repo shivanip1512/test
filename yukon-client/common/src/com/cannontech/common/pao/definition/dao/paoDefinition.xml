@@ -207,9 +207,23 @@
             </attribute>
         </attributes>
     </pao>    
-      
+
+    <pao id="OUTAGE_STATUS_BASE" abstract="true">
+        <points>
+            <point type="Status" offset="1000">
+               <name>Outage Status</name>
+               <stategroup value="Outage Status"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="OUTAGE_STATUS">
+                <basicLookup point="Outage Status"/>
+            </attribute>
+        </attributes>
+    </pao>
+
     <!-- MCT BASE -->
-    <pao id="MCT_BASE" abstract="true">
+    <pao id="MCT_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE">
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
         <tags>

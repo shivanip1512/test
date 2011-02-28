@@ -16,6 +16,7 @@ public enum BuiltInAttribute implements Attribute {
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
+    OUTAGE_STATUS("Outage Status"),
     PEAK_DEMAND("Peak Demand"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
