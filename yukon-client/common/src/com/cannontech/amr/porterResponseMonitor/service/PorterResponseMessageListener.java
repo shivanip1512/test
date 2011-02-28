@@ -1,6 +1,5 @@
 package com.cannontech.amr.porterResponseMonitor.service;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +9,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,6 @@ public class PorterResponseMessageListener implements MessageListener {
     private PorterResponseMonitorDao porterResponseMonitorDao;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
     private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
-    private boolean allMonitorsDisabled = false;
 
     //Map entries will be removed after 12 hours
     private ConcurrentMap<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
@@ -60,9 +58,10 @@ public class PorterResponseMessageListener implements MessageListener {
     public void initialize() {
         List<PorterResponseMonitor> monitorsList = porterResponseMonitorDao.getAllMonitors();
         for (PorterResponseMonitor monitor : monitorsList) {
-            monitors.put(monitor.getMonitorId(), monitor);
+            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
+                monitors.put(monitor.getMonitorId(), monitor);
+            }
         }
-        setAllMonitorsDisabled();
         createDatabaseChangeListener();
     }
 
@@ -72,8 +71,12 @@ public class PorterResponseMessageListener implements MessageListener {
             public void eventReceived(DatabaseChangeEvent event) {
                 PorterResponseMonitor newMonitor = 
                     porterResponseMonitorDao.getMonitorById(event.getPrimaryKey());
-                monitors.put(newMonitor.getMonitorId(), newMonitor);
-                setAllMonitorsDisabled();
+
+                if (newMonitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
+                    monitors.put(newMonitor.getMonitorId(), newMonitor);
+                } else {
+                    monitors.remove(newMonitor.getMonitorId());
+                }
             }
         };
 
@@ -84,7 +87,6 @@ public class PorterResponseMessageListener implements MessageListener {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 monitors.remove(event.getPrimaryKey());
-                setAllMonitorsDisabled();
             }
         };
 
@@ -95,23 +97,33 @@ public class PorterResponseMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (monitors.isEmpty() || allMonitorsDisabled) {
+        if (monitors.isEmpty()) {
             log.trace("Recieved porter response message from jms queue: not processing because " +
             		"no monitors exist or they are all disabled");
             return;
         }
-        if (message instanceof ObjectMessage) {
-            ObjectMessage objMessage = (ObjectMessage) message;
+        if (message instanceof BytesMessage) {
+            BytesMessage bytesMessage = (BytesMessage) message;
             try {
-                Serializable object = objMessage.getObject();
-                if (object instanceof PorterResponseMessage) {
-                    PorterResponseMessage porterResponseMessage = (PorterResponseMessage)object;
-                    handleMessage(porterResponseMessage);
-                }
+                PorterResponseMessage porterResponseMessage = buildPorterResponseMessage(bytesMessage);
+                handleMessage(porterResponseMessage);
             } catch (JMSException e) {
                 log.warn("Unable to extract PorterResponseMessage from message", e);
             }
         }
+    }
+
+    private PorterResponseMessage buildPorterResponseMessage(BytesMessage bytesMessage) throws JMSException {
+        long connectionId = bytesMessage.readLong();
+        int paoId = bytesMessage.readInt();
+        boolean finalMsg = bytesMessage.readBoolean();
+        int errorCode = bytesMessage.readInt();
+        int userMessageId = bytesMessage.readInt();
+        
+        PorterResponseMessage porterResponseMessage = 
+            new PorterResponseMessage(userMessageId, connectionId, paoId, errorCode, finalMsg);
+
+        return porterResponseMessage;
     }
 
     /**
@@ -150,12 +162,10 @@ public class PorterResponseMessageListener implements MessageListener {
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
         for (PorterResponseMonitor monitor : monitors.values()) {
-            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
-                for (PorterResponseMonitorRule rule : monitor.getRules()) {
-                    if(shouldSendPointData(transaction, rule)) {
-                        sendPointData(monitor, rule, transaction);
-                        break;
-                    }
+            for (PorterResponseMonitorRule rule : monitor.getRules()) {
+                if(shouldSendPointData(transaction, rule)) {
+                    sendPointData(monitor, rule, transaction);
+                    break;
                 }
             }
         }
@@ -183,7 +193,7 @@ public class PorterResponseMessageListener implements MessageListener {
         try {
             litePoint = attributeService.getPointForAttribute(yukonPao, monitor.getAttribute());
         } catch (IllegalUseOfAttribute e) {
-            LogHelper.debug(log, "Attribute %s configured on PorterResponseMonitor [monitorId: %s] " +
+            LogHelper.trace(log, "Attribute %s configured on PorterResponseMonitor [monitorId: %s] " +
             		"could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute().getDescription(), 
             		monitor.getMonitorId(), yukonPao.getPaoIdentifier().getPaoId(), yukonPao.getPaoIdentifier().getPaoType());
             return;
@@ -209,7 +219,7 @@ public class PorterResponseMessageListener implements MessageListener {
 
     private class TransactionIdentifier {
         private int userMessageId;
-        private int connectionId;
+        private long connectionId;
 
         public TransactionIdentifier(PorterResponseMessage message) {
             this.userMessageId = message.getUserMessageId();
@@ -221,7 +231,7 @@ public class PorterResponseMessageListener implements MessageListener {
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + connectionId;
+            result = prime * result + (int) (connectionId ^ (connectionId >>> 32));
             result = prime * result + userMessageId;
             return result;
         }
@@ -248,17 +258,7 @@ public class PorterResponseMessageListener implements MessageListener {
             return PorterResponseMessageListener.this;
         }
     }
-    
-    private void setAllMonitorsDisabled() {
-        for (PorterResponseMonitor monitor: monitors.values()) {
-            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
-                allMonitorsDisabled = false;
-                return;
-            }
-        }
-        allMonitorsDisabled = true;
-    }
-    
+
     /** 
      * Only for testing
      */

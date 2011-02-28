@@ -1,24 +1,44 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
-	<cti:standardMenu menuSelection="meters" />
+    <script type="text/javascript">
+        YEvent.observeSelectorClick('.doCountCalculation', function(event) {
+            var resultSpan = event.element().next('span');
+            resultSpan.hide();
+            YEvent.markBusy(event);
+    
+            new Ajax.Request("getPointCount",{
+                parameters: {'monitorId': ${monitorDto.monitorId}},
+                onComplete: function(response) {
+                    var calculatedCount = response.responseText;
+                    resultSpan.innerHTML = calculatedCount;
+                    YEvent.unmarkBusy(event);
+                    resultSpan.show();
+                    flashYellow(resultSpan, 2);
+                }
+            });
+        });
+    </script>
+
+    <cti:standardMenu menuSelection="meters" />
 
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 		<cti:crumbLink url="/spring/meter/start" title="Metering" />
 		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
+        <cti:crumbLink><spring:escapeBody>${monitorDto.name}</spring:escapeBody></cti:crumbLink>
 	</cti:breadCrumbs>
 
+    <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view" />
+
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="mediumDialogScrollArea">
+        <div class="largeDialogScrollArea">
         <table id="errorCodes" class="resultsTable">
             <tr>
                 <th><i:inline key=".errorCodesPopup.header.code" /></th>
@@ -69,7 +89,13 @@
 			<tags:nameValue2 nameKey=".monitoring">
 				<i:inline key="${monitorDto.evaluatorStatus}" />
 			</tags:nameValue2>
-		</tags:nameValueContainer2>
+
+            <%-- Point Count --%>
+            <tags:nameValue2 nameKey=".pointCount" rowClass="middle">
+                <cti:button key="calculatePointCount" styleClass="doCountCalculation" />
+                <span></span>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
 
 		<c:choose>
 			<c:when test="${not empty monitorDto.rules}">
@@ -85,12 +111,21 @@
 							<th><i:inline key=".rulesTable.header.state" /></th>
 						</tr>
 
-						<c:forEach items="${monitorDto.rules}" var="rule" varStatus="status">
+						<c:forEach items="${monitorDto.rules}" var="rule">
 							<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
 								<td nowrap="nowrap">${rule.value.ruleOrder}</td>
-								<td nowrap="nowrap">${rule.value.success}</td>
+								<td nowrap="nowrap">
+                                    <c:choose>
+                                        <c:when test="${rule.value.success}">
+                                            <span class="successMessage"><i:inline key=".rule.success"/></span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="errorMessage"><i:inline key=".rule.failed"/></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
 								<td nowrap="nowrap">${rule.value.errorCodes}</td>
-								<td nowrap="nowrap">${rule.value.matchStyle}</td>
+								<td nowrap="nowrap"><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
 								<td nowrap="nowrap">${states[rule.value.state].stateText}</td>
 							</tr>
 						</c:forEach>

@@ -369,6 +369,10 @@ table.nameValueTable tr {
 	text-align: left;
 }
 
+table.nameValueTable tr.middle td {
+    vertical-align: middle;
+}
+
 table.nameValueTable tr.indent1 td.name {
 	padding-left:40px;
 	font-size: .8em;
@@ -875,14 +879,21 @@ ul.errorMessage {
     color:#777777;
 }
 
-tr.removed {
+table.compactResultsTable th img.logoImage {
+    vertical-align: bottom;
+}
+
+table.compactResultsTable tr.removed {
     background-color:#EFEFEF;
     border-top: 2px solid #ccc;
 }
 
-td.removed {
-    height: 25px;
+table.compactResultsTable tr.removed td {
     text-align: center;
+    vertical-align: middle;
+}
+
+table.compactResultsTable td.checkBox {
     vertical-align: middle;
 }
 
@@ -1042,14 +1053,20 @@ h3.dialogQuestion {
     color: red;
 }
 
+.smallDialogScrollArea {
+    height: 150px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
 .dialogScrollArea {
     height: 200px;
     overflow: auto;
     overflow-x: hidden;
 }
 
-.mediumDialogScrollArea {
-    max-height: 500px;
+.largeDialogScrollArea {
+    max-height: 350px;
     overflow: auto;
     padding: 5px 0;
 }
@@ -1196,6 +1213,14 @@ button.formSubmit img {
 	vertical-align: top;
 }
 
+button.ajaxBusy {
+    padding-right: 0px;
+}
+
+button.ajaxBusy img {
+    padding-left: 5px;
+}
+
 .formSubmit {
     white-space: nowrap;
 }
@@ -1217,6 +1242,11 @@ span.dateRangeInputField {
 div.mediumContainer {
     margin-top: 15px;
     width: 50%;
+}
+
+div.fixedMediumWidth {
+    max-width: 650px;
+    width: 100%;
 }
 
 .usingDefaultValue {

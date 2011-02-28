@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -34,9 +35,12 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRuleDto;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
@@ -51,7 +55,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -64,6 +70,8 @@ public class PorterResponseMonitorController {
 	private PorterResponseMonitorService porterResponseMonitorService;
 	private OutageEventLogService outageEventLogService;
 	private AttributeService attributeService;
+	private DeviceGroupService deviceGroupService;
+	private PointService pointService;
 	private StateDao stateDao;
 	private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
 
@@ -203,18 +211,14 @@ public class PorterResponseMonitorController {
 		    monitor = new PorterResponseMonitor(monitorDto);
 		} catch (NumberFormatException e) {
 			bindingResult.reject(baseKey + ".rulesTable.errorCodesFormat");
-			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-			setupEditPageModelMap(monitorDto, modelMap, userContext);
+			setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
 			return "porterResponseMonitor/edit.jsp";
 		}
 
 		nameAndRulesValidator.validate(monitor, bindingResult);
 
 		if (bindingResult.hasErrors()) {
-			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-			setupEditPageModelMap(monitorDto, modelMap, userContext);
+            setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
 			return "porterResponseMonitor/edit.jsp";
 		}
 
@@ -222,9 +226,7 @@ public class PorterResponseMonitorController {
 			porterResponseMonitorDao.save(monitor);
 		} catch (DuplicateException e) {
 			bindingResult.rejectValue("name", baseKey + ".alreadyExists");
-			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-			setupEditPageModelMap(monitorDto, modelMap, userContext);
+            setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
 			return "porterResponseMonitor/edit.jsp";
 		}
 
@@ -308,6 +310,20 @@ public class PorterResponseMonitorController {
 		model.addAttribute("newMapKey", PorterResponseMonitorDto.getNextKey());
 	}
 
+    @RequestMapping
+    public TextView getPointCount(HttpServletRequest request, HttpServletResponse response, int monitorId) {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
+
+        response.setContentType("text/plain");
+        PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
+        DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
+        int pointCount = pointService.getCountOfGroupAttributeStateGroup(group, monitor.getAttribute(), monitor.getStateGroup());
+        return new TextView(String.valueOf(pointCount));
+    }
+
 	private void setupCreatePageModelMap(ModelMap model, YukonUserContext userContext) {
         PorterResponseMonitor monitor = new PorterResponseMonitor();
         model.addAttribute("monitor", monitor);
@@ -333,6 +349,13 @@ public class PorterResponseMonitorController {
 		model.addAttribute("states", states);
 		model.addAttribute("monitorDto", monitorDto);
 		model.addAttribute("mode", PageEditMode.VIEW);
+	}
+
+	private void setupErrorEditPageModelMap(PorterResponseMonitorDto monitorDto, ModelMap model, 
+	                        YukonUserContext userContext, BindingResult bindingResult, FlashScope flashScope) {
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        setupEditPageModelMap(monitorDto, model, userContext);
 	}
 
 	private void setupEditPageModelMap(PorterResponseMonitorDto monitorDto, ModelMap model, YukonUserContext userContext) {
@@ -372,18 +395,7 @@ public class PorterResponseMonitorController {
                 return attr.getKey();
             }
         });
-        binder.registerCustomEditor(PorterResponseMonitorMatchStyle.class, new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String styleString) throws IllegalArgumentException {
-                PorterResponseMonitorMatchStyle matchStyle = PorterResponseMonitorMatchStyle.valueOf(styleString);
-                setValue(matchStyle);
-            }
-            @Override
-            public String getAsText() {
-                PorterResponseMonitorMatchStyle matchStyle = (PorterResponseMonitorMatchStyle) getValue();
-                return String.valueOf(matchStyle.name());
-            }
-        });
+        EnumPropertyEditor.register(binder, PorterResponseMonitorMatchStyle.class);
         binder.registerCustomEditor(LiteStateGroup.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String group) throws IllegalArgumentException {
@@ -403,10 +415,20 @@ public class PorterResponseMonitorController {
         this.stateDao = stateDao;
     }
 
+    @Autowired
+    public void setPointService(PointService pointService) {
+        this.pointService = pointService;
+    }
+
 	@Autowired
 	public void setPorterResponseMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
 		this.porterResponseMonitorDao = porterResponseMonitorDao;
 	}
+	
+	@Autowired
+	public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
 
 	@Autowired
 	public void setDeviceErrorTranslatorDao(DeviceErrorTranslatorDao deviceErrorTranslatorDao) {

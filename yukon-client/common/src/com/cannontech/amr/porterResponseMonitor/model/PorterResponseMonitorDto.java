@@ -23,7 +23,7 @@ public class PorterResponseMonitorDto {
 
     public PorterResponseMonitorDto() {
         groupName = SystemGroupEnum.ROOT.getFullPath();
-        attribute = BuiltInAttribute.FAULT_STATUS; //should be changed to the new Attribute. yet to be implemented
+        attribute = BuiltInAttribute.OUTAGE_STATUS;
         evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
     }
 

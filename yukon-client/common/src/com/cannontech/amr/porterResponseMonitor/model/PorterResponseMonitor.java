@@ -22,8 +22,8 @@ public class PorterResponseMonitor {
 	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
 
 	public PorterResponseMonitor() {
-        groupName = SystemGroupEnum.ROOT.getFullPath();
-	    attribute = BuiltInAttribute.FAULT_STATUS; //this should be changed to the new Attribute. yet to be implemented
+	    groupName = SystemGroupEnum.ROOT.getFullPath();
+	    attribute = BuiltInAttribute.OUTAGE_STATUS;
 	    evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
 	}
 
@@ -37,7 +37,7 @@ public class PorterResponseMonitor {
 	    Collection<PorterResponseMonitorRuleDto> values = monitorDto.getRules().values();
 	    // sort those values
 	    List<PorterResponseMonitorRuleDto> sortedCopy = Ordering.natural().sortedCopy(values);
-	    int order = 0;
+	    int order = 1;
         for (PorterResponseMonitorRuleDto ruleDto : sortedCopy) {
 	        PorterResponseMonitorRule rule = new PorterResponseMonitorRule(ruleDto);
             rule.setRuleOrder(order++);

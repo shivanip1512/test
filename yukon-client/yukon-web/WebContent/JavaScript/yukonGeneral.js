@@ -306,11 +306,22 @@ Object.extend(YEvent, {
     },
     
     markBusy: function(event) {
-        Event.element(event).addClassName("ajaxBusy");
+        var originalButton = event.element();
+        var spinner = document.createElement("span");
+        spinner.innerHTML = "<img src=\"/WebConfig/yukon/Icons/indicator_arrows.gif\">";
+        var disabledElement = originalButton.cloneNode(true);
+        disabledElement.addClassName('ajaxBusy');
+        disabledElement.appendChild(spinner);
+
+        originalButton.insert({before: disabledElement});
+        disabledElement.disable();
+        originalButton.hide();
+        originalButton.blur();
     },
     
     unmarkBusy: function(event) {
-        Event.element(event).removeClassName("ajaxBusy");
+        event.element().previous().remove();
+        event.element().show();
     }
 });
 

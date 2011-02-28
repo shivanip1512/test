@@ -209,6 +209,7 @@
   <!--  Modules -->
   <module name="amr">
     <skin name="STANDARD" />
+    <css file="/WebConfig/yukon/styles/amrStyles.css"/>
     <menu>
       <options>
         <option name="meters">

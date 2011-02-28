@@ -1,0 +1,37 @@
+#rulesTable th.orderColumn {
+    width: 50px;
+}
+
+#rulesTable th.successColumn {
+    width: 80px;
+}
+
+#rulesTable th.errorsColumn {
+    width: 75px;
+    white-space: nowrap;
+}
+
+#rulesTable th.matchColumn {
+    width: 20%;    
+}
+
+#rulesTable td.matchColumn select {
+    width: 60px;
+}
+
+#rulesTable th.stateColumn {
+    width: 30%;    
+}
+
+#rulesTable td.stateColumn select {
+    width: 105px;
+}
+
+#rulesTable th.ruleRemoveColumn {
+    width: 55px;
+}
+
+table.compactResultsTable tr.removed td img {
+    padding: 3px 0 0 0;
+    visibility: hidden;
+}

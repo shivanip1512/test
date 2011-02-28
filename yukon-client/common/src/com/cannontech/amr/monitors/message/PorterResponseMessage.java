@@ -3,10 +3,21 @@ package com.cannontech.amr.monitors.message;
 
 public class PorterResponseMessage {
     private int userMessageId;
-    private int connectionId;
+    private long connectionId;
     private int paoId;
     private int errorCode;
     private boolean finalMsg;
+
+    public PorterResponseMessage() {
+    }
+    
+    public PorterResponseMessage(int userMessageId, long connectionId, int paoId, int errorCode, boolean finalMsg) {
+        this.userMessageId = userMessageId;
+        this.connectionId = connectionId;
+        this.paoId = paoId;
+        this.errorCode = errorCode;
+        this.finalMsg = finalMsg;
+    }
 
     /**
      * used to correlate messages within a connection
@@ -20,10 +31,10 @@ public class PorterResponseMessage {
     /**
      * has no meaning (i.e. it can't be looked up in the DB)
      */
-    public int getConnectionId() {
+    public long getConnectionId() {
         return connectionId;
     }
-    public void setConnectionId(int connectionId) {
+    public void setConnectionId(long connectionId) {
         this.connectionId = connectionId;
     }
     public int getPaoId() {

@@ -9,16 +9,22 @@
 
 	<cti:standardMenu menuSelection="meters" />
 
+    <cti:url var="monitorViewPage" value="/spring/amr/porterResponseMonitor/viewPage">
+        <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
+    </cti:url>
+
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 		<cti:crumbLink url="/spring/meter/start" title="Metering" />
 		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
+        <cti:crumbLink><a href="${monitorViewPage}"><spring:escapeBody>${monitorDto.name}</spring:escapeBody></a></cti:crumbLink>
+        <cti:crumbLink><i:inline key=".title"/></cti:crumbLink>
 	</cti:breadCrumbs>
 
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="mediumDialogScrollArea">
+        <div class="largeDialogScrollArea">
         <table id="errorCodes" class="resultsTable">
             <tr>
                 <th><i:inline key=".errorCodesPopup.header.code" /></th>
@@ -62,8 +68,7 @@ YEvent.observeSelectorClick('.undoRemovedRow', function(event) {
     theUndoRow.previous().show();
 });
 
-addTableRow = function () {
-	var url = '/spring/amr/porterResponseMonitor/addRule';
+YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 	var maxOrder = 0;
     var numRows = $$('.ruleTableRow').length
     for (var i = 0; i < numRows; i++) {
@@ -76,7 +81,7 @@ addTableRow = function () {
     var newRow = $('defaultRuleRow').cloneNode(true);
     $('rulesTableBody').appendChild(newRow);
 
-    new Ajax.Request(url,{
+    new Ajax.Request("addRule",{
         parameters: {'monitorId': ${monitorDto.monitorId}, 'maxOrder': maxOrder},
         onSuccess: function(transport) {
             var dummyHolder = document.createElement('div');
@@ -90,7 +95,7 @@ addTableRow = function () {
 	        newRow.remove();
         }
     });
-}
+});
 </script>
 
 	<form:form id="updateForm" commandName="monitorDto"
@@ -132,91 +137,85 @@ addTableRow = function () {
                 <tags:nameValue2 nameKey=".monitoring">
 					<i:inline key="${monitorDto.evaluatorStatus}" />
 				</tags:nameValue2>
-
 			</tags:nameValueContainer2>
 		</tags:formElementContainer>
 
-		<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;"
-			cellStyle="padding-right:20px;width:50%">
+		<table style="display: none">
+			<tr id="defaultRuleRow">
+				<td colspan="6" style="text-align: center">
+					<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+				</td>
+			</tr>
+		</table>
 
-			<table style="display: none">
-				<tr id="defaultRuleRow">
-					<td colspan="6" style="text-align: center">
-						<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
-					</td>
-				</tr>
+		<tags:boxContainer2 nameKey="rulesTable" hideEnabled="false" showInitially="true" styleClass="fixedMediumWidth">
+			<div class="smallDialogScrollArea">
+			<table id="rulesTable" class="compactResultsTable">
+				<thead>
+					<tr>
+						<th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
+                        <th class="successColumn"><i:inline key=".rulesTable.header.success" /></th>
+                        <th class="errorsColumn"><i:inline key=".rulesTable.header.errors" />
+                            <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
+                        </th>
+                        <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
+                        <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
+						<th class="ruleRemoveColumn removeColumn"><i:inline key=".rulesTable.header.remove" /></th>
+					</tr>
+				</thead>
+				<tbody id="rulesTableBody">
+					<c:forEach var="ruleEntry" items="${monitorDto.rules}">
+						<c:set var="key" value="${ruleEntry.key}" />
+						<tr id="rule_${key}" class="ruleTableRow">
+							<td>
+								<form:hidden path="rules[${key}].ruleId" />
+								<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" size="1" />
+							</td>
+							<td class="checkBox"><form:checkbox path="rules[${key}].success" /></td>
+							<td>
+                                <form:input size="5" path="rules[${key}].errorCodes"/>
+							</td>
+							<td class="matchColumn">
+								<form:select path="rules[${key}].matchStyle">
+									<c:forEach var="style" items="${matchStyleChoices}">
+										<form:option value="${style}">
+											<i:inline key="${style.formatKey}" />
+										</form:option>
+									</c:forEach>
+								</form:select>
+							</td>
+							<td class="stateColumn">
+								<form:select path="rules[${key}].state">
+									<c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
+										<form:option value="${state.liteID}">
+											<spring:escapeBody htmlEscape="true">
+                                                ${state.stateText}
+                                            </spring:escapeBody>
+										</form:option>
+									</c:forEach>
+								</form:select>
+							</td>
+							<td class="removeColumn">
+								<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
+							</td>
+						</tr>
+						<tr style="display: none" id="rule_${key}_undo" class="removed">
+                            <td colspan="1">
+                                <cti:img key="rulesTable.delete"/>
+                            </td>
+							<td colspan="4"><i:inline key=".rulesTable.removedRow"/></td>
+							<td colspan="1">
+								<span class="undoRemovedRow pointer"><i:inline key=".rulesTable.undoLink"/></span>
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
 			</table>
-
-			<cti:dataGridCell>
-				<tags:boxContainer2 nameKey="rulesTable" hideEnabled="false" showInitially="true">
-					<div style="overflow: auto; max-height: 150px;" class="dialogScrollArea">
-					<table id="rulesTable" class="compactResultsTable">
-						<thead>
-							<tr>
-								<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-                                <th><i:inline key=".rulesTable.header.success" /></th>
-                                <th><i:inline key=".rulesTable.header.errors" /> 
-                                    <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
-                                </th>
-                                <th><i:inline key=".rulesTable.header.matchStyle" /></th>
-                                <th><i:inline key=".rulesTable.header.state" /></th>
-								<th class="removeColumn"><i:inline key=".rulesTable.header.remove" /></th>
-							</tr>
-						</thead>
-						<tbody id="rulesTableBody">
-							<c:forEach var="ruleEntry" items="${monitorDto.rules}">
-								<c:set var="key" value="${ruleEntry.key}" />
-								<tr id="rule_${key}" class="ruleTableRow">
-									<td>
-										<form:hidden path="rules[${key}].ruleId" />
-										<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" size="1" />
-									</td>
-									<td><form:checkbox path="rules[${key}].success" /></td>
-									<td nowrap="nowrap">
-                                        <form:input size="5" path="rules[${key}].errorCodes"/>
-									</td>
-									<td>
-										<form:select path="rules[${key}].matchStyle">
-											<c:forEach var="style" items="${matchStyleChoices}">
-												<form:option value="${style}">
-													<i:inline key="${style.formatKey}" />
-												</form:option>
-											</c:forEach>
-										</form:select>
-									</td>
-									<td>
-										<form:select path="rules[${key}].state">
-											<c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
-												<form:option value="${state.liteID}">
-													<spring:escapeBody htmlEscape="true">
-                                                        ${state.stateText}
-                                                    </spring:escapeBody>
-												</form:option>
-											</c:forEach>
-										</form:select>
-									</td>
-									<td class="removeColumn">
-										<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
-									</td>
-								</tr>
-								<tr style="display: none" id="rule_${key}_undo" class="removed">
-									<td colspan="5" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
-									<td colspan="1" class="removed">
-										<span class="undoRemovedRow pointer"><i:inline key=".rulesTable.undoLink"/></span>
-									</td>
-								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-					</div>
-					<br>
-					<span style="float: right;">
-						<cti:button key="rulesTable.add" onclick="addTableRow()" />
-					</span>
-				</tags:boxContainer2>
-			</cti:dataGridCell>
-			<br>
-		</cti:dataGrid>
+			</div>
+            <div class="actionArea">
+                <cti:button key="rulesTable.add" styleClass="addRuleTableRow"/>
+            </div>
+		</tags:boxContainer2>
 
 		<%-- update / enable_disable / delete / cancel --%>
 		<div class="pageActionArea">
