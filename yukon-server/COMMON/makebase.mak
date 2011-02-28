@@ -106,7 +106,7 @@ $(COMMON_FULLBUILD):
         @echo:
         @echo Compiling cpp to obj
         @echo:
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
@@ -168,7 +168,7 @@ id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 
