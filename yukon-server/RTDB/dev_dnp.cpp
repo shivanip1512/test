@@ -426,11 +426,11 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                     if( const CtiPointSPtr point = getDevicePointEqual(pointid) )
                     {
-                        if( point->getType() == AnalogOutputPointType )
+                        if( point->getType() == AnalogPointType )
                         {
                             if( point->getPointOffset() > AnalogOutput::AnalogOutputOffset )
                             {
-                                controlout.control_offset = point->getPointOffset() - AnalogOutput::AnalogOutputOffset;
+                                control_offset = point->getPointOffset() - AnalogOutput::AnalogOutputOffset;
                             }
                         }
                     }

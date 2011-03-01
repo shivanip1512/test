@@ -45,6 +45,10 @@ public:
    {
        return 0;
    }
+   virtual bool isViable()
+   {
+       return true;  //  connectionless, so always viable
+   }
 };
 
 typedef shared_ptr< UdpPort > UdpPortSPtr;

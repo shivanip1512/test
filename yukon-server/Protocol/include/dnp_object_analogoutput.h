@@ -88,7 +88,7 @@ private:
     unsigned char _status;
 
 protected:
-int restoreVariation(const unsigned char *buf, int len, int variation);
+    int restoreVariation(const unsigned char *buf, int len, int variation);
     int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
@@ -108,6 +108,8 @@ public:
     int restore(const unsigned char *buf, int len);
     int serialize(unsigned char *buf) const;
     int getSerializedLen(void) const;
+    unsigned char getStatus() const;
+    long getValue() const;
 
     void setControl(long value);
 };

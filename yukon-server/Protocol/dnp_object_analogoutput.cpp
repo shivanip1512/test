@@ -323,8 +323,6 @@ int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int v
     {
         case AOB_32Bit:
         {
-            _status = buf[pos++];
-
             _value = 0;
 
             //  these 32 bits will fill up the long, including the sign bit
@@ -333,16 +331,14 @@ int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int v
             _value |= buf[pos++] << 16;
             _value |= buf[pos++] << 24;
 
+            _status = buf[pos++];
+
             break;
         }
 
         case AOB_16Bit:
         {
-            short tmpValue;
-
-            _status = buf[pos++];
-
-            tmpValue = 0;
+            short tmpValue = 0;
 
             //  these 16 bits bytes will fill up the short, including the sign bit...
             tmpValue |= buf[pos++];
@@ -350,6 +346,8 @@ int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int v
 
             //  ...  so we can use the compiler's cast to convert it over
             _value = tmpValue;
+
+            _status = buf[pos++];
 
             break;
         }
@@ -478,6 +476,18 @@ int AnalogOutputBlock::getSerializedLen(void) const
     }
 
     return retVal;
+}
+
+
+unsigned char AnalogOutputBlock::getStatus() const
+{
+    return _status;
+}
+
+
+long AnalogOutputBlock::getValue() const
+{
+    return _value;
 }
 
 

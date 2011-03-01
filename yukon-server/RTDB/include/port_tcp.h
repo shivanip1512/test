@@ -45,6 +45,10 @@ public:
    {
        return 0;
    }
+   virtual bool isViable()
+   {
+       return true;  //  port manages individual connections, so the port itself is always viable
+   }
 };
 
 typedef boost::shared_ptr< TcpPort > TcpPortSPtr;

@@ -290,6 +290,53 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
         //  does the command need any special processing, or is it just pointdata?
         switch( _command )
         {
+            case Command_SetAnalogOut:
+            {
+                if( ! _object_blocks.empty() )
+                {
+                    if( const ObjectBlock *ob = _object_blocks.front() )
+                    {
+                        if( ! ob->empty() && ob->getGroup() == AnalogOutputBlock::Group )
+                        {
+                            const ObjectBlock::object_descriptor od = ob->at(0);
+
+                            if( od.object )
+                            {
+                                const AnalogOutputBlock *aob = reinterpret_cast<const AnalogOutputBlock *>(od.object);
+
+                                std::ostringstream o;
+
+                                o << "Analog output request ";
+
+                                if( aob->getStatus() )
+                                {
+                                    retVal = NOTNORMAL;
+
+                                    o << "unsuccessful\n";
+
+                                    o << "(status = " << aob->getStatus() << ", offset = " << od.index << ", value " << aob->getValue() << ")";
+                                }
+                                else
+                                {
+                                    o << "successful\n";
+
+                                    o << "(offset = " << od.index << ", value " << aob->getValue() << ")";
+                                }
+
+                                _string_results.push_back(new string(o.str()));
+
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                retVal = NOTNORMAL;
+
+                _string_results.push_back(new string("Analog output block not echoed"));
+
+                break;
+            }
             case Command_SetDigitalOut_Direct:
             case Command_SetDigitalOut_SBO_Select:
             case Command_SetDigitalOut_SBO_SelectOnly:
