@@ -65,7 +65,7 @@ public class ButtonTag extends YukonTagSupport {
             id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
         }
 
-        String classes = "formSubmit";
+        String classes = "formSubmit pointer hoverableImageContainer";
         if (StringUtils.isNotBlank(styleClass)) {
             classes += " " + styleClass;
         }
@@ -86,10 +86,6 @@ public class ButtonTag extends YukonTagSupport {
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
                 throw new RuntimeException("at least one of .imageUrl or .label is required for " + key);
             }
-
-            /* Hover Url */
-            MessageSourceResolvable hoverUrlResolvable = messageScope.generateResolvable(".hoverUrl");
-            String hoverUrl = getLocalMessage(hoverUrlResolvable, false);
 
             /* Hover Text */
             MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText");
@@ -126,21 +122,6 @@ public class ButtonTag extends YukonTagSupport {
                 out.write(" title=\"");
                 out.write(hoverText);
                 out.write("\"");
-            }
-
-            /* Hover events */
-            if (hoverUrl != null) {
-                hoverUrl = ServletUtil.createSafeUrl(getRequest(), hoverUrl);
-
-                out.write(" onmouseover=\"javascript:$$('#");
-                out.write(id);
-                out.write(" img')[0].src='");
-                out.write(hoverUrl);
-                out.write("'\" onmouseout=\"javascript:$$('#");
-                out.write(id);
-                out.write(" img')[0].src='");
-                out.write(imageUrl);
-                out.write("'\"");
             }
 
             if (StringUtils.isNotBlank(onclick)) {
@@ -186,7 +167,7 @@ public class ButtonTag extends YukonTagSupport {
     }
 
     private void writeImage(JspWriter out, String imageUrl) throws IOException {
-        out.write("<img class=\"logoImage\" src=\"");
+        out.write("<img class=\"logoImage hoverableImage\" src=\"");
         out.write(imageUrl);
         out.write("\" alt=\"\">");
     }

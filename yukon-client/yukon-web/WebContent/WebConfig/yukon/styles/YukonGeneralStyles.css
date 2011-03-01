@@ -224,7 +224,7 @@ table.resultsTable th a {
 }
 
 table.activeResultsTable tr.hover {
-	background-color: #FFFFAA;
+	background-color: yellow;
 	cursor: pointer;
 }
 
@@ -346,7 +346,7 @@ table.compactResultsTable td.label {
 /* Name value pair styles */
 table.nameValueTable {
 	border: none;
-	border-collapse: collapse; 
+	border-collapse: collapse;
 	width: 100%;
 }
 
@@ -360,9 +360,9 @@ table.nameValueTable td {
 
 table.nameValueTable td.name {
 	vertical-align: top;
-	font-weight: bold;
 	padding-right:10px;
 	font-size: .9em;
+	color: #555555;	
 }
 
 table.nameValueTable tr {
@@ -997,11 +997,7 @@ a.imgLink {
 }
 
 table.rowHighlighting tr:hover td {
-    background-color: #FFFFAA;
-}
-
-table.rowHighlighting tr:hover {
-    outline: #ccc solid thin;
+    background-color: yellow;
 }
 
 .editable:hover {
@@ -1281,4 +1277,27 @@ span.leftOfImageLabel {
 
 span.rightOfImageLabel {
     padding-left: 5px;
+}
+
+/* Input focus glow */
+input[type='text'],
+input[type='password'],
+input[type='checkbox'],
+textarea,
+select {
+    transition: all 0.25s ease-in-out;
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    border:1px solid #CCCCCC;
+}
+
+input[type='text']:focus,
+input[type='password']:focus,
+input[type='checkbox']:focus,
+textarea:focus,
+select:focus {
+    box-shadow: 0 0 5px #FF9900;
+    -webkit-box-shadow: 0 0 5px #FF9900; 
+    -moz-box-shadow: 0 0 5px #FF9900;
+    border:1px solid #FF9900; 
 }

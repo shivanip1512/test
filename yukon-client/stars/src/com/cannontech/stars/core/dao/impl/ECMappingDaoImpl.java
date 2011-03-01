@@ -7,15 +7,21 @@ import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.impl.YukonGroupDaoImpl;
+import com.cannontech.core.dao.impl.YukonUserDaoImpl;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
@@ -319,6 +325,102 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         
         return Sets.newLinkedHashSet(energyCompaniesIdList);
 
+    }
+    
+    @Override
+    public List<LiteYukonGroup> getResidentialGroups(int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yg.GroupId, yg.GroupName, yg.GroupDescription");
+        sql.append("FROM ECToResidentialGroupMapping ectgm");
+        sql.append(  "JOIN YukonGroup yg on yg.GroupId = ectgm.GroupId");
+        sql.append("WHERE ectgm.EnergyCompanyId").eq(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, YukonGroupDaoImpl.liteYukonGroupRowMapper);
+    }
+    
+    @Override
+    public List<LiteYukonGroup> getOperatorGroups(int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yg.GroupId, yg.GroupName, yg.GroupDescription");
+        sql.append("FROM ECToOperatorGroupMapping ectrm");
+        sql.append(  "JOIN YukonGroup yg on yg.GroupId = ectrm.GroupId");
+        sql.append("WHERE ectrm.EnergyCompanyId").eq(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, YukonGroupDaoImpl.liteYukonGroupRowMapper);
+    }
+    
+    @Override
+    public void addECToOperatorGroupMapping(int ecId, List<Integer> groupIds) {
+        for (Integer groupId : groupIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO ECToOperatorGroupMapping");
+            sql.values(ecId, groupId);
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+    
+    @Override
+    public void addECToResidentialGroupMapping(int ecId, List<Integer> groupIds) {
+        for (Integer groupId : groupIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO ECToResidentialGroupMapping");
+            sql.values(ecId, groupId);
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+    
+    @Override
+    public void deleteECToOperatorGroupMapping(int ecId, int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToOperatorGroupMapping");
+        sql.append("WHERE EnergyCompanyId").eq(ecId);
+        sql.append(  "AND GroupId").eq(groupId);
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void deleteECToResidentialGroupMapping(int ecId, int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToResidentialGroupMapping");
+        sql.append("WHERE EnergyCompanyId").eq(ecId);
+        sql.append(  "AND GroupId").eq(groupId);
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public LiteYukonUser findParentLogin(int childEnergyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM ECToGenericMapping gm");
+        sql.append(  "JOIN EnergyCompanyOperatorLoginList ll ON ll.OperatorLoginId = gm.ItemId");
+        sql.append(  "JOIN YukonUser yu ON yu.UserId = gm.ItemId");
+        sql.append("WHERE gm.MappingCategory").eq(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        sql.append(  "AND ll.EnergyCompanyId").eq(childEnergyCompanyId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, YukonUserDaoImpl.rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public void saveParentLogin(int parentEcId, int childEcId, Integer parentLogin) {
+        List<Integer> childOperatorLoginIds = starsDatabaseCache.getEnergyCompany(childEcId).getOperatorLoginIDs();
+        
+        /* Remove existing mapping */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToGenericMapping");
+        sql.append("WHERE ItemId").in(childOperatorLoginIds);
+        sql.append(  "AND MappingCategory").eq(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        sql.append(  "AND EnergyCompanyId").eq(parentEcId);
+        yukonJdbcTemplate.update(sql);
+        
+        /* Add member login mapping */
+        if (parentLogin != null) {
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO ECToGenericMapping");
+            sql.values(parentEcId, parentLogin, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+            yukonJdbcTemplate.update(sql);
+        }
     }
     
     // DI Setters

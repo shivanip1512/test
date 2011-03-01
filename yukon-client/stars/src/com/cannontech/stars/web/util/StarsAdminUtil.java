@@ -999,7 +999,7 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final Map<Integer,String> rolePropMap)
+	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final boolean topLevelEc)
 		throws TransactionException
 	{
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
@@ -1014,11 +1014,7 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			String value = rolePropMap.get( groupRole.getRolePropertyID() );
-			if (value != null)
-				groupRole.setValue( value );
-			else
-				groupRole.setValue( CtiUtilities.STRING_NONE );
+		    groupRole.setValue( CtiUtilities.STRING_NONE );
 			
 			adminGrp.getYukonGroupRoles().add( groupRole );
 		}
@@ -1029,11 +1025,12 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			String value = rolePropMap.get( groupRole.getRolePropertyID());
-			if (value != null)
-				groupRole.setValue( value );
-			else
+			YukonRoleProperty roleProperty = YukonRoleProperty.getForId(roleProps[i].getRolePropertyID());
+            if (topLevelEc && roleProperty == YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY) {
+                groupRole.setValue(CtiUtilities.TRUE_STRING);
+            } else {
 				groupRole.setValue( CtiUtilities.STRING_NONE );
+            }
 			
 			adminGrp.getYukonGroupRoles().add( groupRole );
 		}

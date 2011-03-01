@@ -41,10 +41,16 @@ public class LabeledImageTag extends ImageTag {
             String imageUrl = getLocalMessage(messageScope, ".imageUrl", true);
             imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
             String labelText = getLocalMessage(messageScope, ".label", true);
-            if (StringUtils.isBlank(styleClass)) {
-                styleClass = "simpleLink";
+            
+            String containerClass = "simpleLink";
+            if (StringUtils.isNotBlank(href)) {
+                containerClass += " hoverableImageContainer";
             }
-            String hoverUrl = getLocalMessage(messageScope, ".hoverUrl", false);
+            
+            if (StringUtils.isBlank(styleClass)) {
+                containerClass += " " + styleClass;
+            }
+            
             String hoverText = getLocalMessage(messageScope, ".hoverText", false);
 
             JspWriter out = getJspContext().getOut();
@@ -52,27 +58,14 @@ public class LabeledImageTag extends ImageTag {
             out.write("<span id=\"");
             out.write(id);
             out.write("\" class=\"");
-            out.write(styleClass);
+            out.write(containerClass);
             out.write("\"");
             if (hoverText != null) {
                 out.write(" title=\"");
                 out.write(hoverText);
                 out.write("\"");
             }
-            if (hoverUrl != null) {
-                hoverUrl = ServletUtil.createSafeUrl(getRequest(),
-                                                          hoverUrl);
-
-                out.write(" onmouseover=\"javascript:$$('#");
-                out.write(id);
-                out.write(" img')[0].src='");
-                out.write(hoverUrl);
-                out.write("'\" onmouseout=\"javascript:$$('#");
-                out.write(id);
-                out.write(" img')[0].src='");
-                out.write(imageUrl);
-                out.write("'\"");
-            }
+            
             out.write(">");
 
             if (StringUtils.isNotBlank(href)) {
@@ -110,7 +103,11 @@ public class LabeledImageTag extends ImageTag {
     }
 
     private void writeImage(JspWriter out, String imageUrl) throws IOException {
-        out.write("<img class=\"logoImage\" src=\"");
+        String imgClass = "logoImage";
+        if (StringUtils.isNotBlank(href)) {
+            imgClass += " hoverableImage";
+        }
+        out.write("<img class=\"" + imgClass + "\" src=\"");
         out.write(imageUrl);
         out.write("\">");
     }

@@ -2,7 +2,6 @@ package com.cannontech.web.admin.userGroupEditor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -28,21 +27,23 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.userGroupEditor.model.YukonUserValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/userEditor/*")
+@CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class UserEditorController {
 
     private YukonUserDao yukonUserDao;
@@ -50,7 +51,6 @@ public class UserEditorController {
     private RoleDao roleDao;
     private YukonUserValidator yukonUserValidator;
     private YukonGroupService yukonGroupService;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     /* Group Editor View Page*/
     @RequestMapping
@@ -107,7 +107,7 @@ public class UserEditorController {
         model.addAttribute("user", user);
         model.addAttribute("userId", user.getUserID());
         model.addAttribute("username", user.getUsername());
-        model.addAttribute("groups", yukonGroupDao.getGroupsForUser(userId));
+        model.addAttribute("groups", yukonGroupDao.getGroupsForUser(userId, true));
         
         return "userGroupEditor/groups.jsp";
     }
@@ -164,7 +164,6 @@ public class UserEditorController {
         model.addAttribute("username", updatableUser.getUsername());
         model.addAttribute("authTypes", AuthType.values());
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
-        model.addAttribute("energyCompanies", yukonEnergyCompanyService.getAllEnergyCompanies());
     }
     
     @Autowired
@@ -190,11 +189,6 @@ public class UserEditorController {
     @Autowired
     public void setYukonGroupService(YukonGroupService yukonGroupService) {
         this.yukonGroupService = yukonGroupService;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
 }

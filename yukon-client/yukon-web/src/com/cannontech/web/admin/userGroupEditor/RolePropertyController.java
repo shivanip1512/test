@@ -32,6 +32,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.base.Function;
@@ -39,6 +40,7 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 
 @Controller("/roleEditor/*")
+@CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class RolePropertyController {
 
     private RolePropertyEditorDao rolePropertyEditorDao;

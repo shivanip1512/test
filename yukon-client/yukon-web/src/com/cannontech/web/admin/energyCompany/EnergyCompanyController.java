@@ -1,6 +1,10 @@
 package com.cannontech.web.admin.energyCompany;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -10,11 +14,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.UserNameUnavailableException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -26,13 +32,17 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.login.LoginService;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 public class EnergyCompanyController {
@@ -45,6 +55,8 @@ public class EnergyCompanyController {
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private PaoDao paoDao;
     private ECMappingDao ecMappingDao;
+    private YukonUserDao yukonUserDao;
+    private LoginService loginService;
     
     /* Energy Company Setup Home Page*/
     @RequestMapping("/energyCompany/home")
@@ -55,7 +67,8 @@ public class EnergyCompanyController {
         
         if (superUser) {
             /* For super users show all energy companies. */
-            modelMap.addAttribute("companies", starsDatabaseCache.getAllEnergyCompanies());
+            companies = yukonEnergyCompanyService.getAllEnergyCompanies();
+            setupHomeModelMap(modelMap, user, companies);
             return "energyCompany/home.jsp";
         }
         
@@ -67,10 +80,10 @@ public class EnergyCompanyController {
             companies.addAll(ecMappingDao.getChildEnergyCompanies(energyCompany.getEnergyCompanyId()));
         }
         
-        modelMap.addAttribute("companies", companies);
+        setupHomeModelMap(modelMap, user, companies);
         return "energyCompany/home.jsp";
     }
-    
+
     /* Energy Company Creation Page*/
     @RequestMapping("/energyCompany/new")
     public String newEnergyCompany(YukonUserContext userContext, ModelMap modelMap) {
@@ -129,6 +142,34 @@ public class EnergyCompanyController {
         return "redirect:home";
     }
     
+    /* Parent login to member energy company */
+    @RequestMapping(value="/energyCompany/parentLogin", params="loginAsUserId")
+    public String parentLogin(HttpServletRequest request, HttpSession session, YukonUserContext userContext, int loginAsUserId) {
+        LiteYukonUser user = userContext.getYukonUser();
+        if (!energyCompanyService.canManageMembers(user)) {
+            throw new NotAuthorizedException("User " + user.getUsername() + " not authorized to manage members");
+        }
+        
+        /* Do internal login as operator of member energy company */
+        CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+        LiteYukonUser memberOperatorLogin = yukonUserDao.getLiteYukonUser(loginAsUserId);
+        memberOperatorLogin = loginService.internalLogin(request, session, memberOperatorLogin.getUsername(), true);
+        
+        /* Set new CtiNavObject */
+        nav = new CtiNavObject();
+        nav.setMemberECAdmin(true);
+        HttpSession newSession = request.getSession(false);
+        if(newSession != null) {
+            newSession.setAttribute(ServletUtils.NAVIGATE, nav);
+        }
+        
+        String redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, memberOperatorLogin);
+        
+        return "redirect:" + redirect;
+    }
+    
+    /* Model Attributes */
+    
     @ModelAttribute("routes")
     public List<LiteYukonPAObject> getRoutes(ModelMap modelMap) {
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
@@ -140,7 +181,28 @@ public class EnergyCompanyController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return messageSourceAccessor.getMessage("yukon.web.defaults.none");
     }
+    
+    /* Helper Methods */
+    
+    private void setupHomeModelMap(ModelMap modelMap, LiteYukonUser user, List<YukonEnergyCompany> companies) {
+        modelMap.addAttribute("companies", companies);
+        modelMap.addAttribute("parentLogins", getParentLogins(companies));
+        modelMap.addAttribute("canManageMembers", energyCompanyService.canManageMembers(user));
+    }
+    
+    private Map<Integer, Integer> getParentLogins(Iterable<YukonEnergyCompany> companies) {
+        Map<Integer, Integer> parentLogins = Maps.newHashMap();
+        for (YukonEnergyCompany company : companies) {
+            if(starsDatabaseCache.getEnergyCompany(company).getParent() != null) {
+                int energyCompanyId = company.getEnergyCompanyId();
+                parentLogins.put(energyCompanyId, ecMappingDao.findParentLogin(energyCompanyId).getUserID());
+            }
+        }
+        return parentLogins;
+    }
 
+    /* Dependencies */
+    
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
@@ -179,6 +241,16 @@ public class EnergyCompanyController {
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
+    
+    @Autowired
+    public void setLoginService(LoginService loginService) {
+        this.loginService = loginService;
     }
     
 }

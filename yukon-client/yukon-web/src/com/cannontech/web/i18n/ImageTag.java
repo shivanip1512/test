@@ -48,7 +48,6 @@ public class ImageTag extends YukonTagSupport {
             String imageUrl = getLocalMessage(messageScope, ".imageUrl", true);
             imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
             String hoverText = getLocalMessage(messageScope, ".hoverText", false);
-            String hoverUrl = getLocalMessage(messageScope, ".hoverUrl", false);
 
             JspWriter out = getJspContext().getOut();
 
@@ -71,6 +70,11 @@ public class ImageTag extends YukonTagSupport {
             }
             
             String style = "logoImage";
+            
+            if (StringUtils.isNotBlank(href)) {
+                style += " hoverableImage";
+            }
+            
             if (StringUtils.isNotBlank(styleClass)) {
                 style += (" " + styleClass);
             }
@@ -90,15 +94,6 @@ public class ImageTag extends YukonTagSupport {
                 out.write(" alt=\"\"");
             }
 
-            if (hoverUrl != null) {
-                hoverUrl = ServletUtil.createSafeUrl(getRequest(), hoverUrl);
-
-                out.write(" onmouseover=\"javascript:this.src='");
-                out.write(hoverUrl);
-                out.write("'\" onmouseout=\"javascript:this.src='");
-                out.write(imageUrl);
-                out.write("'\"");
-            }
             out.write(">");
 
             if (StringUtils.isNotBlank(href)) {

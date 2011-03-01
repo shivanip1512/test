@@ -21,7 +21,7 @@ function addGroups() {
             <c:when test="${!empty groups}">
                 <form action="/spring/adminSetup/userEditor/removeGroup" method="post">
                     <input type="hidden" name="userId" value="${userId}">
-                    <table class="compactResultsTable">
+                    <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th><i:inline key=".groupName"/></th>
                             <th><i:inline key=".description"/></th>

@@ -4,6 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
@@ -167,5 +169,46 @@ public interface ECMappingDao {
      * to the further most parent energy company.
      */
     public LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId);
+
+    /**
+     * Returns a list of the operator groups for an energy company
+     */
+    public List<LiteYukonGroup> getOperatorGroups(int energyCompanyId);
+
+    /**
+     * Returns a list of the customer groups for an energy company
+     */
+    public List<LiteYukonGroup> getResidentialGroups(int energyCompanyId);
+
+    /**
+     * Adds a list of login groups to the energy companies operator login group list
+     */
+    public void addECToOperatorGroupMapping(int ecId, List<Integer> groupIds);
+
+    /**
+     * Adds a list of login groups to the energy companies residential customer login group list
+     */
+    public void addECToResidentialGroupMapping(int ecId, List<Integer> groupIds);
+
+    /**
+     * Removes a login group from the operator login group list for an energy company
+     */
+    public void deleteECToOperatorGroupMapping(int ecId, int groupId);
+    
+    /**
+     * Removes a login group from the customer login group list for an energy company
+     */
+    public void deleteECToResidentialGroupMapping(int ecId, int groupId);
+
+    /**
+     * Returns the operator login of an energy company it's parent energy company uses to login to it.
+     * Will return null if no parent login has been set.
+     */
+    public LiteYukonUser findParentLogin(int childEnergyCompanyId);
+
+    /**
+     * Sets the parent login for a child energy company 
+     */
+    public void saveParentLogin(int parentEcId, int childEcId, Integer parentLogin);
 
 }

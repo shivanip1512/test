@@ -52,7 +52,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private static final String selectSql;
     private static final String selectByIdSql;
     private static final String selectByUsernameSql;
-    private static final ParameterizedRowMapper<LiteYukonUser> rowMapper;
+    public static final ParameterizedRowMapper<LiteYukonUser> rowMapper;
     
     private AuthenticationService authenticationService;
     private DBPersistentDao dbPersistantDao;

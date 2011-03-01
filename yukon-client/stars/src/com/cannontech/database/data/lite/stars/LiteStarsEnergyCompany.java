@@ -90,6 +90,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
     private AddressDao addressDao;
@@ -870,13 +871,14 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             routeIDs = new ArrayList<Integer>();
             
             routeIDs = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
-            
+            List<Integer> listCopy = Lists.newArrayList(routeIDs);  /* Need this until route event listener stops blowing away routeIDs */
             if (getDefaultRouteId() > 0) {
                 // Make sure the default route ID is in the list
                 Integer dftRouteID = new Integer( getDefaultRouteId() );
                 
                 if (!routeIDs.contains( dftRouteID )) {
                     routeIDs.add(dftRouteID);
+                    listCopy.add(dftRouteID);
 
                     ecMappingDao.addECToRouteMapping(getEnergyCompanyId(), dftRouteID);
                     dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
@@ -884,6 +886,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                                                           getEnergyCompanyId());
                 }
             }
+            return listCopy;
         }
         
         return routeIDs;

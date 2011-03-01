@@ -112,15 +112,8 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                         throw new WebClientException( "Username of second operator login already exists" );
                     
                     // Create a privilege group with EnergyCompany and Administrator role
-                    Map<Integer, String> rolePropMap = new HashMap<Integer, String>();
-                    rolePropMap.put(Integer.valueOf(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
-                    rolePropMap.put(Integer.valueOf(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
-                    if (!isAddMember) {
-                        rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY), CtiUtilities.TRUE_STRING);
-                    }
-                    
                     String adminGroupName = companyName + " Admin Grp";
-                    LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
+                    LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, !isAddMember );
                     
                     // Create the default operator login
                     LiteYukonGroup[] operGroups = new LiteYukonGroup[] { operGroup, liteAdminGrp };

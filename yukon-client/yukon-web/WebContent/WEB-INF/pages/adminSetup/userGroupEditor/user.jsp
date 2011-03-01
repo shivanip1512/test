@@ -17,6 +17,7 @@
 
             <form:form commandName="updatableUser" action="/spring/adminSetup/userEditor/edit" method="post">
                 <form:hidden path="userID"/>
+                <form:hidden path="energyCompanyId"/>
                 <input type="hidden" value="${userId}" name="userId">
                 
                 <tags:nameValueContainer2>
@@ -26,8 +27,6 @@
                         itemLabel="value"/>
                     <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus" itemValue="key" 
                         itemLabel="value"/>
-                    <tags:selectNameValue nameKey=".energyCompany" items="${energyCompanies}" path="energyCompanyId" 
-                        itemValue="energyCompanyId" itemLabel="name" defaultItemValue="" defaultItemLabel="${none}"/>
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <tags:nameValue2 nameKey=".password">
                             <tags:password path="password"/>

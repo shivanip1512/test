@@ -1,7 +1,6 @@
 package com.cannontech.web.admin.energyCompany.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +43,6 @@ import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
@@ -65,6 +63,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Transactional
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user,
             Integer parentId) throws WebClientException, TransactionException, CommandExecutionException {
+        
+        boolean topLevelEc = parentId == null;
+        
         /* Check energy company name availability */
         try {
             energyCompanyDao.getEnergyCompanyByName(energyCompanyDto.getName());
@@ -82,21 +83,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         /* Create a privilege group with EnergyCompany and Administrator role */
         LiteYukonGroup primaryOperatorGroup = yukonGroupDao.getLiteYukonGroup(energyCompanyDto.getPrimaryOperatorGroupId());
-        String operatorGroupIds = energyCompanyDto.getPrimaryOperatorGroupId().toString();
-        if(StringUtils.isNotBlank(energyCompanyDto.getOperatorGroupIds())) {
-            operatorGroupIds += "," + energyCompanyDto.getOperatorGroupIds();
-        }
-        Map<Integer, String> rolePropMap = Maps.newHashMap();
-        rolePropMap.put(YukonRoleProperty.OPERATOR_GROUP_IDS.getPropertyId(), operatorGroupIds );
-        rolePropMap.put(YukonRoleProperty.CUSTOMER_GROUP_IDS.getPropertyId(), energyCompanyDto.getResidentialGroupIds());
-        if (parentId == null) {
-            rolePropMap.put(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY.getPropertyId(), CtiUtilities.TRUE_STRING);
-        }
-        
         String adminGroupName = energyCompanyDto.getName() + " Admin Grp";
-        LiteYukonGroup adminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
+        LiteYukonGroup adminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, topLevelEc );
         
-        /* Create the default operator login */
+        /* Create the primary operator login */
         LiteYukonGroup[] adminsGroups = new LiteYukonGroup[] { primaryOperatorGroup, adminGrp };
         LiteYukonUser adminUser = StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdminUsername(), 
                                                  energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, adminsGroups, null);
@@ -114,7 +104,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         energyCompany.setName(energyCompanyDto.getName());
         energyCompany.setPrimaryContactId(contact.getContactID());
         energyCompany.setUserId(adminUser.getUserID());
-         energyCompanyDao.save(energyCompany);
+        energyCompanyDao.save(energyCompany);
         
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
@@ -141,6 +131,20 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
          * 
          * This is the most soul crushing poo code I've ever witnessed. */
         liteEnergyCompany.resetDefaultRouteId();
+        
+        /* Set Operator Group List */
+        String operatorGroupIdsString = energyCompanyDto.getPrimaryOperatorGroupId().toString();
+        if(StringUtils.isNotBlank(energyCompanyDto.getOperatorGroupIds())) {
+            operatorGroupIdsString += "," + energyCompanyDto.getOperatorGroupIds();
+        }
+        List<Integer> operatorGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(operatorGroupIdsString);
+        ecMappingDao.addECToOperatorGroupMapping(energyCompany.getEnergyCompanyId(), operatorGroupIds);
+        
+        /* Set Residential Customer Group List */
+        if (StringUtils.isNotBlank(energyCompanyDto.getResidentialGroupIds())) {
+            List<Integer> customerGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getResidentialGroupIds());
+            ecMappingDao.addECToResidentialGroupMapping(energyCompany.getEnergyCompanyId(), customerGroupIds);
+        }
         
         /* Add as member to parent */
         if (parentId != null) {
@@ -193,7 +197,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Override
-    public boolean canManageMembers(LiteYukonUser user, int ecId) {
+    public boolean canManageMembers(LiteYukonUser user) {
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         return superUser || rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
     }

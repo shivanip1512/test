@@ -106,3 +106,30 @@ div.permissionsContainer {
     max-height: 500px;
     overflow: auto;
 }
+
+table.listTable td,
+table.listTable th {
+    width: 90%;
+}
+
+table.listTable td.removeColumn,
+table.listTable th.removeColumn {
+    width: 10%;
+}
+
+table.energyCompaniesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.energyCompaniesTable tr {
+    height: 25px;
+}
+
+table.energyCompaniesTable td.buttonColumn {
+    text-align: right;
+}
+
+button.loginButton {
+    float: right;
+}

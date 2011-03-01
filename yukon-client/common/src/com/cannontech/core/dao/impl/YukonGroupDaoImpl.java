@@ -28,6 +28,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -75,10 +76,19 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         }
     };
     
+    @PostConstruct
+    public void init() {
+        simpleTableTemplate = new SimpleTableAccessTemplate<LiteYukonGroup>(yukonJdbcTemplate, nextValueHelper);
+        simpleTableTemplate.setTableName("YukonGroup");
+        simpleTableTemplate.setFieldMapper(fieldMapper);
+        simpleTableTemplate.setPrimaryKeyField("GroupId");
+        simpleTableTemplate.setPrimaryKeyValidOver(-305);
+    }
+    
     /**
      * Mapping class to process a result set row into a LiteYukonGroup
      */
-    private class LiteYukonGroupMapper implements YukonRowMapper<LiteYukonGroup>{
+    public static YukonRowMapper<LiteYukonGroup> liteYukonGroupRowMapper = new YukonRowMapper<LiteYukonGroup> () {
 
         @Override
         public LiteYukonGroup mapRow(YukonResultSet rs) throws SQLException {
@@ -94,32 +104,30 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
             return group;
         }
 
-    }
-    
-    @PostConstruct
-    public void init() {
-        simpleTableTemplate = new SimpleTableAccessTemplate<LiteYukonGroup>(yukonJdbcTemplate, nextValueHelper);
-        simpleTableTemplate.setTableName("YukonGroup");
-        simpleTableTemplate.setFieldMapper(fieldMapper);
-        simpleTableTemplate.setPrimaryKeyField("GroupId");
-        simpleTableTemplate.setPrimaryKeyValidOver(-305);
-    }
+    };
 
     @Override
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user) {
     	return getGroupsForUser(user.getUserID());
     }
     
+    public List<LiteYukonGroup> getGroupsForUser(int userId) {
+        return getGroupsForUser(userId, false);
+    }
+    
     @Override
-    public List<LiteYukonGroup> getGroupsForUser(int userID) {
+    public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT yug.UserId, yug.GroupId, yg.GroupName, yg.GroupDescription ");
         sql.append("FROM YukonUserGroup yug, YukonGroup yg");
-        sql.append("WHERE UserId").eq(userID);
+        sql.append("WHERE UserId").eq(userId);
         sql.append(  "AND yug.GroupId = yg.GroupId");
+        if (excludeYukonGroup) {
+            sql.append("AND yg.GroupId").neq_k(YukonGroup.YUKON_GROUP_ID);
+        }
         
-        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, new LiteYukonGroupMapper());
+        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
         
         return groupList;
     }
@@ -131,7 +139,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sql.append("FROM YukonGroup");
         sql.append("WHERE GroupId").eq(groupId);
         
-        LiteYukonGroup group = yukonJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper());
+        LiteYukonGroup group = yukonJdbcTemplate.queryForObject(sql, liteYukonGroupRowMapper);
         
         return group;
     }
@@ -167,7 +175,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         
         LiteYukonGroup group;
         try {
-            group = yukonJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper());
+            group = yukonJdbcTemplate.queryForObject(sql, liteYukonGroupRowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Login group name: " + groupName + " not found.", e);
         }        

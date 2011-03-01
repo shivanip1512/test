@@ -11,6 +11,7 @@ public class GeneralInfo {
     private String fax;
     private String email;
     private Address address = new Address();
+    private Integer parentLogin;
     
     public String getName() {
         return name;
@@ -53,6 +54,12 @@ public class GeneralInfo {
     }
     public int getEcId() {
         return ecId;
+    }
+    public Integer getParentLogin() {
+        return parentLogin;
+    }
+    public void setParentLogin(Integer parentLogin) {
+        this.parentLogin = parentLogin;
     }
     
 }

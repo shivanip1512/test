@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
@@ -25,6 +26,7 @@ public class GeneralInfoService {
     private AddressDao addressDao;
     private StarsDatabaseCache starsDatabaseCache;
     private EnergyCompanyDao energyCompanyDao;
+    private ECMappingDao ecMappingDao;
     
     public GeneralInfo getGeneralInfo(LiteStarsEnergyCompany energyCompany) {
         GeneralInfo info = new GeneralInfo();
@@ -54,6 +56,11 @@ public class GeneralInfoService {
         
         info.setDefaultRouteId(energyCompany.getDefaultRouteId());
         
+        LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompany.getEnergyCompanyId());
+        if (parentLogin != null) {
+            info.setParentLogin(parentLogin.getUserID());
+        }
+        
         return info;
     }
     
@@ -81,6 +88,12 @@ public class GeneralInfoService {
         
         /* Route */
         StarsAdminUtil.updateDefaultRoute( energyCompany, generalInfo.getDefaultRouteId(), user);
+        
+        if (energyCompany.getParent() != null) {
+            int parentEcId = energyCompany.getParent().getEnergyCompanyId();
+            int energyCompanyId = energyCompany.getEnergyCompanyId();
+            ecMappingDao.saveParentLogin(parentEcId, energyCompanyId, generalInfo.getParentLogin());
+        }
         
     }
     
@@ -130,6 +143,11 @@ public class GeneralInfoService {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
+    }
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
     }
     
 }

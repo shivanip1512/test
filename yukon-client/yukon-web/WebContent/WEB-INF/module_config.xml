@@ -951,6 +951,7 @@
                     </options>
                 </option>
                 <option name="userGroupEditor">
+                    <requireRoleProperty value="ADMIN_SUPER_USER" />
                     <link>/spring/adminSetup/userGroupEditor/home</link>
                     <options>
                         <option name="home">
@@ -996,6 +997,7 @@
                 </pages>
             </page>
             <page name="userGroupEditor" type="BASIC">
+                <requireRoleProperty value="ADMIN_SUPER_USER" />
                 <menu>userGroupEditor|home</menu>
                 <link>/spring/adminSetup/userGroupEditor/home</link>
                 <pages>

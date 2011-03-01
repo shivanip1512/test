@@ -136,8 +136,8 @@
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
     <entry key="yukon.web.components.button.create.label">Create</entry>
-    <entry key="yukon.web.components.button.create.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.components.button.create.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.components.button.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.components.button.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     <entry key="yukon.web.components.button.save.label">Save</entry>
     <entry key="yukon.web.components.button.submit.label">Submit</entry>

@@ -47,7 +47,7 @@ public interface EnergyCompanyService {
     /**
      * Returns true if the user has the appropriate privaledges to manage member energy companies.
      */
-    public boolean canManageMembers(LiteYukonUser yukonUser, int ecId);
+    public boolean canManageMembers(LiteYukonUser yukonUser);
 
     /** 
      * Returns true if the user has the appropriate privaledges to create member energy companies.

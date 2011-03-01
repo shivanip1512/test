@@ -22,6 +22,7 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -29,9 +30,11 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/groupEditor/*")
+@CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class GroupEditorController {
     
     private YukonGroupDao yukonGroupDao;

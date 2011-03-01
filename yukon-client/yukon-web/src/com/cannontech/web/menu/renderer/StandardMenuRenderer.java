@@ -7,8 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
@@ -20,9 +22,12 @@ import org.apache.ecs.html.Span;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonMenuException;
@@ -137,6 +142,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             }
             first = false;
             MenuOption option = topLevelOptionIterator.next();
+            boolean notLast = topLevelOptionIterator.hasNext();
             
             A link;
             if (option instanceof SimpleMenuOption) {
@@ -175,7 +181,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             } else {
                 throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
-            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
+            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":"") + (notLast ? " border_menuLink" : ""));
             leftDiv.addElement(link);
         }
         return leftDiv;
@@ -202,8 +208,17 @@ public class StandardMenuRenderer implements MenuRenderer {
     }
 
     private A createLink(String linkKey, String defaultTitle) {
+        return createLink(linkKey, defaultTitle, null);
+    }
+    
+    private A createLink(String linkKey, String defaultTitle, Object argument) {
         A link = new A();
-        String menuLabel = messageSource.getMessage(linkKey);
+        String menuLabel;
+        if (argument == null) {
+            menuLabel = messageSource.getMessage(linkKey);
+        } else {
+            menuLabel = messageSource.getMessage(linkKey, argument);
+        }
         link.addElement(e(menuLabel));
         
         // check for custom title
@@ -237,12 +252,22 @@ public class StandardMenuRenderer implements MenuRenderer {
                 first = false;
 
                 MenuOption option = subLevelOptionIterator.next();
+                boolean notLast = subLevelOptionIterator.hasNext();
+                
                 if (option instanceof SimpleMenuOption) {
                     SimpleMenuOption simpleSubOption = (SimpleMenuOption) option;
-                    A link = createLink(simpleSubOption,
-                                        "yukon.web.menu.simpleMenuDefaultTitle");
+                    A link = createLink(simpleSubOption, "yukon.web.menu.simpleMenuDefaultTitle");
+                    
+                    String anchorClass = "";
+                    
                     if (isOptionSelected(simpleSubOption, 1)) {
-                        link.setClass("selected");
+                        anchorClass += "selected";
+                    }
+                    if (notLast) {
+                        anchorClass += " border_submenuLink";
+                    }
+                    if(StringUtils.isNotBlank(anchorClass)) {
+                        link.setClass(anchorClass);
                     }
                     link.setHref(buildUrl(simpleSubOption.getUrl()));
                     thisMenu.addElement(link);
@@ -295,10 +320,22 @@ public class StandardMenuRenderer implements MenuRenderer {
         right.addElement("&nbsp;&nbsp;");
         A homeLink = createLink("yukon.web.menu.home", "");
         homeLink.setHref(homeUrl);
-        homeLink.setClass("stdhdr_menuLink");
+        homeLink.setClass("stdhdr_menuLink border_menuLink");
         right.addElement(homeLink);
         right.addElement(" ");
-        A logoutLink = createLink("yukon.web.menu.logout", "");
+        
+        A logoutLink;
+        HttpSession session = httpServletRequest.getSession(false);
+        boolean savedUser = session.getAttribute(LoginController.SAVED_YUKON_USERS) != null;
+        if (savedUser) {
+            StarsDatabaseCache cache = StarsDatabaseCache.getInstance();
+            int energyCompanyId = ServletUtils.getStarsYukonUser(session).getEnergyCompanyID();
+            String companyName = cache.getEnergyCompany(energyCompanyId).getParent().getName();
+            logoutLink = createLink("yukon.web.menu.backToEc", "", companyName);
+        } else {
+            logoutLink = createLink("yukon.web.menu.logout", "");
+        }
+        
         logoutLink.setHref(buildUrl("/servlet/LoginController?ACTION=LOGOUT"));
         logoutLink.setClass("stdhdr_menuLink");
         right.addElement(logoutLink);

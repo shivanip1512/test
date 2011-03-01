@@ -8,6 +8,17 @@
 
 <cti:standardPage module="adminSetup" page="home">
 
+<script type="text/javascript">
+YEvent.observeSelectorClick('button.loginButton', function(event) {
+    var parentLoginId = event.target.getAttribute('name');
+    $('loginAsUserId').value = parentLoginId;
+    $('parentLoginForm').submit();
+});
+</script>
+    <form action="parentLogin" method="post" id="parentLoginForm">
+        <input type="hidden" name="loginAsUserId" id="loginAsUserId">
+    </form>
+
     <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
     
         <%-- LEFT SIDE COLUMN --%>
@@ -15,15 +26,25 @@
             <tags:boxContainer2 nameKey="companiesContainer">
                 
                 <div class="membersContainer">
-                    <ul>
+                    <table class="energyCompaniesTable rowHighlighting">
                         <c:forEach items="${companies}" var="company" varStatus="status">
-                            <li>
-                                <a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
-                                    <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
-                                </a>
-                            </li>
+                            <tr>
+                                <td>
+                                    <a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
+                                        <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
+                                    </a>
+                                </td>
+                                <td class="buttonColumn">
+                                    <c:if test="${canManageMembers && company.parent != null}">
+                                        <c:set var="parentLoginId" value="${parentLogins[company.energyCompanyId]}"/>
+                                        <c:if test="${not empty parentLoginId}">
+                                            <cti:button key="login" styleClass="loginButton" name="${parentLoginId}"/>
+                                        </c:if>
+                                    </c:if>
+                                </td>
+                            </tr>
                         </c:forEach>
-                    </ul>
+                    </table>
                 </div>
                 
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
