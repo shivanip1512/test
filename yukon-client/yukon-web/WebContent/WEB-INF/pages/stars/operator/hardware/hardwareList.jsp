@@ -15,6 +15,7 @@
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="configureGatewayUrl" value="/spring/stars/operator/hardware/gateway/configuration?accountId=${accountId}&amp;inventoryId="/>
 
 <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
     <input type="hidden" name="accountId" value="${accountId}">
@@ -49,6 +50,8 @@
     function showInvCheckingPopup(type) {
         if(type == 'switch') {
         	$('inventoryCheckingSwitchPopup').show();
+        } else if (type == 'gateway') {
+        	$('inventoryCheckingGatewayPopup').show();
         } else {
         	$('inventoryCheckingThermostatPopup').show();
         }
@@ -79,6 +82,9 @@
 <c:choose>
     <c:when test="${checkingAdd.switch}">
         <c:set var="titleKey" value=".switches.add"/>
+    </c:when>
+    <c:when test="${checkingAdd.gateway}">
+        <c:set var="titleKey" value=".gateways.add"/>
     </c:when>
     <c:otherwise>
         <c:set var="titleKey" value=".thermostats.add"/>
@@ -116,6 +122,29 @@
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <input type="hidden" name="hardwareClass" value="${thermostatClass}">
+                <form:input path="serialNumber" size="25"/>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        
+        <br>
+        
+        <table class="popupButtonTable">
+            <tr>
+                <td><input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>" class="formSubmit"></td>
+            </tr>
+        </table>
+    
+    </form:form>
+</i:simplePopup>
+
+<%-- INVENTORY CHECKING GATEWAY POPUP --%>
+<i:simplePopup titleKey=".gateways.add" id="inventoryCheckingGatewayPopup" styleClass="smallSimplePopup" showImmediately="${param.showGatewayCheckingPopup}">
+    <form:form commandName="serialNumber" action="/spring/stars/operator/hardware/checkSerialNumber">
+    
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".serialNumber">
+                <input type="hidden" name="accountId" value="${accountId}">
+                <input type="hidden" name="hardwareClass" value="${gatewayClass}">
                 <form:input path="serialNumber" size="25"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
@@ -237,6 +266,9 @@
             <c:choose>
                 <c:when test="${checkingAdd.switch}">
                     <input type="hidden" name="hardwareClass" value="${switchClass}">
+                </c:when>
+                <c:when test="${checkingAdd.gateway}">
+                    <input type="hidden" name="hardwareClass" value="${gatewayClass}">
                 </c:when>
                 <c:otherwise>
                     <input type="hidden" name="hardwareClass" value="${thermostatClass}">
@@ -560,4 +592,77 @@
     </cti:checkRolesAndProperties>
     
 </tags:boxContainer2>
+<br><br>
+
+<%-- GATEWAYS TABLE --%>
+<cti:url var="gatewayControllerUrl" value="/spring/stars/operator/hardware/gateway/"/>
+<cti:url var="gatewayControllerUrlParameters" value="?accountId=${accountId}&inventoryId="/>
+
+<tags:boxContainer2 nameKey="gateways">
+    <c:choose>
+        <c:when test="${empty gateways}">
+            <i:inline key=".gateways.none"/>
+        </c:when>
+        <c:otherwise>
+            <tags:alternateRowReset/>
+            <table class="compactResultsTable hardwareListTable">
+                <tr>
+                    <th class="name"><i:inline key=".displayName"/></th>
+                    <th class="type"><i:inline key=".gateways.displayType"/></th>
+                    <th class="label"><i:inline key=".gateways.commStatus"/></th>
+                    <th class="actions"><i:inline key=".actions"/></th>
+                </tr>
+                
+                <c:forEach var="gateway" items="${gateways}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <a href="${editUrl}${gateway.inventoryId}">
+                                <spring:escapeBody htmlEscape="true">${gateway.serialNumber}</spring:escapeBody>
+                            </a>
+                        </td>
+                        <td><spring:escapeBody htmlEscape="true">${gateway.displayType}</spring:escapeBody></td>
+                        <td style="color:green"><spring:escapeBody htmlEscape="true">Installed</spring:escapeBody></td>
+                        <td nowrap="nowrap">
+                            <cti:img key="editConfig" href="${configureGatewayUrl}${gateway.inventoryId}"/>
+                            
+                        </td>
+                    </tr>
+                </c:forEach>
+                
+            </table>
+        </c:otherwise>
+    </c:choose>
+    
+
+	<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+	    <br>
+	    <table class="theremostatActionTable">
+	        <tr>
+	            <td class="buttonCell">
+	                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+	                        <form action="/spring/stars/operator/hardware/hardwareCreate">
+	                            <input type="hidden" name="accountId" value="${accountId}">
+	                            <input type="hidden" name="hardwareClass" value="${gatewayClass}">
+	                        
+                            <c:choose>
+                                <c:when test="${not inventoryChecking}">
+                                    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                    </cti:checkRolesAndProperties>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:button key="add" type="button" onclick="showInvCheckingPopup('gateway');"/>
+                                </c:otherwise>
+                            </c:choose>
+
+	                        </form>
+	                </cti:checkRolesAndProperties>
+	            </td>
+	        </tr>
+	    </table>
+	 </cti:checkRolesAndProperties>
+
+</tags:boxContainer2>
+
+
 </cti:standardPage>

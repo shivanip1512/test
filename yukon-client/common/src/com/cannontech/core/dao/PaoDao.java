@@ -130,4 +130,14 @@ public interface PaoDao {
     
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
     
+    public void addYukonDevice(PaoIdentifier paoIdentifier);
+    
+    public void deleteYukonDevice(PaoIdentifier paoIdentifier);
+    
+    public void addYukonPao(PaoIdentifier paoIdentifier, String name);
+    
+    public void updateYukonPao(PaoIdentifier paoIdentifier, String name);
+    
+    public void deleteYukonPao(PaoIdentifier paoIdentifier);
+    
 }

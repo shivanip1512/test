@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.hardware.model;
+package com.cannontech.stars.dr.hardware.model;
 
 import java.util.Date;
 import java.util.List;
@@ -9,7 +9,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl.HardwareHistory;
 
 public class HardwareDto {
     private Integer inventoryId;
@@ -29,6 +28,7 @@ public class HardwareDto {
     private Integer routeId;
     private Integer serviceCompanyId;
     private Integer warehouseId;
+    private String installCode;
     private String installNotes;
     private Integer deviceStatusEntryId;
     private Integer originalDeviceStatusEntryId;
@@ -39,6 +39,8 @@ public class HardwareDto {
     private int hardwareTypeEntryId;
     private String meterNumber;
     private List<SwitchAssignment> switchAssignments = LazyList.ofInstance(SwitchAssignment.class);
+    private String macAddress;
+    private String firmwareVersion;
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -160,6 +162,14 @@ public class HardwareDto {
         this.installNotes = installNotes;
     }
 
+    public String getInstallCode() {
+        return installCode;
+    }
+    
+    public void setInstallCode(String installCode) {
+        this.installCode = installCode;
+    }
+    
     public String getTwoWayDeviceName() {
         return twoWayDeviceName;
     }
@@ -252,6 +262,22 @@ public class HardwareDto {
         return switchAssignments;
     }
     
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    public void setFirmwareVersion(String firmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
+    }
+
     public YukonPao getYukonPao() {
         PaoType paoType = PaoType.getForDbString(displayType);
         return new PaoIdentifier(deviceId, paoType);

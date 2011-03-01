@@ -91,6 +91,11 @@
 <entry key="yukon.web.picker.thermostat.serialNumber">Serial Number</entry>
 <entry key="yukon.web.picker.thermostat.deviceType">Thermostat Type</entry>
 
+<!-- Available Zigbee Device Picker -->
+<entry key="yukon.web.picker.availableZigbeeDevicePicker.dialogTitle">Select A Device</entry>
+<entry key="yukon.web.picker.zigbee.serialNumber">Serial Number</entry>
+<entry key="yukon.web.picker.zigbee.deviceType">Device Type</entry>
+
 <!-- Database migration pickers -->
 <entry key="yukon.web.picker.databaseMigrationDIRECT_PROGRAMPicker.dialogTitle">Select Direct Load Program</entry>
 <entry key="yukon.web.picker.databaseMigrationDIRECT_PROGRAMPicker.programName">Program Name</entry>

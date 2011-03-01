@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.hardware.model;
+package com.cannontech.stars.dr.hardware.model;
 
 public class SwitchAssignment {
 

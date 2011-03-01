@@ -361,6 +361,17 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     @Override
     @Transactional
+    public void updateInventoryBaseDeviceId(int inventoryId, int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("UPDATE InventoryBase SET DeviceId").eq(deviceId);
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    @Transactional
     public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv, int energyCompanyId) {
         boolean insert = false;
         if (liteInv.getInventoryID() <= 0) {
@@ -383,7 +394,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         return liteInv;
     }
-
+    
     @Override
     @Transactional
     public LiteStarsLMHardware saveLmHardware(LiteStarsLMHardware lmHw, int energyCompanyId) {

@@ -62,6 +62,8 @@ public interface YukonListEntryTypes
     public static final int YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP= 1313;
     public static final int YUK_DEF_ID_DEV_TYPE_UTILITYPRO          = 1314;
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_3102	        = 1315;
+    public static final int YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO   = 1316;
+    public static final int YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY        = 1317;
 	public static final int YUK_DEF_ID_APP_CAT_DEFAULT				= 1400;
 	public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER		= 1401;
 	public static final int YUK_DEF_ID_APP_CAT_WATER_HEATER			= 1402;

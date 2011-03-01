@@ -29,6 +29,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -37,6 +38,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -579,4 +581,67 @@ public final class PaoDaoImpl implements PaoDao {
     	return result;
     }
     
+    @Override
+    public void addYukonPao(PaoIdentifier paoIdentifier, String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("INSERT INTO YukonPaObject");
+        sql.append("(PaObjectId,Category,PaoClass,");
+        sql.append(" PaoName,Type,Description,DisableFlag,PaoStatistics)");
+        sql.values(paoIdentifier.getPaoId(),
+                   paoIdentifier.getPaoType().getPaoCategory(),
+                   paoIdentifier.getPaoType().getPaoClass(),
+                   name,
+                   paoIdentifier.getPaoType().getPaoTypeName(),
+                   CtiUtilities.STRING_NONE,
+                   YNBoolean.NO,
+                   CtiUtilities.STRING_DASH_LINE);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void addYukonDevice(PaoIdentifier paoIdentifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("INSERT INTO Device");
+        sql.append("(DeviceId,AlarmInhibit,ControlInhibit)");
+        sql.values(paoIdentifier.getPaoId(),YNBoolean.NO,YNBoolean.NO);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void updateYukonPao(PaoIdentifier paoIdentifier, String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("UPDATE YukonPaObject SET ");
+        sql.append("Category").eq(paoIdentifier.getPaoType().getPaoCategory());
+        sql.append(", PaoClass").eq(paoIdentifier.getPaoType().getPaoClass());
+        sql.append(", PaoName").eq(name);
+        sql.append(", Type").eq(paoIdentifier.getPaoType().getPaoTypeName());
+        sql.append("WHERE PaObjectId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void deleteYukonPao(PaoIdentifier paoIdentifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM YukonPaObject");
+        sql.append("WHERE PaObjectId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void deleteYukonDevice(PaoIdentifier paoIdentifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("DELETE FROM Device");
+        sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
+        
+        yukonJdbcTemplate.update(sql);
+    }
 }

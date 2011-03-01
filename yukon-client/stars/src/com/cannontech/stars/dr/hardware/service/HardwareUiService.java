@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.hardware.service;
+package com.cannontech.stars.dr.hardware.service;
 
 import java.util.List;
 
@@ -9,11 +9,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.HardwareHistory;
+import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl.HardwareHistory;
 import com.google.common.collect.ListMultimap;
 
 public interface HardwareUiService {

@@ -161,11 +161,13 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN430A3 = DEVICE_OFFSET + 123;
     public final static int RFN430KV = DEVICE_OFFSET + 124;
     
-    public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 125;
-    public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 126;
+    public final static int ZIGBEE_UTIL_PRO = DEVICE_OFFSET + 125;
+    public final static int DIGI_GATEWAY = DEVICE_OFFSET + 126;
+    public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
+    public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 126;
+	public final static int DEVICE_TYPES_COUNT = 128;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

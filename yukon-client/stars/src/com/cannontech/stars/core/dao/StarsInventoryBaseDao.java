@@ -82,6 +82,13 @@ public interface StarsInventoryBaseDao {
     public List<LiteInventoryBase> getAllByEnergyCompanyList(List<LiteStarsEnergyCompany> energyCompanyList);
     
     /**
+     * Updates the deviceId of the InventoryBase table with inventoryId.
+     * @param inventoryId
+     * @param deviceId
+     */
+    public void updateInventoryBaseDeviceId(int inventoryId, int deviceId);
+    
+    /**
      * Saves a Inventory hardware device info on the customer account. Handles both insert/update records.
      */
     public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv, int energyCompanyId);    

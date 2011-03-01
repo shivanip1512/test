@@ -271,7 +271,15 @@
     <bean id="optOutSurveyService" class="com.cannontech.stars.dr.optout.service.impl.OptOutSurveyServiceImpl"/>
 
 	<bean id="hardwareService" class="com.cannontech.stars.dr.hardware.service.impl.HardwareServiceImpl"/>
-	    
+	<bean id="hardwareUiService" class="com.cannontech.stars.dr.hardware.service.impl.HardwareUiServiceImpl"/>
+	
+	<bean id="gatewayDeviceDao" class="com.cannontech.stars.dr.hardware.dao.impl.GatewayDeviceDaoImpl"/>
+	<bean id="digiGatewayBuilder" class="com.cannontech.stars.dr.hardware.builder.DigiGatewayBuilder"/>
+	
+    <bean id="zigbeeDeviceDao" class="com.cannontech.stars.dr.hardware.dao.impl.ZigbeeDeviceDaoImpl"/>
+    <bean id="zigbeeDeviceService" class="com.cannontech.stars.dr.hardware.service.impl.ZigbeeDeviceService"/>
+	<bean id="zigbeeUtilityProBuilder" class="com.cannontech.stars.dr.hardware.builder.ZigbeeUtilityProBuilder"/>
+
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     
     <bean 

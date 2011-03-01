@@ -129,6 +129,35 @@
 	<entry key="yukon.web.components.image.greenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
 	<entry key="yukon.web.components.image.greenDownArrow.hoverText"></entry>
 
+    <entry key="yukon.web.components.image.commission.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.components.image.commission.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
+    <entry key="yukon.web.components.image.commission.hoverText">Commission</entry>
+    <entry key="yukon.web.components.image.commission.label">Commission</entry>
+    
+    <entry key="yukon.web.components.image.decommission.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
+    <entry key="yukon.web.components.image.decommission.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
+    <entry key="yukon.web.components.image.decommission.hoverText">Decommission</entry>
+    <entry key="yukon.web.components.image.decommission.label">Decommission</entry>
+
+    <entry key="yukon.web.components.image.link.imageUrl">/WebConfig/yukon/Icons/link_add.png</entry>
+    <entry key="yukon.web.components.image.link.hoverUrl">/WebConfig/yukon/Icons/link_add_over.png</entry>
+    <entry key="yukon.web.components.image.link.hoverText">Link</entry>
+    <entry key="yukon.web.components.image.link.label">Link</entry>
+
+	<entry key="yukon.web.components.image.unlink.imageUrl">/WebConfig/yukon/Icons/link_delete.png</entry>
+    <entry key="yukon.web.components.image.unlink.hoverUrl">/WebConfig/yukon/Icons/link_delete_over.png</entry>
+    <entry key="yukon.web.components.image.unlink.hoverText">Unlink</entry>
+    <entry key="yukon.web.components.image.unlink.label">Unlink</entry>
+
+	<entry key="yukon.web.components.image.textMessage.imageUrl">/WebConfig/yukon/Icons/phone_sound.png</entry>
+    <entry key="yukon.web.components.image.textMessage.hoverUrl">/WebConfig/yukon/Icons/phone_sound_over.png</entry>
+    <entry key="yukon.web.components.image.textMessage.hoverText">Text Message</entry>
+    <entry key="yukon.web.components.image.textMessage.label">Text Message</entry>
+
+	<entry key="yukon.web.components.image.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.components.image.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.components.image.delete.hoverText">Click to Remove</entry>
+
     <entry key="yukon.web.components.picker.nothingSelected">Nothing has been selected.</entry>
     <entry key="yukon.web.components.picker.selectedItemsDialogTitle">Selected Items</entry>
     <entry key="yukon.web.components.picker.close">Close</entry>

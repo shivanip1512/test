@@ -37,8 +37,12 @@ public enum HardwareType implements DatabaseRepresentationSource{
     COMMERCIAL_EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
     EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
     UTILITY_PRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
-    ;
+    UTILITY_PRO_ZIGBEE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
 
+    /* Gateways*/
+    DIGI_GATEWAY(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.GATEWAY, HardwareConfigType.EXPRESSCOM);
+    
+    
     // this key prefix can be found in the following file:
     // consumer.xml
     private final static String keyPrefix = "yukon.dr.consumer.hardware.type.";
@@ -112,7 +116,19 @@ public enum HardwareType implements DatabaseRepresentationSource{
      * @return boolean
      */
     public boolean isThermostat() {
-        return getLMHardwareClass() == LMHardwareClass.THERMOSTAT;
+        return getLMHardwareClass().isThermostat();
+    }
+    
+    /**
+     * Returns true if this hardware type is a gateway.
+     * @return
+     */
+    public boolean isGateway() {
+        return getLMHardwareClass().isGateway();
+    }
+    
+    public boolean isZigbee() {
+        return (this == HardwareType.DIGI_GATEWAY) || (this == HardwareType.UTILITY_PRO_ZIGBEE);
     }
     
     /**
@@ -142,7 +158,7 @@ public enum HardwareType implements DatabaseRepresentationSource{
     public boolean isExpressCom() {
         return hardwareConfigType == HardwareConfigType.EXPRESSCOM;
     }
-
+    
     public int getNumRelays() {
         return isExpressCom() ? 8 : 4;
     }

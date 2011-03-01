@@ -168,15 +168,22 @@
                     <tags:nameValueContainer2>
                     
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            <tags:nameValue2 nameKey=".deviceType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
+                            <tags:nameValue2 nameKey=".deviceType"><spring:escapeBody htmlEscape="true">
+                            	${hardwareDto.displayType}</spring:escapeBody>
+                            </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="CREATE">
-                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
+                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" 
+                             					  itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
                         </cti:displayForPageEditModes>
+                        
+                        <%-- If this is a Thermostat, display the install code. Field is disabled by default on --%>
+						<c:if test="${showInstallCode}">
+	                            <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false"/>
+                        </c:if>
                         
                         <%-- For switchs and tstat's, show serial number, otherwise device name --%>
                         <c:choose>
-                        
                             <c:when test="${showSerialNumber}">
                                 <c:choose>
                                 
@@ -199,12 +206,22 @@
                             </c:otherwise>
                             
                         </c:choose>
+						
+						<c:if test="${showMacAddress}">
+                    		<tags:inputNameValue nameKey=".macAddress" path="macAddress"></tags:inputNameValue>                   
+                        </c:if>
+                        
+                        <c:if test="${showFirmwareVersion}">
+                        	<tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
+                        </c:if>
                         
                         <tags:inputNameValue nameKey=".label" path="displayLabel"/>
                         
                         <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
+                        <c:if test="${showVoltage}">    
+                        	<tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
+                        </c:if>
                         
                         <tags:nameValue2 nameKey=".fieldInstallDate">
                             <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="fieldInstallDate" springInput="true"></tags:dateInputCalendar>

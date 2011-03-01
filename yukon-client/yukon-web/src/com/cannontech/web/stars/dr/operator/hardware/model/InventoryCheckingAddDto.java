@@ -17,6 +17,7 @@ public class InventoryCheckingAddDto {
     private String alternateTrackingNumber;
     private boolean isSwitch;
     private Integer inventoryId;
+    private boolean isGateway;
 
     public InventoryCheckingAddDto(String serialNumber){
         this.serialNumber = serialNumber;
@@ -92,5 +93,13 @@ public class InventoryCheckingAddDto {
 
     public void setInventoryId(Integer inventoryId) {
         this.inventoryId = inventoryId;
+    }
+
+    public boolean isGateway() {
+        return isGateway;
+    }
+
+    public void setGateway(boolean isGateway) {
+        this.isGateway = isGateway;
     }
 }

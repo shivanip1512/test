@@ -62,8 +62,12 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.hardware.service.impl.ZigbeeDeviceService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsUtils;
@@ -74,11 +78,8 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.InventoryCheckingAddDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.SerialNumber;
-import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareUiService;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
@@ -110,8 +111,9 @@ public class OperatorHardwareController {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private HardwareService hardwareService;
-    
-    /* HARDWARE LIST PAGE*/
+    private ZigbeeDeviceService zigbeeDeviceService;
+        
+    /* HARDWARE LIST PAGE */
     @RequestMapping
     public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
@@ -141,8 +143,10 @@ public class OperatorHardwareController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             if(lmHardwareClass.equals(LMHardwareClass.SWITCH)) {
                 modelMap.addAttribute("showSwitchCheckingPopup", true);
-            } else {
+            } else if(lmHardwareClass.equals(LMHardwareClass.THERMOSTAT)) {
                 modelMap.addAttribute("showThermostatCheckingPopup", true);
+            } else {
+                modelMap.addAttribute("showGatewayCheckingPopup", true);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
             return "redirect:hardwareList"; 
@@ -153,7 +157,7 @@ public class OperatorHardwareController {
 
             InventoryCheckingAddDto inventoryCheckingAddDto = new InventoryCheckingAddDto(serialNumber.getSerialNumber());
             inventoryCheckingAddDto.setIsSwitch(lmHardwareClass.equals(LMHardwareClass.SWITCH));
-            
+            inventoryCheckingAddDto.setGateway(lmHardwareClass.equals(LMHardwareClass.GATEWAY));
             
             if(possibleDuplicate != null) {
                 inventoryCheckingAddDto.setInventoryId(possibleDuplicate.getInventoryID());
@@ -238,6 +242,7 @@ public class OperatorHardwareController {
         
         modelMap.addAttribute("hardwareDto", hardwareDto);
         
+        setupZigbeeShowHideElements(hardwareDto, modelMap);
         setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
         
         return "operator/hardware/hardware.jsp";
@@ -262,6 +267,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("hardwareDto", hardwareDto);
         modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
         
+        setupZigbeeShowHideElements(hardwareDto, modelMap);
         setupHardwareShowHideElements(hardwareDto, modelMap, userContext);
         
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
@@ -406,6 +412,12 @@ public class OperatorHardwareController {
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
         hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId());
+        
+        //If we are deleting from the database. Cleanup the zigbee and pao tables
+        if (delete) {
+            //I would rather this be in the hardwareService versus this controller. (like in the hardwareUiService)
+            zigbeeDeviceService.deleteDevice(hardwareToDelete);
+        }
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -606,6 +618,10 @@ public class OperatorHardwareController {
             modelMap.addAttribute("displayTypeKey", ".switches.displayType");
         } else if (lmHardwareClass == LMHardwareClass.THERMOSTAT) {
             modelMap.addAttribute("displayTypeKey", ".thermostats.displayType");
+            modelMap.addAttribute("isThermostat", true);
+        } else if (lmHardwareClass == LMHardwareClass.GATEWAY) {
+            modelMap.addAttribute("displayTypeKey", ".gateways.displayType");
+            modelMap.addAttribute("isGateway", true);
         } else {
             modelMap.addAttribute("displayTypeKey", ".meters.displayType");
         }
@@ -613,27 +629,52 @@ public class OperatorHardwareController {
         if(lmHardwareClass != LMHardwareClass.METER) {
             modelMap.addAttribute("showSerialNumber", true);
             modelMap.addAttribute("serialNumberEditable", true);
-            modelMap.addAttribute("showRoute", true);
+            
+            if (lmHardwareClass != LMHardwareClass.GATEWAY) {
+                modelMap.addAttribute("showRoute", true);    
+            }
         }
     }
     
     private void setupHardwareShowHideElements(HardwareDto hardwareDto, ModelMap modelMap, YukonUserContext userContext) {
         boolean inventoryChecking = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
-        
-        /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
         HardwareType hardwareType = hardwareDto.getHardwareType(); 
-        if(!inventoryChecking && hardwareType.getLMHardwareClass() != LMHardwareClass.METER) {
+        LMHardwareClass lmHardwareClass = hardwareType.getLMHardwareClass();
+
+        /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
+        if (!inventoryChecking && lmHardwareClass != LMHardwareClass.METER) {
             modelMap.addAttribute("serialNumberEditable", true);
         }
         
         /* For switches and tstats, show serial number instead of device name and show the route. */
-        if(hardwareType.getLMHardwareClass() != LMHardwareClass.METER) {
-            modelMap.addAttribute("showRoute", true);
+        if (lmHardwareClass != LMHardwareClass.METER) {
             modelMap.addAttribute("showSerialNumber", true);
+            
+            if (lmHardwareClass != LMHardwareClass.GATEWAY) {
+                modelMap.addAttribute("showRoute", true);    
+            }
         }
         
-        if(hardwareType.isSwitch() && hardwareType.isTwoWay()) {
+        if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
             modelMap.addAttribute("showTwoWay", true);
+        }
+    }
+    
+    private void setupZigbeeShowHideElements(HardwareDto hardwareDto, ModelMap modelMap) {
+    	LMHardwareClass hardwareClass = hardwareDto.getHardwareClass();
+    	
+    	/* Shows the MacAddress Field and Firmware Version */
+        if (hardwareClass.isGateway()) {
+            modelMap.addAttribute("showMacAddress", true);
+            modelMap.addAttribute("showFirmwareVersion", true);
+            modelMap.addAttribute("showVoltage", false);
+        }
+        
+        /* Shows install code */
+        //Do we want this to be only for Zigbee devices?
+        if (hardwareClass.isThermostat()) {
+            modelMap.addAttribute("showInstallCode", true);
+            modelMap.addAttribute("showVoltage", false);
         }
     }
     
@@ -653,6 +694,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("switches", hardwareMap.get(LMHardwareClass.SWITCH));
         modelMap.addAttribute("meters", hardwareMap.get(LMHardwareClass.METER));
         modelMap.addAttribute("thermostats", hardwareMap.get(LMHardwareClass.THERMOSTAT));
+        modelMap.addAttribute("gateways", hardwareMap.get(LMHardwareClass.GATEWAY));
         if(hardwareMap.get(LMHardwareClass.THERMOSTAT).size() > 1) {
             modelMap.addAttribute("showSelectAll", Boolean.TRUE);
         }
@@ -660,6 +702,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("switchClass", LMHardwareClass.SWITCH);
         modelMap.addAttribute("thermostatClass", LMHardwareClass.THERMOSTAT);
         modelMap.addAttribute("meterClass", LMHardwareClass.METER);
+        modelMap.addAttribute("gatewayClass", LMHardwareClass.GATEWAY);
         
         String meterDesignation= rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getUser());
         boolean starsMeters = meterDesignation.equalsIgnoreCase(StarsUtils.METER_BASE_DESIGNATION); 
@@ -827,4 +870,9 @@ public class OperatorHardwareController {
     public void setHardwareService(HardwareService hardwareService) {
 		this.hardwareService = hardwareService;
 	}
+    
+    @Autowired
+    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
+        this.zigbeeDeviceService = zigbeeDeviceService;
+    }
 }

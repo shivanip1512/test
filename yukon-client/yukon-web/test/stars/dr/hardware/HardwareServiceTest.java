@@ -16,9 +16,9 @@ import com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.service.impl.HardwareUiServiceImpl;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 

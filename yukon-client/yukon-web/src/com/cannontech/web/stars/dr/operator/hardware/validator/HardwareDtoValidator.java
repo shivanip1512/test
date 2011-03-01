@@ -17,8 +17,8 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 
 public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     
@@ -38,6 +38,26 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
         } else {
             hardwareType = hardwareDto.getHardwareType();
+        }
+        
+        // Zigbee Device Specific
+        if (hardwareType.isZigbee()) {
+            if (hardwareType.isMeter()) {
+                /* Install Code */
+                if (StringUtils.isBlank(hardwareDto.getInstallCode())) {
+                    errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");
+                }
+            } else if (hardwareType.isGateway()) {
+                /* Mac Address */
+                if (StringUtils.isBlank(hardwareDto.getMacAddress())) {
+                    errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
+                }
+                
+                /* Firmware Version */
+                if (StringUtils.isBlank(hardwareDto.getFirmwareVersion())) {
+                    errors.rejectValue("firmwareVersion", "yukon.web.modules.operator.hardware.error.required");
+                }
+            }
         }
         
         /* Serial Number */

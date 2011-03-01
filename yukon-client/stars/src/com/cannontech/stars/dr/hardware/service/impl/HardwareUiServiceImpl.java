@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.hardware.service.impl;
+package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +19,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.LMHardwareClass;
+import com.cannontech.common.model.DigiGateway;
+import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -49,12 +51,13 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
+import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareUiService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -75,7 +78,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     private WarehouseDao warehouseDao;
     private PaoLoadingService paoLoadingService;
     private StarsInventoryBaseService starsInventoryBaseService;
-
+    private ZigbeeDeviceService zigbeeDeviceService;
+    
     @Override
     public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
         HardwareDto hardwareDto = new HardwareDto();
@@ -208,6 +212,30 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                     hardwareDto.setTwoWayDeviceName(displayablePao.getName());
                 }
             }
+            
+            LMHardwareClass hardwareClass = hardwareDto.getHardwareType().getLMHardwareClass();
+            hardwareDto.setHardwareClass(hardwareClass);
+            
+            /* Zigbee Devices */
+            if(hardwareType.isZigbee()) {
+                /* Util Pro Tstat */
+                if (hardwareType.isThermostat()) {
+                    ZigbeeThermostat zigbeeThermostat = zigbeeDeviceService.getZigbeeThermostat(liteInventoryBase.getDeviceID()); 
+                    
+                    hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
+                    
+                } else if (hardwareType.isGateway()) {
+                    DigiGateway digiGateway = zigbeeDeviceService.getDigiGateway(liteInventoryBase.getDeviceID());
+                    
+                    hardwareDto.setMacAddress(digiGateway.getMacAddress());
+                    hardwareDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
+                    
+                } else {
+                    /* This is an unknown Zigbee device type */
+                    throw new NotFoundException("Device type not found for inventory id:" + inventoryId);
+                }
+            }
+            
         } else {
             /* This is not a device we know about, maybe we should throw something smarter here. */
             throw new NotFoundException("Device type not found for inventory id:" + inventoryId);
@@ -224,10 +252,12 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         for(int inventoryId : inventoryIds) {
             HardwareDto hardwareDto = getHardwareDto(inventoryId, energyCompanyId, accountId);
             HardwareType hardwareType = hardwareDto.getHardwareType();
-            if(hardwareType.isMeter()) {
+            if (hardwareType.isMeter()) {
                 hardwareMap.put(LMHardwareClass.METER, hardwareDto);
             } else if (hardwareType.isThermostat()) {
                 hardwareMap.put(LMHardwareClass.THERMOSTAT, hardwareDto);
+            } else if (hardwareType.isGateway()) {
+                hardwareMap.put(LMHardwareClass.GATEWAY, hardwareDto);
             } else {
                 hardwareMap.put(LMHardwareClass.SWITCH, hardwareDto);
             }
@@ -341,6 +371,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             }
         }
         
+        //Pass to the Zigbee Service to handle any Zigbee specifics required
+        zigbeeDeviceService.updateDevice(hardwareDto);
+        
         // Log hardware update
         hardwareEventLogService.hardwareUpdated(userContext.getYukonUser(), hardwareDto.getSerialNumber());
         
@@ -379,35 +412,16 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         }
     }
     
-    /* History Wrapper */
-    public static class HardwareHistory {
-        private String action;
-        private Date date;
-        
-        public String getAction() {
-            return action;
-        }
-        
-        public void setAction(String action) {
-            this.action = action;
-        }
-        
-        public Date getDate() {
-            return date;
-        }
-        
-        public void setDate(Date date) {
-            this.date = date;
-        }
-    }
-    
     @Override
     @Transactional
     public int createHardware(HardwareDto hardwareDto, int accountId, YukonUserContext userContext) throws ObjectInOtherEnergyCompanyException {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         int inventoryId;
-        HardwareType hardwareType;
+        String deviceLabel;
+        
         checkSerialNumber(hardwareDto);
+        
+        HardwareType hardwareType;
         if(hardwareDto.getHardwareTypeEntryId() > 0){
             YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardwareDto.getHardwareTypeEntryId());
             hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
@@ -415,6 +429,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             /* This will be a real yukon MCT, they don't have a type coming from a yukon list entry. */
             hardwareType = HardwareType.YUKON_METER;
         }
+        hardwareDto.setHardwareType(hardwareType);
         
         if(hardwareType.isMeter()) {
             if(hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
@@ -425,8 +440,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 
                 starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, userContext.getYukonUser());
                 
-                // Log hardware creation
-                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), inventoryBase.getDeviceLabel());
+                // label for Logging hardware creation
+                deviceLabel = inventoryBase.getDeviceLabel();
             } else {
                 /* MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = getMeterHardware(hardwareDto, accountId, energyCompany); 
@@ -442,7 +457,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 }
                 starsInventoryBaseDao.saveSwitchAssignments(inventoryId, assignedSwitches);
                 
-                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), meterHardwareBase.getDeviceLabel());
+                // label for Logging hardware creation
+                deviceLabel = meterHardwareBase.getDeviceLabel();
             }
         } else {
             /* LMHardwareBase and InventoryBase*/
@@ -459,9 +475,18 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             
             starsInventoryBaseService.addInstallHardwareEvent(lmHardware, energyCompany, userContext.getYukonUser());
             
-            // Log hardware creation
-            hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), lmHardware.getDeviceLabel());
+            // label for Logging hardware creation
+            deviceLabel = lmHardware.getDeviceLabel();
         }
+        
+        // This is set now for the ZigbeeDeviceService
+        hardwareDto.setInventoryId(inventoryId);
+        
+        // Pass to the Zigbee Service to handle any Zigbee specifics required
+        zigbeeDeviceService.createDevice(hardwareDto);
+        
+        // Log hardware creation
+        hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), deviceLabel);
         
         return inventoryId;
     }
@@ -625,8 +650,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* LMHardwareBase Fields */
         lmHardware.setManufacturerSerialNumber(hardwareDto.getSerialNumber());
         lmHardware.setLmHardwareTypeID(hardwareDto.getHardwareTypeEntryId());
-        lmHardware.setRouteID(hardwareDto.getRouteId());
-
+        
+        if(!hardwareDto.getHardwareType().isGateway()) {
+            lmHardware.setRouteID(hardwareDto.getRouteId());
+        }
+        
         return lmHardware;
     }
     
@@ -772,5 +800,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public void setStarsInventoryBaseService(StarsInventoryBaseService starsInventoryBaseService) {
         this.starsInventoryBaseService = starsInventoryBaseService;
     }
-
+    
+    @Autowired
+    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
+        this.zigbeeDeviceService = zigbeeDeviceService;
+    }
 }
