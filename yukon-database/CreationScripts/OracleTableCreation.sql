@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/24/2011 12:25:24 PM                        */
+/* Created on:     3/1/2011 4:38:28 PM                          */
 /*==============================================================*/
 
 
@@ -608,6 +608,10 @@ drop table ECToGenericMapping cascade constraints;
 drop table ECToInventoryMapping cascade constraints;
 
 drop table ECToLMCustomerEventMapping cascade constraints;
+
+drop table ECToOperatorGroupMapping cascade constraints;
+
+drop table ECToResidentialGroupMapping cascade constraints;
 
 drop table ECToRouteMapping cascade constraints;
 
@@ -5095,6 +5099,24 @@ create table ECToLMCustomerEventMapping  (
 /*==============================================================*/
 create index INDX_ECToCustEventMap_EventId on ECToLMCustomerEventMapping (
    EventID ASC
+);
+
+/*==============================================================*/
+/* Table: ECToOperatorGroupMapping                              */
+/*==============================================================*/
+create table ECToOperatorGroupMapping  (
+   EnergyCompanyId      NUMBER                          not null,
+   GroupId              NUMBER                          not null,
+   constraint PK_ECToOpGroupMap primary key (EnergyCompanyId, GroupId)
+);
+
+/*==============================================================*/
+/* Table: ECToResidentialGroupMapping                           */
+/*==============================================================*/
+create table ECToResidentialGroupMapping  (
+   EnergyCompanyId      NUMBER                          not null,
+   GroupId              NUMBER                          not null,
+   constraint PK_ECToResGroupMap primary key (EnergyCompanyId, GroupId)
 );
 
 /*==============================================================*/
@@ -11619,6 +11641,26 @@ alter table ECToLMCustomerEventMapping
 alter table ECToLMCustomerEventMapping
    add constraint FK_LCsEv_ECLmCs foreign key (EventID)
       references LMCustomerEventBase (EventID);
+
+alter table ECToOperatorGroupMapping
+   add constraint FK_ECToOpGroupMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table ECToOperatorGroupMapping
+   add constraint FK_ECToOpGroupMap_YukonGroup foreign key (GroupId)
+      references YukonGroup (GroupID)
+      on delete cascade;
+
+alter table ECToResidentialGroupMapping
+   add constraint FK_ECToResGroupMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table ECToResidentialGroupMapping
+   add constraint FK_ECToResGroupMap_YukonGroup foreign key (GroupId)
+      references YukonGroup (GroupID)
+      on delete cascade;
 
 alter table ECToRouteMapping
    add constraint FK_ECToRouteMap_EC foreign key (EnergyCompanyId)

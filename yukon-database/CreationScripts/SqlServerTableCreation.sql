@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/24/2011 12:23:35 PM                        */
+/* Created on:     3/1/2011 4:40:14 PM                          */
 /*==============================================================*/
 
 
@@ -2326,6 +2326,20 @@ if exists (select 1
            where  id = object_id('ECToLMCustomerEventMapping')
             and   type = 'U')
    drop table ECToLMCustomerEventMapping
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToOperatorGroupMapping')
+            and   type = 'U')
+   drop table ECToOperatorGroupMapping
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToResidentialGroupMapping')
+            and   type = 'U')
+   drop table ECToResidentialGroupMapping
 go
 
 if exists (select 1
@@ -8050,6 +8064,26 @@ go
 /*==============================================================*/
 create index INDX_ECToCustEventMap_EventId on ECToLMCustomerEventMapping (
 EventID ASC
+)
+go
+
+/*==============================================================*/
+/* Table: ECToOperatorGroupMapping                              */
+/*==============================================================*/
+create table ECToOperatorGroupMapping (
+   EnergyCompanyId      numeric              not null,
+   GroupId              numeric              not null,
+   constraint PK_ECToOpGroupMap primary key nonclustered (EnergyCompanyId, GroupId)
+)
+go
+
+/*==============================================================*/
+/* Table: ECToResidentialGroupMapping                           */
+/*==============================================================*/
+create table ECToResidentialGroupMapping (
+   EnergyCompanyId      numeric              not null,
+   GroupId              numeric              not null,
+   constraint PK_ECToResGroupMap primary key nonclustered (EnergyCompanyId, GroupId)
 )
 go
 
@@ -15166,6 +15200,30 @@ go
 alter table ECToLMCustomerEventMapping
    add constraint FK_LCsEv_ECLmCs foreign key (EventID)
       references LMCustomerEventBase (EventID)
+go
+
+alter table ECToOperatorGroupMapping
+   add constraint FK_ECToOpGroupMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table ECToOperatorGroupMapping
+   add constraint FK_ECToOpGroupMap_YukonGroup foreign key (GroupId)
+      references YukonGroup (GroupID)
+         on delete cascade
+go
+
+alter table ECToResidentialGroupMapping
+   add constraint FK_ECToResGroupMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table ECToResidentialGroupMapping
+   add constraint FK_ECToResGroupMap_YukonGroup foreign key (GroupId)
+      references YukonGroup (GroupID)
+         on delete cascade
 go
 
 alter table ECToRouteMapping

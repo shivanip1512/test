@@ -277,6 +277,222 @@ WHERE ItemId = 1050
 AND MappingCategory = 'YukonSelectionList';
 /* End YUK-9448 */
 
+/* Start YUK-9429 */
+/* @start-block */
+CREATE TABLE ECToOperatorGroupMapping ( 
+   EnergyCompanyId NUMBER NOT NULL, 
+   GroupId NUMBER NOT NULL, 
+   CONSTRAINT PK_ECToOpGroupMap PRIMARY KEY (EnergyCompanyId, GroupId) 
+); 
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_YukonGroup FOREIGN KEY (GroupId) 
+        REFERENCES YukonGroup (GroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE; 
+
+CREATE TABLE ECToResidentialGroupMapping ( 
+   EnergyCompanyId NUMBER NOT NULL, 
+   GroupId NUMBER NOT NULL, 
+   CONSTRAINT PK_ECToResGroupMap PRIMARY KEY (EnergyCompanyId, GroupId) 
+); 
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_YukonGroup FOREIGN KEY (GroupId) 
+        REFERENCES YukonGroup (GroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE; 
+/* @end-block */
+
+/* @start-block */
+CREATE OR REPLACE PACKAGE STRING_FNC 
+IS 
+
+TYPE t_array IS TABLE OF VARCHAR2(50) 
+   INDEX BY BINARY_INTEGER; 
+
+FUNCTION SPLIT (p_in_string VARCHAR2, p_delim VARCHAR2) RETURN t_array; 
+
+END; 
+
+CREATE OR REPLACE PACKAGE BODY STRING_FNC 
+IS 
+
+   FUNCTION SPLIT (p_in_string VARCHAR2, p_delim VARCHAR2) RETURN t_array  
+   IS 
+    
+      i       NUMBER :=0; 
+      pos     NUMBER :=0; 
+      lv_str  VARCHAR2(1000) := p_in_string; 
+       
+   strings t_array; 
+    
+   BEGIN 
+    
+      -- determine first chuck of string   
+      pos := INSTR(lv_str,p_delim, 1, 1); 
+
+      -- add it to the array if the value existed but did not have the delimitor.     
+      IF pos = 0 AND lv_str != ' ' THEN 
+          strings(i+1) := lv_str; 
+      END IF;
+   
+      -- while there are chunks left, loop  
+      WHILE ( pos != 0) LOOP 
+          
+         -- increment counter  
+         i := i + 1; 
+          
+         -- create array element for chuck of string  
+         strings(i) := SUBSTR(lv_str,1,pos-1); 
+          
+         -- remove chunk from string  
+         lv_str := SUBSTR(lv_str,pos+1, LENGTH(lv_str)); 
+          
+         -- determine next chunk  
+         pos := INSTR(lv_str,p_delim,1,1); 
+          
+         -- no last chunk, add to array  
+         IF pos = 0 THEN 
+            strings(i+1) := lv_str; 
+         END IF; 
+       
+      END LOOP; 
+    
+      -- return array  
+      RETURN strings; 
+       
+   END SPLIT; 
+
+END;
+/* @end-block */
+
+/* @start-block */
+DECLARE 
+    -- New Appliance Base Values
+    v_EnergyCompanyName VARCHAR2(60);
+    v_EnergyCompanyId NUMBER;
+    v_GroupRoleId NUMBER;
+    v_GroupId NUMBER;
+    v_RoleId NUMBER;
+    v_RolePropertyId NUMBER;
+    v_RolePropertyValue VARCHAR2(1000);
+
+    -- Account Enrollment information Cursor
+    CURSOR ecToOpLoginGroup_curs IS 
+        SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
+        FROM EnergyCompany EC
+        JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
+        JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
+        WHERE YGR.RolePropertyId = -1106;
+
+    -- Inventory Enrollment information based on the account enrollment Cursor
+    CURSOR ecToResLoginGroup_curs IS 
+        SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
+        FROM EnergyCompany EC
+        JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
+        JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
+        WHERE YGR.RolePropertyId = -1105;
+    
+    str string_fnc.t_array;
+
+BEGIN
+
+    OPEN ecToOpLoginGroup_curs;
+    LOOP
+        FETCH ecToOpLoginGroup_curs INTO v_EnergyCompanyName, v_EnergyCompanyId, v_GroupRoleId, v_GroupId, v_RoleId, v_RolePropertyId, v_RolePropertyValue;
+        EXIT WHEN ecToOpLoginGroup_curs%NOTFOUND;
+        
+        -- Turn on logging, reset the original appliance id and inventory count.
+        dbms_output.enable(1000000);
+
+        dbms_output.put(CONCAT('[ECName = ',v_EnergyCompanyName));
+        dbms_output.put(CONCAT(', ECId = ',v_EnergyCompanyId));
+        dbms_output.put(CONCAT(', GroupRoleId = ',v_GroupRoleId));
+        dbms_output.put(CONCAT(', GroupId = ',v_GroupId));
+        dbms_output.put(CONCAT(', RoleId = ',v_RoleId));
+        dbms_output.put(CONCAT(', RolePropertyId = ',v_RolePropertyId));
+        dbms_output.put(CONCAT(', RolePropertyValue = (',v_RolePropertyValue));
+        dbms_output.put_line(')]');
+
+        str := string_fnc.split(v_RolePropertyValue,',');
+
+        -- Add the entries to the ECToOperatorGroupMapping table.
+        FOR i IN 1..str.count LOOP
+            dbms_output.put(CONCAT('inserting ecToOp(ECId = ',v_EnergycompanyId));
+            dbms_output.put(CONCAT(', RolePropertyValue = ',str(i)));
+            dbms_output.put_line(')');
+    
+            INSERT INTO ECToOperatorGroupMapping(EnergyCompanyId, GroupId) VALUES (v_EnergyCompanyId, str(i));
+    
+        END LOOP;
+
+
+    END LOOP;
+    CLOSE ecToOpLoginGroup_curs;
+
+    OPEN ecToResLoginGroup_curs;
+    LOOP
+        FETCH ecToResLoginGroup_curs INTO v_EnergyCompanyName, v_EnergyCompanyId, v_GroupRoleId, v_GroupId, v_RoleId, v_RolePropertyId, v_RolePropertyValue;
+        EXIT WHEN ecToResLoginGroup_curs%NOTFOUND;
+        
+        -- Turn on logging, reset the original appliance id and inventory count.
+        dbms_output.enable(1000000);
+
+        dbms_output.put(CONCAT('[ECName = ',v_EnergyCompanyName));
+        dbms_output.put(CONCAT(', ECId = ',v_EnergyCompanyId));
+        dbms_output.put(CONCAT(', GroupRoleId = ',v_GroupRoleId));
+        dbms_output.put(CONCAT(', GroupId = ',v_GroupId));
+        dbms_output.put(CONCAT(', RoleId = ',v_RoleId));
+        dbms_output.put(CONCAT(', RolePropertyId = ',v_RolePropertyId));
+        dbms_output.put(CONCAT(', RolePropertyValue = (',v_RolePropertyValue));
+        dbms_output.put_line(')]');
+
+        str := string_fnc.split(v_RolePropertyValue,',');
+
+        -- Add the entries to the ECToResidentialGroupMapping table.
+        FOR i IN 1..str.count LOOP
+            dbms_output.put(CONCAT('inserting ecToRes(ECId = ',v_EnergycompanyId));
+            dbms_output.put(CONCAT(', RolePropertyValue = ',str(i)));
+            dbms_output.put_line(')');
+    
+            INSERT INTO ECToResidentialGroupMapping(EnergyCompanyId, GroupId) VALUES (v_EnergyCompanyId, str(i));
+    
+        END LOOP;
+
+    END LOOP;
+    CLOSE ecToResLoginGroup_curs;
+
+    COMMIT;
+
+    dbms_output.put_line('Process Finished');
+end;
+/
+/* @end-block */
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1106; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1106; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1106; 
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1105; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1105; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1105;
+/* End YUK-9429 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

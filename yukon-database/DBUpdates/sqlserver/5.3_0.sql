@@ -287,6 +287,177 @@ WHERE ItemId = 1050
 AND MappingCategory = 'YukonSelectionList';
 /* End YUK-9448 */
 
+/* Start YUK-9429 */
+/* @start-block */
+CREATE TABLE ECToOperatorGroupMapping ( 
+   EnergyCompanyId NUMERIC NOT NULL, 
+   GroupId NUMERIC NOT NULL, 
+   CONSTRAINT PK_ECToOpGroupMap PRIMARY KEY (EnergyCompanyId, GroupId) 
+);
+GO
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_YukonGroup FOREIGN KEY (GroupId) 
+        REFERENCES YukonGroup (GroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE; 
+
+CREATE TABLE ECToResidentialGroupMapping ( 
+   EnergyCompanyId NUMERIC NOT NULL, 
+   GroupId NUMERIC NOT NULL, 
+   CONSTRAINT PK_ECToResGroupMap PRIMARY KEY (EnergyCompanyId, GroupId) 
+); 
+GO
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_YukonGroup FOREIGN KEY (GroupId) 
+        REFERENCES YukonGroup (GroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE;
+GO
+/* @end-block */
+
+/* @start-block */
+CREATE FUNCTION dbo.fx_Split
+(
+    @RowData nvarchar(2000),
+    @SplitOn nvarchar(5)
+)  
+RETURNS @RtnValue table 
+(
+    Id int identity(1,1),
+    Data nvarchar(100)
+) 
+AS  
+BEGIN 
+    Declare @Cnt int
+    Set @Cnt = 1
+
+    While (Charindex(@SplitOn,@RowData)>0)
+    Begin
+        Insert Into @RtnValue (data)
+        Select 
+            Data = ltrim(rtrim(Substring(@RowData,1,Charindex(@SplitOn,@RowData)-1)))
+
+        Set @RowData = Substring(@RowData,Charindex(@SplitOn,@RowData)+1,len(@RowData))
+        Set @Cnt = @Cnt + 1
+    End
+    
+    Insert Into @RtnValue (data)
+    Select Data = ltrim(rtrim(@RowData))
+
+    Return
+END
+GO
+/* @end-block */
+
+/* @start-block */
+DECLARE @EnergyCompanyName VARCHAR(60);
+DECLARE @EnergyCompanyId NUMERIC;
+DECLARE @GroupRoleId NUMERIC;
+DECLARE @GroupId NUMERIC;
+DECLARE @RoleId NUMERIC;
+DECLARE @RolePropertyId NUMERIC;
+DECLARE @RolePropertyValue VARCHAR(1000);
+
+/* ECToGroupMapper insert value holders */
+DECLARE @id int;
+DECLARE @yukonGroupId nvarchar(MAX);
+
+/* Gets the information needed to migrate the operator groups role property to the new ECToOperatorGroupMapping table. */
+DECLARE ecToOpLoginGroup_curs CURSOR FOR ( 
+        SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
+        FROM EnergyCompany EC
+        JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
+        JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
+        WHERE YGR.RolePropertyId = -1106);
+
+/* Gets the information needed to migrate the residential groups role property to the new ECToResidentialGroupMapping table. */
+DECLARE ecToResLoginGroup_curs CURSOR FOR ( 
+        SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
+        FROM EnergyCompany EC
+        JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
+        JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
+        WHERE YGR.RolePropertyId = -1105);
+    
+OPEN ecToOpLoginGroup_curs;
+FETCH ecToOpLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
+    BEGIN
+    
+        /* Getting the operator groups from the role property value */
+        DECLARE ecOperatorRolePropertyMapping_curs CURSOR FOR ( 
+            SELECT * FROM dbo.fx_Split(@RolePropertyValue, ',')
+        );
+        
+        OPEN ecOperatorRolePropertyMapping_curs;
+        FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
+            BEGIN
+            
+                /* Make sure there is a group, if there is add an entry to the ECToOperatorGroupMapping table */ 
+                IF (@yukonGroupId != '')
+                BEGIN 
+                    INSERT INTO ECToOperatorGroupMapping(energyCompanyId, groupId)
+                    VALUES ( @EnergyCompanyId, @yukonGroupId );
+                END
+            END
+        CLOSE ecOperatorRolePropertyMapping_curs;
+        DEALLOCATE ecOperatorRolePropertyMapping_curs;
+        
+    END
+CLOSE ecToOpLoginGroup_curs;
+DEALLOCATE ecToOpLoginGroup_curs;
+
+OPEN ecToResLoginGroup_curs;
+FETCH ecToResLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
+    BEGIN
+
+        /* Getting the operator groups from the role property value */
+        DECLARE ecOperatorRolePropertyMapping_curs CURSOR FOR ( 
+            SELECT * FROM dbo.fx_Split(@RolePropertyValue, ',')
+        );
+        
+        OPEN ecOperatorRolePropertyMapping_curs;
+        FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
+            BEGIN
+            
+                /* Make sure there is a group, if there is add an entry to the ECToResidentialGroupMapping table */ 
+                IF (@yukonGroupId != '')
+                BEGIN 
+                    INSERT INTO ECToResidentialGroupMapping(energyCompanyId, groupId)
+                    VALUES ( @EnergyCompanyId, @yukonGroupId );
+                END
+            END
+        CLOSE ecOperatorRolePropertyMapping_curs;
+        DEALLOCATE ecOperatorRolePropertyMapping_curs;
+    END
+CLOSE ecToResLoginGroup_curs;
+DEALLOCATE ecToResLoginGroup_curs;
+GO
+/* @end-block */
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1106; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1106; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1106; 
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1105; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1105; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1105;
+/* End YUK-9429 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
