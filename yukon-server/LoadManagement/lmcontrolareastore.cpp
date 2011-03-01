@@ -1723,7 +1723,7 @@ void CtiLMControlAreaStore::reset()
             trigTimer.start();
             {//loading control area triggers start
 
-                static const string sql =  "SELECT CAT.triggerid, CAT.deviceid, CAT.triggernumber, CAT.triggertype, "
+                static const string sql =  "SELECT CAT.ThresholdPointId, CAT.triggerid, CAT.deviceid, CAT.triggernumber, CAT.triggertype, "
                                                "CAT.pointid,CAT.normalstate, CAT.threshold, CAT.projectiontype, "
                                                "CAT.projectionpoints, CAT.projectaheadduration, CAT.thresholdkickpercent, "
                                                "CAT.minrestoreoffset, CAT.peakpointid, DTR.pointvalue, "
@@ -1776,6 +1776,10 @@ void CtiLMControlAreaStore::reset()
                     if( newTrigger->getPeakPointId() != 0 )
                     {
                         temp_point_control_area_map.insert(make_pair(newTrigger->getPeakPointId(), tempControlAreaId));
+                    }
+                    if( newTrigger->getThresholdPointId() != 0 )
+                    {
+                        temp_point_control_area_map.insert(make_pair(newTrigger->getThresholdPointId(), tempControlAreaId));
                     }
                 }
             }//loading control area triggers end
@@ -2431,7 +2435,7 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(j);
                 if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
-                    stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )// don't need "!" on compareTo() because supposed to be !=
+                    !stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::ThresholdTriggerType ) )    // LSF Projection only available on Threshold Triggers
                 {
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -33,6 +33,7 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaTrigger, CTILMCONTROLAREATRIGGER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger::CtiLMControlAreaTrigger() :
+_thresholdPointId(0),
 _trigger_id(0),
 _paoid(0),
 _triggernumber(0),
@@ -67,6 +68,16 @@ CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(const CtiLMControlAreaTrigger& 
 CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 {
     _projectionpointentriesqueue.clear();
+}
+
+/*---------------------------------------------------------------------------
+    getThresholdPointId
+
+    Returns the unique point ID of the "Threshold Point".
+---------------------------------------------------------------------------*/
+long CtiLMControlAreaTrigger::getThresholdPointId() const
+{
+    return _thresholdPointId;
 }
 
 /*---------------------------------------------------------------------------
@@ -275,6 +286,17 @@ std::vector<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
 {
 
     return _projectionpointentriesqueue;
+}
+
+/*---------------------------------------------------------------------------
+    setThresholdPointId
+
+    Sets the "Threshold Point" trigger types point ID.
+---------------------------------------------------------------------------*/
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdPointId(const long thresholdId)
+{
+    _thresholdPointId = thresholdId;
+    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -703,6 +725,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::operator=(const CtiLMControlAr
 {
     if( this != &right )
     {
+        _thresholdPointId = right._thresholdPointId;
         _trigger_id = right._trigger_id;
         _paoid = right._paoid;
         _triggernumber = right._triggernumber;
@@ -775,6 +798,7 @@ void CtiLMControlAreaTrigger::restore(Cti::RowReader &rdr)
     rdr["thresholdkickpercent"] >> _thresholdkickpercent;
     rdr["minrestoreoffset"] >> _minrestoreoffset;
     rdr["peakpointid"] >> _peakpointid;
+    rdr["ThresholdPointId"] >> _thresholdPointId;
 
     setProjectedPointValue(0.0);
     if( !rdr["pointvalue"].isNull() )
@@ -882,6 +906,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
 
 /* Public Static members */
 const string CtiLMControlAreaTrigger::ThresholdTriggerType = "Threshold";
+const string CtiLMControlAreaTrigger::ThresholdPointTriggerType = "Threshold Point";
 const string CtiLMControlAreaTrigger::StatusTriggerType = "Status";
 
 const string CtiLMControlAreaTrigger::NoneProjectionType = "(none)";

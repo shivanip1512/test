@@ -64,6 +64,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
     virtual ~CtiLMControlAreaTrigger();
 
+    long getThresholdPointId() const;
     LONG getTriggerId() const;
     LONG getPAOId() const;
     LONG getTriggerNumber() const;
@@ -84,6 +85,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     DOUBLE getProjectedPointValue() const;
     std::vector<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
 
+    CtiLMControlAreaTrigger& setThresholdPointId(const long thresholdId);
     CtiLMControlAreaTrigger& setTriggerId(LONG trigger_id);
     CtiLMControlAreaTrigger& setPAOId(LONG paoid);
     CtiLMControlAreaTrigger& setTriggerNumber(LONG trignum);
@@ -124,6 +126,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
     //Possible trigger types
     static const string ThresholdTriggerType;
+    static const string ThresholdPointTriggerType;
     static const string StatusTriggerType;
 
     static const string NoneProjectionType;
@@ -131,6 +134,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
 private:
 
+    long _thresholdPointId;
     LONG _trigger_id;
     LONG _paoid;
     LONG _triggernumber;

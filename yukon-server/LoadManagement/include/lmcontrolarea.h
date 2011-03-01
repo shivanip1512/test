@@ -73,6 +73,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiTime getCurrentDailyStopTime(const CtiDate &defaultDate = CtiDate::now()) const;
     vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
+    CtiLMControlAreaTrigger* getThresholdPointTrigger() const;
     vector<CtiLMProgramBaseSPtr>& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);

@@ -260,6 +260,24 @@ CtiLMControlAreaTrigger* CtiLMControlArea::getThresholdTrigger() const
     return 0;
 }
 
+/*-----------------------------------------------------------------------------
+  getThresholdPointTrigger
+
+  Return the control area's threshold point trigger if there is one.
+  Otherwise returns 0.
+-----------------------------------------------------------------------------*/
+CtiLMControlAreaTrigger* CtiLMControlArea::getThresholdPointTrigger() const
+{
+    for each ( CtiLMControlAreaTrigger * currentTrigger in _lmcontrolareatriggers )
+    {
+        if ( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdPointTriggerType )
+        {
+            return currentTrigger;
+        }
+    }
+    return 0;
+}
+
 /*---------------------------------------------------------------------------
     getLMPrograms
 
@@ -837,7 +855,8 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     for(int i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )
+        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( ( (currentTrigger->getPointValue() + currentReduction) >
                   (currentTrigger->getThreshold() - currentTrigger->getMinRestoreOffset()) ) ||
@@ -962,7 +981,8 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped(CtiLMProgramBaseSPtr program)
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )
+        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( currentTrigger->getPointValue() > (currentTrigger->getThreshold()+offset) ||
                 currentTrigger->getProjectedPointValue() > (currentTrigger->getThreshold()+offset) )
@@ -980,7 +1000,8 @@ BOOL CtiLMControlArea::hasThresholdTrigger()
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )
+        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             return TRUE;
         }
@@ -1041,7 +1062,8 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )   //why is the load from all triggers added up???
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )
+        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
                 currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() )
@@ -1171,6 +1193,8 @@ bool CtiLMControlArea::shouldReduceControl()
     // Each trigger has its own answer, start with true and set false if necessary
     bool found_threshold_trig = false;
     bool threshold_trig_chk = true;
+    bool found_threshold_point_trig = false;
+    bool threshold_point_trig_chk = true;
     bool found_status_trig = false;
     bool status_trig_chk = true;
 
@@ -1200,6 +1224,18 @@ bool CtiLMControlArea::shouldReduceControl()
                     threshold_trig_chk = false;
                 }
             }
+            else if( lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdPointTriggerType )
+            {
+                found_threshold_point_trig = true;
+                if (    
+                    ( lm_trigger->getPointValue() > ( lm_trigger->getThreshold() - lm_trigger->getMinRestoreOffset() ) ) ||
+                    ( ( lm_trigger->getPointValue() + cur_load_reduction ) > lm_trigger->getThreshold() )
+                   )
+                {
+
+                    threshold_point_trig_chk = false;
+                }
+            }
             else if( lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType )
             {
                 found_status_trig = true;
@@ -1212,11 +1248,21 @@ bool CtiLMControlArea::shouldReduceControl()
 
     return(getRequireAllTriggersActiveFlag() ?
            // If either trigger indicates we should reduce control then do it
-           ( (found_threshold_trig && threshold_trig_chk) || (found_status_trig && status_trig_chk) ) :
+           ( (found_threshold_trig && threshold_trig_chk) ||
+             (found_status_trig && status_trig_chk) ||
+             (found_threshold_point_trig && threshold_point_trig_chk)
+           ) :
            // All triggers must indicate we should reduce control
-           ( (found_threshold_trig && threshold_trig_chk && found_status_trig && status_trig_chk) ||
-             (found_threshold_trig && threshold_trig_chk && !found_status_trig) ||
-             (found_status_trig && status_trig_chk && !found_threshold_trig)));
+           (
+                ((found_threshold_trig && threshold_trig_chk) && (found_status_trig && status_trig_chk) && (found_threshold_point_trig && threshold_point_trig_chk)) ||
+                ((found_threshold_trig && threshold_trig_chk) && (found_status_trig && status_trig_chk) && (!found_threshold_point_trig                           )) ||
+                ((found_threshold_trig && threshold_trig_chk) && (!found_status_trig                  ) && (found_threshold_point_trig && threshold_point_trig_chk)) ||
+                ((found_threshold_trig && threshold_trig_chk) && (!found_status_trig                  ) && (!found_threshold_point_trig                           )) ||
+                ((!found_threshold_trig                     ) && (found_status_trig && status_trig_chk) && (found_threshold_point_trig && threshold_point_trig_chk)) ||
+                ((!found_threshold_trig                     ) && (found_status_trig && status_trig_chk) && (!found_threshold_point_trig                           )) ||
+                ((!found_threshold_trig                     ) && (!found_status_trig                  ) && (found_threshold_point_trig && threshold_point_trig_chk))
+           )
+           );
 }
 
 /*---------------------------------------------------------------------------
@@ -1905,52 +1951,95 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
               lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState) )
         {
             CtiLMProgramDirectSPtr lm_program_direct = boost::static_pointer_cast< CtiLMProgramDirect >(lm_program);
+
             CtiLMControlAreaTrigger* lm_trigger = getThresholdTrigger();
 
-            if( lm_program_direct->getTriggerRestoreOffset() != 0 && lm_trigger != 0 &&
-                ((lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType &&
-                  lm_trigger->getPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset())) ||
-                 (lm_trigger->getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType &&
-                  lm_trigger->getProjectedPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset()))) )
+            if ( lm_trigger != 0 )  // try with a regular threshold trigger
             {
-                string text = "Stopping program: " + lm_program_direct->getPAOName() + ", trigger threshold is below the programs restore offset";
-                string additional = "Trigger Threshold: ";
-                additional += CtiNumStr(lm_trigger->getThreshold());
-                additional += " Program Restore Offset: ";
-                additional += CtiNumStr(lm_program_direct->getTriggerRestoreOffset());
-
-                if( lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType )
+                if( lm_program_direct->getTriggerRestoreOffset() != 0 && lm_trigger != 0 &&
+                    ((lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType &&
+                      lm_trigger->getPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset())) ||
+                     (lm_trigger->getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType &&
+                      lm_trigger->getProjectedPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset()))) )
                 {
+                    string text = "Stopping program: " + lm_program_direct->getPAOName() + ", trigger threshold is below the programs restore offset";
+                    string additional = "Trigger Threshold: ";
+                    additional += CtiNumStr(lm_trigger->getThreshold());
+                    additional += " Program Restore Offset: ";
+                    additional += CtiNumStr(lm_program_direct->getTriggerRestoreOffset());
+    
+                    if( lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType )
+                    {
+                        additional += " Trigger Value: ";
+                        additional += CtiNumStr(lm_trigger->getPointValue());
+                    }
+                    else
+                    {
+                        additional += " Projection Value: ";
+                        additional += CtiNumStr(lm_trigger->getProjectedPointValue());
+                    }
+    
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                    signal->setSOE(1);
+                    multiDispatchMsg->insert(signal);
+    
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " " <<  text << " - " << additional << endl;
+                    }
+                    
+                    lm_program_direct->setChangeReason("Threshold Stop");
+                    if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE) )
+                    {
+                        stopped_program = true;
+                    }
+                    else
+                    {
+                        // Let the world know we just auto stopped?
+                        lm_program_direct->scheduleStopNotification(CtiTime());
+                    }
+    
+                }
+            }
+            else    // try again with a threshold point trigger
+            {
+                lm_trigger = getThresholdPointTrigger();
+
+                if ( lm_program_direct->getTriggerRestoreOffset() != 0 &&
+                     lm_trigger != 0 &&
+                    (lm_trigger->getPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset() ) ) )
+                {
+                    string text = "Stopping program: " + lm_program_direct->getPAOName() + ", trigger threshold is below the programs restore offset";
+                    string additional = "Trigger Threshold: ";
+                    additional += CtiNumStr(lm_trigger->getThreshold());
+                    additional += " Program Restore Offset: ";
+                    additional += CtiNumStr(lm_program_direct->getTriggerRestoreOffset());
                     additional += " Trigger Value: ";
                     additional += CtiNumStr(lm_trigger->getPointValue());
-                }
-                else
-                {
-                    additional += " Projection Value: ";
-                    additional += CtiNumStr(lm_trigger->getProjectedPointValue());
-                }
 
-                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
-                signal->setSOE(1);
-                multiDispatchMsg->insert(signal);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                    signal->setSOE(1);
+                    multiDispatchMsg->insert(signal);
 
-                if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " " <<  text << " - " << additional << endl;
-                }
-                
-                lm_program_direct->setChangeReason("Threshold Stop");
-                if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE) )
-                {
-                    stopped_program = true;
-                }
-                else
-                {
-                    // Let the world know we just auto stopped?
-                    lm_program_direct->scheduleStopNotification(CtiTime());
-                }
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " " <<  text << " - " << additional << endl;
+                    }
 
+                    lm_program_direct->setChangeReason("Threshold Stop");
+                    if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE) )
+                    {
+                        stopped_program = true;
+                    }
+                    else
+                    {
+                        // Let the world know we just auto stopped?
+                        lm_program_direct->scheduleStopNotification(CtiTime());
+                    }
+
+                }
             }
         }
     }
@@ -2837,7 +2926,8 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
     for( int i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) &&
+        if( (!stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+             !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) ) &&
             ( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
               currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() ) )
         {

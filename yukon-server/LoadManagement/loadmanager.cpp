@@ -962,6 +962,10 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
                 {
                     regMsg->insert(currentTrigger->getPeakPointId());
                 }
+                if( currentTrigger->getThresholdPointId() > 0 )
+                {
+                    regMsg->insert(currentTrigger->getThresholdPointId());
+                }
             }
 
             vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
@@ -1304,6 +1308,45 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
                             }
+                        }
+                    }
+                }
+            }
+
+            if ( currentTrigger->getThresholdPointId() == pointID )
+            {
+                currentControlArea->setUpdatedFlag(TRUE);
+
+                if ( value != currentTrigger->getThreshold() )
+                {
+                    double oldThreshold = currentTrigger->getThreshold();
+
+                    currentTrigger->setThreshold(value);
+                    currentControlArea->setNewPointDataReceivedFlag(TRUE);
+
+                    CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
+    
+                    if ( _LM_POINT_EVENT_LOGGING )
+                    {
+                        std::string text("Updated Threshold");
+    
+                        std::ostringstream stream;
+    
+                        stream
+                            << "Threshold for Trigger: "     << currentTrigger->getTriggerNumber()
+                            << " changed in LMControlArea: " << currentControlArea->getPAOName()
+                            << " PAO ID: "                   << currentControlArea->getPAOId()
+                            << " old threshold: "            << oldThreshold
+                            << " new threshold: "            << currentTrigger->getThreshold();
+    
+                        std::string additional( stream.str() );
+    
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(
+                            new CtiSignalMsg(currentTrigger->getThresholdPointId(), 0, text, additional, GeneralLogType, SignalEvent));
+    
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << text << ", " << additional << endl;
                         }
                     }
                 }
