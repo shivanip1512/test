@@ -39,7 +39,7 @@
 	<div id="deviceSelectionDiv">
 		<table>
 			<tr>
-				<td>Cap Banks:&nbsp;</td>
+				<td>Substation Bus:&nbsp;</td>
 				<td>
 					<tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
                 			destinationFieldId="paoIdList" multiSelectMode="true">
