@@ -1,9 +1,8 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/1/2011 4:40:14 PM                          */
+/* Created on:     3/1/2011 5:10:00 PM                          */
 /*==============================================================*/
-
 
 
 if exists (select 1
@@ -12686,8 +12685,6 @@ insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled',
 INSERT INTO YukonRoleProperty VALUES(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
 INSERT INTO YukonRoleProperty VALUES(-1101,-2,'optout_notification_recipients','(none)','Recipients of the opt out notification email');
 INSERT INTO YukonRoleProperty VALUES(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
-INSERT INTO YukonRoleProperty VALUES(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
-INSERT INTO YukonRoleProperty VALUES(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
 INSERT INTO YukonRoleProperty VALUES(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
 INSERT INTO YukonRoleProperty VALUES(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
 INSERT INTO YukonRoleProperty VALUES(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
@@ -13362,8 +13359,6 @@ INSERT INTO YukonUserRole VALUES(-1020, -100, -200, -20019, 'true');
 INSERT INTO YukonUserRole VALUES(-1100, -100, -2, -1100, '(none)');
 INSERT INTO YukonUserRole VALUES(-1101, -100, -2, -1101, '(none)');
 INSERT INTO YukonUserRole VALUES(-1102, -100, -2, -1102, '(none)');
-INSERT INTO YukonUserRole VALUES(-1105, -100, -2, -1105, '(none)');
-INSERT INTO YukonUserRole VALUES(-1106, -100, -2, -1106, '(none)');
 INSERT INTO YukonUserRole VALUES(-1107, -100, -2, -1107, '(none)');
 INSERT INTO YukonUserRole VALUES(-1108, -100, -2, -1108, '(none)');
 INSERT INTO YukonUserRole VALUES(-1109, -100, -2, -1109, '(none)');
