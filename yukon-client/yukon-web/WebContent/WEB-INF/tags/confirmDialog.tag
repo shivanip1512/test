@@ -9,16 +9,23 @@
 <%@ attribute name="submitName" rtexprvalue="true" description="This will be the name of the OK submit button."%>
 <%@ attribute name="argument" type="java.lang.Object" rtexprvalue="true"%>
 <%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
+<%@ attribute name="styleClass"  rtexprvalue="true"%>
 
 <cti:uniqueIdentifier var="uniqueId"/>
 <c:if test="${!empty pageScope.id}">
     <c:set var="uniqueId" value="${pageScope.id}"/>
 </c:if>
 
+<c:set var="style" value="mediumSimplePopup"/>
+<c:if test="${!empty pageScope.styleClass}">
+    <c:set var="style" value="${pageScope.styleClass}"/>
+</c:if>
+
+
 <cti:msgScope paths="${nameKey},">
     <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" />
 
-    <i:simplePopup id="${uniqueId}" styleClass="mediumSimplePopup" titleKey=".title" on="${pageScope.on}" arguments="${pageScope.argument}">
+    <i:simplePopup id="${uniqueId}" styleClass="${style}" titleKey=".title" on="${pageScope.on}" arguments="${pageScope.argument}">
         <h3 class="dialogQuestion">${confirmationMsg}</h3>
 
         <div class="actionArea">

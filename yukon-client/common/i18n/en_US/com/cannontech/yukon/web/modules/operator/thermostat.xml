@@ -224,7 +224,7 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cancel">Cancel</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteSchedule.label">Delete Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm.message">Are you sure you want to delete this schedule?</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm.message">Are you sure?</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>

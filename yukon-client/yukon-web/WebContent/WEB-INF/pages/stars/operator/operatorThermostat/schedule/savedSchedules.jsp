@@ -48,7 +48,7 @@
 				    <input type="submit" name="createNew" value="${createNewText}">
 
 				    <cti:button id="deleteSchedule" key="deleteSchedule"/>
-                    <tags:confirmDialog nameKey=".deleteConfirm" submitName="delete" on="#deleteSchedule"/>
+                    <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup" submitName="delete" on="#deleteSchedule"/>
 
 			</c:otherwise>
 	      	
