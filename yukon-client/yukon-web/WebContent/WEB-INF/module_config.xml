@@ -1094,9 +1094,9 @@
                                 </pages>
                             </page>
                             <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                                 <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
                                 <menu>energyCompanySetup|home</menu>
+                                <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
                             <page name="serviceCompany.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <link>/spring/adminSetup/energyCompany/serviceCompany/home?ecId=${ecId}</link>
