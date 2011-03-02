@@ -1480,7 +1480,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         //Do nothing we don't care.
     }else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB ) {
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
-    }else if ( database == DBChangeMsg.CHANGE_APPLIANCE_CATEGORY_DB) {
+    }else if (DBChangeMsg.CAT_APPLIANCE.equals(dbCategory)) {
         //Do nothing we don't care.
     }else if( database == DBChangeMsg.CHANGE_WEB_CONFIG_DB ) {
         //Do nothing we don't care.

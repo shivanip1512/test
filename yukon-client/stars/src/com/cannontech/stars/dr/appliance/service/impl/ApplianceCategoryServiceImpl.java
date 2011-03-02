@@ -1,5 +1,9 @@
 package com.cannontech.stars.dr.appliance.service.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     private StarsDatabaseCache starsDatabaseCache;
@@ -159,8 +164,14 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
             // compress program orders
             LiteApplianceCategory liteApplianceCategory =
                 energyCompany.getApplianceCategory(applianceCategoryId);
-            Iterable<LiteLMProgramWebPublishing> applianceCategoryPrograms =
-                liteApplianceCategory.getPublishedPrograms();
+            List<LiteLMProgramWebPublishing> applianceCategoryPrograms =
+                Lists.newArrayList(liteApplianceCategory.getPublishedPrograms());
+            Collections.sort(applianceCategoryPrograms, new Comparator<LiteLMProgramWebPublishing>() {
+                @Override
+                public int compare(LiteLMProgramWebPublishing o1, LiteLMProgramWebPublishing o2) {
+                    return o1.getProgramOrder() - o2.getProgramOrder();
+                }
+            });
             int programOrder = 1;
             for (LiteLMProgramWebPublishing program : applianceCategoryPrograms) {
                 AssignedProgram assignedProgram =

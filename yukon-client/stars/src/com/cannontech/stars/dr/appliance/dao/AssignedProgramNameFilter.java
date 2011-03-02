@@ -33,13 +33,13 @@ public class AssignedProgramNameFilter implements UiFilter<AssignedProgram> {
                 SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
 
                 SqlStatementBuilder fragment = new SqlStatementBuilder();
-                fragment.append("LOWER(pao.paoName) like LOWER(");
+                fragment.append("LOWER(pao.paoName) LIKE LOWER(");
                 fragment.appendArgument('%' + name + '%');
                 fragment.append(")");
                 retVal.add(fragment);
 
                 fragment = new SqlStatementBuilder();
-                fragment.append("LOWER(wc.alternateDisplayName) like LOWER(");
+                fragment.append("LOWER(wc.alternateDisplayName) LIKE LOWER(");
                 fragment.appendArgument('%' + name + '%');
                 fragment.append(")");
                 retVal.add(fragment);

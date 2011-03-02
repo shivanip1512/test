@@ -45,11 +45,9 @@ function clearFilter() {
             </tr>
         </table>
 
-        <br>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg2 key=".filterButton"/>"/>
-            <input type="button" value="<cti:msg2 key=".showAllButton"/>"
-                onclick="javascript:clearFilter()"/>
+            <cti:button type="submit" key="filterButton"/>
+            <cti:button key="showAllButton" onclick="clearFilter()"/>
         </div>
     </form:form>
 </i:simplePopup>

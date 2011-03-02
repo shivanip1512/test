@@ -1072,7 +1072,7 @@
                                 <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
-                            <page name="applianceCategory.LIST" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>

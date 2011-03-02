@@ -24,7 +24,7 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
     
     @PostConstruct
     public void startup() {
-        addDBTableListener("ApplianceCategory", DBChangeMsg.CHANGE_APPLIANCE_CATEGORY_DB, DBChangeMsg.CAT_APPLIANCE, DBChangeMsg.CAT_APPLIANCE);
+        addDBTableListener("ApplianceCategory", DBChangeMsg.CHANGE_DO_NOT_CARE_DB, DBChangeMsg.CAT_APPLIANCE, DBChangeMsg.CAT_APPLIANCE);
         addDBTableListener("LMGroupExpressCom", 0, PAOGroups.STRING_CAT_DEVICE, PaoType.LM_GROUP_EXPRESSCOMM.getDbString());
         addDBTableListener("LMProgram", 0, PAOGroups.STRING_CAT_LOADMANAGEMENT, PaoType.LM_DIRECT_PROGRAM.getDbString());
         addDBTableListener("LMProgramWebPublishing", DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM);

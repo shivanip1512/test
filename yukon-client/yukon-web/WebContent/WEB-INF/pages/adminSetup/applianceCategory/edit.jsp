@@ -77,9 +77,10 @@
     <c:if test="${isEditable}">
         <form>
             <script type="text/javascript">
+            var assignProgramsDialogTitle = '<cti:msg2 key=".assignProgramsDialogTitle" javaScriptEscape="true"/>';
             function assignPrograms(devices) {
                 openSimpleDialog('acDialog', $('assignProgramForm').action,
-                        '<cti:msg2 key=".assignProgramsDialogTitle"/>', $('assignProgramForm').serialize(true));
+                        assignProgramsDialogTitle, $('assignProgramForm').serialize(true));
                 return true;
             }
             </script>
@@ -101,18 +102,16 @@
             </table>
 
             <div class="actionArea">
-                <input type="submit" value="<cti:msg2 key=".filterButton"/>"/>
-                <input type="button" value="<cti:msg2 key=".showAllButton"/>"
-                    onclick="javascript:clearFilter()"/>
+                <cti:button type="submit" key="filterButton"/>
+                <cti:button key="showAllButton" onclick="clearFilter();"/>
             </div>
         </form:form>
     </i:simplePopup>
 
     <c:if test="${isEditable}">
         <cti:url var="assignProgramUrl" value="assignProgram"/>
-        <form id="assignProgramForm" action="${assignProgramUrl}" style="display: inline">
-            <input type="hidden" name="applianceCategoryId"
-                value="${applianceCategoryId}"/>
+        <form id="assignProgramForm" action="${assignProgramUrl}">
+            <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
             <input type="hidden" name="ecId" value="${param.ecId}"/>
             <tags:pickerDialog type="applianceProgramPaoPermissionCheckingPicker" id="programPicker"
                 linkType="none" multiSelectMode="true" memoryGroup="programPicker"

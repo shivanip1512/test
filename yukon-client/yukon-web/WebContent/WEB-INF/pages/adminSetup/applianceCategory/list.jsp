@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:standardPage module="adminSetup" page="applianceCategory.LIST">
+<cti:standardPage module="adminSetup" page="applianceCategory.list">
 
 <tags:boxContainer2 nameKey="applianceCategories" hideEnabled="false">
     <c:if test="${empty applianceCategories}">

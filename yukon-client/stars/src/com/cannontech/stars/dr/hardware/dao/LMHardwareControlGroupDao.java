@@ -79,9 +79,7 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type);
     
     public List<LMHardwareControlGroup> getAll();
-    
-    public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId);
-    
+
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId);
     
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId);

@@ -85,8 +85,8 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.title">Delete Energy Company {0}</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.message">Are you sure you want to delete the energy company {0}?</entry>
     
-    <entry key="yukon.web.modules.adminSetup.applianceCategory.LIST.pageName">Appliance Categories</entry>
-    <entry key="yukon.web.modules.adminSetup.applianceCategory.LIST.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageName">Appliance Categories</entry>
+    <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageDescription">{0}</entry>
 
     <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.pageName">Programs</entry>
     <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.pageDescription">{0}</entry>

@@ -6,6 +6,7 @@ import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class Program {
+    // must match prefix in adminSetup/applianceCategory/editAssignedProgram.jsp
     public static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
     private int programId;
     private String programName;

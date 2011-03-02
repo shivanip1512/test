@@ -532,21 +532,6 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> getAll() {
         return yukonJdbcTemplate.query(selectSql, rowMapper);
     }
-    
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId) {
-        SqlStatementBuilder selectAccountId = new SqlStatementBuilder();
-        selectAccountId.append("SELECT AccountId");
-        selectAccountId.append("FROM ECToGenericMapping");
-        selectAccountId.append("WHERE EnergyCompanyId").eq(energyCompanyId);
-
-        SqlStatementBuilder selectAllByEnergyCompanyId = new SqlStatementBuilder();
-        selectAllByEnergyCompanyId.appendFragment(selectSql);
-        selectAllByEnergyCompanyId.append("WHERE AccountId IN (").append(selectAccountId).append(")");
-        selectAllByEnergyCompanyId.append("ORDER BY AccountId");
-                
-        return yukonJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper);
-    }
 
     @Override
     public List<HardwareConfigAction> getHardwareConfigActions(int accountId) {

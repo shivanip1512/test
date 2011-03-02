@@ -402,3 +402,8 @@ function callAfterMainWindowLoad(func) {
 	    Event.observe(window, 'load', func);
 	}
 }
+
+function generateMessageCode(prefix, input) {
+    // This regular expression must match the one in MessageCodeGenerator.java.
+    return prefix + input.replace(/\W+/g, '');
+}

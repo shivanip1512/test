@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <tags:setFormEditMode mode="${mode}"/>
-<cti:msgScope paths="modules.adminSetup.editAssignedProgram">
+<cti:msgScope paths="modules.adminSetup.applianceCategory.editAssignedProgram">
 
 <cti:displayForPageEditModes modes="EDIT,CREATE">
 <script type="text/javascript">
@@ -51,9 +51,9 @@ displayNameChanged = function() {
 }
 
 updateDisplayNameKey = function() {
-    // This prefix and pattern must match MessageCodeGenerator.java
+    // This prefix must match com.cannontech.stars.dr.program.model.Program.java
     var prefix = 'yukon.dr.program.displayname.'; 
-    var displayNameKey = prefix + $('displayNameInput').value.replace(/\W+/g, '');
+    var displayNameKey = generateMessageCode(prefix, $('displayNameInput').value);
 
     $('displayNameKeyArea').innerHTML = displayNameKey;
 }
@@ -202,10 +202,9 @@ submitForm = function() {
 
     <div class="actionArea">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+            <cti:button type="submit" key="ok"/>
         </cti:displayForPageEditModes>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('acDialog').hide()"/>
+        <cti:button key="cancel" onclick="$('acDialog').hide()"/>
     </div>
 
 </form:form>

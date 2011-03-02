@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -28,6 +27,7 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -58,7 +58,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             retVal.append(    "ecm.energyCompanyId, ac.consumerSelectable, yle.yukonDefinitionId");
             retVal.append("FROM applianceCategory ac");
             retVal.append(    "JOIN yukonListEntry yle ON ac.categoryId = yle.entryId");
-            retVal.append(    "LEFT JOIN ecToGenericMapping ecm ON ac.applianceCategoryId = ecm.itemId");
+            retVal.append(    "JOIN ecToGenericMapping ecm ON ac.applianceCategoryId = ecm.itemId");
             return retVal;
         }
 
@@ -96,7 +96,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItemId "); // ItemId represents applianceCategoryId in this case.
         sql.append("FROM ECToGenericMapping ");
-        sql.append("WHERE MappingCategory").eq(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         sql.append("AND EnergyCompanyId").in(appCatEnergyCompanyIds);
         
         List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
@@ -107,7 +107,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     public int getEnergyCompanyForApplianceCategory(int applianceCategoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EnergyCompanyId FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         sql.append("AND ItemId").eq(applianceCategoryId);
         return yukonJdbcTemplate.queryForInt(sql);
     }
@@ -135,8 +135,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
         sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
-        // TODO:  make enum and use eq_k
-        sql.append(    "AND ecm.mappingCategory").eq("ApplianceCategory");
+        sql.append(    "AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 
         ApplianceCategory applianceCategory = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration =
@@ -155,12 +154,11 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append(rowMapper.getBaseQuery());
         sql.append("INNER JOIN YukonWebConfiguration ywc ON ac.webConfigurationId = ywc.configurationId");
         sql.append("INNER JOIN ECToGenericMapping ectgm ON (ectgm.itemId = ac.applianceCategoryId");
-        sql.append("                                        AND ectgm.mappingCategory = 'ApplianceCategory')");
+        sql.append("                                        AND ectgm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY).append("");
         sql.append("WHERE (AC.description").eq(applianceCategoryName);
         sql.append("       OR ywc.alternateDisplayName").eq(applianceCategoryName).append(")");
         sql.append("AND ectgm.energyCompanyId IN (", energyCompanyIds,")");
-        // TODO:  make enum and use eq_k
-        sql.append(    "AND ecm.mappingCategory").eq("ApplianceCategory");
+        sql.append(    "AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 
         List<ApplianceCategory> applianceCategories = yukonJdbcTemplate.query(sql, rowMapper);
         for (ApplianceCategory applianceCategory : applianceCategories) {
@@ -183,7 +181,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         ecIdFromAppCatQuery.append("SELECT EnergyCompanyId");
         ecIdFromAppCatQuery.append("FROM ECtoGenericMapping");
         ecIdFromAppCatQuery.append("WHERE ItemId").eq(applianceCategoryId);
-        ecIdFromAppCatQuery.append("AND MappingCategory = 'ApplianceCategory'");
+        ecIdFromAppCatQuery.append("AND MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         
         List<Integer> energyCompanyIds =
             yukonJdbcTemplate.query(ecIdFromAppCatQuery, new IntegerRowMapper());
@@ -203,8 +201,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
         sql.append("WHERE ac.applianceCategoryId").in(applianceCategoryIds);
-        // TODO:  make enum and use eq_k
-        sql.append(    "AND ecm.mappingCategory").eq("ApplianceCategory");
+        sql.append(    "AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 
         List<ApplianceCategory> applianceCategories =
             yukonJdbcTemplate.query(sql, rowMapper);

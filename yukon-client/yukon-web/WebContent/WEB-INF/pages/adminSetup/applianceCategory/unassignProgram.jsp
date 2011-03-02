@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 
-<cti:msgScope paths="modules.adminSetup.editApplianceCategoryUnassignedProgram">
+<cti:msgScope paths="modules.adminSetup.applianceCategory.unassignedProgram">
 
 <cti:url var="submitUrl" value="unassignProgram">
     <cti:param name="ecId" value="${ecId}"/>
@@ -23,9 +23,8 @@
     </p>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('acDialog').hide()"/>
+        <cti:button type="submit" key="ok"/>
+        <cti:button key="cancel" onclick="$('acDialog').hide()"/>
     </div>
 </form>
 

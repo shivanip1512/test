@@ -375,7 +375,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 						}
 				}
 			}
-		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_APPLIANCE_CATEGORY_DB) {
+		} else if (DBChangeMsg.CAT_APPLIANCE.equals(msg.getDatabase())) {
 		    handleApplianceCategoryChange(msg);
 		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_WEB_CONFIG_DB) {
             handleWebConfigurationChange(msg);
