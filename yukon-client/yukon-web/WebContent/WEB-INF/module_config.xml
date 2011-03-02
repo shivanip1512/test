@@ -1121,29 +1121,6 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="operatorLogin.INDEX" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/operatorLogin/index?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="operatorLogin.VIEW" type="DETAIL" contributeToMenu="false">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?id=${id}</link>
-                                        <labelArgument>${operatorLogin.username}</labelArgument>
-                                        <pages>
-                                            <page name="operatorLogin.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/operatorLogin/edit?operatorLogin=${operatorLoginId}</link>
-                                                <labelArgument>${operatorLogin.username}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="operatorLogin.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/create?id=${id}</link>
-                                    </page>
-                                </pages>
-                            </page>
                             <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
