@@ -29,6 +29,10 @@
             }
             
         });
+        
+        YEvent.observeSelectorClick('#confirmDelete', function() {
+            $('confirmDeleteWorkOrderDialog').show();
+        });
     
         var assignedServiceCompanyChanged = function() {
             if( $('workOrderBase.currentStateId').value != ${assignedEntryId} ) {
@@ -49,6 +53,14 @@
         }
 
     </script>
+
+    <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup">
+        <cti:msg2 key=".deleteWorkOrderConfirmation.message" arguments="${workOrderDto.workOrderBase.orderNumber}"/>
+        <div class="actionArea">
+            <tags:slowInput2 formId="deleteForm" key="delete"/>
+            <input type="button" value="<cti:msg2 key=".deleteWorkOrderConfirmation.Cancel"/>" onclick="$('confirmDeleteWorkOrderDialog').hide()"/>
+        </div>
+    </i:simplePopup>
     
     <form id="deleteForm" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
         <input type="hidden" name="accountId" value="${accountId}">
@@ -180,7 +192,7 @@
         <tags:slowInput2 formId="viewAllForm" key="cancel"/>
         
         <cti:displayForPageEditModes modes="EDIT">
-            <tags:slowInput2 formId="deleteForm" key="delete"/>
+            <cti:button key="delete" id="confirmDelete"/>
         </cti:displayForPageEditModes>
         
     </form:form>
