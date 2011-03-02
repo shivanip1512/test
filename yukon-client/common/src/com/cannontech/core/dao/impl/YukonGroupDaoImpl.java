@@ -92,18 +92,14 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
         @Override
         public LiteYukonGroup mapRow(YukonResultSet rs) throws SQLException {
+
             LiteYukonGroup group = new LiteYukonGroup();
-            group.setGroupID(rs.getInt("GroupId"));
-            String groupName = rs.getString("GroupName");
-            String groupDescription = rs.getString("GroupDescription");
-            if (groupName != null) {
-                group.setGroupName(groupName);
-            }
-            group.setGroupDescription(groupDescription);
-            
+            group.setGroupID(rs.getInt("groupId"));
+            group.setGroupName(rs.getString("groupName"));
+            group.setGroupDescription(rs.getString("groupName"));
+
             return group;
         }
-
     };
 
     @Override

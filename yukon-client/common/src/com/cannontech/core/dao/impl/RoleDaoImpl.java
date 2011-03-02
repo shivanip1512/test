@@ -20,15 +20,14 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
@@ -46,7 +45,6 @@ public class RoleDaoImpl implements RoleDao {
     private IDatabaseCache databaseCache;
     private DBPersistentDao dbPersistentDao;
     private RolePropertyDao rolePropertyDao;
-    private YukonGroupDao yukonGroupDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
 	/* (non-Javadoc)
@@ -206,6 +204,7 @@ public class RoleDaoImpl implements RoleDao {
      * @return
      */
     public YukonGroupRole findYukonGroupRole(int groupId, int rolePropertyId) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, YGR.rolePropertyId, YGR.value");
         sql.append("FROM YukonGroupRole YGR");
@@ -230,24 +229,27 @@ public class RoleDaoImpl implements RoleDao {
     @Override
     public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
         
-        Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
-        Set<YukonRole> userRoles = getRolesForUser(userId);
-        
-        for (YukonRole userRole : userRoles) {
+        final Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
 
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DISTINCT YGR.GroupId");
-            sql.append("FROM YukonGroupRole YGR");
-            sql.append("JOIN YukonUserGroup YUG ON YGR.GroupId = YUG.GroupId");
-            sql.append("WHERE YGR.RoleId").eq(userRole.getRoleId());
-            sql.append("  AND YUG.UserId").eq(userId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName");
+        sql.append("FROM YukonGroupRole YGR");
+        sql.append("  JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
+        sql.append("  JOIN YukonUserGroup YUG ON YG.GroupId = YUG.GroupId");
+        sql.append("WHERE YUG.UserId").eq(userId);
 
-            List<Integer> groupIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-            Map<Integer, LiteYukonGroup> liteYukonGroups = yukonGroupDao.getLiteYukonGroups(groupIdList);
-            for (LiteYukonGroup roleLiteYukonGroup : liteYukonGroups.values()) {
-                results.put(userRole, roleLiteYukonGroup);
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+
+                YukonRole yukonRole = rs.getEnum("RoleId", YukonRole.class);
+                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
+
+                results.put(yukonRole, liteYukonGroup);
+                
             }
-        }
+        });
         
         return results;
     }
@@ -259,19 +261,6 @@ public class RoleDaoImpl implements RoleDao {
         sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("WHERE YGR.GroupId").eq(groupId);
-        List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
-        
-        return Sets.newHashSet(rolesForGroup);
-    }
-    
-    @Override
-    public Set<YukonRole> getRolesForUser(int userId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT RoleId");
-        sql.append("FROM YukonGroupRole YGR");
-        sql.append("JOIN YukonUserGroup YUG ON YGR.GroupId = YUG.GroupId");
-        sql.append("WHERE YUG.UserId").eq(userId);
         List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
         
         return Sets.newHashSet(rolesForGroup);
@@ -316,11 +305,6 @@ public class RoleDaoImpl implements RoleDao {
         this.rolePropertyDao = rolePropertyDao;
     }
 
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
