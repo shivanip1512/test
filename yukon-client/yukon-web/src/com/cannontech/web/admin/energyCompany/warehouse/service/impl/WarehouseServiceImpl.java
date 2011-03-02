@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.warehouse.service.impl;
+package com.cannontech.web.admin.energyCompany.warehouse.service.impl;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
-import com.cannontech.web.stars.dr.operator.warehouse.service.WarehouseService;
+import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;
+import com.cannontech.web.admin.energyCompany.warehouse.service.WarehouseService;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 

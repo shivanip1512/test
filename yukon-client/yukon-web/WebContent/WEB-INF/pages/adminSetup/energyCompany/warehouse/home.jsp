@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="warehouse.home">
+<cti:standardPage module="adminSetup" page="warehouse.home">
     <tags:boxContainer2 nameKey="pageName">
         <table class="compactResultsTable rowHighlighting">
             <c:forEach items="${warehouses}" var="warehouse">

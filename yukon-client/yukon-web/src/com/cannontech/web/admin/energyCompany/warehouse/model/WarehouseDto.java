@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.warehouse.model;
+package com.cannontech.web.admin.energyCompany.warehouse.model;
 
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.db.stars.hardware.Warehouse;

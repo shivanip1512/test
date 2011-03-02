@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.warehouse;
+package com.cannontech.web.admin.energyCompany.warehouse;
 
 import java.util.List;
 
@@ -25,20 +25,20 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
+import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;
+import com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
-import com.cannontech.web.stars.dr.operator.warehouse.service.impl.WarehouseServiceImpl;
 
-@RequestMapping("/operator/energyCompany/warehouse/*")
+@RequestMapping("/energyCompany/warehouse/*")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE)
 public class WarehouseController {
     public StarsDatabaseCache starsDatabaseCache;
     
     private WarehouseServiceImpl warehouseService;
-    private final String baseUrl = "/spring/stars/operator/energyCompany/warehouse";
+    private final String baseUrl = "/spring/adminSetup/energyCompany/warehouse";
     
     /* Main page */
     @RequestMapping
@@ -50,7 +50,7 @@ public class WarehouseController {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         modelMap.addAttribute("warehouses", warehouseService.getWarehousesForEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId()));
         modelMap.addAttribute("energyCompanyName", energyCompanyInfoFragment.getCompanyName());
-        return "operator/warehouse/home.jsp";
+        return "energyCompany/warehouse/home.jsp";
     }
     
     /* Individual View */
@@ -64,7 +64,7 @@ public class WarehouseController {
         modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         modelMap.addAttribute("mode", PageEditMode.VIEW);
-        return "operator/warehouse/view.jsp";
+        return "energyCompany/warehouse/view.jsp";
     }
     
     /* New */
@@ -80,7 +80,7 @@ public class WarehouseController {
         modelMap.addAttribute("warehouseDto", warehouseDto);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        return "operator/warehouse/edit.jsp";
+        return "energyCompany/warehouse/edit.jsp";
     }
     
     /* Create */
@@ -100,11 +100,11 @@ public class WarehouseController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             modelMap.addAttribute("mode", PageEditMode.CREATE);
-            return "operator/warehouse/edit.jsp";
+            return "energyCompany/warehouse/edit.jsp";
         }
         
         warehouseService.createWarehouse(warehouseDto);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseCreated", warehouseDto.getWarehouse().getWarehouseName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouseCreated", warehouseDto.getWarehouse().getWarehouseName()));
         
         return "redirect:home";
     }
@@ -120,7 +120,7 @@ public class WarehouseController {
         modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        return "operator/warehouse/edit.jsp";
+        return "energyCompany/warehouse/edit.jsp";
     }
     
     /* Update */
@@ -142,7 +142,7 @@ public class WarehouseController {
         }
         
         warehouseService.updateWarehouse(warehouseDto);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseUpdated", warehouseDto.getWarehouse().getWarehouseName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouseUpdated", warehouseDto.getWarehouse().getWarehouseName()));
         modelMap.addAttribute("warehouseId", warehouseDto.getWarehouse().getWarehouseID());
         modelMap.addAttribute("ecId", ecId);
         return "redirect:view";
@@ -160,7 +160,7 @@ public class WarehouseController {
         warehouseService.deleteWarehouse(warehouseDto);
         
         modelMap.addAttribute("ecId", ecId);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseDeleted", warehouseDto.getWarehouse().getWarehouseName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouseDeleted", warehouseDto.getWarehouse().getWarehouseName()));
         return "redirect:home";
     }
     
@@ -180,7 +180,7 @@ public class WarehouseController {
             
             //Check Warehouse
             //Name
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "warehouse.warehouseName", "yukon.web.modules.operator.warehouse.warehouseDto.warehouse.nameRequired");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "warehouse.warehouseName", "yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.nameRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "warehouse.warehouseName", warehouseDto.getWarehouse().getWarehouseName(), 60);
             
             //Notes

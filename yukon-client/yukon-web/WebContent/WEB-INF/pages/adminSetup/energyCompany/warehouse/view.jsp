@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="warehouse.${mode}">
+<cti:standardPage module="adminSetup" page="warehouse.${mode}">
     
     <tags:formElementContainer nameKey="viewContainer">
         <span class="meta">

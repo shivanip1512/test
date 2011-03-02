@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.adminSetup.warehouse.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.create.label">Create</entry>
+    
+    <!--  Model -->
+    <entry key="yukon.web.modules.adminSetup.warehouse.title">Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.locationAddress1">Street Address</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.locationAddress2">Street Address 2</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.cityName">City</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.stateCode">State</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.zipCode">Zip</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.notes">Notes</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.infoContainer.title">{0}</entry>
+
+    <!-- UI Elements -->    
+    <entry key="yukon.web.modules.adminSetup.warehouse.save.label">Save</entry>
+
+    <entry key="yukon.web.modules.adminSetup.warehouse.delete.label">Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
+
+    <entry key="yukon.web.modules.adminSetup.warehouse.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.edit.label">Edit</entry>
+
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.label">Add Warehouse</entry>
+    
+    <!--  Validation -->
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.nameRequired">The warehouse name cannot be empty.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.notes">Please limit the notes to 300 characters.</entry>
+    
+    <!--  General success/fail messages -->
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseCreated">Successfully saved {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseNotCreated">There was a problem saving {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseUpdated">Successfully saved {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseNotUpdated">There was a problem saving {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDeleted">Successfully deleted {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouseNotDeleted">There was a problem deleting {0}.</entry>
+
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.adminSetup.warehouse.home.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.home.pageName">Warehouses</entry>
+    
+    <!-- edit.jsp -->
+    <entry key="yukon.web.modules.adminSetup.warehouse.CREATE.pageDescription">New Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.CREATE.pageName">New Warehouse</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.pageDescription">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.pageName">Edit Warehouse</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageName">View Warehouse</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.warehouse.message">Are you sure you want to delete this warehouse?</entry>
+</properties>

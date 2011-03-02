@@ -1,8 +1,8 @@
-package com.cannontech.web.stars.dr.operator.warehouse.service;
+package com.cannontech.web.admin.energyCompany.warehouse.service;
 
 import java.util.List;
 
-import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
+import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;
 
 public interface WarehouseService {
 
