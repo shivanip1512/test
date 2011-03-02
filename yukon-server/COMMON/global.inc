@@ -56,7 +56,7 @@ $(TCL)\lib\tcl81.lib
 BOOST           = $(CPP_LIBRARIES)\boost\1.37.0
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\2010.06.08
-ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.0.1
+ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.2.4
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 MICROSOFT_VC    = $(MICROSOFT)\vc\9.0
