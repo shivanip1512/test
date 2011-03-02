@@ -22,7 +22,7 @@ import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
-import com.cannontech.yukon.api.loadManagement.MockAuthDao;
+import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;

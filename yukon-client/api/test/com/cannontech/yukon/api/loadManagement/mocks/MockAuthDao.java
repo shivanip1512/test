@@ -1,7 +1,8 @@
-package com.cannontech.yukon.api.loadManagement;
+package com.cannontech.yukon.api.loadManagement.mocks;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.yukon.api.loadManagement.adapters.AuthDaoAdapter;
 
 /**
  * Mock object used to simulate the AuthDao

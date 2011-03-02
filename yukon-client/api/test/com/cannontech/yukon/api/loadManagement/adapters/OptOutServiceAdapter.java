@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.loadManagement;
+package com.cannontech.yukon.api.loadManagement.adapters;
 
 import java.util.Date;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
@@ -161,14 +160,14 @@ public class OptOutServiceAdapter implements OptOutService {
 
     @Override
     public void optOut(CustomerAccount customerAccount, OptOutRequest request, LiteYukonUser user,
-                       OptOutCounts optOutCounts) throws CommandCompletionException {
+                       OptOutCounts optOutCounts) throws CommandCompletionException, OptOutException {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
     public void optOutWithValidation(CustomerAccount customerAccount, OptOutRequest request,
                                           LiteYukonUser user, OptOutCounts optOutCounts)
-            throws CommandCompletionException, OptOutException, NotAuthorizedException {
+            throws CommandCompletionException, OptOutException {
         throw new UnsupportedOperationException("not implemented");
     }
 

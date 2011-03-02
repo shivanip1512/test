@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.loadManagement;
+package com.cannontech.yukon.api.loadManagement.mocks;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ public class MockProgramStatus extends ProgramStatus {
     private Date stopDateTime;
     private String gearName;
     
-    MockProgramStatus(String programName, int programStatus, String startDateTimeStr, String stopDateTimeStr, String gearName) {
+    public MockProgramStatus(String programName, int programStatus, String startDateTimeStr, String stopDateTimeStr, String gearName) {
         super(null);
         this.programName = programName;
         this.programStatus = programStatus;

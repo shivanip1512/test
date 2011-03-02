@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.loadManagement;
+package com.cannontech.yukon.api.loadManagement.adapters;
 
 import java.util.Date;
 import java.util.List;
