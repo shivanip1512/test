@@ -8,6 +8,8 @@
 
 #include "cms/connectionfactory.h"
 
+#include "logger.h"
+
 using std::make_pair;
 using std::auto_ptr;
 using std::string;
@@ -57,7 +59,8 @@ struct streamable_envelope : amq_envelope
 
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri),
-    _initialized(false)
+    _initialized(false),
+    _delay(2)
 {
     _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.stream.amr.PorterResponseMessage"));
 }
@@ -102,7 +105,7 @@ void ActiveMQConnectionManager::run()
     {
         sendPendingMessages();
 
-        sleep(2000);
+        sleep(_delay * 1000);
     }
 }
 
@@ -130,11 +133,23 @@ void ActiveMQConnectionManager::validateSetup()
         connection->start();
 
         _connection.swap(connection);
+
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+
+            dout << CtiTime() << " ActiveMQ CMS connection established\n";
+        }
     }
 
     if( ! _session.get() )
     {
         _session.reset(_connection->createSession());
+
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+
+            dout << CtiTime() << " ActiveMQ CMS session established\n";
+        }
     }
 }
 
@@ -169,10 +184,43 @@ try
         //  _session must be valid if we passed validateSetup()
         sendMessage(*_session, *e);
     }
+
+    //  If successful, reset delay
+    _delay = 2;
 }
 catch( cms::CMSException &e )
 {
-    //  possibly add an increasing delay if we keep throwing exceptions?
+    if( _delay < 5 )
+    {
+        _delay = 5;
+    }
+    else if( _delay < 30 )
+    {
+        _delay += 5;
+    }
+
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+
+        dout << CtiTime() << " ActiveMQ CMS error - \"" << trim(string(e.what())) << "\" - delaying " << _delay << " seconds\n";
+    }
+
+    //  If there's been an error, purge any pending messages
+    while( ! _pending_messages.empty() )
+    {
+        delete _pending_messages.front();
+
+        _pending_messages.pop();
+    }
+
+    //  Clear all of the connection, session, and producer info
+    _connection.reset();
+
+    _session.reset();
+
+    delete_assoc_container(_producers);
+    _producers.clear();
+
     return;
 }
 catch( std::runtime_error &e )
@@ -193,10 +241,6 @@ void ActiveMQConnectionManager::enqueueEnvelope(auto_ptr<amq_envelope> e)
     {
         //  starts its thread on first outbound message
         start();
-    }
-    else
-    {
-        interrupt();
     }
 }
 
@@ -230,7 +274,7 @@ void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<St
 
 void ActiveMQConnectionManager::sendMessage(cms::Session &session, const amq_envelope &e)
 {
-    if( cms::MessageProducer *producer = getProducer(session, e.queue) )
+    if( cms::MessageProducer * const producer = getProducer(session, e.queue) )
     {
         auto_ptr<cms::Message> m(e.extractMessage(session));
 
@@ -239,6 +283,12 @@ void ActiveMQConnectionManager::sendMessage(cms::Session &session, const amq_env
             producer->send(m.get());
         }
     }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+
+        dout << CtiTime() << " ActiveMQ CMS producer error - could not get producer for queue (" << e.queue << ")\n";
+    }
 }
 
 
@@ -246,31 +296,36 @@ cms::MessageProducer *ActiveMQConnectionManager::getProducer(cms::Session &sessi
 {
     producer_map::iterator itr = _producers.find(queueName);
 
-    if( itr == _producers.end() )
+    if( itr != _producers.end() )
     {
-        try
+        return itr->second;
+
+    }
+
+    //  if it doesn't exist, try to make one
+    if( const cms::Queue *queue = session.createQueue(queueName) )
+    {
         {
-            //  if it doesn't exist, try to make one
-            if( const cms::Queue *queue = session.createQueue(queueName) )
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+
+            dout << CtiTime() << " ActiveMQ CMS queue established (" << queueName << ")\n";
+        }
+
+        if( cms::MessageProducer *producer = session.createProducer(queue) )
+        {
             {
-                if( cms::MessageProducer *producer = session.createProducer(queue) )
-                {
-                    itr = _producers.insert(make_pair(queueName, producer)).first;
-                }
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+
+                dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")\n";
             }
-        }
-        catch( cms::CMSException &e )
-        {
-            return 0;
+
+            _producers.insert(make_pair(queueName, producer));
+
+            return producer;
         }
     }
 
-    if( itr == _producers.end() )
-    {
-        return 0;
-    }
-
-    return itr->second;
+    return 0;
 }
 
 

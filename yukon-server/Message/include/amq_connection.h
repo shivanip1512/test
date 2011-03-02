@@ -38,6 +38,8 @@ private:
 
     bool _initialized;
 
+    unsigned _delay;
+
     boost::scoped_ptr<cms::Connection> _connection;
     boost::scoped_ptr<cms::Session>    _session;
 
