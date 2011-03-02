@@ -322,6 +322,7 @@ TYPE t_array IS TABLE OF VARCHAR2(50)
 FUNCTION SPLIT (p_in_string VARCHAR2, p_delim VARCHAR2) RETURN t_array; 
 
 END; 
+/
 
 CREATE OR REPLACE PACKAGE BODY STRING_FNC 
 IS 
@@ -373,6 +374,7 @@ IS
    END SPLIT; 
 
 END;
+/
 /* @end-block */
 
 /* @start-block */
