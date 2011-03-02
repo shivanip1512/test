@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.loadManagement.adapters;
+package com.cannontech.yukon.api.loadManagement.mocks;
 
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
