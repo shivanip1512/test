@@ -975,6 +975,7 @@
                 <menu>substationToRouteMapping|home</menu>
                 <link>/spring/multispeak/setup/routemapping/mappings</link>
             </page>
+        
             <page name="interfaces" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <menu>multispeak|interfaces</menu>
@@ -1109,7 +1110,7 @@
                                         <pages>
                                             <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${warehouseId}</link>
+                                                <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
                                                 <labelArgument>${serviceCompany.companyName}</labelArgument>
                                             </page>
                                         </pages>
@@ -1120,10 +1121,28 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="operatorLogin.INDEX" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/serviceAndStorage</link>
+                                <link>/spring/adminSetup/energyCompany/operatorLogin/index?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="operatorLogin.VIEW" type="DETAIL" contributeToMenu="false">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?id=${id}</link>
+                                        <labelArgument>${operatorLogin.username}</labelArgument>
+                                        <pages>
+                                            <page name="operatorLogin.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/operatorLogin/edit?operatorLogin=${operatorLoginId}</link>
+                                                <labelArgument>${operatorLogin.username}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="operatorLogin.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/create?id=${id}</link>
+                                    </page>
+                                </pages>
                             </page>
                             <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
@@ -1502,7 +1521,7 @@
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
-                            <page name="warehouse.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/stars/operator/energyCompany/warehouse/home?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>

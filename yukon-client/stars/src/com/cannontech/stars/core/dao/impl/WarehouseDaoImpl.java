@@ -1,6 +1,5 @@
 package com.cannontech.stars.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,12 +7,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -25,25 +23,9 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
-    private SqlStatementBuilder selectBase = new SqlStatementBuilder();
-    {    
-        selectBase.append("SELECT *");
-        selectBase.append("FROM Warehouse");
-    }
+    private SqlFragmentSource selectBase = new SqlStatementBuilder("SELECT * FROM Warehouse");
     
     private SimpleTableAccessTemplate<Warehouse> warehouseTemplate;
-    
-    public ParameterizedRowMapper<Warehouse> warehouseRowMapper = new ParameterizedRowMapper<Warehouse>() {
-        public Warehouse mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Warehouse warehouse = new Warehouse();
-            warehouse.setEnergyCompanyID(rs.getInt("EnergyCompanyId"));
-            warehouse.setWarehouseID(rs.getInt("WarehouseId"));
-            warehouse.setWarehouseName(SqlUtils.convertDbValueToString(rs.getString("WarehouseName")));
-            warehouse.setAddressID(rs.getInt("AddressId"));
-            warehouse.setNotes(SqlUtils.convertDbValueToString(rs.getString("Notes")));
-            return warehouse;
-        }
-    };
     
     private FieldMapper<Warehouse> warehouseFieldMapper = new FieldMapper<Warehouse>() {
         @Override
@@ -75,8 +57,8 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
             warehouse.setWarehouseID(rs.getInt("WarehouseID"));
             warehouse.setAddressID(rs.getInt("AddressID"));
             warehouse.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));
-            warehouse.setWarehouseName(rs.getString("WarehouseName"));
-            warehouse.setNotes(rs.getString("Notes"));
+            warehouse.setWarehouseName(rs.getStringSafe("WarehouseName"));
+            warehouse.setNotes(rs.getStringSafe("Notes"));
             
             return warehouse;
         }
@@ -108,7 +90,7 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
 
     @Override
     public void delete(int warehouseId) {
-        // Remove work order base
+        // Remove warehouse
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM Warehouse");
         sql.append("WHERE WarehouseID").eq(warehouseId);
@@ -128,10 +110,9 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
     @Override
     public Warehouse getWarehouse(int warehouseId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM Warehouse");
+        sql.appendFragment(selectBase);
         sql.append("WHERE WAREHOUSEID").eq(warehouseId);
-        return yukonJdbcTemplate.queryForObject(sql, warehouseRowMapper);
+        return yukonJdbcTemplate.queryForObject(sql, new WarehouseRowMapper());
     }
     
     @Override
@@ -161,7 +142,7 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
         sql.append("join InventoryToWarehouseMapping inv on wh.WarehouseId = inv.WarehouseId");
         sql.append("where inv.InventoryId ").eq(inventoryId);
         try {
-            return yukonJdbcTemplate.queryForObject(sql, warehouseRowMapper);
+            return yukonJdbcTemplate.queryForObject(sql, new WarehouseRowMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

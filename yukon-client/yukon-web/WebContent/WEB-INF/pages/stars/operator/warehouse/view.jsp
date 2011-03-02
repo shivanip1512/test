@@ -20,6 +20,8 @@
             <br/>
         </c:if>
     </tags:formElementContainer>
+    
+    <div class="pageActionArea">
     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
         <cti:url var="warehouseEditUrl" value="${baseUrl}/edit">
             <cti:param name="ecId" value="${ecId}"/>
@@ -31,6 +33,7 @@
     <cti:url var="warehouseIndexUrl" value="${baseUrl}/home">
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
-    <cti:button key="cancel" onclick="javascript:window.location ='${warehouseIndexUrl}'"/>
+    <cti:button key="cancel" href="${warehouseIndexUrl}"/>
+    </div>
     
 </cti:standardPage>
