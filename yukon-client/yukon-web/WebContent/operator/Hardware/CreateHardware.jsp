@@ -59,7 +59,6 @@
 
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 
 <script language="JavaScript">
 
