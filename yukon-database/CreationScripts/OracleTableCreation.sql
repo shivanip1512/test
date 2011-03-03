@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 12:29:12 PM                         */
+/* Created on:     3/3/2011 1:29:36 PM                          */
 /*==============================================================*/
 
 
@@ -7628,6 +7628,9 @@ create table STATE  (
    constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 );
 
+INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
+INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0); 
+INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0); 
 INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
 INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
 INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
@@ -7724,6 +7727,7 @@ create table STATEGROUP  (
    constraint SYS_C0013128 primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
 INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
 INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
 INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 

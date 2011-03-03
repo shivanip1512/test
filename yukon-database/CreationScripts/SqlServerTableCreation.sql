@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/3/2011 12:30:59 PM                         */
+/* Created on:     3/3/2011 1:18:26 PM                          */
 /*==============================================================*/
 
 
@@ -10823,6 +10823,9 @@ create table STATE (
 )
 go
 
+INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
+INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0); 
+INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0); 
 INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
 INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
 INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
@@ -10921,6 +10924,7 @@ create table STATEGROUP (
 )
 go
 
+INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
 INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
 INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
 INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 

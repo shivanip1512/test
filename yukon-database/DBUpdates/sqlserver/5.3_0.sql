@@ -565,6 +565,13 @@ SET EntryOrder = 0
 WHERE ListId = 1005;
 /* End YUK-9563 */
 
+/* Start YUK-9565 */
+INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status');
+
+INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0);
+INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0);
+INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0);
+/* End YUK-9565 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
