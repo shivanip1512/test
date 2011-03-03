@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/1/2011 5:10:00 PM                          */
+/* Created on:     3/3/2011 12:30:59 PM                         */
 /*==============================================================*/
 
 
@@ -2154,6 +2154,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DigiGateway')
+            and   type = 'U')
+   drop table DigiGateway
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DynamicCCCapBank')
             and   type = 'U')
    drop table DynamicCCCapBank
@@ -3774,6 +3781,27 @@ if exists (select 1
            where  id = object_id('YukonWebConfiguration')
             and   type = 'U')
    drop table YukonWebConfiguration
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ZBDevice')
+            and   type = 'U')
+   drop table ZBDevice
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ZBGateway')
+            and   type = 'U')
+   drop table ZBGateway
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ZBGatewayToDeviceMapping')
+            and   type = 'U')
+   drop table ZBGatewayToDeviceMapping
 go
 
 if exists (select 1
@@ -7582,6 +7610,16 @@ create table DeviceWindow (
 go
 
 /*==============================================================*/
+/* Table: DigiGateway                                           */
+/*==============================================================*/
+create table DigiGateway (
+   DeviceId             numeric              not null,
+   DigiId               numeric              not null,
+   constraint PK_DigiGate primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
 /* Table: DynamicCCCapBank                                      */
 /*==============================================================*/
 create table DynamicCCCapBank (
@@ -10785,6 +10823,8 @@ create table STATE (
 )
 go
 
+INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
+INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
 INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
 INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
 INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
@@ -10881,6 +10921,7 @@ create table STATEGROUP (
 )
 go
 
+INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
 INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
 INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
 INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
@@ -12128,21 +12169,23 @@ insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
 
-insert into YukonListEntry values (1051,1005,0,'LCR-5000(EXPRESSCOM)',1302);
-insert into YukonListEntry values (1052,1005,-1,'LCR-4000',1305);
-insert into YukonListEntry values (1053,1005,0,'LCR-3000',1306);
-insert into YukonListEntry values (1054,1005,-1,'LCR-2000',1307);
-insert into YukonListEntry values (1055,1005,-1,'LCR-1000',1308);
-insert into YukonListEntry values (1056,1005,-1,'ExpressStat',1301);
-insert into YukonListEntry values (1058,1005,-1,'MCT',1303);
-insert into YukonListEntry values (1059,1005,-1,'Commercial ExpressStat',1304);
-insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
-insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
-insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
-insert into YukonListEntry values (1063,1005,-1,'SA Simple',1312);
-insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
-INSERT INTO YukonListEntry VALUES (1065,1005,-1,'UtilityPRO',1314);
-INSERT INTO YukonListEntry VALUES (1066,1005,-1,'LCR-3102',1315);
+INSERT INTO YukonListEntry VALUES (1051,1005,0,'LCR-5000(EXPRESSCOM)',1302);
+INSERT INTO YukonListEntry VALUES (1052,1005,0,'LCR-4000',1305);
+INSERT INTO YukonListEntry VALUES (1053,1005,0,'LCR-3000',1306);
+INSERT INTO YukonListEntry VALUES (1054,1005,0,'LCR-2000',1307);
+INSERT INTO YukonListEntry VALUES (1055,1005,0,'LCR-1000',1308);
+INSERT INTO YukonListEntry VALUES (1056,1005,0,'ExpressStat',1301);
+INSERT INTO YukonListEntry VALUES (1058,1005,0,'MCT',1303);
+INSERT INTO YukonListEntry VALUES (1059,1005,0,'Commercial ExpressStat',1304);
+INSERT INTO YukonListEntry VALUES (1060,1005,0,'SA-205',1309);
+INSERT INTO YukonListEntry VALUES (1061,1005,0,'SA-305',1310);
+INSERT INTO YukonListEntry VALUES (1062,1005,0,'LCR-5000(VERSACOM)',1311);
+INSERT INTO YukonListEntry VALUES (1063,1005,0,'SA Simple',1312);
+INSERT INTO YukonListEntry VALUES (1064,1005,0,'ExpressStat Heat Pump',1313);
+INSERT INTO YukonListEntry VALUES (1065,1005,0,'UtilityPRO',1314);
+INSERT INTO YukonListEntry VALUES (1066,1005,0,'LCR-3102',1315);
+INSERT INTO YukonListEntry VALUES (1067,1005,0,'UtilityPRO Zigbee',1316);
+INSERT INTO YukonListEntry VALUES (1068,1005,0,'Digi Gateway',1317);
 
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
@@ -13386,6 +13429,37 @@ go
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
 INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
+
+/*==============================================================*/
+/* Table: ZBDevice                                              */
+/*==============================================================*/
+create table ZBDevice (
+   DeviceId             numeric              not null,
+   InstallCode          varchar(255)         not null,
+   constraint PK_ZBDevice primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Table: ZBGateway                                             */
+/*==============================================================*/
+create table ZBGateway (
+   DeviceId             numeric              not null,
+   FirmwareVersion      varchar(255)         not null,
+   MacAddress           varchar(255)         not null,
+   constraint PK_ZBGateway primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Table: ZBGatewayToDeviceMapping                              */
+/*==============================================================*/
+create table ZBGatewayToDeviceMapping (
+   GatewayId            numeric              not null,
+   DeviceId             numeric              not null,
+   constraint PK_ZBGateToDeviceMap primary key (GatewayId, DeviceId)
+)
+go
 
 /*==============================================================*/
 /* Table: Zone                                                  */
@@ -15030,6 +15104,12 @@ alter table DeviceWindow
       references DEVICE (DEVICEID)
 go
 
+alter table DigiGateway
+   add constraint FK_DigiGate_ZBGate foreign key (DeviceId)
+      references ZBGateway (DeviceId)
+         on delete cascade
+go
+
 alter table DynamicCCCapBank
    add constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
       references CAPBANK (DEVICEID)
@@ -16654,6 +16734,28 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
+go
+
+alter table ZBDevice
+   add constraint FK_ZBDevice_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+go
+
+alter table ZBGateway
+   add constraint FK_ZBGate_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+go
+
+alter table ZBGatewayToDeviceMapping
+   add constraint FK_ZBGateDeviceMap_ZBDevice foreign key (DeviceId)
+      references ZBDevice (DeviceId)
+         on delete cascade
+go
+
+alter table ZBGatewayToDeviceMapping
+   add constraint FK_ZBGateDeviceMap_ZBGate foreign key (GatewayId)
+      references ZBGateway (DeviceId)
+         on delete cascade
 go
 
 alter table Zone

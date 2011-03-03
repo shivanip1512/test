@@ -539,6 +539,67 @@ SET LogoLocation = 'yukon/Icons/WaterHeater.png'
 WHERE LogoLocation = 'yukon/Icons/WaterHeater.gif'; 
 /* End YUK-9564 */
 
+/* Start YUK-9563 */
+CREATE TABLE DigiGateway  (
+   DeviceId             NUMBER                          NOT NULL,
+   DigiId               NUMBER                          NOT NULL,
+   CONSTRAINT PK_DigiGate PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE ZBDevice  (
+   DeviceId             NUMBER                          NOT NULL,
+   InstallCode          VARCHAR2(255)                   NOT NULL,
+   CONSTRAINT PK_ZBDevice PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE ZBGateway  (
+   DeviceId             NUMBER                          NOT NULL,
+   FirmwareVersion      VARCHAR2(255)                   NOT NULL,
+   MacAddress           VARCHAR2(255)                   NOT NULL,
+   CONSTRAINT PK_ZBGateway PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE ZBGatewayToDeviceMapping  (
+   GatewayId            NUMBER                          NOT NULL,
+   DeviceId             NUMBER                          NOT NULL,
+   CONSTRAINT PK_ZBGateToDeviceMap PRIMARY KEY (GatewayId, DeviceId)
+);
+
+ALTER TABLE DigiGateway
+    ADD CONSTRAINT FK_DigiGate_ZBGate FOREIGN KEY (DeviceId)
+        REFERENCES ZBGateway (DeviceId)
+            ON DELETE CASCADE;
+
+ALTER TABLE ZBDevice
+    ADD CONSTRAINT FK_ZBDevice_Device FOREIGN KEY (DeviceId)
+        REFERENCES DEVICE (DeviceId);
+
+ALTER TABLE ZBGateway
+    ADD CONSTRAINT FK_ZBGate_Device FOREIGN KEY (DeviceId)
+        REFERENCES DEVICE (DeviceId);
+
+ALTER TABLE ZBGatewayToDeviceMapping
+    ADD CONSTRAINT FK_ZBGateDeviceMap_ZBDevice FOREIGN KEY (DeviceId)
+        REFERENCES ZBDevice (DeviceId)
+            ON DELETE CASCADE;
+
+ALTER TABLE ZBGatewayToDeviceMapping
+    ADD CONSTRAINT FK_ZBGateDeviceMap_ZBGate FOREIGN KEY (GatewayId)
+        REFERENCES ZBGateway (DeviceId)
+            ON DELETE CASCADE;
+
+INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
+INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
+INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
+
+INSERT INTO YukonListEntry VALUES (1067,1005,0,'UtilityPRO Zigbee',1316);
+INSERT INTO YukonListEntry VALUES (1068,1005,0,'Digi Gateway',1317);
+
+UPDATE YukonListEntry
+SET EntryOrder = 0
+WHERE ListId = 1005;
+/* End YUK-9563 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
