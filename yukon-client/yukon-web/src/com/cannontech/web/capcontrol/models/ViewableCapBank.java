@@ -3,7 +3,7 @@ package com.cannontech.web.capcontrol.models;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.cbc.CapBankDevice;
 
-public class ViewableCapBank {
+public class ViewableCapBank implements Comparable<ViewableCapBank>{
 	
 	private CapBankDevice capBankDevice = null;
 	private LiteYukonPAObject controlDevice = null;
@@ -62,5 +62,10 @@ public class ViewableCapBank {
 
     public void setNotAssignedToZone(boolean notAssignedToZone) {
         this.notAssignedToZone = notAssignedToZone;
+    }
+
+    @Override
+    public int compareTo(ViewableCapBank o) {
+        return this.capBankDevice.getCcName().compareTo(o.capBankDevice.getCcName());
     }
 }

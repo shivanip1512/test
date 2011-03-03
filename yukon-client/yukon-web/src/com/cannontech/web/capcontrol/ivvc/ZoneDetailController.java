@@ -34,7 +34,9 @@ import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
 import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 
 @RequestMapping("/ivvc/zone/*")
@@ -154,6 +156,8 @@ public class ZoneDetailController {
             }
         }
 
+        Collections.sort(viewableCapBankList);
+
         model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
         model.addAttribute("capBankList", viewableCapBankList);
     }
@@ -187,7 +191,32 @@ public class ZoneDetailController {
             
         	trimmedPointDeltas = pointDeltas.subList(startIndex,endIndex);
         }
-        
+
+        Ordering<CapBankPointDelta> capBankOrdering =
+            Ordering.from(String.CASE_INSENSITIVE_ORDER)
+                .onResultOf(new Function<CapBankPointDelta, String>() {
+                    @Override
+                    public String apply(CapBankPointDelta from) {
+                        return from.getCbcName();
+                    }
+                })
+                .compound(Ordering.explicit(true, false)
+                    .onResultOf(new Function<CapBankPointDelta, Boolean>() {
+                        @Override
+                        public Boolean apply(CapBankPointDelta from) {
+                            return from.getCbcName().equalsIgnoreCase(from.getAffectedDeviceName());
+                        }
+                    }))
+                .compound(Ordering.from(String.CASE_INSENSITIVE_ORDER)
+                    .onResultOf(new Function<CapBankPointDelta, String>() {
+                        @Override
+                        public String apply(CapBankPointDelta from) {
+                            return from.getAffectedDeviceName();
+                        }
+                    }));
+
+        Collections.sort(trimmedPointDeltas, capBankOrdering);
+
         searchResults.setResultList(trimmedPointDeltas);
         searchResults.setBounds(startIndex, itemsPerPage, pointDeltas.size());
         

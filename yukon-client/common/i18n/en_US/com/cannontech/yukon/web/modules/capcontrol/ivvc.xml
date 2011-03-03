@@ -29,7 +29,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.value">Value</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.timestamp">Timestamp</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.title">Cap Banks</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.cbcName">Controller Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.cbcName">CBC Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankName">Bank Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankState">Bank State</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankVoltage">Voltage</entry>

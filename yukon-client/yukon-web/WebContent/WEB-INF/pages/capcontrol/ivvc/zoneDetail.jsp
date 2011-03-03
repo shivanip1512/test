@@ -360,8 +360,8 @@
 	
 				<table id="deltaTable" class="compactResultsTable" >
 					<tr>
-						<th><i:inline key=".deltas.bankName"/></th>
 						<th><i:inline key=".deltas.cbcName"/></th>
+						<th><i:inline key=".deltas.bankName"/></th>
 						<th><i:inline key=".deltas.deviceName"/></th>
 						<th><i:inline key=".deltas.pointName"/></th>
 						<th><i:inline key=".deltas.preOp"/></th>
@@ -377,8 +377,8 @@
 					
 					<c:forEach var="pointDelta" items="${searchResults.resultList}">
 						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-							<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody></td>
 							<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody></td>
+							<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody></td>
 							<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody></td>
 							<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody></td>
 							<td style="width:10%"><spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody></td>
