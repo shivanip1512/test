@@ -126,7 +126,7 @@ public final class DisplayableEnrollment {
     public static final class DisplayableEnrollmentProgram {
         private final ApplianceCategory applianceCategory;
         private final Program program;
-        private final List<DisplayableEnrollmentInventory> inventory;
+        private List<DisplayableEnrollmentInventory> inventory;
         private Boolean enrolled;
 
         public DisplayableEnrollmentProgram(
@@ -162,6 +162,10 @@ public final class DisplayableEnrollment {
         
         public List<DisplayableEnrollmentInventory> getInventory() {
             return inventory;
+        }
+        
+        public void setInventory(List<DisplayableEnrollmentInventory> inventory) {
+            this.inventory = inventory;
         }
         
         /**

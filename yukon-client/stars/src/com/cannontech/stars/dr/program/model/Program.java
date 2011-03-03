@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.program.model;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
@@ -19,6 +20,7 @@ public class Program {
     private String applianceCategoryLogo;
     private String chanceOfControl;
     private int applianceCategoryId;
+    private PaoType paoType;
     
     private String descriptionUrl;
     
@@ -136,6 +138,14 @@ public class Program {
 		this.descriptionUrl = descriptionUrl;
 	}
     
+    public PaoType getPaoType() {
+        return paoType;
+    }
+
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
+    }
+    
     public MessageSourceResolvable getDisplayName() {
         String code = MessageCodeGenerator.generateCode(PROGAM_PREFIX, programName);
         MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(code, programName);
@@ -226,6 +236,4 @@ public class Program {
 		return true;
 	}
 
-
-    
 }

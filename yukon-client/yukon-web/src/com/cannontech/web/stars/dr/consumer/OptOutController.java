@@ -106,8 +106,8 @@ public class OptOutController extends AbstractConsumerController {
     	model.addAttribute("currentOptOutList", currentOptOutList);
 
     	// Get the current counts for used opt outs and remaining allowed opt outs for each device
-    	List<DisplayableInventory> displayableInventories =
-            displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
+    	List<DisplayableInventory> displayableInventories = displayableInventoryDao.getOptOutSupportingInventory(customerAccount.getAccountId());
+    	
         Map<Integer, OptOutCountHolder> optOutCounts =
             getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
 
@@ -165,11 +165,11 @@ public class OptOutController extends AbstractConsumerController {
         boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
         model.addAttribute("isSameDay", isSameDay);
 
-        List<DisplayableInventory> displayableInventories =
-            displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
+        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getOptOutSupportingInventory(customerAccount.getAccountId());
+        
         List<DisplayableInventory> optOutableInventories = new ArrayList<DisplayableInventory>();
-        Map<Integer, OptOutCountHolder> optOutCounts =
-            getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
+        
+        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
         Map<DisplayableInventory, Boolean> noOptOutsAvailableLookup = Maps.newHashMap();
         for (DisplayableInventory inventory : displayableInventories) {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
@@ -464,7 +464,7 @@ public class OptOutController extends AbstractConsumerController {
 
         return null;
     }
-
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         binder.registerCustomEditor(LocalDate.class,
@@ -527,4 +527,5 @@ public class OptOutController extends AbstractConsumerController {
     public void setSurveyService(SurveyService surveyService) {
         this.surveyService = surveyService;
     }
+    
 }

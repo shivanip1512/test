@@ -37,6 +37,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -57,6 +58,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -112,11 +114,12 @@ public class OperatorHardwareController {
     private LMHardwareBaseDao lmHardwareBaseDao;
     private HardwareService hardwareService;
     private ZigbeeDeviceService zigbeeDeviceService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
         
     /* HARDWARE LIST PAGE */
     @RequestMapping
     public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         SerialNumber serialNumber = new SerialNumber();
         modelMap.addAttribute("serialNumber", serialNumber);
         
@@ -217,7 +220,7 @@ public class OperatorHardwareController {
             modelMap.addAttribute("anotherEC", StringEscapeUtils.escapeHtml(e.getYukonEnergyCompany().getName()));
         }
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/hardware/hardwareList.jsp";
@@ -477,7 +480,8 @@ public class OperatorHardwareController {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         
         hardwareUiService.addDeviceToAccount(liteInventoryBase, accountInfoFragment.getAccountId(), fromAccount, energyCompany, userContext.getYukonUser());
@@ -510,7 +514,8 @@ public class OperatorHardwareController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, userContext.getYukonUser());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         modelMap.addAttribute("displayName", "Create Meter");
         
         modelMap.addAttribute("mode", PageEditMode.CREATE);
@@ -599,7 +604,9 @@ public class OperatorHardwareController {
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         
         List<DeviceTypeOpiton> deviceTypeOptions = Lists.newArrayList();
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         
         List<YukonListEntry> deviceTypeList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
         for(YukonListEntry deviceTypeEntry : deviceTypeList) {
@@ -685,7 +692,7 @@ public class OperatorHardwareController {
     }
     
     private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, 
-                                           LiteStarsEnergyCompany energyCompany, 
+                                           YukonEnergyCompany energyCompany, 
                                            YukonUserContext userContext) {
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareUiService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), 
@@ -704,7 +711,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("meterClass", LMHardwareClass.METER);
         modelMap.addAttribute("gatewayClass", LMHardwareClass.GATEWAY);
         
-        String meterDesignation= rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getUser());
+        String meterDesignation= rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getEnergyCompanyUser());
         boolean starsMeters = meterDesignation.equalsIgnoreCase(StarsUtils.METER_BASE_DESIGNATION); 
         modelMap.addAttribute("starsMeters", starsMeters);
         
@@ -718,7 +725,9 @@ public class OperatorHardwareController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         String defaultRoute;
@@ -875,4 +884,10 @@ public class OperatorHardwareController {
     public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
         this.zigbeeDeviceService = zigbeeDeviceService;
     }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
 }

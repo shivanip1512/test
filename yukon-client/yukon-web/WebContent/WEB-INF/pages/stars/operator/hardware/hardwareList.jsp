@@ -441,9 +441,13 @@
                             <cti:img key="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
                             
                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
-                                <cti:img key="editSchedule" href="${editScheduleUrl}${thermostat.inventoryId}"/>
-                                <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
-                                <cti:img key="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
+                                <c:if test="${thermostat.hardwareType.supportsSchedules}">
+                                    <cti:img key="editSchedule" href="${editScheduleUrl}${thermostat.inventoryId}"/>
+                                    <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
+                                </c:if>
+                                <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
+                                    <cti:img key="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
+                                </c:if>
                             </cti:checkRolesAndProperties>
                                 
                         </td>

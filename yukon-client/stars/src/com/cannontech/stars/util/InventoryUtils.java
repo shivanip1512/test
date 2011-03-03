@@ -36,6 +36,7 @@ public class InventoryUtils {
 	public static final int HW_CONFIG_TYPE_SA205 = HardwareConfigType.SA205.getHardwareConfigTypeId();
 	public static final int HW_CONFIG_TYPE_SA305 = HardwareConfigType.SA305.getHardwareConfigTypeId();
 	public static final int HW_CONFIG_TYPE_SA_SIMPLE = HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId();
+	public static final int HW_CONFIG_TYPE_SEP = HardwareConfigType.SEP.getHardwareConfigTypeId();
 	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );
@@ -56,7 +57,8 @@ public class InventoryUtils {
 		{
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
 		}
-		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102)
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102 ||
+		        entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO)
 		{
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
 		}
@@ -123,6 +125,8 @@ public class InventoryUtils {
 			return HW_CONFIG_TYPE_SA305;
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE)
 			return HW_CONFIG_TYPE_SA_SIMPLE;
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO)
+		    return HW_CONFIG_TYPE_SEP;
 		
 		return 0;
 	}

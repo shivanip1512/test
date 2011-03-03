@@ -17,6 +17,9 @@ import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @Repository("displayableInventoryDao")
 public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implements DisplayableInventoryDao {
@@ -60,6 +63,19 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
 
         Collections.sort(displayableInventoryList, displayableInventoryComparator);
         return displayableInventoryList;
+    }
+    
+    @Override
+    public List<DisplayableInventory> getOptOutSupportingInventory(int accountId) {
+        List<DisplayableInventory> displayableInventories = getDisplayableInventory(accountId);
+        Predicate<DisplayableInventory> optOutFilter = new Predicate<DisplayableInventory> () {
+            @Override
+            public boolean apply(DisplayableInventory input) {
+                return inventoryDao.getYukonInventory(input.getInventoryId()).getHardwareType().isSupportsOptOut();
+            }
+        };
+        displayableInventories = Lists.newArrayList(Iterables.filter(displayableInventories, optOutFilter));
+        return displayableInventories;
     }
 
     private List<Program> createProgramList(int inventoryId,

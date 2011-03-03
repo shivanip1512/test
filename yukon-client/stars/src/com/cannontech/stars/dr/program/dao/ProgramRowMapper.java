@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -32,6 +33,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         retVal.append("ywc.url, alternateDisplayName,");
         retVal.append("paoName, yle.entryText as chanceOfControl,");
         retVal.append("applianceCategoryID, logoLocation");
+        retVal.append("ypo.Type");
         retVal.append("FROM lmProgramWebPublishing pwp,");
         retVal.append("yukonWebConfiguration ywc, yukonPAObject ypo,");
         retVal.append("yukonListEntry yle ");
@@ -79,6 +81,8 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         
         String url = rs.getString("url");
         program.setDescriptionUrl(url);
+        
+        program.setPaoType(PaoType.getForDbString(rs.getString("Type")));
         
         return program;
     }

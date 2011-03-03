@@ -62,8 +62,8 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.OptOutControllerHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
-import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean.SurveyResult;
+import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
@@ -200,8 +200,8 @@ public class OperatorOptOutController {
         model.addAttribute("isSameDay", isSameDay);
 
         int accountId = accountInfoFragment.getAccountId();
-        List<DisplayableInventory> displayableInventories =
-            displayableInventoryDao.getDisplayableInventory(accountId);
+        Iterable<DisplayableInventory> displayableInventories = displayableInventoryDao.getOptOutSupportingInventory(accountId);
+        
         Map<Integer, OptOutCountHolder> optOutCounts =
             getOptOutCountsForInventories(displayableInventories, accountId);
 

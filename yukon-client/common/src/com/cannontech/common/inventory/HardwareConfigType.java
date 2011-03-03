@@ -11,6 +11,7 @@ public enum HardwareConfigType {
     SA205(3),
     SA305(4),
     SA_SIMPLE(5),
+    SEP(6),
     ;
 
     private int hardwareConfigTypeId;

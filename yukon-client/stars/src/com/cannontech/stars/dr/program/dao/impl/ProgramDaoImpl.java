@@ -47,14 +47,14 @@ public class ProgramDaoImpl implements ProgramDao {
     private final String selectSQLHeader =
         "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, "+
         "       YWC.alternateDisplayName, PAO.paoName, YLE.entryText as ChanceOfControl, "+
-        "       LMPWP.applianceCategoryId, YWC.logoLocation "+
+        "       LMPWP.applianceCategoryId, YWC.logoLocation, YPO.Type "+
         "FROM LMProgramWebPublishing LMPWP "+
         "INNER JOIN YukonWebConfiguration YWC ON LMPWP.webSettingsId = YWC.configurationId "+
         "INNER JOIN YukonPAObject PAO ON PAO.paobjectId = LMPWP.deviceId "+
         "INNER JOIN YukonListEntry YLE ON YLE.entryId = LMPWP.chanceOfControlId ";
 
     static {
-        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,ywc.url,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation " +
+        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,ywc.url,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation, ypo.Type " +
                     "FROM LMProgramWebPublishing pwp, YukonWebConfiguration ywc, YukonPAObject ypo, YukonListEntry yle " +
                     "WHERE pwp.WebsettingsID = ywc.ConfigurationID " +
                     "AND ypo.PAObjectID = pwp.DeviceID " +

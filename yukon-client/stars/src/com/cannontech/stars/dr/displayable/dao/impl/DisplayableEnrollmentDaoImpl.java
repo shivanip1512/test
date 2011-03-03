@@ -10,6 +10,9 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
@@ -110,6 +113,23 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         }
         throw new NotFoundException("could not find enrollment program for " +
         		"account " + accountId + " and program " + programId);
+    }
+    
+    @Override
+    public void filterEnrollableInventoryByProgramType(DisplayableEnrollmentProgram program) {
+        /* Filter by program type */
+        List<DisplayableEnrollmentInventory> inventoryList = program.getInventory();
+        List<DisplayableEnrollmentInventory> filteredList = Lists.newArrayList();
+        for (DisplayableEnrollmentInventory inventory : inventoryList) {
+            InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(inventory.getInventoryId());
+            if ((program.getProgram().getPaoType() == PaoType.LM_SEP_PROGRAM 
+                        && inventoryIdentifier.getHardwareType().getHardwareConfigType() == HardwareConfigType.SEP) 
+                    || (program.getProgram().getPaoType() != PaoType.LM_SEP_PROGRAM
+                        && inventoryIdentifier.getHardwareType().getHardwareConfigType() != HardwareConfigType.SEP)) {
+                filteredList.add(inventory);
+            } 
+        }
+        program.setInventory(filteredList);
     }
 
     private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(
