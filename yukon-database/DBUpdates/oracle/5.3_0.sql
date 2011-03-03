@@ -495,6 +495,50 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -1105;
 /* End YUK-9429 */
 
+/* Start YUK-9564 */
+UPDATE YukonWebConfiguration
+SET LogoLocation = 'yukon/Icons/AC.png'
+WHERE LogoLocation = 'yukon/Icons/AC.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/DualFuel.png' 
+WHERE LogoLocation = 'yukon/Icons/DualFuel.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Electric.png' 
+WHERE LogoLocation = 'yukon/Icons/Electric.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Generation.png' 
+WHERE LogoLocation = 'yukon/Icons/Generation.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/GrainDryer.png' 
+WHERE LogoLocation = 'yukon/Icons/GrainDryer.gif'; 
+
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/HeatPump.png' 
+WHERE LogoLocation = 'yukon/Icons/HeatPump.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/HotTub.png' 
+WHERE LogoLocation = 'yukon/Icons/HotTub.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Irrigation.png' 
+WHERE LogoLocation = 'yukon/Icons/Irrigation.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Load.png' 
+WHERE LogoLocation = 'yukon/Icons/Load.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Pool.png' 
+WHERE LogoLocation = 'yukon/Icons/Pool.gif'; 
+
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/Setback.png' 
+WHERE LogoLocation = 'yukon/Icons/Setback.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/StorageHeat.png' 
+WHERE LogoLocation = 'yukon/Icons/StorageHeat.gif'; 
+UPDATE YukonWebConfiguration 
+SET LogoLocation = 'yukon/Icons/WaterHeater.png' 
+WHERE LogoLocation = 'yukon/Icons/WaterHeater.gif'; 
+/* End YUK-9564 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
