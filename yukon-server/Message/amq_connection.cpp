@@ -22,31 +22,16 @@ struct amq_envelope
 {
     string queue;
 
-    CtiTime expiration;
-
     virtual ~amq_envelope() {}
 
-    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
-    {
-        auto_ptr<cms::Message> message = createMessage(session);
-
-        if( message.get() )
-        {
-            message->setCMSExpiration(expiration.seconds());
-            message->setCMSDeliveryMode(cms::DeliveryMode::NON_PERSISTENT);
-        }
-
-        return message;
-    }
-
-    virtual auto_ptr<cms::Message> createMessage(cms::Session &session) const = 0;
+    virtual auto_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
 };
 
 struct string_envelope : amq_envelope
 {
     string message;
 
-    auto_ptr<cms::Message> createMessage(cms::Session &session) const
+    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
     {
         return auto_ptr<cms::Message>(session.createTextMessage(message));
     }
@@ -56,7 +41,7 @@ struct streamable_envelope : amq_envelope
 {
     scoped_ptr<StreamableMessage> message;
 
-    auto_ptr<cms::Message> createMessage(cms::Session &session) const
+    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
     {
         auto_ptr<cms::StreamMessage> streamMessage;
 
@@ -266,7 +251,6 @@ void ActiveMQConnectionManager::enqueueMessage(const std::string &queueName, con
 
     e->queue   = queueName;
     e->message = message;
-    e->expiration = CtiTime() + DefaultExpiration;
 
     enqueueEnvelope(auto_ptr<amq_envelope>(e));
 }
@@ -282,7 +266,6 @@ void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<St
 
         se->queue   = queueName;
         se->message.reset(message.release());
-        se->expiration = CtiTime() + DefaultExpiration;
 
         enqueueEnvelope(auto_ptr<amq_envelope>(se));
     }
@@ -335,6 +318,8 @@ cms::MessageProducer *ActiveMQConnectionManager::getProducer(cms::Session &sessi
 
                 dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")\n";
             }
+
+            producer->setTimeToLive(DefaultTimeToLive);
 
             _producers.insert(make_pair(queueName, producer));
 

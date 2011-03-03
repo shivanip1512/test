@@ -60,7 +60,7 @@ private:
 
     enum
     {
-        DefaultExpiration = 3600
+        DefaultTimeToLive = 3600
     };
 
 public:
