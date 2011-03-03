@@ -585,7 +585,7 @@ INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
 
 /* Start YUK-9561 */
 ALTER TABLE FDRTranslation 
-ALTER COLUMN DirectionType VARCHAR2(30);
+ALTER COLUMN DirectionType VARCHAR(30) NOT NULL;
 GO
 
 UPDATE FDRInterface 
