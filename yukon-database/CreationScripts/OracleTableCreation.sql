@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 2:48:34 PM                          */
+/* Created on:     3/3/2011 4:11:59 PM                          */
 /*==============================================================*/
 
 
@@ -752,6 +752,10 @@ drop table LMGroupSA205105 cascade constraints;
 drop table LMGroupSA305 cascade constraints;
 
 drop table LMGroupSASimple cascade constraints;
+
+drop table LMGroupSep cascade constraints;
+
+drop table LMGroupSepDeviceClass cascade constraints;
 
 drop table LMGroupVersacom cascade constraints;
 
@@ -6226,6 +6230,24 @@ create table LMGroupSASimple  (
    MarkIndex            NUMBER                          not null,
    SpaceIndex           NUMBER                          not null,
    constraint PK_LMGROUPSASIMPLE primary key (GroupID)
+);
+
+/*==============================================================*/
+/* Table: LMGroupSep                                            */
+/*==============================================================*/
+create table LMGroupSep  (
+   DeviceId             NUMBER                          not null,
+   UtilityEnrollmentGroup NUMBER                          not null,
+   constraint PK_LMGroupSep primary key (DeviceId)
+);
+
+/*==============================================================*/
+/* Table: LMGroupSepDeviceClass                                 */
+/*==============================================================*/
+create table LMGroupSepDeviceClass  (
+   DeviceId             NUMBER                          not null,
+   SepDeviceClass       VARCHAR2(40)                     not null,
+   constraint PK_LMGroupSepDeviceClass primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -12172,6 +12194,16 @@ alter table LMGroupSASimple
 alter table LMGroupSASimple
    add constraint FK_LmGrSa_Rt foreign key (RouteID)
       references Route (RouteID);
+
+alter table LMGroupSep
+   add constraint FK_LMGroupSep_LMGroup foreign key (DeviceId)
+      references LMGroup (DeviceID)
+      on delete cascade;
+
+alter table LMGroupSepDeviceClass
+   add constraint FK_LMGroupSepDevClass_LMGrpSep foreign key (DeviceId)
+      references LMGroupSep (DeviceId)
+      on delete cascade;
 
 alter table LMGroupVersacom
    add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/3/2011 2:49:58 PM                          */
+/* Created on:     3/3/2011 4:20:01 PM                          */
 /*==============================================================*/
 
 
@@ -2829,6 +2829,20 @@ if exists (select 1
            where  id = object_id('LMGroupSASimple')
             and   type = 'U')
    drop table LMGroupSASimple
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupSep')
+            and   type = 'U')
+   drop table LMGroupSep
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupSepDeviceClass')
+            and   type = 'U')
+   drop table LMGroupSepDeviceClass
 go
 
 if exists (select 1
@@ -9300,6 +9314,26 @@ create table LMGroupSASimple (
    MarkIndex            numeric              not null,
    SpaceIndex           numeric              not null,
    constraint PK_LMGROUPSASIMPLE primary key (GroupID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMGroupSep                                            */
+/*==============================================================*/
+create table LMGroupSep (
+   DeviceId             numeric              not null,
+   UtilityEnrollmentGroup numeric              not null,
+   constraint PK_LMGroupSep primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Table: LMGroupSepDeviceClass                                 */
+/*==============================================================*/
+create table LMGroupSepDeviceClass (
+   DeviceId             numeric              not null,
+   SepDeviceClass       varchar(40)          not null,
+   constraint PK_LMGroupSepDeviceClass primary key nonclustered (DeviceId)
 )
 go
 
@@ -15867,6 +15901,18 @@ go
 alter table LMGroupSASimple
    add constraint FK_LmGrSa_Rt foreign key (RouteID)
       references Route (RouteID)
+go
+
+alter table LMGroupSep
+   add constraint FK_LMGroupSep_LMGroup foreign key (DeviceId)
+      references LMGroup (DeviceID)
+         on delete cascade
+go
+
+alter table LMGroupSepDeviceClass
+   add constraint FK_LMGroupSepDevClass_LMGrpSep foreign key (DeviceId)
+      references LMGroupSep (DeviceId)
+         on delete cascade
 go
 
 alter table LMGroupVersacom

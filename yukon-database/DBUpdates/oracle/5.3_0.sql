@@ -628,6 +628,30 @@ WHERE InterfaceName = 'VALMET'
 OR InterfaceName = 'TEXTIMPORT';
 /* End YUK-9561 */
 
+/* Start YUK-9548 */
+CREATE TABLE LMGroupSep  (
+   DeviceId             NUMBER                          NOT NULL,
+   UtilityEnrollmentGroup NUMBER                        NOT NULL,
+   CONSTRAINT PK_LMGroupSep PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE LMGroupSepDeviceClass  (
+   DeviceId             NUMBER                          NOT NULL,
+   SepDeviceClass       VARCHAR2(40)                    NOT NULL,
+   CONSTRAINT PK_LMGroupSepDeviceClass PRIMARY KEY (DeviceId)
+);
+
+ALTER TABLE LMGroupSep
+    ADD CONSTRAINT FK_LMGroupSep_LMGroup FOREIGN KEY (DeviceId)
+        REFERENCES LMGroup (DeviceId)
+            ON DELETE CASCADE;
+
+ALTER TABLE LMGroupSepDeviceClass
+    ADD CONSTRAINT FK_LMGroupSepDevClass_LMGrpSep FOREIGN KEY (DeviceId)
+        REFERENCES LMGroupSep (DeviceId)
+            ON DELETE CASCADE;
+/* End YUK-9548 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
