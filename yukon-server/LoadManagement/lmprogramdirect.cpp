@@ -630,9 +630,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     ResetGroups();
                 }
 
-                SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
-
-                if( smartGearObject != NULL ) 
+                if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
                 {
                     for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                     {
@@ -1228,9 +1226,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
         if( _currentgearnumber < _lmprogramdirectgears.size() )
         {
             currentGearObject = getCurrentGearObject();
-            SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
 
-            if( smartGearObject != NULL ) 
+            if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
             {
                 for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                 {
@@ -2660,9 +2657,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
 
     if( currentGearObject != NULL && previousGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
-        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
-
-        if( smartGearObject != NULL )
+        if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
         {
             LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
 
@@ -2699,25 +2694,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 }
             }
 
-            
-
-            if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                getProgramState() != CtiLMProgramBase::TimedActiveState )
-            {
-                if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
-                {
-                    setProgramState(CtiLMProgramBase::FullyActiveState);
-                }
-                else if( numberOfActiveGroups == 0 )
-                {
-                    setProgramState(CtiLMProgramBase::InactiveState);
-                    ResetGroups();
-                }
-                else
-                {
-                    setProgramState(CtiLMProgramBase::ActiveState);
-                }
-            }
+            updateStandardControlActiveState(numberOfActiveGroups);
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
@@ -3626,9 +3603,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
     if( currentGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
-        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
-
-        if( smartGearObject != NULL ) 
+        if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
         {
             for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
             {
@@ -3658,24 +3633,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 }
             }
 
-            if( returnBoolean &&
-                getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                getProgramState() != CtiLMProgramBase::TimedActiveState )
-            {
-                if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
-                {
-                    setProgramState(CtiLMProgramBase::FullyActiveState);
-                }
-                else if( numberOfActiveGroups == 0 )
-                {
-                    setProgramState(CtiLMProgramBase::InactiveState);
-                    ResetGroups();
-                }
-                else
-                {
-                    setProgramState(CtiLMProgramBase::ActiveState);
-                }
-            }
+            updateStandardControlActiveState(numberOfActiveGroups);
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
@@ -3980,24 +3938,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     }
                 }
 
-                if( returnBoolean &&
-                    getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                    getProgramState() != CtiLMProgramBase::TimedActiveState )
-                {
-                    if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
-                    {
-                        setProgramState(CtiLMProgramBase::FullyActiveState);
-                    }
-                    else if( numberOfActiveGroups == 0 )
-                    {
-                        setProgramState(CtiLMProgramBase::InactiveState);
-                        ResetGroups();
-                    }
-                    else
-                    {
-                        setProgramState(CtiLMProgramBase::ActiveState);
-                    }
-                }
+                if( returnBoolean )
+                    updateStandardControlActiveState(numberOfActiveGroups);
             }
             else
             {
@@ -4196,24 +4138,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     }
                 }
 
-                if( returnBoolean &&
-                    getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                    getProgramState() != CtiLMProgramBase::TimedActiveState )
-                {
-                    if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
-                    {
-                        setProgramState(CtiLMProgramBase::FullyActiveState);
-                    }
-                    else if( numberOfActiveGroups == 0 )
-                    {
-                        setProgramState(CtiLMProgramBase::InactiveState);
-                        ResetGroups();
-                    }
-                    else
-                    {
-                        setProgramState(CtiLMProgramBase::ActiveState);
-                    }
-                }
+                if( returnBoolean )
+                    updateStandardControlActiveState(numberOfActiveGroups);
             }
             else
             {
@@ -4409,6 +4335,27 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
     return returnBoolean;
 }
 
+void CtiLMProgramDirect::updateStandardControlActiveState(LONG numberOfActiveGroups)
+{
+    if ( getProgramState() != CtiLMProgramBase::ManualActiveState &&
+         getProgramState() != CtiLMProgramBase::TimedActiveState )
+    {
+        if ( numberOfActiveGroups == _lmprogramdirectgroups.size() )
+        {
+            setProgramState(CtiLMProgramBase::FullyActiveState);
+        }
+        else if ( numberOfActiveGroups == 0 )
+        {
+            setProgramState(CtiLMProgramBase::InactiveState);
+            ResetGroups();
+        }
+        else
+        {
+            setProgramState(CtiLMProgramBase::ActiveState);
+        }
+    }
+}
+
 /*----------------------------------------------------------------------------
   stopSubordinatePrograms
 
@@ -4464,15 +4411,13 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
         string tempControlMethod = currentGearObject->getControlMethod();
         string tempMethodStopType = currentGearObject->getMethodStopType();
 
-        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
-
         for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
         {
             CtiLMGroupPtr currentLMGroup  = *i;
             if( secondsFrom1901 > currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
                 getManualControlReceivedFlag() )
             {
-                if( smartGearObject != NULL )
+                if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
                 {
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                     if( !(getConstraintOverride() || con_checker.checkRestore()) )
