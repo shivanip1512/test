@@ -97,9 +97,6 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         
         deleteZBDevice(paoIdentifier);
         
-        //Remove device from any gateways
-        gatewayDeviceDao.unassignDeviceFromGateway(paoIdentifier.getPaoId());
-        
         deviceDao.removeDevice(zigbeeThermostat);
         
         return;

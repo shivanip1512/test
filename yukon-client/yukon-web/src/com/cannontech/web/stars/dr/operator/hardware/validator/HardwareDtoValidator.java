@@ -42,7 +42,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
         
         // Zigbee Device Specific
         if (hardwareType.isZigbee()) {
-            if (hardwareType.isMeter()) {
+            if (hardwareType.isThermostat()) {
                 /* Install Code */
                 if (StringUtils.isBlank(hardwareDto.getInstallCode())) {
                     errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");

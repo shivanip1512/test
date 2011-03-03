@@ -15,7 +15,7 @@ public class AvailableZigbeeDeviceOnAccountFilter implements SqlFilter {
     
     @Override
     public SqlFragmentSource getWhereClauseFragment() {
-    	SqlStatementBuilder assignedDeviceIds = new SqlStatementBuilder("SELECT DeviceId FROM GatewayAssociation");
+    	SqlStatementBuilder assignedDeviceIds = new SqlStatementBuilder("SELECT DeviceId FROM ZBGatewayToDeviceMapping");
     	
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("lmhw.inventoryId IN (");

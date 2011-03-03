@@ -77,17 +77,21 @@ table.bitTable th {
 }
 
 .Connected {
-    color: #339900;
+    font-weight: bold;
+    color: #006633;
 }
 
 .Disconnected {
-    color: #FF0000;
+    font-weight: bold;
+    color: #CC0000;
 }
 
 .Commissioned {
-    color: #339900;
+    font-weight: bold;
+    color: #006633;
 }
 
 .Uncommissioned {
-    color: #FF0000;
+    font-weight: bold;
+    color: #CC0000;
 }

@@ -25,7 +25,6 @@ public class DigiGatewayBuilder implements HardwareBuilder {
     private PaoDefinitionService paoDefinitionService;
     
     @Override
-    @Transactional
     public void createDevice(HardwareDto hardwareDto) {
         DigiGateway digiGateway = createDigiGateway(hardwareDto);
         
@@ -44,7 +43,6 @@ public class DigiGatewayBuilder implements HardwareBuilder {
     }
 
     @Override
-    @Transactional
     public void deleteDevice(HardwareDto hardwareDto) {
         DigiGateway digiGateway = createDigiGateway(hardwareDto);
         
@@ -57,7 +55,6 @@ public class DigiGatewayBuilder implements HardwareBuilder {
     }
 
     @Override
-    @Transactional
     public void updateDevice(HardwareDto hardwareDto) {
         DigiGateway digiGateway = createDigiGateway(hardwareDto);
         

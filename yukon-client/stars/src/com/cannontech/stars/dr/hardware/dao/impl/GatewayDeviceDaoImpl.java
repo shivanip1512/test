@@ -82,13 +82,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     @Override
     public void deleteDigiGateway(DigiGateway digiGateway) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
         int paoId = digiGateway.getPaoIdentifier().getPaoId();
-        
-        sql.append("DELETE FROM DigiGateway");
-        sql.append("WHERE DeviceId").eq(paoId);
-        
-        yukonJdbcTemplate.update(sql);
         
         deleteZBGateway(paoId);
 
@@ -136,7 +130,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT DeviceId,GatewayId");
-        sql.append("FROM GatewayAssociation");
+        sql.append("FROM ZBGatewayToDeviceMapping");
         sql.append("WHERE GatewayId").eq(gatewayId);
         
         return yukonJdbcTemplate.query(sql, new YukonRowMapper<ZigbeeDeviceAssignment>()
@@ -159,7 +153,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public void assignDeviceToGateway(int deviceId, int gatewayId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
-    	sql.append("INSERT INTO GatewayAssociation ").values(gatewayId, deviceId);
+    	sql.append("INSERT INTO ZBGatewayToDeviceMapping ").values(gatewayId, deviceId);
     	
     	yukonJdbcTemplate.update(sql);
     }
@@ -168,7 +162,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public void unassignDeviceFromGateway(int deviceId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
-    	sql.append("DELETE FROM GatewayAssociation WHERE DeviceId").eq(deviceId);
+    	sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE DeviceId").eq(deviceId);
 
     	yukonJdbcTemplate.update(sql);
     }

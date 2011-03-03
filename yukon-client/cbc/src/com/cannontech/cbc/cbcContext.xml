@@ -62,8 +62,4 @@
     <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl">
     </bean>
     
-    <bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl">
-    </bean>
-    
-
 </beans>
