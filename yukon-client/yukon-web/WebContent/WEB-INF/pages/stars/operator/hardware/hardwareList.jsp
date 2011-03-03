@@ -49,17 +49,17 @@
 
     function showInvCheckingPopup(type) {
         if(type == 'switch') {
-        	$('inventoryCheckingSwitchPopup').show();
+            $('inventoryCheckingSwitchPopup').show();
         } else if (type == 'gateway') {
-        	$('inventoryCheckingGatewayPopup').show();
+            $('inventoryCheckingGatewayPopup').show();
         } else {
-        	$('inventoryCheckingThermostatPopup').show();
+            $('inventoryCheckingThermostatPopup').show();
         }
     }
 
     function addMeter() {
         var form = $('addMeterForm');
-    	form.submit();
+        form.submit();
         return true;
     }
 
@@ -67,12 +67,12 @@
         $('oldInventoryId').value = oldId;
 
         if(isMeter) {
-        	$('isMeter').value = 'true';
+            $('isMeter').value = 'true';
         } else {
-        	$('isMeter').value = 'false';
+            $('isMeter').value = 'false';
         }
         
-    	var form = $('changeOutForm');
+        var form = $('changeOutForm');
         form.submit();
         return true;
     }
@@ -638,35 +638,30 @@
     </c:choose>
     
 
-	<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-	    <br>
-	    <table class="theremostatActionTable">
-	        <tr>
-	            <td class="buttonCell">
-	                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-	                        <form action="/spring/stars/operator/hardware/hardwareCreate">
-	                            <input type="hidden" name="accountId" value="${accountId}">
-	                            <input type="hidden" name="hardwareClass" value="${gatewayClass}">
-	                        
-                            <c:choose>
-                                <c:when test="${not inventoryChecking}">
-                                    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
-                                    </cti:checkRolesAndProperties>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:button key="add" type="button" onclick="showInvCheckingPopup('gateway');"/>
-                                </c:otherwise>
-                            </c:choose>
+    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+        <br>
+        <div class="actionArea">
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <form action="/spring/stars/operator/hardware/hardwareCreate">
+                    <input type="hidden" name="accountId" value="${accountId}">
+                    <input type="hidden" name="hardwareClass" value="${gatewayClass}">
 
-	                        </form>
-	                </cti:checkRolesAndProperties>
-	            </td>
-	        </tr>
-	    </table>
-	 </cti:checkRolesAndProperties>
+                    <c:choose>
+                        <c:when test="${not inventoryChecking}">
+                            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                                <cti:button key="add" type="submit"/>
+                            </cti:checkRolesAndProperties>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:button key="add" type="button" onclick="showInvCheckingPopup('gateway');"/>
+                        </c:otherwise>
+                    </c:choose>
+
+                </form>
+            </cti:checkRolesAndProperties>
+        </div>
+    </cti:checkRolesAndProperties>
 
 </tags:boxContainer2>
-
 
 </cti:standardPage>
