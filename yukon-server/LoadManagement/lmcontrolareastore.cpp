@@ -2435,7 +2435,7 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(j);
                 if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
-                    !stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::ThresholdTriggerType ) )    // LSF Projection only available on Threshold Triggers
+                     stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )   // LSF Projection not available on Status triggers
                 {
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);

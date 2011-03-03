@@ -1177,176 +1177,180 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers.at(j);
 
-            if( currentTrigger->getPointId() == pointID )
+            if ( pointID != 0 && ( quality == ManualQuality || quality == NormalQuality ) )
             {
-                currentControlArea->setUpdatedFlag(TRUE);
-
-                string text = ("");
-                bool isNewData = false;
-                string additional = ("");
-                if( timestamp > currentTrigger->getLastPointValueTimestamp() )
+                if( currentTrigger->getPointId() == pointID )
                 {
-                    isNewData = true;
-                    currentTrigger->setLastPointValueTimestamp(timestamp);
-                    currentControlArea->setNewPointDataReceivedFlag(TRUE);
-                    if( _LM_POINT_EVENT_LOGGING &&
-                        ( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                          currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState ) )
+                    currentControlArea->setUpdatedFlag(TRUE);
+    
+                    string text = ("");
+                    bool isNewData = false;
+                    string additional = ("");
+                    if( timestamp > currentTrigger->getLastPointValueTimestamp() )
                     {
-                        char tempchar[80] = "";
-                        text += "Current Trigger Value: ";
-                        _snprintf(tempchar,80,"%.*f",3,value);
-                        text += tempchar;
-                    }
-                }
-
-                if( currentTrigger->getPointValue() != value )
-                {
-                    currentTrigger->setPointValue(value);
-                }
-
-                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                if( (stringCompareIgnoreCase(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && stringCompareIgnoreCase(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
-                    stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                {
-                    if( quality != NonUpdatedQuality && isNewData )
-                    {
-                        if( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )//first reading plug in multiple copies
-                        {
-                            LONG pass = 1;
-                            LONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
-                            while( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )
-                            {
-                                CtiTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
-                                currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,pluggedTimestamp) );
-                                pass++;
-                            }
-                        }
-                        else//normal case
-                        {
-                            currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,timestamp) );
-                        }
-                        currentTrigger->calculateProjectedValue();
+                        isNewData = true;
+                        currentTrigger->setLastPointValueTimestamp(timestamp);
+                        currentControlArea->setNewPointDataReceivedFlag(TRUE);
                         if( _LM_POINT_EVENT_LOGGING &&
                             ( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                               currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState ) )
                         {
                             char tempchar[80] = "";
-                            additional += "Projected Value: ";
-                            _snprintf(tempchar,80,"%.*f",3,currentTrigger->getProjectedPointValue());
-                            additional += tempchar;
+                            text += "Current Trigger Value: ";
+                            _snprintf(tempchar,80,"%.*f",3,value);
+                            text += tempchar;
                         }
                     }
-                }
-                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                else if( stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )//make the projected value equal to the real value
-                {
-                    currentTrigger->setProjectedPointValue(value);
-                }
-
-                if( _LM_POINT_EVENT_LOGGING && text.length() > 0 )
-                {
-                    try
+    
+                    if( currentTrigger->getPointValue() != value )
                     {
-                        getDispatchConnection()->WriteConnQue(CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        currentTrigger->setPointValue(value);
+                    }
+    
+                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    if( (stringCompareIgnoreCase(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && stringCompareIgnoreCase(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
+                        stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    {
+                        if( quality != NonUpdatedQuality && isNewData )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << " (" << currentControlArea->getPAOName() << ")" << endl;
+                            if( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )//first reading plug in multiple copies
+                            {
+                                LONG pass = 1;
+                                LONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
+                                while( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )
+                                {
+                                    CtiTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
+                                    currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,pluggedTimestamp) );
+                                    pass++;
+                                }
+                            }
+                            else//normal case
+                            {
+                                currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,timestamp) );
+                            }
+                            currentTrigger->calculateProjectedValue();
+                            if( _LM_POINT_EVENT_LOGGING &&
+                                ( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
+                                  currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState ) )
+                            {
+                                char tempchar[80] = "";
+                                additional += "Projected Value: ";
+                                _snprintf(tempchar,80,"%.*f",3,currentTrigger->getProjectedPointValue());
+                                additional += tempchar;
+                            }
                         }
                     }
-                    catch( ... )
+                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    else if( stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )//make the projected value equal to the real value
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        currentTrigger->setProjectedPointValue(value);
                     }
-                }
-            }
-
-            if( currentTrigger->getPeakPointId() == pointID )
-            {
-                currentControlArea->setUpdatedFlag(TRUE);
-
-                if( value > currentTrigger->getPeakPointValue() )
-                {
-                    currentTrigger->setLastPeakPointValueTimestamp(timestamp);
-                    currentTrigger->setPeakPointValue(value);
-                }
-
-                if( currentTrigger->getThresholdKickPercent() > 0 )
-                {
-                    DOUBLE oldThreshold = currentTrigger->getThreshold();
-                    LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
-                    LONG amountOverKickValue = currentTrigger->getPeakPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
-
-                    if( amountOverKickValue > 0 )
+    
+                    if( _LM_POINT_EVENT_LOGGING && text.length() > 0 )
                     {
-                        currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
-                        CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
-                        currentControlArea->setUpdatedFlag(TRUE);
+                        try
                         {
-                            char tempchar[80] = "";
-                            string text = ("Automatic Threshold Kick Up");
-                            string additional = ("Threshold for Trigger: ");
-                            _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
-                            additional += tempchar;
-                            additional += " changed in LMControlArea: ";
-                            additional += currentControlArea->getPAOName();
-                            additional += " PAO ID: ";
-                            _snprintf(tempchar,80,"%d",currentControlArea->getPAOId());
-                            additional += tempchar;
-                            additional += " old threshold: ";
-                            _snprintf(tempchar,80,"%.*f",3,oldThreshold);
-                            additional += tempchar;
-                            additional += " new threshold: ";
-                            _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
-                            additional += tempchar;
-                            additional += " changed because peak point value: ";
-                            _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
-                            additional += tempchar;
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                            getDispatchConnection()->WriteConnQue(CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                dout << CtiTime() << " - " << text << ", " << additional << " (" << currentControlArea->getPAOName() << ")" << endl;
+                            }
+                        }
+                        catch( ... )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                }
+    
+                if( currentTrigger->getPeakPointId() == pointID )
+                {
+                    currentControlArea->setUpdatedFlag(TRUE);
+    
+                    if( value > currentTrigger->getPeakPointValue() )
+                    {
+                        currentTrigger->setLastPeakPointValueTimestamp(timestamp);
+                        currentTrigger->setPeakPointValue(value);
+                    }
+    
+                    if( currentTrigger->getThresholdKickPercent() > 0 )
+                    {
+                        DOUBLE oldThreshold = currentTrigger->getThreshold();
+                        LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
+                        LONG amountOverKickValue = currentTrigger->getPeakPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
+    
+                        if( amountOverKickValue > 0 )
+                        {
+                            currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
+                            CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
+                            currentControlArea->setUpdatedFlag(TRUE);
+                            {
+                                char tempchar[80] = "";
+                                string text = ("Automatic Threshold Kick Up");
+                                string additional = ("Threshold for Trigger: ");
+                                _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
+                                additional += tempchar;
+                                additional += " changed in LMControlArea: ";
+                                additional += currentControlArea->getPAOName();
+                                additional += " PAO ID: ";
+                                _snprintf(tempchar,80,"%d",currentControlArea->getPAOId());
+                                additional += tempchar;
+                                additional += " old threshold: ";
+                                _snprintf(tempchar,80,"%.*f",3,oldThreshold);
+                                additional += tempchar;
+                                additional += " new threshold: ";
+                                _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
+                                additional += tempchar;
+                                additional += " changed because peak point value: ";
+                                _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
+                                additional += tempchar;
+                                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                }
                             }
                         }
                     }
                 }
-            }
-
-            if ( currentTrigger->getThresholdPointId() == pointID )
-            {
-                currentControlArea->setUpdatedFlag(TRUE);
-
-                if ( value != currentTrigger->getThreshold() )
+    
+                if ( currentTrigger->getThresholdPointId() == pointID &&
+                     currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdPointTriggerType )
                 {
-                    double oldThreshold = currentTrigger->getThreshold();
-
-                    currentTrigger->setThreshold(value);
-                    currentControlArea->setNewPointDataReceivedFlag(TRUE);
-
-                    CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
+                    currentControlArea->setUpdatedFlag(TRUE);
     
-                    if ( _LM_POINT_EVENT_LOGGING )
+                    if ( value != currentTrigger->getThreshold() )
                     {
-                        std::string text("Updated Threshold");
+                        double oldThreshold = currentTrigger->getThreshold();
     
-                        std::ostringstream stream;
+                        currentTrigger->setThreshold(value);
+                        currentControlArea->setNewPointDataReceivedFlag(TRUE);
     
-                        stream
-                            << "Threshold for Trigger: "     << currentTrigger->getTriggerNumber()
-                            << " changed in LMControlArea: " << currentControlArea->getPAOName()
-                            << " PAO ID: "                   << currentControlArea->getPAOId()
-                            << " old threshold: "            << oldThreshold
-                            << " new threshold: "            << currentTrigger->getThreshold();
-    
-                        std::string additional( stream.str() );
-    
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(
-                            new CtiSignalMsg(currentTrigger->getThresholdPointId(), 0, text, additional, GeneralLogType, SignalEvent));
-    
+                        CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
+        
+                        if ( _LM_POINT_EVENT_LOGGING )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
+                            std::string text("Updated Threshold");
+        
+                            std::ostringstream stream;
+        
+                            stream
+                                << "Threshold for Trigger: "     << currentTrigger->getTriggerNumber()
+                                << " changed in LMControlArea: " << currentControlArea->getPAOName()
+                                << " PAO ID: "                   << currentControlArea->getPAOId()
+                                << " old threshold: "            << oldThreshold
+                                << " new threshold: "            << currentTrigger->getThreshold();
+        
+                            std::string additional( stream.str() );
+        
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(
+                                new CtiSignalMsg(currentTrigger->getThresholdPointId(), 0, text, additional, GeneralLogType, SignalEvent));
+        
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << text << ", " << additional << endl;
+                            }
                         }
                     }
                 }
