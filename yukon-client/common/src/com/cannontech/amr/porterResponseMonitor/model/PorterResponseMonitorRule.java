@@ -121,9 +121,9 @@ public class PorterResponseMonitorRule implements Comparable<PorterResponseMonit
 
     @Override
     public String toString() {
-        return String.format("PorterResponseMonitorRule [ruleId=%s, ruleOrder=%s, success=%s, errorCodes=%s, matchStyle=%s, state=%s]",
+        return String.format("PorterResponseMonitorRule [ruleId=%s, errorCodes=%s, matchStyle=%s, state=%s]",
                     ruleId,
-                    errorCodes,
+                    errorCodesAsIntegers,
                     matchStyle,
                     state);
     }

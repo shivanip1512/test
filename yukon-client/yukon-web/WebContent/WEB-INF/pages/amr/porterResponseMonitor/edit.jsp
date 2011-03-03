@@ -18,7 +18,7 @@
 		<cti:crumbLink url="/spring/meter/start" title="Metering" />
 		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
         <cti:crumbLink><a href="${monitorViewPage}"><spring:escapeBody>${monitorDto.name}</spring:escapeBody></a></cti:crumbLink>
-        <cti:crumbLink><i:inline key=".title"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key=".sectionHeader.title"/></cti:crumbLink>
 	</cti:breadCrumbs>
 
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view"/>
@@ -173,7 +173,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 							</td>
 							<td class="checkBox"><form:checkbox path="rules[${key}].success" /></td>
 							<td>
-                                <form:input size="5" path="rules[${key}].errorCodes"/>
+                                <form:input size="8" path="rules[${key}].errorCodes"/>
 							</td>
 							<td class="matchColumn">
 								<form:select path="rules[${key}].matchStyle">

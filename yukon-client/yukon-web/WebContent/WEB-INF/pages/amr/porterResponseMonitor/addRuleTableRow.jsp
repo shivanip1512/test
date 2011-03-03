@@ -12,7 +12,7 @@
 			<td class="checkBox">
                 <input name="rules[${newMapKey}].success" type="checkbox" />
             </td>
-			<td><input name="rules[${newMapKey}].errorCodes" type="text" size="5" /></td>
+			<td><input name="rules[${newMapKey}].errorCodes" type="text" size="8" /></td>
 			<td class="matchColumn">
                 <select name="rules[${newMapKey}].matchStyle">
 				    <c:forEach items="${matchStyleChoices}" var="style">

@@ -3,7 +3,7 @@
 <properties>
 
 	<!-- errorCodes.jsp -->
-    <entry key="yukon.web.modules.support.errorCodes.title">Error Codes</entry>
+    <entry key="yukon.web.modules.support.errorCodes.pageName">Error Codes</entry>
     <entry key="yukon.web.modules.support.errorCodes.header.code">Code</entry>
     <entry key="yukon.web.modules.support.errorCodes.header.category">Category</entry>
     <entry key="yukon.web.modules.support.errorCodes.header.description">Description</entry>

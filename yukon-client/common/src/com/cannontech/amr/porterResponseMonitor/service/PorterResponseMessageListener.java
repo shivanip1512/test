@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.StreamMessage;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,10 +102,10 @@ public class PorterResponseMessageListener implements MessageListener {
             		"no monitors exist or they are all disabled");
             return;
         }
-        if (message instanceof BytesMessage) {
-            BytesMessage bytesMessage = (BytesMessage) message;
+        if (message instanceof StreamMessage) {
+            StreamMessage streamMessage = (StreamMessage) message;
             try {
-                PorterResponseMessage porterResponseMessage = buildPorterResponseMessage(bytesMessage);
+                PorterResponseMessage porterResponseMessage = buildPorterResponseMessage(streamMessage);
                 handleMessage(porterResponseMessage);
             } catch (JMSException e) {
                 log.warn("Unable to extract PorterResponseMessage from message", e);
@@ -113,12 +113,12 @@ public class PorterResponseMessageListener implements MessageListener {
         }
     }
 
-    private PorterResponseMessage buildPorterResponseMessage(BytesMessage bytesMessage) throws JMSException {
-        long connectionId = bytesMessage.readLong();
-        int paoId = bytesMessage.readInt();
-        boolean finalMsg = bytesMessage.readBoolean();
-        int errorCode = bytesMessage.readInt();
-        int userMessageId = bytesMessage.readInt();
+    private PorterResponseMessage buildPorterResponseMessage(StreamMessage streamMessage) throws JMSException {
+        long connectionId = streamMessage.readLong();
+        int paoId = streamMessage.readInt();
+        boolean finalMsg = streamMessage.readBoolean();
+        int errorCode = streamMessage.readInt();
+        int userMessageId = streamMessage.readInt();
         
         PorterResponseMessage porterResponseMessage = 
             new PorterResponseMessage(userMessageId, connectionId, paoId, errorCode, finalMsg);

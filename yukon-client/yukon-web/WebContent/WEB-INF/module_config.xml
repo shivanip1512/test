@@ -901,7 +901,11 @@
                     <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                     <menu>other|setup</menu>
                 </page>
+                <page name="errorCodes" type="BASIC">
+                    <menu>information|errorCodes</menu>
+                </page>
             </pages>
+            <link>/spring/support/</link>
         </page>
     </pages>
     

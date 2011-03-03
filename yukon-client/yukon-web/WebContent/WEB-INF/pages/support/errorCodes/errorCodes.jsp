@@ -5,17 +5,6 @@
 
 <cti:standardPage module="support" page="errorCodes">
 
-    <cti:standardMenu menuSelection="information|errorCodes" />
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-        <cti:crumbLink url="/spring/support/" title="Support" />
-        <cti:crumbLink><i:inline key=".title"/></cti:crumbLink>
-    </cti:breadCrumbs>
-
-    <h2><i:inline key=".title"/></h2>
-    <br>
-
     <table id="errorCodes" class="resultsTable">
         <tr>
             <th><i:inline key=".header.code"/></th>
