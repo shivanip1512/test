@@ -327,7 +327,7 @@ INSERT INTO YukonRoleProperty VALUES(-10821, -108, 'CSRF Token Mode','OFF', 'Whi
 
 
 /* Start YUK-9077 */
-sp_RENAME 'OptOutSurveyProgram.ProgramId', 'AssignedProgramId'
+EXEC SP_RENAME 'OptOutSurveyProgram.ProgramId', 'AssignedProgramId'
 ALTER TABLE OptOutSurveyProgram ADD DeviceId NUMERIC;
 GO
 
