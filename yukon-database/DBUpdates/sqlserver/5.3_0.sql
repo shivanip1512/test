@@ -584,11 +584,11 @@ INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
 /* End YUK-9562 */
 
 /* Start YUK-9561 */
-ALTER TABLE FdrTranslation 
+ALTER TABLE FDRTranslation 
 ALTER COLUMN DirectionType VARCHAR2(30);
 GO
 
-UPDATE FdrInterface 
+UPDATE FDRInterface 
 SET PossibleDirections = 'Send,Send for control,Receive,Receive for control,Receive for Analog Output' 
 WHERE InterfaceName = 'VALMET'
 OR InterfaceName = 'TEXTIMPORT';
