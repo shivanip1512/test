@@ -8285,7 +8285,7 @@ void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG           
     std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
 
     //Command Action
-    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
+    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPaoId(), commandString );
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 }
