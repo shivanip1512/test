@@ -591,7 +591,7 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
 }
 
 
-void Cti::Porter::UnsolicitedHandler::startPendingRequest(device_record *dr)
+void UnsolicitedHandler::startPendingRequest(device_record *dr)
 {
     if( ! dr->outbound.empty() )
     {
@@ -684,6 +684,10 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
         dr->comm_status = sendOutbound(*dr);
 
         traceOutbound(*dr, dr->comm_status);
+    }
+    else
+    {
+        dr->comm_status = NORMAL;
     }
 
     //  if we have data, are expecting no data, or we have an error, decode right away
