@@ -8,6 +8,7 @@ import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -20,6 +21,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoDao paoDao;
     private GatewayDeviceDao gatewayDeviceDao;
+    private DeviceDao deviceDao;
     
     @Override
     public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
@@ -91,15 +93,14 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     
     @Override
     public void deleteZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat) {
-        PaoIdentifier pao = zigbeeThermostat.getPaoIdentifier();
+        PaoIdentifier paoIdentifier = zigbeeThermostat.getPaoIdentifier();
         
-        deleteZBDevice(pao);
+        deleteZBDevice(paoIdentifier);
         
         //Remove device from any gateways
-        gatewayDeviceDao.unassignDeviceFromGateway(pao.getPaoId());
+        gatewayDeviceDao.unassignDeviceFromGateway(paoIdentifier.getPaoId());
         
-        paoDao.deleteYukonDevice(pao);
-        paoDao.deleteYukonPao(pao);
+        deviceDao.removeDevice(zigbeeThermostat);
         
         return;
     }
@@ -126,5 +127,10 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     @Autowired
     public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
     	this.gatewayDeviceDao = gatewayDeviceDao;
+    }
+    
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
 }

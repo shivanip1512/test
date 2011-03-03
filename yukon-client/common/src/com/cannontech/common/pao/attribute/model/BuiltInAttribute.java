@@ -4,6 +4,7 @@ public enum BuiltInAttribute implements Attribute {
     /* Keep this ordered alphabetically by description */
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
+    CONNECTION_STATUS("Connection Status"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
@@ -38,6 +39,7 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE("Voltage"), 
     VOLTAGE_PROFILE("Voltage Profile", true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
+    ZIGBEE_LINK_STATUS("Zigbee Link Status"),
     ;
     
 

@@ -9,7 +9,9 @@ import com.cannontech.common.model.DigiGateway;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -20,6 +22,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoDao paoDao;
+    private DeviceDao deviceDao;
 
     public DigiGateway getDigiGateway(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -88,8 +91,8 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         yukonJdbcTemplate.update(sql);
         
         deleteZBGateway(paoId);
-        paoDao.deleteYukonDevice(digiGateway.getPaoIdentifier());
-        paoDao.deleteYukonPao(digiGateway.getPaoIdentifier());
+
+        deviceDao.removeDevice(digiGateway);
     }
 
     private void deleteZBGateway(int deviceId) {
@@ -178,5 +181,10 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
 }

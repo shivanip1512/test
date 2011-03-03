@@ -5643,4 +5643,49 @@
     <pao id="PHASE_OPERATED" inherits="VOLTAGE_REGULATOR">
         <displayName>Phase Operated</displayName>
     </pao>
+    
+    <pao id="ZIGBEEUTILPRO">
+        <displayName>Zigbee Utility Pro</displayName>
+        <points>
+            <point type="Status" offset="1">
+                <name>Connection Status</name>
+                <stategroup value="Comm Status State"/>
+            </point>
+            <point type="Status" offset="2">
+                <name>Commissioned State</name>
+                <stategroup value="Commissioned State"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="CONNECTION_STATUS">
+                <basicLookup point="Connection Status" />
+            </attribute>
+            <attribute name="ZIGBEE_LINK_STATUS">
+                <basicLookup point="Commissioned State" />
+            </attribute>
+        </attributes>
+    </pao>
+
+    <pao id="DIGIGATEWAY">
+        <displayName>Digi Gateway</displayName>
+        <points>
+            <point type="Status" offset="1">
+                <name>Connection Status</name>
+                <stategroup value="Comm Status State"/>
+            </point>
+            <point type="Status" offset="2">
+                <name>Commissioned State</name>
+                <stategroup value="Commissioned State"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="CONNECTION_STATUS">
+                <basicLookup point="Connection Status" />
+            </attribute>
+            <attribute name="ZIGBEE_LINK_STATUS">
+                <basicLookup point="Commissioned State" />
+            </attribute>
+        </attributes>
+    </pao>
+    
 </paoDefinitions>

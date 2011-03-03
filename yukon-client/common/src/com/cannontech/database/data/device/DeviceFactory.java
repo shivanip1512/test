@@ -443,6 +443,11 @@ public final class DeviceFactory {
             returnDevice = new RTM();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
+        case ZIGBEEUTILPRO:
+        case DIGIGATEWAY:
+            returnDevice = new ZigbeeDevice();
+            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CARRIER);
+            break;
         }
 
         //Set a couple reasonable defaults

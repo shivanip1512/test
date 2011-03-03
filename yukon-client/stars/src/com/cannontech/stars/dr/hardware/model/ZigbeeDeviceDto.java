@@ -5,7 +5,7 @@ public class ZigbeeDeviceDto {
 	private String serialNumber;
 	private String deviceType;
 	private int connectionStatusId;
-	private boolean installated;
+	private int commissionId;
 	
 	
 	public int getDeviceId() {
@@ -32,10 +32,10 @@ public class ZigbeeDeviceDto {
 	public void setConnectionStatusId(int connectionStatusId) {
 		this.connectionStatusId = connectionStatusId;
 	}
-	public boolean isInstallated() {
-		return installated;
+	public int getCommissionId() {
+		return commissionId;
 	}
-	public void setInstallated(boolean installated) {
-		this.installated = installated;
+	public void setCommissionId(int commissionId) {
+		this.commissionId = commissionId;
 	}
 }

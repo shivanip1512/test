@@ -10,11 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.model.DigiGateway;
+import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.GatewayDeviceDao;
@@ -43,6 +52,7 @@ public class ZigbeeGatewayController {
     private HardwareUiService hardwareUiService;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private YukonListDao yukonListDao;
+    private AttributeService attributeService;
     
     /* Gateway Configuration Page */
     @RequestMapping
@@ -106,7 +116,15 @@ public class ZigbeeGatewayController {
         device.setDeviceId(deviceId);
 		device.setDeviceType(deviceTypeEntry.getEntryText());
 		device.setSerialNumber(lmHardware.getManufacturerSerialNumber());
-        device.setInstallated(false);
+        
+		ZigbeeThermostat tStat = new ZigbeeThermostat();
+		tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO));
+		
+		LitePoint connPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint linkPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+		
+        device.setConnectionStatusId(connPt.getLiteID());
+		device.setCommissionId(linkPt.getLiteID());
         
         return device;
     }
@@ -244,8 +262,11 @@ public class ZigbeeGatewayController {
         gatewayDto.setDigiId(digiGateway.getDigiId());
         gatewayDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
         
-        gatewayDto.setConnectionStatusId(1);
-        gatewayDto.setGatewayStatusId(1);
+        LitePoint connPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        
+        gatewayDto.setConnectionStatusId(connPt.getLiteID());
+        gatewayDto.setGatewayStatusId(linkPt.getLiteID());
         
         return gatewayDto;
     }
@@ -278,5 +299,10 @@ public class ZigbeeGatewayController {
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao){
         this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
 }

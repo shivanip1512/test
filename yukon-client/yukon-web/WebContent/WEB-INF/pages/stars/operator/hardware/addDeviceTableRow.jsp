@@ -16,8 +16,11 @@
 				<spring:escapeBody htmlEscape="true">${zigbeeDto.serialNumber}</spring:escapeBody>
             </td>
             <td><spring:escapeBody htmlEscape="true">${zigbeeDto.deviceType}</spring:escapeBody></td>
-            <td><spring:escapeBody htmlEscape="true">---</spring:escapeBody></td>
-            <td><spring:escapeBody htmlEscape="true">---</spring:escapeBody></td>
+            <td>
+                    <cti:classUpdater type="POINT" identifier="${zigbeeDto.commissionId}/STATE">
+                        <cti:pointValue pointId="${zigbeeDto.commissionId}" format="VALUE"/>
+                    </cti:classUpdater>            
+            </td>
             <td nowrap="nowrap">
                 <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
                 <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>

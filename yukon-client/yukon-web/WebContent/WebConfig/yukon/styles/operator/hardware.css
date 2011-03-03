@@ -75,3 +75,19 @@ table.bitTable td {
 table.bitTable th {
 	font-weight: bold;
 }
+
+.Connected {
+    color: #339900;
+}
+
+.Disconnected {
+    color: #FF0000;
+}
+
+.Commissioned {
+    color: #339900;
+}
+
+.Uncommissioned {
+    color: #FF0000;
+}

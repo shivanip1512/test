@@ -1,8 +1,9 @@
 package com.cannontech.common.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonDevice;
 
-public class DigiGateway {
+public class DigiGateway implements YukonDevice{
 
     private PaoIdentifier paoIdentifier;
     private String firmwareVersion;

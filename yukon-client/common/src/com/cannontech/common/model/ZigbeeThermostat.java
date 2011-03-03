@@ -1,9 +1,9 @@
 package com.cannontech.common.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.YukonDevice;
 
-public class ZigbeeThermostat implements YukonPao {
+public class ZigbeeThermostat implements YukonDevice {
 
     private PaoIdentifier paoIdentifier;
     private String installCode;

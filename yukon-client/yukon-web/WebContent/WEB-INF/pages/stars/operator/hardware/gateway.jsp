@@ -84,10 +84,14 @@ removeTableRow = function(rowId, deviceId) {
 							<spring:escapeBody htmlEscape="true">${gatewayDto.macAddress}</spring:escapeBody>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".connectionStatus">
-							<span style="color:red"><spring:escapeBody htmlEscape="true">Disconnected</spring:escapeBody></span>
+							<cti:classUpdater type="POINT" identifier="${gatewayDto.connectionStatusId}/STATE">
+                                <cti:pointValue pointId="${gatewayDto.connectionStatusId}" format="VALUE"/>
+                            </cti:classUpdater>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".gatewayStatus">
-							<span style="color:green"><spring:escapeBody htmlEscape="true">Installed</spring:escapeBody></span>
+                            <cti:classUpdater type="POINT" identifier="${gatewayDto.gatewayStatusId}/STATE">
+                                <cti:pointValue pointId="${gatewayDto.gatewayStatusId}" format="VALUE"/>
+                            </cti:classUpdater>
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 				</tags:formElementContainer>
@@ -102,12 +106,14 @@ removeTableRow = function(rowId, deviceId) {
 				<div>
 					<cti:labeledImg key="decommission" href="${gatewayControllerUrl}decommission${gatewayControllerUrlParameters}"/>
 				</div>
-				<br>
+				<!-- 
+                <br>
 				<div>
 					Temp way to call "reportAllDevices"
 					<br>
 					<cti:labeledImg key="add" href="${gatewayControllerUrl}reportAllDevices${gatewayControllerUrlParameters}"/>
 				</div>
+                -->
 			</tags:formElementContainer>
 		</cti:dataGridCell>
 	</cti:dataGrid>
@@ -115,56 +121,51 @@ removeTableRow = function(rowId, deviceId) {
     <br>
     
 	<tags:boxContainer2 nameKey="assignedZigbeeDevices">
-	    <c:choose>
-	        <c:when test="${empty assignedDevices}">
-	            <i:inline key=".assignedZigbeeDevices.none"/>
-	        </c:when>
-	        <c:otherwise>
-	            <tags:alternateRowReset/>
-	            
-		        <table style="display: none">
-					<tr id="defaultDeviceRow">
-						<td colspan="5" style="text-align: center">
-							<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
-						</td>
-					</tr>
-				</table>
-	            
-	            <table id="deviceTable" class="compactResultsTable deviceRowCounter">
-	                <thead>
-	                	<tr>
-		                    <th class="name" nowrap="nowrap"><i:inline key=".serialNumber"/></th>
-		                    <th class="type" nowrap="nowrap"><i:inline key=".assignedZigbeeDevices.displayType"/></th>
-		                    <th class="label" nowrap="nowrap"><i:inline key=".assignedZigbeeDevices.commState"/></th>
-		                    <th class="label" nowrap="nowrap"><i:inline key=".assignedZigbeeDevices.deviceState"/></th>
-		                    <th class="actions"><i:inline key=".actions"/></th>
-		                    <th class="removeColumn"><i:inline key=".remove"/></th>
-	                    </tr>
-	                </thead>
-	                <tbody id="deviceTableBody">
-	                <c:forEach var="assignedDevice" items="${assignedDevices}">
-	                    <tr id="${assignedDevice.serialNumber}" class="deviceRow">
-	                        <td>
-								<spring:escapeBody htmlEscape="true">${assignedDevice.serialNumber}</spring:escapeBody>
-	                        </td>
-	                        <td><spring:escapeBody htmlEscape="true">${assignedDevice.deviceType}</spring:escapeBody></td>
-	                        <td style="color:red"><spring:escapeBody htmlEscape="true">Disconnected</spring:escapeBody></td>
-	                        <td style="color:red"><spring:escapeBody htmlEscape="true">Not Linked</spring:escapeBody></td>
-	                        <td nowrap="nowrap">
-	                            <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
-	                            <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
-	                            <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&message=testmessage&gatewayInventoryId=${inventoryId}"/>
-	                        </td>
-	                        <td class="removeColumn" >
-								<cti:img key="delete" href="javascript:removeTableRow('${assignedDevice.serialNumber}',${assignedDevice.deviceId})"/>
-							</td>
-	                    </tr>
-	                </c:forEach>
-	                </tbody>
-	            </table>
-	        </c:otherwise>
-	    </c:choose>
-	    
+        <tags:alternateRowReset/>
+        
+        <table style="display: none">
+			<tr id="defaultDeviceRow">
+				<td colspan="5" style="text-align: center">
+					<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+				</td>
+			</tr>
+		</table>
+        
+        <table id="deviceTable" class="compactResultsTable deviceRowCounter">
+            <thead>
+            	<tr>
+                    <th class="name" nowrap="nowrap"><i:inline key=".serialNumber"/></th>
+                    <th class="type" nowrap="nowrap"><i:inline key=".assignedZigbeeDevices.displayType"/></th>
+                    <th class="label" nowrap="nowrap"><i:inline key=".assignedZigbeeDevices.deviceState"/></th>
+                    <th class="actions"><i:inline key=".actions"/></th>
+                    <th class="removeColumn"><i:inline key=".remove"/></th>
+                </tr>
+            </thead>
+            <tbody id="deviceTableBody">
+            <c:forEach var="assignedDevice" items="${assignedDevices}">
+                <tr id="${assignedDevice.serialNumber}" class="deviceRow">
+                    <td>
+						<spring:escapeBody htmlEscape="true">${assignedDevice.serialNumber}</spring:escapeBody>
+                    </td>
+                    <td><spring:escapeBody htmlEscape="true">${assignedDevice.deviceType}</spring:escapeBody></td>
+                    <td>
+                        <cti:classUpdater type="POINT" identifier="${assignedDevice.commissionId}/STATE">
+                            <cti:pointValue pointId="${assignedDevice.commissionId}" format="VALUE"/>
+                        </cti:classUpdater>
+                    </td>
+                    <td nowrap="nowrap">
+                        <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
+                        <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
+                        <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&message=testmessage&gatewayInventoryId=${inventoryId}"/>
+                    </td>
+                    <td class="removeColumn" >
+						<cti:img key="delete" href="javascript:removeTableRow('${assignedDevice.serialNumber}',${assignedDevice.deviceId})"/>
+					</td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
 		<div class="actionArea">
 			<tags:pickerDialog  extraArgs="${accountId}"
 								id="availableZigbeeDevicePicker" 
