@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 1:29:36 PM                          */
+/* Created on:     3/3/2011 2:28:12 PM                          */
 /*==============================================================*/
 
 
@@ -249,15 +249,15 @@ drop index Indx_RFNAdd_SerNum_Man_Mod_UNQ;
 
 drop index Indx_RouteDevID;
 
-drop index Indx_StateRaw;
-
-drop index Indx_StateGroup_Name_UNQ;
-
 drop index INDX_SYSLG_PTID_TS;
 
 drop index Indx_SYSLG_Date;
 
 drop index Indx_SYSLG_PtId;
+
+drop index Indx_StateRaw;
+
+drop index Indx_StateGroup_Name_UNQ;
 
 drop index Indx_PAObjId_InfoKey_UNQ;
 
@@ -919,10 +919,6 @@ drop table RepeaterRoute cascade constraints;
 
 drop table Route cascade constraints;
 
-drop table STATE cascade constraints;
-
-drop table STATEGROUP cascade constraints;
-
 drop table SYSTEMLOG cascade constraints;
 
 drop table ScheduleShipmentMapping cascade constraints;
@@ -944,6 +940,10 @@ drop table SettlementConfig cascade constraints;
 drop table Shipment cascade constraints;
 
 drop table SiteInformation cascade constraints;
+
+drop table State cascade constraints;
+
+drop table StateGroup cascade constraints;
 
 drop table StaticPAOInfo cascade constraints;
 
@@ -7616,146 +7616,6 @@ create unique index Indx_RouteDevID on Route (
 );
 
 /*==============================================================*/
-/* Table: STATE                                                 */
-/*==============================================================*/
-create table STATE  (
-   STATEGROUPID         NUMBER                          not null,
-   RAWSTATE             NUMBER                          not null,
-   TEXT                 VARCHAR2(32)                    not null,
-   FOREGROUNDCOLOR      NUMBER                          not null,
-   BACKGROUNDCOLOR      NUMBER                          not null,
-   ImageID              NUMBER                          not null,
-   constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
-);
-
-INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
-INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0); 
-INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0); 
-INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
-INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
-INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
-INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
-INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
-INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
-INSERT INTO State VALUES(-11,-1, 'Any', 2, 6, 0);
-INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6, 0);
-INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6, 0);
-INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
-INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
-INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
-INSERT INTO State VALUES(-10, 3, 'C', 3, 6, 0);
-INSERT INTO State VALUES(-10, 4, 'AB', 4, 6, 0);
-INSERT INTO State VALUES(-10, 5, 'AC', 5, 6, 0);
-INSERT INTO State VALUES(-10, 6, 'BC', 7, 6, 0);
-INSERT INTO State VALUES(-10, 7, 'ABC', 8, 6, 0);
-INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
-INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
-INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
-INSERT INTO State VALUES(-7, 0, 'Normal',0,6,0);
-INSERT INTO State VALUES(-7, 1, 'NonCriticalFailure',1,6,0);
-INSERT INTO State VALUES(-7, 2, 'CriticalFailure',2,6,0);
-INSERT INTO State VALUES(-7, 3, 'Unresponsive',3,6,0);
-INSERT INTO State VALUES(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
-INSERT INTO State VALUES(-6, 1, 'Connected', 0, 6, 0);
-INSERT INTO State VALUES(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
-INSERT INTO State VALUES(-6, 3, 'Connect Armed', 5, 6, 0);
-INSERT INTO State VALUES(-5, 0, 'Events', 2, 6, 0);
-INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6, 0);
-INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6, 0);
-INSERT INTO State VALUES(-5, 3, 'Priority 3', 0, 6, 0);
-INSERT INTO State VALUES(-5, 4, 'Priority 4', 7, 6, 0);
-INSERT INTO State VALUES(-5, 5, 'Priority 5', 8, 6, 0);
-INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6, 0);
-INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
-INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
-INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
-INSERT INTO State VALUES(-5,10, 'Priority 10', 9, 6, 0);
-INSERT INTO State VALUES(-3, 0, 'CalculatedText', 0, 6 , 0);
-INSERT INTO State VALUES(-2, 0, 'AccumulatorText', 0, 6 , 0);
-INSERT INTO State VALUES(-1, 0, 'Normal', 0, 6 , 0);
-INSERT INTO State VALUES(-1, 1, 'Non-update', 1, 6 , 0);
-INSERT INTO State VALUES(-1, 2, 'Rate of Change', 2, 6 , 0);
-INSERT INTO State VALUES(-1, 3, 'Limit Set 1', 3, 6 , 0);
-INSERT INTO State VALUES(-1, 4, 'Limit Set 2', 4, 6 , 0);
-INSERT INTO State VALUES(-1, 5, 'High Reasonability', 5, 6 , 0);
-INSERT INTO State VALUES(-1, 6, 'Low Reasonability', 6, 6 , 0);
-INSERT INTO State VALUES(-1, 7, 'Low Limit 1', 7, 6 , 0);
-INSERT INTO State VALUES(-1, 8, 'Low Limit 2', 8, 6 , 0);
-INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
-INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
-INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
-INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES( 1, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES( 3,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES( 3, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES( 3, 1, 'Close', 1, 6 , 0);
-INSERT INTO State VALUES( 3, 2, 'OpenQuestionable', 10, 6 , 0);
-INSERT INTO State VALUES( 3, 3, 'CloseQuestionable', 3, 6 , 0);
-INSERT INTO State VALUES( 3, 4, 'OpenFail', 4, 6 , 0);
-INSERT INTO State VALUES( 3, 5, 'CloseFail', 5, 6 , 0);
-INSERT INTO State VALUES( 3, 6, 'OpenPending', 7, 6 , 0);
-INSERT INTO State VALUES( 3, 7, 'ClosePending', 8, 6 , 0);
-INSERT INTO State VALUES( 4, 0, 'False', 0, 6, 0);
-INSERT INTO State VALUES( 4, 1, 'True', 1, 6, 0);
-INSERT INTO State VALUES( 5, 0, 'Remote', 0, 6, 0);
-INSERT INTO State VALUES( 5, 1, 'Local', 1, 6, 0);
-INSERT INTO State VALUES( 6, 0, 'Enable', 5, 6 , 0);
-INSERT INTO State VALUES( 6, 1, 'Disable',9, 6 , 0);
-INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
-INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
-INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
-INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
-
-/*==============================================================*/
-/* Index: Indx_StateRaw                                         */
-/*==============================================================*/
-create index Indx_StateRaw on STATE (
-   RAWSTATE ASC
-);
-
-/*==============================================================*/
-/* Table: STATEGROUP                                            */
-/*==============================================================*/
-create table STATEGROUP  (
-   StateGroupId         NUMBER                          not null,
-   Name                 VARCHAR2(60)                    not null,
-   GroupType            VARCHAR2(20)                    not null,
-   constraint SYS_C0013128 primary key (StateGroupId)
-);
-
-INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
-INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
-INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
-INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
-INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
-INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
-INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
-INSERT INTO stategroup VALUES(-7, 'Thread Monitor', 'Status');
-INSERT INTO stategroup VALUES(-6, '410 Disconnect', 'Status');
-INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
-INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator');
-INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated');
-INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog');
-INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System');
-INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status');
-INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status');
-INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status');
-INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status');
-INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
-INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
-
-/*==============================================================*/
-/* Index: Indx_StateGroup_Name_UNQ                              */
-/*==============================================================*/
-create unique index Indx_StateGroup_Name_UNQ on STATEGROUP (
-   Name ASC
-);
-
-/*==============================================================*/
 /* Table: SYSTEMLOG                                             */
 /*==============================================================*/
 create table SYSTEMLOG  (
@@ -7934,6 +7794,152 @@ create table SiteInformation  (
 );
 
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
+
+/*==============================================================*/
+/* Table: State                                                 */
+/*==============================================================*/
+create table State  (
+   StateGroupId         NUMBER                          not null,
+   RawState             NUMBER                          not null,
+   Text                 VARCHAR2(32)                    not null,
+   ForegroundColor      NUMBER                          not null,
+   BackGroundColor      NUMBER                          not null,
+   ImageId              NUMBER                          not null,
+   constraint PK_STATE primary key (StateGroupId, RawState)
+);
+
+INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
+INSERT INTO State VALUES(-15, 1, 'Very Poor', 1, 6, 0); 
+INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0); 
+INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0); 
+INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
+INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
+INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0); 
+INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0); 
+INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
+INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
+INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
+INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
+INSERT INTO State VALUES(-11,-1, 'Any', 2, 6, 0);
+INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
+INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
+INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
+INSERT INTO State VALUES(-10, 3, 'C', 3, 6, 0);
+INSERT INTO State VALUES(-10, 4, 'AB', 4, 6, 0);
+INSERT INTO State VALUES(-10, 5, 'AC', 5, 6, 0);
+INSERT INTO State VALUES(-10, 6, 'BC', 7, 6, 0);
+INSERT INTO State VALUES(-10, 7, 'ABC', 8, 6, 0);
+INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
+INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
+INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
+INSERT INTO State VALUES(-7, 0, 'Normal',0,6,0);
+INSERT INTO State VALUES(-7, 1, 'NonCriticalFailure',1,6,0);
+INSERT INTO State VALUES(-7, 2, 'CriticalFailure',2,6,0);
+INSERT INTO State VALUES(-7, 3, 'Unresponsive',3,6,0);
+INSERT INTO State VALUES(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-6, 1, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
+INSERT INTO State VALUES(-6, 3, 'Connect Armed', 5, 6, 0);
+INSERT INTO State VALUES(-5, 0, 'Events', 2, 6, 0);
+INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6, 0);
+INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6, 0);
+INSERT INTO State VALUES(-5, 3, 'Priority 3', 0, 6, 0);
+INSERT INTO State VALUES(-5, 4, 'Priority 4', 7, 6, 0);
+INSERT INTO State VALUES(-5, 5, 'Priority 5', 8, 6, 0);
+INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6, 0);
+INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
+INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
+INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
+INSERT INTO State VALUES(-5,10, 'Priority 10', 9, 6, 0);
+INSERT INTO State VALUES(-3, 0, 'CalculatedText', 0, 6 , 0);
+INSERT INTO State VALUES(-2, 0, 'AccumulatorText', 0, 6 , 0);
+INSERT INTO State VALUES(-1, 0, 'Normal', 0, 6 , 0);
+INSERT INTO State VALUES(-1, 1, 'Non-update', 1, 6 , 0);
+INSERT INTO State VALUES(-1, 2, 'Rate of Change', 2, 6 , 0);
+INSERT INTO State VALUES(-1, 3, 'Limit Set 1', 3, 6 , 0);
+INSERT INTO State VALUES(-1, 4, 'Limit Set 2', 4, 6 , 0);
+INSERT INTO State VALUES(-1, 5, 'High Reasonability', 5, 6 , 0);
+INSERT INTO State VALUES(-1, 6, 'Low Reasonability', 6, 6 , 0);
+INSERT INTO State VALUES(-1, 7, 'Low Limit 1', 7, 6 , 0);
+INSERT INTO State VALUES(-1, 8, 'Low Limit 2', 8, 6 , 0);
+INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
+INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
+INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
+INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES( 1, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES( 3,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( 3, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES( 3, 1, 'Close', 1, 6 , 0);
+INSERT INTO State VALUES( 3, 2, 'OpenQuestionable', 10, 6 , 0);
+INSERT INTO State VALUES( 3, 3, 'CloseQuestionable', 3, 6 , 0);
+INSERT INTO State VALUES( 3, 4, 'OpenFail', 4, 6 , 0);
+INSERT INTO State VALUES( 3, 5, 'CloseFail', 5, 6 , 0);
+INSERT INTO State VALUES( 3, 6, 'OpenPending', 7, 6 , 0);
+INSERT INTO State VALUES( 3, 7, 'ClosePending', 8, 6 , 0);
+INSERT INTO State VALUES( 4, 0, 'False', 0, 6, 0);
+INSERT INTO State VALUES( 4, 1, 'True', 1, 6, 0);
+INSERT INTO State VALUES( 5, 0, 'Remote', 0, 6, 0);
+INSERT INTO State VALUES( 5, 1, 'Local', 1, 6, 0);
+INSERT INTO State VALUES( 6, 0, 'Enable', 5, 6 , 0);
+INSERT INTO State VALUES( 6, 1, 'Disable',9, 6 , 0);
+INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
+INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
+
+/*==============================================================*/
+/* Index: Indx_StateRaw                                         */
+/*==============================================================*/
+create index Indx_StateRaw on State (
+   RawState ASC
+);
+
+/*==============================================================*/
+/* Table: StateGroup                                            */
+/*==============================================================*/
+create table StateGroup  (
+   StateGroupId         NUMBER                          not null,
+   Name                 VARCHAR2(60)                    not null,
+   GroupType            VARCHAR2(20)                    not null,
+   constraint SYS_C0013128 primary key (StateGroupId)
+);
+
+INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
+INSERT INTO StateGroup VALUES(-14, 'Outage Status','Status'); 
+INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status'); 
+INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
+INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
+INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
+INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
+INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
+INSERT INTO stategroup VALUES(-7, 'Thread Monitor', 'Status');
+INSERT INTO stategroup VALUES(-6, '410 Disconnect', 'Status');
+INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
+INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator');
+INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated');
+INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog');
+INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System');
+INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status');
+INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status');
+INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status');
+INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status');
+INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
+INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
+
+/*==============================================================*/
+/* Index: Indx_StateGroup_Name_UNQ                              */
+/*==============================================================*/
+create unique index Indx_StateGroup_Name_UNQ on StateGroup (
+   Name ASC
+);
 
 /*==============================================================*/
 /* Table: StaticPAOInfo                                         */
@@ -12512,7 +12518,7 @@ alter table POINT
 
 alter table POINT
    add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
-      references STATEGROUP (StateGroupId);
+      references StateGroup (StateGroupId);
 
 alter table POINTACCUMULATOR
    add constraint SYS_C0013317 foreign key (POINTID)
@@ -12603,7 +12609,7 @@ alter table PortTiming
 
 alter table PorterResponseMonitor
    add constraint FK_PortRespMon_StateGroup foreign key (StateGroupId)
-      references STATEGROUP (StateGroupId);
+      references StateGroup (StateGroupId);
 
 alter table PorterResponseMonitorErrorCode
    add constraint FK_PortRespMonErr_PortRespMonR foreign key (RuleId)
@@ -12645,14 +12651,6 @@ alter table Route
    add constraint FK_Route_YukPAO foreign key (RouteID)
       references YukonPAObject (PAObjectID);
 
-alter table STATE
-   add constraint FK_YkIm_St foreign key (ImageID)
-      references YukonImage (ImageID);
-
-alter table STATE
-   add constraint SYS_C0013342 foreign key (STATEGROUPID)
-      references STATEGROUP (StateGroupId);
-
 alter table ScheduleShipmentMapping
    add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
       references DeliverySchedule (ScheduleID);
@@ -12689,6 +12687,14 @@ alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
 
+alter table State
+   add constraint FK_YkIm_St foreign key (ImageId)
+      references YukonImage (ImageID);
+
+alter table State
+   add constraint SYS_C0013342 foreign key (StateGroupId)
+      references StateGroup (StateGroupId);
+
 alter table StaticPAOInfo
    add constraint FK_StatPAOInfo foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
@@ -12696,7 +12702,7 @@ alter table StaticPAOInfo
 
 alter table StatusPointMonitor
    add constraint FK_StatPointMon_StateGroup foreign key (StateGroupId)
-      references STATEGROUP (StateGroupId);
+      references StateGroup (StateGroupId);
 
 alter table StatusPointMonitorProcessor
    add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)

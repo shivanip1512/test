@@ -608,6 +608,16 @@ INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0);
 INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0);
 /* End YUK-9565 */
 
+/* Start YUK-9562 */
+INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
+
+INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
+INSERT INTO State VALUES(-15, 1, 'Very Poor', 1, 6, 0); 
+INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0); 
+INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0); 
+INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
+/* End YUK-9562 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
