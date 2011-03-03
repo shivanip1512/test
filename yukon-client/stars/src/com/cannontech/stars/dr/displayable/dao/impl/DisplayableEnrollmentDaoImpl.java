@@ -116,8 +116,8 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     }
     
     @Override
-    public void filterEnrollableInventoryByProgramType(DisplayableEnrollmentProgram program) {
-        /* Filter by program type */
+    public DisplayableEnrollmentProgram getFilteredDisplayableEnrollmentProgram(int accountId, int programId) {
+        DisplayableEnrollmentProgram program = getProgram(accountId, programId);
         List<DisplayableEnrollmentInventory> inventoryList = program.getInventory();
         List<DisplayableEnrollmentInventory> filteredList = Lists.newArrayList();
         for (DisplayableEnrollmentInventory inventory : inventoryList) {
@@ -130,8 +130,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             } 
         }
         program.setInventory(filteredList);
+        return program;
     }
-
+    
     private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(
             ApplianceCategory applianceCategory, Program program,
             List<HardwareSummary> hardwareList,
