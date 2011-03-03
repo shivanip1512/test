@@ -1092,7 +1092,7 @@ div.padded {
 }
 
 .i18nInline {
-    outline: red dotted thin;
+/*    outline: red dotted thin;*/
 }
 
 .i18nInline .i18nInlineDebug {
@@ -1288,7 +1288,7 @@ select {
     transition: all 0.25s ease-in-out;
     -webkit-transition: all 0.25s ease-in-out;
     -moz-transition: all 0.25s ease-in-out;
-    border:1px solid #CCCCCC;
+    border:1px solid #777777;
 }
 
 input[type='text']:focus,
@@ -1296,8 +1296,12 @@ input[type='password']:focus,
 input[type='checkbox']:focus,
 textarea:focus,
 select:focus {
-    box-shadow: 0 0 5px #FF9900;
-    -webkit-box-shadow: 0 0 5px #FF9900; 
-    -moz-box-shadow: 0 0 5px #FF9900;
+    box-shadow: 0 0 4px #FF9900;
+    -webkit-box-shadow: 0 0 4px #FF9900; 
+    -moz-box-shadow: 0 0 4px #FF9900;
     border:1px solid #FF9900; 
+}
+
+.stdhdr_rightSide select {
+    max-width: 140px;
 }

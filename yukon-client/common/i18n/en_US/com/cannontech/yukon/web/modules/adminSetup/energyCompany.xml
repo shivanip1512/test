@@ -56,6 +56,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful">Operator Groups Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup">At least one operator group is required.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful">Residential Customer Groups Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>

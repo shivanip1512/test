@@ -40,7 +40,7 @@ function addCustomerGroups() {
                         
                         <cti:displayForPageEditModes modes="VIEW">
                             <tags:nameValue2 nameKey=".address">
-                                <tags:address address="${generalInfo.address}" inLine="true" />
+                                <tags:address address="${generalInfo.address}" inLine="true"/>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
@@ -101,7 +101,7 @@ function addCustomerGroups() {
                 <%-- RIGHT SIDE COLUMN --%>
                 <cti:dataGridCell>
             
-                    <tags:boxContainer2 nameKey="membersContainer">
+                    <tags:boxContainer2 nameKey="membersContainer" styleClass="membersContainer">
                         <form action="manageMembers" method="post">
                             <input name="ecId" type="hidden" value="${ecId}">
                             
@@ -165,12 +165,17 @@ function addCustomerGroups() {
                                 <table class="compactResultsTable listTable">
                                     <tr>
                                         <th><i:inline key=".operatorGroups"/></th>
-                                        <th class="removeColumn"><i:inline key=".remove"/></th>
+                                        <c:if test="${fn:length(operatorGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
                                     </tr>
                                     <c:forEach var="group" items="${operatorGroups}">
                                         <tr>
                                             <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
-                                            <td class="removeColumn"><input type="image" src="/WebConfig/yukon/Icons/delete.png" name="removeOperatorGroup" value="${group.groupID}" class="hoverableImage pointer"></td>
+                                            <c:if test="${fn:length(operatorGroups) > 1}">
+                                                <td class="removeColumn">
+                                                    <input type="image" src="/WebConfig/yukon/Icons/delete.png" name="removeOperatorGroup" 
+                                                        value="${group.groupID}" class="hoverableImage pointer">
+                                                </td>
+                                            </c:if>
                                         </tr>
                                     </c:forEach>
                                 </table>

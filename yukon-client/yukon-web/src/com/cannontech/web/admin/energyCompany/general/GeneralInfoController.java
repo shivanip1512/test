@@ -192,6 +192,12 @@ public class GeneralInfoController {
     @RequestMapping(value="updateOperatorGroups", params="removeOperatorGroup", method=RequestMethod.POST)
     public String removeOperatorGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeOperatorGroup,
                                EnergyCompanyInfoFragment fragment) {
+        /* Make sure they always have at least one operator group */
+        if (ecMappingDao.getOperatorGroups(ecId).size() > 2) {
+            EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup"));
+            return "redirect:view";
+        }
         
         ecMappingDao.deleteECToOperatorGroupMapping(ecId, removeOperatorGroup);
         
@@ -236,8 +242,10 @@ public class GeneralInfoController {
             model.addAttribute("memberCandidates", energyCompanyService.getMemberCandidates(ecId));
         }
         
-        model.addAttribute("operatorGroups", ecMappingDao.getOperatorGroups(ecId));
-        model.addAttribute("customerGroups", ecMappingDao.getResidentialGroups(ecId));
+        List<LiteYukonGroup> operatorGroups = ecMappingDao.getOperatorGroups(ecId);
+        model.addAttribute("operatorGroups", operatorGroups);
+        List<LiteYukonGroup> customerGroups = ecMappingDao.getResidentialGroups(ecId);
+        model.addAttribute("customerGroups", customerGroups);
     }
     
     /* Model Attributes */

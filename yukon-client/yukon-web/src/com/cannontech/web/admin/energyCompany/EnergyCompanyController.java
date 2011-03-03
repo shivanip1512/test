@@ -195,7 +195,10 @@ public class EnergyCompanyController {
         for (YukonEnergyCompany company : companies) {
             if(starsDatabaseCache.getEnergyCompany(company).getParent() != null) {
                 int energyCompanyId = company.getEnergyCompanyId();
-                parentLogins.put(energyCompanyId, ecMappingDao.findParentLogin(energyCompanyId).getUserID());
+                LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompanyId);
+                if (parentLogin != null) {
+                    parentLogins.put(energyCompanyId, parentLogin.getUserID());
+                }
             }
         }
         return parentLogins;

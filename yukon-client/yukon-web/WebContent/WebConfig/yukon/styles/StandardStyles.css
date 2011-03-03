@@ -98,6 +98,10 @@ a.border_submenuLink {
     border-right: 1px solid #0066CC;
 }
 
+a.stdhdr_menuLink {
+    margin-left: 1px;
+}
+
 #Menu #subMenu {
     border-bottom: 1px solid #0066CC;
     background: #EEEEEE; /* for non-css3 browsers */
@@ -119,18 +123,18 @@ a.border_submenuLink {
 }
     
 #Menu #subMenu a {
-    color: rgb(0, 102, 153);
+    color: #0066CC;
     padding-right: .5em;
     font-size: .75em;
     text-decoration: none;
 }
 
 #Menu #subMenu a:link {
-    color: rgb(0, 102, 153);
+    color: #0066CC;
 }
 
 #Menu #subMenu a:visited {
-    color: rgb(0, 102, 153);
+    color: #0066CC;
 }
 
 #Menu #topMenu a {
@@ -147,9 +151,12 @@ a.border_submenuLink {
     color: white;
 }
 
-#Menu #topMenu a:hover,#Menu #topMenu a.selected,#Menu #subMenu a.selected
-    {
+#Menu #topMenu a:hover,#Menu #topMenu a.selected,#Menu #subMenu a.selected {
     color: #f90;
+}
+
+#Menu #subMenu a.selected {
+    color: #EE8800;
 }
 
 #Menu .stdhdr_rightSide {
