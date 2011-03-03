@@ -625,7 +625,11 @@
                             </a>
                         </td>
                         <td><spring:escapeBody htmlEscape="true">${gateway.displayType}</spring:escapeBody></td>
-                        <td style="color:green"><spring:escapeBody htmlEscape="true">Installed</spring:escapeBody></td>
+                        <td>
+                            <cti:classUpdater type="POINT" identifier="${gateway.commissionedId}/STATE">
+                                <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
+                            </cti:classUpdater>
+                        </td>
                         <td nowrap="nowrap">
                             <cti:img key="editConfig" href="${configureGatewayUrl}${gateway.inventoryId}"/>
                             

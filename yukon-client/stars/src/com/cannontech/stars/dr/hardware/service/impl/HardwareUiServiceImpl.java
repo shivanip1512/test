@@ -24,6 +24,8 @@ import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -31,6 +33,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -79,6 +82,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     private PaoLoadingService paoLoadingService;
     private StarsInventoryBaseService starsInventoryBaseService;
     private ZigbeeDeviceService zigbeeDeviceService;
+    private AttributeService attributeService;
     
     @Override
     public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
@@ -224,11 +228,17 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                     
                     hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
                     
+                    LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                    hardwareDto.setCommissionedId(linkPt.getLiteID());
+                    
                 } else if (hardwareType.isGateway()) {
                     DigiGateway digiGateway = zigbeeDeviceService.getDigiGateway(liteInventoryBase.getDeviceID());
                     
                     hardwareDto.setMacAddress(digiGateway.getMacAddress());
                     hardwareDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
+                    
+                    LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                    hardwareDto.setCommissionedId(linkPt.getLiteID());
                     
                 } else {
                     /* This is an unknown Zigbee device type */
@@ -804,5 +814,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired
     public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
         this.zigbeeDeviceService = zigbeeDeviceService;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
 }

@@ -39,7 +39,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
 		return decommissionConnectPort(digiId);
 	}
 	
-	public String commissionNewConnectPort(String macAddress) {
+	private String commissionNewConnectPort(String macAddress) {
 		logger.info("-- Install Commission start --");
 		//This needs to be passed in...
     	//Installer Provided or have it on the Pao?
@@ -53,7 +53,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
 	}
 
 
-	public String decommissionConnectPort(int deviceId) {
+	private String decommissionConnectPort(int deviceId) {
 		logger.info("-- Decommision X2 start --");
 		//We will have the MAC.. will we have the Digi Id? If so we just use that.. otherwise gotta discover the Digi Id.
 		

@@ -49,9 +49,6 @@ removeTableRow = function(rowId, deviceId) {
 	        parameters: {'accountId': ${accountId}, 'deviceId': deviceId},
 	        onSuccess: function(transport) {
 				$(rowId).remove();
-	        },
-	        onFailure: function(transport){
-	        	console.log("Thain is teh Gayez");
 	        }
 	    });
 }

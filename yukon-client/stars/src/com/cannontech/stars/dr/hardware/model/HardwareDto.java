@@ -41,6 +41,7 @@ public class HardwareDto {
     private List<SwitchAssignment> switchAssignments = LazyList.ofInstance(SwitchAssignment.class);
     private String macAddress;
     private String firmwareVersion;
+    private int commissionedId;
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -278,6 +279,14 @@ public class HardwareDto {
         this.firmwareVersion = firmwareVersion;
     }
 
+    public void setCommissionedId(int commissionedId) {
+        this.commissionedId = commissionedId;
+    }
+    
+    public int getCommissionedId() {
+        return commissionedId;
+    }
+    
     public YukonPao getYukonPao() {
         PaoType paoType = PaoType.getForDbString(displayType);
         return new PaoIdentifier(deviceId, paoType);
