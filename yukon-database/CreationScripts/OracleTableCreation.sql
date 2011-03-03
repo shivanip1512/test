@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 2:28:12 PM                          */
+/* Created on:     3/3/2011 2:37:30 PM                          */
 /*==============================================================*/
 
 
@@ -7803,7 +7803,7 @@ create table State  (
    RawState             NUMBER                          not null,
    Text                 VARCHAR2(32)                    not null,
    ForegroundColor      NUMBER                          not null,
-   BackGroundColor      NUMBER                          not null,
+   BackgroundColor      NUMBER                          not null,
    ImageId              NUMBER                          not null,
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
