@@ -618,6 +618,16 @@ INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0);
 INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
 /* End YUK-9562 */
 
+/* Start YUK-9561 */
+ALTER TABLE FdrTranslation 
+MODIFY DirectionType VARCHAR2(30);
+
+UPDATE FDRInterface 
+SET PossibleDirections = 'Send,Send for control,Receive,Receive for control,Receive for Analog Output' 
+WHERE InterfaceName = 'VALMET'
+OR InterfaceName = 'TEXTIMPORT';
+/* End YUK-9561 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/3/2011 2:36:44 PM                          */
+/* Created on:     3/3/2011 2:49:58 PM                          */
 /*==============================================================*/
 
 
@@ -610,20 +610,20 @@ go
 
 if exists (select 1
             from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
+           where  id    = object_id('FDRTranslation')
             and   name  = 'Indx_FdrTransIntTyp'
             and   indid > 0
             and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTransIntTyp
+   drop index FDRTranslation.Indx_FdrTransIntTyp
 go
 
 if exists (select 1
             from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
+           where  id    = object_id('FDRTranslation')
             and   name  = 'Indx_FdrTrnsIntTypDir'
             and   indid > 0
             and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTrnsIntTypDir
+   drop index FDRTranslation.Indx_FdrTrnsIntTypDir
 go
 
 if exists (select 1
@@ -2455,9 +2455,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('FDRTRANSLATION')
+           where  id = object_id('FDRTranslation')
             and   type = 'U')
-   drop table FDRTRANSLATION
+   drop table FDRTranslation
 go
 
 if exists (select 1
@@ -8307,17 +8307,17 @@ go
 /* Table: FDRInterface                                          */
 /*==============================================================*/
 create table FDRInterface (
-   InterfaceID          numeric              not null,
+   InterfaceId          numeric              not null,
    InterfaceName        varchar(30)          not null,
    PossibleDirections   varchar(100)         not null,
    hasDestination       char(1)              not null,
-   constraint PK_FDRINTERFACE primary key (InterfaceID)
+   constraint PK_FDRINTERFACE primary key (InterfaceId)
 )
 go
 
 INSERT INTO FDRInterface VALUES ( 1, 'INET', 'Send,Send for control,Receive,Receive for control', 't' );
 INSERT INTO FDRInterface VALUES ( 2, 'ACS', 'Send,Send for control,Receive,Receive for control', 'f' );
-INSERT INTO FDRInterface VALUES ( 3, 'VALMET', 'Send,Send for control,Receive,Receive for control', 'f' );
+INSERT INTO FDRInterface VALUES ( 3, 'VALMET', 'Send,Send for control,Receive,Receive for control,Receive for Analog Output', 'f' );
 INSERT INTO FDRInterface VALUES ( 4, 'CYGNET', 'Send,Send for control,Receive,Receive for control', 'f' );
 INSERT INTO FDRInterface VALUES ( 5, 'STEC', 'Receive', 'f' );
 INSERT INTO FDRInterface VALUES ( 6, 'RCCS', 'Send,Send for control,Receive,Receive for control', 't' );
@@ -8326,7 +8326,7 @@ INSERT INTO FDRInterface VALUES ( 8, 'RDEX', 'Send,Send for control,Receive,Rece
 INSERT INTO FDRInterface VALUES ( 9, 'SYSTEM','Link Status','f');
 INSERT INTO FDRInterface VALUES (10, 'DSM2IMPORT','Receive,Receive for control','f');
 INSERT INTO FDRInterface VALUES (11, 'TELEGYR','Receive,Receive for control','f');
-INSERT INTO FDRInterface VALUES (12, 'TEXTIMPORT','Receive,Receive for control','f');
+INSERT INTO FDRInterface VALUES (12, 'TEXTIMPORT','Send,Send for control,Receive,Receive for control,Receive for Analog Output','f');
 INSERT INTO FDRInterface VALUES (13, 'TEXTEXPORT','Send','f');
 INSERT INTO FDRInterface VALUES (16, 'LODESTAR_STD','Receive','f');
 INSERT INTO FDRInterface VALUES (17, 'LODESTAR_ENH','Receive','f');
@@ -8414,22 +8414,22 @@ INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(non
 INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
 
 /*==============================================================*/
-/* Table: FDRTRANSLATION                                        */
+/* Table: FDRTranslation                                        */
 /*==============================================================*/
-create table FDRTRANSLATION (
-   POINTID              numeric              not null,
-   DIRECTIONTYPE        varchar(20)          not null,
+create table FDRTranslation (
+   PointId              numeric              not null,
+   DirectionType        varchar(30)          not null,
    InterfaceType        varchar(20)          not null,
-   DESTINATION          varchar(20)          not null,
-   TRANSLATION          varchar(200)         not null,
-   constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
+   Destination          varchar(20)          not null,
+   Translation          varchar(200)         not null,
+   constraint PK_FDRTrans primary key (PointId, DirectionType, InterfaceType, Translation)
 )
 go
 
 /*==============================================================*/
 /* Index: Indx_FdrTransIntTyp                                   */
 /*==============================================================*/
-create index Indx_FdrTransIntTyp on FDRTRANSLATION (
+create index Indx_FdrTransIntTyp on FDRTranslation (
 InterfaceType ASC
 )
 go
@@ -8437,8 +8437,8 @@ go
 /*==============================================================*/
 /* Index: Indx_FdrTrnsIntTypDir                                 */
 /*==============================================================*/
-create index Indx_FdrTrnsIntTypDir on FDRTRANSLATION (
-DIRECTIONTYPE ASC,
+create index Indx_FdrTrnsIntTypDir on FDRTranslation (
+DirectionType ASC,
 InterfaceType ASC
 )
 go
@@ -15434,11 +15434,11 @@ go
 
 alter table FDRInterfaceOption
    add constraint FK_FDRINTER_REFERENCE_FDRINTER foreign key (InterfaceID)
-      references FDRInterface (InterfaceID)
+      references FDRInterface (InterfaceId)
 go
 
-alter table FDRTRANSLATION
-   add constraint SYS_C0015066 foreign key (POINTID)
+alter table FDRTranslation
+   add constraint SYS_C0015066 foreign key (PointId)
       references POINT (POINTID)
 go
 
