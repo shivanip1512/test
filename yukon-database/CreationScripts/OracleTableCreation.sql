@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 4:11:59 PM                          */
+/* Created on:     3/3/2011 5:35:30 PM                          */
 /*==============================================================*/
 
 
@@ -6246,7 +6246,7 @@ create table LMGroupSep  (
 /*==============================================================*/
 create table LMGroupSepDeviceClass  (
    DeviceId             NUMBER                          not null,
-   SepDeviceClass       VARCHAR2(40)                     not null,
+   SepDeviceClass       VARCHAR2(40)                    not null,
    constraint PK_LMGroupSepDeviceClass primary key (DeviceId)
 );
 
@@ -10041,7 +10041,7 @@ INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/servic
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', 'ServiceManager');
 INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager'); 
-INSERT INTO YukonServices VALUES (-15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
+INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
