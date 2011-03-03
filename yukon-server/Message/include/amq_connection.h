@@ -58,6 +58,11 @@ private:
 
     queue_name_map _queue_names;
 
+    enum
+    {
+        DefaultExpiration = 3600
+    };
+
 public:
 
     ActiveMQConnectionManager(const std::string &broker_uri);
