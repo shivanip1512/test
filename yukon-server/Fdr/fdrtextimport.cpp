@@ -570,6 +570,12 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
         {
             DOUBLE value = aValue;
 
+            if (aPoint.isControllable())
+            {
+                CtiCommandMsg *aoMsg = createAnalogOutputMessage(aPoint.getPointID(), aTranslationName, value);
+                sendMessageToDispatch(aoMsg);
+            }
+
             value *= aPoint.getMultiplier();
             value += aPoint.getOffset();
 

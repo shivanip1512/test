@@ -35,6 +35,7 @@
 #include "cparms.h"
 #include "fdrdebuglevel.h"
 #include "fdrpointlist.h"
+#include "msg_cmd.h"
 
 
 class IM_EX_FDRBASE CtiFDRInterface
@@ -52,6 +53,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         bool                logEvent( const string &logDesc,
                                       const string &logMsg,
                                       bool aSendImmediatelyFlag=false );
+        CtiCommandMsg* createAnalogOutputMessage(long pointId, string translationName, double value);
 
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);

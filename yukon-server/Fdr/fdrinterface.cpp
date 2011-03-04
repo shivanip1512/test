@@ -1348,6 +1348,22 @@ bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool
     }
 }
 
+CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string translationName, double value)
+{
+    // build the command message and send the control
+    CtiCommandMsg *cmdMsg = new CtiCommandMsg(CtiCommandMsg::AnalogOutput);
+
+    cmdMsg->insert(pointId);  // point for control
+    cmdMsg->insert(value);
+
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Analog Output Point " << translationName << " was sent new value: " << value;
+        dout <<" from " << getInterfaceName() << " and processed for point " << pointId << endl;
+    }
+    return cmdMsg;
+}
 
 bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 {

@@ -134,8 +134,9 @@ bool CtiFDRManager::loadPointList()
             }
             else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
             {
-                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
-                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) << "')";
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr()  << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL)             << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT)       << "')";
             }
             else
             {
@@ -215,8 +216,9 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
             }
             else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
             {
-                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
-                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) << "')";
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr()  << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL)             << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT)       << "')";
             }
             else
             {
@@ -361,7 +363,8 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 
                 // set controllable
                 if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
-                   direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
+                   direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) ||
+                   direction == string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT))
                 {
                     fdrPtr->setControllable (true);
                 }

@@ -713,6 +713,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
     CtiTime             timestamp;
     CtiFDRPointSPtr     point;
     bool   flag = true;
+    bool analogOutputFlag = true;
     string           desc;
     CHAR               action[60];
 
@@ -772,6 +773,14 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         }
         else
         {
+            if (point->isControllable())
+            {
+
+                CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, value);
+                sendMessageToDispatch(aoMsg);
+
+            }
+
             pData = new CtiPointDataMsg(point->getPointID(),
                                         value,
                                         quality,
@@ -829,6 +838,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
 
     return retVal;
 }
+
 
 int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 {
