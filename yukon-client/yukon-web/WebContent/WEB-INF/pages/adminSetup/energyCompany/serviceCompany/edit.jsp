@@ -218,7 +218,7 @@
             </cti:dataGridCell>
         </cti:dataGrid>
         
-        <div class="pageActionArea">
+        <div class="actionArea">
         
             <!-- Edit Link -->
             <cti:displayForPageEditModes modes="VIEW">
