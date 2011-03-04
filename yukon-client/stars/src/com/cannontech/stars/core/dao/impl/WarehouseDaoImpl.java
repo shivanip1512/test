@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -22,8 +21,6 @@ import com.cannontech.stars.core.dao.WarehouseDao;
 public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    
-    private SqlFragmentSource selectBase = new SqlStatementBuilder("SELECT * FROM Warehouse");
     
     private SimpleTableAccessTemplate<Warehouse> warehouseTemplate;
     
@@ -101,7 +98,8 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
     @Override
     public List<Warehouse> getAllWarehousesForEnergyCompanyId (int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
+        sql.append("SELECT *");
+        sql.append("FROM Warehouse");
         sql.append("WHERE ENERGYCOMPANYID").eq(energyCompanyId);
         
         return yukonJdbcTemplate.query(sql, new WarehouseRowMapper());
@@ -110,7 +108,8 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
     @Override
     public Warehouse getWarehouse(int warehouseId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
+        sql.append("SELECT *");
+        sql.append("FROM Warehouse");
         sql.append("WHERE WAREHOUSEID").eq(warehouseId);
         return yukonJdbcTemplate.queryForObject(sql, new WarehouseRowMapper());
     }
