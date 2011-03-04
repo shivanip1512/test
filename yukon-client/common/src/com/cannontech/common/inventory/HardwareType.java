@@ -169,7 +169,7 @@ public enum HardwareType implements DatabaseRepresentationSource{
      * @return boolean
      */
     public boolean isMeter() {
-        return getLMHardwareClass() == LMHardwareClass.METER;
+        return getLMHardwareClass().isMeter() ;
     }
     
     /**
@@ -177,7 +177,7 @@ public enum HardwareType implements DatabaseRepresentationSource{
      * @return boolean
      */
     public boolean isSwitch() {
-        return getLMHardwareClass() == LMHardwareClass.SWITCH;
+        return getLMHardwareClass().isSwitch();
     }
     
     /**
