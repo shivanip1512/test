@@ -929,7 +929,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             checkBoxRampIn = new javax.swing.JCheckBox();
             checkBoxRampIn.setText("Ramp In");
             checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
-
+            checkBoxRampIn.setSelected(true);
         }
         return checkBoxRampIn;
     }
@@ -939,6 +939,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             checkBoxRampOut = new javax.swing.JCheckBox();
             checkBoxRampOut.setText("Ramp Out");
             checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampOut.setSelected(true);
 
         }
         return checkBoxRampOut;
@@ -949,6 +950,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             checkBoxTrueCycle = new javax.swing.JCheckBox();
             checkBoxTrueCycle.setText("TrueCycle or adaptive algorithm");
             checkBoxTrueCycle.setPreferredSize(new Dimension(165, 23));
+            checkBoxTrueCycle.setSelected(true);
 
         }
         return checkBoxTrueCycle;
