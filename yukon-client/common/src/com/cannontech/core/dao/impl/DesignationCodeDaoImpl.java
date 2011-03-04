@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.model.DesignationCodeDto;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -16,12 +17,15 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingBean {
     
     private NextValueHelper nextValueHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<DesignationCodeDto> designationCodeTemplate;
+    private DBPersistentDao dbPersistantDao = null;
 
     // DesignationCodeDto -> to -> sql
     private FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper = new FieldMapper<DesignationCodeDto>() {
@@ -92,6 +96,7 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     @Override
     public void add(DesignationCodeDto designationCode) {
         designationCodeTemplate.save(designationCode);
+        sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.ADD);
     }
 
     @Override
@@ -103,12 +108,14 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
                        designationCode.getValue(),
                        designationCode.getServiceCompanyId());
             yukonJdbcTemplate.update(sql);
+            sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.ADD);
         }
     }
 
     @Override
     public void update(DesignationCodeDto designationCode) {
         designationCodeTemplate.save(designationCode);
+        sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.UPDATE);
     }
 
     @Override
@@ -116,7 +123,7 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ServiceCompanyDesignationCode");
         sql.append("WHERE DesignationCodeID").eq(designationCode.getId());
-        
+        sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.DELETE);
         yukonJdbcTemplate.update(sql);
     }
 
@@ -132,7 +139,17 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
             sql.append("DELETE FROM ServiceCompanyDesignationCode");
             sql.append("WHERE DesignationCodeID").eq(designationCode.getId());
             yukonJdbcTemplate.update(sql);
+            sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.DELETE);
         }
+    }
+    
+    private void sendDesignationCodeChangeMessage(Integer designationCodeId, DbChangeType dbChangeType) {
+        DBChangeMsg msg = new DBChangeMsg(designationCodeId,
+                                          DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
+                                          DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                          DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                          dbChangeType);
+        dbPersistantDao.processDBChange(msg);
     }
     
  // DI
@@ -146,4 +163,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
         this.nextValueHelper = nextValueHelper;
     }
 
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
+    }
 }
