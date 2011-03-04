@@ -319,12 +319,6 @@
             </tags:sectionLink>
 		</cti:checkProperty>
         
-		<cti:checkProperty property="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS">
-            <tags:sectionLink>
-            	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
-            </tags:sectionLink>
-		</cti:checkProperty>
-        
 		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
         	<tags:sectionLink>
         		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
