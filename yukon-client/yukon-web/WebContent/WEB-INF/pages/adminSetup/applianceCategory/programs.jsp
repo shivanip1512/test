@@ -31,6 +31,8 @@
 function clearFilter() {
     window.location = '${clearFilterUrl}';
 }
+
+YEvent.observeSelectorClick('#showAllButton', clearFilter);
 </script>
 
 <i:simplePopup id="filterDialog" titleKey=".filters">
@@ -47,7 +49,7 @@ function clearFilter() {
 
         <div class="actionArea">
             <cti:button type="submit" key="filterButton"/>
-            <cti:button key="showAllButton" onclick="clearFilter()"/>
+            <cti:button id="showAllButton" key="showAllButton"/>
         </div>
     </form:form>
 </i:simplePopup>

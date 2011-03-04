@@ -13,32 +13,22 @@
 <cti:displayForPageEditModes modes="EDIT,CREATE">
 <script type="text/javascript">
 <c:if test="${!backingBean.multiple}">
-lastDisplayName = false;
 sameAsProgramNameClicked = function() {
     if ($('sameAsProgramName').checked) {
-        lastDisplayName = $('displayNameInput').value;
         $('displayNameInput').value = $('programNameInput').value;
         $('displayNameInput').disable();
     } else {
-        if (lastDisplayName) {
-            $('displayNameInput').value = lastDisplayName;
-        }
         $('displayNameInput').enable(); 
     }
     sameAsDisplayNameClicked();
     updateDisplayNameKey();
 }
 
-lastShortName = false;
 sameAsDisplayNameClicked = function() {
     if ($('sameAsDisplayName').checked) {
-        lastShortName = $('shortNameInput').value;
         $('shortNameInput').value = $('displayNameInput').value;
         $('shortNameInput').disable();
     } else {
-        if (lastShortName) {
-            $('shortNameInput').value = lastShortName;
-        }
         $('shortNameInput').enable(); 
     }
 }
@@ -68,6 +58,9 @@ submitForm = function() {
     </c:if>
     return submitFormViaAjax('acDialog', 'inputForm')
 }
+
+YEvent.observeSelectorClick('#sameAsProgramName', sameAsProgramNameClicked);
+YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 </script>
 </cti:displayForPageEditModes>
 
@@ -120,8 +113,7 @@ submitForm = function() {
                     <c:if test="${backingBean.assignedProgram.displayName == backingBean.assignedProgram.programName}">
                         <c:set var="checked" value=" checked=\"true\""/>
                     </c:if>
-                    <input id="sameAsProgramName" type="checkbox"${checked}
-                        onclick="sameAsProgramNameClicked()"/>
+                    <input id="sameAsProgramName" type="checkbox"${checked}/>
                     <label for="sameAsProgramName"><i:inline key=".sameAsProgramName"/></label>
                 </c:if>
                 </cti:displayForPageEditModes>
@@ -134,8 +126,7 @@ submitForm = function() {
                 <c:if test="${backingBean.assignedProgram.shortName == backingBean.assignedProgram.displayName}">
                     <c:set var="checked" value=" checked=\"true\""/>
                 </c:if>
-                <input id="sameAsDisplayName" type="checkbox"${checked}
-                    onclick="sameAsDisplayNameClicked()"/>
+                <input id="sameAsDisplayName" type="checkbox"${checked}/>
                 <label for="sameAsDisplayName"><i:inline key=".sameAsDisplayName"/></label>
                 </cti:displayForPageEditModes>
             </tags:nameValue>
