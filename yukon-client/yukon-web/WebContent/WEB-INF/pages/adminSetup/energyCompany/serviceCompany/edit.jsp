@@ -18,6 +18,7 @@
                 this feels bad.
             */
             var DC_INDEX = 0;
+            var FIND_ZIP_MSG = "<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />";
             
             function removeDesignationCode(event, elem) {
                 event.stop();
@@ -77,7 +78,7 @@
                 });
                 
                 Event.observe('findDesignationCode', 'blur', function(){
-                    this.value = "Find Zip Code";
+                    this.value = FIND_ZIP_MSG;
                     this.addClassName('default');
                  });
                 
@@ -156,42 +157,38 @@
                 </tags:formElementContainer>
                 <br/>
                 <br/>
-                <tags:formElementContainer nameKey="designationCodeSection">
-                        <c:if test="${allowContractorZipCodes}" >
-                    <!-- Contractor Zip Codes -->
-                <input type="text" id="findDesignationCode" value="Find Zip Code" class="default"/>
-                   <div class="vertical_scrollbox search_list">
+                <c:if test="${allowContractorZipCodes}">
+                    <tags:formElementContainer nameKey="designationCodeSection">
+                        <!-- Contractor Zip Codes -->
+                        <input type="text" id="findDesignationCode" value="<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />" class="default" />
+                        <div class="vertical_scrollbox search_list">
                         <ul id="designationCodes">
                             <c:forEach items="${serviceCompany.designationCodes}" varStatus="row">
                                 <!-- If we are editing and error any designation codes pending deletion will exist in the list
                                      this ensures that we do not have a visual representation of that -->
-                                <c:if test="${not empty serviceCompany.designationCodes[row.index].value}">
-                                    <li>
-                                        <cti:displayForPageEditModes modes="EDIT,CREATE">
-                                            <span class="remove fr"><a href="#" class="remove icon_remove simpleLink">remove</a></span>
-                                            <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
-                                            <tags:hidden path="designationCodes[${row.index}].id"/>
-                                            <tags:hidden path="designationCodes[${row.index}].value"/>
-                                            <tags:hidden path="designationCodes[${row.index}].serviceCompanyId"/>
-                                        </cti:displayForPageEditModes>
-                                        
-                                        <cti:displayForPageEditModes modes="VIEW">
-                                            <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
-                                        </cti:displayForPageEditModes>
-                                    </li>
+                                <c:if
+                                    test="${not empty serviceCompany.designationCodes[row.index].value}">
+                                    <li><cti:displayForPageEditModes modes="EDIT,CREATE">
+                                        <span class="remove fr"><a href="#" class="remove icon_remove simpleLink">remove</a></span>
+                                        <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
+                                        <tags:hidden path="designationCodes[${row.index}].id" />
+                                        <tags:hidden path="designationCodes[${row.index}].value" />
+                                        <tags:hidden path="designationCodes[${row.index}].serviceCompanyId" />
+                                    </cti:displayForPageEditModes> <cti:displayForPageEditModes modes="VIEW">
+                                        <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
+                                    </cti:displayForPageEditModes></li>
                                 </c:if>
                             </c:forEach>
                         </ul>
-                   </div>
-                   
-                <cti:displayForPageEditModes modes="EDIT,CREATE">
-                   <div>
-                        <input type="text" maxlength=60 id="newDesignationCode" class="zip">
-                        <cti:button key="assignDesignationCode" id="addDesignationCodeButton"/>
-                   </div>
-                </cti:displayForPageEditModes>
-            </c:if>
-                </tags:formElementContainer>
+                        </div>
+
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <div><input type="text" maxlength=60 id="newDesignationCode"
+                                class="zip"> <cti:button key="assignDesignationCode"
+                                id="addDesignationCodeButton" /></div>
+                        </cti:displayForPageEditModes>
+                    </tags:formElementContainer>
+                </c:if>
             </cti:dataGridCell>
             
             <cti:dataGridCell>                        
@@ -226,7 +223,7 @@
                 <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
             </cti:url>
-            <cti:button key="edit" onclick="javascript:window.location ='${serviceCompanyEditUrl}'"/>
+            <cti:button key="edit" href="${serviceCompanyEditUrl}"/>
         </cti:displayForPageEditModes>
         
         <!-- Save/Update -->
@@ -238,10 +235,10 @@
         </cti:displayForPageEditModes>
         
         <!-- Cancel -->
-        <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/home">
+        <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
             <cti:param name="ecId" value="${ecId}"/>
         </cti:url>
-        <cti:button key="cancel" onclick="javascript:window.location ='${serviceCompanyIndexUrl}'"/>
+        <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
         
         <!-- Delete (out of harm's way) -->
         <div class="fr">

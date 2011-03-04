@@ -1102,8 +1102,8 @@
                                 <menu>energyCompanySetup|home</menu>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
-                            <page name="serviceCompany.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <link>/spring/adminSetup/energyCompany/serviceCompany/home?ecId=${ecId}</link>
+                            <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <menu>energyCompanySetup|home</menu>
                                 <pages>

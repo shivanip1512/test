@@ -95,7 +95,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     
     static {
         
-        selectSql = "SELECT UserID,UserName,Status,AuthType FROM YukonUser";
+        selectSql = "SELECT UserID,UserName,Status,AuthType FROM YukonUser YU";
         
         selectByIdSql = selectSql + " WHERE UserID = ?";
         

@@ -31,7 +31,7 @@ public class AddressDaoImpl implements AddressDao {
     private static final String selectByStateCode;
     private static final String selectByZipCode;
     private static final String selectByCounty;
-    private static final ParameterizedRowMapper<LiteAddress> rowMapper;
+    public static final ParameterizedRowMapper<LiteAddress> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     

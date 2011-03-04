@@ -6,17 +6,19 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="adminSetup" page="serviceCompany.HOME">
+<cti:standardPage module="adminSetup" page="serviceCompany.list">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/energyCompany.css"/>
-
-        <cti:dataGrid cols="1" tableClasses="energyCompanyOperationsLayout">
-        
-            <%-- RIGHT SIDE COLUMN --%>
-            <cti:dataGridCell>
-                <tags:boxContainer2 nameKey="yukon.web.modules.adminSetup.serviceCompany.infoContainer.title">
+<cti:dataGrid cols="1" tableClasses="twoColumnLayout">
+                <tags:boxContainer2 nameKey="infoContainer">
                     
                     <table class="compactResultsTable rowHighlighting">
+                    <tr>
+                        <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.companyName"/></th>
+                        <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.mainPhone"/></th>
+                        <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.mainFax"/></th>
+                        <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.contact"/></th>
+                        <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.addressSection.title"/></th>
+                    </tr>
                         <c:forEach items="${serviceCompanies}" var="serviceCompany">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
                             <td style="width:30%">
@@ -44,6 +46,7 @@
                                 <span class="meta">
                                     <tags:notNullDataLine ignore="(none)" inLine="true" value="${serviceCompany.primaryContact.contFirstName}"></tags:notNullDataLine>
                                     <tags:notNullDataLine ignore="(none)" value="${serviceCompany.primaryContact.contLastName}"></tags:notNullDataLine>
+                                    <tags:notNullDataLine ignore="(none)" value="${serviceCompany.emailContactNotification}"></tags:notNullDataLine>
                                 </span>
                             </td>
                             <td>
@@ -56,7 +59,7 @@
                     </table>
                     
                 </tags:boxContainer2>
-                
+                </cti:dataGrid>
                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
                     <div class="actionArea">
                         <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
@@ -65,8 +68,5 @@
                         <cti:button key="add" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
                     </div>
                 </cti:checkRolesAndProperties>
-                
-            </cti:dataGridCell>
-        </cti:dataGrid>
     
 </cti:standardPage>

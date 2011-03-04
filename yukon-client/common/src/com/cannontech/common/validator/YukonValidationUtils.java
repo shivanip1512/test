@@ -22,11 +22,6 @@ public class YukonValidationUtils extends ValidationUtils {
 			errors.rejectValue(field, "yukon.web.error.exceedsMaximumLength", new Object[]{max}, "Exceeds maximum length of " + max);
 		}
 	}
-	
-	public static void checkEmailFormat(Errors errors, String field, String fieldValue) {
-	    Pattern emailPattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
-	    regexCheck(errors, field, fieldValue, emailPattern, "yukon.web.error.invalidEmailFormat");
-	}
 
     public static <T extends Comparable<T>> void checkRange(Errors errors,
             String field, T fieldValue, T min, T max, boolean required) {

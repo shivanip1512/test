@@ -23,13 +23,6 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<DesignationCodeDto> designationCodeTemplate;
 
-    private SqlStatementBuilder selectBase = new SqlStatementBuilder();
-    {
-        selectBase.append("SELECT *");
-        selectBase.append("FROM");
-        selectBase.append("servicecompanydesignationcode");
-    }
-    
     // DesignationCodeDto -> to -> sql
     private FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper = new FieldMapper<DesignationCodeDto>() {
 
@@ -79,7 +72,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     @Override
     public DesignationCodeDto getServiceCompanyDesignationCode(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
+        sql.append("SELECT *");
+        sql.append("FROM ServiceCompanyDesignationCode");
         sql.append("WHERE DesignationCodeID").eq(id);
         
         return yukonJdbcTemplate.queryForObject(sql, new DesignationCodeDtoRowMapper());
@@ -88,7 +82,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     @Override
     public List<DesignationCodeDto> getDesignationCodesByServiceCompanyId(int serviceCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
+        sql.append("SELECT *");
+        sql.append("FROM ServiceCompanyDesignationCode");
         sql.append("WHERE ServiceCompanyID").eq(serviceCompanyId);
         
         return yukonJdbcTemplate.query(sql, new DesignationCodeDtoRowMapper());
@@ -101,15 +96,14 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
 
     @Override
     public void bulkAdd(List<DesignationCodeDto> designationCodes) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
         for(DesignationCodeDto designationCode : designationCodes) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO ServiceCompanyDesignationCode");
             sql.values(nextValueHelper.getNextValue("ServiceCompanyDesignationCode"),
                        designationCode.getValue(),
                        designationCode.getServiceCompanyId());
+            yukonJdbcTemplate.update(sql);
         }
-        
-        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -133,12 +127,12 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
 
     @Override
     public void bulkDelete(List<DesignationCodeDto> designationCodes) {
-      //gather all ids
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ServiceCompanyDesignationCode");
-        sql.append("WHERE DesignationCodeID").in(designationCodes);
-        
-        yukonJdbcTemplate.update(sql);
+        for(DesignationCodeDto designationCode : designationCodes) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ServiceCompanyDesignationCode");
+            sql.append("WHERE DesignationCodeID").eq(designationCode.getId());
+            yukonJdbcTemplate.update(sql);
+        }
     }
     
  // DI

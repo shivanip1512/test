@@ -1,8 +1,6 @@
 package com.cannontech.common.model;
 
-import com.cannontech.common.util.DatabaseRepresentationSource;
-
-public class DesignationCodeDto implements DatabaseRepresentationSource {
+public class DesignationCodeDto {
 
     private int id = 0; //primary key
     private String value;
@@ -29,10 +27,5 @@ public class DesignationCodeDto implements DatabaseRepresentationSource {
     
     public String toString() {
         return this.id + ", '" + this.value + "', " + this.serviceCompanyId;
-    }
-    
-    @Override
-    public Object getDatabaseRepresentation() {
-        return id;
     }
 }

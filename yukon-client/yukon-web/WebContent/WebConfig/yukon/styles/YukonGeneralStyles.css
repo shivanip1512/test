@@ -1300,6 +1300,13 @@ select:focus {
     border:1px solid #FF9900; 
 }
 
+.pipes { overflow:hidden;}
+.pipes li { margin-left: -1px;
+border-left: solid 1px black;
+float: left;
+padding: 10px;
+}
+
 .stdhdr_rightSide select {
     max-width: 140px;
 }

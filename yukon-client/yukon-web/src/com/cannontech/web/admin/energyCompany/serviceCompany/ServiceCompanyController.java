@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -23,12 +24,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
-import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 
 @RequestMapping("/energyCompany/serviceCompany/*")
 @Controller
@@ -37,6 +38,7 @@ public class ServiceCompanyController {
     private static final String baseUrl = "/spring/adminSetup/energyCompany/serviceCompany";
     private RolePropertyDao rolePropertyDao;
     private ServiceCompanyService serviceCompanyService;
+    private ServiceCompanyDao serviceCompanyDao;
     private ServiceCompanyDtoValidator serviceCompanyDtoValidator;
     private YukonUserDao yukonUserDao;
     
@@ -58,7 +60,7 @@ public class ServiceCompanyController {
     }
 
     /* Index */
-    @RequestMapping ("home")
+    @RequestMapping ("list")
     public String index(YukonUserContext userContext, 
                         ModelMap modelMap, 
                         int ecId, 
@@ -67,8 +69,8 @@ public class ServiceCompanyController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         //get all for this energy company
-        modelMap.addAttribute("serviceCompanies", serviceCompanyService.getAllServiceCompanies(ecId));
-        return "energyCompany/serviceCompany/index.jsp";
+        modelMap.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompaniesForEnergyCompany(ecId));
+        return "energyCompany/serviceCompany/list.jsp";
     }
     
     @RequestMapping("view")
@@ -81,8 +83,9 @@ public class ServiceCompanyController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         ServiceCompanyDto serviceCompany = serviceCompanyService.getServiceCompany(serviceCompanyId);
+        modelMap.addAttribute("availableLogins", availableLogins(serviceCompany.getPrimaryContact().getLoginID()));
         modelMap.addAttribute("serviceCompany", serviceCompany);
-        modelMap.addAttribute("mode", "VIEW");
+        modelMap.addAttribute("mode", PageEditMode.VIEW);
         
         return "energyCompany/serviceCompany/edit.jsp";
     }
@@ -97,7 +100,7 @@ public class ServiceCompanyController {
         
         modelMap.addAttribute("availableLogins", availableLogins(UserUtils.USER_DEFAULT_ID));
         modelMap.addAttribute("serviceCompany", new ServiceCompanyDto());
-        modelMap.addAttribute("mode", "CREATE");
+        modelMap.addAttribute("mode", PageEditMode.CREATE);
         
         return "energyCompany/serviceCompany/edit.jsp";
     }
@@ -124,10 +127,15 @@ public class ServiceCompanyController {
             return "energyCompany/serviceCompany/edit.jsp";
         }
         
+        //do not allow unauthorized modification of designation codes
+        if(!getAllowContractorZipCodes(userContext, ecId)) {
+            serviceCompany.setDesignationCodes(null);
+        }
+        
         serviceCompanyService.createServiceCompany(serviceCompany, ecId);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.serviceCompany.serviceCompanyCreated", serviceCompany.getCompanyName()));
         
-        return "redirect:home";
+        return "redirect:list";
     }
     
     @RequestMapping("edit")
@@ -142,7 +150,7 @@ public class ServiceCompanyController {
         ServiceCompanyDto serviceCompany = serviceCompanyService.getServiceCompany(serviceCompanyId);
         
         modelMap.addAttribute("serviceCompany", serviceCompany);
-        modelMap.addAttribute("mode", "EDIT");
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
         modelMap.addAttribute("availableLogins", availableLogins(serviceCompany.getPrimaryContact().getLoginID()));
         
         return "energyCompany/serviceCompany/edit.jsp";
@@ -170,6 +178,10 @@ public class ServiceCompanyController {
             return "energyCompany/serviceCompany/edit.jsp";
         }
         
+        //do not allow unauthorized modification of designation codes
+        if(!getAllowContractorZipCodes(userContext, ecId)) {
+            serviceCompany.setDesignationCodes(null);
+        }
         serviceCompanyService.updateServiceCompany(serviceCompany);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.serviceCompany.serviceCompanyUpdated", serviceCompany.getCompanyName()));
         modelMap.addAttribute("serviceCompanyId", serviceCompany.getCompanyId());
@@ -179,22 +191,20 @@ public class ServiceCompanyController {
     @RequestMapping(method=RequestMethod.POST, value="update", params="delete")
     public String deleteServiceCompany(YukonUserContext userContext, 
                                        ModelMap modelMap, 
-                                       int ecId,
                                        final @ModelAttribute ("serviceCompany") ServiceCompanyDto serviceCompany,
                                        FlashScope flashScope,
                                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
       //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
-        
         serviceCompanyService.deleteServiceCompany(serviceCompany);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.serviceCompany.serviceCompanyDeleted", serviceCompany.getCompanyName()));
         
-        return "redirect:home";
+        return "redirect:list";
     }
     
     @ModelAttribute ("allowContractorZipCodes")
     public boolean getAllowContractorZipCodes(YukonUserContext userContext, int ecId) {
-        //@TODO: fix!!! return rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_ALLOW_DESIGNATION_CODES, userContext.getYukonUser());
-        return true;
+        return rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_ALLOW_DESIGNATION_CODES, userContext.getYukonUser());
     }
     
     @ModelAttribute("baseUrl")
@@ -220,5 +230,10 @@ public class ServiceCompanyController {
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    @Autowired
+    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
+        this.serviceCompanyDao = serviceCompanyDao;
     }
 }

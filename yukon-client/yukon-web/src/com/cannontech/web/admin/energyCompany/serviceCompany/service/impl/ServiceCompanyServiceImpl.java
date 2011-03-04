@@ -27,16 +27,14 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     private ContactNotificationDao contactNotificationDao = null;
 
     @Override
-    public List<ServiceCompanyDto> getAllServiceCompanies(int energyCompanyId) {
-        return serviceCompanyDao.getAllServiceCompaniesForEnergyCompany(energyCompanyId);
-    }
-
-    @Override
     public ServiceCompanyDto getServiceCompany(int serviceCompanyId) {
         ServiceCompanyDto serviceCompany = serviceCompanyDao.getCompanyById(serviceCompanyId);
         
         serviceCompany.setDesignationCodes(designationCodeDao.getDesignationCodesByServiceCompanyId(serviceCompanyId));
-        serviceCompany.setEmailContactNotification(contactNotificationDao.getFirstNotificationForContactByType(serviceCompany.getPrimaryContact(), ContactNotificationType.EMAIL).getNotification());
+        LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(serviceCompany.getPrimaryContact(), ContactNotificationType.EMAIL);
+        if(email != null) {
+            serviceCompany.setEmailContactNotification(email.getNotification());
+        }
         
         return serviceCompany;
     }
@@ -70,7 +68,9 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         }
         
         //now that we have an id for the service company, assign the designation codes
-        updateDesignationCodes(serviceCompany);
+        if(serviceCompany.getDesignationCodes() != null) {
+            updateDesignationCodes(serviceCompany);
+        }
     }
 
     @Override
@@ -100,7 +100,10 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         //update service company
         serviceCompanyDao.update(serviceCompany);
         
-        updateDesignationCodes(serviceCompany);
+        //update designation codes
+        if(serviceCompany.getDesignationCodes() != null) {
+            updateDesignationCodes(serviceCompany);
+        }
     }
     
     private void updateDesignationCodes(ServiceCompanyDto serviceCompany) {

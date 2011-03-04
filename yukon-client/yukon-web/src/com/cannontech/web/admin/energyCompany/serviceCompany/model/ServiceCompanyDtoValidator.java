@@ -11,6 +11,7 @@ import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.util.Validator;
 
 public class ServiceCompanyDtoValidator extends SimpleValidator<ServiceCompanyDto> {
 
@@ -56,8 +57,10 @@ public class ServiceCompanyDtoValidator extends SimpleValidator<ServiceCompanyDt
         errors.popNestedPath();
         
         //Check email
-        YukonValidationUtils.checkExceedsMaxLength(errors, "emailContactNotificaton", serviceCompany.getEmailContactNotification(), 130);
-        YukonValidationUtils.checkEmailFormat(errors, "getEmailContactNotification", serviceCompany.getEmailContactNotification());
+        YukonValidationUtils.checkExceedsMaxLength(errors, "emailContactNotification", serviceCompany.getEmailContactNotification(), 130);
+        if(serviceCompany.getEmailContactNotification().length() > 0 && !Validator.isEmailAddress(serviceCompany.getEmailContactNotification())) {
+            errors.rejectValue("emailContactNotification", "yukon.web.modules.operator.accountImport.error.invalidEmail");
+        }
         
         //Check Designation Codes
         DesignationCodeDtoValidator designationCodeValidator = new DesignationCodeDtoValidator();
