@@ -218,31 +218,31 @@
             </cti:dataGridCell>
         </cti:dataGrid>
         
-        <!-- Edit Link -->
-        <cti:displayForPageEditModes modes="VIEW">
-            <cti:url var="serviceCompanyEditUrl" value="${baseUrl}/edit">
+        <div class="pageActionArea">
+        
+            <!-- Edit Link -->
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:url var="serviceCompanyEditUrl" value="${baseUrl}/edit">
+                    <cti:param name="ecId" value="${ecId}"/>
+                    <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
+                </cti:url>
+                <cti:button key="edit" href="${serviceCompanyEditUrl}"/>
+            </cti:displayForPageEditModes>
+            
+            <!-- Save/Update -->
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:button key="save" name="create" type="submit"/>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button key="save" name="update" type="submit"/>
+            </cti:displayForPageEditModes>
+            
+            <!-- Cancel -->
+            <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
                 <cti:param name="ecId" value="${ecId}"/>
-                <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
             </cti:url>
-            <cti:button key="edit" href="${serviceCompanyEditUrl}"/>
-        </cti:displayForPageEditModes>
+            <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
         
-        <!-- Save/Update -->
-        <cti:displayForPageEditModes modes="CREATE">
-            <cti:button key="save" name="create" type="submit"/>
-        </cti:displayForPageEditModes>
-        <cti:displayForPageEditModes modes="EDIT">
-            <cti:button key="save" name="update" type="submit"/>
-        </cti:displayForPageEditModes>
-        
-        <!-- Cancel -->
-        <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
-            <cti:param name="ecId" value="${ecId}"/>
-        </cti:url>
-        <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
-        
-        <!-- Delete (out of harm's way) -->
-        <div class="fr">
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button key="delete" styleClass="delete"/>
                 <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
