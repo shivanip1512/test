@@ -362,8 +362,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             commandList.add(offsetCommand);
         }
 
-        if(threshold != null && trigger.getThreshold() != threshold  && 
-                            trigger.getTriggerType() == TriggerType.THRESHOLD) {
+        if(threshold != null && trigger.getThreshold() != threshold ) {
             //create a new threshold command message
             LMCommand thresholdCommand = new LMCommand(LMCommand.CHANGE_THRESHOLD,
                                                         controlAreaId,
