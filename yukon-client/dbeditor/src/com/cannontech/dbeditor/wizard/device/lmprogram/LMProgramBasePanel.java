@@ -20,15 +20,6 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JLabel ivjJLabelName = null;
 	//This is for the timed operational state
 	private boolean isAWizardOp = false;
-	//Control Methods
-	public static final String TIME_REFRESH_CONTROL = "TimeRefresh";
-	public static final String SMART_CYCLE_CONTROL = "SmartCycle";
-	public static final String MASTER_CYCLE_CONTROL = "MasterCycle";
-	public static final String ROTATION_CONTROL = "Rotation";
-	public static final String LATCHING_CONTROL = "Latching";
-	// Stop Types
-	public static final String RESTORE_STOP = "Restore";
-	public static final String TIME_IN_STOP = "Time-In";
 	private javax.swing.JComboBox ivjJComboBoxOperationalState = null;
 	private javax.swing.JLabel ivjJLabelOperationalState = null;
 	private javax.swing.JTextField ivjJTextFieldName = null;
@@ -533,15 +524,16 @@ private javax.swing.JTextField getJTextFieldTriggerOffset() {
 	return ivjJTextFieldTriggerOffset;
 }
 
-/**
- * getValue method comment.
- */
 public Object getValue(Object o) 
 {
     LMProgramBase  program;
 	if (isAWizardOp) {
-        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_DIRECT_PROGRAM );
-        //TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM???
+	    if( getJLabelActualProgType().getText().compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0) {
+	        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_SEP_PROGRAM);
+	    }
+	    else {
+	        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_DIRECT_PROGRAM );
+	    }
     }else {
         program = (LMProgramBase)o;
     }
@@ -551,8 +543,7 @@ public Object getValue(Object o)
 	if( getJComboBoxConstraint().getSelectedItem() != null )
 		program.getProgram().setConstraintID( new Integer(((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getSelectedItem()).getConstraintID() ));
 
-	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
-	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
+	if (program instanceof LMProgramDirect)	{
 		LMProgramDirect prog = (LMProgramDirect)program;
 		if(getJTextFieldTriggerOffset().getText().length() > 0)
 			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
@@ -683,9 +674,8 @@ public void setValue(Object o)
     				getJComboBoxConstraint().setSelectedIndex(i);
     				break;
     			}
-    			
-    	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
-    	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
+
+        if (program instanceof LMProgramDirect) {
     		getJPanelTriggerThreshold().setVisible(true);
     		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
     		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());

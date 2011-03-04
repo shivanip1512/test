@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.device.lm.LmProgramSep;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -19,6 +20,7 @@ public class LMProgramDirectPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JPanel ivjJPanelButtons = null;
 	private java.awt.FlowLayout ivjJPanelButtonsFlowLayout = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+    private boolean sep = false;
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.ItemListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -124,6 +126,10 @@ private DirectModifyGearPanel getDirectModifyGearPanel() {
 			ivjDirectModifyGearPanel.setMinimumSize(new java.awt.Dimension(336, 266));
 			// user code begin {1}
 
+			if (isSep())
+			{
+			    ivjDirectModifyGearPanel.showSepGearsOnly();
+			}
 			ivjDirectModifyGearPanel.setVisible( false );
 
 			// user code end
@@ -135,6 +141,16 @@ private DirectModifyGearPanel getDirectModifyGearPanel() {
 	}
 	return ivjDirectModifyGearPanel;
 }
+
+public boolean isSep() {
+    return sep;
+}
+
+public void setSep(boolean sep) {
+    this.sep  = sep;
+    getDirectModifyGearPanel().showSepGearsOnly();
+}
+
 /**
  * Return the JButtonCreate property value.
  * @return javax.swing.JButton
@@ -291,6 +307,10 @@ public Object getValue(Object o)
 		gear.setGearNumber( new Integer(i+1) );
 
 		program.getLmProgramDirectGearVector().add( gear );
+	}
+	
+	if (program instanceof LmProgramSep) {
+	    setSep(true);
 	}
 	
 	return o;
@@ -490,9 +510,14 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 
 	DirectModifyGearPanel p = new DirectModifyGearPanel();
+	if (isSep())
+    {
+        p.showSepGearsOnly();
+    }
+	
 	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Gear Creation", true, p );
-
+	
 	d.setSize(500, 500);
 	d.setLocationRelativeTo( this );
 	d.setVisible(true);
@@ -528,49 +553,8 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 	d.dispose();	
 	return;
-
-
-
-
-
-	
-/*	final javax.swing.JDialog dialog = new javax.swing.JDialog( com.cannontech.common.util.CtiUtilities.getParentFrame(this) );
-	
-	DirectGearPanel panel = new DirectGearPanel()
-	{
-		public void disposePanel()
-		{
-			dialog.dispose();
-		}
-	};
-
-	dialog.setTitle("Create Gear");
-	dialog.setModal(true);
-	dialog.setContentPane( panel );
-	panel.setUsedGearNames( getJTableModel().getAllGearNames() );
-	//dialog.setSize(460, 400);
-	dialog.pack();
-	dialog.setLocationRelativeTo(this);
-	dialog.show();
-
-	if( panel.getButtonPressed() == DirectGearPanel.PRESSED_OK )
-	{
-		//add the newly created gear to the JTable
-		getJTableModel().addRow( panel.getNewGear() );
-
-		//tell the listeners our panel has changed
-		fireInputUpdate();
-
-		//only allow up to MAX_GEAR_COUNT gears per program
-		getJButtonCreate().setEnabled( getJTableModel().getRowCount() < MAX_GEAR_COUNT );		
-	}
-
-	return;
-*/
 }
-/**
- * Comment
- */
+
 public void jButtonDelete_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	if( getJComboBoxGear().getSelectedItem() != null )
@@ -594,9 +578,7 @@ public void jButtonDelete_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 	return;
 }
-/**
- * Comment
- */
+
 public void jComboBoxGear_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 	if( itemEvent != null )
@@ -646,6 +628,11 @@ public void setValue(Object o)
 {
 	LMProgramDirect program = (LMProgramDirect)o;
 
+	if (program instanceof LmProgramSep) {
+        setSep(true);
+        getDirectModifyGearPanel().showSepGearsOnly();
+    }
+	
 	for( int i = 0; i < program.getLmProgramDirectGearVector().size(); i++ )
 	{
 		getJComboBoxGear().addItem(

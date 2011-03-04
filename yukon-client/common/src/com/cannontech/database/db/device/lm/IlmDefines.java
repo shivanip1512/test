@@ -37,6 +37,7 @@ public interface IlmDefines
     public static final String CONTROL_TARGET_CYCLE = GearControlMethod.TargetCycle.toString();
 	public static final String THERMOSTAT_SETBACK = GearControlMethod.ThermostatRamping.toString();
 	public static final String SIMPLE_THERMOSTAT_SETBACK = GearControlMethod.SimpleThermostatRamping.toString();
+	public static final String SEP_CYCLE_CONTROL = GearControlMethod.SepCycle.toString();
 	public static final String NO_CONTROL = GearControlMethod.NoControl.toString();
 
 	//a mapping of all the possible control methods
@@ -52,6 +53,7 @@ public interface IlmDefines
 		CONTROL_LATCHING,
 		THERMOSTAT_SETBACK,
 		SIMPLE_THERMOSTAT_SETBACK,
+		SEP_CYCLE_CONTROL,
 		NO_CONTROL
 		
 	};
@@ -78,6 +80,9 @@ public interface IlmDefines
 	public static final String OPTION_DYNAMIC_SHED = "DynamicShedTime";
 	public static final String OPTION_LIMITED_COUNT_DOWN = "LimitedCountDown";
 
+	// All possible values for ramp in/ramp out options
+	public static final String RAMP_NO_RAMP = "NoRamp";
+	public static final String RAMP_RANDOM = "Random";
 
 
 	// --------------------------------------------------------------- 

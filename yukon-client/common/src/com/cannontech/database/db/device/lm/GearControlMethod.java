@@ -5,6 +5,7 @@ import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
+import com.cannontech.database.data.device.lm.SepCycleGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
@@ -15,6 +16,7 @@ import com.cannontech.database.data.device.lm.TimeRefreshGear;
 public enum GearControlMethod {
 	TimeRefresh(TimeRefreshGear.class),
 	SmartCycle(SmartCycleGear.class),
+	SepCycle(SepCycleGear.class),
 	MasterCycle(MasterCycleGear.class),
 	Rotation(RotationGear.class),
 	Latching(LatchingGear.class),

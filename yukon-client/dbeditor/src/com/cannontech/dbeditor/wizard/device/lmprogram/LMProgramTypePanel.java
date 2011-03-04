@@ -7,9 +7,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
 {
 	javax.swing.ButtonGroup buttonGroup = new javax.swing.ButtonGroup();
-	private javax.swing.JRadioButton ivjJRadioButtonCurtailment = null;
 	private javax.swing.JRadioButton ivjJRadioButtonDirectControl = null;
-	private javax.swing.JRadioButton ivjJRadioButtonEnergyExchange = null;
+	private javax.swing.JRadioButton ivjJRadioButtonSepControl = null;
 /**
  * Constructor
  */
@@ -18,28 +17,7 @@ public LMProgramTypePanel() {
 	super();
 	initialize();
 }
-/**
- * Return the JRadioButtonCurtailment property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getJRadioButtonCurtailment() {
-	if (ivjJRadioButtonCurtailment == null) {
-		try {
-			ivjJRadioButtonCurtailment = new javax.swing.JRadioButton();
-			ivjJRadioButtonCurtailment.setName("JRadioButtonCurtailment");
-			ivjJRadioButtonCurtailment.setMnemonic('c');
-			ivjJRadioButtonCurtailment.setText("Curtailment");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJRadioButtonCurtailment;
-}
+
 /**
  * Return the JRadioButtonDirectControl property value.
  * @return javax.swing.JRadioButton
@@ -63,17 +41,17 @@ private javax.swing.JRadioButton getJRadioButtonDirectControl() {
 	return ivjJRadioButtonDirectControl;
 }
 /**
- * Return the JRadioButtonEnergyExchange property value.
+ * Return the JRadioButtonSepControl property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
-	if (ivjJRadioButtonEnergyExchange == null) {
+	if (ivjJRadioButtonSepControl == null) {
 		try {
-			ivjJRadioButtonEnergyExchange = new javax.swing.JRadioButton();
-			ivjJRadioButtonEnergyExchange.setName("JRadioButtonEnergyExchange");
-			ivjJRadioButtonEnergyExchange.setMnemonic('e');
-			ivjJRadioButtonEnergyExchange.setText("Energy Exchange");
+			ivjJRadioButtonSepControl = new javax.swing.JRadioButton();
+			ivjJRadioButtonSepControl.setName("SEPControlButton");
+			ivjJRadioButtonSepControl.setMnemonic('s');
+			ivjJRadioButtonSepControl.setText("SEP Control");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -82,7 +60,7 @@ private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJRadioButtonEnergyExchange;
+	return ivjJRadioButtonSepControl;
 }
 /**
  * Insert the method's description here.
@@ -91,16 +69,12 @@ private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
 public int getLMSelectedType() 
 {
 	if( getJRadioButtonDirectControl().isSelected() )
-	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
+	{
 		return com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM;
 	}
-	else if( getJRadioButtonCurtailment().isSelected() )
- 	{
-	 	return com.cannontech.database.data.pao.PAOGroups.LM_CURTAIL_PROGRAM;
- 	}
  	else if( getJRadioButtonEnergyExchange().isSelected() )
  	{
-	 	return com.cannontech.database.data.pao.PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM;
+	 	return com.cannontech.database.data.pao.PAOGroups.LM_SEP_PROGRAM;
  	}
  	else
  		throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
@@ -142,13 +116,7 @@ private void initialize() {
 		constraintsJRadioButtonDirectControl.insets = new java.awt.Insets(48, 105, 8, 101);
 		add(getJRadioButtonDirectControl(), constraintsJRadioButtonDirectControl);
 
-		java.awt.GridBagConstraints constraintsJRadioButtonCurtailment = new java.awt.GridBagConstraints();
-		constraintsJRadioButtonCurtailment.gridx = 1; constraintsJRadioButtonCurtailment.gridy = 2;
-		constraintsJRadioButtonCurtailment.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJRadioButtonCurtailment.ipadx = 53;
-		constraintsJRadioButtonCurtailment.insets = new java.awt.Insets(9, 105, 8, 101);
-		add(getJRadioButtonCurtailment(), constraintsJRadioButtonCurtailment);
-
+		
 		java.awt.GridBagConstraints constraintsJRadioButtonEnergyExchange = new java.awt.GridBagConstraints();
 		constraintsJRadioButtonEnergyExchange.gridx = 1; constraintsJRadioButtonEnergyExchange.gridy = 3;
 		constraintsJRadioButtonEnergyExchange.anchor = java.awt.GridBagConstraints.WEST;
@@ -161,7 +129,6 @@ private void initialize() {
 	// user code begin {2}
 
 	buttonGroup.add( getJRadioButtonDirectControl() );
-	buttonGroup.add( getJRadioButtonCurtailment() );
 	buttonGroup.add( getJRadioButtonEnergyExchange() );
 
 	// default selected button

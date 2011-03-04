@@ -7,7 +7,9 @@ import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 import com.cannontech.common.gui.util.AddRemovePanel;
+import com.cannontech.database.data.device.lm.LmProgramSep;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.spring.YukonSpringHook;
@@ -203,8 +205,9 @@ private void initialize() {
 /**
  * Insert the method's description here.
  * Creation date: (3/13/2002 2:17:21 PM)
+ * @param isSepProgram 
  */
-public void initLeftList( boolean hideLMGroupPoints)
+public void initLeftList( boolean hideLMGroupPoints, boolean isSepProgram)
 {
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
@@ -221,7 +224,11 @@ public void initLeftList( boolean hideLMGroupPoints)
 					 ((com.cannontech.database.data.lite.LiteYukonPAObject)groups.get(i)).getType() != com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT 
 					 : true) )
 			{
-				newList.addElement( groups.get(i) );
+			    // SEP compatible groups are shown for SEP programs and hidden for all others
+			    if (isSepProgram && isGroupSepCompatible(((LiteYukonPAObject)groups.get(i)).getType()) ||
+			       !isSepProgram && !isGroupSepCompatible(((LiteYukonPAObject)groups.get(i)).getType())) {
+			        newList.addElement( groups.get(i) );
+			    }
 			}
 
 		}
@@ -233,6 +240,16 @@ public void initLeftList( boolean hideLMGroupPoints)
 	}
 	
 }
+
+private boolean isGroupSepCompatible(int groupType)
+{
+    if (groupType == PAOGroups.LM_GROUP_DIGI_SEP) {
+        return true;
+    }
+        
+    return false;
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -454,7 +471,7 @@ public void setValue(Object o)
 		}
 	}
 
-	initLeftList( !isLatching );
+	initLeftList( !isLatching, o instanceof LmProgramSep );
 	/**** END of special case for the LM_GROUP_POINT group type ****/
 
 

@@ -436,6 +436,7 @@ public final static boolean isLmGroup(int deviceType)
 		case LM_GROUP_SADIGITAL:
 		case LM_GROUP_GOLAY:
 		case LM_GROUP_INTEGRATION:
+		case LM_GROUP_DIGI_SEP:
 			return true;
 	
 		default:

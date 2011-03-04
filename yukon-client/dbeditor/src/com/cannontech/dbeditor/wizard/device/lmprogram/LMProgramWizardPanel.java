@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -174,7 +175,13 @@ public java.awt.Dimension getMinimumSize() {
  */
 protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.cannontech.common.gui.util.DataInputPanel currentInputPanel) 
 {
-	if( currentInputPanel == null )
+    if( currentInputPanel == null )
+    {
+         getLmProgramTypePanel().setFirstFocus();
+         return getLmProgramTypePanel();
+    }
+    else
+	if( currentInputPanel == getLmProgramTypePanel() )
 	{
         getLmProgramBasePanel().setIsAWizardOp(true);
         getLmProgramBasePanel().getJLabelActualProgType().setText(PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()));
@@ -184,6 +191,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
     } else if( currentInputPanel == getLmProgramBasePanel() )
 	{
             getLmProgramDirectPanel().setFirstFocus();
+            if (PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()).compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0) {
+                getLmProgramDirectPanel().setSep(true);
+            }
             return getLmProgramDirectPanel();
 	}
 	// Direct program begin
@@ -196,7 +206,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else if( currentInputPanel == getLMProgramControlWindowPanel() )
 	{		
-		getLmProgramListPanel().initLeftList( !getLmProgramDirectPanel().hasLatchingGear() );
+		getLmProgramListPanel().initLeftList( !getLmProgramDirectPanel().hasLatchingGear(),
+		                                      PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()).compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0 );
         getLmProgramListPanel().setFirstFocus();
 		return getLmProgramListPanel();
 	}

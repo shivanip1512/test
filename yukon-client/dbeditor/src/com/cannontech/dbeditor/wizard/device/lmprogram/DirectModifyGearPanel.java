@@ -27,6 +27,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private LatchingGearPanel ivjLatchingGearPanel1 = null;
     private MasterCycleGearPanel ivjMasterGearPanel1 = null;
     private SmartCycleGearPanel ivjSmartGearPanel1 = null;
+    private SepCycleGearPanel sepCycleGearPanel = null;
     private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
     private RotationGearPanel ivjRotationGearPanel1= null;
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
@@ -261,6 +262,12 @@ private javax.swing.JComboBox getJComboBoxGearType() {
     return ivjJComboBoxGearType;
 }
 
+public void showSepGearsOnly() {
+    getJComboBoxGearType().removeAllItems();
+    ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.SEP_CYCLE_CONTROL) );
+    ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
+}
+
 /**
  * Return the JLabelGearName property value.
  * @return javax.swing.JLabel
@@ -375,6 +382,9 @@ public Object getValue(Object o)
 	    	obj = getIvjSmartGearPanel1().getValue(gear);
 	    	break;
 	    }
+	    case SepCycle:
+	        obj = getSepCycleGearPanel().getValue(gear);
+	        break;
 	    case MasterCycle: {
 	    	obj = getIvjMasterGearPanel1().getValue(gear);
 	    	break;
@@ -455,6 +465,7 @@ private void initConnections() throws java.lang.Exception {
     getIvjMasterGearPanel1().addDataInputPanelListener(this);
     getIvjRotationGearPanel1().addDataInputPanelListener(this);
     getIvjSmartGearPanel1().addDataInputPanelListener(this);
+    getSepCycleGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
     getIvjSimpleThermoSetbackGearPanel1().addDataInputPanelListener(this);
     getNoControlGearPanel().addDataInputPanelListener(this);
@@ -623,6 +634,9 @@ private void setGearType(GearControlMethod method)
         getIvjSmartGearPanel1().setTargetCycle(method == GearControlMethod.TargetCycle);
     	break;
     
+    case SepCycle:
+        getJScrollPane1().setViewportView(getSepCycleGearPanel());
+        break;
     case TimeRefresh:
     	getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
     	break;
@@ -674,6 +688,10 @@ public void setValue(Object o)
     if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )
     {
         getIvjSmartGearPanel1().setValue(gear);         
+    }
+    else if( gear instanceof com.cannontech.database.data.device.lm.SepCycleGear)
+    {
+        getSepCycleGearPanel().setValue(gear);
     }
     else if( gear instanceof com.cannontech.database.data.device.lm.MasterCycleGear )
     {
@@ -768,6 +786,11 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
         return ivjSmartGearPanel1;
     }
 
+    public SepCycleGearPanel getSepCycleGearPanel() {
+        if(sepCycleGearPanel == null)
+            sepCycleGearPanel = new SepCycleGearPanel();
+        return sepCycleGearPanel;
+    }
 
     /**
      * Returns the ivjThermoSetbackGearPanel1.
@@ -833,6 +856,10 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      */
     public void setIvjSmartGearPanel1(SmartCycleGearPanel ivjSmartGearPanel1) {
         this.ivjSmartGearPanel1 = ivjSmartGearPanel1;
+    }
+    
+    public void setSepCycleGearPanel(SepCycleGearPanel sepCycleGearPanel) {
+        this.sepCycleGearPanel = sepCycleGearPanel;
     }
 
     /**

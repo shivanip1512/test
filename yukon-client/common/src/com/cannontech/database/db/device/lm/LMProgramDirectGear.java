@@ -181,7 +181,8 @@ public abstract class LMProgramDirectGear
 					+ ", " + SETTER_COLUMNS[13] + ", " + SETTER_COLUMNS[14] + ", " + SETTER_COLUMNS[15]
 					+ ", " + SETTER_COLUMNS[16] + ", " + SETTER_COLUMNS[17] + ", " + SETTER_COLUMNS[18]
 					+ ", " + SETTER_COLUMNS[19] + ", " + SETTER_COLUMNS[20] + ", " + SETTER_COLUMNS[21]
-                    + ", " + SETTER_COLUMNS[22] + ", " + SETTER_COLUMNS[26] + " from " + TABLE_NAME +
+                    + ", " + SETTER_COLUMNS[22] + ", " + SETTER_COLUMNS[24] + ", " + SETTER_COLUMNS[26]
+                    + " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
 		{
@@ -231,10 +232,11 @@ public abstract class LMProgramDirectGear
 					gear.setRampOutInterval(new Integer(rset.getInt(21)));
 					gear.setRampOutPercent(new Integer(rset.getInt(22)));
                     gear.setFrontRampOption(rset.getString(23));
+                    gear.setBackRampOption(rset.getString(24));
                     /*
                      * Other ramp fields not used
                      */
-                    gear.setKWReduction(new Double(rset.getDouble(24)));
+                    gear.setKWReduction(new Double(rset.getDouble(25)));
 				}
 				
 				gearList.add(gear);
@@ -553,8 +555,9 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setRampOutInterval((Integer) results[20]);
 			setRampOutPercent((Integer) results[21]);
             setFrontRampOption((String) results[22]);
+            setBackRampOption((String) results[24]);
             /*
-             * Other ramp fields not used
+             * Front ramp time/back ramp time unused
              */
             setKWReduction((Double) results[26]);
 		}
@@ -749,6 +752,11 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     public void setFrontRampOption(String newOption)
     {
         frontRampOption = newOption;
+    }
+    
+    public void setBackRampOption(String newOption)
+    {
+        backRampOption = newOption;
     }
 	/**
 	 * Insert the method's description here.
