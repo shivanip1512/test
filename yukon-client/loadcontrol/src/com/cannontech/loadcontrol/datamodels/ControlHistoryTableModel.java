@@ -246,7 +246,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 		else
 			return 
 				getThresholdValue(getCurrentControlArea()) != getThresholdValue(newCntrlArea)
-				|| getThresholdPtID(getCurrentControlArea()) != getThresholdPtID(newCntrlArea);
+				|| getTriggerPtID(getCurrentControlArea()) != getTriggerPtID(newCntrlArea);
 	}
 	
 	/**
@@ -296,10 +296,12 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger =
 					(LMControlAreaTrigger)getCurrentControlArea().getTriggerVector().get(i);
 
-                if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD || 
+                    trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
 					valPtID = trigger.getPointId().intValue();
 					peakPtID = trigger.getPeakPointId().intValue();
 				}
+                
 
 			}
 			
@@ -372,7 +374,8 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger = 
 						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
-                if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD ||
+                    trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
                     return trigger.getThreshold().doubleValue();
                 }
 			}
@@ -384,7 +387,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	}
 	
 
-	private int getThresholdPtID( LMControlArea area )
+	private int getTriggerPtID( LMControlArea area )
 	{
 		if( area != null && area.getTriggerVector().size() > 0 )
 		{

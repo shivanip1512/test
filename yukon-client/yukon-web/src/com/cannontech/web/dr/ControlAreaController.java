@@ -461,7 +461,7 @@ public class ControlAreaController {
         	
         	for (LMControlAreaTrigger trigger : target.getTriggers()) {
         		
-        		if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
+        		if (trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
         		
 	        		int triggerNumber = trigger.getTriggerNumber();
 	        		Double threshold = trigger.getThreshold();
@@ -469,7 +469,8 @@ public class ControlAreaController {
 	        		String thresholdFieldName = "trigger" + triggerNumber + ".threshold";
 	        		String offsetFieldName = "trigger" + triggerNumber + ".minRestoreOffset";
 	        		
-	        		if (threshold == null && errors.getFieldErrorCount(thresholdFieldName) == 0) {
+	        		if (trigger.getTriggerType() == TriggerType.THRESHOLD && 
+	        		    threshold == null && errors.getFieldErrorCount(thresholdFieldName) == 0) {
 	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdBlank");
 	        		}
 	        		

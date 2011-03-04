@@ -269,17 +269,20 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         // Add trigger change commands for trigger 1 if it exists and is a
         // threshold trigger.
         LMControlAreaTrigger trigger1 = triggerVector.get(0);
-        if (trigger1 != null && trigger1.getTriggerType() == TriggerType.THRESHOLD) {
+        if (trigger1 != null && (trigger1.getTriggerType() == TriggerType.THRESHOLD || 
+                                trigger1.getTriggerType() == TriggerType.THRESHOLD_POINT)) {
             List<LMCommand> triggerCommands = 
                 this.getTriggerCommands(controlAreaId, trigger1, threshold1, offset1);
             commandVector.addAll(triggerCommands);
         }
+        
 
         // Add trigger change commands for trigger 2 if it exists and is a
         // threshold trigger.
         if (triggerVector.size() > 1) {
             LMControlAreaTrigger trigger2 = triggerVector.get(1);
-            if (trigger2 != null && trigger2.getTriggerType() == TriggerType.THRESHOLD) {
+            if (trigger2 != null && (trigger2.getTriggerType() == TriggerType.THRESHOLD || 
+                                trigger2.getTriggerType() == TriggerType.THRESHOLD_POINT)) {
                 List<LMCommand> triggerCommands = 
                     this.getTriggerCommands(controlAreaId, trigger2, threshold2, offset2);
                 commandVector.addAll(triggerCommands);
@@ -359,7 +362,8 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             commandList.add(offsetCommand);
         }
 
-        if(threshold != null && trigger.getThreshold() != threshold) {
+        if(threshold != null && trigger.getThreshold() != threshold  && 
+                            trigger.getTriggerType() == TriggerType.THRESHOLD) {
             //create a new threshold command message
             LMCommand thresholdCommand = new LMCommand(LMCommand.CHANGE_THRESHOLD,
                                                         controlAreaId,

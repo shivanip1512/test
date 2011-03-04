@@ -76,7 +76,8 @@ public java.lang.String getTriggerValue()
 			triggerValue = DaoFactory.getStateDao().getLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
-		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD )
+		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD ||
+		         getTrigger().getTriggerType() == TriggerType.THRESHOLD_POINT )
 		{
 			triggerValue = getTrigger().getThreshold().toString();
 		}
@@ -157,7 +158,8 @@ public String toString()
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Normal = " + getTriggerValue() + "]";
 	}
-	else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD )
+	else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD ||
+	        getTrigger().getTriggerType() == TriggerType.THRESHOLD_POINT)
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Threshold = " + getTriggerValue() + "]";
 	}

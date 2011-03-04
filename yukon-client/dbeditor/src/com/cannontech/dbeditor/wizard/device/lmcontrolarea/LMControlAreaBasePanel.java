@@ -739,7 +739,7 @@ private void initialize() {
 		// user code end
 		setName("LMControlAreaBasePanel");
 		setLayout(new java.awt.GridBagLayout());
-		setSize(375, 358);
+		setSize(500, 500);
 
 		java.awt.GridBagConstraints constraintsJLabelName = new java.awt.GridBagConstraints();
 		constraintsJLabelName.gridx = 1; constraintsJLabelName.gridy = 1;

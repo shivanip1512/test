@@ -14,6 +14,7 @@ public class LMControlAreaTrigger implements Cloneable
 	private Date lastPointValueTimeStamp = null;
 	private Integer normalState = null;
 	private Double threshold = null;
+	private Integer thresholdPointId = null;
 	private String projectionType = null;
 	private Integer projectionPoints = null;
 	private Integer projectAheadDuration = null;
@@ -171,5 +172,13 @@ public void setYukonID(java.lang.Integer newYukonID) {
 public String toString() 
 {
 	return getTriggerType() + ":" + getPointId();
+}
+
+public void setThresholdPointId(Integer thresholdPointId) {
+    this.thresholdPointId = thresholdPointId;
+}
+
+public Integer getThresholdPointId() {
+    return thresholdPointId;
 }
 }

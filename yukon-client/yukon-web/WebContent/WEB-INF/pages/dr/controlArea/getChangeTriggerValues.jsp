@@ -33,10 +33,10 @@
                 <c:if test="${trigger.triggerType == 'STATUS'}">
                     <i:inline key=".statusTrigger"/>
                 </c:if>
-                <c:if test="${trigger.triggerType == 'THRESHOLD'}">
+                <c:if test="${trigger.triggerType == 'THRESHOLD' || trigger.triggerType == 'THRESHOLD_POINT'}">
                     <tags:nameValueContainer>
                         <tags:nameValue name="${thresholdName}">
-                        	<tags:input path="trigger${trigger.triggerNumber}.threshold"/>
+                        	<tags:input path="trigger${trigger.triggerNumber}.threshold" disabled="${trigger.triggerType == 'THRESHOLD_POINT'}"/>
                         </tags:nameValue>
                         <tags:nameValue name="${offsetName}">
                         	<tags:input path="trigger${trigger.triggerNumber}.minRestoreOffset"/>

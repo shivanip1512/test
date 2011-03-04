@@ -10,6 +10,8 @@ public class ControlAreaTrigger {
         this.triggerNumber = triggerNumber;
         if (type != null && type.equalsIgnoreCase(TriggerType.THRESHOLD.getDbString())) {
             this.type = TriggerType.THRESHOLD;
+        } else if (type != null && type.equalsIgnoreCase(TriggerType.THRESHOLD_POINT.getDbString())) {
+            this.type = TriggerType.THRESHOLD_POINT;
         } else {
             this.type = TriggerType.STATUS;
         }
@@ -30,5 +32,10 @@ public class ControlAreaTrigger {
     public boolean isThresholdType() {
         return type.equals(TriggerType.THRESHOLD);
     }
+    
+    public boolean isThresholdPointType() {
+        return type.equals(TriggerType.THRESHOLD_POINT);
+    }
+
 
 }

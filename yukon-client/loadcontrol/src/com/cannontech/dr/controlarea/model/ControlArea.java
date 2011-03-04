@@ -22,7 +22,8 @@ public class ControlArea extends DisplayablePaoBase {
 
     public boolean isHasThresholdTrigger() {
         for (ControlAreaTrigger trigger : getTriggers()) {
-            if (trigger.getType() == TriggerType.THRESHOLD) {
+            if (trigger.getType() == TriggerType.THRESHOLD || 
+                trigger.getType() == TriggerType.THRESHOLD_POINT) {
                 return true;
             }
         }

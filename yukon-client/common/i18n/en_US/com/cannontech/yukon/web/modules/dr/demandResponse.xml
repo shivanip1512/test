@@ -69,6 +69,7 @@
 
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.STATUS.VALUE_THRESHOLD">{state} / {threshold}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.THRESHOLD.VALUE_THRESHOLD">{value|2} / {threshold|2}</entry>
+<entry key="yukon.web.modules.dr.controlAreaTrigger.value.THRESHOLD_POINT.VALUE_THRESHOLD">{value|2} / {threshold|2}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.PEAK_PROJECTION">{peak|2} / {projection|2}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.ATKU">{thresholdKickPercent}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.ATKU.disabledKU">Disabled KU</entry>

@@ -23,7 +23,7 @@ public LMControlAreaWizardPanel() {
  */
 public java.awt.Dimension getActualSize() 
 {
-	setPreferredSize( new java.awt.Dimension(410, 500) );
+	setPreferredSize( new java.awt.Dimension(410, 595) );
 
 	return getPreferredSize();
 }
