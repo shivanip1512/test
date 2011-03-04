@@ -30,7 +30,7 @@
                 var str = [];
                 str.push('<li>');
                     str.push('<span class="remove fr">');
-                        str.push('<a class="simpleLink icon_remove" title="" href="javascript:removeDesignationCode()">remove</a>');
+                        str.push('<a class="simpleLink icon icon_remove" title="" href="javascript:removeDesignationCode()">remove</a>');
                     str.push('</span>');
                     str.push(designationCode);
                     str.push('<input type="hidden" value="0" name="designationCodes['+ ++DC_INDEX +'].id"/>');
@@ -169,13 +169,14 @@
                                 <c:if
                                     test="${not empty serviceCompany.designationCodes[row.index].value}">
                                     <li><cti:displayForPageEditModes modes="EDIT,CREATE">
-                                        <span class="remove fr"><a href="#" class="remove icon_remove simpleLink">remove</a></span>
+                                        <span class="remove fr"><a href="#" class="remove icon icon_remove simpleLink">remove</a></span>
                                         <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
                                         <tags:hidden path="designationCodes[${row.index}].id" />
                                         <tags:hidden path="designationCodes[${row.index}].value" />
                                         <tags:hidden path="designationCodes[${row.index}].serviceCompanyId" />
                                     </cti:displayForPageEditModes> <cti:displayForPageEditModes modes="VIEW">
                                         <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
+                                        <tags:hidden path="designationCodes[${row.index}].value" />
                                     </cti:displayForPageEditModes></li>
                                 </c:if>
                             </c:forEach>

@@ -1109,7 +1109,7 @@
                                 <pages>
                                     <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/serviceCompany/view?id=${id}</link>
+                                        <link>/spring/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
                                         <labelArgument>${serviceCompany.companyName}</labelArgument>
                                         <pages>
                                             <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
@@ -1121,7 +1121,7 @@
                                     </page>
                                     <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/serviceCompany/create?id=${id}</link>
+                                        <link>/spring/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
                                     </page>
                                 </pages>
                             </page>

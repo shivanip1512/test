@@ -1310,3 +1310,21 @@ padding: 10px;
 .stdhdr_rightSide select {
     max-width: 140px;
 }
+
+.icon {
+    overflow:hidden;
+    float:left;
+    position:relative;
+    width: 16px;
+    height: 1px;
+    padding-top: 16px;
+}
+
+.icon_remove {
+    background: transparent url(../Icons/delete.png) top left no-repeat;
+}
+
+.icon_remove:hover {
+    background: transparent url(../Icons/delete_over.png) top left no-repeat;
+}
+    
