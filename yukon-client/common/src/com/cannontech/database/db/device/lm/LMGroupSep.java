@@ -1,16 +1,15 @@
 package com.cannontech.database.db.device.lm;
 
+import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.Set;
 
 import com.cannontech.core.dao.LmGroupSepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * This type was created in VisualAge.
- */
-public class LMGroupSep extends com.cannontech.database.db.DBPersistent {
+public class LMGroupSep extends DBPersistent {
     private static final long serialVersionUID = -5869275545572761995L;
     private Integer deviceId = null;
     private Integer utilityEnrollmentGroup = null;
@@ -19,7 +18,7 @@ public class LMGroupSep extends com.cannontech.database.db.DBPersistent {
     public static final String tableName = "LMGroupSep";
 
     @Override
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
         Object addValues[] = { getDeviceId(), getUtilityEnrollmentGroup() };
 
         add(tableName, addValues);
@@ -27,13 +26,13 @@ public class LMGroupSep extends com.cannontech.database.db.DBPersistent {
     }
 
     @Override
-    public void delete() throws java.sql.SQLException {
+    public void delete() throws SQLException {
         delete(tableName, "DeviceId", getDeviceId());
         getDao().removeByDeviceId(deviceId);
     }
 
     @Override
-    public void retrieve() throws java.sql.SQLException {
+    public void retrieve() throws SQLException {
         String selectColumns[] = { "UtilityEnrollmentGroup" };
         String constraintColumns[] = { "DeviceId" };
         Object constraintValues[] = { getDeviceId() };
@@ -50,7 +49,7 @@ public class LMGroupSep extends com.cannontech.database.db.DBPersistent {
     }
 
     @Override
-    public void update() throws java.sql.SQLException {
+    public void update() throws SQLException {
         String setColumns[] = { "UtilityEnrollmentGroup" };
         Object setValues[] = { getUtilityEnrollmentGroup() };
 
@@ -61,11 +60,6 @@ public class LMGroupSep extends com.cannontech.database.db.DBPersistent {
         getDao().save(getDeviceClassSet(), deviceId);
     }
 
-    /**
-     * Returns the xmlDao. Use this instead of accessing the dao variable. This
-     * prevents a null.
-     * @return
-     */
     private LmGroupSepDeviceClassDao getDao() {
         return YukonSpringHook.getBean("sepLMGroupDeviceClassDao", LmGroupSepDeviceClassDao.class);
     }

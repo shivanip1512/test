@@ -28,6 +28,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 		DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
 
     private static final PaoType [] GROUP_LIST = {
+        PaoType.LM_GROUP_DIGI_SEP,
         PaoType.LM_GROUP_EMETCON,
         PaoType.LM_GROUP_EXPRESSCOMM,
         PaoType.LM_GROUP_GOLAY,
@@ -35,12 +36,12 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_MCT,
         PaoType.LM_GROUP_POINT,
         PaoType.LM_GROUP_RIPPLE,
-        PaoType.LM_GROUP_VERSACOM,
-        PaoType.LM_GROUP_DIGI_SEP
+        PaoType.LM_GROUP_VERSACOM
     };  
 
 	private static final PaoType[] GROUP_LIST_SA = {
-        PaoType.LM_GROUP_EMETCON,
+	    PaoType.LM_GROUP_DIGI_SEP,
+	    PaoType.LM_GROUP_EMETCON,
         PaoType.LM_GROUP_EXPRESSCOMM,
         PaoType.LM_GROUP_GOLAY,
         PaoType.LM_GROUP_INTEGRATION,
@@ -50,8 +51,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_SA205,
         PaoType.LM_GROUP_SA305,
         PaoType.LM_GROUP_SADIGITAL,
-        PaoType.LM_GROUP_VERSACOM,
-        PaoType.LM_GROUP_DIGI_SEP
+        PaoType.LM_GROUP_VERSACOM
     };
 	
 /**
