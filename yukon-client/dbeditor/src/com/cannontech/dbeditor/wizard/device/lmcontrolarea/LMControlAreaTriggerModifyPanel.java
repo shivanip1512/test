@@ -1364,17 +1364,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 				ivjJPanelThresholdID.setBorder(ivjLocalBorder1);
 				ivjJPanelThresholdID.setFont(new java.awt.Font("Arial", 1, 12));
 				
-/*				java.awt.GridBagConstraints constraintsJPanelThresholdPoint = new java.awt.GridBagConstraints();
-				constraintsJPanelThresholdPoint.gridx = 1; constraintsJPanelThresholdPoint.gridy = 2;
-				constraintsJPanelThresholdPoint.fill = java.awt.GridBagConstraints.BOTH;
-				constraintsJPanelThresholdPoint.anchor = java.awt.GridBagConstraints.WEST;
-				constraintsJPanelThresholdPoint.weightx = 1.0;
-				constraintsJPanelThresholdPoint.weighty = 1.0;
-				constraintsJPanelThresholdPoint.ipadx = 33;
-				constraintsJPanelThresholdPoint.ipady = 6;
-				constraintsJPanelThresholdPoint.insets = new java.awt.Insets(1, 8, 5, 5);
-				getJPanelThresholdID().add(getJPanelThresholdPoint(), constraintsJPanelThresholdPoint);
-*/				// user code begin {1}
+				// user code begin {1}
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
