@@ -24,7 +24,7 @@ public class AvailableZigbeeDeviceOnAccountFilter implements SqlFilter {
         sql.append("    JOIN LMHardwareBase lmhb ON lmhb.inventoryId = ib.InventoryId");
         sql.append("    JOIN YukonListEntry yle on yle.EntryID = lmhb.LMHardwareTypeID");
         sql.append("  WHERE ib.accountId").eq(accountId);
-        sql.append("    AND yle.YukonDefinitionID ").eq(HardwareType.UTILITY_PRO_ZIGBEE);
+        sql.append("    AND yle.YukonDefinitionID ").eq_k(HardwareType.UTILITY_PRO_ZIGBEE);
         sql.append("    AND ib.DeviceID NOT").in(assignedDeviceIds).append(")");
 
         return sql;

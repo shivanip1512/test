@@ -5,142 +5,196 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
 
+import com.cannontech.common.model.DigiGateway;
+import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.stars.dr.hardware.service.ZigbeeWebService;
 
 public class DigiWebServiceImpl implements ZigbeeWebService {
 
-	private static final Log logger = LogFactory.getLog(DigiWebServiceImpl.class);
-	
-    private RestOperations restTemplate;
-
-	//Constants that will be somewhere else later. For testing.
-	final public String x2Mac = "00409d3d7157";
-	final public String spareX2Mac = "00409d3d70AD";
-	
-	final public String statsMac = "000CC1002719C4BF";
-	final public String statLinkKey = "000CC1002719c4BFFE10";
-	
-	final public String x2DigiId = "2861";
-	final public String spareX2DigiId = "827";
+    private static final Log logger = LogFactory.getLog(DigiWebServiceImpl.class);
     
-	@Override
-	public String installGateway(int deviceId) {
-		String macAddress = "";
-		
-		//get macaddress for digi gateway
-		
-		return commissionNewConnectPort(macAddress);
-	}
-	
-	@Override
-	public String removeGateway(int deviceId) {
-		int digiId = 0;
-		//Get digiId
-		return decommissionConnectPort(digiId);
-	}
-	
-	private String commissionNewConnectPort(String macAddress) {
-		logger.info("-- Install Commission start --");
-		//This needs to be passed in...
-    	//Installer Provided or have it on the Pao?
+    private RestOperations restTemplate;
+    private ZigbeeDeviceService zigbeeDeviceService;
 
-    	String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
-    	
-    	String response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceCore", xml, String.class);
-    	logger.info(response);
-    	
-    	return response;
-	}
+    @Override
+    public String installGateway(int deviceId) {
+        logger.info("-- Install Gateway Start --");
+        DigiGateway digiGateway= zigbeeDeviceService.getDigiGateway(deviceId);
+        logger.info("-- Install Gateway End --");
+        return commissionNewConnectPort(digiGateway.getMacAddress());
+    }
+    
+    @Override
+    public String removeGateway(int deviceId) {
+        logger.info("-- Remove Gateway Start --");
+        DigiGateway digiGateway= zigbeeDeviceService.getDigiGateway(deviceId);
+        logger.info("-- Remove Gateway Start --");
+        return decommissionConnectPort(digiGateway.getDigiId());
+    }
+    
+    private String commissionNewConnectPort(String macAddress) {
+        logger.info("-- CommissionNewConnectPort Start --");
 
+        String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
+        
+        String response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceCore", xml, String.class);
 
-	private String decommissionConnectPort(int deviceId) {
-		logger.info("-- Decommision X2 start --");
-		//We will have the MAC.. will we have the Digi Id? If so we just use that.. otherwise gotta discover the Digi Id.
-		
-    	//This needs to be an html DELETE.
-    	restTemplate.delete("http://developer.idigi.com/ws/DeviceCore/" + deviceId);
-    	
-    	logger.info("Deleted " + deviceId + "from Digi.");
-    	
-    	return null;
-	}
+        logger.info(response);
+        
+        logger.info("-- CommissionNewConnectPort End --");
+        
+        return response;
+    }
 
 
+    private String decommissionConnectPort(int digiId) {
+        logger.info("-- DecommissionNewConnectPort Start --");
 
-	@Override
-	public String installStat(int deviceId) {
-		logger.info("-- Install Stat start --");
-		
-		//What do we need for this?
-    	
-    	//Need Digi id from device... Installer Provided or have it on the Pao?
-    	//Need eui
-    	//Needlink key
-    	
-    	String reformedMac = "00000000-00000000-" + x2Mac.substring(0,6) + "FF-FF" + x2Mac.substring(6);
-    	
-    	String xml = "<sci_request version=\"1.0\">" +
-				        "<send_message>" +
-				            "<targets>" +
-				                "<device id=\"" + reformedMac + "\"/>" +
-				            "</targets>" +
-				            "<rci_request version=\"1.1\">" +
-				                "<do_command target=\"RPC_request\">" +
-				                    "<add_device synchronous=\"true\">" +
-				                        "<device_address type=\"MAC\">" +
-				                        statsMac +
-				                        "</device_address>" +
-				                        "<join_time>900</join_time>" +
-				                        "<link_key>" +
-				                            "0x" + statLinkKey +
-				                        "</link_key>" +
-				                    "</add_device>" +
-				                "</do_command>" +
-				            "</rci_request>" +
-				        "</send_message>" +
-				    "</sci_request>";
-    	
-    	String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
-    	logger.info(response);
-    	return response;
-	}
+        restTemplate.delete("http://developer.idigi.com/ws/DeviceCore/" + digiId);
+        
+        logger.info("Deleted " + digiId + " from Digi.");
+        
+        logger.info("-- DecommissionNewConnectPort End --");
+        
+        return null;
+    }
 
-	@Override
-	public String getAllDevices() {
-    	logger.info("-- gettAllDevices start --");
-    	
-    	String html = restTemplate.getForObject("http://developer.idigi.com/ws/DeviceCore",String.class);
-    	
-    	logger.info(html);
-    	
-    	logger.info("-- gettAllDevices done --");
-    	
-    	return html;
-	}
 
-	@Override
-	public String sendTextMessage(int deviceId, String message) {
-		// TODO Auto-generated method stub\
-		
-		String xml = "<create_message_event synchronous=\"true\">"
-			+ "<record type=\"DisplayMessageRecord\">"
-			+ "<message_id>0x1234</message_id>"
-			+ "<message_control>0</message_control>"
-			+ "<start_time>0</start_time>"
-			+ "<duration_in_minutes>2</duration_in_minutes>"
-			+ "<message type=\"string\">Hello World!</message>"
-			+ "</record>"
-			+ "</create_message_event>";
 
-		String response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceInterface", xml, String.class);
-    	logger.info(response);
-    	return response;
-	}
+    @Override
+    public String installStat(int deviceId, int gatewayId) {
+        logger.info("-- InstallStat Start --");
+        
+        ZigbeeThermostat stat= zigbeeDeviceService.getZigbeeThermostat(deviceId);
+        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+        
+        String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
+        
+        //TODO Get this from the system
+        String thermostatMac = "000CC1002719C4BF";
+        
+        String xml = "<sci_request version=\"1.0\">" +
+                        "<send_message>" +
+                            "<targets>" +
+                                "<device id=\"" + macAddress + "\"/>" +
+                            "</targets>" +
+                            "<rci_request version=\"1.1\">" +
+                                "<do_command target=\"RPC_request\">" +
+                                    "<add_device synchronous=\"true\">" +
+                                        "<device_address type=\"MAC\">" +
+                                        thermostatMac +
+                                        "</device_address>" +
+                                        "<join_time>900</join_time>" +
+                                        "<installation_code type=\"string\">" +
+                                            stat.getInstallCode() +
+                                        "</installation_code>" +
+                                    "</add_device>" +
+                                "</do_command>" +
+                            "</rci_request>" +
+                        "</send_message>" +
+                    "</sci_request>";
+        
+        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        
+        logger.info(response);
+        
+        logger.info("-- InstallStat End --");
+        
+        return response;
+    }
+    
+    public String uninstallStat(int deviceId, int gatewayId) {
+        
+        ZigbeeThermostat stat= zigbeeDeviceService.getZigbeeThermostat(deviceId);
+        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+        
+        String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
+        
+        //TODO Get this from the system
+        String thermostatMac = "000CC1002719C4BF";
+        
+        String xml = 
+               "<sci_request version=\"1.0\">"
+            + "  <send_message>"
+            + "    <targets>"
+            + "      <device id=\"" + macAddress + "\"/>"
+            + "    </targets>"
+            + "    <rci_request version=\"1.1\">"
+            + "      <do_command target=\"RPC_request\">"
+            + "        <remove_device synchronous=\"true\">"
+            + "          <device_address type=\"MAC\">" + thermostatMac + "</device_address>"
+            + "        </remove_device>"
+            + "      </do_command>"
+            + "    </rci_request>"
+            + "  </send_message>"
+            + "</sci_request>";
+        
+        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        
+        return response;
+    }
+    @Override
+    public String getAllDevices() {
+        logger.info("-- GetAllDevices start --");
+        
+        String html = restTemplate.getForObject("http://developer.idigi.com/ws/DeviceCore",String.class);
+        
+        logger.info(html);
+        
+        logger.info("-- GetAllDevices done --");
+        
+        return html;
+    }
 
+    @Override
+    public String sendTextMessage(int deviceId, int gatewayId, String message) {
+
+        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+           
+        String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
+        
+        String xml = 
+               "<sci_request version=\"1.0\">"
+            + "  <send_message>"
+            + "    <targets>"
+            + "      <device id=\"" + macAddress + "\"/>"
+            + "    </targets>"
+            + "    <rci_request version=\"1.1\">"
+            + "      <do_command target=\"RPC_request\">"
+            + "        <create_message_event synchronous=\"true\">"
+            + "          <record type=\"DisplayMessageRecord\">"
+            + "            <message_id>0x1234</message_id>" //Generate Random Id
+            + "            <message_control>0</message_control>"
+            + "            <start_time>0</start_time>"
+            + "            <duration_in_minutes>2</duration_in_minutes>"
+            + "            <message type=\"string\">" + message + "</message>"
+            + "          </record>"
+            + "        </create_message_event>"
+            + "      </do_command>"
+            + "    </rci_request>"
+            + "  </send_message>"
+            + "</sci_request>";
+
+        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        logger.info(response);
+        return response;
+    }
+
+    private String convertMacAddresstoDigi(String mac) {
+        String digiMac = mac.replaceAll(":","");
+        
+        digiMac = "00000000-00000000-" + digiMac.substring(0,6) + "FF-FF" + digiMac.substring(6);
+        
+        return digiMac;
+    }
     
     @Autowired
-	public void setRestTemplate(RestOperations restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    public void setRestTemplate(RestOperations restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
+    @Autowired
+    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
+        this.zigbeeDeviceService = zigbeeDeviceService;
+    }
 }

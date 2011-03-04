@@ -8,8 +8,10 @@ public interface ZigbeeWebService {
 	
 	public String removeGateway(int deviceId);
 	
-	public String installStat(int deviceId);
+	public String installStat(int deviceId, int gatewayId);
 	
-	public String sendTextMessage(int deviceId, String message);
+	public String uninstallStat(int deviceId, int gatewayId);
+	
+	public String sendTextMessage(int deviceId, int gatewayId, String message);
 	
 }

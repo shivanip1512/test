@@ -165,49 +165,66 @@ public class ZigbeeGatewayController {
 	}
     
     @RequestMapping
-    public String commission(YukonUserContext userContext, ModelMap modelMap, 
+    public String commission(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
                             AccountInfoFragment accountInfoFragment, int inventoryId) {        
         //Get deviceId from a dao/service or a gateway
         int deviceId = starsInventoryBaseDao.getByInventoryId(inventoryId).getDeviceID();
         
         zigbeeWebService.installGateway(deviceId);
         
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayCommissioned"));
+        
         return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId);
     }
     
     @RequestMapping
-    public String decommission(YukonUserContext userContext, ModelMap modelMap, 
+    public String decommission(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
                             AccountInfoFragment accountInfoFragment, int inventoryId) {       
         //Get deviceId from a dao/service or a gateway
         int deviceId = starsInventoryBaseDao.getByInventoryId(inventoryId).getDeviceID();
         
         zigbeeWebService.removeGateway(deviceId);
         
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayDecommissioned"));
+        
         return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId);
     }
     
     @RequestMapping
-    public String installStat(YukonUserContext userContext, ModelMap modelMap, 
+    public String installStat(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
                             AccountInfoFragment accountInfoFragment, int deviceId, int gatewayInvId) {
-        zigbeeWebService.installStat(deviceId);
+        
+        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
+        
+        zigbeeWebService.installStat(deviceId, gatewayId);
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatInstalled"));
         
         return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
     }
     
     @RequestMapping
-    public String uninstallStat(YukonUserContext userContext, ModelMap modelMap, 
+    public String uninstallStat(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
                             AccountInfoFragment accountInfoFragment, int deviceId, int gatewayInvId) {
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatUninstalled"));
+        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
+        
+        zigbeeWebService.uninstallStat(deviceId, gatewayId);
     	return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
     }
     
     @RequestMapping
-    public String sendTextMessage(YukonUserContext userContext, ModelMap modelMap, 
-                            AccountInfoFragment accountInfoFragment, int deviceId, String message, int gatewayInventoryId) {
-        zigbeeWebService.sendTextMessage(deviceId,message);
+    public String sendTextMessage(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
+                            AccountInfoFragment accountInfoFragment, int deviceId, String message, int gatewayInvId) {
         
-        LiteInventoryBase inventory = starsInventoryBaseDao.getByDeviceId(deviceId);
+        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
         
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInventoryId);
+        zigbeeWebService.sendTextMessage(deviceId, gatewayId, message);
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.messageSent"));
+        
+        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
     }
     
     @RequestMapping

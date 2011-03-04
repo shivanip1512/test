@@ -153,10 +153,10 @@ removeTableRow = function(rowId, deviceId) {
                     <td nowrap="nowrap">
                         <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
                         <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&gatewayInvId=${inventoryId}"/>
-                        <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&message=testmessage&gatewayInventoryId=${inventoryId}"/>
+                        <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${assignedDevice.deviceId}&message=testmessage&gatewayInvId=${inventoryId}"/>
                     </td>
                     <td class="removeColumn" >
-						<cti:img key="delete" href="javascript:removeTableRow('${assignedDevice.serialNumber}',${assignedDevice.deviceId})"/>
+						<cti:img key="remove" href="javascript:removeTableRow('${assignedDevice.serialNumber}',${assignedDevice.deviceId})"/>
 					</td>
                 </tr>
             </c:forEach>

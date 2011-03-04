@@ -6,17 +6,19 @@ public enum LMHardwareClass {
     METER,
     GATEWAY;
     
+    public boolean isSwitch() {
+        return (this == LMHardwareClass.SWITCH);
+    }
+    
+    public boolean isMeter() {
+        return (this == LMHardwareClass.METER);
+    }
+    
     public boolean isThermostat() {
-    	if ( this == LMHardwareClass.THERMOSTAT) {
-    		return true;
-    	}
-    	return false;
+    	return (this == LMHardwareClass.THERMOSTAT);
     }
     
     public boolean isGateway() {
-    	if ( this == LMHardwareClass.GATEWAY) {
-    		return true;
-    	}
-    	return false;
+    	return (this == LMHardwareClass.GATEWAY);
     }
 }

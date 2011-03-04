@@ -1754,7 +1754,7 @@
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
     
-    <bean id="zigbeeWebService" class="com.cannontech.stars.dr.hardware.service.impl.DigiWebServiceImpl"/>
+    <bean id="zigbeeWebService" class="com.cannontech.stars.dr.hardware.service.impl.DigiDummyWebServiceImpl"/>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
         <constructor-arg>

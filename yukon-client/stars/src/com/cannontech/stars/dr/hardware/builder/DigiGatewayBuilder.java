@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.hardware.builder;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.DigiGateway;
@@ -26,7 +25,7 @@ public class DigiGatewayBuilder implements HardwareBuilder {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = createDigiGateway(hardwareDto);
+        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
         
         gatewayDeviceDao.createDigiGateway(digiGateway);
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
@@ -44,7 +43,7 @@ public class DigiGatewayBuilder implements HardwareBuilder {
 
     @Override
     public void deleteDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = createDigiGateway(hardwareDto);
+        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
         
         gatewayDeviceDao.deleteDigiGateway(digiGateway);
     }
@@ -56,13 +55,13 @@ public class DigiGatewayBuilder implements HardwareBuilder {
 
     @Override
     public void updateDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = createDigiGateway(hardwareDto);
+        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
         
         gatewayDeviceDao.updateDigiGateway(digiGateway);
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
     }
 
-    private DigiGateway createDigiGateway(HardwareDto hardwareDto) {
+    private DigiGateway buildDigiGateway(HardwareDto hardwareDto) {
         DigiGateway digiGateway = new DigiGateway();
         
         digiGateway.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.DIGIGATEWAY));

@@ -23,13 +23,18 @@ public class DigiDummyWebServiceImpl implements ZigbeeWebService {
 	}
 
 	@Override
-	public String installStat(int deviceId) {
+	public String installStat(int deviceId, int gatewayId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String sendTextMessage(int deviceId, String message) {
+	public String uninstallStat(int deviceId, int gatewayId) {
+	    return null;
+	}
+
+	@Override
+	public String sendTextMessage(int deviceId, int gatewayId,  String message) {
 		// TODO Auto-generated method stub
 		return null;
 	}
