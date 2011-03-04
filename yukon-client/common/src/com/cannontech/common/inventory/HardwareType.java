@@ -227,4 +227,8 @@ public enum HardwareType implements DatabaseRepresentationSource{
         return classSet;
     }
 
+    public boolean isEnrollable() {
+        return lmHardwareClass == LMHardwareClass.SWITCH || lmHardwareClass == LMHardwareClass.THERMOSTAT;
+    }
+    
 }

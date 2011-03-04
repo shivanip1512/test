@@ -122,12 +122,19 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         List<DisplayableEnrollmentInventory> filteredList = Lists.newArrayList();
         for (DisplayableEnrollmentInventory inventory : inventoryList) {
             InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(inventory.getInventoryId());
-            if ((program.getProgram().getPaoType() == PaoType.LM_SEP_PROGRAM 
-                        && inventoryIdentifier.getHardwareType().getHardwareConfigType() == HardwareConfigType.SEP) 
-                    || (program.getProgram().getPaoType() != PaoType.LM_SEP_PROGRAM
-                        && inventoryIdentifier.getHardwareType().getHardwareConfigType() != HardwareConfigType.SEP)) {
-                filteredList.add(inventory);
-            } 
+            
+            boolean isEnrollable = inventoryIdentifier.getHardwareType().isEnrollable();
+            if (isEnrollable) {
+                boolean isSepProgram = program.getProgram().getPaoType() == PaoType.LM_SEP_PROGRAM;
+                boolean notSepProgram = program.getProgram().getPaoType() != PaoType.LM_SEP_PROGRAM;
+
+                boolean isSepHardware = inventoryIdentifier.getHardwareType().getHardwareConfigType() == HardwareConfigType.SEP;
+                boolean notSepHardware = inventoryIdentifier.getHardwareType().getHardwareConfigType() != HardwareConfigType.SEP;
+                
+                if ((isSepProgram && isSepHardware) || (notSepProgram && notSepHardware)) {
+                    filteredList.add(inventory);
+                } 
+            }
         }
         program.setInventory(filteredList);
         return program;

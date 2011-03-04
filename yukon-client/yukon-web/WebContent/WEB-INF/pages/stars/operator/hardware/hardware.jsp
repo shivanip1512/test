@@ -118,9 +118,11 @@
             </c:choose>
             <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardwareDto.displayName}"/>
             <br><br>
-            <input type="radio" name="deleteOption" value="remove" checked="checked"><span class="radioLabel"><i:inline key=".deleteOption1"/></span>
+            <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
+            <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
             <br>
-            <input type="radio" name="deleteOption" value="delete"><span class="radioLabel"><i:inline key=".deleteOption2"/></span>
+            <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
+            <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
             <br><br>
             <table class="popupButtonTable">
                 <tr>

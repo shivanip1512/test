@@ -121,7 +121,7 @@ public class OperatorOptOutController {
 
         // Get the current counts for used opt outs and remaining allowed opt outs for each device
         List<DisplayableInventory> displayableInventories =
-            displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
+            displayableInventoryDao.getOptOutSupportingInventory(accountInfoFragment.getAccountId());
         Map<Integer, OptOutCountHolder> optOutCounts =
             getOptOutCountsForInventories(displayableInventories,
                                           accountInfoFragment.getAccountId());
