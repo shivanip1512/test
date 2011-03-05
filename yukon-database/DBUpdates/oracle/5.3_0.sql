@@ -108,7 +108,7 @@ WHERE RolePropertyId = -20002;
 
 /* Start YUK-9436 */
 INSERT INTO YukonRoleProperty
-VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment.');
 
 DELETE FROM YukonUserRole
 WHERE RolePropertyId IN (-40052, -20154);
@@ -651,6 +651,39 @@ ALTER TABLE LMGroupSepDeviceClass
         REFERENCES LMGroupSep (DeviceId)
             ON DELETE CASCADE;
 /* End YUK-9548 */
+
+/* Start YUK-9567 */
+INSERT INTO PorterResponseMonitor VALUES (1, 'Default All Meters', '/', -14, 'OUTAGE_STATUS', 'DISABLED');
+
+INSERT INTO PorterResponseMonitorRule VALUES (1, 1, 1, 'Y', 'any', 0); 
+INSERT INTO PorterResponseMonitorRule VALUES (2, 2, 1, 'N', 'any', 0); 
+INSERT INTO PorterResponseMonitorRule VALUES (3, 3, 1, 'N', 'any', 1); 
+
+INSERT INTO PorterResponseMonitorErrorCode VALUES (1, 2, 93); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (2, 2, 261); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (3, 2, 262); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (4, 2, 263); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (5, 2, 264); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (6, 2, 265); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (7, 2, 267); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (8, 2, 268); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (9, 2, 269); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (10, 2, 270); 
+
+INSERT INTO StatusPointMonitor (StatusPointMonitorId, StatusPointMonitorName, GroupName, Attribute, StateGroupId, EvaluatorStatus) 
+SELECT NVL(MAX(StatusPointMonitorId) + 1, 1), 'Default All Meters', '/', 'OUTAGE_STATUS', -14, 'DISABLED' 
+FROM StatusPointMonitor;
+
+INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
+SELECT NVL(MAX(StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 1, 'NoResponse' 
+FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
+WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+
+INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
+SELECT NVL(MAX(SPMP.StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 0, 'Restoration' 
+FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
+WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+/* End YUK-9567 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

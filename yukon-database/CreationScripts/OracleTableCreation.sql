@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2011 5:35:30 PM                          */
+/* Created on:     3/5/2011 11:03:42 AM                         */
 /*==============================================================*/
 
 
@@ -7483,6 +7483,8 @@ create table PorterResponseMonitor  (
    constraint PK_PortRespMonId primary key (MonitorId)
 );
 
+INSERT INTO PorterResponseMonitor VALUES (1, 'Default All Meters', '/', -14, 'OUTAGE_STATUS', 'DISABLED');
+
 /*==============================================================*/
 /* Index: Indx_PortRespMon_Name_UNQ                             */
 /*==============================================================*/
@@ -7499,6 +7501,17 @@ create table PorterResponseMonitorErrorCode  (
    ErrorCode            NUMBER                          not null,
    constraint PK_PortRespMonErrorCodeId primary key (ErrorCodeId)
 );
+
+INSERT INTO PorterResponseMonitorErrorCode VALUES (1, 2, 93); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (2, 2, 261); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (3, 2, 262); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (4, 2, 263); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (5, 2, 264); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (6, 2, 265); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (7, 2, 267); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (8, 2, 268); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (9, 2, 269); 
+INSERT INTO PorterResponseMonitorErrorCode VALUES (10, 2, 270); 
 
 /*==============================================================*/
 /* Index: Indx_PortRespMonErr_RI_EC_UNQ                         */
@@ -7520,6 +7533,10 @@ create table PorterResponseMonitorRule  (
    State                VARCHAR2(40)                    not null,
    constraint PK_PortRespMonRuleId primary key (RuleId)
 );
+
+INSERT INTO PorterResponseMonitorRule VALUES (1, 1, 1, 'Y', 'any', 0); 
+INSERT INTO PorterResponseMonitorRule VALUES (2, 2, 1, 'N', 'any', 0); 
+INSERT INTO PorterResponseMonitorRule VALUES (3, 3, 1, 'N', 'any', 1); 
 
 /*==============================================================*/
 /* Index: Indx_PortRespMonRule_RO_MI_UNQ                        */
@@ -7995,6 +8012,8 @@ create table StatusPointMonitor  (
    constraint PK_StatPointMon primary key (StatusPointMonitorId)
 );
 
+INSERT INTO StatusPointMonitor VALUES (1, 'Default All Meters', '/', 'OUTAGE_STATUS', -14, 'DISABLED');
+
 /*==============================================================*/
 /* Index: Indx_StatPointMon_MonName_UNQ                         */
 /*==============================================================*/
@@ -8013,6 +8032,9 @@ create table StatusPointMonitorProcessor  (
    ActionType           VARCHAR2(255)                   not null,
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 );
+
+INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
+INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
 
 /*==============================================================*/
 /* Table: Substation                                            */
@@ -9514,7 +9536,7 @@ INSERT INTO YukonRoleProperty VALUES(-1115,-2,'Auto Create Login For Additional 
 INSERT INTO YukonRoleProperty VALUES(-1116,-2,'Account Number Length',' ','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.'); 
 INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Specifies the number of rotation digit characters to ignore during the customer account import process.'); 
 INSERT INTO YukonRoleProperty VALUES(-1118,-2,'Serial Number Validation','NUMERIC','Treat serial numbers as numeric or alpha-numberic. Possible values (NUMERIC, ALPHANUMERIC)');
-INSERT INTO YukonRoleProperty VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+INSERT INTO YukonRoleProperty VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment.');
 
 INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 INSERT INTO YukonRoleProperty VALUES(-1301,-4,'auth_port','1812','Authentication port.');
