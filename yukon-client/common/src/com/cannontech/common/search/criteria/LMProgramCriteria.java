@@ -1,21 +1,18 @@
 package com.cannontech.common.search.criteria;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
-import org.apache.lucene.search.BooleanClause;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.google.common.collect.ImmutableSet;
 
-import com.cannontech.common.pao.PaoType;
-
-public class LMProgramCriteria extends YukonPaoTypeCriteriaHelper {
-
-	private static final List<PaoType> TYPES = Arrays.asList(
-		PaoType.LM_DIRECT_PROGRAM,
-		PaoType.LM_SEP_PROGRAM
-	);
+public class LMProgramCriteria extends YukonPaoTagCriteriaHelper {
 
 	public LMProgramCriteria() {
 		super();
-        addCriteria(TYPES, BooleanClause.Occur.SHOULD);
+	}
+	
+	@Override
+	protected Set<PaoTag> getPaoTags() {
+		return ImmutableSet.of(PaoTag.LM_PROGRAM);
 	}
 }

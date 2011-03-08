@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -73,7 +74,7 @@ public class ProgramServiceImpl implements ProgramService {
 
             @Override
             public SqlFragmentSource getBaseQuery() {
-            	List<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+            	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
                 retVal.append("SELECT paObjectId, paoName, type");
                 retVal.append("FROM yukonPAObject");

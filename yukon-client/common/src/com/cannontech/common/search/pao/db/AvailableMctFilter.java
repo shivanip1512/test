@@ -1,6 +1,5 @@
 package com.cannontech.common.search.pao.db;
 
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
@@ -25,7 +24,7 @@ public class AvailableMctFilter implements SqlFilter {
     @Override
     public SqlFragmentSource getWhereClauseFragment() {
         
-    	List<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+    	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
 
         SqlStatementBuilder limiter1 = new SqlStatementBuilder();
         limiter1.append("paobjectId IN (");

@@ -1,7 +1,7 @@
 package com.cannontech.dr.program.dao.impl;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +36,7 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Override
     public DisplayablePao getProgram(int programId) {
-    	List<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+    	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT paObjectId, paoName, type FROM yukonPAObject");

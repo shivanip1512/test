@@ -25,49 +25,33 @@ public class PaoDetailUrlHelper {
                 return "/spring/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        supportDeviceUrlPatterns = tagBuilder.build();
-
-        // Pao type urls
-        Builder<PaoType, Function<YukonPao, String>> paoBuilder = ImmutableMap.builder();
-        paoBuilder.put(PaoType.LM_SCENARIO, new Function<YukonPao, String>() {
+        tagBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/spring/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        paoBuilder.put(PaoType.LM_CONTROL_AREA, new Function<YukonPao, String>() {
+        tagBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/spring/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        paoBuilder.put(PaoType.LM_DIRECT_PROGRAM, new Function<YukonPao, String>() {
+        tagBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        paoBuilder.put(PaoType.LM_SEP_PROGRAM, new Function<YukonPao, String>() {
-            public String apply(YukonPao pao) {
-                return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        Function<YukonPao, String> loadGroupFunction = new Function<YukonPao, String>() {
+        tagBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
                 return "/spring/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
             }
-        };
-        paoBuilder.put(PaoType.LM_GROUP_EMETCON, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_DIGI_SEP, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_EXPRESSCOMM, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_GOLAY, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_INTEGRATION, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_MCT, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_POINT, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_RIPPLE, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_SA205, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_SA305, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_SADIGITAL, loadGroupFunction);
-        paoBuilder.put(PaoType.LM_GROUP_VERSACOM, loadGroupFunction);
-        paoBuilder.put(PaoType.MACRO_GROUP, loadGroupFunction);
+        });
+        
+        supportDeviceUrlPatterns = tagBuilder.build();
+
+        // All 'to-date' known uses of this builder have been replaced with tagBuilder options.
+        // This builder is being left here for completeness and potential future use.
+        // Pao type urls
+        Builder<PaoType, Function<YukonPao, String>> paoBuilder = ImmutableMap.builder();
         supportPaoUrlPatterns = paoBuilder.build();
         
         

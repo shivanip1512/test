@@ -5020,47 +5020,59 @@
     </pao>
     
     <!-- LM GROUPS -->
-    <pao id="LM_BASE" abstract="true">
+    <pao id="LM_GROUP_BASE" abstract="true">
     	<changeGroup>lm</changeGroup>
+    	<tags>
+       		<tag name="LM_GROUP">
+       			<value>true</value>
+       		</tag>
+		</tags>
+    </pao>
+    <pao id="LM_GROUP" abstract="true">
+    	<tags>
+       		<tag name="LM_GROUP">
+       			<value>true</value>
+       		</tag>
+		</tags>
     </pao>
     
-    <pao id="LM_GROUP_EMETCON" inherits="LM_BASE">
+    <pao id="LM_GROUP_EMETCON" inherits="LM_GROUP_BASE, LM_GROUP">
         <displayName>EMETCON GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_EXPRESSCOMM" inherits="LM_BASE">
+    <pao id="LM_GROUP_EXPRESSCOMM" inherits="LM_GROUP_BASE, LM_GROUP">
         <displayName>EXPRESSCOM GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_VERSACOM" inherits="LM_BASE">
+    <pao id="LM_GROUP_VERSACOM" inherits="LM_GROUP_BASE, LM_GROUP">
         <displayName>VERSACOM GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_POINT">
+    <pao id="LM_GROUP_POINT" inherits="LM_GROUP">
         <displayName>POINT GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_RIPPLE">
+    <pao id="LM_GROUP_RIPPLE" inherits="LM_GROUP">
         <displayName>RIPPLE GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_MCT">
+    <pao id="LM_GROUP_MCT" inherits="LM_GROUP">
         <displayName>MCT GROUP</displayName>
     </pao>
-	<pao id="LM_GROUP_SA305">
+	<pao id="LM_GROUP_SA305" inherits="LM_GROUP">
         <displayName>SA-305 Group</displayName>
     </pao>
-    <pao id="LM_GROUP_SA205">
+    <pao id="LM_GROUP_SA205" inherits="LM_GROUP">
         <displayName>SA-205 Group</displayName>
     </pao>
-    <pao id="LM_GROUP_SADIGITAL">
+    <pao id="LM_GROUP_SADIGITAL" inherits="LM_GROUP">
         <displayName>SA-Digital Group</displayName>
     </pao>
-    <pao id="LM_GROUP_GOLAY">
+    <pao id="LM_GROUP_GOLAY" inherits="LM_GROUP">
         <displayName>Golay Group</displayName>
     </pao>
-    <pao id="LM_GROUP_INTEGRATION">
+    <pao id="LM_GROUP_INTEGRATION" inherits="LM_GROUP">
         <displayName>INTEGRATION GROUP</displayName>
     </pao>
-    <pao id="LM_GROUP_DIGI_SEP">
+    <pao id="LM_GROUP_DIGI_SEP" inherits="LM_GROUP">
         <displayName>DIGI SEP GROUP</displayName>
     </pao>
-    <pao id="MACRO_GROUP">
+    <pao id="MACRO_GROUP" inherits="LM_GROUP">
         <displayName>MACRO GROUP</displayName>
     </pao>
 
@@ -5078,7 +5090,27 @@
     <pao id="LM_SEP_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM SEP PROGRAM</displayName>
     </pao>
+    
+    <!-- LM Scenario -->
+    <pao id="LM_SCENARIO">
+        <displayName>LM_SCENARIO</displayName>
+		<tags>
+        	<tag name="LM_SCENARIO">
+        		<value>true</value>
+        	</tag>
+        </tags>
+    </pao>
         
+    <!-- LM Control Area -->
+    <pao id="LM_CONTROL_AREA">
+        <displayName>LM_CONTROL_AREA</displayName>
+		<tags>
+        	<tag name="LM_CONTROL_AREA">
+        		<value>true</value>
+        	</tag>
+        </tags>
+    </pao>
+    
     <!-- CBCs -->
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>

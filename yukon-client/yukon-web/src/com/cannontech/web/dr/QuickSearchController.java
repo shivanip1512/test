@@ -1,9 +1,12 @@
 package com.cannontech.web.dr;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,14 +15,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -28,7 +40,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
-import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
@@ -47,7 +58,50 @@ public class QuickSearchController {
     private PaoDetailUrlHelper paoDetailUrlHelper;
     private DemandResponseService demandResponseService;
     private PaoAuthorizationService paoAuthorizationService;
+    private PaoDefinitionDao paoDefinitionDao;
 
+    public class QuickSearchRowMapper implements RowMapperWithBaseQuery<DisplayablePao> {
+
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+        	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_CONTROL_AREA,
+        												PaoTag.LM_SCENARIO,
+        												PaoTag.LM_PROGRAM);
+            SqlStatementBuilder fragment = new SqlStatementBuilder();
+            fragment.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type ");
+            fragment.append("FROM YukonPAObject PAO");
+            fragment.append("WHERE ((PAO.Category").eq_k(PaoCategory.LOADMANAGEMENT);
+            fragment.append("       AND PAO.PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
+            fragment.append("       AND PAO.Type").in(paoTypes);
+            fragment.append("       )");
+            fragment.append("       OR (PAO.Category").eq_k(PaoCategory.DEVICE);
+            fragment.append("    AND PAO.PAOClass").eq_k(PaoClass.GROUP);
+            fragment.append("    ))");
+            
+            return fragment;
+        }
+
+        @Override
+        public SqlFragmentSource getOrderBy() {
+            return null;
+        }
+
+        @Override
+        public boolean needsWhere() {
+            return false;
+        }
+
+        @Override
+        public DisplayablePao mapRow(ResultSet rs, int rowNum) throws SQLException {
+            int paoId = rs.getInt("paObjectId");
+            String paoType = rs.getString("type");
+            PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForDbString(paoType));
+            DisplayablePaoBase pao = new DisplayablePaoBase(paoIdentifier, rs.getString("paoName"));
+            return pao;
+        }
+    }
+    
+    
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(ModelMap modelMap, YukonUserContext userContext, 
                          @ModelAttribute("quickSearchBean") ListBackingBean quickSearchBean) {
@@ -143,4 +197,9 @@ public class QuickSearchController {
     public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
         this.paoAuthorizationService = paoAuthorizationService;
     }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 }

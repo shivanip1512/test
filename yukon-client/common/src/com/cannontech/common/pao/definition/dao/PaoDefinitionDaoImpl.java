@@ -42,8 +42,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -71,8 +71,6 @@ import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.definition.model.castor.TypeFilter;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -96,6 +94,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation class for PaoDefinitionDao
@@ -310,19 +309,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	return definitions;
     }
     
-    @Override
-    public List<PaoType> getPaoTypesThatSupportTag(PaoTag feature) {
-    	
-        Set<PaoDefinition> definitions = getPaosThatSupportTag(feature);
-        ObjectMapper<PaoDefinition, PaoType> objectMapper = new ObjectMapper<PaoDefinition, PaoType>() {
-            public PaoType map(PaoDefinition from) throws ObjectMappingException {
-                PaoType paoType = from.getType();
-                return paoType;
-            }
-        };
-        List<PaoType> paoTypes = new MappingList<PaoDefinition, PaoType>(Lists.newArrayList(definitions), objectMapper);
-        return paoTypes;
-    }
+	@Override
+	public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
+
+        Set<PaoDefinition> definitions = Sets.newHashSet();
+        for (PaoTag tag : Lists.asList(firstTag, otherTags)) {
+            definitions.addAll(getPaosThatSupportTag(tag));
+        }
+		Set<PaoType> paoTypes = Sets.newHashSet(Iterables.transform(definitions, PaoUtils.getPaoDefinitionToPaoTypeFunction()));
+		return paoTypes;
+	}
     
     @Override
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, final PaoTag feature) {

@@ -1,6 +1,6 @@
 package com.cannontech.common.search.pao.db;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +18,7 @@ public class PaoTagFilter implements SqlFilter {
     
 	@Override
     public SqlFragmentSource getWhereClauseFragment() {
-		List<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag);
+		Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag);
         SqlStatementBuilder retVal = new SqlStatementBuilder();
         retVal.append("type").in(types);
         return retVal;

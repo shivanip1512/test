@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +22,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Insert the type's description here. Creation date: (3/26/2001 9:40:33 AM)
@@ -150,9 +149,8 @@ public final class LMDaoImpl implements LMDao {
     public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
     	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
     	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_SEP_PROGRAM);
-    	List<LiteYukonPAObject> allPrograms = Lists.newArrayList(Iterables.concat(directPrograms, sepPrograms));
-    	
-        return new HashSet<LiteYukonPAObject>(allPrograms);
+
+        return Sets.newHashSet(Iterables.concat(directPrograms, sepPrograms));
     }
     
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {

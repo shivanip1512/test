@@ -1,9 +1,10 @@
 package com.cannontech.common.pao.definition.dao;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -12,8 +13,6 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -79,7 +78,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 	}
 
 	@Override
-	public List<PaoType> getPaoTypesThatSupportTag(PaoTag feature) {
+	public Set<PaoType> getPaoTypesThatSupportTag(PaoTag tag, PaoTag... otherTags) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 	

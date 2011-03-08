@@ -3,6 +3,7 @@ package com.cannontech.common.pao;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.google.common.base.Function;
@@ -31,7 +32,15 @@ public class PaoUtils {
             return from.getPaoIdentifier();
         }
     };
-    
+
+    private static final Function<PaoDefinition, PaoType> paoDefinitionToPaoTypeFunction = new Function<PaoDefinition, PaoType>() {
+		@Override
+		public PaoType apply(PaoDefinition from) {
+			PaoType paoType = from.getType();
+			return paoType;
+		}
+	};
+	
     public static YukonDevice asYukonDevice(YukonPao pao) {
         if (pao instanceof YukonDevice) {
             YukonDevice device = (YukonDevice)pao;
@@ -98,4 +107,8 @@ public class PaoUtils {
     public static Function<PaoIdentifier, Integer> getPaoIdFunction() {
         return paoIdentifierToPaoIdFunction;
     }
+    
+    public static Function<PaoDefinition, PaoType> getPaoDefinitionToPaoTypeFunction() {
+		return paoDefinitionToPaoTypeFunction;
+	}
 }
