@@ -1,6 +1,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
-<%@ page import="com.cannontech.database.db.device.lm.IlmDefines" %>
+<%@ page import="com.cannontech.database.db.device.lm.GearControlMethod"%>
 <%@ page import="java.util.Date" %>
 <%@ page import="com.cannontech.util.ParamUtil" %>
 <%@ include file="lm_header.jsp" %>
@@ -210,7 +210,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
                             : new java.util.Vector() );
                     for (int i=0; i < gearList.size(); i++) {
                         LMProgramDirectGear gear = (LMProgramDirectGear)gearList.get(i);
-                        if (gear.getControlMethod().equals(IlmDefines.CONTROL_TARGET_CYCLE)) {
+                        if (gear.getControlMethod().equals(GearControlMethod.TargetCycle)) {
                             gearName = gear.getGearName();
                             gearPeriod = gear.getMethodPeriod();
                         %>
