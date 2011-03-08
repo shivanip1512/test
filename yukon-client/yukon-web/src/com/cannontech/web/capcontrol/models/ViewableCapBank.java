@@ -66,6 +66,6 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
 
     @Override
     public int compareTo(ViewableCapBank o) {
-        return this.capBankDevice.getCcName().compareTo(o.capBankDevice.getCcName());
+        return this.capBankDevice.getCcName().compareToIgnoreCase(o.capBankDevice.getCcName());
     }
 }
