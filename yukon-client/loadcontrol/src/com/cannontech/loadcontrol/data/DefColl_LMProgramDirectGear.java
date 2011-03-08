@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -95,7 +96,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirectGear.setYukonID(yukonID);
 	lmProgramDirectGear.setGearName(gearName);
 	lmProgramDirectGear.setGearNumber(gearNumber);
-	lmProgramDirectGear.setControlMethod(controlMethod);
+	lmProgramDirectGear.setControlMethod(GearControlMethod.valueOf(controlMethod));
 	lmProgramDirectGear.setMethodRate(methodRate);
 	lmProgramDirectGear.setMethodPeriod(methodPeriod);
 	lmProgramDirectGear.setMethodRateCount(methodRateCount);

@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 
 /**
  * Insert the type's description here.
@@ -52,8 +52,10 @@ protected String getHeaderText() {
  */
 public LMProgramBasePanel getLmProgramBasePanel() 
 {
-	if( lmProgramBasePanel == null )
-		lmProgramBasePanel = new LMProgramBasePanel();
+	if( lmProgramBasePanel == null ) {
+		PaoType programType = getLmProgramTypePanel().getLMSelectedType();
+		lmProgramBasePanel = new LMProgramBasePanel(programType);
+	}
 		
 	return lmProgramBasePanel;
 }
@@ -100,8 +102,10 @@ public LMProgramCurtailmentPanel getLmProgramCurtailmentPanel()
  */
 public LMProgramDirectPanel getLmProgramDirectPanel() 
 {
-	if( lmProgramDirectPanel == null )
-		lmProgramDirectPanel = new LMProgramDirectPanel();
+	if( lmProgramDirectPanel == null ) {
+		PaoType programType = getLmProgramTypePanel().getLMSelectedType();
+		lmProgramDirectPanel = new LMProgramDirectPanel(programType);
+	}
 
 	return lmProgramDirectPanel;
 }
@@ -184,16 +188,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	if( currentInputPanel == getLmProgramTypePanel() )
 	{
         getLmProgramBasePanel().setIsAWizardOp(true);
-        getLmProgramBasePanel().getJLabelActualProgType().setText(PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()));
+        getLmProgramBasePanel().getJLabelActualProgType().setText(getLmProgramTypePanel().getLMSelectedType().getPaoTypeName());
         getLmProgramBasePanel().setTriggerThresholdVisible(true);
         getLmProgramBasePanel().setFirstFocus();
         return getLmProgramBasePanel();
     } else if( currentInputPanel == getLmProgramBasePanel() )
 	{
             getLmProgramDirectPanel().setFirstFocus();
-            if (PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()).compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0) {
-                getLmProgramDirectPanel().setSep(true);
-            }
             return getLmProgramDirectPanel();
 	}
 	// Direct program begin
@@ -206,8 +207,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else if( currentInputPanel == getLMProgramControlWindowPanel() )
 	{		
-		getLmProgramListPanel().initLeftList( !getLmProgramDirectPanel().hasLatchingGear(),
-		                                      PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()).compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0 );
+		getLmProgramListPanel().initLeftList(!getLmProgramDirectPanel().hasLatchingGear(),
+		                                     getLmProgramTypePanel().getLMSelectedType());
         getLmProgramListPanel().setFirstFocus();
 		return getLmProgramListPanel();
 	}
@@ -218,16 +219,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	return null;
 }
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param currentPanel com.cannontech.common.gui.util.DataInputPanel
- */
+
+
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	//we dont use the getters for each panel here since this call creates new instances of each
 	return ( currentPanel == lmProgramDirectNotifGroupListPanel);
 //				|| currentPanel == lmProgramCurtailListPanel
 //				|| currentPanel == lmProgramEnergyExchangeCustomerListPanel );
+}
+
+@Override
+protected boolean isBackButtonSupported(DataInputPanel panel) {
+    return (panel == getLmProgramTypePanel() || panel == getLmProgramBasePanel());
 }
 }

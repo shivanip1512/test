@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.lm.LMFactory;
+
 /**
  * This type was created in VisualAge.
  */
@@ -66,15 +69,15 @@ private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
  * Insert the method's description here.
  * Creation date: (2/5/2001 10:32:24 AM)
  */
-public int getLMSelectedType() 
+public PaoType getLMSelectedType() 
 {
 	if( getJRadioButtonDirectControl().isSelected() )
 	{
-		return com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM;
+		return PaoType.LM_DIRECT_PROGRAM;
 	}
  	else if( getJRadioButtonEnergyExchange().isSelected() )
  	{
-	 	return com.cannontech.database.data.pao.PAOGroups.LM_SEP_PROGRAM;
+	 	return PaoType.LM_SEP_PROGRAM;
  	}
  	else
  		throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
@@ -85,7 +88,7 @@ public int getLMSelectedType()
 public Object getValue(Object o) 
 {
 	//create a new LMBase here
-	return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( getLMSelectedType() );
+	return LMFactory.createLoadManagement(getLMSelectedType().getDeviceTypeId() );
 }
 /**
  * Called whenever the part throws an exception.

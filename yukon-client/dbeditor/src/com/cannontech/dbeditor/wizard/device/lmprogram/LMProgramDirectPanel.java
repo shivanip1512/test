@@ -5,8 +5,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
-import com.cannontech.database.data.device.lm.LmProgramSep;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -20,7 +20,7 @@ public class LMProgramDirectPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JPanel ivjJPanelButtons = null;
 	private java.awt.FlowLayout ivjJPanelButtonsFlowLayout = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
-    private boolean sep = false;
+    private PaoType programType;
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.ItemListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -34,14 +34,13 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.I
 				connEtoC1(e);
 		};
 	};
-/**
- * Constructor
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public LMProgramDirectPanel() {
+
+public LMProgramDirectPanel(PaoType programType) {
 	super();
+	this.programType = programType;
 	initialize();
 }
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -120,16 +119,12 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 private DirectModifyGearPanel getDirectModifyGearPanel() {
 	if (ivjDirectModifyGearPanel == null) {
 		try {
-			ivjDirectModifyGearPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.DirectModifyGearPanel();
+			ivjDirectModifyGearPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.DirectModifyGearPanel(programType);
 			ivjDirectModifyGearPanel.setName("DirectModifyGearPanel");
 			ivjDirectModifyGearPanel.setPreferredSize(new java.awt.Dimension(336, 266));
 			ivjDirectModifyGearPanel.setMinimumSize(new java.awt.Dimension(336, 266));
 			// user code begin {1}
 
-			if (isSep())
-			{
-			    ivjDirectModifyGearPanel.showSepGearsOnly();
-			}
 			ivjDirectModifyGearPanel.setVisible( false );
 
 			// user code end
@@ -140,15 +135,6 @@ private DirectModifyGearPanel getDirectModifyGearPanel() {
 		}
 	}
 	return ivjDirectModifyGearPanel;
-}
-
-public boolean isSep() {
-    return sep;
-}
-
-public void setSep(boolean sep) {
-    this.sep  = sep;
-    getDirectModifyGearPanel().showSepGearsOnly();
 }
 
 /**
@@ -307,10 +293,6 @@ public Object getValue(Object o)
 		gear.setGearNumber( new Integer(i+1) );
 
 		program.getLmProgramDirectGearVector().add( gear );
-	}
-	
-	if (program instanceof LmProgramSep) {
-	    setSep(true);
 	}
 	
 	return o;
@@ -509,11 +491,7 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	}
 
 
-	DirectModifyGearPanel p = new DirectModifyGearPanel();
-	if (isSep())
-    {
-        p.showSepGearsOnly();
-    }
+	DirectModifyGearPanel p = new DirectModifyGearPanel(programType);
 	
 	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Gear Creation", true, p );
@@ -628,11 +606,6 @@ public void setValue(Object o)
 {
 	LMProgramDirect program = (LMProgramDirect)o;
 
-	if (program instanceof LmProgramSep) {
-        setSep(true);
-        getDirectModifyGearPanel().showSepGearsOnly();
-    }
-	
 	for( int i = 0; i < program.getLmProgramDirectGearVector().size(); i++ )
 	{
 		getJComboBoxGear().addItem(

@@ -2,8 +2,11 @@ package com.cannontech.dbeditor.editor.device.lmprogram;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel;
 import com.cannontech.roles.application.DBEditorRole;
@@ -18,6 +21,8 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 	
 	private LMProgramBasePanel basePanel;
 	private LMProgramControlWindowPanel controlWindowPanel;
+
+	private PaoType programType;
 	
 	private static final int[][] EDITOR_TYPES =
 	{
@@ -71,6 +76,15 @@ public LMProgramEditor() {
 	super();
 	initialize();
 }
+
+public void setProgramType(PaoType programType) {
+	this.programType = programType;
+}
+
+public PaoType getProgramType() {
+	return programType;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/15/2002 1:17:24 PM)
@@ -87,7 +101,7 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			basePanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel();
+			basePanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel(getProgramType());
 			objs[0] = basePanel;
 			objs[1] = "General";
 			break;
@@ -103,7 +117,7 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 3:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectPanel(getProgramType());
 			objs[1] = "Gears";
 			break;
 
@@ -272,7 +286,7 @@ public boolean isInputValid()
 			setErrorString("The '" + errTitle + "' panel had the following error(s): \n   -> " +
 				"LMGroupPoint groups are only allowed if a latching gear is present,\n   -> " +
 				"Remove the group from the assigned group list or change the gear type to " + 
-				com.cannontech.database.db.device.lm.LMProgramDirectGear.CONTROL_LATCHING );
+				GearControlMethod.Latching);
 
 			retVal = false;
 		}		
@@ -291,8 +305,10 @@ public void setValue(Object val)
 	java.util.Vector tabs = new java.util.Vector( EDITOR_TYPES.length );
 	
 	DataInputPanel tempPanel;
-	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((com.cannontech.database.data.device.lm.LMProgramBase)val).getPAOType() );
-
+	int type = PAOGroups.getDeviceType( ((LMProgramBase)val).getPAOType() );
+	PaoType paoType = PaoType.getForDbString(((LMProgramBase)val).getPAOType() );
+	setProgramType(paoType);
+	
  	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{
 	 	for( int j = 0; j < EDITOR_TYPES[i].length; j++ )

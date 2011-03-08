@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -28,6 +27,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
@@ -311,8 +311,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
                 List<LMProgramDirectGear> gears = ((LMProgramDirect)program).getDirectGearVector();
                 for (Iterator iter = gears.iterator(); iter.hasNext();) {
                     LMProgramDirectGear lmProgramDirectGear = (LMProgramDirectGear) iter.next();
-                    if (lmProgramDirectGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE)) 
-                    {
+                    if (isTargetCycleGear(lmProgramDirectGear)) {
                         String additionalInfo = null;
                         if (getGearConfigJPanel() != null)
                         {
@@ -1508,8 +1507,7 @@ private void initialize() {
         {
             //unless we selected target cycle disable the adjustment config
             LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
-            if (!directGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
-            {
+            if (!isTargetCycleGear(directGear)) {
                 getGearConfigJPanel().setAdditonalInfo(null);
             }
         }
@@ -1533,8 +1531,7 @@ private void initialize() {
         Object selectedGear = getJComboBoxGear().getItemAt( selectedIndex);
         if (!isMulti) {
             if (selectedGear instanceof LMProgramDirectGear) {
-                if (!((LMProgramDirectGear) selectedGear).getControlMethod()
-                                                         .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE)) {
+                if (!isTargetCycleGear((LMProgramDirectGear) selectedGear)) {
                     getTargetAdjustButton().setEnabled(false);
                 }
 
@@ -1594,11 +1591,7 @@ private void initialize() {
         if (gear instanceof LMProgramDirectGear) {
             //unless we selected target cycle disable the adjustment config
             LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
-            if (!directGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
-                getTargetAdjustButton().setEnabled(false);
-            else
-                getTargetAdjustButton().setEnabled(true);
-
+            getTargetAdjustButton().setEnabled(isTargetCycleGear(directGear));
         }
 
 	}
@@ -1697,13 +1690,8 @@ private void initialize() {
 			default:  //done for completness
                 Object gear = getSelectedGear();
                 getTargetAdjustButton().setEnabled(false);
-                if (isTargetCycleGear(gear))
-                {
-                        getTargetAdjustButton().setEnabled(true);
-                }
-                else
-                {
-                    getTargetAdjustButton().setEnabled(false);
+                if (gear instanceof LMProgramDirectGear) {
+                	getTargetAdjustButton().setEnabled(isTargetCycleGear((LMProgramDirectGear)gear));
                 }
                 break;
 		}
@@ -1722,18 +1710,9 @@ private void initialize() {
         return gear;
     }
 
-    private boolean isTargetCycleGear (Object gear) {
-        if (gear instanceof LMProgramDirectGear)
-        {
-            if (((LMProgramDirectGear)gear).getControlMethod()
-            .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
-            {
-             return true;   
-            }
-        }
-        return false;
+    private boolean isTargetCycleGear (LMProgramDirectGear gear) {
+    	return gear.getControlMethod() == GearControlMethod.TargetCycle;
     }
-    
 
 	/**
 	 * Insert the method's description here.

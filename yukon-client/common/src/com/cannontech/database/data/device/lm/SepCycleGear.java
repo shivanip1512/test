@@ -21,11 +21,7 @@ public class SepCycleGear extends com.cannontech.database.db.device.lm.LMProgram
     }
 
     public boolean isFrontRampEnabled() {
-        if (getFrontRampOption().compareTo(RAMP_RANDOM) == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return getFrontRampOption().compareTo(RAMP_RANDOM) == 0;
     }
 
     public void setFrontRampEnabled(boolean doRamp) {
@@ -37,11 +33,7 @@ public class SepCycleGear extends com.cannontech.database.db.device.lm.LMProgram
     }
     
     public boolean isBackRampEnabled() {
-        if (getBackRampOption().compareTo(RAMP_RANDOM) == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return getBackRampOption().compareTo(RAMP_RANDOM) == 0;
     }
 
     public void setBackRampEnabled(boolean doRamp) {
@@ -53,16 +45,12 @@ public class SepCycleGear extends com.cannontech.database.db.device.lm.LMProgram
     }
     
     public boolean isTrueCycleEnabled() {
-        if (getMethodOptionType().compareTo(CONTROL_TRUE_CYCLE) == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return getMethodOptionType().compareTo(OPTION_TRUE_CYCLE) == 0;
     }
 
     public void setTrueCycleEnabled(boolean doTrueCycle) {
         if (doTrueCycle) {
-            setMethodOptionType(CONTROL_TRUE_CYCLE);
+            setMethodOptionType(OPTION_TRUE_CYCLE);
         } else {
             setMethodOptionType(CtiUtilities.STRING_NONE);
         }

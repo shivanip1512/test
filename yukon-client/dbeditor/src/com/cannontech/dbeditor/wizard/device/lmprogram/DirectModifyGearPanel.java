@@ -8,8 +8,8 @@ import java.sql.SQLException;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -35,11 +35,13 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private NoControlGearPanel ivjNoControlGearPanel1 = null;
     private boolean changedToRamping = false;
     
+    private PaoType programType;
 /**
  * Constructor
  */
-public DirectModifyGearPanel() {
+public DirectModifyGearPanel(PaoType programType) {
     super();
+    this.programType = programType;
     initialize();
 }
 
@@ -243,29 +245,22 @@ private javax.swing.JComboBox getJComboBoxGearType() {
             ivjJComboBoxGearType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
             ivjJComboBoxGearType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TIME_REFRESH ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_ROTATION ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_MASTER_CYCLE ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_SMART_CYCLE ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TRUE_CYCLE ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_MAGNITUDE_CYCLE ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TARGET_CYCLE ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_LATCHING ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.SIMPLE_THERMOSTAT_SETBACK ) );
-            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
-
+            if(programType == PaoType.LM_SEP_PROGRAM) {
+                ivjJComboBoxGearType.addItem(GearControlMethod.SepCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);
+            } else {
+	            for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
+	            	ivjJComboBoxGearType.addItem(gearControlMethod);
+	            }
+	            // Remove SepCycle from the combobox.
+	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
+            }
+	            
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
     }
     return ivjJComboBoxGearType;
-}
-
-public void showSepGearsOnly() {
-    getJComboBoxGearType().removeAllItems();
-    ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.SEP_CYCLE_CONTROL) );
-    ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
 }
 
 /**
@@ -322,8 +317,10 @@ private javax.swing.JScrollPane getJScrollPane1() {
             ivjJScrollPane1.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             ivjJScrollPane1.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
             ivjJScrollPane1.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-            getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
-            getJScrollPane1().getVerticalScrollBar().setUnitIncrement(10);
+            ivjJScrollPane1.getVerticalScrollBar().setUnitIncrement(10);
+
+            // Set the gear type so that the correct panel can be displayed.
+            setGearType((GearControlMethod)getJComboBoxGearType().getSelectedItem());
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -361,9 +358,8 @@ public Object getValue(Object o)
 {
 	Object obj = null;
     LMProgramDirectGear gear = null;
-    String selectedItem = getJComboBoxGearType().getSelectedItem().toString();
+    GearControlMethod method = (GearControlMethod)getJComboBoxGearType().getSelectedItem();
     
-    GearControlMethod method = GearControlMethod.getGearControlMethod(selectedItem.replaceAll(" ",""));
     setGearType(method);
     gear = method.createNewGear();  
 
@@ -529,8 +525,6 @@ private void initialize() {
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
-    String selectedItem = GearControlMethod.TimeRefresh.toString();
-    //getJComboBoxGearType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', selectedItem));
 }
 
 /**
@@ -558,42 +552,14 @@ public void jComboBoxGearType_ActionPerformed(java.awt.event.ActionEvent actionE
 
     if( getJComboBoxGearType().getSelectedItem() != null )
     {
-    	String selectedItem = getJComboBoxGearType().getSelectedItem().toString();
-    	
-        setGearType(GearControlMethod.getGearControlMethod(selectedItem.replaceAll(" ","")));
+       	GearControlMethod gearControlMethod = (GearControlMethod)getJComboBoxGearType().getSelectedItem();
+    	setGearType(gearControlMethod);
         getGenericGearPanel1().jComboBoxWhenChange_ActionPerformed(actionEvent);
         
         fireInputUpdate();
     }
     
     return;
-}
-
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-    try {
-        javax.swing.JFrame frame = new javax.swing.JFrame();
-        DirectModifyGearPanel aDirectModifyGearPanel;
-        aDirectModifyGearPanel = new DirectModifyGearPanel();
-        frame.setContentPane(aDirectModifyGearPanel);
-        frame.setSize(aDirectModifyGearPanel.getSize());
-        frame.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                System.exit(0);
-            };
-        });
-        frame.show();
-        java.awt.Insets insets = frame.getInsets();
-        frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-        frame.setVisible(true);
-    } catch (Throwable exception) {
-        System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-        com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-    }
 }
 
 /**
@@ -682,7 +648,7 @@ public void setValue(Object o)
     else
         gear = (LMProgramDirectGear)o;
 
-    getJComboBoxGearType().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getControlMethod().toString() ) );
+    getJComboBoxGearType().setSelectedItem(gear.getControlMethod());
     getJTextFieldGearName().setText( gear.getGearName() );
 
     if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )

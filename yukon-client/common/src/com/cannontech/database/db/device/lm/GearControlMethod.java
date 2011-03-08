@@ -1,5 +1,6 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
@@ -10,28 +11,34 @@ import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
-import com.cannontech.database.data.device.lm.TrueCycleGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
+import com.cannontech.database.data.device.lm.TrueCycleGear;
 
-public enum GearControlMethod {
-	TimeRefresh(TimeRefreshGear.class),
-	SmartCycle(SmartCycleGear.class),
-	SepCycle(SepCycleGear.class),
-	MasterCycle(MasterCycleGear.class),
-	Rotation(RotationGear.class),
-	Latching(LatchingGear.class),
-	TrueCycle(TrueCycleGear.class),
-	MagnitudeCycle(MagnitudeCycleGear.class),
-	TargetCycle(TargetCycleGear.class),
-	ThermostatRamping(ThermostatSetbackGear.class),
-	SimpleThermostatRamping(SimpleThermostatRampingGear.class),
-	NoControl(NoControlGear.class);
+public enum GearControlMethod implements DatabaseRepresentationSource {
+	TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
+	SmartCycle(SmartCycleGear.class, "Smart Cycle"),
+	SepCycle(SepCycleGear.class, "SEP Cycle"),
+	MasterCycle(MasterCycleGear.class, "Master Cycle"),
+	Rotation(RotationGear.class, "Rotation"),
+	Latching(LatchingGear.class, "Latching"),
+	TrueCycle(TrueCycleGear.class, "True Cycle"),
+	MagnitudeCycle(MagnitudeCycleGear.class, "Magnitude Cycle"),
+	TargetCycle(TargetCycleGear.class, "Target Cycle"),
+	ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
+	SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
+	NoControl(NoControlGear.class, "No Control");
 	
 	private Class<?> gearClass;
-	
-	private GearControlMethod(Class<?> gear) {
+	private String displayName;
+
+	private GearControlMethod(Class<?> gear, String displayName) {
 		this.gearClass = gear;
+		this.displayName = displayName;
 	}
+
+	public String getDisplayName() {
+		return displayName;
+	};
 	
 	static public GearControlMethod getGearControlMethod(String value) {
 		try{
@@ -58,6 +65,15 @@ public enum GearControlMethod {
 			throw new RuntimeException("InstantiationException while from createNewGear()");
 		}
 	}
+	
+	/** Use the actual enum to write to the db, not the display string. **/
+	@Override
+	public Object getDatabaseRepresentation() {
+		return name();
+	}
+	
+	@Override
+	public String toString() {
+		return getDisplayName();
+	}
 }
-
-

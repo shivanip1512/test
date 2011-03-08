@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
@@ -36,7 +37,10 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JLabel jLabel = null;
 	private javax.swing.JTextField jTextFieldOffset = null;
 	private javax.swing.JPanel jPanel = null;
-class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
+	
+	private PaoType programType;
+
+	class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMProgramBasePanel.this.getJComboBoxOperationalState()) 
 				connEtoC1(e);
@@ -54,14 +58,24 @@ class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.even
 				connEtoC4(e);
 		};
 	};
-/**
- * Constructor
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+
+@Deprecated /* use LMProgramBasePanel(PaoType) */
 public LMProgramBasePanel() {
 	super();
 	initialize();
+	programType = PaoType.LM_DIRECT_PROGRAM;
 }
+
+public LMProgramBasePanel(PaoType programType) {
+	super();
+	this.programType = programType;
+	initialize();
+}
+
+public void setProgramType(PaoType programType) {
+	this.programType = programType;
+}
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent

@@ -27,37 +27,8 @@ public interface IlmDefines
 	public static final String SELECTION_LEAST_CONTROL_TIME = "LeastControlTime";
 
 	//all possible control methods for a gear
-	public static final String CONTROL_TIME_REFRESH = GearControlMethod.TimeRefresh.toString();
-	public static final String CONTROL_SMART_CYCLE = GearControlMethod.SmartCycle.toString();
-	public static final String CONTROL_MASTER_CYCLE = GearControlMethod.MasterCycle.toString();
-	public static final String CONTROL_ROTATION = GearControlMethod.Rotation.toString();
-	public static final String CONTROL_LATCHING = GearControlMethod.Latching.toString();
-	public static final String CONTROL_TRUE_CYCLE = GearControlMethod.TrueCycle.toString();
-    public static final String CONTROL_MAGNITUDE_CYCLE = GearControlMethod.MagnitudeCycle.toString();
-    public static final String CONTROL_TARGET_CYCLE = GearControlMethod.TargetCycle.toString();
-	public static final String THERMOSTAT_SETBACK = GearControlMethod.ThermostatRamping.toString();
-	public static final String SIMPLE_THERMOSTAT_SETBACK = GearControlMethod.SimpleThermostatRamping.toString();
-	public static final String SEP_CYCLE_CONTROL = GearControlMethod.SepCycle.toString();
-	public static final String NO_CONTROL = GearControlMethod.NoControl.toString();
-
-	//a mapping of all the possible control methods
-	public static final String[] ALL_CONTROL_METHODS =
-	{
-		CONTROL_TIME_REFRESH,
-		CONTROL_SMART_CYCLE,
-		CONTROL_TRUE_CYCLE,
-        CONTROL_MAGNITUDE_CYCLE,
-        CONTROL_TARGET_CYCLE,
-		CONTROL_MASTER_CYCLE,
-		CONTROL_ROTATION,
-		CONTROL_LATCHING,
-		THERMOSTAT_SETBACK,
-		SIMPLE_THERMOSTAT_SETBACK,
-		SEP_CYCLE_CONTROL,
-		NO_CONTROL
-		
-	};
-
+	// SEE GearControlMethod enum for values.
+	
 	//all possible method stop type values
 	public static final String STOP_RESTORE = "Restore";
 	public static final String STOP_TIME_IN = "TimeIn";
@@ -79,6 +50,7 @@ public interface IlmDefines
 	public static final String OPTION_FIXED_SHED = "FixedShedTime";
 	public static final String OPTION_DYNAMIC_SHED = "DynamicShedTime";
 	public static final String OPTION_LIMITED_COUNT_DOWN = "LimitedCountDown";
+	public static final String OPTION_TRUE_CYCLE = "TrueCycle";
 
 	// All possible values for ramp in/ramp out options
 	public static final String RAMP_NO_RAMP = "NoRamp";

@@ -896,23 +896,9 @@ public class SepCycleGearPanel extends GenericGearPanel {
 
         getJCSpinFieldControlPercent().setValue(gear.getControlPercent());
 
-        if (gear.isFrontRampEnabled()) {
-            getCheckBoxRampIn().setSelected(true);
-        } else {
-            getCheckBoxRampIn().setSelected(false);
-        }
-
-        if (gear.isBackRampEnabled()) {
-            getCheckBoxRampOut().setSelected(true);
-        } else {
-            getCheckBoxRampOut().setSelected(false);
-        }
-
-        if (gear.isTrueCycleEnabled()) {
-            getCheckBoxTrueCycle().setSelected(true);
-        } else {
-            getCheckBoxTrueCycle().setSelected(false);
-        }
+        getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
+        getCheckBoxTrueCycle().setSelected(gear.isTrueCycleEnabled());
     }
 
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {

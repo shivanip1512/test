@@ -1,6 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
-import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 
 /**
  * Insert the type's description here.
@@ -16,7 +16,7 @@ public class LMProgramDirectGear
 	private Integer yukonID = null;
 	private String gearName = null;
 	private Integer gearNumber = null;
-	private String controlMethod = null;
+	private GearControlMethod controlMethod = null;
 	private Integer methodRate = null;
 	private Integer methodPeriod = null;
 	private Integer methodRateCount = null;
@@ -97,12 +97,12 @@ public java.lang.Double getChangeTriggerOffset() {
  * Creation date: (4/3/2001 9:58:28 AM)
  * @return java.lang.String
  */
-public java.lang.String getControlMethod() {
+public GearControlMethod getControlMethod() {
 	return controlMethod;
 }
 
     public boolean isTargetCycle() {
-        return IlmDefines.CONTROL_TARGET_CYCLE.equals(controlMethod);
+        return GearControlMethod.TargetCycle == controlMethod;
     }
 
 /**
@@ -241,12 +241,8 @@ public void setChangeTriggerNumber(java.lang.Integer newChangeTriggerNumber) {
 public void setChangeTriggerOffset(java.lang.Double newChangeTriggerOffset) {
 	changeTriggerOffset = newChangeTriggerOffset;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 9:58:28 AM)
- * @param newControlMethod java.lang.String
- */
-public void setControlMethod(java.lang.String newControlMethod) {
+
+public void setControlMethod(GearControlMethod newControlMethod) {
 	controlMethod = newControlMethod;
 }
 /**

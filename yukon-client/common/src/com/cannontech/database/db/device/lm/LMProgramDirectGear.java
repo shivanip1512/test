@@ -102,7 +102,7 @@ public abstract class LMProgramDirectGear
 
 		Object addValues[] =
 		{ 
-			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().toString(),
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().getDatabaseRepresentation(),
 			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
@@ -774,7 +774,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		Object setValues[] =
 		{ 
-			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().toString(),
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().getDatabaseRepresentation(),
 			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),

@@ -1,16 +1,21 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 import com.cannontech.common.gui.util.AddRemovePanel;
-import com.cannontech.database.data.device.lm.LmProgramSep;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -207,30 +212,28 @@ private void initialize() {
  * Creation date: (3/13/2002 2:17:21 PM)
  * @param isSepProgram 
  */
-public void initLeftList( boolean hideLMGroupPoints, boolean isSepProgram)
+public void initLeftList( boolean hideLMGroupPoints, PaoType programType)
 {
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List groups = cache.getAllLoadManagement();
-		java.util.Collections.sort( groups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		java.util.Vector newList = new java.util.Vector( getAddRemovePanel().leftListGetModel().getSize() );
+		List<LiteYukonPAObject> groups = cache.getAllLoadManagement();
+		Collections.sort( groups, LiteComparators.liteStringComparator );
+		Vector<LiteYukonPAObject> newList = new Vector<LiteYukonPAObject>( getAddRemovePanel().leftListGetModel().getSize() );
 		
-		for( int i = 0; i < groups.size(); i++ )
-		{ 
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isLmGroup( ((com.cannontech.database.data.lite.LiteYukonPAObject)groups.get(i)).getType() )
+		for (LiteYukonPAObject group : groups) {
+			PaoType paoType = PaoType.getForId(group.getType());
+			if( DeviceTypesFuncs.isLmGroup( group.getType() )
 				 &&
-				 ( hideLMGroupPoints ? 
-					 ((com.cannontech.database.data.lite.LiteYukonPAObject)groups.get(i)).getType() != com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT 
-					 : true) )
+				 ( hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT : true) )
 			{
+				boolean isSepProgram =  programType == PaoType.LM_SEP_PROGRAM;
 			    // SEP compatible groups are shown for SEP programs and hidden for all others
-			    if (isSepProgram && isGroupSepCompatible(((LiteYukonPAObject)groups.get(i)).getType()) ||
-			       !isSepProgram && !isGroupSepCompatible(((LiteYukonPAObject)groups.get(i)).getType())) {
-			        newList.addElement( groups.get(i) );
+			    if ( (isSepProgram && isGroupSepCompatible(paoType)) ||
+			    	 (!isSepProgram && !isGroupSepCompatible(paoType))) {
+			        newList.addElement(group);
 			    }
 			}
-
 		}
 
 		getAddRemovePanel().leftListSetListData( newList );
@@ -238,16 +241,11 @@ public void initLeftList( boolean hideLMGroupPoints, boolean isSepProgram)
 		currentSelectedList = new ArrayList<Object>();
 		
 	}
-	
 }
 
-private boolean isGroupSepCompatible(int groupType)
+private boolean isGroupSepCompatible(PaoType groupType)
 {
-    if (groupType == PAOGroups.LM_GROUP_DIGI_SEP) {
-        return true;
-    }
-        
-    return false;
+    return groupType == PaoType.LM_GROUP_DIGI_SEP;
 }
 
 /**
@@ -453,15 +451,14 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
  */
 public void setValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMProgramDirect dirProg= (com.cannontech.database.data.device.lm.LMProgramDirect)o;
-
+	LMProgramDirect dirProg= (LMProgramDirect)o;
+	PaoType paoType = PaoType.getForDbString(dirProg.getPAOType()); 
 
 	/**** special case for the LM_GROUP_POINT group type ****/
 	boolean isLatching = false;
 	for( int i = 0; i < dirProg.getLmProgramDirectGearVector().size(); i++ )
 	{
-		com.cannontech.database.db.device.lm.LMProgramDirectGear gear = 
-			(com.cannontech.database.db.device.lm.LMProgramDirectGear)dirProg.getLmProgramDirectGearVector().get(i);
+		LMProgramDirectGear gear = dirProg.getLmProgramDirectGearVector().get(i);
 
 		//we only can add LM_GROUP_POINTS group types to a program with a LATCHING gear
 		if( gear.getControlMethod() == GearControlMethod.Latching )
@@ -471,7 +468,7 @@ public void setValue(Object o)
 		}
 	}
 
-	initLeftList( !isLatching, o instanceof LmProgramSep );
+	initLeftList( !isLatching, paoType);
 	/**** END of special case for the LM_GROUP_POINT group type ****/
 
 
