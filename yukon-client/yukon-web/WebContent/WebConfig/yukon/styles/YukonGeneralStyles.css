@@ -1245,6 +1245,10 @@ div.fixedMediumWidth {
     width: 100%;
 }
 
+div.boxContainer .boxContainer_titleBar img {
+    vertical-align: top;
+}
+
 .usingDefaultValue {
     color: #ccc;
 }
