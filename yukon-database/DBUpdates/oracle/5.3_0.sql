@@ -641,7 +641,7 @@ CREATE TABLE LMGroupSep  (
 CREATE TABLE LMGroupSepDeviceClass  (
    DeviceId             NUMBER                          NOT NULL,
    SepDeviceClass       VARCHAR2(40)                    NOT NULL,
-   CONSTRAINT PK_LMGroupSepDeviceClass PRIMARY KEY (DeviceId)
+   CONSTRAINT PK_LMGroupSepDeviceClass PRIMARY KEY (DeviceId, SepDeviceClass)
 );
 
 ALTER TABLE LMGroupSep

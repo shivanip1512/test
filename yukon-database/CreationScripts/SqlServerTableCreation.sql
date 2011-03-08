@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/8/2011 3:32:55 PM                          */
+/* Created on:     3/8/2011 3:48:12 PM                          */
 /*==============================================================*/
 
 
@@ -9333,7 +9333,7 @@ go
 create table LMGroupSepDeviceClass (
    DeviceId             numeric              not null,
    SepDeviceClass       varchar(40)          not null,
-   constraint PK_LMGroupSepDeviceClass primary key nonclustered (DeviceId)
+   constraint PK_LMGroupSepDeviceClass primary key (DeviceId, SepDeviceClass)
 )
 go
 

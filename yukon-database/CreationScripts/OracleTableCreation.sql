@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/8/2011 3:33:56 PM                          */
+/* Created on:     3/8/2011 3:49:24 PM                          */
 /*==============================================================*/
 
 
@@ -6247,7 +6247,7 @@ create table LMGroupSep  (
 create table LMGroupSepDeviceClass  (
    DeviceId             NUMBER                          not null,
    SepDeviceClass       VARCHAR2(40)                    not null,
-   constraint PK_LMGroupSepDeviceClass primary key (DeviceId)
+   constraint PK_LMGroupSepDeviceClass primary key (DeviceId, SepDeviceClass)
 );
 
 /*==============================================================*/
