@@ -154,7 +154,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 				<thead>
 					<tr>
 						<th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
-                        <th class="successColumn"><i:inline key=".rulesTable.header.success" /></th>
+                        <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
                         <th class="errorsColumn"><i:inline key=".rulesTable.header.errors" />
                             <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
                         </th>
@@ -171,7 +171,10 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 								<form:hidden path="rules[${key}].ruleId" />
 								<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" size="1" />
 							</td>
-							<td class="checkBox"><form:checkbox path="rules[${key}].success" /></td>
+                            <td class="checkBox outcomeColumn">
+                                <form:checkbox path="rules[${key}].success"/>
+                                <span><i:inline key=".rule.success"/></span>
+                            </td>
 							<td>
                                 <form:input size="8" path="rules[${key}].errorCodes"/>
 							</td>

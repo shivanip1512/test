@@ -103,7 +103,7 @@
 					<table class="compactResultsTable">
 						<tr>
 							<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-							<th><i:inline key=".rulesTable.header.success" /></th>
+							<th><i:inline key=".rulesTable.header.outcome" /></th>
 							<th><i:inline key=".rulesTable.header.errors" />
                                 <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
                             </th>
@@ -120,7 +120,7 @@
                                             <span class="successMessage"><i:inline key=".rule.success"/></span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="errorMessage"><i:inline key=".rule.failed"/></span>
+                                            <span class="errorMessage"><i:inline key=".rule.failure"/></span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>

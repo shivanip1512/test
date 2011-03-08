@@ -9,8 +9,9 @@
 	<table class="compactResultsTable">
 		<tr id="rule_${newMapKey}" class="ruleTableRow">
 			<td><input name="rules[${newMapKey}].ruleOrder" type="text" value="${nextOrder}" class="ruleOrder" size="1" /></td>
-			<td class="checkBox">
-                <input name="rules[${newMapKey}].success" type="checkbox" />
+            <td class="checkBox outcomeColumn">
+                <input name="rules[${newMapKey}].success" type="checkbox"/>
+                <span><i:inline key=".rule.success"/></span>
             </td>
 			<td><input name="rules[${newMapKey}].errorCodes" type="text" size="8" /></td>
 			<td class="matchColumn">

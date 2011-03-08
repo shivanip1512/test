@@ -38,10 +38,10 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.name">Name</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rule.success">Success</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.rule.failed">Failed</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rule.failure">Failure</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.title">Porter Response Monitor Transaction Rules</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.ruleOrder">Order</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.success">Successful?</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.outcome">Outcome</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.errors">Errors</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.matchStyle">Match</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.state">State</entry>
@@ -53,7 +53,7 @@
          <br><br>
          ** Only one rule (per monitor) will ever be executed per Porter Response / Transaction **
          <br><br>
-         <u>Successful</u>: Whether or not the transaction was a success or failure.
+         <u>Outcome</u>: Whether or not the transaction was a success or failure.
          <br><br>
          <u>Errors</u>: The errors to process. This field must be either blank or populated with non-negative, unique, comma separated integers.
          <br><br>
@@ -85,6 +85,7 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.troubleshoot">Troubleshooting Options</entry>
 
     <!-- PorterResponseMonitorController addRuleTableRow.jsp -->
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rule.success">Success</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverText">Click to remove</entry>

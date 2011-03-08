@@ -2,8 +2,12 @@
     width: 50px;
 }
 
-#rulesTable th.successColumn {
+#rulesTable th.outcomeColumn {
     width: 80px;
+}
+
+#rulesTable td.outcomeColumn span {
+    vertical-align: top;
 }
 
 #rulesTable th.errorsColumn {
