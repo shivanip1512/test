@@ -11,7 +11,7 @@
         var substationBusVoltReductionPointPicker = new Picker('voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
         substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
         
-        var sub_Var_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker');
+        var sub_Var_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
         sub_Var_PointPicker.destinationFieldId = 'var_point';
         
         var sub_Var_PhaseB_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
