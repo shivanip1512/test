@@ -98,7 +98,7 @@ public class PorterResponseMessageListener implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (monitors.isEmpty()) {
-            log.trace("Recieved porter response message from jms queue: not processing because " +
+            log.trace("Received porter response message from jms queue: not processing because " +
             		"no monitors exist or they are all disabled");
             return;
         }

@@ -138,11 +138,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     
     @Override
     public Multimap<PaoType, Attribute> getAllDefinedAttributes() {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
     
     @Override
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap() {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
 }

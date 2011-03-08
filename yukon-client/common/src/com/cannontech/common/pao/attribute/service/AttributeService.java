@@ -92,5 +92,10 @@ public interface AttributeService {
      */
     public Set<Attribute> getReadableAttributes();
     
+    /**
+     * Returns the Sql that gives you the paObjectId and pointId based on a
+     * passed in Attribute
+     * @param attribute
+     */
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
 }

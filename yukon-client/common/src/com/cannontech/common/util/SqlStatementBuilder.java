@@ -164,7 +164,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public SqlStatementBuilder eq_k(int constant) {
         statement.append("= ");
         statement.append(Integer.toString(constant));
-        statement.append(" ");
+        appendSpace();
         return this;
     }
     

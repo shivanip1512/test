@@ -1488,7 +1488,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         //Do nothing we don't care.
     }else {
 	    //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
-	    CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
+	    CTILogger.debug(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
 	}
 
 	return retLBase;

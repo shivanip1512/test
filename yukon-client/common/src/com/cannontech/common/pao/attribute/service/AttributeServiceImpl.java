@@ -194,30 +194,30 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select pao_als.paObjectid, p_als.pointId");
-        sql.append("from YukonPAObject pao_als");
-        sql.append(  "join Point p_als on pao_als.paObjectId = p_als.paObjectId");
+        sql.append("SELECT pao_als.paObjectid, p_als.pointId");
+        sql.append("FROM YukonPAObject pao_als");
+        sql.append(  "JOIN Point p_als ON pao_als.paObjectId = p_als.paObjectId");
         
         SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
         for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
             SqlStatementBuilder clause1 = new SqlStatementBuilder();
             clause1.append("(");
             clause1.append("pao_als.Type").in(entry.getValue());
-            clause1.append(  "and p_als.pointType").eq_k(entry.getKey().getPointType());
-            clause1.append(  "and p_als.pointOffset").eq_k(entry.getKey().getOffset());
+            clause1.append(  "AND p_als.pointType").eq_k(entry.getKey().getPointType());
+            clause1.append(  "AND p_als.pointOffset").eq_k(entry.getKey().getOffset());
             clause1.append(")");
             orCollection.add(clause1);
         }
         
         if (!orCollection.isEmpty()) {
-            sql.append("where").appendFragment(orCollection);
+            sql.append("WHERE").appendFragment(orCollection);
         }
         
         if (haveMapped) {
-            sql.append("union");
-            sql.append("select eppa_als.paObjectId, eppa_als.pointId");
-            sql.append("from ExtraPaoPointAssignment eppa_als");
-            sql.append("where eppa_als.Attribute").eq(attribute.getKey()); //DRS???
+            sql.append("UNION");
+            sql.append("SELECT eppa_als.paObjectId, eppa_als.pointId");
+            sql.append("FROM ExtraPaoPointAssignment eppa_als");
+            sql.append("WHERE eppa_als.Attribute").eq(attribute.getKey()); //DRS???
         }
         
         return sql;
