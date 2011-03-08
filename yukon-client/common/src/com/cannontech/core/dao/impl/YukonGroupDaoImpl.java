@@ -96,7 +96,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
             LiteYukonGroup group = new LiteYukonGroup();
             group.setGroupID(rs.getInt("groupId"));
             group.setGroupName(rs.getString("groupName"));
-            group.setGroupDescription(rs.getString("groupName"));
+            group.setGroupDescription(rs.getString("groupDescription"));
 
             return group;
         }
