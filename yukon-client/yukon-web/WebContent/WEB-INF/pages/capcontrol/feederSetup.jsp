@@ -13,7 +13,7 @@
         feederVarPhaseCPointPicker.destinationFieldId = 'varPhaseCPoint';
         var feederWattPointPicker = new Picker('wattPointPicker', '', 'feederWattPointPicker', 'pointName:feederWattPoint;deviceName:feederWattDevice');
         feederWattPointPicker.destinationFieldId = 'wattPoint';
-        var feederVoltPointPicker = new Picker('voltPointPicker', '', 'feederVoltPointPicker', 'pointName:feederVoltPoint;deviceName:feederVoltDevice','feederVoltPointPicker');
+        var feederVoltPointPicker = new Picker('voltPointPicker', '', 'feederVoltPointPicker', 'pointName:feederVoltPoint;deviceName:feederVoltDevice');
         feederVoltPointPicker.destinationFieldId = 'voltPoint';
     </script>
 </f:verbatim>
