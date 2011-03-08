@@ -93,19 +93,7 @@ public Vector<LMProgramControlWindow> getLmProgramControlWindowVector()
 public Vector<DeviceListItem> getLmProgramStorageVector()
 {
 	if (lmProgramStorageVector == null)
-		lmProgramStorageVector = new Vector<DeviceListItem>(10) {
-			public void add(int i, DeviceListItem o) {
-				super.add(i, o);
-			}
-
-			public boolean add(DeviceListItem o) {
-				return super.add(o);
-			}
-
-			public void addElement(DeviceListItem o) {
-				super.addElement(o);
-			}
-		};
+		lmProgramStorageVector = new Vector<DeviceListItem>(10);
 
     return lmProgramStorageVector;
 }

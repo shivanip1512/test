@@ -151,14 +151,8 @@ public abstract class LMProgramDirectGear
 		catch (SQLException e) {
 			CTILogger.error( e.getMessage(), e );
 		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e2) {
-				CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}
+			SqlUtils.close(stmt);
 		}
-
 	}
    
 	/**
