@@ -662,7 +662,7 @@ public class OptOutServiceImpl implements OptOutService {
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-        DateTimeZone energyCompanyTimeZone = ((LiteStarsEnergyCompany) yukonEnergyCompany).getDefaultDateTimeZone();
+        DateTimeZone energyCompanyTimeZone = (starsDatabaseCache.getEnergyCompany(yukonEnergyCompany)).getDefaultDateTimeZone();
 
 		// Get the Opt Out limits for the user
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
@@ -983,7 +983,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	    // Get the energy company time zone to figure out how many opt outs a user has left.
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-	    DateTimeZone energyCompanyTimeZone = ((LiteStarsEnergyCompany) yukonEnergyCompany).getDefaultDateTimeZone();
+	    DateTimeZone energyCompanyTimeZone = (starsDatabaseCache.getEnergyCompany(yukonEnergyCompany)).getDefaultDateTimeZone();
 
 	    return this.getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
 	};
