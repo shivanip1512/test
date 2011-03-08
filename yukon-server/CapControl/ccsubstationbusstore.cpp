@@ -3363,7 +3363,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     static const string updateSql = "update capbank set operationalstate = ? "
-                                    " where capbank = ?";
+                                    " where deviceid = ?";
 
     Cti::Database::DatabaseConnection conn;
     Cti::Database::DatabaseWriter updater(conn, updateSql);
@@ -7340,7 +7340,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702"))
                     {
                         ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setPAOId(currentCbcId);
-                        ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setDynamicData(rdr, currentCCCapBank->getReportedCBCStateTime());
+                        ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setDynamicData(rdr);
                     }
                 }
             }
