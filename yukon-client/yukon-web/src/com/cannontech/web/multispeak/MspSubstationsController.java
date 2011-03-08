@@ -75,7 +75,7 @@ public class MspSubstationsController {
     @RequestMapping
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/multispeak/setup/routemapping/mappings");
+        ModelAndView mav = new ModelAndView("redirect:/spring/adminSetup/setup/substations/routeMapping/view");
 
         Map<String, String> substatioNamesMap = ServletUtil.getStringParameters(request, "substationName_");
 
@@ -113,6 +113,7 @@ public class MspSubstationsController {
         }
     }
     
+    /* DI Setters */
     @Autowired
     public void setSubstationDao(final SubstationDao substationDao) {
         this.substationDao = substationDao;

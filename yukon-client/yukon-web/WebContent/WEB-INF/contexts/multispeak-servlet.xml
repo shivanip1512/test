@@ -16,9 +16,6 @@
 	<bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<props>
-				<prop key="/setup/routemapping/substation">substationController</prop>
-				<prop key="/setup/routemapping/route">routeController</prop>
-				<prop key="/setup/routemapping/mappings">mappings</prop>
 				<prop key="/setup/lmMappings/*">lmMappingsController</prop>
 				<prop key="/visualDisplays/loadManagement/*">visualDisplaysLoadManagementController</prop>
                 <prop key="/visualDisplays/probabilityForPeak/*">visualDisplaysProbabilityForPeakLoadController</prop>
@@ -27,32 +24,13 @@
 		<property name="order" value="2"></property>
 	</bean>
 
-	<bean id="mappings" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="setup/routemapping/mappings.jsp" />
-	</bean>
-
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/pages/multispeak/" />
 	</bean>
 
-	<bean id="substationController" class="com.cannontech.web.multispeak.SubstationActionController">
-		<property name="methodNameResolver">
-			<ref bean="methodNameResolver" />
-		</property>
-	</bean>
-	
 	<bean class="com.cannontech.web.multispeak.MspSubstationsController" />
 
-	<bean id="routeController" class="com.cannontech.web.multispeak.RouteActionController">
-		<property name="substationToRouteMappingDao">
-			<ref bean="substationToRouteMappingDao" />
-		</property>
-		<property name="methodNameResolver">
-			<ref bean="methodNameResolver" />
-		</property>
-	</bean>
-	
 	<bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
 	
 	<bean id="lmMappingsController" class="com.cannontech.web.multispeak.LMMappingsController">
@@ -73,7 +51,6 @@
 	</bean>
 	
 	<!--  VISUAL DISPLAYS -->
-    
 	<!-- LOAD MANAGEMENT CONTROLLER -->
 	<bean id="visualDisplaysLoadManagementController" class="com.cannontech.web.multispeak.visualDisplays.VisualDisplaysLoadManagementController" >
     </bean>

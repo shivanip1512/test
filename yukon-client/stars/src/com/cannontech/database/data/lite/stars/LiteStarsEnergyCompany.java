@@ -760,7 +760,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             com.cannontech.database.db.stars.Substation[] subs =
                     com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyId() );
             
-            substations = new ArrayList<LiteSubstation>();
+            substations = Collections.synchronizedList(new ArrayList<LiteSubstation>());
             for (int i = 0; i < subs.length; i++) {
                 LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite(subs[i]);
                 substations.add( liteSub );
@@ -794,41 +794,38 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return list;
     }
     
-    public LiteYukonPAObject[] getRoutes(LiteYukonPAObject[] inheritedRoutes) {
+    public synchronized LiteYukonPAObject[] getRoutes(LiteYukonPAObject[] inheritedRoutes) {
         List<LiteYukonPAObject> routeList = new ArrayList<LiteYukonPAObject>();
         List<Integer> routeIDs = getRouteIDs();
         
-        synchronized (routeIDs) {
-            Iterator<Integer> it = routeIDs.iterator();
-            while (it.hasNext()) {
-                Integer routeID = it.next();
-                LiteYukonPAObject liteRoute = DaoFactory.getPaoDao().getLiteYukonPAO( routeID.intValue() );
-                
-                // Check to see if the route is already assigned to the parent company, if so, remove it from the member
-                boolean foundInParent = false;
-                if (inheritedRoutes != null) {
-                    for (int j = 0; j < inheritedRoutes.length; j++) {
-                        if (inheritedRoutes[j].equals( liteRoute )) {
-                            foundInParent = true;
-                            break;
-                        }
+        Iterator<Integer> it = routeIDs.iterator();
+        while (it.hasNext()) {
+            Integer routeID = it.next();
+            LiteYukonPAObject liteRoute = DaoFactory.getPaoDao().getLiteYukonPAO( routeID.intValue() );
+            
+            // Check to see if the route is already assigned to the parent company, if so, remove it from the member
+            boolean foundInParent = false;
+            if (inheritedRoutes != null) {
+                for (int j = 0; j < inheritedRoutes.length; j++) {
+                    if (inheritedRoutes[j].equals( liteRoute )) {
+                        foundInParent = true;
+                        break;
                     }
                 }
+            }
+            
+            if (foundInParent) {
+                ecMappingDao.deleteECToRouteMapping(getEnergyCompanyId(), routeID);
+                it.remove();
                 
-                if (foundInParent) {
-                    
-                    ecMappingDao.deleteECToRouteMapping(getEnergyCompanyId(), routeID);
-                    it.remove();
-                    
-                    dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                                          DbChangeCategory.ENERGY_COMPANY_ROUTES,
-                                                          getEnergyCompanyId());
-                }
-                else
-                    routeList.add( liteRoute );
+                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
+                                                      DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                                      getEnergyCompanyId());
+            } else {
+                routeList.add( liteRoute );
             }
         }
-        
+    
         java.util.Collections.sort( routeList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
         
         LiteYukonPAObject[] routes = new LiteYukonPAObject[ routeList.size() ];
@@ -868,7 +865,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public synchronized List<Integer> getRouteIDs() {
         if (routeIDs == null) {
-            routeIDs = new ArrayList<Integer>();
+            routeIDs = Collections.synchronizedList(new ArrayList<Integer>());;
             
             routeIDs = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
             List<Integer> listCopy = Lists.newArrayList(routeIDs);  /* Need this until route event listener stops blowing away routeIDs */
@@ -880,7 +877,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     routeIDs.add(dftRouteID);
                     listCopy.add(dftRouteID);
 
-                    ecMappingDao.addECToRouteMapping(getEnergyCompanyId(), dftRouteID);
+                    ecMappingDao.addEcToRouteMapping(getEnergyCompanyId(), dftRouteID);
                     dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
                                                           DbChangeCategory.ENERGY_COMPANY_ROUTES,
                                                           getEnergyCompanyId());
@@ -1091,7 +1088,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * This method resets the substation variable to null for the given energy company.  This will cause the
      * get methods to look up the substations from the database next time instead of using the cached value.
      */
-    public void resetSubstations() {
+    public synchronized void resetSubstations() {
         substations = null;
     }
     
@@ -1099,7 +1096,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * This method resets the routes variable to null for the given energy company.  This will cause the
      * get methods to look up the routes from the database next time instead of using the cached value.
      */
-    public void resetRouteIds() {
+    public synchronized void resetRouteIds() {
         routeIDs = null;
     }
 

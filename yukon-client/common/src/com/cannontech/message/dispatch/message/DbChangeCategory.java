@@ -12,8 +12,8 @@ public enum DbChangeCategory {
     GRAPH("Graph"),
     HOLIDAY_SCHEDULE("HolidaySchedule"),
     ENERGY_COMPANY("EnergyCompany"),
-    ENERGY_COMPANY_ROUTES("EnergyCompanyRoutes"),
-    ENERGY_COMPANY_SUBSTATIONS("EnergyCompanySubstation"),
+    ENERGY_COMPANY_ROUTES,
+    ENERGY_COMPANY_SUBSTATIONS,
     ENERGY_COMPANY_DEFAULT_ROUTE("EnergyCompanyDefaultRoute"),
     YUKON_USER("YukonUser"),
     CUSTOMER("Customer"),
@@ -45,7 +45,7 @@ public enum DbChangeCategory {
     STARS_PUBLISHED_PROGRAM("Stars Published Program"),
     YUKON_SELECTION_LIST("YukonSelectionList"), 
     YUKON_LIST_ENTRY("YukonListEntry"),
-    PORTER_RESPONSE_MONITOR("PorterResponseMonitor"),
+    PORTER_RESPONSE_MONITOR,
     ;
     
     private final String representation;
@@ -59,6 +59,10 @@ public enum DbChangeCategory {
         categoryLookup = builder.build();
     }
 
+    private DbChangeCategory() {
+        this.representation = name();
+    }
+    
     private DbChangeCategory(String representation) {
         this.representation = representation;
     }

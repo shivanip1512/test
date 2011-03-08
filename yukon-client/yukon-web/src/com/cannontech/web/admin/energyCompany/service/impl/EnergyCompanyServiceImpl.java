@@ -295,7 +295,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     public void addRouteToEnergyCompany(int energyCompanyId, int routeId) {
         
-        ecMappingDao.addECToRouteMapping(energyCompanyId, routeId);
+        ecMappingDao.addEcToRouteMapping(energyCompanyId, routeId);
         
         dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
                                               DbChangeCategory.ENERGY_COMPANY_ROUTES,

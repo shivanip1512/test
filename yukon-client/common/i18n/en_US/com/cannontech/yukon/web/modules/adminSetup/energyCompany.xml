@@ -107,7 +107,7 @@
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationRemoved">Substation Removed Successfully</entry>    
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmSubstationRemove.title">Remove Substation {0}</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmSubstationRemove.message">Are you sure you want to remove the substation {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationToRouteMapping">Substation to Route Mapping</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationToRouteMapping">Substations</entry>
 
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routes.title">Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.route">Route</entry>

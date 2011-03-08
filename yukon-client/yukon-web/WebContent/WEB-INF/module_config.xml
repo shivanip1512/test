@@ -945,10 +945,6 @@
                         <option name="interfaces">
                             <link>/spring/multispeak/setup/home</link>
                         </option>
-                        <option name="lm_mappings">
-                            <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                            <link>/spring/multispeak/setup/lmMappings/home</link>
-                        </option>
                         <option name="synchronization">
                             <link>/spring/multispeak/setup/deviceGroupSync/home</link>
                         </option>
@@ -964,10 +960,10 @@
                     </options>
                 </option>
                 <option name="substationToRouteMapping">
-                    <link>/spring/multispeak/setup/routemapping/mappings</link>
+                    <link>/spring/adminSetup/setup/substations/routeMapping/view</link>
                     <options>
                         <option name="home">
-                            <link>/spring/multispeak/setup/routemapping/mappings</link>
+                            <link>/spring/adminSetup/setup/substations/routeMapping/view</link>
                         </option>
                     </options>
                 </option>

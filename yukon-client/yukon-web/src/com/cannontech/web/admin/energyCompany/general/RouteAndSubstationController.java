@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -34,6 +37,7 @@ public class RouteAndSubstationController {
     private EnergyCompanyService energyCompanyService;
     private GeneralInfoService generalInfoService;
     private PaoDao paoDao;
+    private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
     private SubstationDao substationDao;
     
@@ -43,6 +47,11 @@ public class RouteAndSubstationController {
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+        // Validate Access
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
+        boolean routeAccess = checkRoutePermission(energyCompanyInfoFragment, userContext.getYukonUser());
+        modelMap.addAttribute("routeAccess", routeAccess);
+        
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.VIEW);
         
@@ -77,6 +86,11 @@ public class RouteAndSubstationController {
     public String addRoute(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                            int routeId, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
+        // Validate Access
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
+        boolean routeAccess = checkRoutePermission(energyCompanyInfoFragment, userContext.getYukonUser());
+        modelMap.addAttribute("routeAccess", routeAccess);
+        
         energyCompanyService.addRouteToEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), routeId);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeAdded"));
 
@@ -90,7 +104,11 @@ public class RouteAndSubstationController {
     @RequestMapping(params="removeRoute")
     public String removeRoute(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                               int removeRoute, EnergyCompanyInfoFragment energyCompanyInfoFragment){
-
+        // Validate Access
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
+        boolean routeAccess = checkRoutePermission(energyCompanyInfoFragment, userContext.getYukonUser());
+        modelMap.addAttribute("routeAccess", routeAccess);
+        
         energyCompanyService.removeRouteFromEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), removeRoute);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved"));
 
@@ -105,8 +123,8 @@ public class RouteAndSubstationController {
     public String addSubstation(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
                                 int substationId, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
-        
-        
+        // Validate Access
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
@@ -129,6 +147,9 @@ public class RouteAndSubstationController {
     public String removeSubstation(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                               int removeSubstation, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
+        // Validate Access
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
+        
         energyCompanyService.removeSubstationFromEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), removeSubstation);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.substationRemoved"));
 
@@ -144,7 +165,7 @@ public class RouteAndSubstationController {
                                    EnergyCompanyInfoFragment energyCompanyInfoFragment) {
     
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        return "redirect:/spring/multispeak/setup/routemapping/mappings";
+        return "redirect:/spring/adminSetup/setup/substations/routeMapping/view";
     }
     
     private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment, YukonUserContext userContext) {
@@ -210,6 +231,25 @@ public class RouteAndSubstationController {
         return ecRoutes;
     }
 
+    /**
+     * This method verifies that an operator has access to the route select page.  If it does not
+     * it will throw a not authorized exception.
+     */
+    private boolean checkRoutePermission(EnergyCompanyInfoFragment energyCompanyInfoFragment,
+                                         LiteYukonUser yukonUser) {
+        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, yukonUser)) return true;
+
+        LiteStarsEnergyCompany energyCompany = 
+            starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        
+        if (energyCompany.getParent() == null ||
+            rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MEMBER_ROUTE_SELECT, yukonUser)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     // Substation Helper Methods
     /**
      * This method returns a list of all the available subsations that can be selected for the given
@@ -282,6 +322,11 @@ public class RouteAndSubstationController {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Autowired

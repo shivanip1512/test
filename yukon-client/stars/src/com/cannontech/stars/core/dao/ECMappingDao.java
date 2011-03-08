@@ -91,7 +91,7 @@ public interface ECMappingDao {
      * @param energyCompanyId
      * @param routeId
      */
-    public void addECToRouteMapping(int energyCompanyId, int routeId);
+    public void addEcToRouteMapping(int energyCompanyId, int routeId);
 
 
     /**
