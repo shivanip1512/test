@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/5/2011 11:05:53 AM                         */
+/* Created on:     3/8/2011 3:32:55 PM                          */
 /*==============================================================*/
 
 
@@ -8340,7 +8340,7 @@ INSERT INTO FDRInterface VALUES ( 8, 'RDEX', 'Send,Send for control,Receive,Rece
 INSERT INTO FDRInterface VALUES ( 9, 'SYSTEM','Link Status','f');
 INSERT INTO FDRInterface VALUES (10, 'DSM2IMPORT','Receive,Receive for control','f');
 INSERT INTO FDRInterface VALUES (11, 'TELEGYR','Receive,Receive for control','f');
-INSERT INTO FDRInterface VALUES (12, 'TEXTIMPORT','Send,Send for control,Receive,Receive for control,Receive for Analog Output','f');
+INSERT INTO FDRInterface VALUES (12, 'TEXTIMPORT','Receive,Receive for control,Receive for Analog Output','f');
 INSERT INTO FDRInterface VALUES (13, 'TEXTEXPORT','Send','f');
 INSERT INTO FDRInterface VALUES (16, 'LODESTAR_STD','Receive','f');
 INSERT INTO FDRInterface VALUES (17, 'LODESTAR_ENH','Receive','f');

@@ -590,8 +590,11 @@ GO
 
 UPDATE FDRInterface 
 SET PossibleDirections = 'Send,Send for control,Receive,Receive for control,Receive for Analog Output' 
-WHERE InterfaceName = 'VALMET'
-OR InterfaceName = 'TEXTIMPORT';
+WHERE InterfaceName = 'VALMET'; 
+
+UPDATE FDRInterface 
+SET PossibleDirections = 'Receive,Receive for control,Receive for Analog Output' 
+WHERE InterfaceName = 'TEXTIMPORT';
 /* End YUK-9561 */
 
 /* Start YUK-9548 */
