@@ -230,7 +230,11 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 }
 
 @Override
-protected boolean isBackButtonSupported(DataInputPanel panel) {
-    return (panel == getLmProgramTypePanel() || panel == getLmProgramBasePanel());
+protected boolean isBackButtonSupported(DataInputPanel inputPanel) {
+      if (inputPanel instanceof LMProgramBasePanel) {
+            return false;
+      }
+      return super.isBackButtonSupported(inputPanel);
 }
+
 }

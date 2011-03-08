@@ -250,15 +250,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
     	}
     		
     	//First Panel - no back button enabled
-    	if( isBackButtonSupported((DataInputPanel) event.getSource()) )
-    	{
-    		setBackEnabled(false);
-    	}
-    	else
-    	{
-    		setBackEnabled(true);
-    	}
-    
+    	setBackEnabled(isBackButtonSupported((DataInputPanel) event.getSource()));
     
     	revalidate();
     	repaint();
@@ -273,7 +265,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
     // Override to control when back button is enabled.
     // By default it is disabled for the first panel only
     protected boolean isBackButtonSupported(DataInputPanel panel) {
-        return currentPanel == 0;
+        return currentPanel != 0;
     }
     
     protected abstract boolean isLastInputPanel(DataInputPanel currentPanel);
