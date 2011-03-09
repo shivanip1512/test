@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.Iso8601DateUtil;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -17,9 +18,8 @@ import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.TotalOverriddenDevicesRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -75,7 +75,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "UserNotAuthorized");
         
         
@@ -97,7 +97,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
        
         long totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
@@ -122,7 +122,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidAccountNumber");
         
         
@@ -143,7 +143,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
        
         totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
@@ -168,7 +168,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
        
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidProgramName");
         
     }
@@ -192,7 +192,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByProgramNameResponse", "UserNotAuthorized");
         
 
@@ -213,7 +213,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byProgramResponseStr, VERSION_1);
        
         long totalDevicesResult = outputTemplate.evaluateAsLong(byProgramTotalDevicesStr);
@@ -237,7 +237,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByProgramNameResponse", "InvalidProgramName");
         
     }

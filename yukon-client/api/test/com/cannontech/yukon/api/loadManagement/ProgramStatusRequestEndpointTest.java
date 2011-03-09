@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -16,8 +17,6 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramStatusRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -79,7 +78,7 @@ public class ProgramStatusRequestEndpointTest {
         requestElement.addContent(tmpElement);
         
         responseElement = impl.invoke(requestElement, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // outputs
         Assert.assertNotNull("No programStatus node present.", outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
@@ -100,7 +99,7 @@ public class ProgramStatusRequestEndpointTest {
         requestElement.addContent(tmpElement);
         
         responseElement = impl.invoke(requestElement, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // outputs
         Assert.assertNotNull("No programStatus node present.", outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
@@ -120,7 +119,7 @@ public class ProgramStatusRequestEndpointTest {
         requestElement.addContent(tmpElement);
         
         responseElement = impl.invoke(requestElement, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         TestUtils.runFailureAssertions(outputTemplate, "programStatusResponse", "InvalidProgramName");
         
         // not auth
@@ -133,7 +132,7 @@ public class ProgramStatusRequestEndpointTest {
         requestElement.addContent(tmpElement);
         
         responseElement = impl.invoke(requestElement, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStatusResponse", "UserNotAuthorized");
     }

@@ -32,6 +32,7 @@ Class-Path: ./
  spring-web.portlet-3.0.5.jar 
  spring-web.servlet-3.0.5.jar 
  spring-web.struts-3.0.5.jar 
+ spring-ws-1.5.6-all.jar 
  dom4j-1.6.1.jar 
  cglib-2.1.3.jar 
  asm.jar 

@@ -16,7 +16,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 
 
 public class TestUtils {

@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -20,9 +21,7 @@ import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -36,7 +35,7 @@ public class NewAccountsRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="newAccountsRequest")
     public Element invoke(Element newAccountsRequest, LiteYukonUser user) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(newAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(newAccountsRequest);
+        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(newAccountsRequest);
         
         List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));

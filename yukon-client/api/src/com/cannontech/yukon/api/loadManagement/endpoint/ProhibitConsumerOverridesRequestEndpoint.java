@@ -9,14 +9,13 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -36,7 +35,7 @@ public class ProhibitConsumerOverridesRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         String version = XmlVersionUtils.getYukonMessageVersion(prohibitConsumerOverridesRequest);
         
-        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(prohibitConsumerOverridesRequest);
+        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(prohibitConsumerOverridesRequest);
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         
         // init response

@@ -7,15 +7,15 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ResetOverrideCountBySerialNumberRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -59,7 +59,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
     	
         // test with valid account, serial, authorized user
@@ -75,7 +75,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
 
         //verify the results
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
         TestUtils.runSuccessAssertion(outputTemplate, RESP_ELEMENT_NAME);
 
@@ -92,7 +92,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
         
         //verify the results
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidAccountNumber");
         
@@ -109,7 +109,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         Assert.assertEquals("Incorrect serialNumber.", INVALID_SERIAL, mockOptOutService.getSerialNumber());
         
         //verify the results
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidSerialNumber");
         
@@ -127,7 +127,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         Assert.assertEquals("Incorrect serialNumber.", INCORRECT_SERIAL, mockOptOutService.getSerialNumber());
         
         //verify the results
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidSerialNumber");
     }

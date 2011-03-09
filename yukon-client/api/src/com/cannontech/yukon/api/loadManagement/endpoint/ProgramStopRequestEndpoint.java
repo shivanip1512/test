@@ -13,6 +13,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -20,9 +21,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.TimeoutException;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -46,7 +45,7 @@ public class ProgramStopRequestEndpoint {
     	XmlVersionUtils.verifyYukonMessageVersion(programStopRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
         // create template and parse data
-        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(programStopRequest);
+        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(programStopRequest);
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);

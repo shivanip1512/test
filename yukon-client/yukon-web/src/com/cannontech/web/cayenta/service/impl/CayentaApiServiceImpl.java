@@ -13,6 +13,7 @@ import org.springframework.xml.xpath.XPathException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
@@ -22,8 +23,7 @@ import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
 import com.cannontech.web.simplePost.SimpleHttpPostService;
 import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 
 public class CayentaApiServiceImpl implements CayentaApiService {
 
@@ -147,7 +147,7 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			
 		Element currentReplyElement = CayentaXmlUtils.getElementForXmlString(reply);
 		String currentReplyTypeName = CayentaXmlUtils.getMethodName(currentReplyElement);
-		SimpleXPathTemplate currentReplyTemplate = XmlApiUtils.getXPathTemplateForElement(currentReplyElement);
+		SimpleXPathTemplate currentReplyTemplate = YukonXml.getXPathTemplateForElement(currentReplyElement);
 		checkReplyStatus(currentReplyTypeName, currentReplyElement);
 		
 		return currentReplyTemplate;

@@ -9,13 +9,13 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.service.EventLogMockServiceFactory;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelAllCurrentOverridesRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -57,7 +57,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
 
     	
@@ -72,7 +72,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         Assert.assertEquals("cancelAllOptOuts was not called", 1, mockOptOutService.getCallCount());
         
         // create template and parse response data
-        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
@@ -89,7 +89,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         Assert.assertEquals("cancelAllOptOuts was not called", 2, mockOptOutService.getCallCount());
         
         // create template and parse response data
-        template = XmlApiUtils.getXPathTemplateForElement(respElement);
+        template = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         Assert.assertEquals("Wrong program name", "Program1", mockOptOutService.getProgramName());

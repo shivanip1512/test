@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
@@ -18,9 +19,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementRequestMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -35,7 +34,7 @@ public class EnrollmentRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, "1.0"); 
         
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
-        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(enrollmentRequest);
+        SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(enrollmentRequest);
         List<EnrollmentHelper> programEnrollments = 
             template.evaluate("//y:enrollmentList/y:programEnrollment", 
                               new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramEnrollmentElementRequestMapper()));

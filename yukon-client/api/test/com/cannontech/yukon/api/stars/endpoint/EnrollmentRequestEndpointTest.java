@@ -9,12 +9,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 public class EnrollmentRequestEndpointTest {
@@ -42,7 +41,7 @@ public class EnrollmentRequestEndpointTest {
 
         Element failRequest = buildFailRequest("NOT_FOUND");
         responseElement = impl.invoke(failRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
@@ -68,7 +67,7 @@ public class EnrollmentRequestEndpointTest {
 
         Element failRequest = buildFailRequest("ILLEGAL_ARGUMENT");
         responseElement = impl.invoke(failRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
@@ -94,7 +93,7 @@ public class EnrollmentRequestEndpointTest {
 
         Element failRequest = buildFailRequest("DUPLICATE_ENROLLMENT");
         responseElement = impl.invoke(failRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
@@ -120,7 +119,7 @@ public class EnrollmentRequestEndpointTest {
         
         Element successRequest = buildSuccessSingleRequest();
         responseElement = impl.invoke(successRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
@@ -143,7 +142,7 @@ public class EnrollmentRequestEndpointTest {
 
         Element successRequest = buildSuccessMultipleRequest();
         responseElement = impl.invoke(successRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
@@ -172,7 +171,7 @@ public class EnrollmentRequestEndpointTest {
 
         Element successRequest = buildSuccessOptionalRequirementsRequest();
         responseElement = impl.invoke(successRequest, null);
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 

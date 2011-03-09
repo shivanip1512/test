@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.xml.transform.StringSource;
 
 import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.yukon.INotifConnection;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.google.common.collect.Maps;
 
 @Controller

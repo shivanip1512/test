@@ -11,14 +11,14 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.Iso8601DateUtil;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ScenarioStartRequestEndpoint;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -109,7 +109,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario1", mockService.getScenarioName());
         Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStartTime());
@@ -125,7 +125,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario2", mockService.getScenarioName());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
@@ -141,7 +141,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario3", mockService.getScenarioName());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
@@ -156,7 +156,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStartResponse", "InvalidScenarioName");
         
@@ -167,7 +167,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStartResponse", "Timeout");
         
@@ -178,7 +178,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStartResponse", "UserNotAuthorized");
         
@@ -189,7 +189,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Synchronous method should have been called", false, mockService.isAsync());
         
@@ -200,7 +200,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Asynchronous method should have been called", true, mockService.isAsync());
         
@@ -211,7 +211,7 @@ public class ScenarioStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Asynchronous method should have been called", true, mockService.isAsync());
     }

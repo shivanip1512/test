@@ -18,12 +18,12 @@ import org.springframework.xml.xpath.XPathException;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 
 public class CayentaXmlUtils {
 
@@ -58,7 +58,7 @@ public class CayentaXmlUtils {
 	// REPLY STATUS
 	public static int getReplyStatusValue(String replyTypeName, Element replyElement) throws CayentaRequestException  {
 		
-		SimpleXPathTemplate replyTemplate = XmlApiUtils.getXPathTemplateForElement(replyElement);
+		SimpleXPathTemplate replyTemplate = YukonXml.getXPathTemplateForElement(replyElement);
 		String expression = "/Reply/" + replyTypeName + "/STATUS";
         Long requestStatus = replyTemplate.evaluateAsLong(expression);
         if (requestStatus == null) {
@@ -70,7 +70,7 @@ public class CayentaXmlUtils {
 	
 	public static String getReplyStatusDescription(String replyTypeName, Element replyElement) throws CayentaRequestException {
 		
-		SimpleXPathTemplate replyTemplate = XmlApiUtils.getXPathTemplateForElement(replyElement);
+		SimpleXPathTemplate replyTemplate = YukonXml.getXPathTemplateForElement(replyElement);
 		String expression = "/Reply/" + replyTypeName + "/STATUS_DESC";
         String requestStatusDesc = replyTemplate.evaluateAsString(expression);
         if (requestStatusDesc == null) {
@@ -83,7 +83,7 @@ public class CayentaXmlUtils {
 	// FUNCTION STATUS
 	public static int getReplyFunctionStatusValue(String replyTypeName, Element replyElement) throws CayentaRequestException  {
 		
-		SimpleXPathTemplate replyTemplate = XmlApiUtils.getXPathTemplateForElement(replyElement);
+		SimpleXPathTemplate replyTemplate = YukonXml.getXPathTemplateForElement(replyElement);
 		String expression = "/Reply/" + replyTypeName + "/Params/STATUS";
         Long functionStatus = replyTemplate.evaluateAsLong(expression);
         if (functionStatus == null) {
@@ -95,7 +95,7 @@ public class CayentaXmlUtils {
 	
 	public static String getReplyFunctionStatusDescription(String replyTypeName, Element replyElement) throws CayentaRequestException {
 		
-		SimpleXPathTemplate replyTemplate = XmlApiUtils.getXPathTemplateForElement(replyElement);
+		SimpleXPathTemplate replyTemplate = YukonXml.getXPathTemplateForElement(replyElement);
 		String expression = "/Reply/" + replyTypeName + "/Params/STATUS_DESC";
         String requestStatusDesc = replyTemplate.evaluateAsString(expression);
         if (requestStatusDesc == null) {

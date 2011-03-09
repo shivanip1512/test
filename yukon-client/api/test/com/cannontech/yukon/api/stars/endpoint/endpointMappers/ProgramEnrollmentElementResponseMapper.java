@@ -4,15 +4,15 @@ import org.jdom.Element;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 
 public class ProgramEnrollmentElementResponseMapper implements ObjectMapper<Element, EnrollmentResponse> {
 
     @Override
     public EnrollmentResponse map(Element enrollmentResponseElement) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(enrollmentResponseElement);
+        SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(enrollmentResponseElement);
         
         EnrollmentResponse enrollmentResponse = new EnrollmentResponse();
         enrollmentResponse.setAccountNumber(template.evaluateAsString("//y:accountNumber"));

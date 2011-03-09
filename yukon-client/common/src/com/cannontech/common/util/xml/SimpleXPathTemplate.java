@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cannontech.yukon.api.util;
+package com.cannontech.common.util.xml;
 
 import java.util.ArrayList;
 import java.util.Date;

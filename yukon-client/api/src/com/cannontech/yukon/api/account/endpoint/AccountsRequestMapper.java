@@ -6,16 +6,16 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
-import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlApiUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 
 public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAccount> {
 
     @Override
     public UpdatableAccount map(Element accountsRequestElement) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(accountsRequestElement);
+        SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(accountsRequestElement);
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         AccountDto dto = new AccountDto();

@@ -356,5 +356,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.6-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.6-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
