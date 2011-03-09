@@ -66,8 +66,6 @@
         </form>
     </i:simplePopup>
     
-    
-    
     <form id="viewAllForm" action="/spring/stars/operator/workOrder/workOrderList">
         <input type="hidden" name="accountId" value="${accountId}">
     </form>
