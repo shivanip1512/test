@@ -47,7 +47,7 @@ public class ProgramDaoImpl implements ProgramDao {
     private final String selectSQLHeader =
         "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, "+
         "       YWC.alternateDisplayName, PAO.paoName, YLE.entryText as ChanceOfControl, "+
-        "       LMPWP.applianceCategoryId, YWC.logoLocation, YPO.Type "+
+        "       LMPWP.applianceCategoryId, YWC.logoLocation, PAO.Type "+
         "FROM LMProgramWebPublishing LMPWP "+
         "INNER JOIN YukonWebConfiguration YWC ON LMPWP.webSettingsId = YWC.configurationId "+
         "INNER JOIN YukonPAObject PAO ON PAO.paobjectId = LMPWP.deviceId "+
