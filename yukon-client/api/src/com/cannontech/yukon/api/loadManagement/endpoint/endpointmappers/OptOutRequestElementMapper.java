@@ -9,13 +9,13 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.optout.OptOutHelper;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 public class OptOutRequestElementMapper implements ObjectMapper<Element, OptOutHelper> {
 
     @Override
     public OptOutHelper map(Element optOutRequest) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(optOutRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(optOutRequest);
         OptOutHelper optOutHelper = new OptOutHelper();
 
         String accountNumber = template.evaluateAsString("//y:accountNumber");

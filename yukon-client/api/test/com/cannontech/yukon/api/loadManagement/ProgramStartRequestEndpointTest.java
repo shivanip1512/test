@@ -19,7 +19,7 @@ import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramStartRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -99,7 +99,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program1", mockService.getProgramName());
         Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStartTime());
@@ -114,7 +114,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program2", mockService.getProgramName());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
@@ -130,7 +130,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program3", mockService.getProgramName());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
@@ -145,7 +145,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "InvalidProgramName");
         
@@ -156,7 +156,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "InvalidGearName");
         
@@ -167,7 +167,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "Timeout");
         
@@ -178,7 +178,7 @@ public class ProgramStartRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "UserNotAuthorized");
     }

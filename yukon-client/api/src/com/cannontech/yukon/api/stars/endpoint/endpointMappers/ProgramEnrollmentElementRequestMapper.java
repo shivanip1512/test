@@ -6,13 +6,13 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 public class ProgramEnrollmentElementRequestMapper implements ObjectMapper<Element, EnrollmentHelper> {
 
     @Override
     public EnrollmentHelper map(Element enrollmentRequestElement) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequestElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(enrollmentRequestElement);
         
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
         enrollmentHelper.setAccountNumber(template.evaluateAsString("//y:accountNumber"));

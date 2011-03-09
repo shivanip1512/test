@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
@@ -22,7 +23,7 @@ import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -37,7 +38,7 @@ public class UpdateAccountsRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="updateAccountsRequest")
     public Element invoke(Element updateAccountsRequest, LiteYukonUser user) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(updateAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0,XmlVersionUtils.YUKON_MSG_VERSION_1_1);
-        SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(updateAccountsRequest);
+        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(updateAccountsRequest);
         
         Boolean add = requestTemplate.evaluateAsBooleanWithDefault("//y:updateAccountsRequest/@addOnFail", true);
         

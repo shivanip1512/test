@@ -20,7 +20,7 @@ import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollment
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -35,7 +35,7 @@ public class UnenrollmentRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, "1.0"); 
         
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(enrollmentRequest);
         List<EnrollmentHelper> programEnrollments = 
             template.evaluate("//y:enrollmentList/y:programUnenrollment", 
                               new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramEnrollmentElementRequestMapper()));

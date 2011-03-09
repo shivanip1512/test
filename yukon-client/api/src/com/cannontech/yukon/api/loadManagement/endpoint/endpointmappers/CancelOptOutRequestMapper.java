@@ -6,14 +6,14 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.optout.CancelOptOutHelper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 
 public class CancelOptOutRequestMapper implements ObjectMapper<Element, CancelOptOutHelper> {
 
     @Override
     public CancelOptOutHelper map(Element cancelOptOutRequest) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(cancelOptOutRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(cancelOptOutRequest);
 
         CancelOptOutHelper cancelOptOutHelper = new CancelOptOutHelper();
 

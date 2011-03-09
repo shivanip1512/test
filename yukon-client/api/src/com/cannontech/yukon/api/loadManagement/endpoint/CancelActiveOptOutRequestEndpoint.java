@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -32,7 +33,7 @@ import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.CancelOp
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -55,7 +56,7 @@ public class CancelActiveOptOutRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(newOptOutCancelRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newOptOutCancelRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(newOptOutCancelRequest);
         CancelOptOutHelper cancelOptOutHelper = template.evaluateAsObject("//y:cancelActiveOptOutRequest", 
                                                               new NodeToElementMapperWrapper<CancelOptOutHelper>(new CancelOptOutRequestMapper()));
 

@@ -19,7 +19,7 @@ import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramControlHistoryRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -105,7 +105,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 0, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
         
@@ -119,7 +119,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
         
@@ -138,7 +138,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 2, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
         
@@ -157,7 +157,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programControlHistoryResponse", "InvalidProgramName");
         
@@ -168,7 +168,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programControlHistoryResponse", "UserNotAuthorized");
     }

@@ -13,11 +13,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.yukon.api.account.endpoint.RemoveAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 

@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -20,7 +21,7 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -39,7 +40,7 @@ public class OverrideHistoryRequestEndpoint {
     	XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByAccountNumberRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
         // create template and parse data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByAccountNumberRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(overrideHistoryByAccountNumberRequest);
         
         String accountNumber = 
         	template.evaluateAsString("/y:overrideHistoryByAccountNumberRequest/y:accountNumber");
@@ -99,7 +100,7 @@ public class OverrideHistoryRequestEndpoint {
         
         
         // create template and parse data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByProgramNameRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(overrideHistoryByProgramNameRequest);
 
         String programName = template.evaluateAsString("/y:overrideHistoryByProgramNameRequest/y:programName");        
         Date startTime = template.evaluateAsDate("/y:overrideHistoryByProgramNameRequest/y:startDateTime");

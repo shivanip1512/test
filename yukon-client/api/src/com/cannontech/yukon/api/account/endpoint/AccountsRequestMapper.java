@@ -9,13 +9,13 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAccount> {
 
     @Override
     public UpdatableAccount map(Element accountsRequestElement) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(accountsRequestElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(accountsRequestElement);
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         AccountDto dto = new AccountDto();

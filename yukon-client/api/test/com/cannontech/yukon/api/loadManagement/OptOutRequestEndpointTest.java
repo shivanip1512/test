@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -31,7 +32,7 @@ import com.cannontech.yukon.api.loadManagement.endpoint.OptOutRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -168,7 +169,7 @@ public class OptOutRequestEndpointTest {
         
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        return XmlUtils.getXPathTemplateForElement(responseElement);
+        return XmlApiUtils.getXPathTemplateForElement(responseElement);
         
     }
     

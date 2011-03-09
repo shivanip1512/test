@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -19,7 +20,7 @@ import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -42,7 +43,7 @@ public class ProgramStatusRequestEndpoint {
     	XmlVersionUtils.verifyYukonMessageVersion(programStatusRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
         // create template and parse data
-        SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programStatusRequest);
+        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(programStatusRequest);
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
 

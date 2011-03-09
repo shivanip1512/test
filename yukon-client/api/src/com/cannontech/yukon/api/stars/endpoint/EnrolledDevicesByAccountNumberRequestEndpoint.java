@@ -10,13 +10,14 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -35,7 +36,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpoint {
         
     	XmlVersionUtils.verifyYukonMessageVersion(enrolledDevicesByAccountNumberRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
-        SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(enrolledDevicesByAccountNumberRequest);
+        SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(enrolledDevicesByAccountNumberRequest);
         String accountNumber = requestTemplate.evaluateAsString(accountNumberExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startDateTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopDateTimeExpressionStr);

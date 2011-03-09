@@ -14,6 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -29,7 +30,7 @@ import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -85,7 +86,7 @@ public class ControllableDevicesRequestEndPoint {
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newControllableDevicesRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(newControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
 
         // Log hardware addition attempts
@@ -123,7 +124,7 @@ public class ControllableDevicesRequestEndPoint {
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(updateControllableDevicesRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(updateControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
         // check authorization
@@ -159,7 +160,7 @@ public class ControllableDevicesRequestEndPoint {
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeControllableDevicesRequest);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(removeControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
         // check authorization
@@ -274,7 +275,7 @@ public class ControllableDevicesRequestEndPoint {
         @Override
         public StarsControllableDeviceDTO map(Node from) throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+            SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForNode(from);
 
             StarsControllableDeviceDTO device = new StarsControllableDeviceDTO();
             device.setAccountNumber(template.evaluateAsString(accountNumberStr));

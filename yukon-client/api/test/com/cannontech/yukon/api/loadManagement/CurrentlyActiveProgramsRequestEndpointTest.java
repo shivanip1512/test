@@ -19,7 +19,7 @@ import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapte
 import com.cannontech.yukon.api.loadManagement.endpoint.CurrentlyActiveProgramsRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -83,7 +83,7 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         responseElement = impl.invoke(requestElement, emptyReturnUser);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
         Assert.assertNotNull("No programStatuses node present.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
@@ -103,7 +103,7 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         responseElement = impl.invoke(requestElement, user);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
         Assert.assertNotNull("No programStatuses node present.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));

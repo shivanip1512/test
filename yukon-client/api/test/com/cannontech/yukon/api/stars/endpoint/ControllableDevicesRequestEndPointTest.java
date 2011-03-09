@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
@@ -26,7 +27,7 @@ import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
@@ -154,7 +155,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, newDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         List<ControllableDeviceResult> deviceResults = template.evaluate(newDeviceRespElementStr,
@@ -247,7 +248,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, updateDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         List<ControllableDeviceResult> deviceResults = template.evaluate(updateDeviceRespElementStr,
@@ -340,7 +341,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, removeDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         List<ControllableDeviceResult> deviceResults = template.evaluate(removeDeviceRespElementStr,
@@ -419,7 +420,7 @@ public class ControllableDevicesRequestEndPointTest {
         @Override
         public ControllableDeviceResult map(Node from) throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+            SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForNode(from);
 
             ControllableDeviceResult deviceResult = new ControllableDeviceResult();
             deviceResult.setAccountNumber(template.evaluateAsString(accountNumberRespStr));

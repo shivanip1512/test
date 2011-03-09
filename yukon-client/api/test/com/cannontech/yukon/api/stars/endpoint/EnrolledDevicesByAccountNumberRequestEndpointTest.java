@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
@@ -29,7 +30,7 @@ import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
@@ -134,7 +135,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template,
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -169,7 +170,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template,
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -208,7 +209,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template,
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -248,7 +249,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         public EnrolledDevicePrograms map(Node from)
                 throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+            SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForNode(from);
 
             EnrolledDevicePrograms deviceResult = new EnrolledDevicePrograms(template.evaluateAsString(serialNumberRespStr),
                                                                              Collections.EMPTY_LIST);

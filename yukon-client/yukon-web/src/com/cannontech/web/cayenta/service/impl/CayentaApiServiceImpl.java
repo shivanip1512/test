@@ -23,7 +23,7 @@ import com.cannontech.web.cayenta.util.CayentaXmlUtils;
 import com.cannontech.web.simplePost.SimpleHttpPostService;
 import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 public class CayentaApiServiceImpl implements CayentaApiService {
 
@@ -147,7 +147,7 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			
 		Element currentReplyElement = CayentaXmlUtils.getElementForXmlString(reply);
 		String currentReplyTypeName = CayentaXmlUtils.getMethodName(currentReplyElement);
-		SimpleXPathTemplate currentReplyTemplate = XmlUtils.getXPathTemplateForElement(currentReplyElement);
+		SimpleXPathTemplate currentReplyTemplate = XmlApiUtils.getXPathTemplateForElement(currentReplyElement);
 		checkReplyStatus(currentReplyTypeName, currentReplyElement);
 		
 		return currentReplyTemplate;

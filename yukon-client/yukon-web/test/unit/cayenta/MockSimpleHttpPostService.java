@@ -11,11 +11,12 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
 import com.cannontech.web.simplePost.SimpleHttpPostService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 class MockSimpleHttpPostService implements SimpleHttpPostService {
     
@@ -38,7 +39,7 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 			Resource requestResource = new ByteArrayResource(value.getBytes());
 			Element requestElement = XmlUtils.createElementFromResource(requestResource);
 			String requestTypeName = CayentaXmlUtils.getMethodName(requestElement);
-			SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(requestElement);
+			SimpleXPathTemplate requestTemplate = XmlApiUtils.getXPathTemplateForElement(requestElement);
 			
 			// failure responses
 			meterNumber = requestTemplate.evaluateAsString("/Request/" + requestTypeName + "/Params/METER_NO");

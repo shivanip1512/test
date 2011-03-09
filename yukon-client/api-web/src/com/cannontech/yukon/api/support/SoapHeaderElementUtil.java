@@ -13,7 +13,7 @@ import org.springframework.ws.soap.SoapHeaderException;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.xml.transform.TransformerObjectSupport;
 
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.common.util.xml.XmlUtils;
 
 public class SoapHeaderElementUtil extends TransformerObjectSupport {
 

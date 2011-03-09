@@ -16,6 +16,7 @@ import org.w3c.dom.Node;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -26,7 +27,7 @@ import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.OverrideHistoryRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
@@ -198,7 +199,7 @@ public class OverrideHistoryRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByAccountNumberResponse", "UserNotAuthorized");
         
@@ -219,7 +220,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
@@ -246,7 +247,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
@@ -275,7 +276,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
@@ -302,7 +303,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByAccountNumberResponse", "InvalidAccountNumber");
         
@@ -322,7 +323,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByAccountNumberResponse", "InvalidProgramName");
         
@@ -348,7 +349,7 @@ public class OverrideHistoryRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByProgramNameResponse", "UserNotAuthorized");
         
@@ -364,7 +365,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
         List<OverrideHistory> actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_0);
@@ -384,7 +385,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        template = XmlUtils.getXPathTemplateForElement(respElement);
+        template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
        
         actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_1);
@@ -406,7 +407,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        template = XmlUtils.getXPathTemplateForElement(respElement);
+        template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
         actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_0);
@@ -430,7 +431,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        template = XmlUtils.getXPathTemplateForElement(respElement);
+        template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
        
         actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_1);
@@ -452,7 +453,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByProgramNameResponse", "InvalidProgramName");
         
@@ -467,7 +468,7 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
-        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByProgramNameResponse", "InvalidProgramName");
         
@@ -591,7 +592,7 @@ public class OverrideHistoryRequestEndpointTest {
         @Override
         public OverrideHistory map(Node from) throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+            SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForNode(from);
 
             OverrideHistory overrideHist = new OverrideHistory();
             overrideHist.setSerialNumber(template.evaluateAsString("y:serialNumber"));
@@ -617,7 +618,7 @@ public class OverrideHistoryRequestEndpointTest {
 		@Override
 		public OverrideHistory map(Node from) throws ObjectMappingException {
 		    // create template and parse data
-		    SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+		    SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForNode(from);
 		
 		    OverrideHistory overrideHist = new OverrideHistory();
 		    overrideHist.setSerialNumber(template.evaluateAsString("y:serialNumber"));
@@ -625,7 +626,7 @@ public class OverrideHistoryRequestEndpointTest {
 		    List<Program> programList = new ArrayList<Program>();
 		    List<Node> programNameNodeList = template.evaluateAsNodeList("y:enrolledProgramList");
 		    for (Node n : programNameNodeList) {
-		    	SimpleXPathTemplate nt = XmlUtils.getXPathTemplateForNode(n);
+		    	SimpleXPathTemplate nt = XmlApiUtils.getXPathTemplateForNode(n);
 		    	String programName = nt.evaluateAsString("y:programName");
 		    	Program p = new Program();
 			    p.setProgramName(programName);

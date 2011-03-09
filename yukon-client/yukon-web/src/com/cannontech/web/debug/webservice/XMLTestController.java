@@ -27,10 +27,10 @@ import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsonView;
-import com.cannontech.yukon.api.util.XmlUtils;
 
 public class XMLTestController extends MultiActionController {
     

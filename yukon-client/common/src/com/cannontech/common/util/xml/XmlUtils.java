@@ -1,17 +1,15 @@
-package com.cannontech.yukon.api.util;
+package com.cannontech.common.util.xml;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
@@ -22,13 +20,7 @@ import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.jdom.transform.JDOMSource;
 import org.springframework.core.io.Resource;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.SoapMessage;
-import org.w3c.dom.Node;
 
 import com.cannontech.common.util.Iso8601DateUtil;
 
@@ -128,24 +120,6 @@ public class XmlUtils {
         return inputElement;
     }
     
-    public static SimpleXPathTemplate getXPathTemplateForElement(Element element) {
-        
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(new JDOMSource(element));
-        template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
-        
-        return template;
-    }
-
-    public static SimpleXPathTemplate getXPathTemplateForNode(Node node) {
-        
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(new DOMSource(node));
-        template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
-        
-        return template;
-    }
-    
     public static void printElement(Element element, String title) throws IOException {
         
         if (!StringUtils.isBlank(title)) {
@@ -154,16 +128,6 @@ public class XmlUtils {
         xmlOutputter.output(element, System.out);
         System.out.println();
         System.out.println();
-    }
-    
-    public static void addHeaderToMessage(WebServiceMessage message, QName headerElementName, String headerValue, boolean mustUnderstand) {
-    	
-    	SoapMessage soapMessage = ((SoapMessage)message);
-		SoapHeader soapHeader = soapMessage.getSoapHeader();
-
-		SoapHeaderElement headerElement = soapHeader.addHeaderElement(headerElementName);
-		headerElement.setText(headerValue);
-		headerElement.setMustUnderstand(mustUnderstand);
     }
     
     private static TransformerFactory transformerFactory = TransformerFactory.newInstance();

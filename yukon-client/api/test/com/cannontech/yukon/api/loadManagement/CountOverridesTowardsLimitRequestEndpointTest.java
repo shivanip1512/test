@@ -10,12 +10,13 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.service.EventLogMockServiceFactory;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.CountOverridesTowardsLimitRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
@@ -60,7 +61,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
-        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate outputTemplate = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
     	
 
@@ -77,7 +78,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         		mockOptOutService.getLastValueCalled());
         
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        SimpleXPathTemplate template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
@@ -99,7 +100,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         Assert.assertEquals("unexpected programName", "TEST_PROGRAM", mockOptOutService.getLastProgramNameCalled());
         
         // create template and parse response data
-        template = XmlUtils.getXPathTemplateForElement(respElement);
+        template = XmlApiUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
