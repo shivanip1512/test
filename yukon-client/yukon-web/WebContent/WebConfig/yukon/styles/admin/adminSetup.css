@@ -32,7 +32,7 @@ div.rolesContainer {
     font-size: 12px;
     overflow: auto;
     max-height: 400px;
-    min-width: 500px;
+    min-width: 400px;
 }
 
 ul.category {

@@ -175,7 +175,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         } else {
             statement.append(((Enum<?>) constant).name());
         }
-        statement.append("'");
+        statement.append("' ");
         return this;
     }
     
@@ -198,7 +198,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         } else {
             statement.append(((Enum<?>) constant).name());
         }
-        statement.append("'");
+        statement.append("' ");
         return this;
     }
     

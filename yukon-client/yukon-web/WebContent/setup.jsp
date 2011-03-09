@@ -1,3 +1,3 @@
 <%
-response.sendRedirect("/spring/support/setup/view");
+response.sendRedirect("/spring/adminSetup/roleEditor/view?groupId=-1&roleId=-1");
 %>

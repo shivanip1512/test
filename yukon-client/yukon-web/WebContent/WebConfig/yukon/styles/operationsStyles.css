@@ -142,7 +142,6 @@ div.boxedLink:hover {
     -webkit-box-shadow: #777 1px 1px 5px;
     -moz-box-shadow: #777 1px 1px 5px;
     box-shadow: #777 1px 1px 5px;
-    cursor: pointer;
 }
 
 div.boxedLink a {

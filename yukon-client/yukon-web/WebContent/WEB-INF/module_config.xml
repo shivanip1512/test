@@ -853,10 +853,6 @@
             <option name="threadDump">
               <link>/spring/support/threadDump</link>
             </option>
-            <option name="setup">
-              <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-              <link>/spring/support/setup/view</link>
-            </option>
           </options>
         </option>
       </options>

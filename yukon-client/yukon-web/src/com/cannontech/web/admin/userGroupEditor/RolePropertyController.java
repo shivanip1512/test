@@ -91,13 +91,13 @@ public class RolePropertyController {
     private MappedPropertiesHelper<DescriptiveRoleProperty> getHelper(YukonRole yukonRole) {
         Map<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties = rolePropertyEditorDao.getDescriptiveRoleProperties(yukonRole);
         
-        MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper1 = new MappedPropertiesHelper<DescriptiveRoleProperty>("values");
+        MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper = new MappedPropertiesHelper<DescriptiveRoleProperty>("values");
         for (DescriptiveRoleProperty descriptiveRoleProperty : descriptiveRoleProperties.values()) {
             YukonRoleProperty yukonRoleProperty = descriptiveRoleProperty.getYukonRoleProperty();
-            mappedPropertiesHelper1.add(yukonRoleProperty.name(), descriptiveRoleProperty, yukonRoleProperty.getType());
+            mappedPropertiesHelper.add(yukonRoleProperty.name(), descriptiveRoleProperty, yukonRoleProperty.getType());
         }
-        MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper = mappedPropertiesHelper1;
-        return mappedPropertiesHelper;
+        MappedPropertiesHelper<DescriptiveRoleProperty> result = mappedPropertiesHelper;
+        return result;
     }    
 
     @RequestMapping(value="update", method=RequestMethod.POST, params="save")
@@ -122,7 +122,7 @@ public class RolePropertyController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated"));
         setupModelMap(context, map, liteYukonGroup, role);
-        return "redirect:view";
+        return "redirect:/spring/adminSetup/groupEditor/view";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="delete")

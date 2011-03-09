@@ -48,7 +48,7 @@ public class RoleListHelper {
         Builder<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> builder = ImmutableMultimap.builder();
         for (YukonRole role : rolesList) {
             /* Skip roles from the system category */
-            if (role.getCategory() == YukonRoleCategory.System) continue;
+            if (role.getCategory().isSystem()) continue;
             
             Pair<YukonRole, LiteYukonGroup>roleGroupPair = new Pair<YukonRole, LiteYukonGroup>(role, rolesAndGroups.get(role));
             builder.put(role.getCategory(), roleGroupPair);
