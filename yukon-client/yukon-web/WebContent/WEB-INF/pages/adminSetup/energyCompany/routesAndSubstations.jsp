@@ -17,7 +17,7 @@
         <cti:param name="ecId" value="${ecId}" />
     </cti:url>
 
-    <cti:dataGrid cols="2" tableClasses="routeAndSubstationLayout">
+    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
       <c:if test="${routeAccess}">
           <cti:dataGridCell>
             <tags:boxContainer2 nameKey="routes">
@@ -129,7 +129,7 @@
                     </c:if>
 
                     <br>
-                    <a href="/spring/multispeak/setup/routemapping/mappings"><i:inline key=".substationToRouteMapping" /></a>
+                    <a href="createSubstation" ><i:inline key=".substationToRouteMapping" /></a>
                     
                 </div>
             </form>

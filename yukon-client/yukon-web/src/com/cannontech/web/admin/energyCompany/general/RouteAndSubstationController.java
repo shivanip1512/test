@@ -160,11 +160,8 @@ public class RouteAndSubstationController {
     /**
      * This method redirects you to the substation creation page.
      */
-    @RequestMapping(params="createSubstation")
-    public String createSubstation(YukonUserContext userContext, ModelMap modelMap, 
-                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-    
-        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
+    @RequestMapping("createSubstation")
+    public String createSubstation(YukonUserContext userContext, ModelMap modelMap) {
         return "redirect:/spring/adminSetup/setup/substations/routeMapping/view";
     }
     

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.substation.dao.SubstationDao;
@@ -28,9 +29,11 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/setup/substations/*")
+@CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
 @Controller
 public class SubstationController { 
 
