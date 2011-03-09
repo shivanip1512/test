@@ -1,9 +1,14 @@
 package com.cannontech.yukon.api.util;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 
 import org.jdom.Element;
 import org.jdom.transform.JDOMSource;
+import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Node;
 
 public class XmlApiUtils {
@@ -24,6 +29,17 @@ public class XmlApiUtils {
         template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
         
         return template;
+    }
+    
+    
+    public static void addHeaderToMessage(WebServiceMessage message, QName headerElementName, String headerValue, boolean mustUnderstand) {
+        
+        SoapMessage soapMessage = ((SoapMessage)message);
+        SoapHeader soapHeader = soapMessage.getSoapHeader();
+
+        SoapHeaderElement headerElement = soapHeader.addHeaderElement(headerElementName);
+        headerElement.setText(headerValue);
+        headerElement.setMustUnderstand(mustUnderstand);
     }
 
 }

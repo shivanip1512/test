@@ -27,10 +27,10 @@ import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsonView;
+import com.cannontech.yukon.api.util.XmlApiUtils;
 
 public class XMLTestController extends MultiActionController {
     
@@ -136,7 +136,7 @@ public class XMLTestController extends MultiActionController {
 		public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
 			
 			QName headerElementName = new QName("http://yukon.cannontech.com/api", "yukonUser", "api");
-			XmlUtils.addHeaderToMessage(message, headerElementName, this.userName, false);
+			XmlApiUtils.addHeaderToMessage(message, headerElementName, this.userName, false);
 		}
     }
 
