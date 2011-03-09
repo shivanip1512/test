@@ -30,8 +30,8 @@
             
         });
         
-        YEvent.observeSelectorClick('#confirmDelete', function() {
-            $('confirmDeleteWorkOrderDialog').show();
+        YEvent.observeSelectorClick('#workOrderConfirmCancel', function() {
+            $('confirmDeleteWorkOrderDialog').hide();
         });
     
         var assignedServiceCompanyChanged = function() {
@@ -54,18 +54,19 @@
 
     </script>
 
-    <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup">
+    <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup" on="#confirmDelete">
         <cti:msg2 key=".deleteWorkOrderConfirmation.message" arguments="${workOrderDto.workOrderBase.orderNumber}"/>
-        <div class="actionArea">
-            <tags:slowInput2 formId="deleteForm" key="delete"/>
-            <input type="button" value="<cti:msg2 key=".deleteWorkOrderConfirmation.Cancel"/>" onclick="$('confirmDeleteWorkOrderDialog').hide()"/>
-        </div>
+         <form id="deleteForm" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
+          <input type="hidden" name="accountId" value="${accountId}">
+          <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
+          <div class="actionArea">
+            <cti:button id="workOrderConfirmDelete" type="submit" key="delete"/>
+            <cti:button id="workOrderConfirmCancel" type="button" key="cancel"/>  
+          </div>
+        </form>
     </i:simplePopup>
     
-    <form id="deleteForm" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
-        <input type="hidden" name="accountId" value="${accountId}">
-        <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
-    </form>
+    
     
     <form id="viewAllForm" action="/spring/stars/operator/workOrder/workOrderList">
         <input type="hidden" name="accountId" value="${accountId}">
