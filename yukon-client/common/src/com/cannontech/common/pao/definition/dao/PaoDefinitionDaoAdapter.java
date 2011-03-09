@@ -136,7 +136,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
     
     @Override
-    public Multimap<PaoType, Attribute> getAllDefinedAttributes() {
+    public Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap() {
         throw new UnsupportedOperationException("not implemented");
     }
     

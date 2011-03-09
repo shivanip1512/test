@@ -111,6 +111,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     // Maps containing all of the data in the paoDefinition.xml file
     private Map<PaoType, Map<Attribute, AttributeDefinition>> paoAttributeAttrDefinitionMap = null;
+    private Multimap<PaoType, Attribute> paoTypeAttributesMultiMap = null;
     private Map<PaoType, Set<PointTemplate>> paoAllPointTemplateMap = null;
     private Map<PaoType, Set<PointTemplate>> paoInitPointTemplateMap = null;
     private Map<PaoType, PaoDefinition> paoTypeMap = null;
@@ -170,6 +171,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
+    public Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap() {
+        return paoTypeAttributesMultiMap;
+    }
+
     public Set<AttributeDefinition> getDefinedAttributes(PaoType paoType) {
         Map<Attribute, AttributeDefinition> attributeLookupsForPao = paoAttributeAttrDefinitionMap.get(paoType);
         if (attributeLookupsForPao == null) {
@@ -179,16 +184,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
     }
 
-    @Override
-    public Multimap<PaoType, Attribute> getAllDefinedAttributes() {
-        Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
-        
-        for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
-            builder.putAll(entry.getKey(), entry.getValue().keySet());
-        }
-        return builder.build();
-    }
-    
     @Override
     public Set<PointTemplate> getAllPointTemplates(PaoDefinition paoDefinition) {
         return this.getAllPointTemplates(paoDefinition.getType());
@@ -492,6 +487,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             this.addPao(paoStore);
         }
         
+        Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
+        for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
+            builder.putAll(entry.getKey(), entry.getValue().keySet());
+        }
+        paoTypeAttributesMultiMap = builder.build();
+
 // this junk should probably stick around for a while during 4.3 development, makes it easy to compare dao output to earlier versions
 //      //TEST FILE
 //        BufferedWriter out = new BufferedWriter(new FileWriter("c:\\paoDefinition_NEW-6.txt"));

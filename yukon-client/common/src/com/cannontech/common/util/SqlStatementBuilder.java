@@ -188,6 +188,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public SqlStatementBuilder neq_k(int constant) {
         statement.append("!= ");
         statement.append(Integer.toString(constant));
+        appendSpace();
         return this;
     }
     

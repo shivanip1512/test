@@ -217,7 +217,7 @@ public class AttributeServiceImpl implements AttributeService {
             sql.append("UNION");
             sql.append("SELECT eppa_als.paObjectId, eppa_als.pointId");
             sql.append("FROM ExtraPaoPointAssignment eppa_als");
-            sql.append("WHERE eppa_als.Attribute").eq(attribute.getKey()); //DRS???
+            sql.append("WHERE eppa_als.Attribute").eq(attribute.getKey());
         }
         
         return sql;

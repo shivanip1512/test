@@ -26,7 +26,7 @@ public interface PaoDefinitionDao {
 	//============================================
     public abstract Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
     
-    public Multimap<PaoType, Attribute> getAllDefinedAttributes();
+    public Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap();
     
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
     

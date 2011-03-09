@@ -5,6 +5,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.cannontech.common.util.MatchStyle.*;
 import com.google.common.collect.Sets;
 
 public class MatchStyleTest {
@@ -14,19 +15,6 @@ public class MatchStyleTest {
     private Set<Integer> AB = Sets.newHashSet(1,2);
     private Set<Integer> E = Sets.newHashSet();
     
-    private final MatchStyle none = MatchStyle.none;
-    private final MatchStyle some = MatchStyle.some;
-    private final MatchStyle any = MatchStyle.any;
-    private final MatchStyle notany = MatchStyle.notany;
-    private final MatchStyle all = MatchStyle.all;
-    private final MatchStyle notall = MatchStyle.notall;
-    private final MatchStyle subset = MatchStyle.subset;
-    private final MatchStyle notsubset = MatchStyle.notsubset;
-    private final MatchStyle equal = MatchStyle.equal;
-    private final MatchStyle notequal = MatchStyle.notequal;
-    private final MatchStyle empty = MatchStyle.empty;
-    private final MatchStyle notempty = MatchStyle.notempty;
-
     private void validate(Set<Integer> one, MatchStyle style, Set<Integer> two, boolean expectedResult) {
         Assert.assertEquals(expectedResult, style.matches(one, two));
     }
