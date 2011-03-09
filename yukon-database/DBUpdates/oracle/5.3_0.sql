@@ -592,7 +592,7 @@ INSERT INTO StateGroup VALUES(-13, 'Commissioned State','Status');
 INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
 INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
 
-INSERT INTO YukonListEntry VALUES (1067,1005,0,'UtilityPRO Zigbee',1316);
+INSERT INTO YukonListEntry VALUES (1067,1005,0,'Zigbee',1316);
 INSERT INTO YukonListEntry VALUES (1068,1005,0,'Digi Gateway',1317);
 
 UPDATE YukonListEntry
