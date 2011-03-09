@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.model.UpdatableYukonUser;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -141,9 +140,8 @@ public interface YukonUserDao {
     public List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds);
 
     /**
-     * Inserts or updates a yukon user.
-     * Will update the password (AuthenticationService) and energy company association.
+     * Inserts or updates a lite yukon user.
      */
-    public void save(UpdatableYukonUser user);
+    public void save(LiteYukonUser user);
  
 }

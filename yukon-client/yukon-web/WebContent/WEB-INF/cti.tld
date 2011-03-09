@@ -61,6 +61,22 @@
   </tag>
 
   <tag>
+  	<name>enumName</name>
+  	<tag-class>com.cannontech.web.taglib.EnumNameTag</tag-class>
+  	<body-content>scriptless</body-content>
+  	<attribute>
+  		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  	<attribute>
+  		<name>value</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  </tag>
+
+  <tag>
   	<name>checklogin</name>
 	<tag-class>com.cannontech.web.taglib.CheckLoginTag</tag-class>		
   </tag>

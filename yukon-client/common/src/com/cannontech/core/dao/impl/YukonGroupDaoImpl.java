@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -57,14 +55,14 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, LiteYukonGroup group) {
-            parameterHolder.addValue("groupName", group.getGroupName());
-            parameterHolder.addValue("groupDescription", group.getGroupDescription());
+            parameterHolder.addValue("GroupName", group.getGroupName());
+            parameterHolder.addValue("GroupDescription", group.getGroupDescription());
         }
     };
     
-    private ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
-        new ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
-        public Map.Entry<Integer, LiteYukonGroup> mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private YukonRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
+        new YukonRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
+        public Map.Entry<Integer, LiteYukonGroup> mapRow(YukonResultSet rs) throws SQLException {
             int groupId = rs.getInt("groupId");
             String groupName = rs.getString("groupName");
 
@@ -82,7 +80,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         simpleTableTemplate.setTableName("YukonGroup");
         simpleTableTemplate.setFieldMapper(fieldMapper);
         simpleTableTemplate.setPrimaryKeyField("GroupId");
-        simpleTableTemplate.setPrimaryKeyValidOver(-305);
+        simpleTableTemplate.setPrimaryKeyValidNotEqualTo(0);
     }
     
     /**
@@ -94,9 +92,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         public LiteYukonGroup mapRow(YukonResultSet rs) throws SQLException {
 
             LiteYukonGroup group = new LiteYukonGroup();
-            group.setGroupID(rs.getInt("groupId"));
-            group.setGroupName(rs.getString("groupName"));
-            group.setGroupDescription(rs.getString("groupDescription"));
+            group.setGroupID(rs.getInt("GroupId"));
+            group.setGroupName(rs.getString("GroupName"));
+            group.setGroupDescription(rs.getString("GroupDescription"));
 
             return group;
         }
@@ -116,9 +114,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT yug.UserId, yug.GroupId, yg.GroupName, yg.GroupDescription ");
-        sql.append("FROM YukonUserGroup yug, YukonGroup yg");
+        sql.append("FROM YukonUserGroup yug");
+        sql.append(  "JOIN YukonGroup yg ON yg.GroupId = yug.GroupId");
         sql.append("WHERE UserId").eq(userId);
-        sql.append(  "AND yug.GroupId = yg.GroupId");
         if (excludeYukonGroup) {
             sql.append("AND yg.GroupId").neq_k(YukonGroup.YUKON_GROUP_ID);
         }

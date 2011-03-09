@@ -46,8 +46,8 @@ function addUsers() {
                                 </c:choose>
                                 <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
                                     <td><a href="${editUserUrl}">${user.username}</a></td>
-                                    <td>${user.authType}</td>
-                                    <td><span class="${styleClass}">${user.loginStatus}</span></td>
+                                    <td><cti:formatObject value="${user.authType}"/></td>
+                                    <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
                                     <td class="removeColumn">
                                         <input type="image" name="remove" src="/WebConfig/yukon/Icons/delete.png" value="${user.userID}" 
                                             class="pointer hoverableImage">

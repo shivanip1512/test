@@ -42,12 +42,4 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource, Displayable
         return "yukon.common.loginStatus." + name();
     }
     
-    public String getKey() {
-        return name();
-    }
-    
-    public LoginStatusEnum getValue() {
-        return this;
-    }
-
 }

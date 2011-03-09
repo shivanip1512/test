@@ -19,7 +19,14 @@
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
 	<spring:bind path="${path}">
-	    <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+        <c:choose>
+            <c:when test="${not empty itemValue}">
+                <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+            </c:when>
+            <c:otherwise>
+                <tags:listItem value="${status.value}" items="${items}"/> 
+            </c:otherwise>
+        </c:choose>
 	</spring:bind>
 </cti:displayForPageEditModes>
 
@@ -40,19 +47,27 @@
     <c:forEach var="item" items="${items}">
         
         <c:set var="valueArg" value="${pageScope.itemValue}"/>
-        <c:if test="${itemValue != null}">
+        <c:if test="${not empty itemValue}">
             <c:set var="valueArg" value="${item[itemValue]}"/>
         </c:if>
-    
-        <c:set var="labelArg" value="${pageScope.itemLabel}"/>
-        <c:if test="${itemLabel != null}">
-            <c:set var="labelArg" value="${item[itemLabel]}"/>
+        <c:if test="${empty itemValue}">
+            <c:set var="valueArg" value="${item}"/>
         </c:if>
         
-        <form:option value="${valueArg}">
+        <c:set var="labelArg" value="${pageScope.itemLabel}"/>
+        <c:if test="${not empty itemLabel}">
+            <c:set var="labelArg" value="${item[itemLabel]}"/>
+        </c:if>
+        <c:if test="${empty itemLabel}">
+            <c:set var="labelArg" value="${item}"/>
+        </c:if>
+        
+        <cti:enumName var="enumSafeValue" value="${valueArg}"/>
+        
+        <form:option value="${enumSafeValue}">
             <c:choose>
-                <c:when test="${not empty fn:trim(item[itemLabel])}">
-                    <cti:formatObject value="${item[itemLabel]}"/>
+                <c:when test="${not empty fn:trim(labelArg)}">
+                    <cti:formatObject value="${labelArg}"/>
                 </c:when>
                 <c:otherwise>
                     <c:choose>

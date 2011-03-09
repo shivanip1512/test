@@ -232,7 +232,7 @@ public class RoleDaoImpl implements RoleDao {
         final Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName");
+        sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("  JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
         sql.append("  JOIN YukonUserGroup YUG ON YG.GroupId = YUG.GroupId");

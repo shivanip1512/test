@@ -19,8 +19,8 @@
                 <input type="hidden" value="${group.groupID}" name="groupId">
                 
                 <tags:nameValueContainer2>
-
-                    <tags:inputNameValue nameKey=".name" path="groupName"/>
+                
+                    <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
                     <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
                 
                 </tags:nameValueContainer2>

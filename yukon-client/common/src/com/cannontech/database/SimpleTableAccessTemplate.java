@@ -27,9 +27,19 @@ public final class SimpleTableAccessTemplate<T> {
     private AdvancedFieldMapper<T> advancedFieldMapper;
     private final NextValueHelper nextValueHelper;
     private String primaryKeyField;
-    private Integer primaryKeyValidOver = null;
+    private PrimaryKeyChecker<T> primaryKeyNeeded;
     private CascadeMode cascadeMode = CascadeMode.NONE;
     private String parentForeignKeyField;
+    
+    {
+        // setup default primary key checker
+        primaryKeyNeeded = new PrimaryKeyChecker<T>() {
+            @Override
+            public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper) {
+                return baseFieldMapper.getPrimaryKey(value) == null;
+            }
+        };
+    }
 
     private class HolderOfParameters {
         MapSqlParameterSource parameterSource;
@@ -38,6 +48,10 @@ public final class SimpleTableAccessTemplate<T> {
 
     public static enum CascadeMode {
         DELETE_ALL_CHILDREN_BEFORE_UPDATE, NONE;
+    }
+    
+    public static interface PrimaryKeyChecker<T> {
+        public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper);
     }
 
     public SimpleTableAccessTemplate(final YukonJdbcTemplate yukonJdbcTemplate, 
@@ -63,8 +77,31 @@ public final class SimpleTableAccessTemplate<T> {
         return this;
     }
     
-    public SimpleTableAccessTemplate<T> setPrimaryKeyValidOver(int i) {
-        this.primaryKeyValidOver  = i;
+    public SimpleTableAccessTemplate<T> setPrimaryKeyValidOver(final int primaryKeyValidOver) {
+        this.primaryKeyNeeded = new PrimaryKeyChecker<T>() {
+            public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper) {
+                if (baseFieldMapper.getPrimaryKey(value) == null) {
+                    return true;
+                } else {
+                    return baseFieldMapper.getPrimaryKey(value).longValue() <= primaryKeyValidOver;
+                }
+                
+            };
+        };
+        return this;
+    }
+    
+    public SimpleTableAccessTemplate<T> setPrimaryKeyValidNotEqualTo(final int invalidPrimaryKey) {
+        this.primaryKeyNeeded = new PrimaryKeyChecker<T>() {
+            public boolean needsPrimaryKey(T value, BaseFieldMapper<T> baseFieldMapper) {
+                if (baseFieldMapper.getPrimaryKey(value) == null) {
+                    throw new IllegalStateException("found null when a non-null value was assumed");
+                } else {
+                    return baseFieldMapper.getPrimaryKey(value).longValue() == invalidPrimaryKey;
+                }
+                
+            };
+        };
         return this;
     }
     
@@ -118,15 +155,7 @@ public final class SimpleTableAccessTemplate<T> {
     }
 
     protected boolean needsPrimaryKey(T object) {
-        if (primaryKeyValidOver == null) {
-            return baseFieldMapper.getPrimaryKey(object) == null;
-        } else {
-            if (baseFieldMapper.getPrimaryKey(object) == null) {
-                return true;
-            } else {
-                return baseFieldMapper.getPrimaryKey(object).longValue() <= primaryKeyValidOver;
-            }
-        }
+        return this.primaryKeyNeeded.needsPrimaryKey(object, baseFieldMapper);
     }
     
     public final void insert(T object) {

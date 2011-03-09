@@ -22,10 +22,6 @@ public enum AuthType implements DatabaseRepresentationSource, DisplayableEnum {
         return title;
     }
     
-    public String getKey() {
-        return name();
-    }
-
     @Override
     public String getFormatKey() {
         return "yukon.common.authType." + name();
@@ -35,9 +31,9 @@ public enum AuthType implements DatabaseRepresentationSource, DisplayableEnum {
     public Object getDatabaseRepresentation() {
         return name();
     }
-    
-    public AuthType getValue() {
-        return this;
+
+    public String getTitle() {
+        return title;
     }
     
 }

@@ -111,7 +111,7 @@ public class RolePropertyController {
 
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return "setup.jsp";
+            return "userGroupEditor/roles.jsp";
         }
         
         GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(liteYukonGroup, role, true);

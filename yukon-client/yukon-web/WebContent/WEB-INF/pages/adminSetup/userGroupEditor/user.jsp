@@ -7,6 +7,31 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="userEditor.${mode}">
+
+<script type="text/javascript">
+YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
+    $('changePasswordPopup').hide();
+});
+</script>
+    
+    <i:simplePopup titleKey=".changePasswordPopup" arguments="${user.username}" id="changePasswordPopup" 
+            on="#changePasswordButton" styleClass="smallSimplePopup">
+        <form:form commandName="password" action="changePassword" method="post">
+            <input type="hidden" value="${userId}" name="userId">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".password">
+                    <tags:password path="password"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".confirmPassword">
+                    <tags:password path="confirmPassword"/>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
+            <div class="actionArea">
+                <cti:button key="save" type="submit"/>
+                <cti:button key="cancel" type="button" id="cancelChangePassword"/>
+            </div>
+        </form:form>
+    </i:simplePopup>
     
     <tags:setFormEditMode mode="${mode}"/>
     <cti:msg2 var="none" key="yukon.web.defaults.none"/>
@@ -15,27 +40,15 @@
 
         <cti:dataGridCell>
 
-            <form:form commandName="updatableUser" action="/spring/adminSetup/userEditor/edit" method="post">
+            <form:form commandName="user" action="edit" method="post">
                 <form:hidden path="userID"/>
-                <form:hidden path="energyCompanyId"/>
                 <input type="hidden" value="${userId}" name="userId">
                 
                 <tags:nameValueContainer2>
 
                     <tags:inputNameValue nameKey=".username" path="username"/>
-                    <tags:selectNameValue nameKey=".authentication" items="${authTypes}" path="authType" itemValue="key" 
-                        itemLabel="value"/>
-                    <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus" itemValue="key" 
-                        itemLabel="value"/>
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:nameValue2 nameKey=".password">
-                            <tags:password path="password"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".confirmPassword">
-                            <tags:password path="confirmPassword"/>
-                        </tags:nameValue2>
-                    </cti:displayForPageEditModes>
-                
+                    <tags:selectNameValue nameKey=".authentication" items="${authTypes}" path="authType" />
+                    <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
@@ -46,6 +59,9 @@
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button key="edit" name="edit" type="submit"/>
+                        <c:if test="${showChangePassword}">
+                            <cti:button key="changePassword" id="changePasswordButton" type="button"/>
+                        </c:if>
                     </cti:displayForPageEditModes>
                 </div>
             </form:form>

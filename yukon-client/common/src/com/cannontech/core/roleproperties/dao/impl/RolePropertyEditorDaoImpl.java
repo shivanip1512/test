@@ -1,18 +1,17 @@
 package com.cannontech.core.roleproperties.dao.impl;
 
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
@@ -59,7 +58,6 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     private NextValueHelper nextValueHelper;
     private DBPersistentDao dbPersistentDao;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
-    private static final Logger log = YukonLogManager.getLogger(RolePropertyEditorDaoImpl.class);
     
     @PostConstruct
     public void initialize() {
@@ -79,9 +77,9 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                 try {
                     YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
                     MessageSourceResolvable keyNameMsr = 
-                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty." + roleProperty.name() + ".name", keyName);
+                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property." + roleProperty.name() + ".name", keyName);
                     MessageSourceResolvable descriptionMsr = 
-                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty." + roleProperty.name() + ".description",description);
+                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property." + roleProperty.name() + ".description",description);
 
                     DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty, defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
                     descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
@@ -164,7 +162,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     }
 
     private Iterable<YukonRoleProperty> getFilteredRoleProperties(Predicate<YukonRoleProperty> predicate) {
-        Set<YukonRoleProperty> expected = Sets.newHashSet(YukonRoleProperty.values());
+        Set<YukonRoleProperty> expected = EnumSet.allOf(YukonRoleProperty.class);
         Set<YukonRoleProperty> missing = rolePropertyDao.getMissingProperties();
         Set<YukonRoleProperty> existingSet = Sets.difference(expected, missing);
         return Iterables.filter(existingSet , predicate);
