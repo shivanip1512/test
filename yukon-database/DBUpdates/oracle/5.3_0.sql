@@ -278,7 +278,6 @@ AND MappingCategory = 'YukonSelectionList';
 /* End YUK-9448 */
 
 /* Start YUK-9429 */
-/* @start-block */
 CREATE TABLE ECToOperatorGroupMapping ( 
    EnergyCompanyId NUMBER NOT NULL, 
    GroupId NUMBER NOT NULL, 
@@ -310,7 +309,6 @@ ALTER TABLE ECToResidentialGroupMapping
     ADD CONSTRAINT FK_ECToResGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
         REFERENCES EnergyCompany (EnergyCompanyId) 
             ON DELETE CASCADE; 
-/* @end-block */
 
 /* @start-block */
 CREATE OR REPLACE PACKAGE STRING_FNC 
@@ -323,7 +321,9 @@ FUNCTION SPLIT (p_in_string VARCHAR2, p_delim VARCHAR2) RETURN t_array;
 
 END; 
 /
+/* @end-block */
 
+/* @start-block */
 CREATE OR REPLACE PACKAGE BODY STRING_FNC 
 IS 
 
@@ -338,37 +338,37 @@ IS
     
    BEGIN 
     
-      -- determine first chuck of string   
+      /* determine first chuck of string */   
       pos := INSTR(lv_str,p_delim, 1, 1); 
 
-      -- add it to the array if the value existed but did not have the delimitor.     
+      /* add it to the array if the value existed but did not have the delimitor. */  
       IF pos = 0 AND lv_str != ' ' THEN 
           strings(i+1) := lv_str; 
       END IF;
    
-      -- while there are chunks left, loop  
+      /* while there are chunks left, loop  */
       WHILE ( pos != 0) LOOP 
           
-         -- increment counter  
+         /* increment counter  */
          i := i + 1; 
           
-         -- create array element for chuck of string  
+         /* create array element for chuck of string  */
          strings(i) := SUBSTR(lv_str,1,pos-1); 
           
-         -- remove chunk from string  
+         /* remove chunk from string  */
          lv_str := SUBSTR(lv_str,pos+1, LENGTH(lv_str)); 
           
-         -- determine next chunk  
+         /* determine next chunk  */
          pos := INSTR(lv_str,p_delim,1,1); 
           
-         -- no last chunk, add to array  
+         /* no last chunk, add to array  */
          IF pos = 0 THEN 
             strings(i+1) := lv_str; 
          END IF; 
        
       END LOOP; 
     
-      -- return array  
+      /* return array  */
       RETURN strings; 
        
    END SPLIT; 
@@ -379,7 +379,7 @@ END;
 
 /* @start-block */
 DECLARE 
-    -- New Appliance Base Values
+    /* New Appliance Base Values */
     v_EnergyCompanyName VARCHAR2(60);
     v_EnergyCompanyId NUMBER;
     v_GroupRoleId NUMBER;
@@ -388,7 +388,7 @@ DECLARE
     v_RolePropertyId NUMBER;
     v_RolePropertyValue VARCHAR2(1000);
 
-    -- Account Enrollment information Cursor
+    /* Account Enrollment information Cursor */
     CURSOR ecToOpLoginGroup_curs IS 
         SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
         FROM EnergyCompany EC
@@ -396,7 +396,7 @@ DECLARE
         JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
         WHERE YGR.RolePropertyId = -1106;
 
-    -- Inventory Enrollment information based on the account enrollment Cursor
+    /* Inventory Enrollment information based on the account enrollment Cursor */
     CURSOR ecToResLoginGroup_curs IS 
         SELECT EC.Name, EC.EnergyCompanyId, YGR.GroupRoleId, YGR.GroupId, YGR.RoleId, YGR.RolePropertyId, YGR.Value
         FROM EnergyCompany EC
@@ -413,7 +413,7 @@ BEGIN
         FETCH ecToOpLoginGroup_curs INTO v_EnergyCompanyName, v_EnergyCompanyId, v_GroupRoleId, v_GroupId, v_RoleId, v_RolePropertyId, v_RolePropertyValue;
         EXIT WHEN ecToOpLoginGroup_curs%NOTFOUND;
         
-        -- Turn on logging, reset the original appliance id and inventory count.
+        /* Turn on logging, reset the original appliance id and inventory count. */
         dbms_output.enable(1000000);
 
         dbms_output.put(CONCAT('[ECName = ',v_EnergyCompanyName));
@@ -427,7 +427,7 @@ BEGIN
 
         str := string_fnc.split(v_RolePropertyValue,',');
 
-        -- Add the entries to the ECToOperatorGroupMapping table.
+        /* Add the entries to the ECToOperatorGroupMapping table. */
         FOR i IN 1..str.count LOOP
             dbms_output.put(CONCAT('inserting ecToOp(ECId = ',v_EnergycompanyId));
             dbms_output.put(CONCAT(', RolePropertyValue = ',str(i)));
@@ -446,7 +446,7 @@ BEGIN
         FETCH ecToResLoginGroup_curs INTO v_EnergyCompanyName, v_EnergyCompanyId, v_GroupRoleId, v_GroupId, v_RoleId, v_RolePropertyId, v_RolePropertyValue;
         EXIT WHEN ecToResLoginGroup_curs%NOTFOUND;
         
-        -- Turn on logging, reset the original appliance id and inventory count.
+        /* Turn on logging, reset the original appliance id and inventory count. */
         dbms_output.enable(1000000);
 
         dbms_output.put(CONCAT('[ECName = ',v_EnergyCompanyName));
@@ -460,7 +460,7 @@ BEGIN
 
         str := string_fnc.split(v_RolePropertyValue,',');
 
-        -- Add the entries to the ECToResidentialGroupMapping table.
+        /* Add the entries to the ECToResidentialGroupMapping table. */
         FOR i IN 1..str.count LOOP
             dbms_output.put(CONCAT('inserting ecToRes(ECId = ',v_EnergycompanyId));
             dbms_output.put(CONCAT(', RolePropertyValue = ',str(i)));
@@ -677,18 +677,29 @@ INSERT INTO StatusPointMonitor (StatusPointMonitorId, StatusPointMonitorName, Gr
 SELECT NVL(MAX(StatusPointMonitorId) + 1, 1), 'Default All Meters', '/', 'OUTAGE_STATUS', -14, 'DISABLED' 
 FROM StatusPointMonitor;
 
-INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
-SELECT NVL(MAX(StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 1, 'NoResponse' 
-FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
-WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+/* @start-block */
+DECLARE
+    v_StatusPointMonitorId NUMBER;
 
-INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
-SELECT NVL(MAX(SPMP.StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 0, 'Restoration' 
-FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
-WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+BEGIN
+    SELECT SPM.StatusPointMonitorId INTO v_StatusPointMonitorId
+    FROM StatusPointMonitor SPM
+    WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+    
+    INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
+    SELECT NVL(MAX(SPMP.StatusPointMonitorProcessorId) + 1, 1), v_StatusPointMonitorId, 'DIFFERENCE', 1, 'NoResponse' 
+    FROM StatusPointMonitorProcessor SPMP;
+
+    INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
+    SELECT NVL(MAX(SPMP.StatusPointMonitorProcessorId) + 1, 1), v_StatusPointMonitorId, 'DIFFERENCE', 0, 'Restoration' 
+    FROM StatusPointMonitorProcessor SPMP;
+END;
+/
+/* @end-block */
 /* End YUK-9567 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '08-MAR-2011', 'Latest Update', 0);
