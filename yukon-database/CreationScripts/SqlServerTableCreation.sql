@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/9/2011 1:03:43 PM                          */
+/* Created on:     3/9/2011 2:11:00 PM                          */
 /*==============================================================*/
 
 
@@ -12250,7 +12250,7 @@ INSERT INTO YukonListEntry VALUES (1063,1005,0,'SA Simple',1312);
 INSERT INTO YukonListEntry VALUES (1064,1005,0,'ExpressStat Heat Pump',1313);
 INSERT INTO YukonListEntry VALUES (1065,1005,0,'UtilityPRO',1314);
 INSERT INTO YukonListEntry VALUES (1066,1005,0,'LCR-3102',1315);
-INSERT INTO YukonListEntry VALUES (1067,1005,0,'Zigbee',1316);
+INSERT INTO YukonListEntry VALUES (1067,1005,0,'UtilityPRO ZigBee',1316);
 INSERT INTO YukonListEntry VALUES (1068,1005,0,'Digi Gateway',1317);
 
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
