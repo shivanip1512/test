@@ -644,18 +644,21 @@ INSERT INTO StatusPointMonitor (StatusPointMonitorId, StatusPointMonitorName, Gr
 SELECT ISNULL(MAX(StatusPointMonitorId) + 1, 1), 'Default All Meters', '/', 'OUTAGE_STATUS', -14, 'DISABLED' 
 FROM StatusPointMonitor;
 
-INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
-SELECT ISNULL(MAX(SPMP.StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 1, 'NoResponse' 
-FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
-WHERE SPM.StatusPointMonitorName = 'Default All Meters';
-
-INSERT INTO StatusPointMonitorProcessor (StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType) 
-SELECT ISNULL(MAX(StatusPointMonitorProcessorId) + 1, 1), MAX(SPM.StatusPointMonitorId), 'DIFFERENCE', 0, 'Restoration' 
-FROM StatusPointMonitorProcessor SPMP, StatusPointMonitor SPM
-WHERE SPM.StatusPointMonitorName = 'Default All Meters';
+INSERT INTO StatusPointMonitorProcessor
+SELECT ISNULL(MAX(StatusPointMonitorProcessorId) + 1, 1), 
+        (SELECT StatusPointMonitorId FROM StatusPointMonitor WHERE StatusPointMonitorName = 'Default All Meters'), 
+        'DIFFERENCE', 1, 'NoResponse' 
+FROM StatusPointMonitorProcessor; 
+   
+INSERT INTO StatusPointMonitorProcessor 
+SELECT ISNULL(MAX(StatusPointMonitorProcessorId) + 1, 1), 
+        (SELECT StatusPointMonitorId FROM StatusPointMonitor WHERE StatusPointMonitorName = 'Default All Meters'), 
+        'DIFFERENCE', 0, 'Restoration' 
+FROM StatusPointMonitorProcessor;
 /* End YUK-9567 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '08-MAR-2011', 'Latest Update', 0);
