@@ -378,7 +378,9 @@ DECLARE ecToOpLoginGroup_curs CURSOR FOR (
         FROM EnergyCompany EC
         JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
         JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
-        WHERE YGR.RolePropertyId = -1106);
+        WHERE YGR.RolePropertyId = -1106
+        AND YGR.Value != '(none)'
+        );
 
 /* Gets the information needed to migrate the residential groups role property to the new ECToResidentialGroupMapping table. */
 DECLARE ecToResLoginGroup_curs CURSOR FOR ( 
@@ -386,12 +388,15 @@ DECLARE ecToResLoginGroup_curs CURSOR FOR (
         FROM EnergyCompany EC
         JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
         JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
-        WHERE YGR.RolePropertyId = -1105);
-    
+        WHERE YGR.RolePropertyId = -1105
+        AND YGR.Value != '(none)'
+        );
+
 OPEN ecToOpLoginGroup_curs;
 FETCH ecToOpLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
+
+WHILE (@@FETCH_STATUS = 0)
     BEGIN
-    
         /* Getting the operator groups from the role property value */
         DECLARE ecOperatorRolePropertyMapping_curs CURSOR FOR ( 
             SELECT * FROM dbo.fx_Split(@RolePropertyValue, ',')
@@ -399,6 +404,8 @@ FETCH ecToOpLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRol
         
         OPEN ecOperatorRolePropertyMapping_curs;
         FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
+        
+        WHILE (@@FETCH_STATUS = 0)   
             BEGIN
             
                 /* Make sure there is a group, if there is add an entry to the ECToOperatorGroupMapping table */ 
@@ -407,16 +414,21 @@ FETCH ecToOpLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRol
                     INSERT INTO ECToOperatorGroupMapping(energyCompanyId, groupId)
                     VALUES ( @EnergyCompanyId, @yukonGroupId );
                 END
+
+                FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
             END
         CLOSE ecOperatorRolePropertyMapping_curs;
         DEALLOCATE ecOperatorRolePropertyMapping_curs;
         
+        FETCH ecToOpLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
     END
 CLOSE ecToOpLoginGroup_curs;
 DEALLOCATE ecToOpLoginGroup_curs;
 
 OPEN ecToResLoginGroup_curs;
 FETCH ecToResLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
+
+WHILE (@@FETCH_STATUS = 0)
     BEGIN
 
         /* Getting the operator groups from the role property value */
@@ -426,6 +438,8 @@ FETCH ecToResLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRo
         
         OPEN ecOperatorRolePropertyMapping_curs;
         FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
+        
+        WHILE (@@FETCH_STATUS = 0)   
             BEGIN
             
                 /* Make sure there is a group, if there is add an entry to the ECToResidentialGroupMapping table */ 
@@ -434,9 +448,13 @@ FETCH ecToResLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRo
                     INSERT INTO ECToResidentialGroupMapping(energyCompanyId, groupId)
                     VALUES ( @EnergyCompanyId, @yukonGroupId );
                 END
+                
+                FETCH ecOperatorRolePropertyMapping_curs INTO @id, @yukonGroupId;
             END
         CLOSE ecOperatorRolePropertyMapping_curs;
         DEALLOCATE ecOperatorRolePropertyMapping_curs;
+        
+        FETCH ecToResLoginGroup_curs INTO @EnergyCompanyName, @EnergyCompanyId, @GroupRoleId, @GroupId, @RoleId, @RolePropertyId, @RolePropertyValue;
     END
 CLOSE ecToResLoginGroup_curs;
 DEALLOCATE ecToResLoginGroup_curs;
