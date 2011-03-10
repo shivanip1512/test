@@ -288,6 +288,7 @@
     <entry key="yukon.dr.consumer.savedSchedules.viewSchedule">View Schedule</entry>
     <entry key="yukon.dr.consumer.savedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.dr.consumer.savedSchedules.noSchedules">There are no saved schedules.</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.deleteSchedule">Delete Schedule</entry>
 
     <!-- allThermostats.jsp -->
     <entry key="yukon.dr.consumer.allThermostats.header">Thermostat - All</entry>
