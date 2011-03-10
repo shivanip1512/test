@@ -3,6 +3,7 @@ package com.cannontech.database.data.device.lm;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.LMGroupSep;
 
@@ -13,7 +14,7 @@ public class LMGroupDigiSep extends LMGroup {
     public LMGroupDigiSep() {
         super();
 
-        getYukonPAObject().setType(PAOGroups.STRING_DIGI_SEP_GROUP[0]);
+        getYukonPAObject().setType(PaoType.LM_GROUP_DIGI_SEP.getDbString());
     }
 
     public void add() throws SQLException {
@@ -47,7 +48,7 @@ public class LMGroupDigiSep extends LMGroup {
     public LMGroupSep getLmGroupSepDefaults() {
 
         getLmGroupSep().addDeviceClass(SepDeviceClass.HVAC_COMPRESSOR_FURNACE);
-        getLmGroupSep().setUtilityEnrollmentGroup(new Integer(1));
+        getLmGroupSep().setUtilityEnrollmentGroup(1);
 
         return getLmGroupSep();
     }

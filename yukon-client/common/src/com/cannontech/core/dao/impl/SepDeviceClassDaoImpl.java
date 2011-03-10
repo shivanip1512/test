@@ -8,19 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.LmGroupSepDeviceClassDao;
+import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 
-public class LmGroupSepDeviceClassDaoImpl implements LmGroupSepDeviceClassDao {
+public class SepDeviceClassDaoImpl implements SepDeviceClassDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
     @Transactional
-    public Set<SepDeviceClass> getClassSetByDeviceId(int deviceId) {
+    public Set<SepDeviceClass> getSepDeviceClassesByDeviceId(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SepDeviceClass");
         sql.append("FROM LMGroupSepDeviceClass");
@@ -38,7 +38,7 @@ public class LmGroupSepDeviceClassDaoImpl implements LmGroupSepDeviceClassDao {
 
     @Transactional(readOnly = false)
     @Override
-    public int removeByDeviceId(int deviceId) {
+    public int deleteByDeviceId(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM LMGroupSepDeviceClass");
         sql.append("WHERE DeviceId").eq(deviceId);
@@ -47,11 +47,11 @@ public class LmGroupSepDeviceClassDaoImpl implements LmGroupSepDeviceClassDao {
 
     @Override
     @Transactional
-    public void save(Set<SepDeviceClass> deviceClassList, int deviceId) {
+    public void save(Set<SepDeviceClass> sepDeviceClasses, int deviceId) {
         /* Remove possible existing entries first */
-        removeByDeviceId(deviceId);
+        deleteByDeviceId(deviceId);
 
-        for (SepDeviceClass deviceClass : deviceClassList) {
+        for (SepDeviceClass deviceClass : sepDeviceClasses) {
             SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO LMGroupSepDeviceClass");
             sql.values(deviceId, deviceClass);
 

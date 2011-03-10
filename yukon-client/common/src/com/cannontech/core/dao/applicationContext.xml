@@ -172,7 +172,7 @@
   </bean> 
    
   <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmGroupXmlParameterDaoImpl"/> 
-  <bean id="sepLMGroupDeviceClassDao" class="com.cannontech.core.dao.impl.LmGroupSepDeviceClassDaoImpl"/>
+  <bean id="sepLMGroupDeviceClassDao" class="com.cannontech.core.dao.impl.SepDeviceClassDaoImpl"/>
   <bean id="paoScheduleDao" class="com.cannontech.core.dao.impl.PaoScheduleDaoImpl"/>
   
   <bean id="strategyDao" class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
