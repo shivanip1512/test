@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -15,7 +13,6 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.UnknownRolePropertyException;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -192,14 +189,7 @@ public class CBCDisplay {
         }
 
         case CB_STATUS_COLUMN: {
-            String fixedCapbankLabel = "Fixed";
-            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-            try{
-                fixedCapbankLabel = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, userContext.getYukonUser());
-            }catch(UserNotInRoleException e){
-                CTILogger.warn("User not in Cap Bank Display role, using default Fixed text.");
-            }
-            if (StringUtils.isBlank(fixedCapbankLabel)) fixedCapbankLabel = "Fixed";
+            String fixedCapbankLabel = CBCUtils.getFixedText(userContext.getYukonUser());
             
             boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 
                 || capBank.getControlStatus().intValue() >= CBCUtils.getCBCStateNames().length;

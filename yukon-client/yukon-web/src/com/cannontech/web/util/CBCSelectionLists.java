@@ -9,11 +9,10 @@ import javax.faces.model.SelectItem;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -66,7 +65,6 @@ public class CBCSelectionLists {
 	
 	private LiteYukonUser yukonUser;
 	private AuthDao authDao;
-	private RolePropertyDao rolePropertyDao;
 	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -376,7 +374,7 @@ public class CBCSelectionLists {
 	 * @return SelectItem[]
 	 */
 	public SelectItem[] getCapBankOpStates() {
-	    String fixedText = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, yukonUser);
+	    String fixedText = CBCUtils.getFixedText(yukonUser);
 	    capBankOpStates[0] = new SelectItem(fixedText, fixedText);
 		return capBankOpStates;
 	}
@@ -634,10 +632,6 @@ public class CBCSelectionLists {
 
     public void setYukonUser(LiteYukonUser yukonUser) {
         this.yukonUser = yukonUser;
-    }
-    
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
     
     public void setAuthDao(AuthDao authDao) {

@@ -31,10 +31,6 @@
             <property-name>authDao</property-name>
             <value>#{authDao}</value>
         </managed-property>
-		<managed-property>
-            <property-name>rolePropertyDao</property-name>
-            <value>#{rolePropertyDao}</value>
-        </managed-property>
     </managed-bean>
 
 	<!-- Navigation bean -->
