@@ -76,7 +76,6 @@ public class CancelScheduledOptOutRequestEndpointTest {
     public void setUp() throws Exception {
         impl = new CancelScheduledOptOutRequestEndpoint();
         
-        impl.setAccountEventLogService(null);
         impl.setCustomerAccountDao(new MockCustomerAccountDao());
         impl.setLmHardwareBaseDao(new MockLmHardwareBaseDao());
         impl.setOptOutService(new MockOptOutService());

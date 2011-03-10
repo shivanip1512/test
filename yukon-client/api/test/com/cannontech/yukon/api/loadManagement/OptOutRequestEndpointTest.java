@@ -84,7 +84,6 @@ public class OptOutRequestEndpointTest {
     public void setUp() throws Exception {
         impl = new OptOutRequestEndpoint();
         
-        impl.setAccountEventLogService(null);
         impl.setCustomerAccountDao(new MockCustomerAccountDao());
         impl.setLmHardwareBaseDao(new MockLmHardwareBaseDao());
         impl.setOptOutService(new MockOptOutService());
