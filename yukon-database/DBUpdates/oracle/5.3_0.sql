@@ -394,7 +394,8 @@ DECLARE
         FROM EnergyCompany EC
         JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
         JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
-        WHERE YGR.RolePropertyId = -1106;
+        WHERE YGR.RolePropertyId = -1106
+        AND YGR.Value != '(none)';
 
     /* Inventory Enrollment information based on the account enrollment Cursor */
     CURSOR ecToResLoginGroup_curs IS 
@@ -402,7 +403,8 @@ DECLARE
         FROM EnergyCompany EC
         JOIN YukonUserGroup YUG ON YUG.UserId = EC.UserId
         JOIN YukonGroupRole YGR ON YGR.GroupId = YUG.GroupId
-        WHERE YGR.RolePropertyId = -1105;
+        WHERE YGR.RolePropertyId = -1105
+        AND YGR.Value != '(none)';
     
     str string_fnc.t_array;
 
