@@ -7,24 +7,31 @@
     <script type="text/javascript">
         var substationBusDisableBusPointPicker = new Picker('voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
         substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
+        substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
         
         var substationBusVoltReductionPointPicker = new Picker('voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
         substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
+        substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
         
         var sub_Var_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
         sub_Var_PointPicker.destinationFieldId = 'var_point';
+        sub_Var_PointPicker.memoryGroup = 'pointPicker';
         
         var sub_Var_PhaseB_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
         sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
+        sub_Var_PhaseB_PointPicker.memoryGroup = 'pointPicker';
         
         var sub_Var_PhaseC_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 'pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
         sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
+        sub_Var_PhaseC_PointPicker.memoryGroup = 'pointPicker';
         
         var subWattPointPicker = new Picker('wattPointPicker', '', 'subWattPointPicker', 'pointName:subWattPoint;deviceName:subWattDevice');
         subWattPointPicker.destinationFieldId = 'watt_point';
+        subWattPointPicker.memoryGroup = 'pointPicker';
         
         var subVoltPointPicker = new Picker('voltPointPicker', '', 'subVoltPointPicker', 'pointName:subVoltPoint;deviceName:subVoltDevice');
         subVoltPointPicker.destinationFieldId = 'volt_point';
+        subVoltPointPicker.memoryGroup = 'pointPicker';
     </script>
 </f:verbatim>
 
