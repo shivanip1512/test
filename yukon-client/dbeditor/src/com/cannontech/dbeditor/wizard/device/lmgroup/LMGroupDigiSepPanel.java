@@ -326,30 +326,19 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         }
         if (value instanceof LMGroupDigiSep) {
             LMGroupDigiSep group = (LMGroupDigiSep) value;
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.BASEBOARD_HEAT))
-                getBaseboardCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.HVAC_COMPRESSOR_FURNACE))
-                getHvacCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.WATER_HEATER))
-                getWaterHeaterCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.POOL_PUMP))
-                getPoolPumpCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.SMART_APPLIANCE))
-                getSmartApplianceCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.IRRIGATION_PUMP))
-                getIrrigationPumpCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.MANAGED_COMMERCIAL_INDUSTRIAL))
-                getCommercialCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.SIMPLE_RESIDENTIAL_ON_OFF))
-                getSimpleResidentialCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.EXTERIOR_LIGHTING))
-                getExteriorLightCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.INTERIOR_LIGHTING))
-                getInteriorLightCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.ELECTRIC_VEHICLE))
-                getElectricVehicleCheckBox().setSelected(true);
-            if (group.getLmGroupSep().hasDeviceClass(SepDeviceClass.GENERATION_SYSTEMS))
-                getGenerationCheckBox().setSelected(true);
+
+            getBaseboardCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.BASEBOARD_HEAT));
+            getHvacCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.HVAC_COMPRESSOR_FURNACE));
+            getWaterHeaterCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.WATER_HEATER));
+            getPoolPumpCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.POOL_PUMP));
+            getSmartApplianceCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.SMART_APPLIANCE));
+            getIrrigationPumpCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.IRRIGATION_PUMP));
+            getCommercialCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.MANAGED_COMMERCIAL_INDUSTRIAL));
+            getSimpleResidentialCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.SIMPLE_RESIDENTIAL_ON_OFF));
+            getExteriorLightCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.EXTERIOR_LIGHTING));
+            getInteriorLightCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.INTERIOR_LIGHTING));
+            getElectricVehicleCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.ELECTRIC_VEHICLE));
+            getGenerationCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.GENERATION_SYSTEMS));
 
             getUtilityEnerollmentGroupTextField().setText(group.getLmGroupSep().getUtilityEnrollmentGroup().toString());
         }
