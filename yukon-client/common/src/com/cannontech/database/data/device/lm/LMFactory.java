@@ -5,6 +5,8 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (2/18/2002 9:38:37 AM)
  * @author: 
  */
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -24,6 +26,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 {
 
 	com.cannontech.database.data.pao.YukonPAObject retLm = null;
+	PaoType type = PaoType.getForId(lmType);
 
 	switch( lmType )
 	{
@@ -34,8 +37,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			break;
 		case PAOGroups.LM_GROUP_DIGI_SEP:
             retLm = new LMGroupDigiSep();
-            retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-            retLm.setPAOClass( DeviceClasses.STRING_CLASS_GROUP );
+            retLm.setPAOCategory(PAOGroups.getCategory(type.getPaoCategory().getCategoryId()));
             break;
 		case PAOGroups.LM_GROUP_VERSACOM:
 			retLm = new LMGroupVersacom();
@@ -96,10 +98,10 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm = new LMProgramDirect();			
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
 			break;
-		case PAOGroups.LM_SEP_PROGRAM:
-			retLm = new LmProgramSep();			
-			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
-			break;
+        case PAOGroups.LM_SEP_PROGRAM:
+            retLm = new LmProgramSep();
+            retLm.setPAOClass(type.getPaoClass().getDbString());
+            break;
 		case PAOGroups.LM_CURTAIL_PROGRAM:
 			retLm = new LMProgramCurtailment();
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
