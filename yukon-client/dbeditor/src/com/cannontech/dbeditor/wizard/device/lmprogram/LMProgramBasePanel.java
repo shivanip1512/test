@@ -13,7 +13,6 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -542,11 +541,11 @@ public Object getValue(Object o)
 {
     LMProgramBase  program;
 	if (isAWizardOp) {
-	    if( getJLabelActualProgType().getText().compareTo(DeviceTypes.STRING_LM_SEP_PROGRAM[0]) == 0) {
-	        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_SEP_PROGRAM);
+	    if( programType == PaoType.LM_SEP_PROGRAM) {
+	        program = (LMProgramBase)LMFactory.createLoadManagement(PAOGroups.LM_SEP_PROGRAM);
 	    }
 	    else {
-	        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_DIRECT_PROGRAM );
+	        program = (LMProgramBase)LMFactory.createLoadManagement(PAOGroups.LM_DIRECT_PROGRAM);
 	    }
     }else {
         program = (LMProgramBase)o;
