@@ -29,6 +29,7 @@ import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
@@ -424,7 +425,13 @@ public class CapControlImportController {
     	    		int scanInterval = Integer.decode(line[8]);
     	    		int altInterval = Integer.decode(line[9]);
     				
-    	    		int commChannelId = getPaoIdByName(commChannel);
+                    int commChannelId;
+                    if (CBCUtils.isTwoWay(typeId)) {
+                        commChannelId = getPaoIdByName(commChannel);
+                    } else {
+                        commChannelId = getRouteIdByPaoName(commChannel);
+                    }
+                    
     	    		if (commChannelId == -1) {
     	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel/Route was not found. " + commChannel);
     	    		}
@@ -497,7 +504,13 @@ public class CapControlImportController {
 	    		int scanInterval = Integer.decode(line[9]);
 	    		int altInterval = Integer.decode(line[10]);
 				
-	    		int commChannelId = getPaoIdByName(commChannel);
+	    		int commChannelId;
+	    		if (CBCUtils.isTwoWay(typeId)) {
+	    		    commChannelId = getPaoIdByName(commChannel);
+	    		} else {
+	    		    commChannelId = getRouteIdByPaoName(commChannel);
+	    		}
+	    		
 	    		if (commChannelId == -1) {
 	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel was not found. " + commChannel);
 	    		}
@@ -552,6 +565,15 @@ public class CapControlImportController {
 		return litePao.getYukonID();
 	}
 	
+    private int getRouteIdByPaoName(String paoName) {
+        Integer routeId = paoDao.getRouteIdForRouteName(paoName);
+        if (routeId == null) {
+            return -1;
+        }
+
+        return routeId;
+    }
+
 	private CapControlImportType determineImportMethod(String[] header) throws UnsupportedOperationException {
 		
 		//Figure out what this file is based on the number of header columns
