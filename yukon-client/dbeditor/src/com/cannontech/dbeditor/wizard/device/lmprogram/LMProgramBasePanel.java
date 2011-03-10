@@ -541,12 +541,7 @@ public Object getValue(Object o)
 {
     LMProgramBase  program;
 	if (isAWizardOp) {
-	    if( programType == PaoType.LM_SEP_PROGRAM) {
-	        program = (LMProgramBase)LMFactory.createLoadManagement(PAOGroups.LM_SEP_PROGRAM);
-	    }
-	    else {
-	        program = (LMProgramBase)LMFactory.createLoadManagement(PAOGroups.LM_DIRECT_PROGRAM);
-	    }
+	    program = (LMProgramBase)LMFactory.createLoadManagement(programType.getDeviceTypeId());
     }else {
         program = (LMProgramBase)o;
     }
