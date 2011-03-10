@@ -7,14 +7,24 @@
 	<script type="text/javascript">
 	    var feederVarPointPicker = new Picker('varPointPicker', '', 'feederVarPointPicker', 'pointName:feederVarPoint;deviceName:feederVarDevice');
 	    feederVarPointPicker.destinationFieldId = 'varPoint';
+	    feederVarPointPicker.memoryGroup = 'pointPicker';
+	    
 	    var feederVarPhaseBPointPicker = new Picker('varPointPicker', '', 'feederVarPhaseBPointPicker', 'pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice');
         feederVarPhaseBPointPicker.destinationFieldId = 'varPhaseBPoint';
+        feederVarPhaseBPointPicker.memoryGroup = 'pointPicker';
+        
         var feederVarPhaseCPointPicker = new Picker('varPointPicker', '', 'feederVarPhaseCPointPicker', 'pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice');
         feederVarPhaseCPointPicker.destinationFieldId = 'varPhaseCPoint';
+        feederVarPhaseCPointPicker.memoryGroup = 'pointPicker';
+        
         var feederWattPointPicker = new Picker('wattPointPicker', '', 'feederWattPointPicker', 'pointName:feederWattPoint;deviceName:feederWattDevice');
         feederWattPointPicker.destinationFieldId = 'wattPoint';
+        feederWattPointPicker.memoryGroup = 'pointPicker';
+        
         var feederVoltPointPicker = new Picker('voltPointPicker', '', 'feederVoltPointPicker', 'pointName:feederVoltPoint;deviceName:feederVoltDevice');
         feederVoltPointPicker.destinationFieldId = 'voltPoint';
+        feederVoltPointPicker.memoryGroup = 'pointPicker';
+        
     </script>
 </f:verbatim>
 <f:subview id="feederSetup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}">
