@@ -425,17 +425,6 @@ public class CapControlImportController {
     	    		int scanInterval = Integer.decode(line[8]);
     	    		int altInterval = Integer.decode(line[9]);
     				
-                    int commChannelId;
-                    if (CBCUtils.isTwoWay(typeId)) {
-                        commChannelId = getPaoIdByName(commChannel);
-                    } else {
-                        commChannelId = getRouteIdByPaoName(commChannel);
-                    }
-                    
-    	    		if (commChannelId == -1) {
-    	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel/Route was not found. " + commChannel);
-    	    		}
-    	    		
     				CapbankController controller = new CapbankController();
     	    		controller.setType(deviceType);
     	    		controller.setName(cbcName);
@@ -443,10 +432,18 @@ public class CapControlImportController {
     	    		controller.setMasterAddress(masterAddress);
     	    		controller.setSlaveAddress(slaveAddress);
     	    		
-                    if (CapbankController.isOneWayCbc(deviceType)) {
-                        controller.setRouteId(commChannelId);
-                    } else {
+                    if (CBCUtils.isTwoWay(typeId)) {
+                        int commChannelId = getPaoIdByName(commChannel);
+                        if (commChannelId == -1) {
+                            throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel not found. " + commChannel);
+                        }
                         controller.setPortId(commChannelId);
+                    } else {
+                        int routeId = getRouteIdByPaoName(commChannel);
+                        if (routeId == -1) {
+                            throw new UnsupportedOperationException("Import of " + cbcName + " failed. Route not found. " + commChannel);
+                        }
+                        controller.setRouteId(routeId);
                     }
     	    		
     	    		//These two are default settings. Import them?
@@ -493,7 +490,6 @@ public class CapControlImportController {
                 if (typeId == -1) {
                     throw new UnsupportedOperationException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
                 }
-                PaoType deviceType = PaoType.getForId(typeId);
                 
 	    		int cbcSerialNumber = Integer.decode(line[3]);
 	    		String capBankName = line[4];
@@ -504,27 +500,24 @@ public class CapControlImportController {
 	    		int scanInterval = Integer.decode(line[9]);
 	    		int altInterval = Integer.decode(line[10]);
 				
-	    		int commChannelId;
-	    		if (CBCUtils.isTwoWay(typeId)) {
-	    		    commChannelId = getPaoIdByName(commChannel);
-	    		} else {
-	    		    commChannelId = getRouteIdByPaoName(commChannel);
-	    		}
-	    		
-	    		if (commChannelId == -1) {
-	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel was not found. " + commChannel);
-	    		}
-
 				CapbankController controller = new CapbankController();
 	    		controller.setName(cbcName);
 	    		controller.setSerialNumber(cbcSerialNumber);
 	    		controller.setMasterAddress(masterAddress);
 	    		controller.setSlaveAddress(slaveAddress);
-                
-	    		if (CapbankController.isOneWayCbc(deviceType)) {
-                    controller.setRouteId(commChannelId);
-                } else {
+	    		
+                if (CBCUtils.isTwoWay(typeId)) {
+                    int commChannelId = getPaoIdByName(commChannel);
+                    if (commChannelId == -1) {
+                        throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel not found. " + commChannel);
+                    }
                     controller.setPortId(commChannelId);
+                } else {
+                    int routeId = getRouteIdByPaoName(commChannel);
+                    if (routeId == -1) {
+                        throw new UnsupportedOperationException("Import of " + cbcName + " failed. Route not found. " + commChannel);
+                    }
+                    controller.setRouteId(routeId);
                 }
 	    		
 	    		//controller.setS    scan Enabled?
