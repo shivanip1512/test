@@ -48,7 +48,7 @@ private javax.swing.JRadioButton getJRadioButtonDirectControl() {
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
+private javax.swing.JRadioButton getJRadioButtonSepControl() {
 	if (ivjJRadioButtonSepControl == null) {
 		try {
 			ivjJRadioButtonSepControl = new javax.swing.JRadioButton();
@@ -75,7 +75,7 @@ public PaoType getLMSelectedType()
 	{
 		return PaoType.LM_DIRECT_PROGRAM;
 	}
- 	else if( getJRadioButtonEnergyExchange().isSelected() )
+ 	else if( getJRadioButtonSepControl().isSelected() )
  	{
 	 	return PaoType.LM_SEP_PROGRAM;
  	}
@@ -125,14 +125,14 @@ private void initialize() {
 		constraintsJRadioButtonEnergyExchange.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJRadioButtonEnergyExchange.ipadx = 21;
 		constraintsJRadioButtonEnergyExchange.insets = new java.awt.Insets(9, 105, 152, 101);
-		add(getJRadioButtonEnergyExchange(), constraintsJRadioButtonEnergyExchange);
+		add(getJRadioButtonSepControl(), constraintsJRadioButtonEnergyExchange);
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
 
 	buttonGroup.add( getJRadioButtonDirectControl() );
-	buttonGroup.add( getJRadioButtonEnergyExchange() );
+	buttonGroup.add( getJRadioButtonSepControl() );
 
 	// default selected button
 	getJRadioButtonDirectControl().setSelected(true);

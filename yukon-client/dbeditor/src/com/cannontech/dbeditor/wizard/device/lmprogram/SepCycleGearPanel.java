@@ -1,11 +1,15 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import static com.cannontech.common.util.StringUtils.removeChars;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.util.InputMismatchException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -13,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.CaretEvent;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.util.StringUtils;
@@ -29,66 +34,54 @@ public class SepCycleGearPanel extends GenericGearPanel {
     private static final long serialVersionUID = 337578549868176151L;
     private JComboBox ivjJComboBoxHowToStop = null;
     private JComboBox ivjJComboBoxWhenChange = null;
-    private JCSpinField ivjJCSpinFieldChangeDuration = null;
-    private JCSpinField ivjJCSpinFieldChangePriority = null;
-    private JCSpinField ivjJCSpinFieldChangeTriggerNumber = null;
-    private JCSpinField ivjJCSpinFieldControlPercent = null;
-    private JCSpinField ivjJCSpinFieldPercentReduction = null;
-    private JLabel ivjJLabelChangeDuration = null;
-    private JLabel ivjJLabelChangePriority = null;
-    private JLabel ivjJLabelChangeTriggerNumber = null;
-    private JLabel ivjJLabelChangeTriggerOffset = null;
-    private JLabel ivjJLabelControlPercent = null;
-    private JLabel ivjJLabelHowToStop = null;
-    private JLabel ivjJLabelMinutesChDur = null;
-    private JLabel ivjJLabelPercentReduction = null;
-    private JLabel ivjJLabelWhenChange = null;
-    private JPanel ivjJPanelChangeMethod = null;
-    private JTextField ivjJTextFieldChangeTriggerOffset = null;
+    private JCSpinField changeDurationSpinField = null;
+    private JCSpinField changePrioritySpinField = null;
+    private JCSpinField changeTriggerNumberSpinField = null;
+    private JCSpinField controlPercentSpinField = null;
+    private JCSpinField percentReductionSpinField = null;
+    private JLabel changeDurationLabel = null;
+    private JLabel changePriorityLabel = null;
+    private JLabel changeTriggerNumberLabel = null;
+    private JLabel changeTriggerOffsetLabel = null;
+    private JLabel controlPercentLabel = null;
+    private JLabel howToStopLabel = null;
+    private JLabel minutesChangeDurationLabel = null;
+    private JLabel percentReductionLabel = null;
+    private JLabel whenToChangeLabel = null;
+    private JPanel changeMethodPanel = null;
+    private JTextField changeTriggerOffsetTextField = null;
+    private JTextField kwReductionTextField = null;
     private JCheckBox checkBoxRampIn = null;
     private JCheckBox checkBoxRampOut = null;
     private JCheckBox checkBoxTrueCycle = null;
-    private JTextField jTextFieldKWReduction = null;
 
     public SepCycleGearPanel() {
         super();
         initialize();
     }
 
-    public void actionPerformed(java.awt.event.ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         if (e.getSource() == getJComboBoxWhenChange()) {
-            connEtoC1(e);
+            this.jComboBoxWhenChange_ActionPerformed(e);
         } else {
             this.fireInputUpdate();
         }
     }
 
-    public void caretUpdate(javax.swing.event.CaretEvent e) {
+    public void caretUpdate(CaretEvent e) {
         fireInputUpdate();
     }
 
-    private void connEtoC1(java.awt.event.ActionEvent arg1) {
-        try {
-            this.jComboBoxWhenChange_ActionPerformed(arg1);
-        } catch (java.lang.Throwable ivjExc) {
-            handleException(ivjExc);
-        }
-    }
-
-    private javax.swing.JComboBox getJComboBoxHowToStop() {
+    private JComboBox getJComboBoxHowToStop() {
         if (ivjJComboBoxHowToStop == null) {
             try {
-                ivjJComboBoxHowToStop = new javax.swing.JComboBox();
+                ivjJComboBoxHowToStop = new JComboBox();
                 ivjJComboBoxHowToStop.setName("JComboBoxHowToStop");
                 ivjJComboBoxHowToStop.setPreferredSize(new Dimension(75, 23));
                 ivjJComboBoxHowToStop.setAlignmentY(TOP_ALIGNMENT);
-                // user code begin {1}
                 ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
                 ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_RESTORE));
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
@@ -96,403 +89,336 @@ public class SepCycleGearPanel extends GenericGearPanel {
     }
 
     private JTextField getJTextFieldKWReduction() {
-        if (jTextFieldKWReduction == null) {
+        if (kwReductionTextField == null) {
             try {
-                jTextFieldKWReduction = new javax.swing.JTextField();
-                jTextFieldKWReduction.setName("JTextFieldKWReduction");
-                jTextFieldKWReduction.setPreferredSize(new Dimension(70, 22));
-                jTextFieldKWReduction.setAlignmentX(LEFT_ALIGNMENT);
-                jTextFieldKWReduction.setAlignmentY(TOP_ALIGNMENT);
-                jTextFieldKWReduction.setDocument(new DoubleRangeDocument(0.0, 99999.999, 3));
-                jTextFieldKWReduction.setVisible(false);
-            } catch (java.lang.Throwable ivjExc) {
+                kwReductionTextField = new JTextField();
+                kwReductionTextField.setName("JTextFieldKWReduction");
+                kwReductionTextField.setPreferredSize(new Dimension(70, 22));
+                kwReductionTextField.setAlignmentX(LEFT_ALIGNMENT);
+                kwReductionTextField.setAlignmentY(TOP_ALIGNMENT);
+                kwReductionTextField.setDocument(new DoubleRangeDocument(0.0, 99999.999, 3));
+                kwReductionTextField.setVisible(false);
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return jTextFieldKWReduction;
+        return kwReductionTextField;
     }
 
-    private javax.swing.JComboBox getJComboBoxWhenChange() {
+    private JComboBox getJComboBoxWhenChange() {
         if (ivjJComboBoxWhenChange == null) {
             try {
                 ivjJComboBoxWhenChange = new javax.swing.JComboBox();
                 ivjJComboBoxWhenChange.setName("JComboBoxWhenChange");
                 ivjJComboBoxWhenChange.setPreferredSize(new Dimension(205, 23));
                 ivjJComboBoxWhenChange.setAlignmentY(TOP_ALIGNMENT);
-                // user code begin {1}
                 ivjJComboBoxWhenChange.addItem("Manually Only");
                 ivjJComboBoxWhenChange.addItem("After a Duration");
                 ivjJComboBoxWhenChange.addItem("Priority Change");
                 ivjJComboBoxWhenChange.addItem("Above Trigger");
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
         return ivjJComboBoxWhenChange;
     }
 
-    private com.klg.jclass.field.JCSpinField getJCSpinFieldChangeDuration() {
-        if (ivjJCSpinFieldChangeDuration == null) {
+    private JCSpinField getJCSpinFieldChangeDuration() {
+        if (changeDurationSpinField == null) {
             try {
-                ivjJCSpinFieldChangeDuration = new com.klg.jclass.field.JCSpinField();
-                ivjJCSpinFieldChangeDuration.setName("JCSpinFieldChangeDuration");
-                ivjJCSpinFieldChangeDuration.setPreferredSize(new Dimension(35, 20));
-                ivjJCSpinFieldChangeDuration.setAlignmentY(TOP_ALIGNMENT);
-                ivjJCSpinFieldChangeDuration.setMaximumSize(new Dimension(40, 20));
-                // user code begin {1}
-                ivjJCSpinFieldChangeDuration.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
+                changeDurationSpinField = new JCSpinField();
+                changeDurationSpinField.setName("JCSpinFieldChangeDuration");
+                changeDurationSpinField.setPreferredSize(new Dimension(35, 20));
+                changeDurationSpinField.setAlignmentY(TOP_ALIGNMENT);
+                changeDurationSpinField.setMaximumSize(new Dimension(40, 20));
+                changeDurationSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
                                                                                                          new Integer(99999), null, true,
                                                                                                          null, new Integer(1),
                                                                                                          "#,##0.###;-#,##0.###", false,
                                                                                                          false, false, null, new Integer(3)),
-                                                                                  new MutableValueModel(java.lang.Integer.class,
-                                                                                                        new Integer(0)),
+                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
                                                                                   new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255),
                                                                                                     new Color(255, 255, 255, 255))));
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJCSpinFieldChangeDuration;
+        return changeDurationSpinField;
     }
 
-    private com.klg.jclass.field.JCSpinField getJCSpinFieldChangePriority() {
-        if (ivjJCSpinFieldChangePriority == null) {
+    private JCSpinField getJCSpinFieldChangePriority() {
+        if (changePrioritySpinField == null) {
             try {
-                ivjJCSpinFieldChangePriority = new com.klg.jclass.field.JCSpinField();
-                ivjJCSpinFieldChangePriority.setName("JCSpinFieldChangePriority");
-                ivjJCSpinFieldChangePriority.setPreferredSize(new Dimension(30, 20));
-                ivjJCSpinFieldChangePriority.setAlignmentY(TOP_ALIGNMENT);
-                ivjJCSpinFieldChangePriority.setMaximumSize(new Dimension(40, 30));
-                // user code begin {1}
-                ivjJCSpinFieldChangePriority.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
+                changePrioritySpinField = new JCSpinField();
+                changePrioritySpinField.setName("JCSpinFieldChangePriority");
+                changePrioritySpinField.setPreferredSize(new Dimension(30, 20));
+                changePrioritySpinField.setAlignmentY(TOP_ALIGNMENT);
+                changePrioritySpinField.setMaximumSize(new Dimension(40, 30));
+                changePrioritySpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
                                                                                                          new Integer(9999), null, true,
                                                                                                          null, new Integer(1),
                                                                                                          "#,##0.###;-#,##0.###", false,
                                                                                                          false, false, null, new Integer(0)),
-                                                                                  new MutableValueModel(java.lang.Integer.class,
-                                                                                                        new Integer(0)),
+                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
                                                                                   new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255),
                                                                                                     new Color(255, 255, 255, 255))));
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJCSpinFieldChangePriority;
+        return changePrioritySpinField;
     }
 
-    private com.klg.jclass.field.JCSpinField getJCSpinFieldChangeTriggerNumber() {
-        if (ivjJCSpinFieldChangeTriggerNumber == null) {
+    private JCSpinField getJCSpinFieldChangeTriggerNumber() {
+        if (changeTriggerNumberSpinField == null) {
             try {
-                ivjJCSpinFieldChangeTriggerNumber = new com.klg.jclass.field.JCSpinField();
-                ivjJCSpinFieldChangeTriggerNumber.setName("JCSpinFieldChangeTriggerNumber");
-                ivjJCSpinFieldChangeTriggerNumber.setPreferredSize(new Dimension(35, 20));
-                ivjJCSpinFieldChangeTriggerNumber.setAlignmentY(TOP_ALIGNMENT);
-                ivjJCSpinFieldChangeTriggerNumber.setMaximumSize(new Dimension(40, 20));
-                // user code begin {1}
-                ivjJCSpinFieldChangeTriggerNumber.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(1),
+                changeTriggerNumberSpinField = new JCSpinField();
+                changeTriggerNumberSpinField.setName("JCSpinFieldChangeTriggerNumber");
+                changeTriggerNumberSpinField.setPreferredSize(new Dimension(35, 20));
+                changeTriggerNumberSpinField.setAlignmentY(TOP_ALIGNMENT);
+                changeTriggerNumberSpinField.setMaximumSize(new Dimension(40, 20));
+                changeTriggerNumberSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(1),
                                                                                                               new Integer(99999), null,
                                                                                                               true, null, new Integer(1),
                                                                                                               "#,##0.###;-#,##0.###",
                                                                                                               false, false, false, null,
                                                                                                               new Integer(1)),
-                                                                                       new MutableValueModel(java.lang.Integer.class,
-                                                                                                             new Integer(0)),
+                                                                                       new MutableValueModel(java.lang.Integer.class, new Integer(0)),
                                                                                        new JCInvalidInfo(true, 2,
                                                                                                          new Color(0, 0, 0, 255),
-                                                                                                         new Color(255, 255, 255,
-                                                                                                                            255))));
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                                                                                                         new Color(255, 255, 255, 255))));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJCSpinFieldChangeTriggerNumber;
+        return changeTriggerNumberSpinField;
     }
 
-    private com.klg.jclass.field.JCSpinField getJCSpinFieldControlPercent() {
-        if (ivjJCSpinFieldControlPercent == null) {
+    private JCSpinField getJCSpinFieldControlPercent() {
+        if (controlPercentSpinField == null) {
             try {
-                ivjJCSpinFieldControlPercent = new com.klg.jclass.field.JCSpinField();
-                ivjJCSpinFieldControlPercent.setName("JCSpinFieldControlPercent");
-                ivjJCSpinFieldControlPercent.setPreferredSize(new Dimension(48, 20));
-                ivjJCSpinFieldControlPercent.setAlignmentX(LEFT_ALIGNMENT);
-                ivjJCSpinFieldControlPercent.setAlignmentY(TOP_ALIGNMENT);
-                ivjJCSpinFieldControlPercent.setMaximumSize(new Dimension(50, 20));
-                ivjJCSpinFieldControlPercent.setMinimumSize(new Dimension(48, 20));
-                // user code begin {1}
-                ivjJCSpinFieldControlPercent.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(5),
+                controlPercentSpinField = new JCSpinField();
+                controlPercentSpinField.setName("JCSpinFieldControlPercent");
+                controlPercentSpinField.setPreferredSize(new Dimension(48, 20));
+                controlPercentSpinField.setAlignmentX(LEFT_ALIGNMENT);
+                controlPercentSpinField.setAlignmentY(TOP_ALIGNMENT);
+                controlPercentSpinField.setMaximumSize(new Dimension(50, 20));
+                controlPercentSpinField.setMinimumSize(new Dimension(48, 20));
+                controlPercentSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(5),
                                                                                                          new Integer(100), null, true,
                                                                                                          null, new Integer(1),
                                                                                                          "#,##0.###;-#,##0.###", false,
                                                                                                          false, false, null,
                                                                                                          new Integer(50)),
-                                                                                  new MutableValueModel(java.lang.Integer.class,
-                                                                                                        new Integer(0)),
-                                                                                  new JCInvalidInfo(true, 2, new Color(0, 0, 0,
-                                                                                                                                255),
+                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
+                                                                                  new JCInvalidInfo(true, 2,
+                                                                                                    new Color(0, 0, 0,255),
                                                                                                     new Color(255, 255, 255, 255))));
 
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJCSpinFieldControlPercent;
+        return controlPercentSpinField;
     }
 
-    private com.klg.jclass.field.JCSpinField getJCSpinFieldPercentReduction() {
-        if (ivjJCSpinFieldPercentReduction == null) {
+    private JCSpinField getJCSpinFieldPercentReduction() {
+        if (percentReductionSpinField == null) {
             try {
-                ivjJCSpinFieldPercentReduction = new com.klg.jclass.field.JCSpinField();
-                ivjJCSpinFieldPercentReduction.setName("JCSpinFieldPercentReduction");
-                ivjJCSpinFieldPercentReduction.setPreferredSize(new Dimension(49, 20));
-                ivjJCSpinFieldPercentReduction.setMaximumSize(new Dimension(50, 60));
-                ivjJCSpinFieldPercentReduction.setMinimumSize(new Dimension(40, 50));
-                // user code begin {1}
-                ivjJCSpinFieldPercentReduction.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
+                percentReductionSpinField = new JCSpinField();
+                percentReductionSpinField.setName("JCSpinFieldPercentReduction");
+                percentReductionSpinField.setPreferredSize(new Dimension(49, 20));
+                percentReductionSpinField.setMaximumSize(new Dimension(50, 60));
+                percentReductionSpinField.setMinimumSize(new Dimension(40, 50));
+                percentReductionSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(0),
                                                                                                            new Integer(100), null, true,
                                                                                                            null, new Integer(1),
                                                                                                            "#,##0.###;-#,##0.###", false,
                                                                                                            false, false, null,
                                                                                                            new Integer(100)),
-                                                                                    new MutableValueModel(java.lang.Integer.class,
-                                                                                                          new Integer(0)),
-                                                                                    new JCInvalidInfo(true,
-                                                                                                      2,
+                                                                                    new MutableValueModel(java.lang.Integer.class, new Integer(0)),
+                                                                                    new JCInvalidInfo(true,2,
                                                                                                       new Color(0, 0, 0, 255),
                                                                                                       new Color(255, 255, 255, 255))));
 
-                ivjJCSpinFieldPercentReduction.setValue(new Integer(100));
+                percentReductionSpinField.setValue(new Integer(100));
 
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJCSpinFieldPercentReduction;
+        return percentReductionSpinField;
     }
 
-    private javax.swing.JLabel getJLabelChangeDuration() {
-        if (ivjJLabelChangeDuration == null) {
+    private JLabel getJLabelChangeDuration() {
+        if (changeDurationLabel == null) {
             try {
-                ivjJLabelChangeDuration = new javax.swing.JLabel();
-                ivjJLabelChangeDuration.setName("JLabelChangeDuration");
-                ivjJLabelChangeDuration.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelChangeDuration.setText("Change Duration:");
-                ivjJLabelChangeDuration.setMaximumSize(new Dimension(103, 14));
-                ivjJLabelChangeDuration.setPreferredSize(new Dimension(103, 14));
-                ivjJLabelChangeDuration.setFont(new Font("dialog", 0, 12));
-                ivjJLabelChangeDuration.setMinimumSize(new Dimension(103, 14));
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                changeDurationLabel = new JLabel();
+                changeDurationLabel.setName("JLabelChangeDuration");
+                changeDurationLabel.setAlignmentY(TOP_ALIGNMENT);
+                changeDurationLabel.setText("Change Duration:");
+                changeDurationLabel.setMaximumSize(new Dimension(103, 14));
+                changeDurationLabel.setPreferredSize(new Dimension(103, 14));
+                changeDurationLabel.setFont(new Font("dialog", 0, 12));
+                changeDurationLabel.setMinimumSize(new Dimension(103, 14));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelChangeDuration;
+        return changeDurationLabel;
     }
 
-    private javax.swing.JLabel getJLabelChangePriority() {
-        if (ivjJLabelChangePriority == null) {
+    private JLabel getJLabelChangePriority() {
+        if (changePriorityLabel == null) {
             try {
-                ivjJLabelChangePriority = new javax.swing.JLabel();
-                ivjJLabelChangePriority.setName("JLabelChangePriority");
-                ivjJLabelChangePriority.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelChangePriority.setText("Change Priority:");
-                ivjJLabelChangePriority.setMaximumSize(new Dimension(103, 14));
-                ivjJLabelChangePriority.setPreferredSize(new Dimension(103, 14));
-                ivjJLabelChangePriority.setFont(new Font("dialog", 0, 12));
-                ivjJLabelChangePriority.setMinimumSize(new Dimension(103, 14));
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                changePriorityLabel = new JLabel();
+                changePriorityLabel.setName("JLabelChangePriority");
+                changePriorityLabel.setAlignmentY(TOP_ALIGNMENT);
+                changePriorityLabel.setText("Change Priority:");
+                changePriorityLabel.setMaximumSize(new Dimension(103, 14));
+                changePriorityLabel.setPreferredSize(new Dimension(103, 14));
+                changePriorityLabel.setFont(new Font("dialog", 0, 12));
+                changePriorityLabel.setMinimumSize(new Dimension(103, 14));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelChangePriority;
+        return changePriorityLabel;
     }
 
-    private javax.swing.JLabel getJLabelChangeTriggerNumber() {
-        if (ivjJLabelChangeTriggerNumber == null) {
+    private JLabel getJLabelChangeTriggerNumber() {
+        if (changeTriggerNumberLabel == null) {
             try {
-                ivjJLabelChangeTriggerNumber = new javax.swing.JLabel();
-                ivjJLabelChangeTriggerNumber.setName("JLabelChangeTriggerNumber");
-                ivjJLabelChangeTriggerNumber.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelChangeTriggerNumber.setText("Trigger Number:");
-                ivjJLabelChangeTriggerNumber.setMaximumSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerNumber.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-                ivjJLabelChangeTriggerNumber.setPreferredSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerNumber.setFont(new Font("dialog", 0, 12));
-                ivjJLabelChangeTriggerNumber.setMinimumSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerNumber.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                changeTriggerNumberLabel = new JLabel();
+                changeTriggerNumberLabel.setName("JLabelChangeTriggerNumber");
+                changeTriggerNumberLabel.setAlignmentY(TOP_ALIGNMENT);
+                changeTriggerNumberLabel.setText("Trigger Number:");
+                changeTriggerNumberLabel.setMaximumSize(new Dimension(143, 14));
+                changeTriggerNumberLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+                changeTriggerNumberLabel.setPreferredSize(new Dimension(143, 14));
+                changeTriggerNumberLabel.setFont(new Font("dialog", 0, 12));
+                changeTriggerNumberLabel.setMinimumSize(new Dimension(143, 14));
+                changeTriggerNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelChangeTriggerNumber;
+        return changeTriggerNumberLabel;
     }
 
-    private javax.swing.JLabel getJLabelChangeTriggerOffset() {
-        if (ivjJLabelChangeTriggerOffset == null) {
+    private JLabel getJLabelChangeTriggerOffset() {
+        if (changeTriggerOffsetLabel == null) {
             try {
-                ivjJLabelChangeTriggerOffset = new javax.swing.JLabel();
-                ivjJLabelChangeTriggerOffset.setName("JLabelChangeTriggerOffset");
-                ivjJLabelChangeTriggerOffset.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelChangeTriggerOffset.setText("Trigger Offset:");
-                ivjJLabelChangeTriggerOffset.setMaximumSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerOffset.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-                ivjJLabelChangeTriggerOffset.setPreferredSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerOffset.setFont(new Font("dialog", 0, 12));
-                ivjJLabelChangeTriggerOffset.setMinimumSize(new Dimension(143, 14));
-                ivjJLabelChangeTriggerOffset.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                changeTriggerOffsetLabel = new JLabel();
+                changeTriggerOffsetLabel.setName("JLabelChangeTriggerOffset");
+                changeTriggerOffsetLabel.setAlignmentY(TOP_ALIGNMENT);
+                changeTriggerOffsetLabel.setText("Trigger Offset:");
+                changeTriggerOffsetLabel.setMaximumSize(new Dimension(143, 14));
+                changeTriggerOffsetLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+                changeTriggerOffsetLabel.setPreferredSize(new Dimension(143, 14));
+                changeTriggerOffsetLabel.setFont(new Font("dialog", 0, 12));
+                changeTriggerOffsetLabel.setMinimumSize(new Dimension(143, 14));
+                changeTriggerOffsetLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelChangeTriggerOffset;
+        return changeTriggerOffsetLabel;
     }
 
-    private javax.swing.JLabel getJLabelControlPercent() {
-        if (ivjJLabelControlPercent == null) {
+    private JLabel getJLabelControlPercent() {
+        if (controlPercentLabel == null) {
             try {
-                ivjJLabelControlPercent = new javax.swing.JLabel();
-                ivjJLabelControlPercent.setName("JLabelControlPercent");
-                ivjJLabelControlPercent.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelControlPercent.setText("Control Percent:");
-                ivjJLabelControlPercent.setMaximumSize(new Dimension(112, 14));
-                ivjJLabelControlPercent.setPreferredSize(new Dimension(112, 14));
-                ivjJLabelControlPercent.setFont(new Font("dialog", 0, 12));
-                ivjJLabelControlPercent.setAlignmentX(LEFT_ALIGNMENT);
-                ivjJLabelControlPercent.setMinimumSize(new Dimension(112, 14));
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                controlPercentLabel = new JLabel();
+                controlPercentLabel.setName("JLabelControlPercent");
+                controlPercentLabel.setAlignmentY(TOP_ALIGNMENT);
+                controlPercentLabel.setText("Control Percent:");
+                controlPercentLabel.setMaximumSize(new Dimension(112, 14));
+                controlPercentLabel.setPreferredSize(new Dimension(112, 14));
+                controlPercentLabel.setFont(new Font("dialog", 0, 12));
+                controlPercentLabel.setAlignmentX(LEFT_ALIGNMENT);
+                controlPercentLabel.setMinimumSize(new Dimension(112, 14));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelControlPercent;
+        return controlPercentLabel;
     }
 
-    private javax.swing.JLabel getJLabelHowToStop() {
-        if (ivjJLabelHowToStop == null) {
+    private JLabel getJLabelHowToStop() {
+        if (howToStopLabel == null) {
             try {
-                ivjJLabelHowToStop = new javax.swing.JLabel();
-                ivjJLabelHowToStop.setName("JLabelHowToStop");
-                ivjJLabelHowToStop.setFont(new Font("dialog", 0, 12));
-                ivjJLabelHowToStop.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelHowToStop.setText("How to Stop Control:");
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                howToStopLabel = new JLabel();
+                howToStopLabel.setName("JLabelHowToStop");
+                howToStopLabel.setFont(new Font("dialog", 0, 12));
+                howToStopLabel.setAlignmentY(TOP_ALIGNMENT);
+                howToStopLabel.setText("How to Stop Control:");
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelHowToStop;
+        return howToStopLabel;
     }
 
-    private javax.swing.JLabel getJLabelMinutesChDur() {
-        if (ivjJLabelMinutesChDur == null) {
+    private JLabel getJLabelMinutesChDur() {
+        if (minutesChangeDurationLabel == null) {
             try {
-                ivjJLabelMinutesChDur = new javax.swing.JLabel();
-                ivjJLabelMinutesChDur.setName("JLabelMinutesChDur");
-                ivjJLabelMinutesChDur.setFont(new Font("dialog", 0, 12));
-                ivjJLabelMinutesChDur.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelMinutesChDur.setText("(min.)");
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                minutesChangeDurationLabel = new JLabel();
+                minutesChangeDurationLabel.setName("JLabelMinutesChDur");
+                minutesChangeDurationLabel.setFont(new Font("dialog", 0, 12));
+                minutesChangeDurationLabel.setAlignmentY(TOP_ALIGNMENT);
+                minutesChangeDurationLabel.setText("(min.)");
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelMinutesChDur;
+        return minutesChangeDurationLabel;
     }
 
-    private javax.swing.JLabel getJLabelPercentReduction() {
-        if (ivjJLabelPercentReduction == null) {
+    private JLabel getJLabelPercentReduction() {
+        if (percentReductionLabel == null) {
             try {
-                ivjJLabelPercentReduction = new javax.swing.JLabel();
-                ivjJLabelPercentReduction.setName("JLabelPercentReduction");
-                ivjJLabelPercentReduction.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelPercentReduction.setText("Group Capacity Reduction %:");
-                ivjJLabelPercentReduction.setMaximumSize(new Dimension(160, 14));
-                ivjJLabelPercentReduction.setPreferredSize(new Dimension(160, 14));
-                ivjJLabelPercentReduction.setFont(new Font("dialog", 0, 12));
-                ivjJLabelPercentReduction.setMinimumSize(new Dimension(160, 14));
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                percentReductionLabel = new JLabel();
+                percentReductionLabel.setName("JLabelPercentReduction");
+                percentReductionLabel.setAlignmentY(TOP_ALIGNMENT);
+                percentReductionLabel.setText("Group Capacity Reduction %:");
+                percentReductionLabel.setMaximumSize(new Dimension(160, 14));
+                percentReductionLabel.setPreferredSize(new Dimension(160, 14));
+                percentReductionLabel.setFont(new Font("dialog", 0, 12));
+                percentReductionLabel.setMinimumSize(new Dimension(160, 14));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelPercentReduction;
+        return percentReductionLabel;
     }
 
-    private javax.swing.JLabel getJLabelWhenChange() {
-        if (ivjJLabelWhenChange == null) {
+    private JLabel getJLabelWhenChange() {
+        if (whenToChangeLabel == null) {
             try {
-                ivjJLabelWhenChange = new javax.swing.JLabel();
-                ivjJLabelWhenChange.setName("JLabelWhenChange");
-                ivjJLabelWhenChange.setFont(new Font("dialog", 0, 12));
-                ivjJLabelWhenChange.setAlignmentY(TOP_ALIGNMENT);
-                ivjJLabelWhenChange.setText("When to Change:");
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+                whenToChangeLabel = new JLabel();
+                whenToChangeLabel.setName("JLabelWhenChange");
+                whenToChangeLabel.setFont(new Font("dialog", 0, 12));
+                whenToChangeLabel.setAlignmentY(TOP_ALIGNMENT);
+                whenToChangeLabel.setText("When to Change:");
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelWhenChange;
+        return whenToChangeLabel;
     }
 
-    private javax.swing.JPanel getJPanelChangeMethod() {
-        if (ivjJPanelChangeMethod == null) {
+    private JPanel getJPanelChangeMethod() {
+        if (changeMethodPanel == null) {
             try {
-                ivjJPanelChangeMethod = new javax.swing.JPanel();
-                ivjJPanelChangeMethod.setName("JPanelChangeMethod");
-                ivjJPanelChangeMethod.setLayout(new GridBagLayout());
-                ivjJPanelChangeMethod.setAlignmentY(TOP_ALIGNMENT);
-                ivjJPanelChangeMethod.setMaximumSize(new Dimension(300, 75));
-                ivjJPanelChangeMethod.setPreferredSize(new Dimension(300, 75));
-                ivjJPanelChangeMethod.setFont(new Font("dialog", 0, 12));
-                ivjJPanelChangeMethod.setAlignmentX(LEFT_ALIGNMENT);
+                changeMethodPanel = new JPanel();
+                changeMethodPanel.setName("JPanelChangeMethod");
+                changeMethodPanel.setLayout(new GridBagLayout());
+                changeMethodPanel.setAlignmentY(TOP_ALIGNMENT);
+                changeMethodPanel.setMaximumSize(new Dimension(300, 75));
+                changeMethodPanel.setPreferredSize(new Dimension(300, 75));
+                changeMethodPanel.setFont(new Font("dialog", 0, 12));
+                changeMethodPanel.setAlignmentX(LEFT_ALIGNMENT);
 
                 GridBagConstraints constraintsJLabelChangeDuration = new GridBagConstraints();
                 constraintsJLabelChangeDuration.gridx = 1;
@@ -592,34 +518,29 @@ public class SepCycleGearPanel extends GenericGearPanel {
                 constraintsJComboBoxWhenChange.ipadx = 79;
                 constraintsJComboBoxWhenChange.insets = new Insets(4, 5, 1, 17);
                 getJPanelChangeMethod().add(getJComboBoxWhenChange(), constraintsJComboBoxWhenChange);
-                ivjJPanelChangeMethod.setBorder(new EtchedBorder());
-                // user code begin {1}
+                changeMethodPanel.setBorder(new EtchedBorder());
                 jComboBoxWhenChange_ActionPerformed(null);
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJPanelChangeMethod;
+        return changeMethodPanel;
     }
 
-    private javax.swing.JTextField getJTextFieldChangeTriggerOffset() {
-        if (ivjJTextFieldChangeTriggerOffset == null) {
+    private JTextField getJTextFieldChangeTriggerOffset() {
+        if (changeTriggerOffsetTextField == null) {
             try {
-                ivjJTextFieldChangeTriggerOffset = new javax.swing.JTextField();
-                ivjJTextFieldChangeTriggerOffset.setName("JTextFieldChangeTriggerOffset");
-                ivjJTextFieldChangeTriggerOffset.setPreferredSize(new Dimension(30, 20));
-                ivjJTextFieldChangeTriggerOffset.setAlignmentY(TOP_ALIGNMENT);
-                ivjJTextFieldChangeTriggerOffset.setMaximumSize(new Dimension(40, 20));
-                ivjJTextFieldChangeTriggerOffset.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-99999.9999,
-                                                                                                                          99999.9999, 4));
-            } catch (java.lang.Throwable ivjExc) {
+                changeTriggerOffsetTextField = new JTextField();
+                changeTriggerOffsetTextField.setName("JTextFieldChangeTriggerOffset");
+                changeTriggerOffsetTextField.setPreferredSize(new Dimension(30, 20));
+                changeTriggerOffsetTextField.setAlignmentY(TOP_ALIGNMENT);
+                changeTriggerOffsetTextField.setMaximumSize(new Dimension(40, 20));
+                changeTriggerOffsetTextField.setDocument(new DoubleRangeDocument(-99999.9999, 99999.9999, 4));
+            } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJTextFieldChangeTriggerOffset;
+        return changeTriggerOffsetTextField;
     }
 
     public Object getValue(Object o) {
@@ -628,8 +549,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
         gear = (SepCycleGear) o;
 
         if (getJComboBoxHowToStop().getSelectedItem() != null) {
-            gear.setMethodStopType(com.cannontech.common.util.StringUtils.removeChars(' ', getJComboBoxHowToStop().getSelectedItem()
-                .toString()));
+            gear.setMethodStopType(removeChars(' ', getJComboBoxHowToStop().getSelectedItem().toString()));
         }
 
         gear.setPercentReduction(new Integer(((Number) getJCSpinFieldPercentReduction().getValue()).intValue()));
@@ -647,35 +567,20 @@ public class SepCycleGearPanel extends GenericGearPanel {
 
         gear.setControlPercent(new Integer(((Number) getJCSpinFieldControlPercent().getValue()).intValue()));
 
-        if (getCheckBoxRampIn().isSelected()) {
-            gear.setFrontRampEnabled(true);
-        } else {
-            gear.setFrontRampEnabled(false);
-        }
-
-        if (getCheckBoxRampOut().isSelected()) {
-            gear.setBackRampEnabled(true);
-        } else {
-            gear.setBackRampEnabled(false);
-        }
-
-        if (getCheckBoxTrueCycle().isSelected()) {
-            gear.setTrueCycleEnabled(true);
-        } else {
-            gear.setTrueCycleEnabled(false);
-        }
+        gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
+        gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
+        gear.setTrueCycleEnabled(getCheckBoxTrueCycle().isSelected());
 
         return gear;
     }
 
-    private void handleException(java.lang.Throwable exception) {
+    private void handleException(Throwable exception) {
         System.out.print(exception.getMessage());
-        /* Uncomment the following lines to print uncaught exceptions to stdout */
         System.out.println("--------- UNCAUGHT EXCEPTION ---------");
         exception.printStackTrace(System.out);
     }
 
-    private void initConnections() throws java.lang.Exception {
+    private void initConnections() {
         getJCSpinFieldChangeDuration().addValueListener(this);
         getJCSpinFieldChangePriority().addValueListener(this);
         getJCSpinFieldChangeTriggerNumber().addValueListener(this);
@@ -776,16 +681,15 @@ public class SepCycleGearPanel extends GenericGearPanel {
             this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
             this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
             this.add(getCheckBoxTrueCycle(), constraintJCheckBoxTrueCycle);
-        } catch (java.lang.Throwable ivjExc) {
+        } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
         getJComboBoxWhenChange().setSelectedItem(LMProgramDirectGear.CHANGE_NONE);
         getJComboBoxHowToStop().removeItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
         getJComboBoxHowToStop().addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
         getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
-        try {
-            initConnections();
-        } catch (Exception e) {}
+        
+        initConnections();
     }
 
     public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
@@ -826,37 +730,11 @@ public class SepCycleGearPanel extends GenericGearPanel {
             getJLabelChangeTriggerOffset().setVisible(true);
             getJTextFieldChangeTriggerOffset().setVisible(true);
         } else
-            throw new Error("Unknown LMProgramDirectGear control condition found, the value = "
+            throw new InputMismatchException("Unknown LMProgramDirectGear control condition found, the value = "
                             + getJComboBoxWhenChange().getSelectedItem().toString());
 
         fireInputUpdate();
         return;
-    }
-
-    /**
-     * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
-     */
-    public static void main(java.lang.String[] args) {
-        try {
-            javax.swing.JFrame frame = new javax.swing.JFrame();
-            SepCycleGearPanel sepCycleGearPanel;
-            sepCycleGearPanel = new SepCycleGearPanel();
-            frame.setContentPane(sepCycleGearPanel);
-            frame.setSize(sepCycleGearPanel.getSize());
-            frame.addWindowListener(new java.awt.event.WindowAdapter() {
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                };
-            });
-            frame.setVisible(true);
-            Insets insets = frame.getInsets();
-            frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-            frame.setVisible(true);
-        } catch (Throwable exception) {
-            System.err.println("Exception occurred in main() of com.cannontech.dbeditor.wizard.device.lmprogram.GenericGearPanel");
-            exception.printStackTrace(System.out);
-        }
     }
 
     private void setChangeCondition(String change) {
@@ -902,17 +780,12 @@ public class SepCycleGearPanel extends GenericGearPanel {
     }
 
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        // fire this event for all JCSpinFields!!
         this.fireInputUpdate();
     }
 
-    /**
-     * This method initializes jCheckBoxNoRamp
-     * @return javax.swing.JCheckBox
-     */
-    private javax.swing.JCheckBox getCheckBoxRampIn() {
+    private JCheckBox getCheckBoxRampIn() {
         if (checkBoxRampIn == null) {
-            checkBoxRampIn = new javax.swing.JCheckBox();
+            checkBoxRampIn = new JCheckBox();
             checkBoxRampIn.setText("Ramp In");
             checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
             checkBoxRampIn.setSelected(true);
@@ -920,24 +793,22 @@ public class SepCycleGearPanel extends GenericGearPanel {
         return checkBoxRampIn;
     }
 
-    private javax.swing.JCheckBox getCheckBoxRampOut() {
+    private JCheckBox getCheckBoxRampOut() {
         if (checkBoxRampOut == null) {
-            checkBoxRampOut = new javax.swing.JCheckBox();
+            checkBoxRampOut = new JCheckBox();
             checkBoxRampOut.setText("Ramp Out");
             checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
             checkBoxRampOut.setSelected(true);
-
         }
         return checkBoxRampOut;
     }
 
-    private javax.swing.JCheckBox getCheckBoxTrueCycle() {
+    private JCheckBox getCheckBoxTrueCycle() {
         if (checkBoxTrueCycle == null) {
-            checkBoxTrueCycle = new javax.swing.JCheckBox();
+            checkBoxTrueCycle = new JCheckBox();
             checkBoxTrueCycle.setText("TrueCycle or adaptive algorithm");
             checkBoxTrueCycle.setPreferredSize(new Dimension(165, 23));
             checkBoxTrueCycle.setSelected(true);
-
         }
         return checkBoxTrueCycle;
     }
