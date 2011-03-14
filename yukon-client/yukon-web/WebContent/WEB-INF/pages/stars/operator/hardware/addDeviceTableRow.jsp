@@ -8,7 +8,7 @@
 <cti:url var="gatewayControllerUrlParameters" value="?accountId=${accountId}&inventoryId=${inventoryId}"/>
 
 
-<tags:standardPageFragment module="operator" pageName="gateway" fragmentName="addDevice">
+<cti:standardPage module="operator" page="gateway">
 
 	<table class="compactResultsTable">
         <tr id="${zigbeeDto.serialNumber}" class="deviceRow">
@@ -27,9 +27,9 @@
                 <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}&message=testmessage&gatewayInventoryId=${inventoryId}"/>
             </td>
 			<td class="removeColumn" >
-				<cti:img key="delete" href="javascript:removeTableRow('${zigbeeDto.serialNumber}',${zigbeeDto.deviceId})"/>
+				<cti:img key="remove" href="javascript:removeTableRow('${zigbeeDto.serialNumber}',${zigbeeDto.deviceId})"/>
 			</td>
          </tr>
     </table>
 
-</tags:standardPageFragment>
+</cti:standardPage>
