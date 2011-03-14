@@ -17,7 +17,7 @@
             </td>
             <td><spring:escapeBody htmlEscape="true">${zigbeeDto.deviceType}</spring:escapeBody></td>
             <td>
-                    <cti:classUpdater type="POINT" identifier="${zigbeeDto.commissionId}/STATE">
+                    <cti:classUpdater type="POINT" identifier="${zigbeeDto.commissionId}/SHORT">
                         <cti:pointValue pointId="${zigbeeDto.commissionId}" format="VALUE"/>
                     </cti:classUpdater>            
             </td>
