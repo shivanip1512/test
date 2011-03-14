@@ -156,4 +156,9 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
     }
+    
+    @Autowired
+    public void setHardwareTypeExtensionService(HardwareTypeExtensionService hardwareTypeExtensionService) {
+        this.hardwareTypeExtensionService = hardwareTypeExtensionService;
+    }
 }
