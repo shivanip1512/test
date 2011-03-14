@@ -767,7 +767,7 @@ public final class CBCUtils {
         try {
             fixedText = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, yukonUser);
         } catch(UserNotInRoleException e) {
-            CTILogger.warn("User not in Cap Bank Display role, using default Fixed text.");
+            CTILogger.warn("User not in CAP_BANK_FIXED_TEXT role, using default text: Fixed.");
         }
         
         if(StringUtils.isBlank(fixedText)) fixedText = "Fixed";
