@@ -1,4 +1,4 @@
-package com.cannontech.stars.dr.thirdparty.digi.service;
+package com.cannontech.stars.dr.thirdparty.digi.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,7 +7,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl;
 import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
-import com.cannontech.stars.dr.thirdparty.digi.service.impl.DigiWebServiceImpl;
+import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
 
 public class DigiDummyWebServiceImpl implements ZigbeeWebService {
 
