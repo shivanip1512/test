@@ -34,6 +34,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CancelActiveOptOutRequestEndpointTest {
     
+    private static final LiteYukonUser AUTH_USER = new LiteYukonUser();
+    private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+    
     private static final String KNOWN_ACCOUNT_NUMBER = "A";
     private static final String UNKNOWN_ACCOUNT_NUMBER = "B";
     
@@ -87,42 +90,41 @@ public class CancelActiveOptOutRequestEndpointTest {
     
     @Test
     public void testInvoke() throws Exception {
-        Element requestElement = null;
-        SimpleXPathTemplate outputTemplate = null;
-        LiteYukonUser user = new LiteYukonUser();
-  
+
         // test with unauthorized user
         // ========================================================================================
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT.toString());
-        outputTemplate = validateAndReturnResponse(requestElement, MockRolePropertyDao.getUnAuthorizedUser());
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, NOT_AUTH_USER, "UserNotAuthorized", false);
         
         // test with unknown account number
-        // ========================================================================================       
-        requestElement = createRequest(UNKNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT.toString());
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "NotFound");
+        // ========================================================================================    
+        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, "NotFound", false);
         
         // test with unknown serial number
         // ========================================================================================       
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN.toString());
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "NotFound");
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "NotFound", false);
         
         // test with opted out device
-        // ========================================================================================       
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT.toString());
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runSuccessAssertion(outputTemplate, RESP_ELEMENT_NAME);
+        // ========================================================================================
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, null, true);
         
         // test with not opted out device
-        // ========================================================================================       
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT.toString());
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "CancelFailed");
-        
-       
+        // ========================================================================================
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT, AUTH_USER, "CancelFailed", false);
     }
+    
+    
+    private void validate(String accountNumber, TestInventory inventory, LiteYukonUser user, String expectedResponse, boolean expectedSuccess) 
+    throws Exception {
+        Element requestElement = createRequest(accountNumber, inventory.toString());
+        SimpleXPathTemplate responseTemplate = validateAndReturnResponse(requestElement, user);
+        if(expectedSuccess) {
+            TestUtils.runSuccessAssertion(responseTemplate, RESP_ELEMENT_NAME);
+        } else {
+            TestUtils.runFailureAssertions(responseTemplate, RESP_ELEMENT_NAME, expectedResponse);
+        }
+    }
+    
+    
     
     private SimpleXPathTemplate validateAndReturnResponse(Element requestElement, LiteYukonUser user) throws Exception{
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);

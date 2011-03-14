@@ -41,6 +41,9 @@ public class OptOutRequestEndpointTest {
     private static final String KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE = "B";
     private static final String UNKNOWN_ACCOUNT_NUMBER = "C";
     
+    private static final LiteYukonUser AUTH_USER = new LiteYukonUser();
+    private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+    
     private static Namespace ns = YukonXml.getYukonNamespace();
     private static final String RESP_ELEMENT_NAME = "optOutResponse";
     private static final String REQU_ELEMENT_NAME = "optOutRequest";
@@ -94,70 +97,63 @@ public class OptOutRequestEndpointTest {
     
     @Test
     public void testInvoke() throws Exception {
-        Element requestElement = null;
-        SimpleXPathTemplate outputTemplate = null;
-        LiteYukonUser user = new LiteYukonUser();
-  
+        
         // test with unauthorized user
         // ========================================================================================
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED.toString(), null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, MockRolePropertyDao.getUnAuthorizedUser());
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
-        
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
+                 null, 1, null, NOT_AUTH_USER, "UserNotAuthorized", false);
+       
         // test with unknown account number
-        // ========================================================================================       
-        requestElement = createRequest(UNKNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED.toString(), null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "NotFound");
+        // ========================================================================================
+        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
+                 null, 1, null, AUTH_USER, "NotFound", false);
         
         // test with unknown serial number
-        // ========================================================================================       
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.UNKNOWN.toString(), null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "NotFound");
+        // ========================================================================================
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.UNKNOWN, 
+                 null, 1, null, AUTH_USER, "NotFound", false);
         
         // test passed start time
         // ======================================================================================== 
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED.toString(), 
-                                       "2011-02-20T10:00:00Z", 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidStartDate");
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
+                 "2011-02-20T10:00:00Z", 1, null, AUTH_USER, "InvalidStartDate", false);
         
         // test instant opt out on not opted out device
         // ======================================================================================== 
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED.toString(), 
-                                       null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runSuccessAssertion(outputTemplate, RESP_ELEMENT_NAME);
-        
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
+                 null, 1, null, AUTH_USER, null, true);
+      
         // test instant opt out on opted out device
         // ======================================================================================== 
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED.toString(), 
-                                       null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "DeviceAlreadyOptedOut");
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED, 
+                 null, 1, null, AUTH_USER, "DeviceAlreadyOptedOut", false);
         
         // test schedule opt out on device with no schedules
-        // ======================================================================================== 
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED.toString(), 
-                                       "2012-01-01T10:00:00Z", 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runSuccessAssertion(outputTemplate, RESP_ELEMENT_NAME);
+        // ========================================================================================
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED, 
+                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, null, true);
         
         // test schedule opt out on device with schedule
         // ======================================================================================== 
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_SCHEDULED.toString(), 
-                                       "2012-01-01T10:00:00Z", 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "OptOutAlreadyScheduled");
+        validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_SCHEDULED, 
+                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, "OptOutAlreadyScheduled", false);
         
         // test counting opting out on account with no opt outs remaining 
-        // ========================================================================================   
-        requestElement = createRequest(KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED.toString(), 
-                                       null, 1, null);
-        outputTemplate = validateAndReturnResponse(requestElement, user);
-        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "OptOutLimitReached");
-       
+        // ======================================================================================== 
+        validate(KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
+                 null, 1, null, AUTH_USER, "OptOutLimitReached", false);
+    }
+    
+    private void validate(String accountNumber, TestInventory inventory, String startDate, long durationInHours, 
+                          Boolean counts, LiteYukonUser user, String expectedResponse, boolean expectedSuccess) 
+    throws Exception {
+        Element requestElement = createRequest(accountNumber, inventory.toString(), startDate, durationInHours, counts);
+        SimpleXPathTemplate responseTemplate = validateAndReturnResponse(requestElement, user);
+        if(expectedSuccess) {
+            TestUtils.runSuccessAssertion(responseTemplate, RESP_ELEMENT_NAME);
+        } else {
+            TestUtils.runFailureAssertions(responseTemplate, RESP_ELEMENT_NAME, expectedResponse);
+        }
     }
     
     private SimpleXPathTemplate validateAndReturnResponse(Element requestElement, LiteYukonUser user) throws Exception{
