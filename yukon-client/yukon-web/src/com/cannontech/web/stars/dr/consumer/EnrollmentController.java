@@ -59,7 +59,7 @@ public class EnrollmentController extends AbstractConsumerController {
             int assignedProgramId, HttpSession session,
             YukonUserContext userContext) {
         DisplayableEnrollmentProgram displayableEnrollmentProgram = 
-            displayableEnrollmentDao.getFilteredDisplayableEnrollmentProgram(customerAccount.getAccountId(), assignedProgramId);
+            displayableEnrollmentDao.getProgram(customerAccount.getAccountId(), assignedProgramId);
 
         boolean perDeviceEnrollment =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE,

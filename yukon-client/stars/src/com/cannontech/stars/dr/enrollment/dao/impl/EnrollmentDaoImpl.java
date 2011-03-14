@@ -148,7 +148,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
-		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
+		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation, ypo.Type ");
 		sql.append("FROM LMProgramWebPublishing pwp");
 		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
 		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");

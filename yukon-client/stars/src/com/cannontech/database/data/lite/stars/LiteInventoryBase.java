@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -239,7 +240,7 @@ public class LiteInventoryBase extends LiteBase {
 		boolean isSA = false;
 		if (this instanceof LiteStarsLMHardware) {
 			int hwConfigType = InventoryUtils.getHardwareConfigType( ((LiteStarsLMHardware)this).getLmHardwareTypeID() );
-			isSA = hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305;
+			isSA = hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId() || hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId();
 		}
 		
 		for (LiteLMHardwareEvent liteEvent : invHist) {

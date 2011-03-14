@@ -35,9 +35,4 @@ public interface DisplayableEnrollmentDao {
      */
     public DisplayableEnrollmentProgram getProgram(int accountId, int programId);
 
-    /**
-     * Returns the DisplayableEnrollmentProgram with filtered inventory list based on the programs pao type
-     */
-    public DisplayableEnrollmentProgram getFilteredDisplayableEnrollmentProgram(int accountId, int programId);
-    
 }

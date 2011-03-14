@@ -136,7 +136,7 @@ public class OperatorEnrollmentController {
         validateAccountEditing(userContext);
 
         DisplayableEnrollmentProgram displayableEnrollmentProgram = 
-            displayableEnrollmentDao.getFilteredDisplayableEnrollmentProgram(accountInfoFragment.getAccountId(), assignedProgramId);
+            displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
         
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
         model.addAttribute("programEnrollment", programEnrollment);

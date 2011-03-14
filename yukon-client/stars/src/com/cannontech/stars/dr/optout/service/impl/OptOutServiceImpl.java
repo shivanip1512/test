@@ -36,6 +36,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
@@ -1130,11 +1131,11 @@ public class OptOutServiceImpl implements OptOutService {
 		cmd.append(inventory.getManufacturerSerialNumber());
 		
 		int hwConfigType = InventoryUtils.getHardwareConfigType( inventory.getLmHardwareTypeID() );
-		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+		if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
 			// Versacom
 			cmd.append(" vcom service out temp offhours ");
 			cmd.append(durationString);
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+		} else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
 			// Expresscom
 			cmd.append(" xcom service out temp offhours ");
 			cmd.append(durationString);
@@ -1146,11 +1147,11 @@ public class OptOutServiceImpl implements OptOutService {
 			if (restoreFirst) {
 				cmd.append(" control restore load 0");
 			}
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+		} else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
 			//SA205
 			cmd.append(" sa205 service out temp offhours ");
 			cmd.append(durationString);
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+		} else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
 			//SA305
 			
 			boolean trackHwAddr = rolePropertyDao.checkProperty(
@@ -1196,16 +1197,16 @@ public class OptOutServiceImpl implements OptOutService {
 		cmd.append(inventory.getManufacturerSerialNumber());
 		
 		int hwConfigType = InventoryUtils.getHardwareConfigType( inventory.getLmHardwareTypeID() );
-		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+		if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
 			// Versacom
 			cmd.append(" vcom service in temp");
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+		} else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
 			// Expresscom
 			cmd.append(" xcom service in temp");
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+		} else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
 			// SA205
 			cmd.append(" sa205 service out temp offhours 0");
-		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+		} else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
 			// SA305
 			
 			boolean trackHwAddr = rolePropertyDao.checkProperty(

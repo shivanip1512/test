@@ -31,13 +31,6 @@ public class InventoryUtils {
 
 	public static final int SA205_UNUSED_ADDR = 3909;
 	
-	public static final int HW_CONFIG_TYPE_EXPRESSCOM = HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId();
-	public static final int HW_CONFIG_TYPE_VERSACOM = HardwareConfigType.VERSACOM.getHardwareConfigTypeId();
-	public static final int HW_CONFIG_TYPE_SA205 = HardwareConfigType.SA205.getHardwareConfigTypeId();
-	public static final int HW_CONFIG_TYPE_SA305 = HardwareConfigType.SA305.getHardwareConfigTypeId();
-	public static final int HW_CONFIG_TYPE_SA_SIMPLE = HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId();
-	public static final int HW_CONFIG_TYPE_SEP = HardwareConfigType.SEP.getHardwareConfigTypeId();
-	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );
 		
@@ -113,28 +106,28 @@ public class InventoryUtils {
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO
             || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP
             || devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102)
-			return HW_CONFIG_TYPE_EXPRESSCOM;
+			return HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000)
-			return HW_CONFIG_TYPE_VERSACOM;
+			return HardwareConfigType.VERSACOM.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205)
-			return HW_CONFIG_TYPE_SA205;
+			return HardwareConfigType.SA205.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305)
-			return HW_CONFIG_TYPE_SA305;
+			return HardwareConfigType.SA305.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE)
-			return HW_CONFIG_TYPE_SA_SIMPLE;
+			return HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId();
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO)
-		    return HW_CONFIG_TYPE_SEP;
+		    return HardwareConfigType.SEP.getHardwareConfigTypeId();
 		
 		return 0;
 	}
 	
 	public static boolean supportServiceInOut(int devTypeID) {
 		int hwConfigType = getHardwareConfigType( devTypeID );
-		return hwConfigType == HW_CONFIG_TYPE_EXPRESSCOM
-			|| hwConfigType == HW_CONFIG_TYPE_VERSACOM;
+		return hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()
+			|| hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId();
 	}
 	
 	public static boolean isAdditionalProtocol(int devTypeDefID) {

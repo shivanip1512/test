@@ -90,24 +90,12 @@ public enum HardwareType implements DatabaseRepresentationSource{
         return supportsSchedules;
     }
 
-    public void setSupportsSchedules(boolean supportsSchedules) {
-        this.supportsSchedules = supportsSchedules;
-    }
-    
     public boolean isSupportsOptOut() {
         return supportsOptOut;
     }
     
-    public void setSupportsOptOut(boolean supportsOptOut) {
-        this.supportsOptOut = supportsOptOut;
-    }
-    
     public boolean isSupportsManualAdjustment() {
         return supportsManualAdjustment;
-    }
-
-    public void setSupportsManualAdjustment(boolean supportsManualAdjustment) {
-        this.supportsManualAdjustment = supportsManualAdjustment;
     }
 
     /**

@@ -32,7 +32,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         retVal.append("SELECT programId, programOrder, ywc.description,");
         retVal.append("ywc.url, alternateDisplayName,");
         retVal.append("paoName, yle.entryText as chanceOfControl,");
-        retVal.append("applianceCategoryID, logoLocation");
+        retVal.append("applianceCategoryID, logoLocation,");
         retVal.append("ypo.Type");
         retVal.append("FROM lmProgramWebPublishing pwp,");
         retVal.append("yukonWebConfiguration ywc, yukonPAObject ypo,");

@@ -5086,9 +5086,19 @@
     </pao>
     <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM DIRECT PROGRAM</displayName>
+        <tags>
+            <tag name="DIRECT_PROGRAM_ENROLLMENT">
+                <value>true</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="LM_SEP_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM SEP PROGRAM</displayName>
+        <tags>
+            <tag name="SEP_PROGRAM_ENROLLMENT">
+                <value>true</value>
+            </tag>
+        </tags>
     </pao>
     
     <!-- LM Scenario -->

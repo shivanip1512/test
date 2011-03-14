@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.displayable.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -10,9 +9,10 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
@@ -24,34 +24,33 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
     
 	private EnrollmentDao enrollmentDao;
+	private PaoDefinitionDao paoDefinitionDao;
 	
     @Override
     public List<DisplayableEnrollment> find(int customerAccountId) {
 
         // Get All ApplianceCategory's that the CustomerAccount could enroll in
-        final List<ApplianceCategory> applianceCategories = 
-        	applianceCategoryDao.findApplianceCategories(customerAccountId);
+        final List<ApplianceCategory> applianceCategories = applianceCategoryDao.findApplianceCategories(customerAccountId);
         
         // Get all Programs that belong to the ApplianceCategory's.
-        final Map<ApplianceCategory, List<Program>> typeMap = 
-        	programDao.getByApplianceCategories(applianceCategories);
+        final Map<ApplianceCategory, List<Program>> typeMap = programDao.getByApplianceCategories(applianceCategories);
 
         // Get all Hardware that belongs to this CustomerAccount
-        final List<HardwareSummary> hardwareList = 
-        	inventoryDao.getAllHardwareSummaryForAccount(customerAccountId);
+        final List<HardwareSummary> hardwareList = inventoryDao.getAllHardwareSummaryForAccount(customerAccountId);
 
         // Get all current program enrollments for account
-        List<ProgramEnrollment> activeEnrollments = 
-        	enrollmentDao.getActiveEnrollmentsByAccountId(customerAccountId);
+        List<ProgramEnrollment> activeEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccountId);
         
-        final Map<ApplianceCategory, DisplayableEnrollment> enrollmentMap =
-            new HashMap<ApplianceCategory, DisplayableEnrollment>(); 
+        final Map<ApplianceCategory, DisplayableEnrollment> enrollmentMap = Maps.newHashMap();
         
         for (final ApplianceCategory applianceCategory : typeMap.keySet()) {
             List<Program> programList = typeMap.get(applianceCategory);
@@ -65,16 +64,15 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 
                 enrollment.setApplianceCategory(applianceCategory);
 
-                enrollment.setEnrollmentPrograms(
-                    new TreeSet<DisplayableEnrollmentProgram>(DisplayableEnrollment.enrollmentProgramComparator));
+                TreeSet<DisplayableEnrollmentProgram> enrollmentPrograms = new TreeSet<DisplayableEnrollmentProgram>(DisplayableEnrollment.enrollmentProgramComparator);
+                enrollment.setEnrollmentPrograms(enrollmentPrograms);
+                
                 enrollmentMap.put(applianceCategory, enrollment);
             }
             
             for (Program program : programList) {
             	DisplayableEnrollmentProgram displayableEnrollmentProgram = 
-            		createDisplayableEnrollmentProgram(applianceCategory,
-            		                                   program, hardwareList,
-            		                                   activeEnrollments);
+            		createDisplayableEnrollmentProgram(applianceCategory, program, hardwareList, activeEnrollments);
             	enrollment.getEnrollmentPrograms().add(displayableEnrollmentProgram);
             }
             
@@ -115,47 +113,37 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         		"account " + accountId + " and program " + programId);
     }
     
-    @Override
-    public DisplayableEnrollmentProgram getFilteredDisplayableEnrollmentProgram(int accountId, int programId) {
-        DisplayableEnrollmentProgram program = getProgram(accountId, programId);
-        List<DisplayableEnrollmentInventory> inventoryList = program.getInventory();
-        List<DisplayableEnrollmentInventory> filteredList = Lists.newArrayList();
-        for (DisplayableEnrollmentInventory inventory : inventoryList) {
-            InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(inventory.getInventoryId());
-            
-            boolean isEnrollable = inventoryIdentifier.getHardwareType().isEnrollable();
-            if (isEnrollable) {
-                boolean isSepProgram = program.getProgram().getPaoType() == PaoType.LM_SEP_PROGRAM;
-                boolean notSepProgram = program.getProgram().getPaoType() != PaoType.LM_SEP_PROGRAM;
-
-                boolean isSepHardware = inventoryIdentifier.getHardwareType().getHardwareConfigType() == HardwareConfigType.SEP;
-                boolean notSepHardware = inventoryIdentifier.getHardwareType().getHardwareConfigType() != HardwareConfigType.SEP;
-                
-                if ((isSepProgram && isSepHardware) || (notSepProgram && notSepHardware)) {
-                    filteredList.add(inventory);
-                } 
-            }
-        }
-        program.setInventory(filteredList);
-        return program;
-    }
-    
-    private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(
-            ApplianceCategory applianceCategory, Program program,
-            List<HardwareSummary> hardwareList,
-            List<ProgramEnrollment> activeEnrollments) {
-    	int programId = program.getProgramId();
-    	List<DisplayableEnrollmentInventory> enrollmentInventoryList = 
-    		new ArrayList<DisplayableEnrollmentInventory>();
+    private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(ApplianceCategory applianceCategory, final Program program,
+            List<HardwareSummary> hardwareList, List<ProgramEnrollment> activeEnrollments) {
     	
-    	for(HardwareSummary hardware : hardwareList) {
-    		DisplayableEnrollmentInventory displayableEnrollmentInventory = 
-    			this.createDisplayableEnrollmentInventory(hardware, programId, activeEnrollments);
+        Predicate<HardwareSummary> enrollableFilter = new Predicate<HardwareSummary>() {
+            @Override
+            public boolean apply(HardwareSummary hardwareSummary) {
+                InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(hardwareSummary.getInventoryId());
+                
+                /* Exclude non enrollable hardware */
+                if (!inventoryIdentifier.getHardwareType().isEnrollable()) {
+                    return false;
+                }
+                
+                /* Exclude non valid program enrollment (SEP hardware cannot be enrolled in DIRECT programs) */
+                PaoTag inventoryEnrollmentTag = inventoryIdentifier.getHardwareType().getHardwareConfigType().getEnrollmentTag();
+                PaoType programPaoType = program.getPaoType();
+                return paoDefinitionDao.isTagSupported(programPaoType, inventoryEnrollmentTag);
+            }
+        };
+        
+        Iterable<HardwareSummary> filteredList = Iterables.filter(hardwareList, enrollableFilter);
+        
+        int programId = program.getProgramId();
+    	List<DisplayableEnrollmentInventory> enrollmentInventoryList = Lists.newLinkedList();
+    	
+    	for(HardwareSummary hardware : filteredList) {
+    		DisplayableEnrollmentInventory displayableEnrollmentInventory = createDisplayableEnrollmentInventory(hardware, programId, activeEnrollments);
     		enrollmentInventoryList.add(displayableEnrollmentInventory);
     	}
     	
-        return new DisplayableEnrollmentProgram(applianceCategory, program,
-                                                enrollmentInventoryList);
+        return new DisplayableEnrollmentProgram(applianceCategory, program, enrollmentInventoryList);
     }
 
     private DisplayableEnrollmentInventory createDisplayableEnrollmentInventory(
@@ -199,5 +187,10 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
 		this.enrollmentDao = enrollmentDao;
 	}
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
     
 }

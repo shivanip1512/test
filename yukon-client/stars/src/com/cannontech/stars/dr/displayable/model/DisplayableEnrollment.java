@@ -164,10 +164,6 @@ public final class DisplayableEnrollment {
             return inventory;
         }
         
-        public void setInventory(List<DisplayableEnrollmentInventory> inventory) {
-            this.inventory = inventory;
-        }
-        
         /**
          * Method to get all inventory ids associated with this program
          * @return Array of inventory ids

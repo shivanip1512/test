@@ -32,6 +32,8 @@ public enum PaoTag {
 	LM_PROGRAM("LM Program"),
 	LM_CONTROL_AREA("LM Control Area"),
 	LM_SCENARIO("LM Scenario"),	
+	DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
+	SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
 	;
 
 	private String description;

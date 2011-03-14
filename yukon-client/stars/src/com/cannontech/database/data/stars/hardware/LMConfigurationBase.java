@@ -9,6 +9,7 @@ package com.cannontech.database.data.stars.hardware;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -149,7 +150,7 @@ public class LMConfigurationBase extends DBPersistent {
 		
 		try {
 			int hwConfigType = InventoryUtils.getHardwareConfigType( hwTypeID );
-			if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -160,7 +161,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setExpressCom( xcom );
 				}
 			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+			else if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -171,7 +172,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setVersaCom( vcom );
 				}
 			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+			else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA205 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -182,7 +183,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA205( sa205 );
 				}
 			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+			else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA305 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -193,7 +194,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA305( sa305 );
 				}
 			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE) {
+			else if (hwConfigType == HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId()) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSASimple WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();

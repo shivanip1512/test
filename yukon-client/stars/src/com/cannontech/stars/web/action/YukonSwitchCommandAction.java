@@ -11,6 +11,7 @@ import java.util.TimerTask;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
@@ -114,16 +115,16 @@ public class YukonSwitchCommandAction {
          * likely that there will be more functionality added to this per device
          * type.
          */
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+        if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
             cmd = "1," + liteHw.getManufacturerSerialNumber() + "," + loadGroupName;
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+        } else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
             cmd = "1," + liteHw.getManufacturerSerialNumber() + "," + loadGroupName;
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+        } else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA205_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Config";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+        } else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA305_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Config";
         } else {
@@ -197,16 +198,16 @@ public class YukonSwitchCommandAction {
          * likely that there will be more functionality added to this per device
          * type.
          */
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+        if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
             cmd = "2," + liteHw.getManufacturerSerialNumber() + ",OUT";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+        } else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
             cmd = "2," + liteHw.getManufacturerSerialNumber() + ",OUT";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+        } else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA205_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Deactivate";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+        } else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA305_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Deactivate";
         } else {
@@ -275,16 +276,16 @@ public class YukonSwitchCommandAction {
          * likely that there will be more functionality added to this per device
          * type.
          */
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+        if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
             cmd = "2," + liteHw.getManufacturerSerialNumber() + ",IN";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+        } else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
             cmd = "2," + liteHw.getManufacturerSerialNumber() + ",IN";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+        } else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA205_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Activate";
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+        } else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
             commFile = new File(ecDir, ServerUtils.SA305_FILE);
             cmd = liteHw.getManufacturerSerialNumber() + ", Activate";
         } else {
@@ -771,11 +772,11 @@ public class YukonSwitchCommandAction {
     public static List<String> getDisableCommands(LiteStarsLMHardware liteHw) {
         List<String> retVal = Lists.newArrayList();
         int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+        if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
             retVal.add("putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber());
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+        } else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
             retVal.add("putconfig xcom service out serial " + liteHw.getManufacturerSerialNumber());
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+        } else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
             // To disable a SA205 switch, reconfig all slots to the unused
             // address
             retVal.add("putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() +
@@ -783,7 +784,7 @@ public class YukonSwitchCommandAction {
                        InventoryUtils.SA205_UNUSED_ADDR + ",3=" + InventoryUtils.SA205_UNUSED_ADDR +
                        ",4=" + InventoryUtils.SA205_UNUSED_ADDR + ",5=" +
                        InventoryUtils.SA205_UNUSED_ADDR + ",6=" + InventoryUtils.SA205_UNUSED_ADDR);
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+        } else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
             // To disable a SA305 switch, we need to zero out relay map 1 and tell the switch to
             // use map 1 instead of map 0
 
@@ -868,16 +869,16 @@ public class YukonSwitchCommandAction {
         List<String> retVal = Lists.newArrayList();
 
         int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+        if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
             retVal.add("putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber());
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+        } else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
             retVal.add("putconfig xcom service in serial " + liteHw.getManufacturerSerialNumber());
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+        } else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
             // To enable a SA205 switch, just reconfig it using the saved configuration
             if (!willAlsoConfig) {
                 retVal.add(getConfigCommands(liteHw, energyCompany, true, null)[0]);
             }
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+        } else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
             // To enable a SA305 switch, we need to tell the switch to use map 1 instead of map 0
             // and then reset values in relay map 1 to their defaults just to be neat and tidy.
 
