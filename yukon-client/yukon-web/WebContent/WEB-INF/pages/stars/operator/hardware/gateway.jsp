@@ -9,7 +9,7 @@
 <cti:url var="gatewayControllerUrlParameters" value="?accountId=${accountId}&inventoryId=${inventoryId}"/>
 
 
-<cti:standardPage module="operator" page="gateway.${mode}">
+<cti:standardPage module="operator" page="gateway">
 
 <script type="text/javascript">
 
@@ -55,7 +55,6 @@ removeTableRow = function(rowId, deviceId) {
 
 </script>
 
-<tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
@@ -81,12 +80,12 @@ removeTableRow = function(rowId, deviceId) {
 							<spring:escapeBody htmlEscape="true">${gatewayDto.macAddress}</spring:escapeBody>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".connectionStatus">
-							<cti:classUpdater type="POINT" identifier="${gatewayDto.connectionStatusId}/STATE">
+							<cti:classUpdater type="POINT" identifier="${gatewayDto.connectionStatusId}/SHORT">
                                 <cti:pointValue pointId="${gatewayDto.connectionStatusId}" format="VALUE"/>
                             </cti:classUpdater>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".gatewayStatus">
-                            <cti:classUpdater type="POINT" identifier="${gatewayDto.gatewayStatusId}/STATE">
+                            <cti:classUpdater type="POINT" identifier="${gatewayDto.gatewayStatusId}/SHORT">
                                 <cti:pointValue pointId="${gatewayDto.gatewayStatusId}" format="VALUE"/>
                             </cti:classUpdater>
 						</tags:nameValue2>
@@ -146,7 +145,7 @@ removeTableRow = function(rowId, deviceId) {
                     </td>
                     <td><spring:escapeBody htmlEscape="true">${assignedDevice.deviceType}</spring:escapeBody></td>
                     <td>
-                        <cti:classUpdater type="POINT" identifier="${assignedDevice.commissionId}/STATE">
+                        <cti:classUpdater type="POINT" identifier="${assignedDevice.commissionId}/SHORT">
                             <cti:pointValue pointId="${assignedDevice.commissionId}" format="VALUE"/>
                         </cti:classUpdater>
                     </td>

@@ -1,72 +1,109 @@
-package com.cannontech.stars.dr.hardware.service.impl;
+package com.cannontech.stars.dr.thirdparty.digi.service.impl;
 
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
 
-import com.cannontech.common.model.DigiGateway;
-import com.cannontech.common.model.ZigbeeThermostat;
-import com.cannontech.stars.dr.hardware.service.ZigbeeWebService;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
 
 public class DigiWebServiceImpl implements ZigbeeWebService {
 
     private static final Log logger = LogFactory.getLog(DigiWebServiceImpl.class);
     
     private RestOperations restTemplate;
-    private ZigbeeDeviceService zigbeeDeviceService;
-
+    private GatewayDeviceDao gatewayDeviceDao;
+    private ZigbeeDeviceDao zigbeeDeviceDao;
+    
     @Override
-    public String installGateway(int deviceId) {
+    public void installGateway(int deviceId) {
         logger.info("-- Install Gateway Start --");
-        DigiGateway digiGateway= zigbeeDeviceService.getDigiGateway(deviceId);
+        
+        DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(deviceId);
+        Integer digiId = commissionNewConnectPort(digiGateway.getMacAddress());
+        
+        Validate.notNull(digiId,"Digi ID was null, installation failed.");
+        
+        digiGateway.setDigiId(digiId);
+        
+        //Update the database with the DigiId we got assigned.
+        gatewayDeviceDao.updateDigiGateway(digiGateway);
+        
         logger.info("-- Install Gateway End --");
-        return commissionNewConnectPort(digiGateway.getMacAddress());
     }
     
     @Override
-    public String removeGateway(int deviceId) {
+    public void removeGateway(int deviceId) {
         logger.info("-- Remove Gateway Start --");
-        DigiGateway digiGateway= zigbeeDeviceService.getDigiGateway(deviceId);
-        logger.info("-- Remove Gateway Start --");
-        return decommissionConnectPort(digiGateway.getDigiId());
+        
+        DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(deviceId);
+        decommissionConnectPort(digiGateway.getDigiId());
+
+        logger.info("-- Remove Gateway Stop --");
     }
     
-    private String commissionNewConnectPort(String macAddress) {
+    /**
+     * Commissions the gateway with the MAC Address.
+     * 
+     * returns the value of the Digi ID if successful, otherwise null.
+     * 
+     * @param macAddress
+     * @return
+     */
+    private Integer commissionNewConnectPort(String macAddress) {
         logger.info("-- CommissionNewConnectPort Start --");
-
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
         
-        String response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceCore", xml, String.class);
+        StreamSource response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceCore", xml, StreamSource.class);
 
-        logger.info(response);
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(response);
+        
+        String location = template.evaluateAsString("//location");
+        
+        if (location == null) {
+            String error = template.evaluateAsString("//error");
+            if (error != null) {
+                logger.error("Failed to Provision device with MAC Address: " + macAddress);
+                return null;
+            }
+        }
+        
+        String [] locationInfo = location.split("/");
+        
+        int deviceId = Integer.parseInt(locationInfo[1]);
+
+        logger.info("Device successfully added with Digi Id: " + deviceId);
         
         logger.info("-- CommissionNewConnectPort End --");
         
-        return response;
+        return deviceId;
     }
 
-
-    private String decommissionConnectPort(int digiId) {
+    private void decommissionConnectPort(int digiId) {
         logger.info("-- DecommissionNewConnectPort Start --");
 
         restTemplate.delete("http://developer.idigi.com/ws/DeviceCore/" + digiId);
-        
+
         logger.info("Deleted " + digiId + " from Digi.");
         
         logger.info("-- DecommissionNewConnectPort End --");
-        
-        return null;
     }
 
-
-
     @Override
-    public String installStat(int deviceId, int gatewayId) {
+    public void installStat(int deviceId, int gatewayId) {
         logger.info("-- InstallStat Start --");
         
-        ZigbeeThermostat stat= zigbeeDeviceService.getZigbeeThermostat(deviceId);
-        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+        ZigbeeThermostat stat= zigbeeDeviceDao.getZigbeeUtilPro(deviceId);
+        DigiGateway gateway = gatewayDeviceDao.getDigiGateway(gatewayId);
         
         String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
         
@@ -99,14 +136,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         logger.info(response);
         
         logger.info("-- InstallStat End --");
-        
-        return response;
     }
     
-    public String uninstallStat(int deviceId, int gatewayId) {
+    public void uninstallStat(int deviceId, int gatewayId) {
         
-        ZigbeeThermostat stat= zigbeeDeviceService.getZigbeeThermostat(deviceId);
-        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+        ZigbeeThermostat stat= zigbeeDeviceDao.getZigbeeUtilPro(deviceId);
+        DigiGateway gateway = gatewayDeviceDao.getDigiGateway(gatewayId);
         
         String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
         
@@ -131,7 +166,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
         
-        return response;
+
     }
     @Override
     public String getAllDevices() {
@@ -147,9 +182,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
 
     @Override
-    public String sendTextMessage(int deviceId, int gatewayId, String message) {
+    public void sendTextMessage(int deviceId, int gatewayId, String message) {
 
-        DigiGateway gateway = zigbeeDeviceService.getDigiGateway(gatewayId);
+        DigiGateway gateway = gatewayDeviceDao.getDigiGateway(gatewayId);
            
         String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
         
@@ -163,7 +198,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             + "      <do_command target=\"RPC_request\">"
             + "        <create_message_event synchronous=\"true\">"
             + "          <record type=\"DisplayMessageRecord\">"
-            + "            <message_id>0x1234</message_id>" //Generate Random Id
+            + "            <message_id>0x1478</message_id>" //Generate Random Id
             + "            <message_control>0</message_control>"
             + "            <start_time>0</start_time>"
             + "            <duration_in_minutes>2</duration_in_minutes>"
@@ -175,9 +210,16 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             + "  </send_message>"
             + "</sci_request>";
 
-        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
-        logger.info(response);
-        return response;
+        String source = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        
+        //SimpleXPathTemplate template = new SimpleXPathTemplate();
+        //template.setContext(source);
+        
+        //template.evaluateAsInt("");
+        
+        logger.info(source);
+        
+        //logger.info(response);
     }
 
     private String convertMacAddresstoDigi(String mac) {
@@ -194,7 +236,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
 
     @Autowired
-    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
-        this.zigbeeDeviceService = zigbeeDeviceService;
+    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
+        this.zigbeeDeviceDao = zigbeeDeviceDao;
+    }
+    
+    @Autowired
+    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
+        this.gatewayDeviceDao = gatewayDeviceDao;
     }
 }

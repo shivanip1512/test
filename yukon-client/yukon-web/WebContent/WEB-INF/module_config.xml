@@ -1381,10 +1381,12 @@
                                     <page name="hardware.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="gateway.EDIT" type="BASIC">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
+                                        <pages>
+                                            <page name="gateway" type="DETAIL_CHILD">
+                                                <menu>account|accounts</menu>
+                                                <labelArgument>${gatewayDto.serialNumber}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                     <page name="meterProfile.CREATE" type="BASIC">
                                         <menu>account|accounts</menu>

@@ -1,22 +1,21 @@
-package com.cannontech.stars.dr.hardware.dao.impl;
+package com.cannontech.stars.dr.thirdparty.digi.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.model.DigiGateway;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.stars.dr.hardware.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.hardware.model.ZigbeeDeviceAssignment;
+import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceAssignment;
 
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
@@ -32,16 +31,14 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("JOIN ZBGateway ZG ON DG.DeviceId = ZG.DeviceId");
         sql.append("WHERE DG.DeviceId").eq(deviceId);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<DigiGateway>()
-            {
+        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<DigiGateway>() {
                 @Override
-                public DigiGateway mapRow(YukonResultSet rs)
-                        throws SQLException {
+                public DigiGateway mapRow(YukonResultSet rs) throws SQLException {
                     DigiGateway digiGateway = new DigiGateway();
                     
                     int deviceId = rs.getInt("DeviceId");
                     
-                    digiGateway.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.DIGIGATEWAY));
+                    digiGateway.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.DIGIGATEWAY)); // TODO select out of DB
                     digiGateway.setDigiId(rs.getInt("DigiId"));
                     digiGateway.setMacAddress(rs.getString("MacAddress"));
                     digiGateway.setFirmwareVersion(rs.getString("FirmwareVersion"));
@@ -56,7 +53,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     @Override
     public void createDigiGateway(DigiGateway digiGateway) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
         PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
 
         paoDao.addYukonPao(paoIdentifier, digiGateway.getMacAddress());
@@ -64,6 +60,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         
         addZBGateway(digiGateway);
         
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO DigiGateway");
         sql.values(paoIdentifier.getPaoId(), digiGateway.getDigiId());
         
@@ -102,7 +99,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public void updateDigiGateway(DigiGateway digiGateway) {
         
     	updateZBGateway(digiGateway);
-    	
+    	//TODO this and create should use SimpleTableAccessTemplate
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("UPDATE DigiGateway");

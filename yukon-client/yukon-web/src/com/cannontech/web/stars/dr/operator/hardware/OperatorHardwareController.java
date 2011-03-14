@@ -61,6 +61,7 @@ import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
@@ -69,7 +70,6 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
-import com.cannontech.stars.dr.hardware.service.impl.ZigbeeDeviceService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsUtils;
@@ -113,7 +113,6 @@ public class OperatorHardwareController {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private HardwareService hardwareService;
-    private ZigbeeDeviceService zigbeeDeviceService;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
         
     /* HARDWARE LIST PAGE */
@@ -414,13 +413,7 @@ public class OperatorHardwareController {
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId());
-        
-        //If we are deleting from the database. Cleanup the zigbee and pao tables
-        if (delete) {
-            //I would rather this be in the hardwareService versus this controller. (like in the hardwareUiService)
-            zigbeeDeviceService.deleteDevice(hardwareToDelete);
-        }
+        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId(), hardwareToDelete);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -879,11 +872,6 @@ public class OperatorHardwareController {
     public void setHardwareService(HardwareService hardwareService) {
 		this.hardwareService = hardwareService;
 	}
-    
-    @Autowired
-    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
-        this.zigbeeDeviceService = zigbeeDeviceService;
-    }
     
     @Autowired
     public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {

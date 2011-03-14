@@ -1,20 +1,15 @@
-package com.cannontech.common.model;
+package com.cannontech.stars.dr.thirdparty.digi.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 
-public class DigiGateway implements YukonDevice{
+public class DigiGateway implements YukonDevice {
 
     private PaoIdentifier paoIdentifier;
-    private String firmwareVersion;
-    private String macAddress;
-    private int digiId;
+    private String firmwareVersion = "";
+    private String macAddress = "";
+    private int digiId = -1;
     
-    public DigiGateway() {
-        this.digiId = -1;
-        this.firmwareVersion = "1.0";
-    }
-
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
     }

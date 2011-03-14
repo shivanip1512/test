@@ -626,7 +626,7 @@
                         </td>
                         <td><spring:escapeBody htmlEscape="true">${gateway.displayType}</spring:escapeBody></td>
                         <td>
-                            <cti:classUpdater type="POINT" identifier="${gateway.commissionedId}/STATE">
+                            <cti:classUpdater type="POINT" identifier="${gateway.commissionedId}/SHORT">
                                 <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
                             </cti:classUpdater>
                         </td>

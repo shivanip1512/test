@@ -26,7 +26,6 @@
     <entry key="yukon.common.point.pointFormatting.formats.RAWVALUE">{rawValue}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.VALUE">{default}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.QUALITY">{quality}</entry>
-    <entry key="yukon.common.point.pointFormatting.formats.STATE">{state}</entry>
 
     <entry key="yukon.common.point.pointFormatting.shortQuality.Questionable">?</entry>
     <entry key="yukon.common.point.pointFormatting.shortQuality.Normal"></entry>

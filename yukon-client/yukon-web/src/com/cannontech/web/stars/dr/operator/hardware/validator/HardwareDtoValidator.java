@@ -16,6 +16,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
@@ -25,6 +26,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     private InventoryBaseDao inventoryBaseDao;
     private PaoDao paoDao;
     private YukonListDao yukonListDao;
+    private HardwareTypeExtensionService hardwareTypeExtensionService;
     
     public HardwareDtoValidator() {
     	super(HardwareDto.class);
@@ -40,25 +42,8 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             hardwareType = hardwareDto.getHardwareType();
         }
         
-        // Zigbee Device Specific
-        if (hardwareType.isZigbee()) {
-            if (hardwareType.isThermostat()) {
-                /* Install Code */
-                if (StringUtils.isBlank(hardwareDto.getInstallCode())) {
-                    errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");
-                }
-            } else if (hardwareType.isGateway()) {
-                /* Mac Address */
-                if (StringUtils.isBlank(hardwareDto.getMacAddress())) {
-                    errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
-                }
-                
-                /* Firmware Version */
-                if (StringUtils.isBlank(hardwareDto.getFirmwareVersion())) {
-                    errors.rejectValue("firmwareVersion", "yukon.web.modules.operator.hardware.error.required");
-                }
-            }
-        }
+        //This will validate any hardware extensions. Ex. Zigbee devices
+        hardwareTypeExtensionService.validateDevice(hardwareDto, errors);
         
         /* Serial Number */
         if(!hardwareType.isMeter()){  /* Check serial numbers for switches and tstats */

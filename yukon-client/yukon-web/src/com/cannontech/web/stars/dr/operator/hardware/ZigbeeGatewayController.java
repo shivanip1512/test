@@ -9,31 +9,25 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.model.DigiGateway;
-import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.dr.hardware.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.hardware.model.GatewayDto;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
-import com.cannontech.stars.dr.hardware.model.ZigbeeDeviceAssignment;
-import com.cannontech.stars.dr.hardware.model.ZigbeeDeviceDto;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
-import com.cannontech.stars.dr.hardware.service.ZigbeeWebService;
-import com.cannontech.stars.dr.hardware.service.impl.ZigbeeDeviceService;
+import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
+import com.cannontech.stars.dr.thirdparty.digi.model.GatewayDto;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceAssignment;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -46,7 +40,6 @@ import com.google.common.collect.Lists;
 @Controller
 public class ZigbeeGatewayController {
 
-    private ZigbeeDeviceService zigbeeDeviceService;
     private ZigbeeWebService zigbeeWebService;
     private GatewayDeviceDao gatewayDeviceDao;
     private HardwareUiService hardwareUiService;
@@ -71,13 +64,16 @@ public class ZigbeeGatewayController {
     private String loadConfigurationPage(YukonUserContext userContext, ModelMap modelMap, 
             							 AccountInfoFragment accountInfoFragment, int inventoryId,
             							 GatewayDto gatewayDto, DigiGateway digiGateway) {
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+
+        modelMap.addAttribute("displayName", gatewayDto.getSerialNumber());
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         modelMap.addAttribute("inventoryId", inventoryId);
         modelMap.addAttribute("gatewayDto", gatewayDto);
         
         //Get list of assigned devices
-        List<ZigbeeDeviceAssignment> assignedDeviceIds = zigbeeDeviceService.getAssignedDevices(digiGateway.getPaoIdentifier().getPaoId());
+        List<ZigbeeDeviceAssignment> assignedDeviceIds = gatewayDeviceDao.getAssignedDevices(digiGateway.getPaoIdentifier().getPaoId());
         List<ZigbeeDeviceDto> assignedDevices = buildZigbeeDeviceDtoList(assignedDeviceIds);
         
         modelMap.addAttribute("assignedDevices", assignedDevices);
@@ -248,7 +244,7 @@ public class ZigbeeGatewayController {
     	LiteInventoryBase gateway = starsInventoryBaseDao.getByInventoryId(gatewayId);
     	LiteInventoryBase device = starsInventoryBaseDao.getByInventoryId(deviceId);
     	
-    	zigbeeDeviceService.assignDeviceToGateway(device.getDeviceID(), gateway.getDeviceID());
+    	gatewayDeviceDao.assignDeviceToGateway(device.getDeviceID(), gateway.getDeviceID());
     	
     	modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
     	modelMap.addAttribute("inventoryId", gatewayId);
@@ -264,7 +260,7 @@ public class ZigbeeGatewayController {
     							AccountInfoFragment accountInfoFragment, int deviceId) {
     	//Send Digi Unlink commands?
     	
-    	zigbeeDeviceService.unassignDeviceFromGateway(deviceId);
+    	gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
     	
     	return new JsonView();
     }
@@ -296,11 +292,6 @@ public class ZigbeeGatewayController {
     @Autowired
     public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
         this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
-        this.zigbeeDeviceService = zigbeeDeviceService;
     }
     
     @Autowired

@@ -19,13 +19,9 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.LMHardwareClass;
-import com.cannontech.common.model.DigiGateway;
-import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -33,7 +29,6 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -49,6 +44,7 @@ import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
@@ -81,8 +77,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     private WarehouseDao warehouseDao;
     private PaoLoadingService paoLoadingService;
     private StarsInventoryBaseService starsInventoryBaseService;
-    private ZigbeeDeviceService zigbeeDeviceService;
-    private AttributeService attributeService;
+    private HardwareTypeExtensionService hardwareTypeExtensionService;
     
     @Override
     public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
@@ -220,31 +215,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LMHardwareClass hardwareClass = hardwareDto.getHardwareType().getLMHardwareClass();
             hardwareDto.setHardwareClass(hardwareClass);
             
-            /* Zigbee Devices */
-            if(hardwareType.isZigbee()) {
-                /* Util Pro Tstat */
-                if (hardwareType.isThermostat()) {
-                    ZigbeeThermostat zigbeeThermostat = zigbeeDeviceService.getZigbeeThermostat(liteInventoryBase.getDeviceID()); 
-                    
-                    hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
-                    
-                    LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                    hardwareDto.setCommissionedId(linkPt.getLiteID());
-                    
-                } else if (hardwareType.isGateway()) {
-                    DigiGateway digiGateway = zigbeeDeviceService.getDigiGateway(liteInventoryBase.getDeviceID());
-                    
-                    hardwareDto.setMacAddress(digiGateway.getMacAddress());
-                    hardwareDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
-                    
-                    LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                    hardwareDto.setCommissionedId(linkPt.getLiteID());
-                    
-                } else {
-                    /* This is an unknown Zigbee device type */
-                    throw new NotFoundException("Device type not found for inventory id:" + inventoryId);
-                }
-            }
+            hardwareTypeExtensionService.retrieveDevice(hardwareDto);
             
         } else {
             /* This is not a device we know about, maybe we should throw something smarter here. */
@@ -381,8 +352,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             }
         }
         
-        //Pass to the Zigbee Service to handle any Zigbee specifics required
-        zigbeeDeviceService.updateDevice(hardwareDto);
+        //Pass to the Service to handle any extensions for the hardwaretype
+        hardwareTypeExtensionService.updateDevice(hardwareDto);
         
         // Log hardware update
         hardwareEventLogService.hardwareUpdated(userContext.getYukonUser(), hardwareDto.getSerialNumber());
@@ -493,7 +464,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         hardwareDto.setInventoryId(inventoryId);
         
         // Pass to the Zigbee Service to handle any Zigbee specifics required
-        zigbeeDeviceService.createDevice(hardwareDto);
+        hardwareTypeExtensionService.createDevice(hardwareDto);
         
         // Log hardware creation
         hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), deviceLabel);
@@ -812,12 +783,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     }
     
     @Autowired
-    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
-        this.zigbeeDeviceService = zigbeeDeviceService;
+    public void setHardwareTypeExtensionService(HardwareTypeExtensionService hardwareTypeExtensionService) {
+        this.hardwareTypeExtensionService = hardwareTypeExtensionService;
     }
     
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
 }

@@ -25,8 +25,10 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
@@ -52,10 +54,12 @@ public class HardwareServiceImpl implements HardwareService {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private OptOutService optOutService;
     private OptOutEventDao optOutEventDao;
+    private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
     
     @Override
     @Transactional
-    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId) 
+    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, 
+                                           int accountId, HardwareDto hardwareToDelete) 
     throws Exception {
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
@@ -97,6 +101,9 @@ public class HardwareServiceImpl implements HardwareService {
 
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
+            
+            //Give the Extension service a chance to clean up its tables
+            hardwareTypeExtensionService.deleteDevice(hardwareToDelete);
 
         } else {
             /* Just remove it from the account and put it back in general inventory */
@@ -193,5 +200,10 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired
     public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
         this.optOutEventDao = optOutEventDao;
+    }
+    
+    @Autowired
+    public void setHardwareTypeExtensionService(HardwareTypeExtensionServiceImpl hardwareTypeExtensionService) {
+        this.hardwareTypeExtensionService = hardwareTypeExtensionService;
     }
 }

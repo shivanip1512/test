@@ -13,26 +13,30 @@
     <entry key="yukon.web.modules.operator.gateway.gatewayStatus">Gateway Status</entry>
     <entry key="yukon.web.modules.operator.gateway.remove">Remove</entry>
     
-    <!-- Command Icons -->
-    <entry key="yukon.web.components.image.commission.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.components.image.commission.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
-    <entry key="yukon.web.components.image.commission.hoverText">Commission</entry>
-    <entry key="yukon.web.components.image.commission.label">Commission</entry>
+     <!-- gateway.jsp -->
+    <entry key="yukon.web.modules.operator.gateway.pageName">Gateway Configuration</entry>
+    <entry key="yukon.web.modules.operator.gateway.pageDescription">{0}</entry>
     
-    <entry key="yukon.web.components.image.decommission.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
-    <entry key="yukon.web.components.image.decommission.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
-    <entry key="yukon.web.components.image.decommission.hoverText">Decommission</entry>
-    <entry key="yukon.web.components.image.decommission.label">Decommission</entry>
+    <!-- Command Icons -->
+    <entry key="yukon.web.modules.operator.gateway.commission.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.operator.gateway.commission.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
+    <entry key="yukon.web.modules.operator.gateway.commission.hoverText">Commission</entry>
+    <entry key="yukon.web.modules.operator.gateway.commission.label">Commission</entry>
+    
+    <entry key="yukon.web.modules.operator.gateway.decommission.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
+    <entry key="yukon.web.modules.operator.gateway.decommission.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
+    <entry key="yukon.web.modules.operator.gateway.decommission.hoverText">Decommission</entry>
+    <entry key="yukon.web.modules.operator.gateway.decommission.label">Decommission</entry>
 
-    <entry key="yukon.web.components.image.link.imageUrl">/WebConfig/yukon/Icons/link_add.png</entry>
-    <entry key="yukon.web.components.image.link.hoverUrl">/WebConfig/yukon/Icons/link_add_over.png</entry>
-    <entry key="yukon.web.components.image.link.hoverText">Commission</entry>
-    <entry key="yukon.web.components.image.link.label">Commission</entry>
+    <entry key="yukon.web.modules.operator.gateway.link.imageUrl">/WebConfig/yukon/Icons/link_add.png</entry>
+    <entry key="yukon.web.modules.operator.gateway.link.hoverUrl">/WebConfig/yukon/Icons/link_add_over.png</entry>
+    <entry key="yukon.web.modules.operator.gateway.link.hoverText">Commission</entry>
+    <entry key="yukon.web.modules.operator.gateway.link.label">Commission</entry>
 
-    <entry key="yukon.web.components.image.unlink.imageUrl">/WebConfig/yukon/Icons/link_delete.png</entry>
-    <entry key="yukon.web.components.image.unlink.hoverUrl">/WebConfig/yukon/Icons/link_delete_over.png</entry>
-    <entry key="yukon.web.components.image.unlink.hoverText">Decommission</entry>
-    <entry key="yukon.web.components.image.unlink.label">Decommission</entry>
+    <entry key="yukon.web.modules.operator.gateway.unlink.imageUrl">/WebConfig/yukon/Icons/link_delete.png</entry>
+    <entry key="yukon.web.modules.operator.gateway.unlink.hoverUrl">/WebConfig/yukon/Icons/link_delete_over.png</entry>
+    <entry key="yukon.web.modules.operator.gateway.unlink.hoverText">Decommission</entry>
+    <entry key="yukon.web.modules.operator.gateway.unlink.label">Decommission</entry>
     
     <!--  Flashscope Messages -->
     <entry key="yukon.web.modules.operator.gateway.gatewayCommissioned">Gateway Commissioned</entry>

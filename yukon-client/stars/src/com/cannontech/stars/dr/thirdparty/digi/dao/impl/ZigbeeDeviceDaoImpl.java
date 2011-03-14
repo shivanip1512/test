@@ -1,10 +1,9 @@
-package com.cannontech.stars.dr.hardware.dao.impl;
+package com.cannontech.stars.dr.thirdparty.digi.dao.impl;
 
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.model.ZigbeeThermostat;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -13,8 +12,9 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.stars.dr.hardware.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.hardware.dao.ZigbeeDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
 
 public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
 
@@ -31,16 +31,14 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         sql.append("FROM ZBDevice");
         sql.append("WHERE DeviceId").eq(deviceId);
         
-        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<ZigbeeThermostat>()
-            {
+        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<ZigbeeThermostat>() {
                 @Override
-                public ZigbeeThermostat mapRow(YukonResultSet rs)
-                        throws SQLException {
+                public ZigbeeThermostat mapRow(YukonResultSet rs) throws SQLException {
                     ZigbeeThermostat zigbeeThermostat = new ZigbeeThermostat();
                     
                     int deviceId = rs.getInt("DeviceId");
                     
-                    zigbeeThermostat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO));
+                    zigbeeThermostat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO)); //TODO select from DB
                     zigbeeThermostat.setInstallCode(rs.getString("InstallCode"));
                     
                     return zigbeeThermostat;

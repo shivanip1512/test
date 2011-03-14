@@ -15,9 +15,6 @@
     <entry key="yukon.web.modules.operator.hardware.list.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
     
-    <!-- gateway.jsp -->
-    <entry key="yukon.web.modules.operator.gateway.EDIT.pageName">Gateway Configuration</entry>
-    
     <!-- Action Images -->
     <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.editConfig.hoverUrl">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
