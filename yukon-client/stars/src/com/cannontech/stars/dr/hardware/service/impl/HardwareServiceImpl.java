@@ -59,7 +59,16 @@ public class HardwareServiceImpl implements HardwareService {
     @Override
     @Transactional
     public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, 
-                                           int accountId, HardwareDto hardwareToDelete) 
+                                           int accountId, HardwareDto hardwareToDelete) throws Exception {
+        
+        deleteHardware(userContext, delete, inventoryId, accountId);
+        //Give the Extension service a chance to clean up its tables
+        hardwareTypeExtensionService.deleteDevice(hardwareToDelete);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId) 
     throws Exception {
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
@@ -101,10 +110,6 @@ public class HardwareServiceImpl implements HardwareService {
 
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
-            
-            //Give the Extension service a chance to clean up its tables
-            hardwareTypeExtensionService.deleteDevice(hardwareToDelete);
-
         } else {
             /* Just remove it from the account and put it back in general inventory */
             Date removeDate = new Date();
