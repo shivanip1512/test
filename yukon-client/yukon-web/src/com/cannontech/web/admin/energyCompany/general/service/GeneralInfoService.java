@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -16,6 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 
@@ -65,7 +67,7 @@ public class GeneralInfoService {
     }
     
     @Transactional
-    public void save(GeneralInfo generalInfo, LiteYukonUser user) throws Exception {
+    public void save(GeneralInfo generalInfo, LiteYukonUser user) throws CommandExecutionException, WebClientException {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(generalInfo.getEcId());
         LiteContact contact = contactDao.getContact(energyCompany.getPrimaryContactID());
         int contactId = contact.getContactID();
@@ -92,7 +94,12 @@ public class GeneralInfoService {
         if (energyCompany.getParent() != null) {
             int parentEcId = energyCompany.getParent().getEnergyCompanyId();
             int energyCompanyId = energyCompany.getEnergyCompanyId();
-            ecMappingDao.saveParentLogin(parentEcId, energyCompanyId, generalInfo.getParentLogin());
+            Integer parentLogin = generalInfo.getParentLogin();
+            if (parentLogin == null) {
+                ecMappingDao.removeParentLogin(parentEcId, energyCompanyId);
+            } else {
+                ecMappingDao.saveParentLogin(parentEcId, energyCompanyId, parentLogin);
+            }
         }
         
     }

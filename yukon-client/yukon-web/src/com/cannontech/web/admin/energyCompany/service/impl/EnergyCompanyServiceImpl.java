@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -43,6 +45,7 @@ import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
@@ -110,7 +113,12 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
         
         /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
-        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.ENERGY_COMPANY, energyCompany.getEnergyCompanyId());
+        dbPersistentDao.processDBChange(new DBChangeMsg(
+                            energyCompany.getEnergyCompanyId(),
+                            DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                            DBChangeMsg.CAT_ENERGY_COMPANY,
+                            null,
+                            DbChangeType.ADD));
         
         /* Add Secondary Operator */
         if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username())) {
@@ -133,11 +141,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         liteEnergyCompany.resetDefaultRouteId();
         
         /* Set Operator Group List */
-        String operatorGroupIdsString = energyCompanyDto.getPrimaryOperatorGroupId().toString();
-        if(StringUtils.isNotBlank(energyCompanyDto.getOperatorGroupIds())) {
-            operatorGroupIdsString += "," + energyCompanyDto.getOperatorGroupIds();
-        }
-        List<Integer> operatorGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(operatorGroupIdsString);
+        List<Integer> operatorGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorGroupIds());
+        Iterable<Integer> operatorGroupIds = Iterables.concat(Collections.singleton(energyCompanyDto.getPrimaryOperatorGroupId()), operatorGroupIdsList);
         ecMappingDao.addECToOperatorGroupMapping(energyCompany.getEnergyCompanyId(), operatorGroupIds);
         
         /* Set Residential Customer Group List */

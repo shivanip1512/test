@@ -214,11 +214,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private A createLink(String linkKey, String defaultTitle, Object argument) {
         A link = new A();
         String menuLabel;
-        if (argument == null) {
-            menuLabel = messageSource.getMessage(linkKey);
-        } else {
-            menuLabel = messageSource.getMessage(linkKey, argument);
-        }
+        menuLabel = messageSource.getMessage(linkKey, argument);
         link.addElement(e(menuLabel));
         
         // check for custom title

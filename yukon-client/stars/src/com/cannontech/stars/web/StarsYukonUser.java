@@ -67,7 +67,7 @@ public class StarsYukonUser {
 		return null;
 	}
 	
-	public void init() throws InstantiationException {
+	private void init() throws InstantiationException {
 		if (StarsUtils.isOperator(this.getYukonUser())) {
 			LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonUserDao;
@@ -29,6 +30,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -91,7 +93,7 @@ public class GeneralInfoController {
     @RequestMapping(value="update", params="delete", method=RequestMethod.POST)
     public String delete(ModelMap model, YukonUserContext context, int ecId) {
         LiteYukonUser user = context.getYukonUser();
-        if(!energyCompanyService.canDeleteEnergyCompany(user, ecId)) {
+        if (!energyCompanyService.canDeleteEnergyCompany(user, ecId)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
         }
         
@@ -103,17 +105,14 @@ public class GeneralInfoController {
     @RequestMapping(value="update", params="save", method=RequestMethod.POST)
     public String update(@ModelAttribute("generalInfo") GeneralInfo generalInfo, BindingResult binding, FlashScope flash,
                          ModelMap model, YukonUserContext context, int ecId, 
-                         EnergyCompanyInfoFragment fragment) throws Exception {
+                         EnergyCompanyInfoFragment fragment) throws CommandExecutionException, WebClientException {
         
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), ecId);
         
         generalInfoValidator.validate(generalInfo, binding);
-        if(binding.hasErrors()) {
-            setupModelMap(model, context.getYukonUser(), ecId, fragment);
-            
-            model.addAttribute("generalInfo", generalInfo);
+        if (binding.hasErrors()) {
+            EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
             model.addAttribute("mode", PageEditMode.EDIT);
-            
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(binding);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             
@@ -134,7 +133,7 @@ public class GeneralInfoController {
                             EnergyCompanyInfoFragment fragment) throws Exception {
 
         LiteYukonUser user = context.getYukonUser();
-        if(!energyCompanyService.canManageMembers(user)) {
+        if (!energyCompanyService.canManageMembers(user)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to add member energy companies");
         }
         
@@ -151,7 +150,7 @@ public class GeneralInfoController {
                                EnergyCompanyInfoFragment fragment) throws NotAuthorizedException, TransactionException {
         
         LiteYukonUser user = context.getYukonUser();
-        if(!energyCompanyService.canManageMembers(user)) {
+        if (!energyCompanyService.canManageMembers(user)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to remove member energy companies");
         }
         
@@ -168,7 +167,7 @@ public class GeneralInfoController {
     public String createMember(ModelMap model, YukonUserContext context, FlashScope flash, int ecId) throws NotAuthorizedException {
         
         LiteYukonUser user = context.getYukonUser();
-        if(!energyCompanyService.canCreateMembers(user)) {
+        if (!energyCompanyService.canCreateMembers(user)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to create member energy companies");
         }
         

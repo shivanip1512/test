@@ -21,7 +21,6 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
-        user.init();
         
         if (energyCompany.hasChildEnergyCompanies()) {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete this energy company because its member list is not empty");

@@ -183,7 +183,7 @@ public interface ECMappingDao {
     /**
      * Adds a list of login groups to the energy companies operator login group list
      */
-    public void addECToOperatorGroupMapping(int ecId, List<Integer> groupIds);
+    public void addECToOperatorGroupMapping(int ecId, Iterable<Integer> groupIds);
 
     /**
      * Adds a list of login groups to the energy companies residential customer login group list
@@ -207,8 +207,13 @@ public interface ECMappingDao {
     public LiteYukonUser findParentLogin(int childEnergyCompanyId);
 
     /**
-     * Sets the parent login for a child energy company 
+     * Sets the parent login for a child energy company, Will delete any existing login and insert this one.
      */
     public void saveParentLogin(int parentEcId, int childEcId, Integer parentLogin);
+    
+    /**
+     * Deletes any existing parent login
+     */
+    public void removeParentLogin(int parentEcId, int childEcId);
 
 }

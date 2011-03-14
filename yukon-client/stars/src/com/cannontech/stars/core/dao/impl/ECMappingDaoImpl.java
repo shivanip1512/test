@@ -350,7 +350,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
-    public void addECToOperatorGroupMapping(int ecId, List<Integer> groupIds) {
+    public void addECToOperatorGroupMapping(int ecId, Iterable<Integer> groupIds) {
         for (Integer groupId : groupIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO ECToOperatorGroupMapping");
             sql.values(ecId, groupId);
@@ -404,23 +404,26 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     
     @Override
     public void saveParentLogin(int parentEcId, int childEcId, Integer parentLogin) {
-        List<Integer> childOperatorLoginIds = starsDatabaseCache.getEnergyCompany(childEcId).getOperatorLoginIDs();
-        
         /* Remove existing mapping */
+        removeParentLogin(parentEcId, childEcId);
+        
+        /* Add member login mapping */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ECToGenericMapping");
+        sql.values(parentEcId, parentLogin, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void removeParentLogin(int parentEcId, int childEcId) {
+        List<Integer> childOperatorLoginIds = starsDatabaseCache.getEnergyCompany(childEcId).getOperatorLoginIDs();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToGenericMapping");
         sql.append("WHERE ItemId").in(childOperatorLoginIds);
         sql.append(  "AND MappingCategory").eq(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
         sql.append(  "AND EnergyCompanyId").eq(parentEcId);
         yukonJdbcTemplate.update(sql);
-        
-        /* Add member login mapping */
-        if (parentLogin != null) {
-            sql = new SqlStatementBuilder();
-            sql.append("INSERT INTO ECToGenericMapping");
-            sql.values(parentEcId, parentLogin, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
-            yukonJdbcTemplate.update(sql);
-        }
     }
     
     // DI Setters
