@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ page import="com.cannontech.common.inventory.HardwareConfigType" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%
@@ -442,11 +443,11 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
 	if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue() && configuration != null) {
 		// Hide the hardware addressing tables if the protocol of the new device type is different from the saved protocol
 		int hwConfigType = InventoryUtils.getHardwareConfigType(Integer.parseInt(savedReq.getProperty("DeviceType")));
-		if (configuration.getExpressCom() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM
-			|| configuration.getVersaCom() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM
-			|| configuration.getSA205() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205
-			|| configuration.getSA305() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305
-			|| configuration.getSASimple() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE)
+		if (configuration.getExpressCom() != null && hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()
+			|| configuration.getVersaCom() != null && hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()
+			|| configuration.getSA205() != null && hwConfigType == HardwareConfigType.SA_205.getHardwareConfigTypeId()
+			|| configuration.getSA305() != null && hwConfigType == HardwareConfigType.SA_305.getHardwareConfigTypeId()
+			|| configuration.getSASimple() != null && hwConfigType == HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId())
 		{
 %>
                   <input type="hidden" name="UseHardwareAddressing" value="true">
