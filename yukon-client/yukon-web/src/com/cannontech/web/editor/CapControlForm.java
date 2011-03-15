@@ -1270,38 +1270,27 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
     
     private void reorderBankList(List<CCFeederBankList> childList, float removeDispOrder, float removeCloseOrder, float removeTripOrder) {
-    	if (childList.size() > 0 && removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1){
-    		CCFeederBankList capBank = childList.get(0);
-    		float prevAdjControlOrder = 0;
-    		float prevAdjCloseOrder = 0;
-    		float prevAdjTripOrder = 0;
-    		boolean tripOrderDesc = false;
-    		if (capBank.getTripOrder() == childList.size()){
-    			tripOrderDesc = true;
-    			prevAdjTripOrder = childList.size();
-    		} 
+    	if (childList.size() > 0 && removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1) {
+    		Collections.sort(childList, CBCUtils.BANK_TRIP_ORDER_COMPARATOR);
     		for (int i = 0; i < childList.size(); i++) {
-    			capBank = childList.get(i);
-
-    			if(capBank.getControlOrder() > removeDispOrder && (capBank.getControlOrder() - 1) > prevAdjControlOrder){
-    				capBank.setControlOrder(new Float ( capBank.getControlOrder() - 1));
-    			}
-    			if(capBank.getCloseOrder() > removeCloseOrder && (capBank.getCloseOrder() - 1) > prevAdjCloseOrder){
-    				capBank.setCloseOrder(new Float ( capBank.getCloseOrder() - 1));
-    			}
-    			if ( (capBank.getTripOrder() > removeTripOrder && (!tripOrderDesc && (capBank.getTripOrder() - 1) > prevAdjTripOrder)) || 
-       			     ((capBank.getTripOrder()-1) >= removeTripOrder && (tripOrderDesc && (capBank.getTripOrder() - 1) < prevAdjTripOrder))) {
-       					capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
-           		} 
-    			prevAdjControlOrder = capBank.getControlOrder();
-				prevAdjCloseOrder = capBank.getCloseOrder();
-				prevAdjTripOrder = capBank.getTripOrder();
-
+    			CCFeederBankList capBank = childList.get(i);
+    			capBank.setTripOrder(new Float(i + 1.0));
+    		}
+    		
+    		Collections.sort(childList, CBCUtils.BANK_CLOSE_ORDER_COMPARATOR);
+    		for (int i = 0; i < childList.size(); i++) {
+    			CCFeederBankList capBank = childList.get(i);
+    			capBank.setCloseOrder(new Float(i + 1.0));
+    		}
+    		
+    		Collections.sort(childList, CBCUtils.BANK_DISPLAY_ORDER_COMPARATOR);
+    		for (int i = 0; i < childList.size(); i++) {
+    			CCFeederBankList capBank = childList.get(i);
+    			capBank.setControlOrder(new Float(i + 1.0));
     		}
 		} else {
     		reorderList(childList);
     	}
-    		
 	}
 
     //Warning: instanceof CCFeederSubAssignment is putting an int into a float.

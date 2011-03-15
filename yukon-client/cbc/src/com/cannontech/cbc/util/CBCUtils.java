@@ -36,6 +36,7 @@ import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -141,6 +142,36 @@ public final class CBCUtils {
 
         }
     };
+    
+    public static final Comparator<CCFeederBankList> BANK_DISPLAY_ORDER_COMPARATOR = new Comparator<CCFeederBankList>() {
+		@Override
+		public int compare(CCFeederBankList o1, CCFeederBankList o2) {
+            Float order1 = o1.getControlOrder();
+            Float order2 = o2.getControlOrder();
+            int result = order1.compareTo(order2);
+            return result;
+        }
+	};
+	
+	public static final Comparator<CCFeederBankList> BANK_CLOSE_ORDER_COMPARATOR = new Comparator<CCFeederBankList>() {
+		@Override
+		public int compare(CCFeederBankList o1, CCFeederBankList o2) {
+            Float order1 = o1.getCloseOrder();
+            Float order2 = o2.getCloseOrder();
+            int result = order1.compareTo(order2);
+            return result;
+        }
+	};
+	
+	public static final Comparator<CCFeederBankList> BANK_TRIP_ORDER_COMPARATOR = new Comparator<CCFeederBankList>() {
+		@Override
+		public int compare(CCFeederBankList o1, CCFeederBankList o2) {
+            Float order1 = o1.getTripOrder();
+            Float order2 = o2.getTripOrder();
+            int result = order1.compareTo(order2);
+            return result;
+        }
+	};
 
     /**
      * Calculates the average PowerFactor for an array of SubBuses that have
