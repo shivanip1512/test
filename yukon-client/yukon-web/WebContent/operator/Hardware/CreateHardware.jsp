@@ -445,8 +445,8 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
 		int hwConfigType = InventoryUtils.getHardwareConfigType(Integer.parseInt(savedReq.getProperty("DeviceType")));
 		if (configuration.getExpressCom() != null && hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()
 			|| configuration.getVersaCom() != null && hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()
-			|| configuration.getSA205() != null && hwConfigType == HardwareConfigType.SA_205.getHardwareConfigTypeId()
-			|| configuration.getSA305() != null && hwConfigType == HardwareConfigType.SA_305.getHardwareConfigTypeId()
+			|| configuration.getSA205() != null && hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()
+			|| configuration.getSA305() != null && hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()
 			|| configuration.getSASimple() != null && hwConfigType == HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId())
 		{
 %>
