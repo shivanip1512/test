@@ -599,6 +599,11 @@ void CtiCapController::controlLoop()
                             break;
 
                         CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
+
+                        //Bypass IVVC subbuses.  IVVC subbuses are analyzed in the IVVC Algorithm.
+                        if (currentSubstationBus->getStrategy()->getControlUnits() == ControlStrategy::IntegratedVoltVarControlUnit)
+                            continue;
+                        
                         CtiCCAreaPtr currentArea = NULL;
                         CtiCCSubstation* currentStation = NULL;
 
