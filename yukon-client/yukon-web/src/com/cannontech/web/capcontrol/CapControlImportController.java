@@ -482,6 +482,8 @@ public class CapControlImportController {
         
         while(line != null) {
         	try {
+        		validateCBCTemplateImporterRow(line);
+        		
 	        	String templateName = line[0];
 	        	String cbcName = line[1];
                 String cbcType = line[2];
@@ -535,6 +537,9 @@ public class CapControlImportController {
 	    			errors.add("Error inserting " + cbcName + " into the database.");
 	    		}//else its an orphan
 	    		
+	    	} catch (CapControlImporterException e) {
+	    		CTILogger.error(e.getMessage());
+	    		errors.add("Error inserting " + line[0] + " into the database. " + e.getMessage());
 	    	} catch (UnsupportedOperationException e) {
 	    		CTILogger.error(e.getMessage());
 	    		errors.add("Error inserting " + line[0] + " into the database. " + e.getMessage());
@@ -545,6 +550,23 @@ public class CapControlImportController {
 	    		line = csvReader.readNext();
 	    	}
         }
+	}
+	
+	private void validateCBCTemplateImporterRow(String[] line) throws CapControlImporterException {
+		// Ensure all required columns contain data.
+		List<CapBankControllerImporterEnum> missingColumns = new ArrayList<CapBankControllerImporterEnum>();
+		
+		for(int i = 0; i < CapBankControllerImporterEnum.numColumns(); i++) {
+			CapBankControllerImporterEnum column = CapBankControllerImporterEnum.getColumnById(i);
+			
+			if( column.isRequired() && line[column.getColumnId()].length() == 0 ) {
+				missingColumns.add(column);
+			}
+		}
+		
+		if(missingColumns.size() > 0) {
+			throw new CapControlImporterException("CBC Template Import File was missing required data in the following column(s): ", missingColumns);
+		}
 	}
 	
 	private int getPaoIdByName(String paoName) {
