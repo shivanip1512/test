@@ -68,7 +68,7 @@ public class DeviceReadingsModel extends DeviceReportModelBase<DeviceReadingsMod
 
     @Override
     public void doLoadData() {
-        List<SimpleDevice> devices = getDeviceList();
+        Iterable<SimpleDevice> devices = getDeviceList();
         List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;

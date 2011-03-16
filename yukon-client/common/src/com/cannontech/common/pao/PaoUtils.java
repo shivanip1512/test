@@ -41,6 +41,12 @@ public class PaoUtils {
 		}
 	};
 	
+    private static final Function<YukonPao, Integer> yukonPaoToPaoIdFunction = new Function<YukonPao, Integer>() {
+        public Integer apply(YukonPao from) {
+            return from.getPaoIdentifier().getPaoId();
+        }
+    };
+
     public static YukonDevice asYukonDevice(YukonPao pao) {
         if (pao instanceof YukonDevice) {
             YukonDevice device = (YukonDevice)pao;
@@ -66,6 +72,11 @@ public class PaoUtils {
     	return builder.build();
     }
     
+    public static ImmutableList<Integer> asPaoIdList(Iterable<? extends YukonPao> paos) {
+        Iterable<Integer> transformedList = Iterables.transform(paos, yukonPaoToPaoIdFunction);
+        return ImmutableList.copyOf(transformedList);
+    }
+
     private static void buildSimpleDeviceList(Builder<? super SimpleDevice> builder, Iterable<PaoIdentifier> identifiers) {
     	for (PaoIdentifier paoIdentifier : identifiers) {
     		Validate.isTrue(paoIdentifier.getPaoType().getPaoCategory() == PaoCategory.DEVICE, "all identifiers must refer to a DEVICE");
@@ -111,4 +122,8 @@ public class PaoUtils {
     public static Function<PaoDefinition, PaoType> getPaoDefinitionToPaoTypeFunction() {
 		return paoDefinitionToPaoTypeFunction;
 	}
+    
+    public static Function<YukonPao, Integer> getYukonPaoToPaoIdFunction() {
+        return yukonPaoToPaoIdFunction;
+    }
 }

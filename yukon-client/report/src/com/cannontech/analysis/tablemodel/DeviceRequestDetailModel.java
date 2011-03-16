@@ -14,12 +14,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 
 public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceRequestDetailModel.ModelRow> {
 
@@ -100,19 +99,13 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
 
     @Override
     public void doLoadData() {
-        List<SimpleDevice> devices = getDeviceList();
+        Iterable<SimpleDevice> devices = getDeviceList();
         
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
         SqlFragmentGenerator<SimpleDevice> gen = new SqlFragmentGenerator<SimpleDevice>() {
             @Override
             public SqlFragmentSource generate(List<SimpleDevice> subList) {
-                Collection<Integer> deviceIds = Collections2.transform(subList, new Function<SimpleDevice, Integer>() {
-                    @Override
-                    public Integer apply(SimpleDevice simpleDevice) {
-                        return simpleDevice.getDeviceId();
-                    }
-                });
-                return getSqlSource(deviceIds);
+                return getSqlSource(PaoUtils.asPaoIdList(subList));
             }
         };
         

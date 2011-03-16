@@ -29,10 +29,10 @@ public abstract class DeviceReportModelBase<T> extends BareDatedReportModelBase<
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceDao deviceDao;
     
-	protected List<SimpleDevice> getDeviceList() {
+	protected Iterable<SimpleDevice> getDeviceList() {
 		if (!IterableUtils.isEmpty(groupsFilter)) {
             Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupsFilter);
-            return Lists.newArrayList(deviceGroupService.getDevices(groups));
+            return deviceGroupService.getDevices(groups);
         } else if (!IterableUtils.isEmpty(deviceFilter)) {
             List<SimpleDevice> devices = Lists.newArrayList();
             for(String deviceName : deviceFilter){
@@ -48,7 +48,7 @@ public abstract class DeviceReportModelBase<T> extends BareDatedReportModelBase<
             /* If they didn't pick anything to filter on, assume all devices. */
             /* Use contents of SystemGroupEnum.DEVICETYPES. */
             DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
-            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
+            return deviceGroupService.getDevices(Collections.singletonList(group));
         }
     }
 	

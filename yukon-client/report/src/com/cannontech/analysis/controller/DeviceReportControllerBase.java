@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.ReportFilter;
@@ -40,7 +41,10 @@ public abstract class DeviceReportControllerBase extends ReportControllerBase {
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
     	    List<String> deviceNames = new ArrayList<String>(st.countTokens());
     	    while (st.hasMoreTokens()) {
-    	    	deviceNames.add(st.nextToken().trim());
+    	    	String token = st.nextToken().trim();
+    	    	if (StringUtils.isNotBlank(token)) {
+    	    		deviceNames.add(token);
+    	    	}
     	    }
     	    deviceReportModel.setGroupsFilter(null);
             deviceReportModel.setDeviceFilter(deviceNames);
