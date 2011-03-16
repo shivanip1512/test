@@ -21,7 +21,7 @@ ${pageScope.addPao} = function() {
     <tags:widgetState paoIdsList="${paoIds}"/>
     
     <div id="paoTable">
-	   <span>Select Objects that <b>${instructionText}</b> have this permission.</span>
+	   <span>Select items that <b>${instructionText}</b> have this permission.</span>
 		<br><br>
         <c:choose>
             <c:when test="${empty paoList}">

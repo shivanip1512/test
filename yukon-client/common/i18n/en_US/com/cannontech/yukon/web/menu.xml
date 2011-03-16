@@ -74,12 +74,10 @@
 <entry key="yukon.web.menu.portal.administration.viewLogs">View Logs</entry>
 <entry key="yukon.web.menu.portal.administration.manageIndexes">Manage Indexes</entry>
 <entry key="yukon.web.menu.portal.administration.deviceConfiguration">Device Configuration</entry>
-<!-- TODO: remove these since they now live in system administration -->
-<entry key="yukon.web.menu.portal.administration.userGroupEditor">User/Group Editor</entry>
-<entry key="yukon.web.menu.portal.administration.newEnergyCompany">New Energy Company</entry>
+
+<!-- TODO: remove this since it now lives in system administration -->
 <entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
 
-<!--  -->
 <entry key="yukon.web.menu.subMenuDefaultTitle">Display Menu for {0}</entry>
 <entry key="yukon.web.menu.simpleMenuDefaultTitle">Goto {0}</entry>
 

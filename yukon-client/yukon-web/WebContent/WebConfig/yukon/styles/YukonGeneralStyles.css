@@ -496,8 +496,8 @@ div.roundedContainer .bottomBar{
 }
 
 .widgetColumns {
-  margin: auto 0;
-  width: 100%;
+    margin: 0;
+    width: 100%;
 }
 
 div.widgetInternalSectionHeader {
@@ -587,6 +587,8 @@ div.boxContainerFooter .footer {
 	text-align: left;
 }
 
+.boxContainer_titleBar{position:relative; overflow:hidden;}
+
 div.pagedBox .footer,
 div.boxContainerFooter .footer{
 	border-top: none;
@@ -598,6 +600,12 @@ div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer {
 	line-height: 1.5em;
 	font-weight: bold;
     font-size: 12px;
+}
+
+.boxContainer_title {
+    float: left;
+    overflow:hidden;
+    position:relative;
 }
 
 div.boxContainer .boxContainer_titleBar .controls { 

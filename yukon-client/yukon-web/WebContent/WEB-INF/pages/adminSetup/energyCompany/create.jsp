@@ -58,7 +58,7 @@
             <cti:dataGridCell>
                 
                 <tags:formElementContainer nameKey="defaultOperatorLogin">
-                    <div class="smallBoldLabel notes"><i:inline key=".note"/>&nbsp;<i:inline key=".defaultOperatorLogin.note"/></div>
+                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorLogin.note"/></span></div>
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".username" path="adminUsername"/>
                         <tags:nameValue2 nameKey=".password">
@@ -71,7 +71,7 @@
                 </tags:formElementContainer>
                 
                 <tags:formElementContainer nameKey="secondaryOperatorLogin">
-                    <div class="smallBoldLabel notes"><i:inline key=".note"/>&nbsp;<i:inline key=".secondaryOperatorLogin.note"/></div>
+                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".secondaryOperatorLogin.note"/></span></div>
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".username" path="admin2Username"/>
                         <tags:nameValue2 nameKey=".password">
