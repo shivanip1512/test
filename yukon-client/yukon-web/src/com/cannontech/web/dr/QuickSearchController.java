@@ -23,8 +23,6 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -70,13 +68,7 @@ public class QuickSearchController {
             SqlStatementBuilder fragment = new SqlStatementBuilder();
             fragment.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type ");
             fragment.append("FROM YukonPAObject PAO");
-            fragment.append("WHERE ((PAO.Category").eq_k(PaoCategory.LOADMANAGEMENT);
-            fragment.append("       AND PAO.PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
-            fragment.append("       AND PAO.Type").in(paoTypes);
-            fragment.append("       )");
-            fragment.append("       OR (PAO.Category").eq_k(PaoCategory.DEVICE);
-            fragment.append("    AND PAO.PAOClass").eq_k(PaoClass.GROUP);
-            fragment.append("    ))");
+            fragment.append("WHERE (PAO.Type").in(paoTypes).append(")");
             
             return fragment;
         }
