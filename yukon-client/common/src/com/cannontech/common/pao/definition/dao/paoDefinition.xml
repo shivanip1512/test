@@ -5022,11 +5022,6 @@
     <!-- LM GROUPS -->
     <pao id="LM_GROUP_BASE" abstract="true">
     	<changeGroup>lm</changeGroup>
-    	<tags>
-       		<tag name="LM_GROUP">
-       			<value>true</value>
-       		</tag>
-		</tags>
     </pao>
     <pao id="LM_GROUP" abstract="true">
     	<tags>
