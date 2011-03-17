@@ -17,7 +17,7 @@ public class WorkOrderBase{
     private Instant dateReported;
     private Instant dateScheduled;
     private Instant dateCompleted;
-    private String actionTaken;
+    private String actionTaken = "";
     private String additionalOrderNumber = "";
 
     public int getOrderId() {

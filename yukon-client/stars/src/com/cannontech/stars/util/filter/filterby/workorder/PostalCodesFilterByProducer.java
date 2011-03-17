@@ -13,7 +13,7 @@ public class PostalCodesFilterByProducer extends AbstractWorkOrderFilterByProduc
 
     @Override
     public Collection<? extends FilterBy> createFilterBys(FilterWrapper filter) {
-        return Arrays.asList(createServiceCompanyPostalCodes(filter.getFilterID()));
+        return Arrays.asList(createServiceCompanyPostalCodes(filter.getFilterText()));
     }
 
     @Override
@@ -33,8 +33,8 @@ public class PostalCodesFilterByProducer extends AbstractWorkOrderFilterByProduc
             }
             @Override
             public List<Object> getParameterValues() {
-                //filterValue is formatted "Label: value"
-                String[] split = filterValue.split(" ");
+                //filterValue is formatted "Postal Code: value"
+                String[] split = filterValue.split(": ");
                 String value = split[1];
                 return Arrays.<Object>asList(value + "%");
             }

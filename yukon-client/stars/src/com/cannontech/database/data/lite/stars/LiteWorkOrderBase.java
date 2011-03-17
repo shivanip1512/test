@@ -55,6 +55,11 @@ public class LiteWorkOrderBase extends LiteBase {
 	 * @return String
 	 */
 	public String getActionTaken() {
+		if (actionTaken == null) {
+			//check for null and return "".  
+			//This will resolve null values being stored in database instead of empty strings, in older jsps.
+			return "";
+		}
 		return actionTaken;
 	}
 
