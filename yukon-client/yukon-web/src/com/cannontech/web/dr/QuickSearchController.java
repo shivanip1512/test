@@ -64,7 +64,8 @@ public class QuickSearchController {
         public SqlFragmentSource getBaseQuery() {
         	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_CONTROL_AREA,
         												PaoTag.LM_SCENARIO,
-        												PaoTag.LM_PROGRAM);
+        												PaoTag.LM_PROGRAM, 
+        												PaoTag.LM_GROUP);
             SqlStatementBuilder fragment = new SqlStatementBuilder();
             fragment.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type ");
             fragment.append("FROM YukonPAObject PAO");
