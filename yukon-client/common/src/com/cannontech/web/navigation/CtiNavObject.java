@@ -13,7 +13,6 @@ public class CtiNavObject implements Serializable{
 	private String previousPage;
 
 	private String moduleExitPage = null;
-	private String moduleRedirectPage;
 	private String moduleLabel;
 	private String preservedAddress;
 	
@@ -66,7 +65,7 @@ public class CtiNavObject implements Serializable{
 	 */
 	public void setNavigation(String page)
 	{
-		if (!currentPage.contains(page)) {
+		if (!currentPage.equals(page)) {
 	        previousPage = currentPage;
 	        currentPage = page;
 	    }
@@ -88,20 +87,6 @@ public class CtiNavObject implements Serializable{
 	 */
 	public void setModuleExitPage(String string) {
 		moduleExitPage = string;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getModuleRedirectPage() {
-		return moduleRedirectPage;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setModuleRedirectPage(String string) {
-		moduleRedirectPage = string;
 	}
 
 	/**

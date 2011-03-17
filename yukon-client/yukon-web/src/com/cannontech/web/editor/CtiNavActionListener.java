@@ -35,12 +35,7 @@ public class CtiNavActionListener implements ActionListener {
 				CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");
 			    red = CBCNavigationUtil.goBack(session);
 			    
-			    if (ctiNav.getModuleRedirectPage() != null) {
-                    //redirect to our module redirect page first, if it set, else
-                    // we return to the module exit page
-                    red = ctiNav.getModuleRedirectPage();
-                    ctiNav.setModuleRedirectPage( null );
-				} else if (red.equalsIgnoreCase("") ) {
+				if (red.equalsIgnoreCase("") ) {
 					red = ctiNav.getModuleExitPage();
 					usingExitPage = true;
 					ctiNav.setModuleExitPage( null );

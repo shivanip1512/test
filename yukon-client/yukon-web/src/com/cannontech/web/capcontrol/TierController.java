@@ -22,7 +22,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
@@ -186,7 +185,6 @@ public class TierController {
 	    String urlParams = request.getQueryString();
 	    String fullURL = url + ((urlParams != null) ? "?" + urlParams : "");
 	    
-	    fullURL = ServletUtil.urlEncode(fullURL);
 	    mav.addAttribute("fullURL", fullURL);
 	    
 	    String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
