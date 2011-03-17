@@ -1316,10 +1316,6 @@ float: left;
 padding: 10px;
 }
 
-.stdhdr_rightSide select {
-    max-width: 140px;
-}
-
 .icon {
     overflow:hidden;
     float:left;
