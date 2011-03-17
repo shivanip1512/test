@@ -198,12 +198,6 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << updater.asString() << endl;
-        }
-
         success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 

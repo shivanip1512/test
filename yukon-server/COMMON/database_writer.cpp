@@ -143,7 +143,7 @@ std::string DatabaseWriter::asString()
     {
         if( _command.ParamByIndex(i).ParamType() != SA_dtCursor )
         {
-            sqlString += " <" + CtiNumStr(i) + "> ";
+            sqlString += " <" + CtiNumStr(i + 1) + "> ";
             sqlString += _command.ParamByIndex(i).asString();
         }
     }
