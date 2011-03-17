@@ -1435,6 +1435,12 @@
             <description>id for generated HTML img tag</description>
         </attribute>
         <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>name for generated HTML img tag</description>
+        </attribute>
+        <attribute>
             <name>href</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

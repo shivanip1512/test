@@ -11,9 +11,10 @@
 <cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
 
 <c:set var="showNextButton" value="false" />
-<form:form id="form" commandName="optOutBackingBean" 
-           action="/spring/stars/operator/program/optOut/optOutQuestions" 
+
+<form:form id="form" commandName="optOutBackingBean" action="/spring/stars/operator/program/optOut/optOutQuestions" 
            method="POST" onsubmit="createJSON();">
+           
     <input type="hidden" name="accountId" value="${accountId}" />
 
     <tags:boxContainer2 nameKey="selectDevice">
@@ -74,13 +75,9 @@
 
     <div class="pageActionArea">
         <c:if test="${showNextButton}">
-            <button type="submit" class="formSubmit">
-                <i:inline key=".save"/>
-            </button>
+            <cti:button key="save" type="submit"/>
         </c:if>
-        <button type="submit" name="cancel" class="formSubmit">
-            <i:inline key=".cancel"/>
-        </button>
+        <cti:button key="cancel" name="cancel" type="submit"/>
     </div>
 
     <form:hidden path="durationInDays"/>

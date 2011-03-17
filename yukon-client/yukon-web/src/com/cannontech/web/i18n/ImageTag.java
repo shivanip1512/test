@@ -17,12 +17,17 @@ import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 public class ImageTag extends YukonTagSupport {
 
     protected String id = null;
+    protected String name = null;
     protected String key = null;
     protected String href = null;
     protected String styleClass = null;
 
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setKey(String key) {
@@ -52,14 +57,9 @@ public class ImageTag extends YukonTagSupport {
             JspWriter out = getJspContext().getOut();
 
             if (StringUtils.isNotBlank(href)) {
-                if (StringUtils.isBlank(styleClass)) {
-                    styleClass = "simpleLink";
-                }
                 out.write("<a href=\"");
                 out.write(href);
-                out.write("\" class=\"");
-                out.write(styleClass);
-                out.write("\">");
+                out.write("\" class=\"simpleLink\">");
             }
 
             out.write("<img");
@@ -69,16 +69,16 @@ public class ImageTag extends YukonTagSupport {
                 out.write('"');
             }
             
-            String style = "logoImage";
+            String imgClass = "logoImage";
             
             if (StringUtils.isNotBlank(href)) {
-                style += " hoverableImage";
+                imgClass += " hoverableImage";
             }
             
-            if (StringUtils.isNotBlank(styleClass)) {
-                style += (" " + styleClass);
+            if(StringUtils.isNotBlank(styleClass)) {
+                imgClass += (" " + styleClass);
             }
-            out.write(" class=\"" + style + "\"");
+            out.write(" class=\"" + imgClass + "\"");
             out.write(" src=\"");
             out.write(imageUrl);
             out.write("\"");
@@ -94,6 +94,11 @@ public class ImageTag extends YukonTagSupport {
                 out.write(" alt=\"\"");
             }
 
+            if (StringUtils.isNotBlank(name)) {
+                out.write(" name=\"");
+                out.write(name);
+                out.write('"');
+            }
             out.write(">");
 
             if (StringUtils.isNotBlank(href)) {

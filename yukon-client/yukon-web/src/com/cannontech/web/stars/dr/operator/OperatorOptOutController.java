@@ -16,7 +16,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,6 +29,7 @@ import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -41,9 +41,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -87,7 +85,6 @@ public class OperatorOptOutController {
     private RolePropertyDao rolePropertyDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
-    private InventoryDao inventoryDao;
     private OptOutSurveyService optOutSurveyService;
     private SurveyService surveyService;
     private SurveyDao surveyDao;
@@ -168,8 +165,7 @@ public class OperatorOptOutController {
             @ModelAttribute OptOutBackingBean optOutBackingBean,
             BindingResult bindingResult, ModelMap model,
             YukonUserContext userContext, FlashScope flashScope,
-            AccountInfoFragment accountInfoFragment)
-            throws ServletRequestBindingException {
+            AccountInfoFragment accountInfoFragment) {
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
 
         // Validate info entered on first page.
@@ -222,7 +218,7 @@ public class OperatorOptOutController {
             BindingResult bindingResult, ModelMap model,
             YukonUserContext userContext, FlashScope flashScope,
             AccountInfoFragment accountInfoFragment)
-            throws ServletRequestBindingException, CommandCompletionException {
+            throws CommandCompletionException {
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
 
         Integer[] inventoryIds = optOutBackingBean.getInventoryIds();
@@ -401,16 +397,6 @@ public class OperatorOptOutController {
     }
 
     @RequestMapping
-    public String confirmCancelOptOut(int eventId, int inventoryId,
-            ModelMap model, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        helper.checkEventAgainstAccount(eventId, accountInfoFragment.getAccountId());
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmCancelOptOut.jsp";
-    }
-
-    @RequestMapping
     public String cancelOptOut(Integer eventId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) throws Exception {
@@ -435,25 +421,14 @@ public class OperatorOptOutController {
                               "yukon.web.modules.operator.optOut.main.cancelOptOut.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
-        return closeDialog(model);
-    }
-
-    @RequestMapping
-    public String confirmDecrementAllowances(int inventoryId, ModelMap model,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmDecrementAllowances.jsp";
+        return "redirect:view";
     }
 
     @RequestMapping
     public String decrementAllowances(Integer inventoryId,
             FlashScope flashScope, ModelMap model,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment)
-            throws ServletRequestBindingException {
+            AccountInfoFragment accountInfoFragment) {
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
@@ -466,24 +441,13 @@ public class OperatorOptOutController {
                                "yukon.web.modules.operator.optOut.main.decrementAllowance.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
-        return closeDialog(model);
-    }
-
-    @RequestMapping
-    public String confirmAllowAnother(int inventoryId, ModelMap model,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmAllowAnother.jsp";
+        return "redirect:view";
     }
 
     @RequestMapping
     public String allowAnother(Integer inventoryId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment)
-            throws ServletRequestBindingException {
+            AccountInfoFragment accountInfoFragment) {
 
         // Log opt out addition attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
@@ -502,23 +466,13 @@ public class OperatorOptOutController {
                               "yukon.web.modules.operator.optOut.main.allowOne.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
-        return closeDialog(model);
-    }
-
-    @RequestMapping
-    public String confirmResend(int inventoryId, ModelMap model,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmResend.jsp";
+        return "redirect:view";
     }
 
     @RequestMapping
     public String resend(Integer inventoryId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) throws Exception {
+            AccountInfoFragment accountInfoFragment) throws NotFoundException, CommandCompletionException {
 
         // Log command resend attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
@@ -540,19 +494,9 @@ public class OperatorOptOutController {
                                "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
-        return closeDialog(model);
+        return "redirect:view";
     }
 
-    @RequestMapping
-    public String confirmResetToLimit(int inventoryId, ModelMap model,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-
-        helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmResetToLimit.jsp";
-    }
 
     @RequestMapping
     public String resetToLimit(Integer inventoryId, FlashScope flashScope,
@@ -576,7 +520,7 @@ public class OperatorOptOutController {
                                "yukon.web.modules.operator.optOut.main.resetToLimit.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
-        return closeDialog(model);
+        return "redirect:view";
     }
 
     @RequestMapping(params="cancel")
@@ -620,11 +564,6 @@ public class OperatorOptOutController {
         binder.registerCustomEditor(LocalDate.class,
                                     "startDate",
                                     datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
-    }
-
-    private String closeDialog(ModelMap model) {
-        model.addAttribute("popupId", "confirmDialog");
-        return "closePopup.jsp";
     }
 
     @Autowired
@@ -684,11 +623,6 @@ public class OperatorOptOutController {
     }
 
     @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-
-    @Autowired
     public void setOptOutSurveyService(OptOutSurveyService optOutSurveyService) {
         this.optOutSurveyService = optOutSurveyService;
     }
@@ -707,6 +641,5 @@ public class OperatorOptOutController {
     public void setSurveyService(SurveyService surveyService) {
         this.surveyService = surveyService;
     }
-    
     
 }
