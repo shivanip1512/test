@@ -294,7 +294,8 @@ public class GeneralInfoController {
         LiteYukonUser user = context.getYukonUser();
         boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
         if (superUser) {
-            LiteYukonGroup group = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, user.getUserID());
+            LiteYukonUser ecAdminUser = starsDatabaseCache.getEnergyCompany(ecId).getUser();
+            LiteYukonGroup group = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, ecAdminUser.getUserID());
             model.addAttribute("groupId", group.getGroupID());
             model.addAttribute("roleId", YukonRole.ENERGY_COMPANY.getRoleId());
         }
