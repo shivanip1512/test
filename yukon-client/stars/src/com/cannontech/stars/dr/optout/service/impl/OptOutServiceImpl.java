@@ -963,7 +963,7 @@ public class OptOutServiceImpl implements OptOutService {
 					" is not associated with the account with account number: " + accountNumber);
 		}
 		
-		allowAdditionalOptOuts(inventory.getInventoryID(), account.getAccountId(), 
+		allowAdditionalOptOuts(account.getAccountId(), inventory.getInventoryID(), 
 		                       additionalOptOuts, user);
 		
 	}
