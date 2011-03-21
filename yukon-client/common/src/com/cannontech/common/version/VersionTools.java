@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.jar.Manifest;
 
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -19,6 +20,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.roles.yukon.SystemRole;
 
+import com.google.common.collect.Maps;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/26/2001 2:42:37 PM)
@@ -28,6 +31,7 @@ public final class VersionTools
 {	
 	public static final String KEY_YUKON_VERSION = "Yukon-Version";
     public static final String KEY_YUKON_DETAILS = "Yukon-Details";
+    public static final String KEY_BUILD_INFO = "Hudson-Build-Details";
 	public static final String COMMON_JAR = "common.jar";
 	
     private static boolean appCatFound = false;
@@ -35,6 +39,7 @@ public final class VersionTools
     private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
     public static String yukonDetails;
+    public static Map<String, String> buildInfo = null; 
 	private static CTIDatabase db_obj = null;
 	
 
@@ -271,6 +276,44 @@ public synchronized static final String getYukonDetails() {
     return yukonDetails;
 }
 
+public synchronized final static Map<String, String> getBuildInfo() 
+{
+    if( buildInfo == null ) {
+        buildInfo = Maps.newHashMap();
+        ClassLoader classLoader = VersionTools.class.getClassLoader();
+        Enumeration<URL> resources;
+        try {
+            resources = classLoader.getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL it = null;
+                try {
+                    it = resources.nextElement();
+                    InputStream stream = it.openStream();
+                    Manifest manifest = new Manifest(stream);
+                    String[] values = manifest.getMainAttributes().getValue(KEY_BUILD_INFO).split("[,]");
+                    int i = 0;
+                    for (i = 0; i < values.length; i++) {
+                        String[] keyValue = values[i].split("[=]");
+                        buildInfo.put(keyValue[0], keyValue[1]);
+                    }
+                } catch (Exception e) {
+                }
+                if (!buildInfo.isEmpty()) {
+                    CTILogger.debug("Found '" + buildInfo.size() + "' build information parameters on " + it);
+                    break;
+                }
+            }
+        } catch ( IOException e ) {
+            CTILogger.warn("Caught exception looking up build info", e);
+        }
+        
+        if(buildInfo.isEmpty()) {
+            CTILogger.debug("Unable to find build information.");
+            buildInfo.put("status", "No build information could be found.");
+        }
+    }
+    return buildInfo;
+}
 
 public static Boolean getStaticLoadGroupMapping() {
     return staticLoadGroupMapping;

@@ -218,6 +218,17 @@ public class LayoutController {
         return VersionTools.getYUKON_VERSION();
     }
     
+    @ModelAttribute("buildInfo")
+    public String getyukonBuild() {
+        Map<String, String> buildInfo = VersionTools.getBuildInfo();
+        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
+            return "<a href=\"http://hudson.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
+            + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
+        } else {
+            return "undefined";
+        }
+    }
+    
     private ModuleBase getModuleBase(String moduleName) throws JspException {
         ModuleBase moduleBase = moduleBuilder.getModuleBase(moduleName);
 

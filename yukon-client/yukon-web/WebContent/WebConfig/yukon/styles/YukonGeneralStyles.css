@@ -1309,11 +1309,11 @@ select:focus {
     border:1px solid #FF9900; 
 }
 
-.pipes { overflow:hidden;}
+.pipes { overflow:hidden; display:inline-block;}
 .pipes li { margin-left: -1px;
-border-left: solid 1px black;
+border-left: solid 1px;
 float: left;
-padding: 10px;
+padding: 3px 10px;
 }
 
 .icon {

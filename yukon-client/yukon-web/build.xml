@@ -25,6 +25,7 @@
             <manifest>
                 <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                 <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            	<attribute name="Build-Info" value="${build.info}"/>
             </manifest>
 		</jar>
         

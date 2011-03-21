@@ -19,6 +19,7 @@ public class InformationController implements Controller {
 
         mav.addObject("versionDetails", VersionTools.getYukonDetails());
         mav.addObject("systemInformation", CtiUtilities.getSystemInfoString());
+        mav.addObject("buildInfo", VersionTools.getBuildInfo());
         
         return mav;
     }
