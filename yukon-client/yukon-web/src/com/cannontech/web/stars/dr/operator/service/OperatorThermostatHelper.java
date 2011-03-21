@@ -48,4 +48,11 @@ public interface OperatorThermostatHelper {
      * @return a List of ThermostatScheduleConfirmationDisplays to display
      */
     public List<ThermostatScheduleDisplay> getScheduleDisplays(YukonUserContext yukonUserContext, String type, ThermostatScheduleMode thermostatScheduleMode, AccountThermostatSchedule accountThermostatSchedule, boolean isFahrenheit, String i18nKey);
+    
+    /**
+     * Returns the schedule mode for the provided schedule.  If the mode is Weekday, Weekend, it will
+     * be changed to Weekday, Saturday, Sunday unless the schedule is a UPro schedule and the
+     * schedule52Enabled role value is true.
+     */
+    public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, boolean schedule52Enabled);
 }

@@ -472,8 +472,7 @@ function changeScheduleMode() {
 	if(!alertModeChange()) {
 		// reselect the last mode
 		$("radio" + currentScheduleMode).checked = "checked";
-		
-        return;
+        return false;
     }
     
     var mode = $RF('radioALL');
@@ -485,6 +484,7 @@ function changeScheduleMode() {
     
     // Always default to weekday selected when mode changes
     changeTimePeriod('WEEKDAY');
+    return true;
 }
 
 function updateTimePeriodUI() {

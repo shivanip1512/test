@@ -117,10 +117,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	map.addAttribute("schedule52Enabled", schedule52Enabled);
     	
     	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
-    	if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
-    		scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
-    	}
+    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, schedule52Enabled);
     	map.addAttribute("scheduleMode", scheduleMode);
     	
         // thermostatLabel
@@ -147,6 +144,9 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
         JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         map.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
+        
+        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, schedule52Enabled);
+        map.addAttribute("defaultScheduleMode", defaultScheduleMode);
         
         return "consumer/thermostatSchedule.jsp";
     }

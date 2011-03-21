@@ -141,10 +141,7 @@ public class OperatorThermostatScheduleController {
     	modelMap.addAttribute("schedule52Enabled", schedule52Enabled);
     	
     	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
-    	if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
-    		scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
-    	}
+    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, schedule52Enabled);
     	modelMap.addAttribute("scheduleMode", scheduleMode);
     	
         // temperatureUnit
@@ -162,6 +159,9 @@ public class OperatorThermostatScheduleController {
         modelMap.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
         JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         modelMap.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
+        
+        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, schedule52Enabled);
+        modelMap.addAttribute("defaultScheduleMode", defaultScheduleMode);
         
         // if arriving at the view page due to a canceled send/save operation
         if (StringUtils.isNotBlank(canceledAction)) {

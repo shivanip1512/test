@@ -39,12 +39,35 @@
     tempUnit = '${temperatureUnit}';
     
     function setToDefault() {
-        if(tempUnit == 'F') {
-            schedules = $H(${defaultFahrenheitScheduleJSON});
-        } else {
-            schedules = $H(${defaultCelsiusScheduleJSON});
-        } 
-        setCurrentSchedule(currentTimePeriod);
+        //If the default schedule has a different mode than what's currently
+        //selected, it must be changed.
+        var setToDefault = true;
+        if('${defaultScheduleMode}' != currentScheduleMode) {
+            $("radio" + "${defaultScheduleMode}").checked = "checked";
+            setToDefault = changeScheduleMode();
+        }
+
+        if(setToDefault) {
+            //Replace current schedule with default schedule
+            if(tempUnit == 'F') {
+                schedules = $H('${defaultFahrenheitScheduleJSON}'.evalJSON());
+            } else {
+                schedules = $H('${defaultCelsiusScheduleJSON}'.evalJSON());
+            }
+            
+            // convert raw objects to $H objects.  As of prototype 1.6 you cannot directly reference
+            // hash members.  The code in thermostatSchedule.js assumes that the members of  schedules.season
+            // have been constructed as a Hash
+            for(i in schedules.get('season')){
+                var tmp = schedules.get('season')[i];
+                for(var j=0; j<tmp.length; j++){
+                    tmp[j] = $H(tmp[j]);
+                }
+            }
+            
+            //Update the currently displayed time period
+            setCurrentSchedule(currentTimePeriod);
+        }
     }
     
     var schedules = null;

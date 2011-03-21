@@ -20,6 +20,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -291,6 +292,14 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	    }
 	    return scheduleDisplays;
 	}
+	
+	public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, boolean schedule52Enabled) {
+        ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
+        if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
+            scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
+        }
+        return scheduleMode;
+    }
 	
 	@Autowired
 	public void setInventoryDao(InventoryDao inventoryDao) {
