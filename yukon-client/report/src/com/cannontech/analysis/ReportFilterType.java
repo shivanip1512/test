@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.google.common.base.Function;
@@ -57,7 +58,8 @@ public enum ReportFilterType {
 	PAOBJECTID {
 		@Override
         public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-            int[] idsArray = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+            String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
+            int[] idsArray = StringUtils.parseIntString(filterValuesStr); 
             if (idsArray.length > 0) {
                 model.setPaoIDs(idsArray);
             }
