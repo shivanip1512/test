@@ -8,7 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="warehouse.${mode}">
     
-    <tags:formElementContainer nameKey="viewContainer">
         <span class="meta">
             <tags:liteAddress address="${warehouseDto.address}"/>
         </span>
@@ -19,7 +18,6 @@
             <br/>
             <br/>
         </c:if>
-    </tags:formElementContainer>
     
     <div class="pageActionArea">
     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
