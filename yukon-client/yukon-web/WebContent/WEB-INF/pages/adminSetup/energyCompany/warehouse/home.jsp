@@ -36,7 +36,7 @@
     </tags:boxContainer2>
     
     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
-        <div class="actionArea">
+        <div class="pageActionArea">
             <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
