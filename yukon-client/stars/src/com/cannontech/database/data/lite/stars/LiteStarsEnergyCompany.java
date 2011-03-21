@@ -423,35 +423,19 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return value;
     }
     
+    @Deprecated /* use ecMappingDao.getResidentialGroups(energyCompanyId) */
     public LiteYukonGroup[] getResidentialCustomerGroups() {
-        String[] custGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.CUSTOMER_GROUP_IDS ).split(",");
-        List<LiteYukonGroup> custGroupList = new ArrayList<LiteYukonGroup>();
-        
-        for (int i = 0; i < custGroupIDs.length; i++) {
-            String groupID = custGroupIDs[i].trim();
-            if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = DaoFactory.getRoleDao().getGroup( Integer.parseInt(groupID) );
-            if (liteGroup != null) custGroupList.add( liteGroup );
-        }
-        
-        LiteYukonGroup[] custGroups = new LiteYukonGroup[ custGroupList.size() ];
-        custGroupList.toArray( custGroups );
+    	List<LiteYukonGroup> custGroupList = ecMappingDao.getResidentialGroups(getEnergyCompanyId());
+        LiteYukonGroup[] custGroups = new LiteYukonGroup[custGroupList.size()];
+        custGroupList.toArray(custGroups);
         return custGroups;
     }
     
+    @Deprecated /* use ecMappingDao.getOperatorGroups(energyCompanyId) */
     public LiteYukonGroup[] getWebClientOperatorGroups() {
-        String[] operGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.OPERATOR_GROUP_IDS ).split(",");
-        List<LiteYukonGroup> operGroupList = new ArrayList<LiteYukonGroup>();
-        
-        for (int i = 0; i < operGroupIDs.length; i++) {
-            String groupID = operGroupIDs[i].trim();
-            if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = DaoFactory.getRoleDao().getGroup( Integer.parseInt(groupID) );
-            if (liteGroup != null) operGroupList.add( liteGroup );
-        }
-        
-        LiteYukonGroup[] operGroups = new LiteYukonGroup[ operGroupList.size() ];
-        operGroupList.toArray( operGroups );
+        List<LiteYukonGroup> operGroupList = ecMappingDao.getOperatorGroups(getEnergyCompanyId());
+        LiteYukonGroup[] operGroups = new LiteYukonGroup[operGroupList.size()];
+        operGroupList.toArray(operGroups);
         return operGroups;
     }
     

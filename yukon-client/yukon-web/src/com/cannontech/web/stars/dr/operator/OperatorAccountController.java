@@ -50,6 +50,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -108,6 +109,7 @@ public class OperatorAccountController {
     private TransactionOperations transactionTemplate;
     private LoginValidatorFactory loginValidatorFactory;
     private SystemEventLogService systemEventLogService;
+    private ECMappingDao ecMappingDao;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -439,7 +441,7 @@ public class OperatorAccountController {
     public String accountEdit(int accountId, ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfo) {
 		
 	    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-	    List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+	    List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
 	    LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfo.getAccountId());
 
 	    /* AccountDto */
@@ -502,7 +504,7 @@ public class OperatorAccountController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         String currentAccountNumber = customerAccount.getAccountNumber();
 	    
@@ -696,7 +698,7 @@ public class OperatorAccountController {
 	
 	private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
         
         List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
@@ -863,6 +865,11 @@ public class OperatorAccountController {
 	public void setLoginValidatorFactory(LoginValidatorFactory loginValidatorFactory) {
         this.loginValidatorFactory = loginValidatorFactory;
     }
+	
+	@Autowired
+	public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
+	}
 	
 	@Resource(name="accountImportResultsCache")
     public void setRecentResultsCache(RecentResultsCache<AccountImportResult> recentResultsCache) {
