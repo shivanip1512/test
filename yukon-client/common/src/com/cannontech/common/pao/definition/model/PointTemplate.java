@@ -156,19 +156,12 @@ public class PointTemplate implements Comparable<PointTemplate> {
 	}
     
     public int compareTo(PointTemplate o) {
-
+        
         if (o == null) {
             return 0;
+        } else {
+            return getName().compareToIgnoreCase(o.getName());
         }
-        if( getName().compareTo(o.getName()) == 0) {
-        	if( o.getType() == getType()) {	//compare type
-       			return ( getOffset() < o.getOffset()? -1 : (getOffset()==o.getOffset()? 0 : 1));//compare offset
-        	}
-    		return ( getType() < o.getType()? -1 : (getType()==o.getType()? 0 : 1));
-        }
-        	
-        return getName().compareTo(o.getName());
-
     }
 
     @Override
