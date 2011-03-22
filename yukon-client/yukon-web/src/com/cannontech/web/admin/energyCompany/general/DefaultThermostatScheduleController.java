@@ -89,8 +89,7 @@ public class DefaultThermostatScheduleController {
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
 
-        
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
         // AccountThermostatSchedule
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
