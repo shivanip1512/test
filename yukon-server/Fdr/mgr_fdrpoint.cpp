@@ -200,7 +200,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
                                    "FROM FDRTranslation FDR, Point PT "
                                      "LEFT OUTER JOIN PointAnalog PAL ON PT.PointID = PAL.PointID "
                                      "LEFT OUTER JOIN PointAccumulator PAC ON PT.PointID = PAC.PointID "
-                                   "WHERE PT.PointID = ";
+                                   "WHERE FDR.PointID = PT.PointID AND PT.PointID = ";
 
         ss << sql << pointId;
 
