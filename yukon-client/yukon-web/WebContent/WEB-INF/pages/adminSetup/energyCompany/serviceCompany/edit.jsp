@@ -73,13 +73,22 @@
                 
                 
                 Event.observe('findDesignationCode', 'focus', function(){
-                   this.value = "";
-                   this.removeClassName('default');
+                    if(this.hasClassName('default')){
+                       this.value = "";
+                       this.removeClassName('default');
+                    }
                 });
                 
                 Event.observe('findDesignationCode', 'blur', function(){
-                    this.value = FIND_ZIP_MSG;
-                    this.addClassName('default');
+                    if(this.value.length == 0) {
+                        this.value = FIND_ZIP_MSG;
+                        this.addClassName('default');
+                        this.removeClassName('filtered').removeClassName('found').removeClassName('notFound');
+                        $("designationCodes").removeClassName('filtering');
+                        $$("#designationCodes li").each(function(obj, iter){
+                            obj.removeClassName('filtered');
+                        });
+                    }
                  });
                 
                 Event.observe('findDesignationCode', 'keyup', function(){
@@ -148,16 +157,16 @@
             <cti:dataGridCell>
                 <tags:formElementContainer nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
-                        <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="60" maxlength="60"/>
+                        <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
                         <tags:inputNameValue nameKey=".mainPhone" path="mainPhoneNumber" inputClass="phone" maxlength="14"/>
                         <tags:inputNameValue nameKey=".mainFax" path="mainFaxNumber" inputClass="phone" maxlength="14"/>
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
-                        <tags:inputNameValue nameKey=".HIType" path="hiType" size="40" maxlength="40"/>
+                        <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
                 <br/>
                 <br/>
-                <c:if test="${allowContractorZipCodes}">
+                <c:if test="${canViewDesignationCodes}">
                     <tags:formElementContainer nameKey="designationCodeSection">
                         <!-- Contractor Zip Codes -->
                         <input type="text" id="findDesignationCode" value="<cti:msg key="yukon.web.modules.adminSetup.serviceCompany.findZipCode" javaScriptEscape="true" />" class="default" />
@@ -168,25 +177,32 @@
                                      this ensures that we do not have a visual representation of that -->
                                 <c:if
                                     test="${not empty serviceCompany.designationCodes[row.index].value}">
-                                    <li><cti:displayForPageEditModes modes="EDIT,CREATE">
-                                        <span class="remove fr"><a href="#" class="remove icon icon_remove simpleLink">remove</a></span>
+                                    <li>
+                                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                        <c:if test="${canEditDesignationCodes}">
+                                            <span class="remove fr"><a href="#" class="remove icon icon_remove simpleLink">remove</a></span>
+                                        </c:if>
                                         <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
                                         <tags:hidden path="designationCodes[${row.index}].id" />
                                         <tags:hidden path="designationCodes[${row.index}].value" />
                                         <tags:hidden path="designationCodes[${row.index}].serviceCompanyId" />
-                                    </cti:displayForPageEditModes> <cti:displayForPageEditModes modes="VIEW">
+                                    </cti:displayForPageEditModes>
+                                    <cti:displayForPageEditModes modes="VIEW">
                                         <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
                                         <tags:hidden path="designationCodes[${row.index}].value" />
-                                    </cti:displayForPageEditModes></li>
+                                    </cti:displayForPageEditModes>
+                                    </li>
                                 </c:if>
                             </c:forEach>
                         </ul>
                         </div>
 
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <c:if test="${canEditDesignationCodes}">
                             <div><input type="text" maxlength=60 id="newDesignationCode"
                                 class="zip"> <cti:button key="assignDesignationCode"
                                 id="addDesignationCodeButton" /></div>
+                            </c:if>
                         </cti:displayForPageEditModes>
                     </tags:formElementContainer>
                 </c:if>
@@ -218,7 +234,7 @@
             </cti:dataGridCell>
         </cti:dataGrid>
         
-        <div class="actionArea">
+        <div class="pageActionArea">
         
             <!-- Edit Link -->
             <cti:displayForPageEditModes modes="VIEW">

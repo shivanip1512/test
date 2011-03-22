@@ -48,7 +48,8 @@ public class ServiceCompanyDtoValidator extends SimpleValidator<ServiceCompanyDt
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "mainFaxNumber", serviceCompany.getMainFaxNumber(), 14);
         
-        //HIType?
+        //HIType
+        YukonValidationUtils.checkExceedsMaxLength(errors, "HIType", serviceCompany.getHiType(), 40);
         
         //Check Primary Contact
         errors.pushNestedPath("primaryContact");

@@ -17,7 +17,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingBean {
@@ -144,12 +144,7 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     }
     
     private void sendDesignationCodeChangeMessage(Integer designationCodeId, DbChangeType dbChangeType) {
-        DBChangeMsg msg = new DBChangeMsg(designationCodeId,
-                                          DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
-                                          DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-                                          DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-                                          dbChangeType);
-        dbPersistantDao.processDBChange(msg);
+        dbPersistantDao.processDatabaseChange(dbChangeType, DbChangeCategory.SERVICE_COMPANY_DESIGNATION_CODE, designationCodeId);
     }
     
  // DI

@@ -12,10 +12,13 @@ import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 
 public class ServiceCompanyServiceImpl implements ServiceCompanyService {
@@ -24,6 +27,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     private AddressDao addressDao = null;
     private DesignationCodeDao designationCodeDao = null;
     private ContactDao contactDao = null;
+    private DBPersistentDao dbPersistantDao = null;
     private ContactNotificationDao contactNotificationDao = null;
 
     @Override
@@ -46,8 +50,6 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         addressDao.add(serviceCompany.getAddress());
 
         //Primary Contact
-        // why oh why should i have to do this? because CtiUtilities.NONE_ZERO_ID 
-        //  (also known as 0) is considered a 'valid' id in the save contact method!
         serviceCompany.getPrimaryContact().setContactID(-1);
         contactDao.saveContact(serviceCompany.getPrimaryContact());
         
@@ -71,6 +73,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         if(serviceCompany.getDesignationCodes() != null) {
             updateDesignationCodes(serviceCompany);
         }
+        sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.ADD);
     }
 
     @Override
@@ -104,6 +107,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         if(serviceCompany.getDesignationCodes() != null) {
             updateDesignationCodes(serviceCompany);
         }
+        sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.UPDATE);
     }
     
     private void updateDesignationCodes(ServiceCompanyDto serviceCompany) {
@@ -170,14 +174,18 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
             //notifications will get deleted here as well
             contactDao.deleteContact(serviceCompany.getPrimaryContact().getContactID());
         }
-        
-        
+        sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.DELETE);
     }
     
     @Override
     public List<ServiceCompanyDesignationCode> getDesignationCodesForServiceCompany(ServiceCompanyDto serviceCompany) {
         return ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(serviceCompany.getCompanyId());
     }
+    
+    private void sendServiceCompanyChangeMessage(Integer serviceCompanyId, DbChangeType dbChangeType) {
+        dbPersistantDao.processDatabaseChange(dbChangeType, DbChangeCategory.SERVICE_COMPANY, serviceCompanyId);
+    }
+    
 
     @Autowired
     public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
@@ -202,5 +210,10 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     @Autowired
     public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
         this.contactNotificationDao = contactNotificationDao;
+    }
+    
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
     }
 }

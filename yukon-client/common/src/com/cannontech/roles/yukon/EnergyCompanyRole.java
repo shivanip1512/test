@@ -23,4 +23,5 @@ public interface EnergyCompanyRole {
     public static final int ROTATION_DIGIT_LENGTH = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 17;
     public static final int SERIAL_NUMBER_VALIDATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 18;
     public static final int AUTOMATIC_CONFIGURATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 19;
+    public static final int ALLOW_DESIGNATION_CODES = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 20;
 }

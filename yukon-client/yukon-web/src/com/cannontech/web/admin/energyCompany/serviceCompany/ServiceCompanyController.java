@@ -128,7 +128,7 @@ public class ServiceCompanyController {
         }
         
         //do not allow unauthorized modification of designation codes
-        if(!getAllowContractorZipCodes(userContext, ecId)) {
+        if(!getEditDesignationCodes(userContext, ecId)) {
             serviceCompany.setDesignationCodes(null);
         }
         
@@ -179,7 +179,7 @@ public class ServiceCompanyController {
         }
         
         //do not allow unauthorized modification of designation codes
-        if(!getAllowContractorZipCodes(userContext, ecId)) {
+        if(!getEditDesignationCodes(userContext, ecId)) {
             serviceCompany.setDesignationCodes(null);
         }
         serviceCompanyService.updateServiceCompany(serviceCompany);
@@ -202,9 +202,14 @@ public class ServiceCompanyController {
         return "redirect:list";
     }
     
-    @ModelAttribute ("allowContractorZipCodes")
-    public boolean getAllowContractorZipCodes(YukonUserContext userContext, int ecId) {
+    @ModelAttribute ("canEditDesignationCodes")
+    public boolean getEditDesignationCodes(YukonUserContext userContext, int ecId) {
         return rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_ALLOW_DESIGNATION_CODES, userContext.getYukonUser());
+    }
+    
+    @ModelAttribute ("canViewDesignationCodes")
+    public boolean getViewDesignationCodes(YukonUserContext userContext, int ecId) {
+        return rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, userContext.getYukonUser());
     }
     
     @ModelAttribute("baseUrl")

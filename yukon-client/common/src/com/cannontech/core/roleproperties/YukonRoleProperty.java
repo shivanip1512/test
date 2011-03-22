@@ -230,7 +230,7 @@ public enum YukonRoleProperty {
     ADMIN_VIEW_OPT_OUT_EVENTS(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS, booleanType()),
     ADMIN_MEMBER_LOGIN_CNTRL(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MEMBER_LOGIN_CNTRL, stringType()),
     ADMIN_MEMBER_ROUTE_SELECT(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MEMBER_ROUTE_SELECT, booleanType()),
-    ADMIN_ALLOW_DESIGNATION_CODES(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_ALLOW_DESIGNATION_CODES, booleanType()),
+    
     ADMIN_MULTI_WAREHOUSE(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MULTI_WAREHOUSE, booleanType()),
     ADMIN_AUTO_PROCESS_BATCH_COMMANDS(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_AUTO_PROCESS_BATCH_COMMANDS, stringType()),
     ADMIN_MULTISPEAK_SETUP(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP, booleanType()),
@@ -396,6 +396,7 @@ public enum YukonRoleProperty {
     ROTATION_DIGIT_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ROTATION_DIGIT_LENGTH, integerType()),
     SERIAL_NUMBER_VALIDATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SERIAL_NUMBER_VALIDATION, InputTypeFactory.enumType(SerialNumberValidation.class)),
     AUTOMATIC_CONFIGURATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTOMATIC_CONFIGURATION, booleanType()),
+    ADMIN_ALLOW_DESIGNATION_CODES(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_DESIGNATION_CODES, booleanType()),
     
     MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),
     MSP_PRIMARY_CB_VENDORID(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),

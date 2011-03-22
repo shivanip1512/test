@@ -61,7 +61,7 @@
                 </tags:boxContainer2>
                 </cti:dataGrid>
                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
-                    <div class="actionArea">
+                    <div class="pageActionArea">
                         <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
                             <cti:param name="ecId" value="${ecId}"/>
                         </cti:url>
