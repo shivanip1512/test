@@ -40,6 +40,11 @@
             <manifest>
                 <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                 <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            	<attribute name="Hudson-Build-Details" value="BUILD_NUMBER=${env.BUILD_NUMBER},
+            	                                                                BUILD_ID=${env.BUILD_ID},
+            	                                                                BUILD_TAG=${env.BUILD_TAG},
+            	                                                                JOB_NAME=${env.JOB_NAME},
+            	                                                                SVN_REVISION=${SVN.REVISION}"/>
             </manifest> 
         </jar>
 
