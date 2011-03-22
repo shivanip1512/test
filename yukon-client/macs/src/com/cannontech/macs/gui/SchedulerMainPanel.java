@@ -1102,38 +1102,33 @@ private void showWizardPanel(WizardPanel wizard)
  * This method was created in VisualAge.
  * @param selected Schedule
  */
-private void synchTableAndButtons(Schedule selected)
-{
-   if (startStopButton == null || editButton == null || enableDisableButton == null)
-	  return;
-	
-   	boolean isEditable = isScheduleEditable();
+private void synchTableAndButtons(Schedule selected) {
+	if (startStopButton == null || editButton == null
+			|| enableDisableButton == null)
+		return;
+
+	boolean isEditable = isScheduleEditable();
 	getDeleteScheduleButton().setEnabled(isEditable);
- 	getEditButton().setEnabled(isEditable);
+	getEditButton().setEnabled(isEditable);
 	getEnableDisableButton().setEnabled(isEditable);
 	getViewButton().setEnabled(true);
+	getStartStopButton().setEnabled(true);
 
-   if (selected.getCurrentState().equals(Schedule.STATE_WAITING))
-   {
-	  getStartStopButton().setText("Start");
-	  getEnableDisableButton().setText("Disable");
-   }
-   else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING))
-   {
-	  getStartStopButton().setText("Stop");
-	  getEnableDisableButton().setText("Disable");
-   }
-   else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED))
-   {
-	  getStartStopButton().setText("Start");
-	  getEnableDisableButton().setText("Enable");
-   }
-   else if (selected.getCurrentState().equals(Schedule.STATE_PENDING))
-   {
-	  getStartStopButton().setText("Stop");
-   }
-   //revalidate();
-   //repaint();
+	if (selected.getCurrentState().equals(Schedule.STATE_WAITING)) {
+		getStartStopButton().setText("Start");
+		getEnableDisableButton().setText("Disable");
+	} else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING)) {
+		getStartStopButton().setText("Stop");
+		getEnableDisableButton().setText("Disable");
+	} else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED)) {
+		getStartStopButton().setText("Start");
+		getEnableDisableButton().setText("Enable");
+		getStartStopButton().setEnabled(false);
+	} else if (selected.getCurrentState().equals(Schedule.STATE_PENDING)) {
+		getStartStopButton().setText("Stop");
+	}
+	// revalidate();
+	// repaint();
 }
 /**
  * This method was created in VisualAge.
