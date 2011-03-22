@@ -6,9 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
-
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
     <tags:setFormEditMode mode="${mode}"/>
