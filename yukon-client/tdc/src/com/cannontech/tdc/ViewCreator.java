@@ -543,13 +543,10 @@ public class ViewCreator
 	    upperCal.setTimeInMillis(lowerCal.getTimeInMillis());
 	    upperCal.add(Calendar.DATE, 1);
 	        
-		String rowCountQuery = "select min(s.logid) " +
+		String rowCountQuery = "select min(s.logid), max(s.logid) " +
 						  " from " + SystemLog.TABLE_NAME + " s" +
-                          " where s.datetime >= ? " +
-                          " and s.datetime < ?";
-
-//						  " where s.datetime >= '" + format.format(lowerCal.getTime()) + "' " +
-//						  " and s.datetime < '" + format.format(upperCal.getTime()) + "'";
+						  " where s.datetime >= '" + format.format(lowerCal.getTime()) + "' " +
+						  " and s.datetime < '" + format.format(upperCal.getTime()) + "'";
 
 		String rowQuery = "select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
 						  " s.username, s.pointid, s.soe_tag " +
@@ -561,21 +558,17 @@ public class ViewCreator
 						  " and s.logid <= ? " +
 						  " order by s.datetime, s.soe_tag";
    
-	      Object[] objs = new Object[2];
-	        objs[0] = lowerCal.getTime();
-	        objs[1] = upperCal.getTime();
-	        
 		//get the row count, min, max   
-		Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, objs);
+		Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, null);
 
 		//set the correct page number values
 		processPagingValues(
 				rowCount[0][0].toString(),
-				"0",
+				rowCount[0][1].toString(),
 				page );
 
 	
-		objs = new Object[4];
+		Object[] objs = new Object[4];
 		objs[0] = lowerCal.getTime();
 		objs[1] = upperCal.getTime();
 		objs[2] = new Integer(qMin);
