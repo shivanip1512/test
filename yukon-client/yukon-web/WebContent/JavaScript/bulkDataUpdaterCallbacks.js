@@ -39,6 +39,9 @@ function updateProgressStatus(pDescId) {
     return function(data) {
     	var statusText = data.get('statusText');
     	$('progressStatus_' + pDescId).innerHTML = statusText;
+    	if (statusText = "error") {
+    		$('progressStatus_' + pDescId).addClassName("ErrorMsg");
+    	}
     };
 }
 

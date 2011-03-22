@@ -33,6 +33,8 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
         	
         	if (status.isComplete()) {
         		return "Complete";
+        	} else if (status.isExceptionOccured()) {
+        	    return "Error";
         	} else {
         		return "In Progress";
         	}

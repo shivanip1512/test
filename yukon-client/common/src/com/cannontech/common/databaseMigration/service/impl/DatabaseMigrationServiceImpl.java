@@ -1040,33 +1040,42 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 			@Override
 			public void run() {
 				
+			    final PrintWriter logFileWriter = 
+			        getLogFileWriter(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
 			     
-				final PrintWriter logFileWriter = 
-					getLogFileWriter(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
-			    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
-		        
-		        // build data
-		        Iterable<DataTable> data = 
-		            configurationProcessorService.processDataTableTemplate(dataTableTemplate, 
-		                                                                   exportIdList, 
-		                                                                   exportDatabaseMigrationStatus,
-		                                                                   logFileWriter);
-		        Element generatedXMLFile = 
-		            exportXMLGeneratorService.buildXmlElement(data, exportType.name());
-
-		        // write data to file
-		        Format format = Format.getPrettyFormat(  );
-		        XMLOutputter xmlOutputter = new XMLOutputter(format);
-		        
-		        try {
-		        	xmlOutputter.output(generatedXMLFile, new FileWriter(xmlDataFile));
-		        } catch (IOException e) {
-		        	log.error("Error outputting xml file.", e);
-		        }
-		        
-		        exportDatabaseMigrationStatus.addCurrentCount();
-		        
-		        logFileWriter.close();
+			    try {
+    			    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
+    		        
+    		        // build data
+    		        Iterable<DataTable> data = 
+    		            configurationProcessorService.processDataTableTemplate(dataTableTemplate, 
+    		                                                                   exportIdList, 
+    		                                                                   exportDatabaseMigrationStatus,
+    		                                                                   logFileWriter);
+    		        Element generatedXMLFile = 
+    		            exportXMLGeneratorService.buildXmlElement(data, exportType.name());
+    
+    		        // write data to file
+    		        Format format = Format.getPrettyFormat(  );
+    		        XMLOutputter xmlOutputter = new XMLOutputter(format);
+    		        
+    		        try {
+    		        	xmlOutputter.output(generatedXMLFile, new FileWriter(xmlDataFile));
+    		        } catch (IOException e) {
+    		        	log.error("Error outputting xml file.", e);
+    		        }
+    		        
+    		        exportDatabaseMigrationStatus.addCurrentCount();
+    		        
+    		        //salvage what we can
+			    } catch (Throwable t) {
+			        log.fatal(t);
+			        exportDatabaseMigrationStatus.setError(t.getLocalizedMessage());
+			        
+			    } finally {
+			        logFileWriter.close();
+			    }
+			    
 			}
 		});
 

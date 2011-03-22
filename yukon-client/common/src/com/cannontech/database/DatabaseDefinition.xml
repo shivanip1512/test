@@ -307,7 +307,6 @@
         <data name="ExcludeNotifyStates"/>
         <data name="NotifyOnAcknowledge"/>
         <data name="NotificationGroupId" tableRef="NotificationGroup"  refType="MANY_TO_ONE"/>
-        <data name="RecipientId" tableRef="ContactNotification" refType="MANY_TO_ONE" />
     </table>
     
     <table name="PointLimits">

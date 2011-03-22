@@ -28,14 +28,18 @@
 
 	    Event.observe(window, 'load', function() {
 
-		    <c:if test="${not migrationStatus.complete}">
+		    <c:if test="${not migrationStatus.complete or migrationStatus.exceptionOccured}">
 		    	$('downloadButton').disable();
 		    </c:if>
+
 	    });
 
 	    function enableMigrationExportDownloadButton() {
 		    try {
-	    		$('downloadButton').enable();
+                <c:if test="${not migrationStatus.exceptionOccured}" >  
+                    $('downloadButton').enable();
+                </c:if>
+                
 	    		// may not be rendered yet
 		    } catch(e){}
 	    }
@@ -53,12 +57,17 @@
 	    
 	    <%-- PROGRESS BAR --%>
 	    <tags:resultProgressBar totalCount="${migrationStatus.totalCount}"
-	        						 countKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"
-	        						 progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
-	        						 statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"
-	        						 hideCount="true"
-	        						 completionCallback="enableMigrationExportDownloadButton"/>
+	                            countKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"
+	                            progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
+	                            statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"
+	        	                hideCount="true"
+                                completionCallback="enableMigrationExportDownloadButton"/>
 	
+        <c:if test="${migrationStatus.exceptionOccured}">
+            <div class="ErrorMsg">
+                ${migrationStatus.exceptionReason}
+            </div>
+        </c:if>
 	
 		
 		<%-- DOWNLOAD --%>	
