@@ -146,7 +146,7 @@ bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool se
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Filename and Path: " << _fileName << " " << _path << std::endl;
+                dout << CtiTime() << " PointId: " << pointID << " at : " << _path << " " << _fileName << std::endl;
             }
             //Also the last point loaded gets the final say in the path and filename
         }
@@ -198,7 +198,14 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     }
     else
     {
-        ok = false;
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Warning: Data will not be sent for Id: " << aMessage->getId() << endl;
+            dout << CtiTime() << "          Expected a 0 or 1, got: " << aMessage->getValue() << endl;
+        }
+
+        return false;
     }
 
     //get the time from pdata and format to match "11/08/06 14:00:19,AEP-AC-COOL-75%,STOP"
@@ -220,9 +227,15 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
             point = (*itr).second;
         }
 
-        if ( mgrPtr->getMap().size() == 0 ||  point)
+        if (mgrPtr->getMap().size() == 0 || !point)
         {
-            ok = false;
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Warning: FDRWabash will not write data to the file. Point is not in the watch list." << std::endl;
+            }
+
+            return false;
         }
         else
         {
@@ -238,52 +251,50 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
             {
                 initialmsg = true;
             }
+
             // store away the latest values.
             schedName = point->getDestinationList()[0].getTranslation();
             point->setValue (aMessage->getValue());
             point->setLastTimeStamp(aMessage->getTime());
         }
     }
+
     //form string with these pieces and call writeDataToFile( string )
-    if(ok){ // ok to write out. no errors.
-        //write out if initialmsg && _writeInitialLoad regardless of value's being equal
-        //write out if the value has changed always
-        //do not write initial load at all if _writeInitialLoad == false
-        //do not write if same values
-        if( initialmsg ){
-            if (_writeInitialLoad){
-                writeDataToFile( dateStr + "," + schedName + "," + action );
-            }
-            else
-            {
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " FDRWabash will not write initial data to the file.\n";
-                }
-            }
+    //write out if initialmsg && _writeInitialLoad regardless of value's being equal
+    //write out if the value has changed always
+    //do not write initial load at all if _writeInitialLoad == false
+    //do not write if same values
+    if( initialmsg )
+    {
+        if (_writeInitialLoad){
+            writeDataToFile( dateStr + "," + schedName + "," + action );
         }
-        else{
-            if ( !equivalentValue )
-            {
-                writeDataToFile( dateStr + "," + schedName + "," + action );
-            }
-            else
-            {
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " FDRWabash will not write duplicate data to the file.\n";
-                }
-            }
-        }
-    }else{
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Warning: FDRWabash will not write data to the file. Point is not in the watch list.\n";
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " FDRWabash: Initial Data will not be written to the file. FDR_WABASH_WRITE_INITIAL_LOAD is false. \n";
+            }
         }
     }
+    else
+    {
+        if ( !equivalentValue )
+        {
+            writeDataToFile( dateStr + "," + schedName + "," + action );
+        }
+        else
+        {
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " FDRWabash: Data will not be written to file. Duplicate data.\n";
+            }
+        }
+    }
+
+
     return ok;
 }
 
@@ -305,11 +316,6 @@ void FDRWabash::setPath( string path )
 }
 bool FDRWabash::writeDataToFile( string cmd )
 {
-    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash has wrote data to a file. \n";
-    }
     ofstream file;
     string pathandfile = _path;// + _fileName );
     pathandfile.append( _fileName );
@@ -329,6 +335,17 @@ bool FDRWabash::writeDataToFile( string cmd )
 
     // close file
     file.close();
+
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " FDRWabash: New Data written to the file.\n";
+
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            dout << CtiTime() << " Data:" << cmd << endl;
+        }
+    }
 
     return true;
 }
