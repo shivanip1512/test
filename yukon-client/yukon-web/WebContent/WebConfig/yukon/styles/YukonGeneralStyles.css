@@ -1332,4 +1332,7 @@ padding: 3px 10px;
 .icon_remove:hover {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
 }
-    
+
+.inline {
+    display: inline;
+}

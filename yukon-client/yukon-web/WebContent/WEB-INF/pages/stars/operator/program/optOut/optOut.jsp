@@ -9,130 +9,6 @@
 
 <cti:standardPage module="operator" page="optOut.main">
 
-<script type="text/javascript">
-
-YEvent.observeSelectorClick('img.cancel', function(event) {
-    var confirmCancelPopup = $('confirmCancel');
-    var theRow = Event.findElement(event, 'tr');
-    var confirmMsg = theRow.down('span.confirmCancelMessage').innerHTML;
-    var eventId = Event.element(event).getAttribute('name');
-    confirmCancelPopup.down("input[name='eventId']").value = eventId;
-    $('cancelConfirmMessage').innerHTML = confirmMsg;
-    confirmCancelPopup.show();
-});
-
-YEvent.observeSelectorClick('img.resend', function(event) {
-    var confirmResendPopup = $('confirmResend');
-    var theRow = Event.findElement(event, 'tr');
-    var confirmMsg = theRow.down('span.confirmResendMessage').innerHTML;
-    var inventoryId = Event.element(event).getAttribute('name');
-    confirmResendPopup.down("input[name='inventoryId']").value = inventoryId;
-    $('resendConfirmMessage').innerHTML = confirmMsg;
-    confirmResendPopup.show();
-});
-
-YEvent.observeSelectorClick('img.allowOne', function(event) {
-    var confirmAllowOnePopup = $('confirmAllowOne');
-    var theRow = Event.findElement(event, 'tr');
-    var confirmMsg = theRow.down('span.confirmAllowOneMessage').innerHTML;
-    var inventoryId = Event.element(event).getAttribute('name');
-    confirmAllowOnePopup.down("input[name='inventoryId']").value = inventoryId;
-    $('allowOneConfirmMessage').innerHTML = confirmMsg;
-    confirmAllowOnePopup.show();
-});
-
-YEvent.observeSelectorClick('img.decrementAllowance', function(event) {
-    var confirmDecrementAllowancePopup = $('confirmDecrementAllowance');
-    var theRow = Event.findElement(event, 'tr');
-    var confirmMsg = theRow.down('span.confirmDecrementAllowanceMessage').innerHTML;
-    var inventoryId = Event.element(event).getAttribute('name');
-    confirmDecrementAllowancePopup.down("input[name='inventoryId']").value = inventoryId;
-    $('decrementAllowanceConfirmMessage').innerHTML = confirmMsg;
-    confirmDecrementAllowancePopup.show();
-});
-
-YEvent.observeSelectorClick('img.resetToLimit', function(event) {
-    var confirmResetToLimitPopup = $('confirmResetToLimit');
-    var theRow = Event.findElement(event, 'tr');
-    var confirmMsg = theRow.down('span.confirmResetToLimitMessage').innerHTML;
-    var inventoryId = Event.element(event).getAttribute('name');
-    confirmResetToLimitPopup.down("input[name='inventoryId']").value = inventoryId;
-    $('resetToLimitConfirmMessage').innerHTML = confirmMsg;
-    confirmResetToLimitPopup.show();
-});
-
-</script>
-
-<!-- Cancel Opt Out Confirmation -->
-<i:simplePopup id="confirmCancel" titleKey=".cancelOptOut.confirmTitle" styleClass="mediumSimplePopup">
-    <div id="cancelConfirmMessage"></div>
-    <form action="/spring/stars/operator/program/optOut/cancelOptOut">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="eventId"/>
-    
-        <div class="actionArea">
-            <cti:button type="submit" key="ok" /> 
-            <cti:button type="button" key="cancel" onclick="$('confirmCancel').hide()"/>
-        </div>
-    </form>
-</i:simplePopup>
-
-<!-- Resend Opt Out Confirmation -->
-<i:simplePopup id="confirmResend" titleKey=".resendOptOut.confirmTitle" styleClass="mediumSimplePopup">
-    <div id="resendConfirmMessage"></div>
-    <form action="/spring/stars/operator/program/optOut/resend">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="inventoryId"/>
-    
-        <div class="actionArea">
-            <cti:button type="submit" key="ok" /> 
-            <cti:button type="button" key="cancel" onclick="$('confirmResend').hide()"/>
-        </div>
-    </form>
-</i:simplePopup>
-
-<!-- Allow One Opt Out Confirmation -->
-<i:simplePopup id="confirmAllowOne" titleKey=".allowOne.confirmTitle" styleClass="mediumSimplePopup">
-    <div id="allowOneConfirmMessage"></div>
-    <form action="/spring/stars/operator/program/optOut/allowAnother">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="inventoryId"/>
-    
-        <div class="actionArea">
-            <cti:button type="submit" key="ok" /> 
-            <cti:button type="button" key="cancel" onclick="$('confirmAllowOne').hide()"/>
-        </div>
-    </form>
-</i:simplePopup>
-
-<!-- Decrement Opt Out Allowance Confirmation -->
-<i:simplePopup id="confirmDecrementAllowance" titleKey=".decrementAllowance.confirmTitle" styleClass="mediumSimplePopup">
-    <div id="decrementAllowanceConfirmMessage"></div>
-    <form action="/spring/stars/operator/program/optOut/decrementAllowances">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="inventoryId"/>
-    
-        <div class="actionArea">
-            <cti:button type="submit" key="ok" /> 
-            <cti:button type="button" key="cancel" onclick="$('confirmDecrementAllowance').hide()"/>
-        </div>
-    </form>
-</i:simplePopup>
-
-<!-- Reset To Limit Confirmation -->
-<i:simplePopup id="confirmResetToLimit" titleKey=".resetToLimit.confirmTitle" styleClass="mediumSimplePopup">
-    <div id="resetToLimitConfirmMessage"></div>
-    <form action="/spring/stars/operator/program/optOut/resetToLimit">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="inventoryId"/>
-    
-        <div class="actionArea">
-            <cti:button type="submit" key="ok" /> 
-            <cti:button type="button" key="cancel" onclick="$('confirmResetToLimit').hide()"/>
-        </div>
-    </form>
-</i:simplePopup>
-
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -246,17 +122,21 @@ YEvent.observeSelectorClick('img.resetToLimit', function(event) {
                         <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                     </td>
                     <td valign="top">
-                        <cti:img key="cancelOptOut" styleClass="cancel hoverableImage" name="${optOut.eventId}"/>
-                        <span class="confirmCancelMessage" style="display:none;">
-                            <i:inline key=".cancelOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
-                        </span>
-
+                        <cti:img key="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                        <form action="/spring/stars/operator/program/optOut/cancelOptOut" class="inline">
+                            <input type="hidden" name="accountId" value="${accountId}"/>
+                            <input type="hidden" name="eventId" value="${optOut.eventId}"/>
+                            <tags:confirmDialog on="#cancel${optOut.inventory.inventoryId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
+                        </form>
+                        
                         <c:choose>
                             <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                <cti:img key="resendOptOut" styleClass="resend hoverableImage" name="${optOut.inventory.inventoryId}"/>
-                                <span class="confirmResendMessage" style="display:none;">
-                                    <i:inline key=".resendOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
-                                </span>
+                                <cti:img key="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                <form action="/spring/stars/operator/program/optOut/resend" class="inline">
+                                    <input type="hidden" name="accountId" value="${accountId}"/>
+                                    <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
+                                    <tags:confirmDialog on="#resend${optOut.inventory.inventoryId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
+                                </form>
                             </c:when>
                             <c:otherwise>
                                 <cti:img key="resendOptOutDisabled"/>
@@ -309,16 +189,20 @@ YEvent.observeSelectorClick('img.resetToLimit', function(event) {
                     </td>
                     <td>
                         <c:if test="${!noOptOutLimits}">
-                            <cti:img key="allowOne" styleClass="allowOne hoverableImage" name="${inventory.inventoryId}"/>
-                            <span class="confirmAllowOneMessage" style="display:none;">
-                                <i:inline key=".allowOne.confirm" arguments="${inventory.displayName}"/>
-                            </span>
+                            <cti:img key="allowOne" id="allowOne${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                            <form action="/spring/stars/operator/program/optOut/allowAnother" class="inline">
+                                <input type="hidden" name="accountId" value="${accountId}"/>
+                                <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
+                                <tags:confirmDialog on="#allowOne${inventory.inventoryId}" nameKey=".confirmAllowOne" argument="${inventory.displayName}"/>
+                            </form>
 
                             <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
-                                <cti:img key="decrementAllowance" styleClass="decrementAllowance hoverableImage" name="${inventory.inventoryId}"/>
-                                <span class="confirmDecrementAllowanceMessage" style="display:none;">
-                                    <i:inline key=".decrementAllowance.confirm" arguments="${inventory.displayName}"/>
-                                </span>
+                                <cti:img key="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                <form action="/spring/stars/operator/program/optOut/decrementAllowances" class="inline">
+                                    <input type="hidden" name="accountId" value="${accountId}"/>
+                                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
+                                    <tags:confirmDialog on="#decrementAllowance${inventory.inventoryId}" nameKey=".confirmDecrementAllowance" argument="${inventory.displayName}"/>
+                                </form>
                             </c:if>
                             <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
                                 <cti:img key="decrementAllowanceDisabled"/>
@@ -329,10 +213,12 @@ YEvent.observeSelectorClick('img.resetToLimit', function(event) {
                                     <cti:img key="resetToLimitDisabled"/>
         	                    </c:when>
         	                    <c:otherwise>
-                                    <cti:img key="resetToLimit" styleClass="resetToLimit hoverableImage" name="${inventory.inventoryId}"/>
-                                    <span class="confirmResetToLimitMessage" style="display:none;">
-                                        <i:inline key=".resetToLimit.confirm" arguments="${inventory.displayName}"/>
-                                    </span>
+                                    <cti:img key="resetToLimit" id="resetToLimit${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                    <form action="/spring/stars/operator/program/optOut/resetToLimit" class="inline">
+                                        <input type="hidden" name="accountId" value="${accountId}"/>
+                                        <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
+                                        <tags:confirmDialog on="#resetToLimit${inventory.inventoryId}" nameKey=".confirmResetToLimit" argument="${inventory.displayName}"/>
+                                    </form>
           	                   </c:otherwise>
         	                </c:choose>
                                              
