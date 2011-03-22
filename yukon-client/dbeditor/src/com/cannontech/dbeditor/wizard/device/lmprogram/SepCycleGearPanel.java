@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 
 import javax.swing.JCheckBox;
@@ -18,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.CaretEvent;
+
+import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.util.StringUtils;
@@ -552,20 +555,20 @@ public class SepCycleGearPanel extends GenericGearPanel {
             gear.setMethodStopType(removeChars(' ', getJComboBoxHowToStop().getSelectedItem().toString()));
         }
 
-        gear.setPercentReduction(new Integer(((Number) getJCSpinFieldPercentReduction().getValue()).intValue()));
+        gear.setPercentReduction(toInteger(getJCSpinFieldPercentReduction().getValue()));
 
         gear.setChangeCondition(getChangeCondition(getJComboBoxWhenChange().getSelectedItem().toString()));
 
-        gear.setChangeDuration(new Integer(((Number) getJCSpinFieldChangeDuration().getValue()).intValue() * 60));
-        gear.setChangePriority(new Integer(((Number) getJCSpinFieldChangePriority().getValue()).intValue()));
-        gear.setChangeTriggerNumber(new Integer(((Number) getJCSpinFieldChangeTriggerNumber().getValue()).intValue()));
+        gear.setChangeDuration(toInteger(getJCSpinFieldChangeDuration().getValue()) * 60);
+        gear.setChangePriority(toInteger(getJCSpinFieldChangePriority().getValue()));
+        gear.setChangeTriggerNumber(toInteger(getJCSpinFieldChangeTriggerNumber().getValue()));
 
         if (getJTextFieldChangeTriggerOffset().getText() == null || getJTextFieldChangeTriggerOffset().getText().length() <= 0)
-            gear.setChangeTriggerOffset(new Double(0.0));
+            gear.setChangeTriggerOffset(0.0);
         else
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
 
-        gear.setControlPercent(new Integer(((Number) getJCSpinFieldControlPercent().getValue()).intValue()));
+        gear.setControlPercent(toInteger(getJCSpinFieldControlPercent().getValue()));
 
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
@@ -574,6 +577,10 @@ public class SepCycleGearPanel extends GenericGearPanel {
         return gear;
     }
 
+    private Integer toInteger(Object o) throws ClassCastException {
+        return ((Number)o).intValue();
+    }
+    
     private void handleException(Throwable exception) {
         System.out.print(exception.getMessage());
         System.out.println("--------- UNCAUGHT EXCEPTION ---------");
@@ -770,7 +777,8 @@ public class SepCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldChangeDuration().setValue(new Integer(gear.getChangeDuration().intValue() / 60));
         getJCSpinFieldChangePriority().setValue(gear.getChangePriority());
         getJCSpinFieldChangeTriggerNumber().setValue(gear.getChangeTriggerNumber());
-        getJTextFieldChangeTriggerOffset().setText(gear.getChangeTriggerOffset().toString());
+        final DecimalFormat format = new DecimalFormat("#####.####");
+        getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
 
         getJCSpinFieldControlPercent().setValue(gear.getControlPercent());
 
