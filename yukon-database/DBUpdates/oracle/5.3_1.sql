@@ -22,13 +22,11 @@ WHERE StateGroupId = -14
 /* Start YUK-9575 */
 ALTER TABLE ServiceCompanyDesignationCode 
     DROP CONSTRAINT FK_SRVCODSGNTNCODES_SRVCO;
-GO
 
 ALTER TABLE ServiceCompanyDesignationCode 
     ADD CONSTRAINT FK_ServCompDesCode_ServComp FOREIGN KEY (ServiceCompanyId) 
         REFERENCES ServiceCompany (CompanyId) 
             ON DELETE CASCADE;
-GO
 /* End YUK-9575 */
 
 /**************************************************************/ 
