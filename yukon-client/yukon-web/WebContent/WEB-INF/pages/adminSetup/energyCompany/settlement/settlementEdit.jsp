@@ -1,0 +1,164 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
+
+<cti:standardPage module="adminSetup" page="settlement.${mode}">
+    <tags:setFormEditMode mode="${mode}"/>
+
+<script>
+Event.observe(window, 'load', function() {
+    $$('.focusableFieldHolder input').each(function(inputField) {
+        var blurAndInitial = function() {
+            var defaultField = inputField.up('span').next('input');
+            if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
+                inputField.addClassName('usingDefaultValue');
+                inputField.value = $F(defaultField);
+            }
+            inputField.up('tr').removeClassName('childHasFocus');
+        };
+        Event.observe(inputField, "focus", function(event) {
+            var defaultField = inputField.up('span').next('input');
+            if ($F(inputField) == $F(defaultField)) {
+                inputField.value = "";
+            }
+            inputField.removeClassName('usingDefaultValue');
+            inputField.up('tr').addClassName('childHasFocus');
+        });
+        Event.observe(inputField, "blur", blurAndInitial);
+        blurAndInitial();
+    });
+
+    <%-- handling select elements is similar, but requires slightly different code --%>
+    $$('.focusableFieldHolder select').each(function(inputField) {
+        var blurAndInitial = function() {
+            var defaultField = inputField.up('span').next('input');
+            if ($F(inputField) == $F(defaultField)) {
+                inputField.addClassName('usingDefaultValue');
+            } else {
+                inputField.removeClassName('usingDefaultValue');
+            }
+        };
+        Event.observe(inputField, "change", blurAndInitial);
+        Event.observe(inputField, "focus", function(event) {
+            inputField.up('tr').addClassName('childHasFocus');
+            inputField.removeClassName('usingDefaultValue');
+        });
+        Event.observe(inputField, "blur", function(event) {
+            inputField.up('tr').removeClassName('childHasFocus');
+            blurAndInitial();
+        });
+        blurAndInitial();
+    });
+
+});
+
+function toggleAvailableRatesInputs(availableRatesCheckBox) {
+
+    var parentTr = availableRatesCheckBox.up('tr');
+    var rateConfigTrs = parentTr.nextSiblings();
+
+    for (var i = 0; i < rateConfigTrs.length; i++) {
+    	var rateConfigTr = rateConfigTrs[i];
+    	if (availableRatesCheckBox.checked) {
+            rateConfigTr.removeClassName('disabled');
+
+            rateConfigTrs.each(function(elem) {
+                elem.select("input:text").each(function(elem2) {
+                    elem2.disabled = false;
+                })
+             });
+            
+        } else {
+            rateConfigTr.addClassName('disabled');
+
+            rateConfigTrs.each(function(elem) {
+                elem.select("input:text").each(function(elem2) {
+                    elem2.disabled = true;
+                })
+             });
+        }
+    }
+}
+
+Event.observe(window, 'load', function() {
+    var availableRateCheckBoxTds = $$(".availableRateCheckBoxTd");
+
+    console.log(availableRateCheckBoxTds);
+
+    for (var i = 0; i < availableRateCheckBoxTds.length; i++) {
+        var availableRateCheckBoxTd = availableRateCheckBoxTds[i];
+
+        toggleAvailableRatesInputs(availableRateCheckBoxTd.down('input'));
+    }
+});
+
+</script>
+
+    <cti:url value="edit" var="editUrl">
+        <cti:param name="ecId" value="${ecId}" />
+        <cti:param name="settlementYukonDefId" value="${settlementYukonDefId}" />
+    </cti:url>
+
+    <form:form commandName="settlementDto" method="post" action="${edit}">
+        
+        <tags:formElementContainer nameKey="configurations">
+            <table class="nameValueTable naturalWidth">
+                <c:forEach var="liteSettlementConfig" items="${settlementDto.editableLiteSettlementConfigs}" varStatus="status">
+                    <tr>
+                        <td class="name"><label>${liteSettlementConfig.fieldName}:</label></td>
+                        <td class="value">
+                            <span class="focusableFieldHolder">
+                                <tags:input path="editableLiteSettlementConfigs[${status.index}].fieldValue"/>
+                            </span>
+                            <tags:hidden path="editableLiteSettlementConfigs[${status.index}].configID"/>
+                            <span class="focusedFieldDescription">${liteSettlementConfig.description}</span>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </tags:formElementContainer>
+        
+        <tags:formElementContainer nameKey="availableRates">
+            <c:forEach var="availableRate" items="${settlementDto.availableRates}" varStatus="availRatesStatus">
+                <tags:hidden path="availableRates[${availRatesStatus.index}].entryId"/>
+                <table class="nameValueTable naturalWidth">
+                    <tr>
+                        <td colspan="3" class="availableRateCheckBoxTd"><tags:checkbox path="availableRates[${availRatesStatus.index}].enabled" onclick="toggleAvailableRatesInputs(this);" /> ${availableRate.availableRateName}</td>
+                    </tr>
+                    <c:forEach var="liteSettlementConfig" items="${availableRate.rateConfigurations}" varStatus="rateConfigStatus">
+                        <tr>
+                            <td width="30"></td>
+                            <td class="name"><label>${liteSettlementConfig.fieldName}:</label></td>
+                            <td class="value">
+                                <span class="focusableFieldHolder">
+                                     <form:input path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].fieldValue"/>
+                                </span>
+                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].configID"/>
+                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].fieldName"/>
+                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].description"/>
+                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].entryID"/>
+                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].refEntryID"/>
+                                <span class="focusedFieldDescription">${liteSettlementConfig.description}</span>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+                <br>
+            </c:forEach>
+        </tags:formElementContainer>
+    
+        <div class="pageActionArea">
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button key="save" type="submit" name="save"/>
+                <cti:button key="cancel" type="submit" name="cancel"/>
+            </cti:displayForPageEditModes>
+        </div>
+    </form:form>
+
+</cti:standardPage>

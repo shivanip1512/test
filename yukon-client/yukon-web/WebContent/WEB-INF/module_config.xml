@@ -1171,8 +1171,15 @@
                             </page>
                             <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/settlement</link>
+                                <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="settlement.EDIT" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}</link>
+                                        <labelArgument>${settlementName}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                         </pages>
                     </page>
@@ -1540,6 +1547,7 @@
                             <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/stars/operator/energyCompany/schedules</link>
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT" />
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>

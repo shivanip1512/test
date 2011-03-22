@@ -177,4 +177,54 @@ public class LiteSettlementConfig extends LiteBase {
 	{
 		desc = desc_;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((desc == null) ? 0 : desc.hashCode());
+        result = prime * result + entryID;
+        result = prime * result
+                 + ((fieldName == null) ? 0 : fieldName.hashCode());
+        result = prime * result
+                 + ((fieldValue == null) ? 0 : fieldValue.hashCode());
+        result = prime * result + refEntryID;
+        result = prime * result + yukonDefID;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LiteSettlementConfig other = (LiteSettlementConfig) obj;
+        if (desc == null) {
+            if (other.desc != null)
+                return false;
+        } else if (!desc.equals(other.desc))
+            return false;
+        if (entryID != other.entryID)
+            return false;
+        if (fieldName == null) {
+            if (other.fieldName != null)
+                return false;
+        } else if (!fieldName.equals(other.fieldName))
+            return false;
+        if (fieldValue == null) {
+            if (other.fieldValue != null)
+                return false;
+        } else if (!fieldValue.equals(other.fieldValue))
+            return false;
+        if (refEntryID != other.refEntryID)
+            return false;
+        if (yukonDefID != other.yukonDefID)
+            return false;
+        return true;
+    }
+	
+	
 }

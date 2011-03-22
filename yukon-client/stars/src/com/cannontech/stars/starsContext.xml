@@ -173,6 +173,10 @@
 
     <bean id="starsProgramEnrollmentService" class="com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl"/>
 
+    <bean id="settlementConfigDao" class="com.cannontech.stars.dr.settlement.dao.impl.SettlementConfigDaoImpl" />
+
+    <bean id="settlementService" class="com.cannontech.stars.dr.settlement.service.impl.SettlementServiceImpl" />
+
 	<bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl" />
 
     <bean id="customerEventDao" class="com.cannontech.stars.dr.thermostat.dao.impl.CustomerEventDaoImpl" />

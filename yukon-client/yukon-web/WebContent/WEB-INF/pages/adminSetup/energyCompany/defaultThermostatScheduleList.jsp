@@ -11,12 +11,17 @@
 
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     <tags:setFormEditMode mode="${mode}"/>
     
-    <c:forEach var="schedulableThermostatType" items="${schedulableThermostatTypes}">
-        <a href="editDefaultThermostatSchedule?type=${schedulableThermostatType}&ecId=${ecId}"><i:inline key="${schedulableThermostatType.hardwareType.displayKey}" /></a>
-        <br>
-    </c:forEach>
+    <div class="listContainer">
+        <tags:boxContainer2 nameKey="defaultThermostatSchedules">
+        
+            <c:forEach var="schedulableThermostatType" items="${schedulableThermostatTypes}">
+                <a href="editDefaultThermostatSchedule?type=${schedulableThermostatType}&ecId=${ecId}"><i:inline key="${schedulableThermostatType.hardwareType.displayKey}" /></a>
+                <br>
+            </c:forEach>
+
+        </tags:boxContainer2>
+    </div>
     
 </cti:standardPage>

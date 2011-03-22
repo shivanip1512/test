@@ -3,6 +3,7 @@
  */
 package com.cannontech.stars.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -23,6 +24,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 /**
  * SettlementConfigFuncs - deals with lite settlementConfig objects
@@ -58,9 +60,9 @@ public final class SettlementConfigFuncs {
 	 * @param yukonDefID
 	 * @return
 	 */
-	public static Vector getAllLiteConfigsBySettlementType(int yukonDefID)
+	public static List<LiteSettlementConfig> getAllLiteConfigsBySettlementType(int yukonDefID)
 	{
-		Vector liteConfigs = new Vector();
+		List<LiteSettlementConfig> liteConfigs = Lists.newArrayList();
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized(cache) {
 				Iterator iter = cache.getAllSettlementConfigs().iterator();
@@ -132,11 +134,11 @@ public final class SettlementConfigFuncs {
 		return liteConfigs;
 	}
 	
-	public static Vector getAllAvailRateSchedules(LiteStarsEnergyCompany liteStarsEC, int yukonDefID)
+	public static List<YukonListEntry> getAllAvailRateSchedules(LiteStarsEnergyCompany liteStarsEC, int yukonDefID)
 	{
-		Vector rates = new Vector();
+		List<YukonListEntry> rates = Lists.newArrayList();
 		YukonSelectionList rateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE);
-		Vector liteConfigs = getAllLiteConfigsBySettlementType(yukonDefID);
+		List<LiteSettlementConfig> liteConfigs = getAllLiteConfigsBySettlementType(yukonDefID);
 		for (int i = 0; i < rateList.getYukonListEntries().size(); i++)
 		{
 			boolean add = true;
@@ -159,6 +161,7 @@ public final class SettlementConfigFuncs {
 		return rates;
 	}
 	
+	@Deprecated
 	public static boolean isEditableConfig(int configID, int entryID)
 	{
 		//YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO configs
@@ -172,15 +175,25 @@ public final class SettlementConfigFuncs {
 		return true;
 	}
 	
+	public static List<LiteSettlementConfig> getNonEditableConfigs(int energyCompanyId, int yukonDefId){
+	    ArrayList<LiteSettlementConfig> nonEditableConfigs = Lists.newArrayList();
+	    
+	    LiteSettlementConfig demandChargeConfig = 
+	        getLiteSettlementConfig(energyCompanyId, yukonDefId, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+	    nonEditableConfigs.add(demandChargeConfig);
+
+	    return nonEditableConfigs;
+	}
+	
 	/**
 	 * Returns vector of LiteSettlementConfig values
 	 * @param yukDefID Settlement Type ID
 	 * @param entryID YukonListEntryTypes (rate schedule ID)
 	 * @return
 	 */
-	public static Vector getRateScheduleConfigs(int yukDefID, int rateEntryID)
+	public static List<LiteSettlementConfig> getRateScheduleConfigs(int yukDefID, int rateEntryID)
 	{
-		Vector rateConfigs = new Vector();
+		List<LiteSettlementConfig> rateConfigs = Lists.newArrayList();
 		
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		List configs = cache.getAllSettlementConfigs();
@@ -199,7 +212,6 @@ public final class SettlementConfigFuncs {
 			if( yukDefID == YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
 			{
 				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_DEMAND_CHARGE)));
-//				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_PENALTY_CHARGE)));
 			}
 		}
 		return rateConfigs;
@@ -207,7 +219,7 @@ public final class SettlementConfigFuncs {
 
 	public static String buildConfigHTML(LiteStarsEnergyCompany liteEC, int yukDefID)
 	{
-		java.util.Vector liteConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(yukDefID);
+		List<LiteSettlementConfig> liteConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(yukDefID);
 
 		String html = "";
 		
@@ -243,11 +255,11 @@ public final class SettlementConfigFuncs {
 		html += "  <td colspan='3' class='TableCell' height='2'><hr></td>" + LINE_SEPARATOR;
 		html += "</tr>" + LINE_SEPARATOR;
 		
-		Vector availRates = SettlementConfigFuncs.getAllAvailRateSchedules(liteEC, yukDefID);
+		List<YukonListEntry> availRates = SettlementConfigFuncs.getAllAvailRateSchedules(liteEC, yukDefID);
 		for (int i = 0; i < availRates.size(); i++)
 		{
 			YukonListEntry entry = (YukonListEntry) availRates.get(i);
-			Vector rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukDefID, entry.getEntryID());
+			List<LiteSettlementConfig> rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukDefID, entry.getEntryID());
 			if( !rateConfigs.isEmpty())
 			{
 				LiteSettlementConfig rateConfig = (LiteSettlementConfig)rateConfigs.get(0);	//use the first one for checking if the rate is 'checked'

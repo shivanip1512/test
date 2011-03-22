@@ -190,3 +190,7 @@ table.routeAndSubstationLayout td.first, td.last {
 table.routeAndSubstationLayout td.last {
     padding-left: 30px;
 }
+
+div.listContainer {
+    max-width: 400px;
+}
