@@ -20,9 +20,16 @@ public final class DisplayableEnrollment {
         enrollmentProgramComparator = new Comparator<DisplayableEnrollmentProgram>() {
             @Override
             public int compare(DisplayableEnrollmentProgram o1, DisplayableEnrollmentProgram o2) {
+                
                 Integer order1 = o1.getProgram().getProgramOrder();
                 Integer order2 = o2.getProgram().getProgramOrder();
-                return order1.compareTo(order2);
+                if (order1.compareTo(order2) != 0) {
+                    return order1.compareTo(order2);
+                } else {
+                    Integer programId1 = o1.getProgram().getProgramId();
+                    Integer programId2 = o2.getProgram().getProgramId();
+                    return programId1.compareTo(programId2);
+                }
             }
         };
 
