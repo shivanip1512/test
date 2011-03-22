@@ -3,19 +3,25 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 public abstract class AbstractDeviceTreeModel extends DBTreeModel 
@@ -59,14 +65,8 @@ protected DBTreeNode getNewNode(Object obj)
 {
 	return new DBTreeNode(obj);
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/27/2002 10:17:05 AM)
- * @param lp com.cannontech.database.data.lite.LitePoint
- * @param dTreeNode com.cannontech.database.model.DummyTreeNode
- */
-protected DBTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoint lp, 
-					DBTreeNode node, String text, DBTreeNode deviceNode ) 
+
+protected DBTreeNode addDummyTreeNode(LitePoint lp, DBTreeNode node, String text, DBTreeNode deviceNode ) 
 {
 	if( node == null)
 	{
@@ -92,11 +92,7 @@ protected DBTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoin
 
 	return node;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/19/2002 1:35:08 PM)
- * @param deviceNode DBTreeNode
- */
+
 private void addPoints(DBTreeNode deviceNode )
 {
 	//type nodes of point types
@@ -108,30 +104,27 @@ private void addPoints(DBTreeNode deviceNode )
 	//the points in the pointList are added to the device node
 	//pseudo points are added to the end of the list if sorting by point offset
 	//if sorting by name, all points are added in alphabetical order, regardless if pseudo points
-	for (int j = 0; j < pointTempList.size(); j++)
-	{
-		LitePoint lp = (LitePoint) pointTempList.get(j);
+	for (LitePoint lp : pointTempList) {
 
-		if( lp.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT)
-		{
-			anNode = addDummyTreeNode( lp, anNode, "Analog", deviceNode );
-		}
-		else if( lp.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT)
-		{
-			stNode = addDummyTreeNode( lp, stNode, "Status", deviceNode );
-		}
-		else if ( lp.getPointType() == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT)
-		{
-			accPulsNode = addDummyTreeNode( lp, accPulsNode, "Pulse Accumulator", deviceNode );
-		}
-		else if ( lp.getPointType() == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT)
-		{
-			accDmndNode = addDummyTreeNode( lp, accDmndNode, "Demand Accumulator", deviceNode );
-		}
-		else if ( lp.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT
-				|| lp.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT )
-		{
-			calcNode = addDummyTreeNode( lp, calcNode, "Calculated", deviceNode );
+		if( isPointValid(lp)) {
+			switch (lp.getPointTypeEnum()) {
+			case Analog:
+				anNode = addDummyTreeNode( lp, anNode, "Analog", deviceNode );
+				break;
+			case Status:
+				stNode = addDummyTreeNode( lp, stNode, "Status", deviceNode );
+				break;
+			case PulseAccumulator:
+				accPulsNode = addDummyTreeNode( lp, accPulsNode, "Pulse Accumulator", deviceNode );
+				break;
+			case DemandAccumulator:
+				accDmndNode = addDummyTreeNode( lp, accDmndNode, "Demand Accumulator", deviceNode );
+				break;
+			case CalcAnalog:
+			case CalcStatus:
+				calcNode = addDummyTreeNode( lp, calcNode, "Calculated", deviceNode );
+				break;
+			}
 		}
 	}
 
@@ -154,47 +147,18 @@ private void addPoints(DBTreeNode deviceNode )
 	pointTempList.clear();
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/27/2002 10:37:56 AM)
- * @param points java.util.List
- * @param destList java.util.Vector
- */
-private boolean createDevicePointList(java.util.List points, java.util.List destList, int deviceDevID )
-{
-    
-	//searches and sorts the list!
-	CtiUtilities.binarySearchRepetition( 
-					points,
-					DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-					com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
-					destList );
-						
-	for( int i = destList.size()-1; i >= 0; i-- )
-	{
-		com.cannontech.database.data.lite.LitePoint lp = (LitePoint)destList.get(i);
-		if( !isPointValid(lp) )
-			destList.remove(i);
-	}
 
-	return destList.size() > 0;
-}
 /**
- * Insert the method's description here.
- * Creation date: (4/24/2002 9:24:01 AM)
+ * This method will return what List of LiteYukonPAObjects we want to use.  
+ * Example, a device tree model will use :
+ * 		cache.getAllDevices()
+ * and a LoadManagement tree model will use:
+ * 		cache.getAllLoadManagement()
+ * 
+ * Override this method when using a different List
  * @return java.util.List
  */
-/* This method will return what List of LiteYukonPAObjects we 
-   want to use.  Example, a device tree model will use :
-	   cache.getAllDevices()
-   and a LoadManagement tree model will use:
-	   cache.getAllLoadManagement()
-
-	Override this method when using a differnt List
-	*/
-   
-protected synchronized java.util.List getCacheList(
-		IDatabaseCache cache ) 
+protected synchronized List getCacheList(IDatabaseCache cache) 
 {
 	return cache.getAllDevices();
 }
@@ -204,11 +168,7 @@ protected boolean isPointValid( LitePoint lp )
    return true; //all points are valid by default
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- */
+@Override
 public boolean insertTreeObject( LiteBase lb ) 
 {
 	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
@@ -220,8 +180,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		int devID = ((LitePoint)lb).getPaobjectID();
 
-		com.cannontech.database.data.lite.LiteYukonPAObject pao =
-				DaoFactory.getPaoDao().getLiteYukonPAO( devID );
+		LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO( devID );
 
 		//in order to find our lite object we need to first populate our TreeModel
 		updateIfNothingHasBeenLoaded();
@@ -242,10 +201,9 @@ public boolean insertTreeObject( LiteBase lb )
 		}
 
 	}
-	else if ( lb instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+	else if ( lb instanceof LiteYukonPAObject )
 	{
-		com.cannontech.database.data.lite.LiteYukonPAObject liteYuk =
-				(com.cannontech.database.data.lite.LiteYukonPAObject)lb;
+		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
 		if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
 		{
@@ -284,33 +242,25 @@ public boolean isTreePrimaryForObject(LiteBase lb) {
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (4/22/2002 4:11:23 PM)
- * @param deviceType int
+ * Other models should override this method to return the condition they want to use
  */
-/* Other models should override this method to return the condition
-	they want to use */
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-	return com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(class_)
-				&& category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE 
-				&& type_ != com.cannontech.database.data.pao.PAOGroups.MCTBROADCAST;
+	return DeviceClasses.isCoreDeviceClass(class_)
+				&& category_ == PAOGroups.CAT_DEVICE 
+				&& type_ != PAOGroups.MCTBROADCAST;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 2:05:03 PM)
- * @return com.cannontech.database.data.lite.LiteBase[]
- */
+
+@Override
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT
-		  		|| liteType == com.cannontech.database.data.lite.LiteTypes.POINT );
+	return ( liteType == LiteTypes.YUKON_PAOBJECT
+		  		|| liteType == LiteTypes.POINT );
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (4/16/2002 5:16:19 PM)
+ * Override me if you want a sub class to do something different.
  */
-// Override me if you want a sub class to do something different.
 protected synchronized void runUpdate() 
 {
 	IDatabaseCache cache =
@@ -318,8 +268,8 @@ protected synchronized void runUpdate()
 
 	synchronized (cache)
 	{
-		java.util.List devices = getCacheList(cache);
-		java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
+		List devices = getCacheList(cache);
+		Collections.sort(devices, LiteComparators.liteStringComparator);
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
@@ -327,9 +277,9 @@ protected synchronized void runUpdate()
 		for (int i = 0; i < devices.size(); i++)
 		{
 			if( isDeviceValid(
-					((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getCategory(),
-					((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass(),
-					((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() ) )
+					((LiteYukonPAObject)devices.get(i)).getCategory(),
+					((LiteYukonPAObject)devices.get(i)).getPaoClass(),
+					((LiteYukonPAObject)devices.get(i)).getType() ) )
 			{
 				DBTreeNode deviceNode = getNewNode(devices.get(i));
 				rootNode.add(deviceNode);
@@ -346,12 +296,8 @@ protected synchronized void runUpdate()
 
 	reload();	
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 12:43:37 PM)
- * @param parentNode DBTreeNode
- * @param sortType int
- */
+
+@Override
 public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType) 
 {
 	if( parentNode == null )
@@ -360,15 +306,15 @@ public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType)
 	//we only sort points, for now............
 
 	//default the sorting to the POINT_NAME comparator
-	java.util.Comparator comp = com.cannontech.database.data.lite.LiteComparators.liteStringComparator;
+	Comparator comp = LiteComparators.liteStringComparator;
 	if( sortType == SORT_POINT_OFFSET )
-		comp = com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator;
+		comp = LiteComparators.litePointPointOffsetComparator;
 
-	java.util.Vector liteObjects = new java.util.Vector( parentNode.getChildCount() );
+	Vector liteObjects = new Vector( parentNode.getChildCount() );
 	for( int i = 0 ; i < parentNode.getChildCount(); i++ )
 		liteObjects.add( ((DBTreeNode)parentNode.getChildAt(i)).getUserObject() );
 
-	java.util.Collections.sort( liteObjects, comp );
+	Collections.sort( liteObjects, comp );
 
 	parentNode.removeAllChildren();
 	for( int i = 0 ; i < liteObjects.size(); i++ )
@@ -376,18 +322,8 @@ public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType)
 
 	updateTreeNodeStructure( parentNode );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-//public String toString() {
-//    return ModelFactory.getModelString(this.getClass());
-//}
-/**
- * Insert the method's description here.
- * Creation date: (4/25/2002 12:35:32 PM)
- * @param path javax.swing.tree.TreePath
- */
+
+@Override
 public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 {
 	if( !showPoints )
@@ -397,15 +333,13 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 	DBTreeNode node = (DBTreeNode)path.getLastPathComponent();
 
 	if( node.willHaveChildren() &&
-		 node.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+		 node.getUserObject() instanceof LiteYukonPAObject )
 	{
-		IDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
 		synchronized (cache)
 		{
-			int deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject)node.getUserObject()).getYukonID();
-			//java.util.List points = cache.getAllPoints();
+			int deviceDevID = ((LiteYukonPAObject)node.getUserObject()).getYukonID();
 
 			//change our dummy points device ID to the current DeviceID
 			DUMMY_LITE_POINT.setPaobjectID(deviceDevID);
@@ -416,13 +350,11 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 				node.removeAllChildren();
 				pointTempList.clear();
 				
-				//makes a list of points associated with the current deviceNode
-				//createDevicePointList( points, pointTempList, deviceDevID );
                 PointDao pointDao = DaoFactory.getPointDao();
                 pointTempList = pointDao.getLitePointsByPaObjectId(deviceDevID);
 
 				//sorts the pointList according to name or offset, (default is set to sort by name)
-				java.util.Collections.sort(pointTempList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+				Collections.sort(pointTempList, LiteComparators.liteStringComparator);
 
 				//add all points and point types to the deviceNode
 				addPoints( node );
@@ -432,9 +364,8 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 
 	node.setWillHaveChildren(false);
 }
-/**
- * This method was created in VisualAge.
- */
+
+@Override
 public synchronized void update()
 {
 	runUpdate();
