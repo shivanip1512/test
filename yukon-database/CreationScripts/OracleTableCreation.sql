@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/9/2011 2:12:12 PM                          */
+/* Created on:     3/22/2011 3:04:41 PM                         */
 /*==============================================================*/
 
 
@@ -7853,8 +7853,8 @@ INSERT INTO State VALUES(-15, 2, 'Ok', 10, 6, 0);
 INSERT INTO State VALUES(-15, 3, 'Good', 3, 6, 0); 
 INSERT INTO State VALUES(-15, 4, 'Best', 4, 6, 0);
 INSERT INTO State VALUES(-14, 0, 'Good', 0, 6, 0); 
-INSERT INTO State VALUES(-14, 1, 'Questionable', 1, 6, 0); 
-INSERT INTO State VALUES(-14, 2, 'Bad', 2, 6, 0); 
+INSERT INTO State VALUES(-14, 1, 'Questionable', 3, 6, 0); 
+INSERT INTO State VALUES(-14, 2, 'Bad', 1, 6, 0); 
 INSERT INTO State VALUES(-13, 0, 'Commissioned', 0, 6, 0);
 INSERT INTO State VALUES(-13, 1, 'Uncommissioned', 1, 6, 0); 
 INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
