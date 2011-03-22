@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/22/2011 3:40:10 PM                         */
+/* Created on:     3/22/2011 5:25:08 PM                         */
 /*==============================================================*/
 
 
@@ -9537,6 +9537,7 @@ INSERT INTO YukonRoleProperty VALUES(-1116,-2,'Account Number Length',' ','Speci
 INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Specifies the number of rotation digit characters to ignore during the customer account import process.'); 
 INSERT INTO YukonRoleProperty VALUES(-1118,-2,'Serial Number Validation','NUMERIC','Treat serial numbers as numeric or alpha-numberic. Possible values (NUMERIC, ALPHANUMERIC)');
 INSERT INTO YukonRoleProperty VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment.');
+INSERT INTO YukonRoleProperty VALUES(-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.') 
 
 INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 INSERT INTO YukonRoleProperty VALUES(-1301,-4,'auth_port','1812','Authentication port.');
@@ -9726,7 +9727,6 @@ INSERT INTO YukonRoleProperty VALUES(-20004,-200,'View Batch Commands','false','
 INSERT INTO YukonRoleProperty VALUES(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
 INSERT INTO YukonRoleProperty VALUES(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
 INSERT INTO YukonRoleProperty VALUES(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
-INSERT INTO YukonRoleProperty VALUES(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 INSERT INTO YukonRoleProperty VALUES(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 INSERT INTO YukonRoleProperty VALUES(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.'); 
 INSERT INTO YukonRoleProperty VALUES(-20011,-200,'MultiSpeak Setup','false','Controls access to configure the MultiSpeak Interfaces.');
@@ -10184,7 +10184,6 @@ INSERT INTO YukonUserRole VALUES(-1014, -100, -200, -20004, '(none)');
 INSERT INTO YukonUserRole VALUES(-1015, -100, -200, -20005, '(none)');
 INSERT INTO YukonUserRole VALUES(-1016, -100, -200, -20006, '(none)');
 INSERT INTO YukonUserRole VALUES(-1017, -100, -200, -20007, '(none)');
-INSERT INTO YukonUserRole VALUES(-1018, -100, -200, -20008, '(none)');
 INSERT INTO YukonUserRole VALUES(-1019, -100, -200, -20009, '(none)');
 INSERT INTO YukonUserRole VALUES(-1020, -100, -200, -20019, 'true');
 

@@ -31,6 +31,17 @@ ALTER TABLE ServiceCompanyDesignationCode
 GO
 /* End YUK-9575 */
 
+/* Start YUK-9603 */
+INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.') 
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -20008; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -20008; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -20008;
+/* End YUK-9603 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
