@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/22/2011 2:44:25 PM                         */
+/* Created on:     3/22/2011 3:41:27 PM                         */
 /*==============================================================*/
 
 
@@ -16559,8 +16559,9 @@ alter table ServiceCompany
 go
 
 alter table ServiceCompanyDesignationCode
-   add constraint FK_SRVCODSGNTNCODES_SRVCO foreign key (ServiceCompanyID)
+   add constraint FK_ServCompDesCode_ServComp foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID)
+         on delete cascade
 go
 
 alter table Shipment

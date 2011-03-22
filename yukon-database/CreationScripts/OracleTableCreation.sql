@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/22/2011 3:04:41 PM                         */
+/* Created on:     3/22/2011 3:40:10 PM                         */
 /*==============================================================*/
 
 
@@ -12730,8 +12730,9 @@ alter table ServiceCompany
       references Contact (ContactID);
 
 alter table ServiceCompanyDesignationCode
-   add constraint FK_SRVCODSGNTNCODES_SRVCO foreign key (ServiceCompanyID)
-      references ServiceCompany (CompanyID);
+   add constraint FK_ServCompDesCode_ServComp foreign key (ServiceCompanyID)
+      references ServiceCompany (CompanyID)
+      on delete cascade;
 
 alter table Shipment
    add constraint FK_SHPMNT_WRHSE foreign key (WarehouseID)
