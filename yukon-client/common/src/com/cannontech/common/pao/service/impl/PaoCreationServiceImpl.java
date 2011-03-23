@@ -18,6 +18,8 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -46,17 +48,17 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         int paoId = paoDao.getNextPaoId();
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoTemplate.getPaoType());
         
-        // loop through providers
+        // Loop through providers
         for (PaoCreationTypeProvider<?> paoTypeProvider : providers) {
             callProvider(paoTemplate, paoIdentifier, paoTypeProvider);
         }
         
-        // create points        
+        // Create and Add points
         List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(paoIdentifier);
         applyPoints(paoIdentifier, pointsToCreate);
         
-        // send db change messages
-        //TODO
+        // Send db change message
+        processDeviceDbChange(paoIdentifier);
         
         return paoIdentifier;
     }
@@ -92,6 +94,16 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         
         // Insert into DB
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
+    }
+    
+    private void processDeviceDbChange(PaoIdentifier paoIdentifier) {
+
+        DBChangeMsg msg = new DBChangeMsg(paoIdentifier.getPaoId(),
+                                          DBChangeMsg.CHANGE_PAO_DB,
+                                          paoIdentifier.getPaoType().getPaoCategory().name(),
+                                          paoIdentifier.getPaoType().getDbString(),
+                                          DbChangeType.ADD );
+        dbPersistentDao.processDBChange(msg);
     }
     
     @Autowired
