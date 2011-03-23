@@ -956,10 +956,10 @@
                     </options>
                 </option>
                 <option name="substationToRouteMapping">
-                    <link>/spring/adminSetup/setup/substations/routeMapping/view</link>
+                    <link>/spring/adminSetup/substations/routeMapping/view</link>
                     <options>
                         <option name="home">
-                            <link>/spring/adminSetup/setup/substations/routeMapping/view</link>
+                            <link>/spring/adminSetup/substations/routeMapping/view</link>
                         </option>
                     </options>
                 </option>

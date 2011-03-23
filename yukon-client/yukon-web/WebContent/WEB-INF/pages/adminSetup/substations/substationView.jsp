@@ -3,9 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
-<cti:url var="routeUrl" value="/spring/adminSetup/setup/substations/routeMapping/viewRoute" />
-<cti:url var="subUrl" value="/spring/adminSetup/setup/substations/routeMapping/edit" />
-<cti:url var="removeAllUrl" value="/spring/adminSetup/setup/substations/routeMapping/removeAll">
+<cti:url var="routeUrl" value="/spring/adminSetup/substations/routeMapping/viewRoute" />
+<cti:url var="subUrl" value="/spring/adminSetup/substations/routeMapping/edit" />
+<cti:url var="removeAllUrl" value="/spring/adminSetup/substations/routeMapping/removeAll">
 	<cti:param name="removeAll" value=""/>
 </cti:url>
 
@@ -51,11 +51,11 @@
     		<input type="text" value="" name="name" size="20" style="width:200px;"/>
     	</td>
     	<td style="vertical-align:bottom;">
-    		<input id="addButton" type="submit" value="add" name="add" class="formSubmit"/>
+    		<input id="addButton" type="submit" value="Add" name="add" class="formSubmit"/>
     		
     		<c:if test="${hasVendorId}"> 
 		    	
-		    	<cti:url var="mspAddUrl" value="/spring/multispeak/setup/routemapping/mspSubstations/choose"/>
+		    	<cti:url var="mspAddUrl" value="/spring/adminSetup/substations/routemapping/multispeak/choose"/>
 		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="formSubmit">
 		    </c:if>
     

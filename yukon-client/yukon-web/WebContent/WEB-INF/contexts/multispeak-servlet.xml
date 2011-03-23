@@ -29,8 +29,6 @@
 		<property name="prefix" value="/WEB-INF/pages/multispeak/" />
 	</bean>
 
-	<bean class="com.cannontech.web.multispeak.MspSubstationsController" />
-
 	<bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
 	
 	<bean id="lmMappingsController" class="com.cannontech.web.multispeak.LMMappingsController">

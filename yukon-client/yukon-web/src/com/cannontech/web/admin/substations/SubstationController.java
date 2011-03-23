@@ -1,4 +1,4 @@
-package com.cannontech.web.admin.setup;
+package com.cannontech.web.admin.substations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +32,7 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
-@RequestMapping("/setup/substations/*")
+@RequestMapping("/substations/*")
 @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
 @Controller
 public class SubstationController { 
@@ -46,7 +46,7 @@ public class SubstationController {
     @RequestMapping("routeMapping/view")
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("setup/mappings.jsp");
+        mav.setViewName("substations/mappings.jsp");
         
         return mav;
     }
@@ -63,7 +63,7 @@ public class SubstationController {
         final List<Route> avList = (id != null) ? 
                 strmDao.getAvailableRoutesBySubstationId(id) : strmDao.getAll();
 
-        mav.setViewName("setup/routeView.jsp");
+        mav.setViewName("substations/routeView.jsp");
         mav.addObject("list", routeList);
         mav.addObject("avlist", avList);
         return mav;
@@ -85,7 +85,7 @@ public class SubstationController {
         List<Substation> list = substationDao.getAll();
         Collections.sort(list, new SubstationComparator());
         
-        mav.setViewName("setup/substationView.jsp");
+        mav.setViewName("substations/substationView.jsp");
         mav.addObject("list", list);
         return mav;
     }

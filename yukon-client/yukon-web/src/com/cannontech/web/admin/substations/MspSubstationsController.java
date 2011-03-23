@@ -1,4 +1,4 @@
-package com.cannontech.web.multispeak;
+package com.cannontech.web.admin.substations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.model.Substation;
-import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -27,7 +27,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
-@RequestMapping("/setup/routemapping/mspSubstations/*")
+@RequestMapping("/substations/routemapping/multispeak/*")
 public class MspSubstationsController {
 
     private SubstationDao substationDao;
@@ -38,7 +38,7 @@ public class MspSubstationsController {
     @RequestMapping
     public ModelAndView choose(HttpServletRequest request, HttpServletResponse response) {
         
-        ModelAndView mav = new ModelAndView("setup/routemapping/mspSubstations.jsp");
+        ModelAndView mav = new ModelAndView("substations/mspSubstations.jsp");
         
         // currentSubstationNames
         List<Substation> currentSubstations = substationDao.getAll();
@@ -75,7 +75,7 @@ public class MspSubstationsController {
     @RequestMapping
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/adminSetup/setup/substations/routeMapping/view");
+        ModelAndView mav = new ModelAndView("redirect:/spring/adminSetup/substations/routeMapping/view");
 
         Map<String, String> substatioNamesMap = ServletUtil.getStringParameters(request, "substationName_");
 

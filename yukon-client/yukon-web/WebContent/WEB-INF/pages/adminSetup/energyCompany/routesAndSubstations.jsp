@@ -13,9 +13,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     
-    <cti:url value="edit" var="editUrl">
-        <cti:param name="ecId" value="${ecId}" />
-    </cti:url>
+    <cti:url value="edit" var="editUrl" />
 
     <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
       <c:if test="${routeAccess}">
@@ -23,6 +21,8 @@
             <tags:boxContainer2 nameKey="routes">
                 <form action="${editUrl}" method="post">
                     
+                    <input type="hidden" name="ecId" value="${ecId}"/>
+
                     <c:choose>
                         <c:when test="${empty inheritedRoutes and empty ecRoutes}">
                             <div><i:inline key=".noRoutes"/></div>
@@ -80,6 +80,7 @@
         <tags:boxContainer2 nameKey="substations">
 
             <form action="${editUrl}" method="post">
+                <input type="hidden" name="ecId" value="${ecId}"/>
                 
                 <c:choose>
                     <c:when test="${empty inheritedSubstations and empty ecSubstations}">
