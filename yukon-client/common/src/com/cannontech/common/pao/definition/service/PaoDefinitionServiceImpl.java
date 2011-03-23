@@ -102,9 +102,6 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
 
         // Get all of the paos in the pao's change group
         Set<PaoDefinition> paos = paoDefinitionDao.getPaosThatPaoCanChangeTo(paoDefinition);
-
-        // Remove the current pao
-        paos.remove(paoDefinition);
         return paos;
     }
 

@@ -11,15 +11,15 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
-	Status(PointTypes.STATUS_POINT),
-	Analog(PointTypes.ANALOG_POINT),
-	PulseAccumulator(PointTypes.PULSE_ACCUMULATOR_POINT),
-	DemandAccumulator(PointTypes.DEMAND_ACCUMULATOR_POINT),
-	CalcAnalog(PointTypes.CALCULATED_POINT),
-	StatusOutput(PointTypes.STATUS_OUTPUT_POINT), //5
-	AnalogOutput(PointTypes.ANALOG_OUTPUT_POINT),
-	System(PointTypes.SYSTEM_POINT),
-	CalcStatus(PointTypes.CALCULATED_STATUS_POINT),
+    Status(PointTypes.STATUS_POINT), // 0
+    Analog(PointTypes.ANALOG_POINT), // 1
+    PulseAccumulator(PointTypes.PULSE_ACCUMULATOR_POINT), // 2
+    DemandAccumulator(PointTypes.DEMAND_ACCUMULATOR_POINT), // 3
+    CalcAnalog(PointTypes.CALCULATED_POINT), // 4
+    StatusOutput(PointTypes.STATUS_OUTPUT_POINT), //5
+    AnalogOutput(PointTypes.ANALOG_OUTPUT_POINT), // 6
+    System(PointTypes.SYSTEM_POINT), // 7
+    CalcStatus(PointTypes.CALCULATED_STATUS_POINT), // 8
 	;
 	
 	private final int pointTypeId;

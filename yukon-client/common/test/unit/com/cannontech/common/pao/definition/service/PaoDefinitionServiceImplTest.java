@@ -209,21 +209,21 @@ public class PaoDefinitionServiceImplTest {
 
         // Pulse Accumulators
         expectedTemplates.add(new PointTemplate("pulse1",
-                                                    2,
-                                                    2,
-                                                    1.0,
-                                                    1,
-                                                    0,
-                                                    3));
+                                                PointType.PulseAccumulator,
+                                                2,
+                                                1.0,
+                                                1,
+                                                0,
+                                                3));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
-                                                    3,
-                                                    1,
-                                                    1.0,
-                                                    0,
-                                                    0,
-                                                    3));
+                                                PointType.DemandAccumulator,
+                                                1,
+                                                1.0,
+                                                0,
+                                                0,
+                                                3));
 
         
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,

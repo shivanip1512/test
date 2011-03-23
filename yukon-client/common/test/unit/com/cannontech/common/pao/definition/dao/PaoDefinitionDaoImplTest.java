@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -23,6 +25,7 @@ import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateDao;
@@ -31,14 +34,16 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableSet.Builder;
 
 /**
  * Test class for PaoDefinitionDao
  */
-public class PaoDefinitionDaoImplTest extends TestCase {
+public class PaoDefinitionDaoImplTest {
 
     private PaoDefinitionDao dao = null;
     private SimpleDevice device = null;
@@ -63,7 +68,8 @@ public class PaoDefinitionDaoImplTest extends TestCase {
         return dao;
     }
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
 
@@ -83,6 +89,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getAvailableAttributes()
      */
+    @Test
     public void testGetDefinedAttributes() {
 
         // Test with supported device type
@@ -97,11 +104,12 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
     }
 
+    @Test
     public void testGetPointTemplateForAttribute() {
 
         // Test with supported device type
         PointTemplate expectedPointTemplate = new PointTemplate("pulse1",
-                                                               2,
+                                                               PointType.PulseAccumulator,
                                                                2,
                                                                1.0,
                                                                1,
@@ -119,6 +127,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getAllPointTemplates()
      */
+    @Test
     public void testGetAllPointTemplates() {
 
         // Test with supported device type
@@ -141,6 +150,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getInitPointTemplates()
      */
+    @Test
     public void testGetInitPointTemplates() {
 
         // Test with supported device type
@@ -162,6 +172,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getDeviceDisplayGroupMap()
      */
+    @Test
     public void testGetDeviceDisplayGroupMap() {
 
         Multimap<String, PaoDefinition> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
@@ -194,6 +205,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getPaoDefinition()
      */
+    @Test
     public void testGetPaoDefinition() {
 
         // Test with supported device type
@@ -256,15 +268,16 @@ public class PaoDefinitionDaoImplTest extends TestCase {
     /**
      * Test getAffected()
      */
+    @Test
     public void testGetAffected() {
 
         Set<PointIdentifier> points = new HashSet<PointIdentifier>();
         Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
 
         // Define expected points
-        PointIdentifier status1 = new PointIdentifier(0, 0);
-        PointIdentifier pulse1 = new PointIdentifier(2, 2);
-        PointIdentifier pulse2 = new PointIdentifier(2, 4);
+        PointIdentifier status1 = new PointIdentifier(PointType.Status, 0);
+        PointIdentifier pulse1 = new PointIdentifier(PointType.PulseAccumulator, 2);
+        PointIdentifier pulse2 = new PointIdentifier(PointType.PulseAccumulator, 4);
 
         // Define expected command definitions
         CommandDefinition command1 = new CommandDefinition("command1");
@@ -301,10 +314,137 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
     }
     
+    @Test
+    public void testPaoTags() throws Exception {
+        assertTrue(dao.isTagSupported(PaoType.MCT370, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER));
+        assertFalse(dao.isTagSupported(PaoType.MCT370, PaoTag.LOCATE_ROUTE));
+        assertTrue(dao.isTagSupported(PaoType.MCT370, PaoTag.PORTER_COMMAND_REQUESTS));
+        assertFalse(dao.isTagSupported(PaoType.MCT370, PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS));
+        assertTrue(dao.isTagSupported(PaoType.MCT370, PaoTag.MCT_200_SERIES));
+        assertFalse(dao.isTagSupported(PaoType.MCT370, PaoTag.MCT_300_SERIES));
+    }
+    
+    @Test
+    public void testGetSupportedTags() {
+        PaoType mct370 = PaoType.MCT370;
+        ImmutableSet<PaoTag> expectedTags = ImmutableSet.of(PaoTag.PLC_ADDRESS_RANGE, 
+                                                            PaoTag.DUMMY_LONG_TAG,
+                                                            PaoTag.STARS_ACCOUNT_ATTACHABLE_METER,
+                                                            PaoTag.PORTER_COMMAND_REQUESTS, 
+                                                            PaoTag.MCT_200_SERIES);
+        
+        PaoDefinition mct370Definition = dao.getPaoDefinition(mct370);
+        Set<PaoTag> supportedTags = dao.getSupportedTags(mct370Definition);
+        assertEquals(expectedTags, supportedTags);
+        
+        Set<PaoTag> supportedTags2 = dao.getSupportedTags(mct370);
+        assertEquals(expectedTags, supportedTags2);
+    }
+    
+    @Test
+    public void testGetPaosThatSupportTag_1() {
+        Set<PaoType> expectedTypes = ImmutableSet.of(PaoType.MCT370);
+        Set<PaoDefinition> expectedDefinitions = Sets.newHashSet();
+        for (PaoType paoType : expectedTypes) {
+            PaoDefinition paoDefinition = dao.getPaoDefinition(paoType);
+            expectedDefinitions.add(paoDefinition);
+        }
+        
+        Set<PaoDefinition> paosThatSupportTag = dao.getPaosThatSupportTag(PaoTag.PLC_ADDRESS_RANGE);
+        assertEquals(expectedDefinitions, paosThatSupportTag);
+        Set<PaoType> paoTypesThatSupportTag = dao.getPaoTypesThatSupportTag(PaoTag.PLC_ADDRESS_RANGE);
+        assertEquals(expectedTypes, paoTypesThatSupportTag);
+        
+    }
+    
+    @Test
+    public void testGetPaosThatSupportTag_2() {
+        Set<PaoType> expectedTypes = ImmutableSet.of(PaoType.MCT370, PaoType.MCT318L);
+        Set<PaoDefinition> expectedDefinitions = Sets.newHashSet();
+        for (PaoType paoType : expectedTypes) {
+            PaoDefinition paoDefinition = dao.getPaoDefinition(paoType);
+            expectedDefinitions.add(paoDefinition);
+        }
+        
+        Set<PaoDefinition> paosThatSupportTag = dao.getPaosThatSupportTag(PaoTag.PORTER_COMMAND_REQUESTS);
+        assertEquals(expectedDefinitions, paosThatSupportTag);
+        Set<PaoType> paoTypesThatSupportTag = dao.getPaoTypesThatSupportTag(PaoTag.PORTER_COMMAND_REQUESTS);
+        assertEquals(expectedTypes, paoTypesThatSupportTag);
+        
+    }
+    
+    @Test
+    public void testGetPaosThatSupportTag_3() {
+        Set<PaoType> expectedTypes = ImmutableSet.of(PaoType.MCT370, PaoType.MCT318L);
+        Set<PaoDefinition> expectedDefinitions = Sets.newHashSet();
+        for (PaoType paoType : expectedTypes) {
+            PaoDefinition paoDefinition = dao.getPaoDefinition(paoType);
+            expectedDefinitions.add(paoDefinition);
+        }
+        
+        Set<PaoDefinition> paosThatSupportTag = dao.getPaosThatSupportTag(PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        assertEquals(expectedDefinitions, paosThatSupportTag);
+        Set<PaoType> paoTypesThatSupportTag = dao.getPaoTypesThatSupportTag(PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        assertEquals(expectedTypes, paoTypesThatSupportTag);
+        
+    }
+    
+    @Test
+    public void testGetValueForTag() {
+        String valueForTagString1 = dao.getValueForTagString(PaoType.MCT370, PaoTag.PLC_ADDRESS_RANGE);
+        assertEquals("1-5", valueForTagString1);
+        long valueForTagLong1 = dao.getValueForTagLong(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
+        assertEquals(8251709l, valueForTagLong1);
+        long valueForTagLong2 = dao.getValueForTagLong(PaoType.MCT318L, PaoTag.DUMMY_LONG_TAG);
+        assertEquals(0, valueForTagLong2);
+        
+        // should not work
+        try {
+            dao.getValueForTagLong(PaoType.MCT370, PaoTag.PLC_ADDRESS_RANGE);
+            fail("should not be compatible get long");
+        } catch(Exception e) {}
+        
+        try {
+            dao.getValueForTagString(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
+            fail("should not be compatible get string");
+        } catch(Exception e) {}
+        
+        try {
+            dao.getValueForTagLong(PaoType.MCT310, PaoTag.DUMMY_LONG_TAG);
+            fail("should not exist on pao");
+        } catch(Exception e) {}
+        
+        try {
+            dao.getValueForTagString(PaoType.MCT370, PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS);
+            fail("doesn't allow values");
+        } catch(Exception e) {}
+    }
+    
+    @Test
+    public void testGetAvailableCommands1() {
+        PaoDefinition paoDefinition = dao.getPaoDefinition(PaoType.MCT310);
+        Set<CommandDefinition> availableCommands = dao.getAvailableCommands(paoDefinition);
+        Set<String> availableCommandStrings = Sets.newHashSet();
+        for (CommandDefinition command : availableCommands) {
+            availableCommandStrings.add(command.getName());
+        }
+        
+        
+        assertEquals(ImmutableSet.of("command1", "command2"), availableCommandStrings);
+    }
+    
+    @Test
+    public void testGetAvailableCommands2() {
+        PaoDefinition paoDefinition = dao.getPaoDefinition(PaoType.MCT318);
+        Set<CommandDefinition> availableCommands = dao.getAvailableCommands(paoDefinition);
+        assertEquals(ImmutableSet.of(), availableCommands);
+    }
+    
     /**
      * Test Custom Definition file
      * @throws Exception 
      */
+    @Test
     public void testCustomDefinition() throws Exception {
         ClassLoader classLoader = dao.getClass().getClassLoader();
 
@@ -327,7 +467,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
         
         // Test custom definition overrides standard definition - point
         PointTemplate expectedPulse1PointTemplate = new PointTemplate("pulse1",
-		                                                2,
+		                                                PointType.PulseAccumulator,
 		                                                2,
 		                                                2.5,
 		                                                0,
@@ -335,14 +475,14 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 		                                                3);
         
         PaoType deviceType = PaoType.getForId(device.getType());
-        PointIdentifier pointIdentifier = new PointIdentifier(2, 2);
+        PointIdentifier pointIdentifier = new PointIdentifier(PointType.PulseAccumulator, 2);
         PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(deviceType, pointIdentifier);
         
         assertEquals("Expected point customizations do not match: ", expectedPulse1PointTemplate, actualPulse1PointTemplate);
 
         // Test custom definition overrides standard definition - command
-        PointIdentifier pulse1 = new PointIdentifier(2, 2);
-        PointIdentifier pulse2 = new PointIdentifier(2, 4);
+        PointIdentifier pulse1 = new PointIdentifier(PointType.PulseAccumulator, 2);
+        PointIdentifier pulse2 = new PointIdentifier(PointType.PulseAccumulator, 4);
         Set<PointIdentifier> points = new HashSet<PointIdentifier>();
         Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
         
@@ -390,7 +530,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Pulse Accumulators
         expectedTemplates.add(new PointTemplate("pulse1",
-                                                    2,
+                                                PointType.PulseAccumulator,
                                                     2,
                                                     1.0,
                                                     1,
@@ -399,7 +539,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
-                                                    3,
+                                                PointType.DemandAccumulator,
                                                     1,
                                                     1.0,
                                                     0,
@@ -408,7 +548,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Analog
         expectedTemplates.add(new PointTemplate("analog1",
-                                                    1,
+                                                    PointType.Analog,
                                                     1,
                                                     1.0,
                                                     1,
@@ -432,7 +572,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Pulse Accumulator
         expectedTemplates.add(new PointTemplate("pulse2",
-                                                    2,
+                                                PointType.PulseAccumulator,
                                                     4,
                                                     1.0,
                                                     1,
@@ -440,7 +580,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
                                                     3));
 
         // Status
-        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0,3));
+        expectedTemplates.add(new PointTemplate("status1", PointType.Status, 1, 1.0, -1, 0,3));
 
         return expectedTemplates;
     }

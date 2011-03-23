@@ -38,16 +38,14 @@ public interface PaoDefinitionDao {
     /**
      * Method to get all of the point templates for a given pao
      * @param pao - Pao to get point templates for
-     * @return A set of all point templates for the pao (returns a new copy
-     *         each time the method is called)
+     * @return An unmodifiable set of all point templates for the pao
      */
     public abstract Set<PointTemplate> getAllPointTemplates(PaoType paoType);
 
     /**
      * Method to get all of the point templates for a given pao definition
      * @param paoDefiniton - Pao definition to get point templates for
-     * @return A set of all point templates for the pao (returns a new copy
-     *         each time the method is called)
+     * @return A unmodifiable set of all point templates for the pao
      */
     public abstract Set<PointTemplate> getAllPointTemplates(PaoDefinition paoDefiniton);
 
@@ -55,8 +53,8 @@ public interface PaoDefinitionDao {
      * Method to get all of the point templates for a given pao that should
      * be initialized
      * @param pao - Pao to get point templates for
-     * @return A set of all point templates for the pao that should be
-     *         initialized (returns a new copy each time the method is called)
+     * @return A unmodifiable set of all point templates for the pao that should be
+     *         initialized
      */
     public abstract Set<PointTemplate> getInitPointTemplates(PaoType paoType);
 
@@ -64,8 +62,8 @@ public interface PaoDefinitionDao {
      * Method to get all of the point templates for a given pao definition
      * that should be initialized
      * @param newDefinition - Pao definition to get point templates for
-     * @return A set of all point templates for the pao that should be
-     *         initialized (returns a new copy each time the method is called)
+     * @return A unmodifiable set of all point templates for the pao that should be
+     *         initialized
      */
     public abstract Set<PointTemplate> getInitPointTemplates(PaoDefinition newDefinition);
     
@@ -93,14 +91,17 @@ public interface PaoDefinitionDao {
     
     // TAGS
     //============================================
-    public abstract Set<PaoTag> getSupportedTags(PaoType paoType);
-    public abstract Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton);
+    public Set<PaoTag> getSupportedTags(PaoType paoType);
+    public Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton);
     
-    public abstract Set<PaoDefinition> getPaosThatSupportTag(PaoTag feature);
-    public abstract Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+    public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+    public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
     
-    public abstract boolean isTagSupported(PaoType paoType, PaoTag feature);
-    public abstract boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature);
+    public boolean isTagSupported(PaoType paoType, PaoTag feature);
+    public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature);
+    
+    public String getValueForTagString(PaoType paoType, PaoTag tag);
+    public long getValueForTagLong(PaoType paoType, PaoTag tag);
     
     // DEFINITIONS
     //============================================
@@ -122,12 +123,12 @@ public interface PaoDefinitionDao {
     public abstract PaoDefinition getPaoDefinition(PaoType paoType);
     
     /**
-     * Method to get a set of pao types that the given pao can change into
-     * @param paoDefinition - Definition of pao to change
-     * @return A set of pao definitions (returns a new copy each time the
-     *         method is called)
+     * Method to get a set of PaoDefinitions into which the given PAO can change.
+     * Result is guaranteed not to contain the paoDefinition that was passed in.
+     * 
+     * @param paoDefinition - Definition of PAO to change
+     * @return An immutable set of PaoDefinition
      */
-    //TODO rename me
     public abstract Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition);
     
     // MISC
@@ -145,7 +146,7 @@ public interface PaoDefinitionDao {
 
     /**
      * Method to return set of paoDefinitions that are creatable.
-     * @return set of paoDefinition
+     * @return An unmodifiable set of paoDefinition
      */
     public Set<PaoDefinition> getCreatablePaoDefinitions();
 }

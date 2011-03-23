@@ -1,10 +1,12 @@
 package com.cannontech.common.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -110,6 +112,20 @@ public class IterableUtils {
      */
     public static <T> boolean isEmpty(final Iterable<T> iterable) {
     	return (iterable == null || Iterables.isEmpty(iterable));
+    }
+    
+    /**
+     * Returns an unmodifiable version of the list or an empty list if the parameter is null.
+     */
+    public static <T> List<T> safeList(final List<T> nullableList) {
+        return nullableList == null ? Collections.<T>emptyList() : Collections.unmodifiableList(nullableList);
+    }
+    
+    /**
+     * Returns an unmodifiable list version of the array or an empty list if the parameter is null.
+     */
+    public static <T> List<T> safeList(T[] nullableArray) {
+        return nullableArray == null ? Collections.<T>emptyList() : ImmutableList.of(nullableArray);
     }
     
     /**

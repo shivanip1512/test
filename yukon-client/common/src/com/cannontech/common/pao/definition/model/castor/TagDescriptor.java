@@ -104,21 +104,21 @@ public class TagDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- _enabled
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_enabled", "enabled", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _supports
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_supports", "supports", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Tag target = (Tag) object;
-                return target.getEnabled();
+                return target.getSupports();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     Tag target = (Tag) object;
-                    target.setEnabled( (java.lang.Boolean) value);
+                    target.setSupports( (java.lang.Boolean) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -132,7 +132,7 @@ public class TagDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _enabled
+        //-- validation code for: _supports
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
             BooleanValidator typeValidator = new BooleanValidator();
@@ -142,7 +142,8 @@ public class TagDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         //-- initialize element descriptors
         
         //-- _value
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_value", "value", org.exolab.castor.xml.NodeType.Element);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_value", "value", org.exolab.castor.xml.NodeType.Element);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -155,7 +156,7 @@ public class TagDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
             {
                 try {
                     Tag target = (Tag) object;
-                    target.setValue( (java.lang.Boolean) value);
+                    target.setValue( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -172,7 +173,8 @@ public class TagDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         //-- validation code for: _value
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            BooleanValidator typeValidator = new BooleanValidator();
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

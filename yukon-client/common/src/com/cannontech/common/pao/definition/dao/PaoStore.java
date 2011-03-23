@@ -16,6 +16,7 @@ import com.cannontech.common.pao.definition.model.castor.Pao;
 import com.cannontech.common.pao.definition.model.castor.Point;
 import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.database.data.point.PointType;
 
 public class PaoStore {
@@ -57,19 +58,19 @@ public class PaoStore {
 		this.applyDisplayGroup(castor.getDisplayGroup());
 		this.applyChangeGroup(castor.getChangeGroup());
 		if (castor.getPoints() != null) {
-			this.applyPoints(castor.getPoints().getPoint());
+			this.applyPoints(IterableUtils.safeList(castor.getPoints().getPoint()));
 		}
 		if (castor.getCommands() != null) {
-			this.applyCommands(castor.getCommands().getCommand());
+			this.applyCommands(IterableUtils.safeList(castor.getCommands().getCommand()));
 		}
 		if (castor.getAttributes() != null) {
-			this.applyAttributes(castor.getAttributes().getAttribute());
+			this.applyAttributes(IterableUtils.safeList(castor.getAttributes().getAttribute()));
 		}
 		if (castor.getTags() != null) {
-			this.applyTags(castor.getTags().getTag());
+			this.applyTags(IterableUtils.safeList(castor.getTags().getTag()));
 		}
 	}
-	
+
 	public void mergePaoStore(PaoStore inheritedPao) {
 
 		this.applyDisplayName(inheritedPao.getDisplayName());
@@ -78,7 +79,7 @@ public class PaoStore {
 		this.applyPoints(inheritedPao.getEnabledPoints());
 		this.applyCommands(inheritedPao.getEnabledCommands());
 		this.applyAttributes(inheritedPao.getEnabledAttributes());
-		this.applyTags(inheritedPao.getEnabledTags());
+		this.applyTags(inheritedPao.getTags());
 	}
 	
 	
@@ -127,11 +128,7 @@ public class PaoStore {
 		}
 	}
 	
-	private void applyPoints(Point[] points) {
-		
-		if (points == null) {
-			return;
-		}
+	private void applyPoints(List<Point> points) {
 		
 		for (Point inheritedPoint : points) {
 			
@@ -180,11 +177,7 @@ public class PaoStore {
 		}
 	}
 	
-	private void applyCommands(Command[] commands) {
-		
-		if (commands == null) {
-			return;
-		}
+	private void applyCommands(List<Command> commands) {
 		
 		for (Command inheritedCommand : commands) {
 			
@@ -196,11 +189,7 @@ public class PaoStore {
 		}
 	}
 	
-	private void applyAttributes(Attribute[] attributes) {
-		
-		if (attributes == null) {
-			return;
-		}
+	private void applyAttributes(List<Attribute> attributes) {
 		
 		for (Attribute inheritedAttribute : attributes) {
 			
@@ -212,17 +201,13 @@ public class PaoStore {
 		}
 	}
 	
-	private void applyTags(Tag[] tags) {
-		
-		if (tags == null) {
-			return;
-		}
+	private void applyTags(List<Tag> tags) {
 		
 		for (Tag inheritedTag : tags) {
 			
 			String id = inheritedTag.getName();
-			Tag existingFeature = this.tags.get(id);
-			if (existingFeature == null) {
+			Tag existingTag = this.tags.get(id);
+			if (existingTag == null) {
 				this.tags.put(id, inheritedTag);
 			}
 		}
@@ -259,7 +244,7 @@ public class PaoStore {
 	public String getChangeGroup() {
 		return changeGroup;
 	}
-	public Point[] getEnabledPoints() {
+	public List<Point> getEnabledPoints() {
 		
 		List<Point> enabledPoints = new ArrayList<Point>();
 		for (PointIdentifier id : this.points.keySet()) {
@@ -268,9 +253,9 @@ public class PaoStore {
 				enabledPoints.add(point);
 			}
 		}
-		return enabledPoints.toArray(new Point[]{});
+		return enabledPoints;
 	}
-	public Command[] getEnabledCommands() {
+	public List<Command> getEnabledCommands() {
 
 		List<Command> enabledCommands = new ArrayList<Command>();
 		for (String id : this.commands.keySet()) {
@@ -279,9 +264,9 @@ public class PaoStore {
 				enabledCommands.add(command);
 			}
 		}
-		return enabledCommands.toArray(new Command[]{});
+		return enabledCommands;
 	}
-	public Attribute[] getEnabledAttributes() {
+	public List<Attribute> getEnabledAttributes() {
 
 		List<Attribute> enabledAttributes = new ArrayList<Attribute>();
 		for (String id : this.attributes.keySet()) {
@@ -290,17 +275,15 @@ public class PaoStore {
 				enabledAttributes.add(attribute);
 			}
 		}
-		return enabledAttributes.toArray(new Attribute[]{});
+		return enabledAttributes;
 	}
-	public Tag[] getEnabledTags() {
+	public List<Tag> getTags() {
 
-		List<Tag> enabledTags = new ArrayList<Tag>();
-		for (String id : this.tags.keySet()) {
-			Tag tag = this.tags.get(id);
-			if (tag.getEnabled()) {
-				enabledTags.add(tag);
-			}
-		}
-		return enabledTags.toArray(new Tag[]{});
+	    List<Tag> filteredTags = new ArrayList<Tag>();
+	    for (String id : this.tags.keySet()) {
+	        Tag tag = this.tags.get(id);
+	        filteredTags.add(tag);
+	    }
+	    return filteredTags;
 	}
 }

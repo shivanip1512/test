@@ -39,14 +39,14 @@ public class Tag implements java.io.Serializable {
     private java.lang.String _name;
 
     /**
-     * Field _enabled
+     * Field _supports
      */
-    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
+    private java.lang.Boolean _supports = new java.lang.Boolean("true");
 
     /**
      * Field _value
      */
-    private java.lang.Boolean _value = new java.lang.Boolean("false");
+    private java.lang.String _value;
 
 
       //----------------/
@@ -64,17 +64,6 @@ public class Tag implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'enabled'.
-     * 
-     * @return Boolean
-     * @return the value of field 'enabled'.
-     */
-    public java.lang.Boolean getEnabled()
-    {
-        return this._enabled;
-    } //-- java.lang.Boolean getEnabled() 
-
-    /**
      * Returns the value of field 'name'.
      * 
      * @return String
@@ -86,15 +75,26 @@ public class Tag implements java.io.Serializable {
     } //-- java.lang.String getName() 
 
     /**
-     * Returns the value of field 'value'.
+     * Returns the value of field 'supports'.
      * 
      * @return Boolean
+     * @return the value of field 'supports'.
+     */
+    public java.lang.Boolean getSupports()
+    {
+        return this._supports;
+    } //-- java.lang.Boolean getSupports() 
+
+    /**
+     * Returns the value of field 'value'.
+     * 
+     * @return String
      * @return the value of field 'value'.
      */
-    public java.lang.Boolean getValue()
+    public java.lang.String getValue()
     {
         return this._value;
-    } //-- java.lang.Boolean getValue() 
+    } //-- java.lang.String getValue() 
 
     /**
      * Method isValid
@@ -143,16 +143,6 @@ public class Tag implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'enabled'.
-     * 
-     * @param enabled the value of field 'enabled'.
-     */
-    public void setEnabled(java.lang.Boolean enabled)
-    {
-        this._enabled = enabled;
-    } //-- void setEnabled(java.lang.Boolean) 
-
-    /**
      * Sets the value of field 'name'.
      * 
      * @param name the value of field 'name'.
@@ -163,14 +153,24 @@ public class Tag implements java.io.Serializable {
     } //-- void setName(java.lang.String) 
 
     /**
+     * Sets the value of field 'supports'.
+     * 
+     * @param supports the value of field 'supports'.
+     */
+    public void setSupports(java.lang.Boolean supports)
+    {
+        this._supports = supports;
+    } //-- void setSupports(java.lang.Boolean) 
+
+    /**
      * Sets the value of field 'value'.
      * 
      * @param value the value of field 'value'.
      */
-    public void setValue(java.lang.Boolean value)
+    public void setValue(java.lang.String value)
     {
         this._value = value;
-    } //-- void setValue(java.lang.Boolean) 
+    } //-- void setValue(java.lang.String) 
 
     /**
      * Method unmarshal

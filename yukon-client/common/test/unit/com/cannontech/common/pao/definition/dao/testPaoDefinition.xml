@@ -75,7 +75,16 @@ This file contains default pao and point information for all of the paos in Yuko
         	</attribute>
         </attributes>      
     </pao>
-    <pao id="MCT370">
+    <pao id="MCT370_BASE" abstract="true">
+        <tags>
+            <tag name="PORTER_COMMAND_REQUESTS" supports="false"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" supports="true"/>
+            <tag name="MCT_200_SERIES" supports="false"/>
+            <tag name="MCT_300_SERIES" supports="true"/>
+        </tags>    
+    </pao>
+    
+    <pao id="MCT370" inherits="MCT370_BASE">
         <displayName>Device 2</displayName>
         <displayGroup>display1</displayGroup>
         <changeGroup>change1</changeGroup>
@@ -87,21 +96,35 @@ This file contains default pao and point information for all of the paos in Yuko
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>analog1</name>
                 <multiplier value=".0001"/>
                 <unitofmeasure value="measure1"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
-		<attributes>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="pulse2" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="analog1" />
-        	</attribute>
-        </attributes>          
+        <attributes>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="pulse2" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="analog1" />
+            </attribute>
+        </attributes>      
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE" supports="true">
+                <value>1-5</value>
+            </tag>
+            <tag name="DUMMY_LONG_TAG">
+                <value>8251709</value>
+            </tag>
+            <tag name="STARS_ACCOUNT_ATTACHABLE_METER" supports="true"/>
+            <tag name="LOCATE_ROUTE" supports="false"/>
+            <tag name="PORTER_COMMAND_REQUESTS" supports="true"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS" supports="false"/>
+            <tag name="MCT_200_SERIES" supports="true"/>
+            <tag name="MCT_300_SERIES" supports="false"/>
+        </tags>    
     </pao>
     
     
@@ -115,6 +138,30 @@ This file contains default pao and point information for all of the paos in Yuko
                 <stategroup value="state0"/>
             </point>
         </points>
+        <tags>
+            <tag name="DUMMY_LONG_TAG">
+                <value>0</value>
+            </tag>
+            <tag name="PORTER_COMMAND_REQUESTS"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+            <tag name="MCT_300_SERIES"/>
+        </tags> 
+    </pao>
+    
+    <pao id="MCT318">
+        <displayName>Device 4 -- expected to be unavailable</displayName>
+        <points>
+            <point type="Status" offset="2000">
+                <name>status1</name>
+                <stategroup value="state0"/>
+            </point>
+        </points>
+        <tags>
+            <tag name="DUMMY_LONG_TAG">
+                <value></value> <!-- the blank value should make this guy unavailable -->
+            </tag>
+            <tag name="PORTER_COMMAND_REQUESTS"/>
+        </tags> 
     </pao>
     
 </paoDefinitions>

@@ -17,86 +17,62 @@
     <!-- TAGS -->
     <pao id="SUPPORTS_TOU_TAG" abstract="true">
     	<tags>
-        	<tag name="TOU">
-        		<value>true</value>
-        	</tag>
+        	<tag name="TOU"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_OUTAGE_TAG" abstract="true">
     	<tags>
-        	<tag name="OUTAGE">
-        		<value>true</value>
-        	</tag>
+        	<tag name="OUTAGE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_HIGH_BILL_TAG" abstract="true">
     	<tags>
-        	<tag name="HIGH_BILL">
-        		<value>true</value>
-        	</tag>
+        	<tag name="HIGH_BILL"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_MOVE_TAG" abstract="true">
     	<tags>
-        	<tag name="MOVE_SUPPORTED">
-        		<value>true</value>
-        	</tag>
+        	<tag name="MOVE_SUPPORTED"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_LOAD_PROFILE_TAG" abstract="true">
     	<tags>
-        	<tag name="LOAD_PROFILE">
-        		<value>true</value>
-        	</tag>
+        	<tag name="LOAD_PROFILE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_PEAK_REPORT_TAG" abstract="true">
     	<tags>
-        	<tag name="PEAK_REPORT">
-        		<value>true</value>
-        	</tag>
+        	<tag name="PEAK_REPORT"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_VOLTAGE_TAG" abstract="true">
     	<tags>
-        	<tag name="VOLTAGE">
-        		<value>true</value>
-        	</tag>
+        	<tag name="VOLTAGE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_VOLTAGE_PROFILE_TAG" abstract="true">
     	<tags>
-        	<tag name="VOLTAGE_PROFILE">
-        		<value>true</value>
-        	</tag>
+        	<tag name="VOLTAGE_PROFILE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_PHASE_DETECT_TAG" abstract="true">
         <tags>
-            <tag name="PHASE_DETECT">
-                <value>true</value>
-            </tag>
+            <tag name="PHASE_DETECT"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_LOCATE_ROUTE_TAG" abstract="true">
         <tags>
-            <tag name="LOCATE_ROUTE">
-                <value>true</value>
-            </tag>
+            <tag name="LOCATE_ROUTE"/>
         </tags>
     </pao>
     <pao id="MCT_200_SERIES_TAG" abstract="true">
         <tags>
-            <tag name="MCT_200_SERIES">
-                <value>true</value>
-            </tag>
+            <tag name="MCT_200_SERIES"/>
         </tags>
     </pao>
     <pao id="MCT_300_SERIES_TAG" abstract="true">
         <tags>
-            <tag name="MCT_300_SERIES">
-                <value>true</value>
-            </tag>
+            <tag name="MCT_300_SERIES"/>
         </tags>
     </pao>
 
@@ -120,12 +96,8 @@
             </attribute>
         </attributes>
         <tags>
-        	<tag name="DISCONNECT_410">
-        		<value>true</value>
-        	</tag>
-        	<tag name="DISCONNECT_COLLAR_COMPATIBLE">
-        		<value>true</value>
-        	</tag>
+        	<tag name="DISCONNECT_410"/>
+        	<tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
         </tags>
     </pao>
 
@@ -150,9 +122,7 @@
             </attribute>
         </attributes>
         <tags>
-        	<tag name="DISCONNECT_410">
-        		<value>true</value>
-        	</tag>
+        	<tag name="DISCONNECT_410"/>
         </tags>
     </pao>
 
@@ -227,21 +197,11 @@
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
         <tags>
-            <tag name="METER_DETAIL_DISPLAYABLE">
-                <value>true</value>
-            </tag>
-            <tag name="STARS_ACCOUNT_ATTACHABLE_METER">
-                <value>true</value>
-            </tag>
-            <tag name="LOCATE_ROUTE">
-                <value>true</value>
-            </tag>
-            <tag name="PORTER_COMMAND_REQUESTS">
-                <value>true</value>
-            </tag>
-            <tag name="USES_METER_NUMBER_FOR_MSP">
-                <value>true</value>
-            </tag>
+            <tag name="METER_DETAIL_DISPLAYABLE" />
+            <tag name="STARS_ACCOUNT_ATTACHABLE_METER" />
+            <tag name="LOCATE_ROUTE" />
+            <tag name="PORTER_COMMAND_REQUESTS" />
+            <tag name="USES_METER_NUMBER_FOR_MSP" />
         </tags>
 	</pao>
     
@@ -915,9 +875,7 @@
         	</attribute>
         </attributes>
         <tags>
-            <tag name="DEVICE_CONFIGURATION_470">
-                <value>true</value>
-            </tag>
+            <tag name="DEVICE_CONFIGURATION_470"/>
         </tags>
     </pao>
     
@@ -1310,9 +1268,7 @@
         	</attribute>
         </attributes>
         <tags>
-            <tag name="DEVICE_CONFIGURATION_430">
-                <value>true</value>
-            </tag>
+            <tag name="DEVICE_CONFIGURATION_430"/>
         </tags>
    </pao>
    
@@ -1371,9 +1327,7 @@
 	<!-- MCT 420 BASE -->
 	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE">
         <tags>
-            <tag name="DEVICE_CONFIGURATION_420">
-                <value>true</value>
-            </tag>
+            <tag name="DEVICE_CONFIGURATION_420"/>
         </tags>
 	</pao>
     
@@ -2782,17 +2736,13 @@
     <pao id="MCT310ID" inherits="MCT_310_D_BASE" creatable="false">
         <displayName>MCT-310ID</displayName>
         <tags>
-            <tag name="DISCONNECT_310">
-                <value>true</value>
-            </tag>
+            <tag name="DISCONNECT_310"/>
         </tags>
 	</pao> 
     <pao id="MCT310IDL" inherits="MCT_310_D_BASE, MCT_310_L_BASE">
         <displayName>MCT-310IDL</displayName>
         <tags>
-            <tag name="DISCONNECT_310">
-                <value>true</value>
-            </tag>
+            <tag name="DISCONNECT_310"/>
         </tags>
 	</pao>
     <pao id="MCT310IL" inherits="MCT_310_L_BASE">
@@ -3143,9 +3093,7 @@
         	</attribute>
        	</attributes>
        	<tags>
-            <tag name="DISCONNECT_213">
-                <value>true</value>
-            </tag>
+            <tag name="DISCONNECT_213"/>
         </tags>
 	</pao>
 	<pao id="MCT210" inherits="MCT_210_213_BASE" creatable="false">
@@ -4218,10 +4166,8 @@
         	</attribute>
        	</attributes>
        	<tags>
-    		<tag name="PORTER_COMMAND_REQUESTS">
-                <value>true</value>
-      		</tag>
-    	</tags>
+    		<tag name="PORTER_COMMAND_REQUESTS"/>
+        </tags>
       	
     </pao>
     
@@ -4476,15 +4422,9 @@
             </attribute>
         </attributes>
         <tags>
-            <tag name="METER_DETAIL_DISPLAYABLE">
-                <value>true</value>
-            </tag>
-            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS">
-                <value>true</value>
-            </tag>
-            <tag name="USES_METER_NUMBER_FOR_MSP">
-                <value>true</value>
-            </tag>
+            <tag name="METER_DETAIL_DISPLAYABLE"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+            <tag name="USES_METER_NUMBER_FOR_MSP"/>
         </tags>
     </pao>
 	
@@ -4686,9 +4626,7 @@
             </attribute>
         </attributes>
         <tags>
-            <tag name="DISCONNECT_RFN">
-                <value>true</value>
-            </tag>
+            <tag name="DISCONNECT_RFN"/>
         </tags>
     </pao>
 	
@@ -5025,9 +4963,7 @@
     </pao>
     <pao id="LM_GROUP" abstract="true">
     	<tags>
-       		<tag name="LM_GROUP">
-       			<value>true</value>
-       		</tag>
+       		<tag name="LM_GROUP" />
 		</tags>
     </pao>
     
@@ -5074,25 +5010,19 @@
     <!--  LM Programs -->
     <pao id="LM_PROGRAM_BASE" abstract="true">
 		<tags>
-        	<tag name="LM_PROGRAM">
-        		<value>true</value>
-        	</tag>
+        	<tag name="LM_PROGRAM"/>
         </tags>
     </pao>
     <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM DIRECT PROGRAM</displayName>
         <tags>
-            <tag name="DIRECT_PROGRAM_ENROLLMENT">
-                <value>true</value>
-            </tag>
+            <tag name="DIRECT_PROGRAM_ENROLLMENT" />
         </tags>
     </pao>
     <pao id="LM_SEP_PROGRAM" inherits="LM_PROGRAM_BASE">
         <displayName>LM SEP PROGRAM</displayName>
         <tags>
-            <tag name="SEP_PROGRAM_ENROLLMENT">
-                <value>true</value>
-            </tag>
+            <tag name="SEP_PROGRAM_ENROLLMENT" />
         </tags>
     </pao>
     
@@ -5100,9 +5030,7 @@
     <pao id="LM_SCENARIO">
         <displayName>LM_SCENARIO</displayName>
 		<tags>
-        	<tag name="LM_SCENARIO">
-        		<value>true</value>
-        	</tag>
+        	<tag name="LM_SCENARIO" />
         </tags>
     </pao>
         
@@ -5110,9 +5038,7 @@
     <pao id="LM_CONTROL_AREA">
         <displayName>LM_CONTROL_AREA</displayName>
 		<tags>
-        	<tag name="LM_CONTROL_AREA">
-        		<value>true</value>
-        	</tag>
+        	<tag name="LM_CONTROL_AREA"/>
         </tags>
     </pao>
     
@@ -5665,9 +5591,7 @@
             </attribute>
         </attributes>
         <tags>
-        	<tag name="VOLTAGE_REGULATOR">
-        		<value>true</value>
-        	</tag>
+        	<tag name="VOLTAGE_REGULATOR"/>
         </tags>
     </pao>
     

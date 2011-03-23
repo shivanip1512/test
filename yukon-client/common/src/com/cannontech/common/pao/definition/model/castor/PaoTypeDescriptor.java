@@ -67,7 +67,7 @@ public class PaoTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         
         //-- _id
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_id", "id", org.exolab.castor.xml.NodeType.Attribute);
-        desc.setImmutable(true);
+        this.identity = desc;
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -87,7 +87,7 @@ public class PaoTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new java.lang.String();
             }
         };
         desc.setHandler(handler);
@@ -99,9 +99,6 @@ public class PaoTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            StringValidator typeValidator = new StringValidator();
-            typeValidator.setWhiteSpace("preserve");
-            fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
         //-- _enabled

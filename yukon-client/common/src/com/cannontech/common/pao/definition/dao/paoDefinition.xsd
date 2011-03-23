@@ -8,11 +8,15 @@
               </xs:element>
             </xs:sequence>
         </xs:complexType>
+        <xs:unique name="displayNameUniq">
+            <xs:selector xpath="pao"/>
+            <xs:field xpath="displayName"/>
+        </xs:unique>
     </xs:element>
 
 	<!-- PAO -->
 	<xs:attributeGroup name="paoAttributes">
-		<xs:attribute name="id" type="xs:string" use="required" /> <!-- Unique identifier for parser. Must be PaoTypes Java constant for non-abstract paos. -->
+		<xs:attribute name="id" type="xs:ID" use="required" /> <!-- Unique identifier for parser. Must be PaoTypes Java constant for non-abstract paos. -->
 		<xs:attribute name="enabled" type="xs:boolean" default="true" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
 	    <xs:attribute name="inherits" type="xs:string" />
@@ -24,9 +28,29 @@
         <xs:element name="displayName" type="xs:string" minOccurs="0" />
         <xs:element name="displayGroup" type="xs:string" minOccurs="0" />
         <xs:element name="changeGroup" type="xs:string" minOccurs="0" />
-        <xs:element name="points" type="pointsType" minOccurs="0" />
-        <xs:element name="commands" type="commandsType" minOccurs="0" />
-        <xs:element name="attributes" type="attributesType" minOccurs="0" />
+        <xs:element name="points" type="pointsType" minOccurs="0">
+            <xs:unique name="pointTypeAndIdUniq">
+                <xs:selector xpath="point"/>
+                <xs:field xpath="@type"/>
+                <xs:field xpath="@offset"/>
+            </xs:unique>
+            <xs:unique name="pointNameKey">
+                <xs:selector xpath="point"/>
+                <xs:field xpath="name"/>
+            </xs:unique>
+        </xs:element>
+        <xs:element name="commands" type="commandsType" minOccurs="0">
+            <xs:unique name="commandIdUniq">
+                <xs:selector xpath="command"/>
+                <xs:field xpath="@id"/>
+            </xs:unique>
+        </xs:element>
+        <xs:element name="attributes" type="attributesType" minOccurs="0" >
+            <xs:unique name="attributeNameUniq">
+                <xs:selector xpath="attribute"/>
+                <xs:field xpath="@name"/>
+            </xs:unique>
+        </xs:element>
         <xs:element name="tags" type="tagType" minOccurs="0" />
       </xs:sequence>
       <xs:attributeGroup ref="paoAttributes" />
@@ -35,7 +59,7 @@
     <!-- TAGS -->
     <xs:attributeGroup name="tagAttributes">
 		<xs:attribute name="name" type="xs:string" use="required" />
-        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+		<xs:attribute name="supports" type="xs:boolean" default="true"/>
     </xs:attributeGroup>
     
     <xs:complexType name="tagType">
@@ -43,7 +67,7 @@
 	        <xs:element name="tag" minOccurs="0" maxOccurs="unbounded">
 	            <xs:complexType>
 	                <xs:sequence>
-	                    <xs:element name="value" type="xs:boolean" minOccurs="0" default="false" />
+	                    <xs:element name="value" type="xs:string" minOccurs="0" />
 	                </xs:sequence>
 	                <xs:attributeGroup ref="tagAttributes" />
 	            </xs:complexType>

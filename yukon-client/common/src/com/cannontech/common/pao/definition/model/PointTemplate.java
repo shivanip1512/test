@@ -57,20 +57,6 @@ public class PointTemplate implements Comparable<PointTemplate> {
         return pointIdentifier;
     }
 
-    /**
-     * @deprecated Use the PointType version.
-     */
-    @Deprecated
-    public PointTemplate(String name, int type, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
-        pointIdentifier = new PointIdentifier(type, offset);
-        this.name = name;
-        this.multiplier = multiplier;
-        this.unitOfMeasure = unitOfMeasure;
-        this.stateGroupId = stateGroupId;
-        this.decimalPlaces = decimalPlaces;
-    }
-    
     public PointTemplate(String name, PointType type, int offset, double multiplier,
             int unitOfMeasure, int stateGroupId, int decimalPlaces) {
         pointIdentifier = new PointIdentifier(type, offset);

@@ -1,5 +1,10 @@
 package com.cannontech.common.pao.definition.model;
 
+import static com.cannontech.core.roleproperties.InputTypeFactory.longType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+
+import com.cannontech.web.input.type.InputType;
+
 public enum PaoTag {
 
 	TOU("TOU"),
@@ -30,16 +35,24 @@ public enum PaoTag {
 	VOLTAGE_REGULATOR("Voltage Regulator"),
 	LM_GROUP("LM Group"),
 	LM_PROGRAM("LM Program"),
-	LM_CONTROL_AREA("LM Control Area"),
-	LM_SCENARIO("LM Scenario"),	
-	DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
-	SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
+    LM_CONTROL_AREA("LM Control Area"),
+    LM_SCENARIO("LM Scenario"),
+    DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
+    SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
+    PLC_ADDRESS_RANGE("PLC Address Range", stringType()),
+	DUMMY_LONG_TAG("for internal testing", longType()), // can be removed when we add a real tag that uses long
 	;
 
-	private String description;
+	private final String description;
+    private final InputType<?> valueType;
 	
 	PaoTag(String description) {
-		this.description = description;
+		this(description, null);
+	}
+	
+	PaoTag(String description, InputType<?> valueType) {
+	    this.description = description;
+        this.valueType = valueType;
 	}
 	
 	public String getDescription() {
@@ -49,4 +62,12 @@ public enum PaoTag {
 	public String getName() {
 		return this.name();
 	}
+	
+	public boolean isTagHasValue() {
+        return valueType != null;
+    }
+	
+	public InputType<?> getValueType() {
+        return valueType;
+    }
 }
