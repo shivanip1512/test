@@ -23,7 +23,7 @@ public interface RouteDiscoveryService {
 
     /**
      * This method takes a list of callbacks and sends out cancel commands for each of them.  
-     * It also adds the callback to a cancellation list so it can’t recursively call another 
+     * It also adds the callback to a cancellation list so it can't recursively call another 
      * route locate request during the cancellation process.
      * 
      * @param routeFoundCallbacks

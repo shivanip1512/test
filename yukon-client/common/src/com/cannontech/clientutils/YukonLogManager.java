@@ -158,7 +158,7 @@ public class YukonLogManager {
      * if it does not already exist. (Loggers are typically named
      * using the fully qualified class name.
      * @param s A string that is the name of the logger in the following forms:
-     * “packageName.className” or
+     * "packageName.className" or
      * className.class.getName()
      * @return existing logger or new logger if it doesn't already exist
      */
