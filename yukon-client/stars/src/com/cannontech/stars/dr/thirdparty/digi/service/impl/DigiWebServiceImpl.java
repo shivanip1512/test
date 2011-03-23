@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
-import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
 import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
+import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
 
 public class DigiWebServiceImpl implements ZigbeeWebService {
 
@@ -171,8 +171,11 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Override
     public String getAllDevices() {
         logger.info("-- GetAllDevices start --");
+        DigiGateway gateway = gatewayDeviceDao.getDigiGateway(2861);
         
-        String html = restTemplate.getForObject("http://developer.idigi.com/ws/DeviceCore",String.class);
+        String macAddress = convertMacAddresstoDigi(gateway.getMacAddress());
+        
+        String html = restTemplate.getForObject("http://developer.idigi.com/ws/data/",String.class);
         
         logger.info(html);
         

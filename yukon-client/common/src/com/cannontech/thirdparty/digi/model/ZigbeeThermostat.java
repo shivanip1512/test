@@ -1,4 +1,4 @@
-package com.cannontech.stars.dr.thirdparty.digi.model;
+package com.cannontech.thirdparty.digi.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -7,6 +7,7 @@ public class ZigbeeThermostat implements YukonDevice {
 
     private PaoIdentifier paoIdentifier;
     private String installCode;
+    private String macAddress;
     private String name;
     
     public String getInstallCode() {
@@ -32,4 +33,12 @@ public class ZigbeeThermostat implements YukonDevice {
     public void setName(String name) {
         this.name = name;
     }   
+    
+    public String getMacAddress() {
+        return macAddress;
+    }
+    
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
 }

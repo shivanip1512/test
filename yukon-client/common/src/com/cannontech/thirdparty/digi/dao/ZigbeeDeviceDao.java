@@ -1,6 +1,6 @@
-package com.cannontech.stars.dr.thirdparty.digi.dao;
+package com.cannontech.thirdparty.digi.dao;
 
-import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
 
 
 public interface ZigbeeDeviceDao {

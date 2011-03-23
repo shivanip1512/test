@@ -243,7 +243,7 @@ public class OperatorHardwareController {
         
         modelMap.addAttribute("hardwareDto", hardwareDto);
         
-        setupZigbeeShowHideElements(hardwareDto, modelMap);
+        setupZigbeeCreateShowHideElements(hardwareDto, modelMap);
         setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
         
         return "operator/hardware/hardware.jsp";
@@ -268,7 +268,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("hardwareDto", hardwareDto);
         modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
         
-        setupZigbeeShowHideElements(hardwareDto, modelMap);
+        setupZigbeeEditShowHideElements(hardwareDto, modelMap);
         setupHardwareShowHideElements(hardwareDto, modelMap, userContext);
         
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
@@ -659,21 +659,45 @@ public class OperatorHardwareController {
         }
     }
     
-    private void setupZigbeeShowHideElements(HardwareDto hardwareDto, ModelMap modelMap) {
-    	LMHardwareClass hardwareClass = hardwareDto.getHardwareClass();
+    /**
+     * When creating we don't have a HardwareType yet since that is selected during the creation, 
+     * we only have a class
+     * 
+     * @param hardwareDto
+     * @param modelMap
+     */
+    private void setupZigbeeCreateShowHideElements(HardwareDto hardwareDto, ModelMap modelMap) {
+        LMHardwareClass lmHardwareClass  = hardwareDto.getHardwareClass();
+        
+        setupZigbeeShowHideElements(lmHardwareClass.isGateway(),lmHardwareClass.isThermostat(),modelMap);
+    }
+    
+    /**
+     * For editing we have the hardwareType set so we will use it. The Dto does not have the class set anymore.
+     * 
+     * @param hardwareDto
+     * @param modelMap
+     */
+    private void setupZigbeeEditShowHideElements(HardwareDto hardwareDto, ModelMap modelMap) {
+        HardwareType hardwareType = hardwareDto.getHardwareType();
+        
+        setupZigbeeShowHideElements(hardwareType.isGateway(),hardwareType.isThermostat(),modelMap);        
+    }
+    
+    private void setupZigbeeShowHideElements(boolean gateway, boolean thermostat, ModelMap map) {
     	
     	/* Shows the MacAddress Field and Firmware Version */
-        if (hardwareClass.isGateway()) {
-            modelMap.addAttribute("showMacAddress", true);
-            modelMap.addAttribute("showFirmwareVersion", true);
-            modelMap.addAttribute("showVoltage", false);
+        if (gateway) {
+            map.addAttribute("showMacAddress", true);
+            map.addAttribute("showFirmwareVersion", true);
+            map.addAttribute("showVoltage", false);
         }
         
         /* Shows install code */
-        //Do we want this to be only for Zigbee devices?
-        if (hardwareClass.isThermostat()) {
-            modelMap.addAttribute("showInstallCode", true);
-            modelMap.addAttribute("showVoltage", false);
+        if (thermostat) {
+            map.addAttribute("showInstallCode", true);
+            map.addAttribute("showMacAddress", true);
+            map.addAttribute("showVoltage", false);
         }
     }
     

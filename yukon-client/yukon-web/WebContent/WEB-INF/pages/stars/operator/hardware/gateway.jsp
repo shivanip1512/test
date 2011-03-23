@@ -102,14 +102,14 @@ removeTableRow = function(rowId, deviceId) {
 				<div>
 					<cti:labeledImg key="decommission" href="${gatewayControllerUrl}decommission${gatewayControllerUrlParameters}"/>
 				</div>
-				<!-- 
+				
                 <br>
 				<div>
 					Temp way to call "reportAllDevices"
 					<br>
 					<cti:labeledImg key="add" href="${gatewayControllerUrl}reportAllDevices${gatewayControllerUrlParameters}"/>
 				</div>
-                -->
+                
 			</tags:formElementContainer>
 		</cti:dataGridCell>
 	</cti:dataGrid>

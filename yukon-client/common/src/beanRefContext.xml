@@ -35,6 +35,8 @@
                 <value>com/cannontech/cc/applicationContext.xml</value>
                 <value>com/cannontech/common/events/eventsContext.xml</value>
                 <value>com/cannontech/common/validation/validationClientContext.xml</value>
+                <value>com/cannontech/thirdparty/thirdparty.xml</value>
+                <value>com/cannontech/common/pao/pao.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />

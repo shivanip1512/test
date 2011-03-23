@@ -6,15 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionService {
-    
-    private PaoDao paoDao;
     
     private ImmutableMap<HardwareType,HardwareTypeExtensionProvider> builderMap = ImmutableMap.of();
     
@@ -24,8 +21,6 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
         
         if (hardwareBuilder == null) return;
 
-        int paoId = paoDao.getNextPaoId();
-        hardwareDto.setDeviceId(paoId);
         hardwareBuilder.createDevice(hardwareDto);
         
     }
@@ -76,9 +71,5 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
         
         builderMap = builder.build();
     }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
+
 }

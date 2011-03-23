@@ -442,11 +442,11 @@ public final class DeviceFactory {
             returnDevice = new RTM();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
-        case ZIGBEEUTILPRO:
-        case DIGIGATEWAY:
-            returnDevice = new ZigbeeDevice();
-            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CARRIER);
-            break;
+        default:
+            returnDevice = new GenericDevice();
+            returnDevice.setDeviceClass(paoType.getPaoClass().getDbString());
+            returnDevice.setPAOCategory(paoType.getPaoCategory().name());
+            returnDevice.setDeviceType(paoType.getPaoTypeName());
         }
 
         //Set a couple reasonable defaults
@@ -456,8 +456,8 @@ public final class DeviceFactory {
         returnDevice.setDisableFlag('N');
         returnDevice.getDevice().setAlarmInhibit('N');
         returnDevice.getDevice().setControlInhibit('N');
-        setDeviceDefaults( paoType.getDeviceTypeId(), returnDevice );
-
+        setDeviceDefaults(paoType.getDeviceTypeId(), returnDevice);
+        
         return returnDevice;
     }
     /**

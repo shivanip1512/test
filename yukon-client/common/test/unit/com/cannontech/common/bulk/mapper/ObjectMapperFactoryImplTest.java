@@ -340,30 +340,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 			throw new UnsupportedOperationException("Method not implemented");
 		}
 
-        @Override
-        public void addYukonDevice(PaoIdentifier paoIdentifier) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void addYukonPao(PaoIdentifier paoIdentifier, String name) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void deleteYukonDevice(PaoIdentifier paoIdentifier) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void deleteYukonPao(PaoIdentifier paoIdentifier) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void updateYukonPao(PaoIdentifier paoIdentifier, String name) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
     }
 
     /**
@@ -523,6 +499,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public int getRouteDeviceCount(int routeId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
     }
 
 }

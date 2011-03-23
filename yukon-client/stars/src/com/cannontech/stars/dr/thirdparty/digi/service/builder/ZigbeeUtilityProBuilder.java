@@ -1,10 +1,7 @@
 package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.HardwareType;
@@ -12,26 +9,28 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.database.TransactionException;
+import com.cannontech.common.pao.service.PaoCreationService;
+import com.cannontech.common.pao.service.PaoTemplate;
+import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
-import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
-import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
+import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
+import com.google.common.collect.ClassToInstanceMap;
 
 public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
 
+    private PaoCreationService paoCreationService;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private PaoDefinitionService paoDefinitionService;
+    private DeviceDao deviceDao;
     private AttributeService attributeService;
+    
     
     @Override
     public HardwareType getType() {
@@ -40,10 +39,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void retrieveDevice(HardwareDto hardwareDto) {
-        //TODO Check to make sure deviceId was set before getting here. was liteInventoryBase.getDeviceID()       
         ZigbeeThermostat zigbeeThermostat = zigbeeDeviceDao.getZigbeeUtilPro(hardwareDto.getDeviceId()); 
         
         hardwareDto.setInstallCode(zigbeeThermostat.getInstallCode());
+        hardwareDto.setMacAddress(zigbeeThermostat.getMacAddress());
         
         LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
@@ -55,32 +54,36 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         if (StringUtils.isBlank(hardwareDto.getInstallCode())) {
             errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");
         }
+        
+        /* MAC Address*/
+        if (StringUtils.isBlank(hardwareDto.getMacAddress())) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
+        }
     }
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        ZigbeeThermostat thermostat = new ZigbeeThermostat();
+        //Build up all the fields for inserting a digiGateway.        
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields();
+        //Serial Number is unique, using that as the PaoName
+        yukonPaObjectFields.setName(hardwareDto.getSerialNumber());
         
-        thermostat.setInstallCode(hardwareDto.getInstallCode());
-        thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
+        UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields();
+        tStatFields.setInstallCode(hardwareDto.getInstallCode());
+        tStatFields.setMacAddress(hardwareDto.getMacAddress());
         
-        //Do we really want to use the Serial number as the name?
-        thermostat.setName(hardwareDto.getSerialNumber());
+        //Build Template and call Pao Creation Service
+        ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
+        paoFields.put(UtilityProZigbeeFields.class, tStatFields);
+        paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
-        zigbeeDeviceDao.createZigbeeUtilPro(thermostat);
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
+        PaoTemplate paoTemplate = new PaoTemplate(PaoType.ZIGBEEUTILPRO, paoFields);
         
-        List<PointBase> points = paoDefinitionService.createAllPointsForPao(thermostat);
-        MultiDBPersistent pointMulti = new MultiDBPersistent();
-        pointMulti.getDBPersistentVector().addAll(points);
+        PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
         
-        try {
-            PointUtil.insertIntoDB(pointMulti);
-        } catch (TransactionException e) {
-            //TODO
-        }
-
-        return;
+        //Update the Stars table with the device id
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), 
+                                                                                 paoIdentifier.getPaoId());
     }
 
     @Override
@@ -88,6 +91,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         ZigbeeThermostat thermostat = new ZigbeeThermostat();
         
         thermostat.setInstallCode(hardwareDto.getInstallCode());
+        thermostat.setMacAddress(hardwareDto.getMacAddress());
         thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
         thermostat.setName(hardwareDto.getSerialNumber());
         
@@ -105,8 +109,14 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
         
         zigbeeDeviceDao.deleteZigbeeUtilPro(thermostat);
+        deviceDao.removeDevice(thermostat);
     }
 
+    @Autowired
+    public void setPaoCreationService(PaoCreationService paoCreationService) {
+        this.paoCreationService = paoCreationService;
+    }
+    
     @Autowired
     public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
         this.zigbeeDeviceDao = zigbeeDeviceDao;
@@ -118,8 +128,8 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Autowired
-    public void setPaoDefinitionSerivice(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
     
     @Autowired

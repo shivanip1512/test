@@ -474,4 +474,5 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 }

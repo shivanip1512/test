@@ -1,9 +1,9 @@
-package com.cannontech.stars.dr.thirdparty.digi.dao;
+package com.cannontech.thirdparty.digi.dao;
 
 import java.util.List;
 
-import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
-import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
 
 public interface GatewayDeviceDao {
     

@@ -1,7 +1,5 @@
 package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -11,28 +9,30 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.database.TransactionException;
+import com.cannontech.common.pao.service.PaoCreationService;
+import com.cannontech.common.pao.service.PaoTemplate;
+import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
-import com.cannontech.stars.dr.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.stars.dr.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.dao.provider.fields.GatewayFields;
+import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.google.common.collect.ClassToInstanceMap;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     private GatewayDeviceDao gatewayDeviceDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private PaoDefinitionService paoDefinitionService;
     private AttributeService attributeService;
+    private DeviceDao deviceDao;
+    private PaoCreationService paoCreationService;
     
     @Override
     public void retrieveDevice(HardwareDto hardwareDto) {
-        //TODO Check to make sure deviceId was set before getting here. was liteInventoryBase.getDeviceID()
         DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(hardwareDto.getDeviceId());
         
         hardwareDto.setMacAddress(digiGateway.getMacAddress());
@@ -58,20 +58,24 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
+        //Build up all the fields for inserting a digiGateway.        
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields();
+        yukonPaObjectFields.setName(hardwareDto.getSerialNumber());
         
-        gatewayDeviceDao.createDigiGateway(digiGateway);
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
+        GatewayFields gatewayFields = buildGatewayFields(hardwareDto);
         
-        List<PointBase> points = paoDefinitionService.createAllPointsForPao(digiGateway);
-        MultiDBPersistent pointMulti = new MultiDBPersistent();
-        pointMulti.getDBPersistentVector().addAll(points);
+        //Build Template and call Pao Creation Service
+        ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
+        paoFields.put(GatewayFields.class, gatewayFields);
+        paoFields.put(YukonPaObjectFields.class, yukonPaObjectFields);
         
-        try {
-            PointUtil.insertIntoDB(pointMulti);
-        } catch (TransactionException e) {
-            //TODO
-        }
+        PaoTemplate paoTemplate = new PaoTemplate(PaoType.DIGIGATEWAY, paoFields);
+        
+        PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
+        
+        //Update the Stars table with the device id
+        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), 
+                                                                                 paoIdentifier.getPaoId());
     }
 
     @Override
@@ -79,6 +83,8 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         DigiGateway digiGateway = buildDigiGateway(hardwareDto);
         
         gatewayDeviceDao.deleteDigiGateway(digiGateway);
+        
+        deviceDao.removeDevice(digiGateway);
     }
 
     @Override
@@ -94,12 +100,27 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         starsInventoryBaseDao.updateInventoryBaseDeviceId(hardwareDto.getInventoryId(), hardwareDto.getDeviceId());
     }
 
+    private GatewayFields buildGatewayFields(HardwareDto hardwareDto) {
+        GatewayFields fields = new GatewayFields();
+        
+        fields.setFirmwareVersion(hardwareDto.getFirmwareVersion());
+        fields.setMacAddress(hardwareDto.getMacAddress());
+
+        //Digi Id is set later after we get commission the device on Digi.
+        //Default to the value in hardwareDto
+        fields.setDigiId(hardwareDto.getCommissionedId());
+        
+        return fields;
+    }    
     private DigiGateway buildDigiGateway(HardwareDto hardwareDto) {
         DigiGateway digiGateway = new DigiGateway();
         
         digiGateway.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.DIGIGATEWAY));
         digiGateway.setFirmwareVersion(hardwareDto.getFirmwareVersion());
         digiGateway.setMacAddress(hardwareDto.getMacAddress());
+        //Serial Number is unique, using that as the PaoName
+        digiGateway.setName(hardwareDto.getSerialNumber());
+        digiGateway.setDigiId(hardwareDto.getCommissionedId());
         
         return digiGateway;
     }
@@ -115,12 +136,17 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Autowired
-    public void setPaoDefinitionSerivice(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
     
     @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+    
+    @Autowired
+    public void setPaoCreationService(PaoCreationService paoCreationService) {
+        this.paoCreationService = paoCreationService;
     }
 }

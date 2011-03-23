@@ -24,7 +24,7 @@
             <td nowrap="nowrap">
                 <cti:img key="link" href="${gatewayControllerUrl}installStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
                 <cti:img key="unlink" href="${gatewayControllerUrl}uninstallStat?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}"/>
-                <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}&message=testmessage&gatewayInventoryId=${inventoryId}"/>
+                <cti:img key="textMessage" href="${gatewayControllerUrl}sendTextMessage?accountId=${accountId}&deviceId=${zigbeeDto.deviceId}&message=testmessage&gatewayInvId=${inventoryId}"/>
             </td>
 			<td class="removeColumn" >
 				<cti:img key="remove" href="javascript:removeTableRow('${zigbeeDto.serialNumber}',${zigbeeDto.deviceId})"/>
