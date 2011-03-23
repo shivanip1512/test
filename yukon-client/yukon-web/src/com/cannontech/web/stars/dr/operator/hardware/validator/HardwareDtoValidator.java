@@ -34,13 +34,10 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
 
     @Override
     public void doValidation(HardwareDto hardwareDto, Errors errors) {
-        HardwareType hardwareType = null;
-        if(hardwareDto.getHardwareType() == null) {
-            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardwareDto.getHardwareTypeEntryId());
-            hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
-        } else {
-            hardwareType = hardwareDto.getHardwareType();
-        }
+        HardwareType hardwareType = hardwareDto.getHardwareType();
+
+        /* Set the type for */
+        hardwareDto.setHardwareType(hardwareType);
         
         //This will validate any hardware extensions. Ex. Zigbee devices
         hardwareTypeExtensionService.validateDevice(hardwareDto, errors);

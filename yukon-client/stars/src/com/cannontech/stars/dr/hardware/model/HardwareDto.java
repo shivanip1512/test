@@ -25,7 +25,7 @@ public class HardwareDto {
     private Date fieldReceiveDate;
     private Date fieldRemoveDate;
     private String deviceNotes;
-    private Integer routeId;
+    private int routeId = 0;
     private Integer serviceCompanyId;
     private Integer warehouseId;
     private String installCode;
@@ -131,11 +131,11 @@ public class HardwareDto {
         this.deviceNotes = deviceNotes;
     }
     
-    public Integer getRouteId() {
+    public int getRouteId() {
         return routeId;
     }
     
-    public void setRouteId(Integer routeId) {
+    public void setRouteId(int routeId) {
         this.routeId = routeId;
     }
     
