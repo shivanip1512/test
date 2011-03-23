@@ -87,8 +87,8 @@ protected:
 
     bool isDeviceAddressGlobal();
 
-    virtual CtiTime getDeviceDawnOfTime() const       { return CtiTime(CtiTime::neg_infin); }
-    virtual bool is_valid_time(const CtiTime) const   { return false; }
+    virtual CtiTime getDeviceDawnOfTime()          const   { return CtiTime(CtiTime::neg_infin); }
+    virtual bool is_valid_time(const CtiTime time) const   { return time.isValid() && !time.is_special(); }
 
     std::string valueReport(const CtiPointSPtr p,         const point_info &pi, const CtiTime &t = YUKONEOT) const;
     std::string valueReport(const std::string &pointname, const point_info &pi, const CtiTime &t) const;
