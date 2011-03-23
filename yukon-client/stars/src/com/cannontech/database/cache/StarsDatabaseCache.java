@@ -24,6 +24,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -44,6 +45,8 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.stars.LMProgramWebPublishing;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -101,6 +104,12 @@ public class StarsDatabaseCache implements DBChangeListener {
 
     public void init() {		
         dataSource.addDBChangeListener(this);
+        dataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE, new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                handleApplianceCategoryChange(event);
+            }
+        });
 	}
 	
 	public synchronized static StarsDatabaseCache getInstance() {
@@ -230,6 +239,10 @@ public class StarsDatabaseCache implements DBChangeListener {
 		return getEnergyCompany( DEFAULT_ENERGY_COMPANY_ID );
 	}
 
+	/**
+	 * @deprecated Use WebConfigurationDao.getById.
+	 */
+	@Deprecated
 	public LiteWebConfiguration getWebConfiguration(int configID) {
         Map<Integer, LiteWebConfiguration> configs = getAllWebConfigurations();
         LiteWebConfiguration result = configs.get(configID);
@@ -375,8 +388,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 						}
 				}
 			}
-		} else if (DBChangeMsg.CAT_APPLIANCE.equals(msg.getDatabase())) {
-		    handleApplianceCategoryChange(msg);
 		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_WEB_CONFIG_DB) {
             handleWebConfigurationChange(msg);
         } else if (msg.getDatabase() == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
@@ -441,16 +452,15 @@ public class StarsDatabaseCache implements DBChangeListener {
         webConfigMap = null;
     }
 
-	private void handleApplianceCategoryChange(DBChangeMsg msg) {
-	    int applianceCategoryId = msg.getId();
+	private void handleApplianceCategoryChange(DatabaseChangeEvent event) {
+	    int applianceCategoryId = event.getPrimaryKey();
 
 	    List<Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompaniesByApplianceCategoryId(applianceCategoryId);
 	    for (Integer energyCompanyId : energyCompanyIds) {
 	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
 
-	        switch( msg.getDbChangeType() ) {
+            switch (event.getChangeType()) {
 	            case ADD:
-
 	                try {
 	                    // Create a lite appliance category from the supplied applianceCategoryId
 	                    com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -486,6 +496,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 	                energyCompany.deleteApplianceCategory(applianceCategoryId);
 	                break;
 	        }
+	    }
+	    synchronized (this) {
+	        webConfigMap = null;
 	    }
 	}
 

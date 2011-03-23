@@ -1462,33 +1462,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
 	{
 		retLBase = handleSettlementConfigChange(dbChangeType, id);
-	}
-	else if( database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DB ||
-			database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB )
-	{
-		//Do nothing, there is no cache for service Companies, but please do not release all cache!
-	}
-    else if ( database == DBChangeMsg.CHANGE_CBC_STRATEGY_DB)
-    {
-        
-        //Do nothing for now...
-    }
-    else if ( database == DBChangeMsg.CHANGE_CBC_ADDINFO_DB)
-    {
-        //Do nothing for now...
-    }else if ( database == DBChangeMsg.CHANGE_PAO_SCHEDULE_DB) {
-        //Do nothing we don't care.
-    }else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB ) {
-		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
-    }else if (DBChangeMsg.CAT_APPLIANCE.equals(dbCategory)) {
-        //Do nothing we don't care.
-    }else if( database == DBChangeMsg.CHANGE_WEB_CONFIG_DB ) {
-        //Do nothing we don't care.
-    }else if ( database == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
-        //Do nothing we don't care.
-    }else {
-	    //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
-	    CTILogger.debug(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
+    } else {
+	    // There are several messages we don't care about.
+	    CTILogger.debug("Unhandled DBChangeMessage with category " + dbCategory);
 	}
 
 	return retLBase;

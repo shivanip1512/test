@@ -165,7 +165,7 @@ function showSimplePopup(popupId, initialFocus) {
     $(popupId).show();
     if (initialFocus) {
         $(initialFocus).focus();
-    } else if ($(popupId).select("input:first[type='text']")[0]) {
-        $(popupId).select("input:first[type='text']")[0].focus();
+    } else if ($(popupId).down("input:first[type='text']")) {
+        $(popupId).down("input:first[type='text']").focus();
     }
 }

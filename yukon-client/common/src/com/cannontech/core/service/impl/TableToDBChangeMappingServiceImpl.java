@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMappingService{
@@ -24,7 +25,7 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
     
     @PostConstruct
     public void startup() {
-        addDBTableListener("ApplianceCategory", DBChangeMsg.CHANGE_DO_NOT_CARE_DB, DBChangeMsg.CAT_APPLIANCE, DBChangeMsg.CAT_APPLIANCE);
+        addDBTableListener("ApplianceCategory", DbChangeCategory.APPLIANCE);
         addDBTableListener("LMGroupExpressCom", 0, PAOGroups.STRING_CAT_DEVICE, PaoType.LM_GROUP_EXPRESSCOMM.getDbString());
         addDBTableListener("LMProgram", 0, PAOGroups.STRING_CAT_LOADMANAGEMENT, PaoType.LM_DIRECT_PROGRAM.getDbString());
         addDBTableListener("LMProgramWebPublishing", DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM);
@@ -33,7 +34,23 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
         addPointDBTableListener("Point", 1, DBChangeMsg.CAT_POINT);
         
     }
-    
+
+    private void addDBTableListener(final String tableName, final DbChangeCategory changeCategory) {
+        databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
+            public void rowInserted(int primaryKey) {
+                dbPersistentDao.processDatabaseChange(DbChangeType.ADD, changeCategory, primaryKey);
+            }
+
+            public void rowUpdated(int primaryKey) {
+                dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, changeCategory, primaryKey);
+            }
+
+            public void rowDeleted(int primaryKey) {
+                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, changeCategory, primaryKey);
+            }
+        });
+    }
+
     private void addDBTableListener(final String tableName, final int database, final String category, final String objectType) {
         databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
             public void rowInserted(int primaryKey) {
