@@ -292,7 +292,7 @@ public:
         _pointId(SYS_PID_CAPCONTROL), _spAreaId(0),_areaId(0),_stationId(0),_subId(0),
         _feederId(0), _eventType(capControlIvvcTapOperation), _seqId(0), _value(0),
         _kvarBefore(0), _kvarAfter(0), _kvarChange(0), _ipAddress("(N/A)"),
-        _actionId(0), _aVar(0), _bVar(0), _cVar(0), _regulatorId(regulatorId) { };
+        _actionId(0), _stateInfo("(N/A)"), _aVar(0), _bVar(0), _cVar(0), _regulatorId(regulatorId) { };
 
     CtiCCEventLogMsg (const CtiCCEventLogMsg& aRef);
 
