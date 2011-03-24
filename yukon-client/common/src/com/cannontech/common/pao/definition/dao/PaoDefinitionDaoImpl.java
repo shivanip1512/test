@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -340,9 +341,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     public <T> T getConvertedValueForTag(PaoType paoType, PaoTag tag, Class<T> returnType) {
         Validate.isTrue(tag.isTagHasValue(), "Tag does not support an attached value");
-        if (log.isDebugEnabled()) {
-            log.debug("getting converted value of " + tag + " for " + paoType + " as " + returnType.getSimpleName());
-        }
+        LogHelper.debug(log, "getting converted value of %s for %s as %s", tag, paoType, returnType.getSimpleName());
         Validate.isTrue(returnType.isAssignableFrom(tag.getValueType().getTypeClass()), "can't convert " + tag + " to " + returnType);
         PaoTagDefinition tagDefinition = getSupportedTag(paoType, tag);
         if (tagDefinition == null) {
@@ -350,9 +349,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         Object convertedValue = tagDefinition.getValue();
 
-        if (log.isDebugEnabled()) {
-            log.debug("returning: " + convertedValue);
-        }
+        LogHelper.debug(log, "returning: %s", convertedValue);
         T result = returnType.cast(convertedValue);
         return result;
     }
