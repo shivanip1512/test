@@ -121,7 +121,7 @@
         <webClassPathEntry>/tools/bin</webClassPathEntry>
         <webClassPathEntry>/trending/bin</webClassPathEntry>
         <webClassPathEntry>/trending/resource</webClassPathEntry>
-        <webClassPathEntry>/web-common/build/classes</webClassPathEntry>
+        <webClassPathEntry>/web-common/bin</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/classes</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-validator.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/web.jar</webClassPathEntry>
