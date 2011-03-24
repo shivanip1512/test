@@ -30,3 +30,4 @@ GO
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '24-MAR-2011', 'Latest Update', 6);
