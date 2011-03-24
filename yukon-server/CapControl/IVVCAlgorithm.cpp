@@ -1647,23 +1647,16 @@ void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr
 }
 
 
-/*
-    tapOpCount can be positive or negative so we compute a sum of squares.  The result
-    is
-        == 0    iff the map has all 0's for tap operations
-        != 0    if there exists at least one map element with non-zero tap operations
- */
 bool IVVCAlgorithm::hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const
 {
-    int sum_of_squares = 0;
-
     for each ( const IVVCState::TapOperationZoneMap::value_type & operation in tapOp )
     {
-        int  tapOpCount = operation.second;
-
-        sum_of_squares += ( tapOpCount * tapOpCount );
+        if ( operation.second != 0 )
+        {
+            return true;
+        }
     }
 
-    return ( sum_of_squares != 0 );
+    return false;
 }
 
