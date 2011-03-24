@@ -59,7 +59,7 @@ std::list<LitePoint> AttributeService::getExtraPaoPoints(int paoId)
  */
 LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
 {
-    int pointId;
+    int pointId = 0;
     string attributeName = attribute.name();
 
     {
@@ -77,9 +77,7 @@ LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttr
         }
     }
 
-    LitePoint point = getLitePointsById(pointId);
-
-    return point;
+    return pointId == 0 ? LitePoint() : getLitePointsById(pointId);
 }
 
 LitePoint AttributeService::getLitePointsById(int pointId)
