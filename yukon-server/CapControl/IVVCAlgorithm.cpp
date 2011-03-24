@@ -557,11 +557,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     long zoneID     = operation.first;
                     int  tapOpCount = operation.second;
 
-                    if ( tapOpCount == 0 )
-                    {
-                        state->_tapOps.erase(zoneID);
-                    }
-                    else if ( tapOpCount < 0 )
+                    if ( tapOpCount < 0 )
                     {
                         ZoneManager & zoneManager = store->getZoneManager();
                         long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
@@ -580,7 +576,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         }
                         state->_tapOps[zoneID]++;
                     }
-                    else    // tapOpCount > 0
+                    else if ( tapOpCount > 0 )
                     {
                         ZoneManager & zoneManager = store->getZoneManager();
                         long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
@@ -599,9 +595,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         }
                         state->_tapOps[zoneID]--;
                     }
+                    else    // tapOpCount == 0
+                    {
+                        // Nothing to do here
+                    }
                 }
 
-                if ( state->_tapOps.empty() )       // are we done yet?
+                if ( ! hasTapOpsRemaining(state->_tapOps) ) // are we done yet?
                 {
                     state->setLastTapOpTime( timeNow );
                     state->setState(IVVCState::IVVC_WAIT);
@@ -1352,20 +1352,8 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
     tapOpZoneNormalization( rootZoneId, zoneManager, state->_tapOps );
 
-    // remove Tap Operations of 0 from the operations map
-    for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
-    {
-        long zoneID     = operation.first;
-        int  tapOpCount = operation.second;
-
-        if ( tapOpCount == 0 )
-        {
-            state->_tapOps.erase(zoneID);
-        }
-    }
-
-    // if there are non-zero ops in the map set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
-    if ( state->_tapOps.size() != 0 )
+    // if there are tap ops remaining, set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
+    if ( hasTapOpsRemaining(state->_tapOps) )
     {
         if ( allRegulatorsInRemoteMode(subbusId) )
         {
@@ -1659,4 +1647,23 @@ void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr
 }
 
 
+/*
+    tapOpCount can be positive or negative so we compute a sum of squares.  The result
+    is
+        == 0    iff the map has all 0's for tap operations
+        != 0    if there exists at least one map element with non-zero tap operations
+ */
+bool IVVCAlgorithm::hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const
+{
+    int sum_of_squares = 0;
+
+    for each ( const IVVCState::TapOperationZoneMap::value_type & operation in tapOp )
+    {
+        int  tapOpCount = operation.second;
+
+        sum_of_squares += ( tapOpCount * tapOpCount );
+    }
+
+    return ( sum_of_squares != 0 );
+}
 

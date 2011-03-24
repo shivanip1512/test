@@ -53,6 +53,7 @@ class IVVCAlgorithm
 
         void handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
+        bool hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const;
 
         PointDataRequestFactoryPtr _requestFactory;
 };
