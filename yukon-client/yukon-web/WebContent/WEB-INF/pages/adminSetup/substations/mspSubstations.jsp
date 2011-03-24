@@ -9,7 +9,7 @@
 
 </script>
 
-<form action="/spring/adminSetup//substations/routemapping/multispeak/add" method="post">
+<form action="/spring/adminSetup/substations/routemapping/multispeak/add" method="post">
 
 	<div style="text-align:right;">
 	<a href="javascript:void(0);" onclick="mspSubstations_check(false);">Uncheck All</a> |
