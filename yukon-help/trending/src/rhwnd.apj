@@ -12,14 +12,14 @@
 			<jump1text></jump1text>
 			<jump2filename></jump2filename>
 			<jump2text></jump2text>
-			<flags>1056</flags>
+			<flags>263200</flags>
 			<navpanewidth>200</navpanewidth>
-			<buttons>8218</buttons>
+			<buttons>8198</buttons>
 			<windowplacement>
-				<left>426</left>
+				<left>225</left>
 				<top>0</top>
 				<right>1026</right>
-				<bottom>500</bottom>
+				<bottom>600</bottom>
 			</windowplacement>
 			<windowstyle>0</windowstyle>
 			<windowstyleex>0</windowstyleex>

@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=528>
+<meta name=layout-width content=964>
 <meta name=x-ignored-words content=RTU>
 
 
@@ -46,74 +46,72 @@
 
 <h1>Load Management</h1>
 
-<p>The Load Management database allows you to create control areas, load 
- programs and load groups, and points.</p>
+<p>The Load Management database allows control areas, load programs and 
+ load groups, and points to be defined in the Yukon system.</p>
 
 <p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">Cooper Power Systems recommends creating 
- a new load management database in the following order:</p>
+ a new Load Management database in the following order:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Define the <a href="Creating_a_Load_Group.htm">load 
- groups</a>. A load group defines the communication protocol and the device 
- addressing needed to control field devices.</p></li>
+ groups</a> in the Yukon system. A load group defines the communication 
+ protocol and the device addressing needed to control field devices.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Define the <a href="Creating_a_Load_Program.htm">load 
+ programs</a> in the Yukon system. A load program defines the load groups 
+ to control and the method of control.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Optionally, define 
  <a href="Creating_a_Program_Constraint.htm">program constraints</a> for 
- load programs.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Define the <a href="Creating_a_Load_Program.htm">load 
- programs</a>. Load programs define the loads to control and the method 
- of control.</p></li>
+ load programs in the Yukon system.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Define the <a href="Creating_a_Control_Area.htm">control 
- areas</a>. Control areas define geographical regions used for controlling 
- loads to reduce peak. A Control Area may be the entire system, portion 
- of the system, substation, or any defined controllable area. Two trigger 
- points can be defined per control area.</p></li>
+ areas</a> in the Yukon system. A control area defines a geographical region 
+ used for controlling loads to reduce peak. A control area may be the entire 
+ system, portion of the system, substation, or any defined controllable 
+ area. Two trigger points can be defined per control area.</p></li>
 </ol>
 
 <p style="margin-bottom: 9pt; margin-left: 40px;">Note: When two control 
- triggers are defined, you must select whether both are required active 
- before control begins for the control area.</p>
+ triggers are defined, select whether or not both triggers are required 
+ to be active before control can start for the control area.</p>
 
 <ol start=4
 	style="list-style: decimal;"
 	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Optionally, create 
- <a href="Creating_a_Control_Scenario.htm">control scenarios</a>. A Control 
- Scenario defines when to start load programs and the gears to use for 
- the programs.</p></li>
+ <a href="Creating_a_Control_Scenario.htm">control scenarios</a> in the 
+ Yukon system. A control scenario defines when to start load programs and 
+ the gears to use for the programs.</p></li>
 	
 	<li class=kadov-p><p>Define the <a href="Creating_a_Load_Management_Point.htm">points</a> 
  for load groups. A point is required for every discrete piece of information 
- that is collected. The two types of load management points are:</p></li>
+ that is collected. The two types of Load Management points are:</p></li>
 </ol>
 
-<ul style="list-style: disc;"
+<ol style="list-style: disc;"
 	type=disc>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Analog</span> 
- - an analog point reads a value directly from the transducer or electronic 
+ – An analog point reads a value directly from the transducer or electronic 
  device.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Status</span> 
- - a status point reads the value of a contact, usually open or closed. 
+ – A status point reads the value of a contact, usually open or closed. 
  An example of a status point might be the relay on a verification load 
  control receiver.</p></li>
 	</ul>
-</ul>
+</ol>
 
 <p>&nbsp;</p>
-
-<p>&nbsp; </p>
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -127,8 +125,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -139,7 +137,7 @@
 <param name="Items" value="Creating a Control Area;Creating_a_Control_Area.htm$$**$$Creating a Load Group;Creating_a_Load_Group.htm$$**$$Creating a Load Management Point;Creating_a_Load_Management_Point.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Load_Management.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Load_Management.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

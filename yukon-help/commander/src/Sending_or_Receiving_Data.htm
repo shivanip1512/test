@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=714>
-<meta name=layout-width content=974>
+<meta name=layout-height content=578>
+<meta name=layout-width content=964>
 <meta name=x-ignored-words content="Versacom;CBCs;LCR;MCT;CI;ExpressCom;Expresscom;VERSACOM;Loopback;DLC;PLC;Name'';LoadGroupName;putconfig;Afton;C';Yukon\Client\Commands;Plus.txt;Alpha-BASE.txt;C;LoadGroupName';Shed';Shed'm;Yukon\Client\Commands\Custom;m;Transponder;Transponders;CCU;LCU;RPT;TCU;RTU;CBC;Yukon\Client\Commands\;c;c;Yukon\Client\Commands\;Name'';BCH;Powerline;CCU's;NACK;enhancer;Retune;PCA;SCU;SSSA;SH;N-Type;Timeout;comm;REQACK;Unexecutable;…;E-Word;DCD;timeout;CRC;IED;Yukon\Client\Commands\;Yukon\Client\Commands\;TOU;TOU">
 
 
@@ -64,7 +64,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Sending or Receiving Data</h1>
 
-<p>To enter or select commands for collecting or sending data:</p>
+<p>Perform the following steps to submit commands to the Yukon system for 
+ collecting or sending field data:</p>
 
 <p>&nbsp;</p>
 
@@ -78,35 +79,35 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Device</span> 
- - list of the field devices in the Yukon system.</p></li>
+ – List of the field devices in the Yukon system.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Meter Number</span> 
- - list of the meter numbers in the Yukon system</p></li>
+ – List of the meter numbers in the Yukon system</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">MCT Broadcast</span> 
- - list of the MCT Broadcast groups.</p></li>
+ – List of the MCT Broadcast groups.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Transmitter</span> 
- - list of signal transmitters in the Yukon system.</p></li>
+ – List of signal transmitters in the Yukon system.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Load Group</span> 
- - list of the load groups in the Yukon system.</p></li>
+ – List of the load groups in the Yukon system.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Cap Bank 
- Controller</span> - list of the cap bank controllers in the Yukon system.</p></li>
+ Controller</span> – List of the cap bank controllers in the Yukon system.</p></li>
 		
 		<li class=kadov-p><p style="margin-top: 0px;"><span style="font-weight: bold;">ExpressCom 
- Serial</span> - select the route to send a command on from the Route # 
+ Serial</span> – Select the route to send a command on from the Route # 
  drop-down list and enter the serial number of the ExpressCom device to 
  send a command to in the Serial # text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Versacom 
- Serial</span> - select the route to send a command on from the Route # 
+ Serial</span> – Select the route to send a command on from the Route # 
  drop-down list and enter the serial number of the VERSACOM device to send 
  a command to in the Serial # text box.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Device 
- Groups</span> - list of the device/meter groups in the Yukon system.</p></li>
+ Groups</span> – List of the device/meter groups in the Yukon system.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To refresh the list 
@@ -114,28 +115,29 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  from the <span style="font-weight: bold;">View</span> menu.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the database 
- item to which you want to send a command from the database item list.</p></li>
+ item to which to send a command from the database item list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the <a href="javascript:BSSCPopup('Command_Options.htm');"
 	id=a1>command options</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--> 
- you want to enable.</p></li>
+ to enable.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a command from 
  the <span style="font-weight: bold;">Common Commands</span> drop-down 
- list. In addition, you can enter or select a command in the <span style="font-weight: bold;">Execute 
+ list.<br>
+	A command can be entered or selected in the <span style="font-weight: bold;">Execute 
  Command</span> drop-down list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To run the command, 
  click the <span style="font-weight: bold;">Execute</span> button or select 
  <span style="font-weight: bold;">Execute</span> from the <span style="font-weight: bold;">Command</span> 
- menu. The output result appears in the area below and command information 
- appears in the Command Log window.</p></li>
+ menu. The output result appears in the area below the command window and 
+ command information appears in the Command Log window.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To interrupt the command 
- and stop the display of the output, either click the <span style="font-weight: bold;">Stop</span> 
+ and stop the display of the output, click the <span style="font-weight: bold;">Stop</span> 
  button or select <span style="font-weight: bold;">Stop</span> from the 
  <span style="font-weight: bold;">Command </span>menu.</p></li>
 	
@@ -148,9 +150,9 @@ kadovFilePopupInit('a1');
  area, click the <span style="font-weight: bold;">Clear All</span> button.</p></li>
 </ol>
 
-<p style="margin-bottom: 9pt;">Note: The last five database items that 
- have had commands sent to them appear under the <span style="font-weight: bold;">File</span> 
- menu.</p>
+<p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Note:</span> 
+ The last five database items that have had commands sent to them are displayed 
+ in the <span style="font-weight: bold;">File</span> menu.</p>
 
 </body>
 

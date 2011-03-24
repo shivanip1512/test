@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig">
+<meta name=layout-height content=757>
+<meta name=layout-width content=1142>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;deselected;RFN">
 
 
 <!--(Links)=========================================================-->
@@ -44,32 +44,16 @@
 
 <body>
 
-<!--(Generated Script Links)========================================-->
-<!--(Generated Code)================================================-->
-<!--(WARNING: DO NOT EDIT OR DELETE THIS SECTION!)==================-->
-<!--begin!kadov{{===================================================-->
-<script type="text/javascript"
-		language=JavaScript1.2
-		src="ehlpdhtm.js"
-		x-save-method=compute-relative></script>
-<script type="text/javascript"
-		language=JavaScript1.2>
-<!-- 
-if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function();if( typeof( kadovInitTrigger ) != 'function' ) kadovInitTrigger = new Function();if( typeof( kadovFilePopupInit ) != 'function' ) kadovFilePopupInit = new Function();if( typeof( kadovTextPopupInit ) != 'function' ) kadovTextPopupInit = new Function();
- //-->
-</script>
-
-<!--}}end!kadov=====================================================-->
-<!--(==============================================================)-->
-
-
 <h1>Creating an MCT Config</h1>
 
-<p style="margin-bottom: 9pt;">The information in a config is uploaded 
- to an MCT when a <span style="font-style: italic;">putconfig EMETCON install</span> 
- command is sent to the MCT from Yukon Commander.</p>
+<p style="margin-bottom: 9pt;">To manually upload a config to an MCT, start 
+ the Yukon Commander application, select the MCT to which to send the config, 
+ and execute the <span style="font-style: italic;">putconfig EMETCON install</span> 
+ command.</p>
 
-<p style="margin-bottom: 9pt;">To create an MCT config:</p>
+<p>Perform the following steps to create an MCT config:</p>
+
+<p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -80,32 +64,175 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Create</span> 
  menu, select <span style="font-weight: bold;">MCT Config</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select either <span 
- style="font-weight: bold;">200 Series MCT</span> or <span style="font-weight: bold;">300 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">300 
  Series MCT</span>.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
- button. Based on the type of MCT config selected, the wizard will follow 
- one of two paths.</p></li>
+ button.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
+ config in the <span style="font-weight: bold;">Configuration Name</span> 
+ text box.</p></li>
+	
+	<li class=kadov-p><p>Select the mode of operation for the MCT config:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><a href="javascript:BSSCPopup('200_Series_MCT_Config.htm');"
-															id=a1>200 Series 
- MCT Config</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a1');
-//--></script><!--}}end!kadov--></p></li>
+		<li class=kadov-p><p><span style="font-weight: bold;">On-Peak/Off-Peak 
+ Mode</span> – Configures the MCT to record the maximum demand readings 
+ for either the On-Peak or Off-Peak interval.</p></li>
 		
-		<li class=kadov-p><p><a href="javascript:BSSCPopup('300_Series_MCT_Config.htm');"
-								id=a2>300 Series MCT Config</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
-kadovFilePopupInit('a2');
-//--></script><!--}}end!kadov--></p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Min/Max 
+ Mode</span> – Configures the MCT to record the minimum and maximum demand 
+ readings.</p></li>
 	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">The check box for 
+ channel 1 is selected by default and cannot be deselected.</p></li>
+	
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select how the 
+ MCT is wired for channel 1 by selecting the <span style="font-weight: bold;">3-Wire 
+ (KYZ)</span> or <span style="font-weight: bold;">2-Wire (KY)</span> radio 
+ button.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">If the Ke value 
+ (kWh per pulse) for channel 1 is known, enter it in the <span style="font-weight: bold;">Ke</span> 
+ text box.<br>
+		If the Ke value for channel 1 is not known:</p></li>
+		
+		<ol style="list-style: lower-roman;"
+			type=i>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click the 
+ <span style="font-weight: bold;">Recalculate</span> button.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Enter the 
+ Mp value (pulse constant) and Kh value (watt-hour or disk constant) into 
+ the appropriate text boxes.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;">Click the 
+ <span style="font-weight: bold;">=</span> (equals) button to calculate 
+ the Ke value.</p></li>
+		</ol>
+	</ol>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">To enable channel 
+ 2, select the <span style="font-weight: bold;">Channel 2</span> check 
+ box.</p></li>
+	
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select how the 
+ MCT is wired for channel 2 by selecting the <span style="font-weight: bold;">3-Wire 
+ (KYZ)</span> or <span style="font-weight: bold;">2-Wire (KY)</span> radio 
+ button.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">If the Ke value 
+ (kWh per pulse) for channel 2 is known, enter it in the <span style="font-weight: bold;">Ke</span> 
+ text box.<br>
+		If the Ke value for channel 2 is not known:</p></li>
+		
+		<ol style="list-style: lower-roman;"
+			type=i>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click the 
+ <span style="font-weight: bold;">Recalculate</span> button.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Enter the 
+ Mp value (pulse constant) and Kh value (watt-hour or disk constant) into 
+ the appropriate text boxes.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;">Click the 
+ <span style="font-weight: bold;">=</span> (equals) button to calculate 
+ the Ke value.</p></li>
+		</ol>
+	</ol>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">To enable channel 
+ 3, select the <span style="font-weight: bold;">Channel 3</span> check 
+ box.</p></li>
+	
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select how the 
+ MCT is wired for channel 3 by selecting the <span style="font-weight: bold;">3-Wire 
+ (KYZ)</span> or <span style="font-weight: bold;">2-Wire (KY)</span> radio 
+ button.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">If the Ke value 
+ (kWh per pulse) for channel 3 is known, enter it in the <span style="font-weight: bold;">Ke</span> 
+ text box.<br>
+		If the Ke value for channel 3 is not known:</p></li>
+		
+		<ol style="list-style: lower-roman;"
+			type=i>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click the 
+ <span style="font-weight: bold;">Recalculate</span> button.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Enter the 
+ Mp value (pulse constant) and Kh value (watt-hour or disk constant) into 
+ the appropriate text boxes.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;">Click the 
+ <span style="font-weight: bold;">=</span> (equals) button to calculate 
+ the Ke value.</p></li>
+		</ol>
+	</ol>
+	
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
+ button. The new MCT Config is displayed in the Config Editor. For instructions 
+ on editing an MCT config, refer to the related topics.</p></li>
 </ol>
+
+<p>&nbsp;</p>
+
+<p>
+<!--Metadata type="DesignerControl" startspan
+<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
+		ID=RelatedTopics
+		BORDER=0
+		style="margin-top: 0px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 0px;
+				vertical-align: baseline;"
+		align=bottom>
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Editing an MCT Config;Editing_an_MCT_Config.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor.r36877\src\Creating_an_MCT_Config.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
+</object>--><OBJECT
+  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
+  ID="RelatedTopics"  TYPE="application/x-oleobject" >
+  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
+  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
+  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
+  <PARAM  NAME="Frame"  VALUE="_top">
+  <PARAM  NAME="Item1"  VALUE="Editing an MCT Config;Editing_an_MCT_Config.htm">
+</OBJECT>
+<!--Metadata type="DesignerControl" endspan-->
+ </p>
 
 </body>
 

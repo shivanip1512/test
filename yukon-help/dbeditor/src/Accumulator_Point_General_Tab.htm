@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=677>
-<meta name=layout-width content=774>
+<meta name=layout-height content=595>
+<meta name=layout-width content=1054>
 <meta name=x-ignored-words content="DNP;SOE">
 
 
@@ -43,6 +43,25 @@
 
 <body>
 
+<!--(Generated Script Links)========================================-->
+<!--(Generated Code)================================================-->
+<!--(WARNING: DO NOT EDIT OR DELETE THIS SECTION!)==================-->
+<!--begin!kadov{{===================================================-->
+<script type="text/javascript"
+		language=JavaScript1.2
+		src="ehlpdhtm.js"
+		x-save-method=compute-relative></script>
+<script type="text/javascript"
+		language=JavaScript1.2>
+<!-- 
+if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function();if( typeof( kadovInitTrigger ) != 'function' ) kadovInitTrigger = new Function();if( typeof( kadovFilePopupInit ) != 'function' ) kadovFilePopupInit = new Function();if( typeof( kadovTextPopupInit ) != 'function' ) kadovTextPopupInit = new Function();
+ //-->
+</script>
+
+<!--}}end!kadov=====================================================-->
+<!--(==============================================================)-->
+
+
 <h4>Accumulator Point General Tab</h4>
 
 <p>The following changes can be made to the general settings of the accumulator 
@@ -57,24 +76,36 @@
  can be changed in the <span style="font-weight: bold;">Point Name</span> 
  text box.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Timing 
- Group</span> drop-down list controls how often events are recorded. A 
- value of Default records events that occur within seconds of each other. 
- For points on DNP devices, a value of SOE (Sequence of Events) records 
- high speed events that occur within milliseconds of each other. </p></li>
+	<li class=kadov-p><p>A different type of timing group, which control 
+ how often events are recorded, can be selected from the <span style="font-weight: bold;">Timing 
+ Group</span> drop-down list. The timing group are:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Default</span> 
+ – Records events that occur within seconds of each other. </p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">SOE</span> 
+ – Records events that occur within milliseconds of each other (Sequence 
+ of Events).</p></li>
+	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The point can be disabled 
  or enabled by selecting or clearing the <span style="font-weight: bold;">Disable 
  Point</span> check box. Disabling the point may be useful if it is temporarily 
  not functioning.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different unit of 
- measure can be selected from the <span style="font-weight: bold;">Unit 
- of Measure</span> drop-down list. The unit of measure is for the data 
- being read.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">A different <a href="javascript:BSSCPopup('Unit_of_Measure.htm');"
+	id=a1>unit of measure</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a1');
+//--></script><!--}}end!kadov--> 
+ can be selected from the <span style="font-weight: bold;">Unit of Measure</span> 
+ drop-down list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The number of dials/digits 
- displayed in the meter reading can be changed in the <span style="font-weight: bold;">Meter 
+ to display for the meter reading can be changed in the <span style="font-weight: bold;">Meter 
  Digits (Dials) </span>spin box. This allows a rollover to occur when the 
  reading passes the specified number of digits.</p></li>
 	
@@ -83,86 +114,65 @@
  Positions</span> spin box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different state 
- group can be selected from the <span style="font-weight: bold;">State 
- Group </span>drop-down list. The state group defines the messages to display 
- for the different states of a point.</p></li>
+ group, which defines the messages to display for the different states 
+ of a point, can be selected from the <span style="font-weight: bold;">State 
+ Group </span>drop-down list.</p></li>
 	
-	<li class=kadov-p><p>A different archive type can be selected from 
- the <span style="font-weight: bold;">Data Archive Type</span> drop-down 
+	<li class=kadov-p><p>A different data archive type can be selected 
+ from the <span style="font-weight: bold;">Data Archive Type</span> drop-down 
  list.&nbsp;The data archive types are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">None</span> 
- – does not archive.</p></li>
+ – Does not archive data.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">On Change</span> 
- – archives when an operand causes the point to change.</p></li>
+ – Archives data when an operand causes the point to change.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">On Timer</span> 
- – archives at the selected archive interval.</p></li>
+ – Archives data at the selected archive interval.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">On Update</span> 
- – archives any time the point is updated.</p></li>
+ – Archives data any time the point is updated.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">On 
- Timer or Update</span> - archives at the selected archive interval or 
- any time the point is updated.</p></li>
+ Timer or Update</span> – Archives data at the selected archive interval 
+ or any time the point is updated.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If <span style="font-weight: bold;">On 
- Timer</span> or <span style="font-weight: bold;">On Timer or Update </span>is 
- selected as the data archive type, select how often to archive point data 
- from the <span style="font-weight: bold;">Interval </span>drop-down list.</p></li>
+	<li class=kadov-p><p>If <span style="font-weight: bold;">On Timer</span> 
+ or <span style="font-weight: bold;">On Timer or Update </span>is selected 
+ as the data archive type, select how often to archive point data from 
+ the <span style="font-weight: bold;">Interval </span>drop-down list. The 
+ archive intervals are:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">30 
+ minute</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">1 
+ hour</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">2 
+ hour</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">6 
+ hour</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">12 
+ hour</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Daily</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Weekly</p></li>
+		
+		<li class=kadov-p><p style="font-weight: bold;">Monthly</p></li>
+	</ul>
 </ol>
-
-<p>&nbsp;</p>
-
-&nbsp; 
-
-<p>
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Core Database Point;Editing_a_Point.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelp\trunk\dbeditor\src\Accumulator_Point_General_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Core Database Point;Editing_a_Point.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

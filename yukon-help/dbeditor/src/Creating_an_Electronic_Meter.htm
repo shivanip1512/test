@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=713>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="comm;RTU;RTU-WELCO;RTU-ILEX;KYZ;RTU-DNP;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;setpoint;Fahren;Min;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;deadband;Deadband;config.properties;billing_wiz_activate=;kVAr;CBC;DNP;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;SCADA;ILEX;Tx;RTS;ReEnable;downline;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;KVAR;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO;Readmeter;KW;C;xxx;LCU;TimeOut;support@cannontech.com.;Versacom;ExpressStat;ExpressCom;T-STAT;WCTP;CCU's;KQ;SIXNET;Eventlog;dialback">
+<meta name=layout-height content=1073>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="comm;RTU;RTU-WELCO;RTU-ILEX;KYZ;RTU-DNP;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;setpoint;Fahren;Min;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;deadband;Deadband;config.properties;billing_wiz_activate=;kVAr;CBC;DNP;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;SCADA;ILEX;Tx;RTS;ReEnable;downline;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;KVAR;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO;Readmeter;KW;C;xxx;LCU;TimeOut;support@cannontech.com.;Versacom;ExpressStat;ExpressCom;T-STAT;WCTP;CCU's;KQ;SIXNET;Eventlog;dialback;LCU-EastRiver;Telocator;RTC;RTU-LMI;TNPP;Elster;Itron;LANDIS+Gyr;Landis+Gyr;PowerLogic;ABB;TRANSDATA;TransData;VECTRON;Dialback">
 
 
 <!--(Links)=========================================================-->
@@ -43,93 +43,169 @@
 
 <body>
 
-<h4>Creating an Electronic Meter</h4>
+<h1>Creating an Electronic Meter</h1>
 
-<p>If you selected <span style="font-weight: bold;">Electronic Meter</span> 
- as the device type:</p>
+<p>Perform the following steps to create an electronic meter:</p>
 
 <p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
- meter in the <span style="font-weight: bold;">Device Name</span> text 
- box. For Power Measurement ION meters, enter the slave address of the 
- meter in the <span style="font-weight: bold;">Slave Address</span> text 
- box, which appears below the <span style="font-weight: bold;">Device Name</span> 
- text box. </p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">View</span> 
+ menu, select <span style="font-weight: bold;">Core</span>.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Create</span> 
+ menu, select <span style="font-weight: bold;">Device</span>.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Electronic 
+ Meters</span> from the list on the left.</p></li>
+	
+	<li class=kadov-p><p>Select the type of electronic meter to create 
+ from the list on the right:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">ALPHA POWER 
+ PLUS</span> – Elster ALPHA Plus® (A2) meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">ALPHA A1</span> 
+ – Elster ALPHA® (A1) meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">FULCRUM</span> 
+ – Itron FULCRUM® meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">ION-7330</span> 
+ – Power Measurement/PowerLogic ION 7330<symbol name=Trademark><!--begin!kadov{{-->&#8482;<!--}}end!kadov--> 
+ meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">ION-7700</span> 
+ – Power Measurement/PowerLogic ION 7700<symbol name=Trademark><!--begin!kadov{{-->&#8482;<!--}}end!kadov--> 
+ meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">ION-8300</span> 
+ – Power Measurement/PowerLogic ION 8300<symbol name=Trademark><!--begin!kadov{{-->&#8482;<!--}}end!kadov--> 
+ meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Landis+Gyr 
+ S4</span> – Landis+Gyr S4/S4e meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">QUANTUM</span> 
+ – Itron QUANTUM® meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">SENTINEL</span> 
+ – Itron SENTINEL® meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">FOCUS</span> 
+ – Landis+Gyr FOCUS® meter.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">TRANSDATA 
+ MARK-V</span> – TransData MARK-V Energy Meter.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">VECTRON</span> 
+ – Itron VECTRON® meter.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
- button and<span style="font-weight: bold;"> </span>enter the meter number 
- in the <span style="font-weight: bold;">Meter Number</span> text box. 
- This is the meter number assigned by the utility.</p></li>
+ button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">the 
- Next</span> button<span style="font-weight: bold;"> </span>and select 
- the check boxes of the scan categories you want to enable. The scan categories 
- vary depending on the type of signal transmitter selected.</p></li>
+	<li class=kadov-p><p>Enter a name for the meter in the <span style="font-weight: bold;">Device 
+ Name</span> text box.</p></li>
 </ol>
 
-<p style="margin-left: 40px;">If you selected an ION device, a dialog box 
- appears with the following scan categories:</p>
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the meter is an ION 
+ meter, enter the slave address of the meter in the <span style="font-weight: bold;">Slave 
+ Address</span> text box. </p>
 
-<ol style="list-style: decimal;"
+<ol start=7
+	style="list-style: decimal;"
 	type=1>
 	
-	<ul style="list-style: disc;"
-		type=disc>
-		
-		<li class=kadov-p><p><span style="font-weight: bold;">Integrity 
- Rate</span> -<span style="font-weight: bold;"> </span>collects all point 
- values</p></li>
-		
-		<li class=kadov-p><p><span style="font-weight: bold;">General Data 
- Collection</span> - collects general data</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Eventlog 
- Collection</span> - collects the devices event log</p></li>
-	</ul>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the meter number 
+ of the electronic meter in the <span style="font-weight: bold;">Meter 
+ Number</span> text box. This is the meter number assigned by the utility.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">Select the check boxes 
+ of the scan categories to enable. The scan categories vary depending on 
+ the type of electronic meter selected in step 4.</p></li>
 </ol>
 
-<p style="margin-left: 40px;">If you selected one of the other devices, 
- a dialog box appears with one scan category:</p>
-
-<ol style="list-style: decimal;"
-	type=1>
+<ul>
 	
-	<ul style="list-style: disc;"
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-left: 40px; margin-bottom: 0px;">If 
+ the meter is an ION meter, the following scan categories are displayed:</p></li>
+	
+	<ol style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">General 
- Data Collection</span> - collects general data</p></li>
-	</ul>
-	
-	<ol style="list-style: lower-alpha;"
-		type=a>
-		
-		<li class=kadov-p><p>Select the default scan interval from the 
- <span style="font-weight: bold;">Interval</span> drop-down list.</p></li>
-		
-		<li class=kadov-p><p>Select the alternate scan interval from the 
- <span style="font-weight: bold;">Alt Interval</span> drop-down list. The 
- alternate scan interval can be activated using the Tabular Data Console 
- or the Yukon Web interface.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="margin-bottom: 9pt;">Select 
- a scan group from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Group</span><span 
- style="margin-bottom: 9pt;"> drop-down list. This is used to group similar 
- scans together.</span></p></li>
+		<ul style="list-style: circle;"
+			type=circle>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Integrity 
+ Rate</span> – Collects all point values from the electronic meter.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">General 
+ Data Collection</span> – Collects general data from the electronic meter.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Eventlog 
+ Collection</span> – Collects event logs from the electronic meter.</p></li>
+		</ul>
 	</ol>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-left: 40px;">If the meter is not 
+ an ION meter, the following scan category is displayed:</p></li>
+	
+	<ol style="list-style: disc;"
+		type=disc>
+		
+		<ul style="list-style: circle;"
+			type=circle>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">General 
+ Data Collection</span> – Collects general data.</p></li>
+		</ul>
+	</ol>
+</ul>
+
+<p style="margin-left: 40px;">When the check box of a scan category is 
+ selected, the following scan options are enabled:</p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Interval</span> 
+ – Default scan interval of the selected scan category.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Alt Interval</span> 
+ – Alternate scan interval of the selected scan category.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Group</span> 
+ – Scan group of the selected scan category. The scan group is used to 
+ assign priorities to the scan categories.</p></li>
+	</ul>
 </ol>
 
-<ol start=6
+<ol start=11
 	style="list-style: decimal;"
 	type=1>
 	
 	<li class=kadov-p><p>Under the Optional Scan Window, select the <span 
- style="font-weight: bold;">Enabled</span> check box if you want to define 
- a time when the scans can occur.</p></li>
+ style="font-weight: bold;">Enabled</span> check box to define a time when 
+ the scans can occur.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -145,54 +221,62 @@
  style="margin-bottom: 9pt;"> text box.</span></p></li>
 	</ol>
 	
-	<li class=kadov-p><p>If you selected SIXNET as the meter device, click 
- the <span style="font-weight: bold;">Next</span> button and perform steps 
- a and b. Otherwise, skip to step 8.</p></li>
-	
-	<ol style="list-style: lower-alpha;"
-		type=a>
-		
-		<li class=kadov-p><p>Enter the name of the SIXNET log file in the 
- <span style="font-weight: bold;">Log File</span> text box. The name of 
- the log file must include the <span style="font-style: italic;">.6d</span>l 
- extension.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the SIXNET 
- station address in the <span style="font-weight: bold;">Station Address</span> 
- text box.</p></li>
-	</ol>
-	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a comm channel 
- for the meter from the drop-down list of comm channels.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The rest of this procedure 
- depends on the type of comm channel selected.</p></li>
+	<li class=kadov-p><p>Select the comm channel for the electronic meter 
+ from the <span style="font-weight: bold;">Select a Communication Channel</span> 
+ drop-down list.</p></li>
 </ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">The rest of this procedure 
+ depends on the type of comm channel selected.</p>
 
 <ul>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 24px;">If 
- the comm channel is dedicated, click the <span style="font-weight: bold;">Finish</span> 
- button. The new device appears in the Device Editor. For instructions 
- on editing a device, refer to the related topics.</p></li>
+		class=kadov-p><p style="margin-left: 24px;">If the selected comm 
+ channel is Dedicated, click the <span style="font-weight: bold;">Finish</span> 
+ button.</p></li>
+</ul>
+
+<p style="margin-bottom: 9pt; margin-left: 64px;">The new electronic meter 
+ appears in the Device Editor. For instructions on editing an electronic 
+ meter, refer to the related topics.</p>
+
+<ul>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 24px;">If 
- the comm channel is dialup or dialback, click the <span style="font-weight: bold;">Next</span> 
- button,<span style="font-weight: bold;"> </span>enter the phone number 
- used to dial this device or dialback from the device, and then click the 
- <span style="font-weight: bold;">Finish</span> button. The new device 
- appears in the Device Editor. For instructions on editing a device, refer 
- to the related topics.</p></li>
+		class=kadov-p><p style="margin-left: 24px; margin-bottom: 0px;">If 
+ the selected comm channel is Dialup or Dialback:</p></li>
+	
+	<ol>
+		
+		<li style="list-style: lower-alpha;"
+			type=a
+			class=kadov-p><p style="margin-left: 24px; margin-bottom: 0px;">Click 
+ the <span style="font-weight: bold;">Next</span> button.</p></li>
+		
+		<li style="list-style: lower-alpha;"
+			type=a
+			class=kadov-p><p style="margin-left: 24px; margin-bottom: 0px;">Enter 
+ the phone number used to dial this electronic meter or dialback from this 
+ electronic meter in the <span style="font-weight: bold;">Phone Number</span> 
+ text box.</p></li>
+		
+		<li style="list-style: lower-alpha;"
+			type=a
+			class=kadov-p><p style="margin-left: 24px; margin-bottom: 0px;">Click 
+ the <span style="font-weight: bold;">Finish</span> button.</p></li>
+	</ol>
 </ul>
 
-&nbsp; 
+<p style="margin-left: 64px;">The new electronic meter appears in the Device 
+ Editor. For instructions on using this editor, refer to the related topics.</p>
+
+<p style="margin-left: 0px;">&nbsp;</p>
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -206,8 +290,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -215,26 +299,23 @@
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
+<param name="Items" value="Editing an Electronic Meter;Editing_an_Electronic_Meter.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_an_Electronic_Meter.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_an_Electronic_Meter.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >
 <param name="Window" value="" >
-</object>-->
-<OBJECT
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
   <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Device;Editing_a_Device.htm">
+  <PARAM  NAME="Item1"  VALUE="Editing an Electronic Meter;Editing_an_Electronic_Meter.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

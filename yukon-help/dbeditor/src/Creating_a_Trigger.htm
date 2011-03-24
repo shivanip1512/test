@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=673>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU">
+<meta name=layout-height content=632>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;Kickup">
 
 
 <!--(Links)=========================================================-->
@@ -45,104 +45,125 @@
 
 <h4>Creating a Trigger</h4>
 
-<p>To create a new trigger:</p>
+<p>Perform the following steps to create a new trigger:</p>
 
 <p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select either <span 
- style="font-weight: bold;">Threshold</span> or <span style="font-weight: bold;">Status</span> 
- from the <span style="font-weight: bold;">Type</span> drop-down list.</p></li>
+	<li class=kadov-p><p>Select the type of trigger to create from the 
+ <span style="font-weight: bold;">Type</span> drop-down list.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Threshold</span> 
+ – Control is initiated when the value of the trigger point exceeds the 
+ specified threshold.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Status</span> 
+ – Control is initiated when the status of the trigger point changes from 
+ the specified normal state to a different state.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the device 
- to use for the trigger from the <span style="font-weight: bold;">Device</span> 
- drop-down list within the Trigger Identification area.</p></li>
+ that contains the point to use for the trigger from the <span style="font-weight: bold;">Device</span> 
+ drop-down list in the Trigger Identification area.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the point to 
  use for the trigger from the <span style="font-weight: bold;">Point</span> 
- drop-down list within the Trigger Identification area.</p></li>
+ drop-down list in the Trigger Identification area.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected <span 
- style="font-weight: bold;">Status</span> as the trigger type, select a 
- state from the <span style="font-weight: bold;">Normal State</span> drop-down 
- list. This is the normal state of the point selected in step 3.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If Status was selected 
+ as the trigger type in step 1, select the normal state for the point that 
+ was selected in step 3, from the <span style="font-weight: bold;">Normal 
+ State</span> drop-down list.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">If you selected <span 
- style="font-weight: bold;">Threshold</span> as the trigger type:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">If Threshold was selected 
+ as the trigger type in step 1:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Enter a threshold 
+		<li class=kadov-p><p style="margin-bottom: 0px;">Enter a kW threshold 
  and minimum restore offset in the <span style="font-weight: bold;">Threshold</span> 
  and <span style="font-weight: bold;">Min Restore Offset</span> text boxes. 
- The threshold minus the minimum restore offset is the level that the load 
- must be below before a program can stop controlling.</p></li>
+ The threshold minus the minimum restore offset is the kW level that the 
+ load must be below before a program can stop controlling.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">An optional threshold 
- kickup offset can be entered in the <span style="font-weight: bold;">ATKU</span> 
- text box. If the peak load value exceeds the threshold, the threshold 
- is automatically increased to the new peak load value minus this offset. 
- A value of zero disables the automatic threshold kickup offset.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">An optional kW 
+ threshold kickup offset can be entered in the <span style="font-weight: bold;">ATKU</span> 
+ (Automatic Threshold Kickup Offset) text box. If the peak load value exceeds 
+ the threshold, the threshold is automatically increased to the new peak 
+ load value minus this offset. A value of zero disables the Automatic Threshold 
+ Kickup Offset.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Enable or disable 
  peak tracking by selecting or clearing the <span style="font-weight: bold;">Use 
  Peak Tracking</span> check box. Peak tracking records the highest peak 
  load value.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">If peak tracking 
- is enabled, select a device to use for peak tracking from the <span style="font-weight: bold;">Device</span> 
- drop-down list and select a point to use for the peak tracking from the 
- <span style="font-weight: bold;">Point</span> drop-down list.</p></li>
 	</ol>
+</ol>
+
+<p style="margin-left: 80px; margin-bottom: 9px;"><span style="margin-bottom: 9pt;">If 
+ peak tracking is enabled, select a device to use for peak tracking from 
+ the </span><span style="margin-bottom: 9pt; font-weight: bold;">Device</span><span 
+ style="margin-bottom: 9pt;"> drop-down list and select a point to use 
+ for the peak tracking from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Point</span><span 
+ style="margin-bottom: 9pt;"> drop-down list.</span></p>
+
+<ol start=6
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">To setup trigger data 
- projection, click the <span style="font-weight: bold;">Projection</span> 
- button. This projects the value of the trigger after a set number of minutes. 
- If the projected value is above the threshold, Yukon starts to control.</p></li>
+ projection for a threshold trigger, click the <span style="font-weight: bold;">Projection</span> 
+ button. The Yukon system projects what the value of the trigger will be 
+ after a specified number of minutes. If the projected value is above the 
+ threshold, the Yukon system initiates control.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select the type 
- of projection from the <span style="font-weight: bold;">Type</span> drop-down 
- list. The types are (none) or LSF (Least Squared Fit).</p></li>
+ of data projection from the <span style="font-weight: bold;">Type</span> 
+ drop-down list. The types are (none) or LSF (Least Squared Fit).</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select the number 
  of trigger values to use in the LSF projection from the <span style="font-weight: bold;">Samples</span> 
- drop-down list. If the trigger values in the projection are older than 
- one hour, the current trigger value is used.</p></li>
+ drop-down list. <span style="font-weight: bold;"><br>
+		Note:</span> If the trigger values in the projection are older 
+ than one hour, the current trigger value is used.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Select how far 
- ahead in time to project values from the <span style="font-weight: bold;">Ahead</span> 
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select the number 
+ of minutes ahead in time to project values from the <span style="font-weight: bold;">Ahead</span> 
  drop-down list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
- style="font-weight: bold;">OK</span> button to save the control area projection.</p></li>
+ style="font-weight: bold;">OK</span> button to save the trigger data projection.</p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">OK</span> 
+	<li class=kadov-p><p style="margin-bottom: 0px;">Click the <span style="font-weight: bold;">OK</span> 
  button to save the trigger.</p></li>
 	
 	<ul>
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If only one threshold 
+			class=kadov-p><p style="margin-bottom: 0px;">If only one threshold 
  trigger exists and the threshold value is surpassed, control is performed 
  on the next priority level.</p></li>
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If only one status 
+			class=kadov-p><p style="margin-bottom: 0px;">If only one status 
  trigger exists and the status changes, control is performed on the all 
  of the priority levels.</p></li>
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If both a threshold 
+			class=kadov-p><p style="margin-bottom: 0px;">If both a threshold 
  and status trigger exist, and the <span style="font-weight: bold;">Require 
  All Triggers Active</span> check box is selected, then control is performed 
  only if the threshold is surpassed and the status changes. Control is 
@@ -150,57 +171,12 @@
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If both a threshold 
- and status trigger exist, and the <span style="font-weight: bold;">Require 
- All Triggers Active</span> check box is not selected, then control is 
- performed if either the threshold is surpassed or the status changes.</p></li>
+			class=kadov-p><p>If both a threshold and status trigger exist, 
+ and the <span style="font-weight: bold;">Require All Triggers Active</span> 
+ check box is not selected, then control is performed if either the threshold 
+ is surpassed or the status changes.</p></li>
 	</ul>
 </ol>
-
-&nbsp; 
-
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Control Area;Editing_a_Control_Area.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Trigger.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Control Area;Editing_a_Control_Area.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

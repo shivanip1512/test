@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=729>
-<meta name=layout-width content=634>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters">
 
 
@@ -53,16 +53,17 @@
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The physical point 
- offset option can enabled or disabled by selecting or clearing the <span 
- style="font-weight: bold;">Physical Point Offset</span> check box. Select 
- this option if the system obtains physical settings from a location other 
- than the hardware. Clear this option if this is a pseudo point.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the Yukon system 
+ obtains physical data from the device on which the point is located or 
+ the point is a special Yukon system point, select the <span style="font-weight: bold;">Physical 
+ Point Offset</span> check box. Clear this check box if this is a pseudo 
+ point.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">If the <span style="font-weight: bold;">Physical 
  Point Offset</span> check box is selected, the point offset can be changed 
  in the <span style="font-weight: bold;">Point Offset</span> spin box. 
- This is the physical field wired input.</p></li>
+ This is either the physical input to which the point is wired or a Yukon 
+ system defined point.</p></li>
 	
 	<li class=kadov-p><p>A different control type can be selected from 
  the <span style="font-weight: bold;">Control Type</span> drop-down list. 
@@ -77,110 +78,60 @@
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">None</span> 
- – no control type exists.</p></li>
+ – No control type exists.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Latch</span> 
- – control command is sent and the relay latches in that position. Latch 
- controls require a second command to return to the original state.</p></li>
+ – The control command is sent and the relay latches in that position. 
+ Latch controls require a second command to return to the original state.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Normal</span> 
- – <!--kadov_tag{{<ignored>}}-->Normal<!--kadov_tag{{</ignored>}}--> controls 
- are temporary or held only for a discrete number of milliseconds. The 
- control is a dual relay Select Before Operate (SBO). </p></li>
+ – The control is a dual relay Select Before Operate (SBO). <!--kadov_tag{{<ignored>}}-->Normal<!--kadov_tag{{</ignored>}}--> 
+ controls are temporary or held only for a discrete number of milliseconds. 
+ </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Pseudo</span> 
- – the point is controlled by another system. Pseudo controls do not have 
- a physical status point.</p></li>
+ – The point is controlled by another system. Pseudo controls do not have 
+ a physical status point to indicate if control has completed.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">SBO 
- Latch</span> - Select Before Operate latch command.</p></li>
+ Latch</span> – Select Before Operate latch command.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">SBO 
- Pulse</span> - Select Before Operate pulse (normal) command.</p></li>
+ Pulse</span> – Select Before Operate pulse (normal) command.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the control type 
- selected is <span style="font-weight: bold;">Latch</span>, <span style="font-weight: bold;">Normal</span>, 
- <span style="font-weight: bold;">SBO Latch</span>, or <span style="font-weight: bold;">SBO 
- Pulse</span>:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">If the control type 
+ selected is Latch, Normal, SBO Latch, or SBO Pulse:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The control point 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The control point 
  offset can be changed in the <span style="font-weight: bold;">Control 
- Point Offset</span> spin box. This specifies the physical location used 
- for wiring the control point.</p></li>
+ Point Offset</span> box. This specifies the physical location used for 
+ wiring the control point.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The close times 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The close times 
  can be changed in the <span style="font-weight: bold;">Close Time 1</span> 
- and <span style="font-weight: bold;">Close Time 2</span> spin boxes. These 
+ and <span style="font-weight: bold;">Close Time 2</span> boxes. These 
  times specify how long each relay stays energized.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The control inhibit 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The control inhibit 
  option can be enabled or disabled by selecting or clearing the <span style="font-weight: bold;">Control 
  Inhibit</span> check box. Select this check box to disable control of 
  the point. Clear this check box to enable control of the point.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The command strings 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The command strings 
  can be changed in the text boxes with the Command Strings area. These 
- are the commands that are sent when Yukon controls the point.</p></li>
+ are the commands that are sent when the Yukon system controls the point.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The command time-out 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The command time-out 
  can be changed in the <span style="font-weight: bold;">Command TimeOut</span> 
- minutes and seconds spin boxes. This specifies the length of time to use 
- the alternate scan rate to scan for a state change following control. 
- If a state change is not detected, an alarm occurs.</p></li>
+ minutes and seconds boxes. This specifies the length of time to use the 
+ alternate scan rate to scan for a state change following control. If a 
+ state change is not detected, an alarm occurs.</p></li>
 	</ol>
 </ol>
-
-<p>&nbsp;</p>
-
-&nbsp; 
-
-<p>
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Status_Point_Physical_Setup_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Core Database Point;Editing_a_Point.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Load Management Point;Editing_a_Load_Management_Point.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

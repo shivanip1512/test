@@ -20,8 +20,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=778>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=746>
+<meta name=layout-width content=1054>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;Logins;TCP;UDP;Calc;FDR;MACS;TDC">
 
 
@@ -40,10 +40,8 @@
 
 <h1>Editing System Points</h1>
 
-<p>System points allow you to monitor the status of the Yukon application 
- servers. The following system points are pre-defined:</p>
-
-<p>&nbsp;</p>
+<p>System points allow the Yukon system to monitor the status of Yukon 
+ application servers. The following system points are pre-defined:</p>
 
 <ul style="list-style: disc;"
 	type=disc>
@@ -68,14 +66,12 @@
 <p>&nbsp;</p>
 
 <p>To view the status of the system points, create a custom display in 
- the Yukon TDC application and add the system points from the System Device 
- object type.</p>
-
-<p>&nbsp;</p>
+ the Tabular Data Console application and add the system points from the 
+ System Device object type.</p>
 
 <p>In addition, alarms can be assigned to the system points. If a system 
- point goes into an alarm condition, an alarm appears in the Yukon TDC 
- application.</p>
+ point goes into an alarm condition, an alarm appears in the Tabular Data 
+ Console application.</p>
 
 <p>&nbsp;</p>
 
@@ -94,14 +90,15 @@
  By</span> list, select <span style="font-weight: bold;">System Points</span>.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click on the 
- system point modify. This opens the General tabbed page of the Point Editor.</p></li>
+ system point edit. The General tabbed page is displayed in the Point Editor.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click on the Alarms 
  tab to display the Alarms tabbed page.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A notification group 
  can be selected from the <span style="font-weight: bold;">Group</span> 
- drop-down list. This is the group that is notified of all alarm conditions.</p></li>
+ drop-down list. This is the notification group that is notified of all 
+ alarm conditions.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The option to be notified 
  when an alarm is acknowledged can be enabled or disabled by selecting 
@@ -115,10 +112,12 @@
  box is selected, the notification group receives a message when an alarm 
  is cleared.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">An alarm categories 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">An alarm category 
  for each alarm condition can be selected from the drop-down lists in the 
- <span style="font-weight: bold;">Category</span> column. <a href="Editing_Alarm_Categories.htm">Alarm 
- categories</a> can be edited in the System view of the Database Editor.</p></li>
+ <span style="font-weight: bold;">Category</span> column. The notification 
+ group within the alarm category is notified when the alarm condition occurs. 
+ <a href="Editing_Alarm_Categories.htm">Alarm categories</a> can be edited 
+ in the System view of the Database Editor.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Notification attributes 
  can be selected from the <span style="font-weight: bold;">Notify</span> 
@@ -128,18 +127,20 @@
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">None</span> 
- - the notification is sent out normally.</p></li>
+ – The notification is sent out normally to the notification group of the 
+ alarm. </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Exclude 
- Notify</span> - the notification group/contact do not receive notification 
+ Notify</span> – The notification group of the alarm does not receive notification 
  of the alarm condition.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Auto 
- Ack</span> - the alarm is automatically acknowledged.</p></li>
+ Ack</span> – The alarm is automatically acknowledged.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Exclude 
- Notify &amp; Auto Ack</span> - the notification group/contact do not receive 
- notification of the alarm condition and the alarm is automatically acknowledged.</p></li>
+ Notify &amp; Auto Ack</span> – The notification group of the alarm does 
+ not receive notification of the alarm condition and the alarm is automatically 
+ acknowledged.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The option to disable 
@@ -148,8 +149,8 @@
  check box is selected, all of the alarms for this point are disabled.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Point Editor.</p></li>
+ button to save the changes to the system point or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the system point and close the Point Editor.</p></li>
 </ol>
 
 </body>

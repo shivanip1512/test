@@ -8,26 +8,20 @@
 
 <head>
 
-<title>Alarms and Events</title>
+<title>Viewing Alarms and Events</title>
 
 <!--(Meta)==========================================================-->
 
-<meta http-equiv=content-type content="text/html; charset=windows-1252">
-<meta name=date content="01 24, 2006 9:43:55 AM">
-<meta name=topic-status content="In Progress">
-<meta name=topic-priority content=0>
-<meta name=topic-time-estimate content=0>
-<meta name=topic-comment content>
-<meta name=topic-id content="Alarms and Events">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;TDC;Unsilence;Unmute;Unacked;ACK;SOE;DNP">
+<meta name=layout-height content=643>
+<meta name=layout-width content=908>
+<meta name=date content="11 18, 2002 10:27:14 AM">
+<meta name=x-ignored-words content="Ack;TDC;Unsilence">
 
 
 <!--(Links)=========================================================-->
@@ -62,7 +56,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 <!--(==============================================================)-->
 
 
-<h1>Alarms and Events</h1>
+<h1>Viewing Alarms and Events</h1>
 
 <p>To view alarms and events:</p>
 
@@ -73,48 +67,38 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Display</span> 
  menu, select <span style="font-weight: bold;">Alarms and Events</span>. 
- The number of unacknowledged alarms appears in the upper right-hand corner 
- of the window.</p></li>
+ The number of active alarms appears in the upper right-hand corner of 
+ the window.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click on <span style="font-weight: bold;">Unacked 
- Alarms</span> in the upper right-hand corner of the TDC window to display 
- a drop-down list of the last three unacknowledged alarms. Selecting an 
- alarm from the drop-down list displays the alarm’s <span style="font-weight: bold;">Category</span> 
- page.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 0px;">Select a view to display 
- from the <span style="font-weight: bold;">View </span>drop-down list. 
- The views include:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Select a display to 
+ view from the <span style="font-weight: bold;">Display</span> drop-down 
+ list. The displays include:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Event 
+ Viewer</span> - displays all Yukon events for the day selected from <span 
+ style="font-weight: bold;">View Date</span>.</p></li>
+		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">All 
- Alarms</span> - displays all active and unacknowledged alarms. See <a 
- href="javascript:BSSCPopup('All_Alarms_and_Alarm_Categories.htm');"
-	id=a2>All Alarms and Alarm Categories</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+ Alarms</span> - displays all active alarms. See <a href="javascript:BSSCPopup('All_Alarms_and_Alarm_Categories.htm');"
+													id=a2>All Alarms and 
+ Alarm Categories</a><!--begin!kadov{{--><script type="text/javascript"
+												language=JavaScript1.2><!--
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--> 
  for more information.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Event 
- Viewer</span> - displays all Yukon events for the day selected from <span 
- style="font-weight: bold;">View Date</span> drop-down.</p></li>
-		
-		<li class=kadov-p><p><span style="font-weight: bold;">Category 
- 1</span> to <span style="font-weight: bold;">Category x</span> - displays 
- active and unacknowledged alarms for the selected category.</p></li>
-		
-		<li class=kadov-p><p><span style="font-weight: bold;">SOE Log</span> 
- - displays data for points on DNP devices that have their timing group 
- set to SOE (Sequence of Events). That data that is recorded are high speed 
- events that occur within milliseconds of each other.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">TAG 
- Log</span> - displays information about tags that have been assigned to 
- devices.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Category 
+ 1</span> to <span style="font-weight: bold;">Category 9</span> - displays 
+ active alarms for the selected category. See <a href="javascript:BSSCPopup('All_Alarms_and_Alarm_Categories.htm');"
+												id=a3>All Alarms and Alarm 
+ Categories</a><!--begin!kadov{{--><script type="text/javascript"
+											language=JavaScript1.2><!--
+kadovFilePopupInit('a3');
+//--></script><!--}}end!kadov--> 
+ for more information.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Click on any of the 
@@ -123,58 +107,24 @@ kadovFilePopupInit('a2');
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Silence</span> 
- - turns off the audible alarm for all current alarms. The alarms continue 
- to flash until they are acknowledged.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Mute/Unmute</span> 
- - mute turns off the audible alarm for all current and future alarms. 
- Unmute turns the audible alarm back on for all current and future alarms. 
- The alarms continue to flash until they are acknowledged.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Silence/Unsilence</span> 
+ - disables or enables the audible alarm. </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Refresh</span> 
- - refreshes the data on the current display.</p></li>
+ - refreshes the display table.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Clear 
- Display</span> - clears the display of past events.</p></li>
+ Display</span> - clears the entire table.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Ack 
  Viewable</span> - acknowledges all viewable alarms. Alarms stop flashing 
- and the audible alarms stop. However, alarms still display in the table 
- until the points that caused the alarms change to a non-alarming state.</p></li>
+ and the audible alarms stop; however the alarm is still displayed in the 
+ table. This is helpful while handling an alarm event.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Filter - the filter 
- drop-down list lets you display one of the following:</p></li>
-		
-		<ul style="list-style: disc;"
-			type=disc>
-			
-			<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">No 
- Filter<span style="font-weight: normal;"> - the points displayed are all 
- the active and unacknowledged alarms.</span></p></li>
-			
-			<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Active 
- Alarms<span style="font-weight: normal;"> - the points displayed are currently 
- in an alarm state.</span></p></li>
-			
-			<li class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Alarms 
- History<span style="font-weight: normal;"> - the points displayed are 
- the alarms that have occurred on the day selected from the </span>View 
- Date<span style="font-weight: normal;"> drop-down.</span></p></li>
-			
-			<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: bold;">Unacked. 
- Alarms<span style="font-weight: normal;"> - the points displayed are in 
- an alarm state, which has not been acknowledged, or the points have moved 
- out of an alarm state and are waiting acknowledgement.</span></p></li>
-		</ul>
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Clear 
+ Viewable</span> - acknowledges and removes all viewable alarms. Use this 
+ feature when an alarm event has been terminated.</p></li>
 	</ul>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To acknowledge an 
- alarm, right-click on an alarm, select the <span style="font-weight: bold;">Ack 
- Alarm</span> option, and click on the alarm that appears. When an alarm 
- is acknowledged, the alarm stops flashing and the audible alarm stops. 
- However, the alarm still displays in the table until the point that caused 
- the alarm changes to a non-alarming state or value.</p></li>
 </ol>
 
 </body>

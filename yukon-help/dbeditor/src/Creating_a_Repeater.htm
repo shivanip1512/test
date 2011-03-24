@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;INET;ACS;VALMET;CYGMET;PointID;deadband;Deadband;Comm;Dialup;RTUs;downline;CBC;KVAR;RTU;IP;PortServer;ClassicBoard;Digi;Xyplex;Min;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCU;CCUs;TCU;w;Failover;dialup;thumbwheel">
+<meta name=layout-height content=777>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;INET;ACS;VALMET;CYGMET;PointID;deadband;Deadband;Comm;Dialup;RTUs;downline;CBC;KVAR;RTU;IP;PortServer;ClassicBoard;Digi;Xyplex;Min;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCU;CCUs;TCU;w;Failover;dialup;thumbwheel;PLC">
 
 
 <!--(Links)=========================================================-->
@@ -44,42 +44,80 @@
 
 <body>
 
-<h4>Creating a Repeater</h4>
+<h1>Creating a Repeater</h1>
 
-<p>Before you can create a Repeater, you must <a href="Creating_a_Route.htm">create 
- CCU routes</a> in the Yukon database.</p>
+<p>Before a Repeater can be created, a CCU <a href="Creating_a_Communication_Route.htm"
+												id=a1>communication route</a> 
+ must be created in the Yukon database.</p>
 
 <p>&nbsp;</p>
 
-<p>If you selected <span style="font-weight: bold;">Repeater</span> as 
- the device type:</p>
+<p>Perform the following steps to create a repeater:</p>
 
 <p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">View</span> 
+ menu, select <span style="font-weight: bold;">Core</span>.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Create</span> 
+ menu, select <span style="font-weight: bold;">Device</span>.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Signal 
+ Transmitter</span> from the list on the left.</p></li>
+	
+	<li class=kadov-p><p>Select the type of repeater to create from the 
+ list on the right:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Repeater 
+ 900 </span>– Single-Phase and Three-Phase PLC Repeater.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Repeater 
+ 902 </span>– Single-Phase and Three-Phase PLC Repeater.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Repeater 
+ 800 </span>– Single-Phase PLC Repeater.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Repeater 
+ 850 </span>– Single-Phase PLC Repeater.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Repeater 
+ 801 </span>– Single-Phase PLC Repeater.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Repeater 
+ 921 </span>– Single-Phase and Three-Phase PLC Repeater.</p></li>
+	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button.</p></li>
+	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
  repeater in the <span style="font-weight: bold;">Device Name</span> text 
  box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the physical 
- address in the <span style="font-weight: bold;">Physical Address</span> 
- text box. For the Repeater 800, Repeater 801, Repeater 902, and Repeater 
- 921, the physical address is located on a label inside the unit. For the 
- Repeater 900, the physical address is a thumbwheel setting. </p></li>
+ address of the repeater in the <span style="font-weight: bold;">Physical 
+ Address</span> text box. For the Repeater 800, Repeater 801, Repeater 
+ 902, and Repeater 921, the physical address is located on a label inside 
+ the unit. For the Repeater 900, the physical address is a thumbwheel setting.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To create the default 
  points for the repeater, select the <span style="font-weight: bold;">Create 
- Default Points</span> check box.</p></li>
+ Default Points</span> check box. To prevent the default points from being 
+ created, clear this check box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
-	<li class=kadov-p><p>Select the <span style="font-weight: bold;">Periodic 
+	<li class=kadov-p><p>To enable periodic health check scans, which periodically 
+ check that the repeater is functioning, select the <span style="font-weight: bold;">Periodic 
  Health Check</span> <!--kadov_tag{{<ignored>}}-->check<!--kadov_tag{{</ignored>}}--> 
- box if you want to enable this scan. The Periodic Health Check scan periodically 
- checks that the device functioning.</p></li>
+ box.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -89,17 +127,16 @@
 		
 		<li class=kadov-p><p>Select the alternate scan interval from the 
  <span style="font-weight: bold;">Alt</span> <span style="font-weight: bold;">Interval</span> 
- drop-down list. The alternate scan interval can be activated using the 
- Tabular Data Console or the Yukon Web interface.</p></li>
+ drop-down list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Select a scan 
  group from the <span style="font-weight: bold;">Group</span> drop-down 
- list. This is used to group similar scans together.</p></li>
+ list. The scan group is used to assign priorities to the scan category.</p></li>
 	</ol>
 	
 	<li class=kadov-p><p>Under the Optional Scan Window, select the <span 
- style="font-weight: bold;">Enabled</span> check box if you want to define 
- a time when the scans can occur.</p></li>
+ style="font-weight: bold;">Enabled</span> check box to define a time when 
+ the scans can occur.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -119,14 +156,15 @@
  button.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the communication 
- route to the repeater from the drop-down list of routes.</p></li>
+ route to the repeater from the <span style="font-weight: bold;">Select 
+ the route used with this device</span> drop-down list.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
- button. The new device appears in the Device Editor. For instructions 
- on editing a device, refer to the related topics.</p></li>
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
+ button. The new repeater appears in the Device Editor. For instructions 
+ on editing a repeater, refer to the related topics.</p></li>
 </ol>
 
-&nbsp; 
+<p>&nbsp;</p>
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -140,8 +178,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -149,30 +187,25 @@
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
+<param name="Items" value="Editing a Repeater;Editing_a_Repeater.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Repeater.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Repeater.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >
 <param name="Window" value="" >
-</object>-->
-<OBJECT
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
   <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Device;Editing_a_Device.htm">
+  <PARAM  NAME="Item1"  VALUE="Editing a Repeater;Editing_a_Repeater.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
  </p>
-
-<p>&nbsp;</p>
 
 </body>
 

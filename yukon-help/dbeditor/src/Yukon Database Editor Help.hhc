@@ -28,24 +28,44 @@
         <param name="Local" value="Creating_a_Comm_Channel.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Creating a Device">
-        <param name="Local" value="Creating_a_Device.htm">
+        <param name="Name" value="Creating a Signal Transmitter">
+        <param name="Local" value="Creating_a_Signal_Transmitter.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating an Electronic Meter">
+        <param name="Local" value="Creating_an_Electronic_Meter.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating an RTU">
+        <param name="Local" value="Creating_an_RTU.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating a Virtual Device">
+        <param name="Local" value="Creating_a_Virtual_Device.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating a Route">
         <param name="Local" value="Creating_a_Route.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Creating a Two-Way LCR">
-        <param name="Local" value="Creating_a_Two-Way_LCR.htm">
+        <param name="Name" value="Creating a PLC Repeater">
+        <param name="Local" value="Creating_a_Repeater.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating an MCT">
+        <param name="Local" value="Creating_an_MCT.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating an MCT Broadcast Group">
+        <param name="Local" value="Creating_an_MCT_Broadcast.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating an MCT Config">
         <param name="Local" value="Creating_an_MCT_Config.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Creating a Billing File">
-        <param name="Local" value="Creating_a_Billing_File.htm">
+        <param name="Name" value="Creating a Two-Way LCR">
+        <param name="Local" value="Creating_a_Two-Way_LCR.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating a State Group">
@@ -53,7 +73,7 @@
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating a Point">
-        <param name="Local" value="Creating_a_Point.htm">
+        <param name="Local" value="Creating_a_Core_Database_Point.htm">
       </object>
       </ul>
     <li><object type="text/sitemap">
@@ -65,8 +85,28 @@
         <param name="Local" value="Editing_a_Comm_Channel.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Editing a Device">
-        <param name="Local" value="Editing_a_Device.htm">
+        <param name="Name" value="Editing a Signal Transmitter">
+        <param name="Local" value="Editing_a_Signal_Transmitter.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing an Electronic Meter">
+        <param name="Local" value="Editing_an_Electronic_Meter.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing an RTU">
+        <param name="Local" value="Editing_an_RTU.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing a Virtual Device">
+        <param name="Local" value="Editing_a_Virtual_Device.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing a Route">
+        <param name="Local" value="Editing_a_Route.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing a Repeater">
+        <param name="Local" value="Editing_a_Repeater.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Editing a Two-Way LCR">
@@ -75,10 +115,6 @@
       <li><object type="text/sitemap">
         <param name="Name" value="Editing an MCT Broadcast">
         <param name="Local" value="Editing_an_MCT_Broadcast.htm">
-      </object>
-      <li><object type="text/sitemap">
-        <param name="Name" value="Editing a Route">
-        <param name="Local" value="Editing_a_Route.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Editing an MCT Config">
@@ -273,8 +309,8 @@
   </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="Support">
-      <param name="Local" value="Support.htm">
+      <param name="Name" value="Customer Service">
+      <param name="Local" value="Customer_Service.htm">
     </object>
     </ul>
 </ul>

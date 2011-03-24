@@ -26,8 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1235>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=1510>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="LCR;TrueCycle;Ctrl">
 
 
 <!--(Links)=========================================================-->
@@ -64,19 +65,15 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Creating a Load Program</h1>
 
-<p>One or more Load Programs can be defined in the database. A Load Program 
+<p>One or more load programs can be defined in the database. A load program 
  defines how the load is controlled, the load groups to control, and the 
- customers to notify.</p>
+ customers to notify. When a load program is created, a status point is 
+ automatically added to the load program. The status point keeps track 
+ of when the load program is controlling and when it is stopped.</p>
 
 <p>&nbsp;</p>
 
-<p>When a Load Program is created, a status point is automatically added 
- to the load program. The status point keeps track of when the load program 
- is controlling and when it is stopped.</p>
-
-<p>&nbsp;</p>
-
-<p>To create a Load Program:</p>
+<p>Perform the following steps to create a load program:</p>
 
 <p>&nbsp;</p>
 
@@ -90,7 +87,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  menu, select <span style="font-weight: bold;">Load Program</span>.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
- program in the <span style="font-weight: bold;">Name</span> text box.</p></li>
+ load program in the <span style="font-weight: bold;">Name</span> text 
+ box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Select an operational 
  state from the Operational State list.</p></li>
@@ -99,14 +97,14 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Automatic</span> 
- - the program controls when the trigger threshold is exceeded or when 
+ – The program controls when the trigger threshold is exceeded or when 
  the program is manually started.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Manual 
- Only</span> - the program must be manually started to perform control.</p></li>
+ Only</span> – The program must be manually started to perform control.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Timed</span> 
- - the program controls during the specified control windows.</p></li>
+ – The program controls during the control windows specified in step 11.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the constraint 
@@ -129,189 +127,284 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  The trigger point defined in the control area must go below the control 
  area trigger threshold minus the trigger offset before the load program 
  can stop control. A restore offset with a positive value causes the trigger 
- threshold to be lowered, a restore offset with a negative value causes 
- the trigger threshold to be raised. The default value is zero.</p></li>
+ threshold to be lowered; while a restore offset with a negative value 
+ causes the trigger threshold to be raised. The default value is zero.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9px;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
 	<li class=kadov-p><p style="margin-left: 0px;">Click the <span style="font-weight: bold;">Add 
- </span>button to add a new gear.<span style="margin-left: 0px;"><br>
-	<br>
-	Gears define the different rates at which a load program can controls 
- loads. Different gear ratios result in different amounts of reduction.</span><span 
- style="margin-left: 40px;"><br>
-	<br>
-	The control gears are:</span></p></li>
+ </span>button to create a gear for the load program. Gears define the 
+ different rates at which a load program can controls loads. Different 
+ gear ratios result in different amounts of reduction. <span style="margin-left: 40px;">To 
+ continue creating a gear, click on the type of gear that to create from 
+ the list of gear types below:</span></p></li>
+</ol>
+
+<ol style="list-style: decimal;"
+	type=1>
 	
 	<ul start=2
-		style="list-style: decimal;"
-		type=1>
+		style="list-style: disc;"
+		type=disc>
 		
-		<ul style="list-style: disc;"
-			type=disc>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Time_Refresh_Gear.htm');"
-	id=a1
-	style="font-weight: normal;">Time Refresh</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Time_Refresh_Gear.htm');"
+															id=a1
+															style="font-weight: normal;">Time 
+ Refresh</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--> 
- - timed commands are sent repeatedly to control.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Rotation_Gear.htm');"
-	id=a2>Rotation</a><!--begin!kadov{{--><script type="text/javascript"
-													language=JavaScript1.2><!--
-kadovFilePopupInit('a2');
-//--></script><!--}}end!kadov--> 
- - the gear rotates through a list of groups to control.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Master_Cycle_Gear.htm');"
-	id=a3>Master Cycle</a><!--begin!kadov{{--><script type="text/javascript"
-														language=JavaScript1.2><!--
-kadovFilePopupInit('a3');
-//--></script><!--}}end!kadov--> 
- - the Master Station sends commands to the LCR to perform cycling.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
-	id=a4
-	style="font-weight: normal;">Smart Cycle</a><!--begin!kadov{{--><script 
+ <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->– The Time 
+ Refresh gear is used for irrigation control, C&amp;I control, and warnings/notifications. 
+ The gear controls load control devices by sending shed commands, with 
+ a fixed or dynamic shed time, to one or more load groups. The Command 
+ Resend Rate setting specifies how often the shed command is resent and 
+ the How to Stop Control setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Rotation_Gear.htm');"
+															id=a2>Rotation</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
+kadovFilePopupInit('a2');
+//--></script><!--}}end!kadov--> 
+ – The Rotation gear is used to control legacy load control devices. The 
+ gear controls load control devices by sending shed commands, with a fixed 
+ shed time, to a rotating list of load groups. The Command Resend Rate 
+ setting specifies how often the shed command is resent and How to Stop 
+ Control setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Master_Cycle_Gear.htm');"
+															id=a3>Master 
+ Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
+kadovFilePopupInit('a3');
+//--></script><!--}}end!kadov--> 
+ – The Master Cycle gear is used to cycle load control devices that cannot 
+ perform cycling themselves. The gear controls load control devices by 
+ sending cycling commands to one or more load groups. The Control Percent 
+ and Cycle Period settings specify the percentage of control over a period 
+ of time and the How to Stop Control setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
+															id=a4
+															style="font-weight: normal;">Smart 
+ Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--> 
- - the LCR hardware performs cycling.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
-	id=a5
-	style="font-weight: normal;">TrueCycle</a><!--begin!kadov{{--><script 
+ – The Smart Cycle gear is used to control air conditioners (AC) and water 
+ heaters attached to load control devices that can perform the cycling 
+ themselves. The gear controls load control devices by sending cycling 
+ commands to one or more load groups. The Control Percent and Cycle Period 
+ settings specify the percentage of control over a period of time. The 
+ Command Resend Rate setting specifies how often the cycle command is resent 
+ and the How to Stop Control setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
+															id=a5
+															style="font-weight: normal;">TrueCycle</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--> 
- - the LCR uses an algorithm to perform cycling.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
-	id=a9
-	style="font-weight: normal;">Magnitude Cycle</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+ – The TrueCycle™ gear is used to control air conditioners attached to 
+ load control devices that can adjust the cycling percentage based on the 
+ AC compressor runtime for the hour before control and the historical hourly 
+ runtime profile of the air conditioner. The gear controls load control 
+ devices by sending cycling commands to one or more load groups. The Control 
+ Percent and Cycle Period settings specify the percentage of control over 
+ a period of time. The Command Resend Rate setting specifies how often 
+ the cycle command is resent and the How to Stop Control setting specifies 
+ how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
+															id=a9
+															style="font-weight: normal;">Magnitude 
+ Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a9');
 //--></script><!--}}end!kadov--> 
- - uses an algorithm to perform cycling, which targets a percentage of 
- the max current the field device draws.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
-	id=a10
-	style="font-weight: normal;">Target Cycle</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+ – The Magnitude Cycle gear is used to control air conditioners with variable 
+ speed compressors or Direct Digital Controls (DDC) that are attached to 
+ load control devices that can measure the magnitude of the AC compressor's 
+ current. The magnitude measurement is combined with historical data collected 
+ by the LCR to generate a historical runtime for the AC unit. The gear 
+ controls load control devices by sending cycling commands to one or more 
+ load groups. The Control Percent and Cycle Period settings specify the 
+ percentage of control over a period of time. The Command Resend Rate setting 
+ specifies how often the cycle command is resent and the How to Stop Control 
+ setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Cycle_Gears.htm');"
+															id=a10
+															style="font-weight: normal;">Target 
+ Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a10');
 //--></script><!--}}end!kadov--> 
- - control is targeted to a specific amount of kW reduction.</p></li>
-			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Latching.htm');"
-	id=a6
-	style="font-weight: normal;">Latching</a><!--begin!kadov{{--><script 
+ – The Target Cycle gear is used to control air conditioners attached to 
+ load control devices, which can reduce kW usage by the amount specified 
+ in the gear. The gear controls load control devices by sending cycling 
+ commands to one or more load groups. The Control Percent and Cycle Period 
+ settings specify the percentage of control over a period of time. The 
+ Command Resend Rate setting specifies how often the cycle command is resent 
+ and the How to Stop Control setting specifies how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Latching_Gear.htm');"
+															id=a6
+															style="font-weight: normal;">Latching</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a6');
 //--></script><!--}}end!kadov--> 
- - one command is sent to open and another command is sent to close.</p></li>
-			
-			<li class=kadov-p><p><a href="javascript:BSSCPopup('Thermostat.htm');"
-									id=a8
-									style="font-weight: normal;">Thermostat 
+ – The Latching gear is used to control a point on an RTU. The gear controls 
+ RTUs by sending status point control commands to one or more load groups. 
+ The Control Start State setting specifies the starting state of the control 
+ point. </p></li>
+		
+		<li class=kadov-p><p><a href="javascript:BSSCPopup('Thermostat_Ramping_Gear.htm');"
+								id=a8
+								style="font-weight: normal;">Thermostat 
  Ramping</a><!--begin!kadov{{--><script type="text/javascript"
 										language=JavaScript1.2><!--
 kadovFilePopupInit('a8');
 //--></script><!--}}end!kadov--> 
- - performs thermostat temperature ramping.</p></li>
-			
-			<li class=kadov-p><p><a href="javascript:BSSCPopup('Simple_Thermostat_Ramping.htm');"
-									id=a11>Simple Thermostat Ramping</a><!--begin!kadov{{--><script 
+ – The Thermostat Ramping gear is used to control air conditioner(s) by 
+ performing thermostat ramping. The gear controls the setpoint of a thermostat 
+ by sending setpoint control commands to one or more load groups. The Deltas/Absolute 
+ setting specifies whether the temperature setpoint values are delta values 
+ and absolute values. The Fahrenheit/Celsius setting specifies whether 
+ the temperature setpoint values are in degrees Fahrenheit or Celsius. 
+ The Ta through Tf values specify the times of the day that the temperature 
+ setpoint is changed and the How to Stop Control setting specifies how 
+ control of the thermostat is stopped.</p></li>
+		
+		<li class=kadov-p><p><a href="javascript:BSSCPopup('Simple_Thermostat_Ramping.htm');"
+								id=a11>Simple Thermostat Ramping</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a11');
 //--></script><!--}}end!kadov--> 
- - performs simple thermostat temperature ramping. </p></li>
-			
-			<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><a 
- href="javascript:BSSCPopup('No_Control.htm');"
+ – The Simple Thermostat Ramping gear is used to control air conditioner(s) 
+ by performing expanded thermostat ramping. The gear controls the setpoint 
+ of a thermostat by sending setpoint control commands to one or more load 
+ groups. The time periods of the gear are adjusted based on the control 
+ duration entered by the user. The Max Runtime specifies the maximum runtime 
+ of the load program, the Resend Rate setting specifies how often the setpoint 
+ control command is resent, and the How to Stop Control setting specifies 
+ how control is stopped.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><a 
+ href="javascript:BSSCPopup('No_Control_Gear.htm');"
 	id=a7>No Control</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a7');
 //--></script><!--}}end!kadov--> 
- - no control command is sent.</p></li>
-		</ul>
+ – The No Control gear is used to trigger notifications without performing 
+ control.</p></li>
 	</ul>
+</ol>
+
+<ol start=10
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-left: 0px; margin-bottom: 9pt;">Click 
  the <span style="font-weight: bold;">Next</span> button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To activate the first 
- control window, select the <span style="font-weight: bold;">Use Window 
- 1</span> check box and select a start time and a stop time for the control 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a control 
+ window, select the <span style="font-weight: bold;">Use Window 1</span> 
+ check box and select a start time for the control window from the <span 
+ style="font-weight: bold;">Hr</span> and <span style="font-weight: bold;">Min</span> 
+ drop-down lists in the Start area and select a stop time for the control 
  window from the <span style="font-weight: bold;">Hr</span> and <span style="font-weight: bold;">Min</span> 
- drop-down lists.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To activate the second 
- control window, select the <span style="font-weight: bold;">Use Window 
- 2</span> check box and select a start time and a stop time for the control 
+ drop-down lists in the Stop area.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">To specify a second control 
+ window, select the <span style="font-weight: bold;">Use Window 2</span> 
+ check box and select a start time for the control window from the <span 
+ style="font-weight: bold;">Hr</span> and <span style="font-weight: bold;">Min</span> 
+ drop-down lists in the Start area and select a stop time for the control 
  window from the <span style="font-weight: bold;">Hr</span> and <span style="font-weight: bold;">Min</span> 
- drop-down lists.</p></li>
+ drop-down lists in the Stop area.</p>
+
+<ol start=12
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To assign a load group 
- to the load program, select the group from the <span style="font-weight: bold;">Available 
+ to the load program, select the load group from the <span style="font-weight: bold;">Available 
  Groups</span> list and click the <span style="font-weight: bold;">Add</span> 
  button. To select more than one load group, hold the Ctrl key on the keyboard 
- while clicking additional groups. To rearrange the order of the assigned 
+ while clicking additional load groups. To rearrange the order of the assigned 
  load groups, click and drag a load group to move it up or down in the 
  list.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To unassign a load 
- group to the load program, select the group from the <span style="font-weight: bold;">Assigned 
- Groups</span> list and click the <span style="font-weight: bold;">Remove</span> 
- button. To select more than one load group, hold the Ctrl key on the keyboard 
- while clicking additional groups.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;"><span style="margin-bottom: 9pt;">To 
+ unassign a load group to the load program, select the group from the </span><span 
+ style="margin-bottom: 9pt; font-weight: bold;">Assigned Groups</span><span 
+ style="margin-bottom: 9pt;"> list and click the </span><span style="margin-bottom: 9pt; font-weight: bold;">Remove</span><span 
+ style="margin-bottom: 9pt;"> button. To select more than one load group, 
+ hold the Ctrl key on the keyboard while clicking additional groups.</span></p>
+
+<ol start=14
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To send out a notification 
- message before control starts, select the <span style="font-weight: bold;">Program 
- Start</span> check box and enter how many minutes before control starts 
- to send the message. If this check box is not selected, a notification 
- message is not sent out when the control starts.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Perform the following 
+ steps to specify whether or not to use notification messages and to assign 
+ notification groups to the load program:</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To send out a notification 
- message after control stops, select the <span style="font-weight: bold;">Program 
- Stop </span>check box and enter how many minutes after control stops to 
- send the message. If this check box is not selected, a notification message 
- is not sent out when the control stops.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To assign a notification 
- group, select the group from the <span style="font-weight: bold;">Notification 
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">To send out a 
+ notification message before the load program starts, select the <span 
+ style="font-weight: bold;">Program Start</span> check box and enter how 
+ many minutes before the load program starts to send the message. If this 
+ check box is not selected, a notification message is not sent out when 
+ the load program starts.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">To send out a 
+ notification message after the load program stops, select the <span style="font-weight: bold;">Program 
+ Stop </span>check box and enter how many minutes after the load program 
+ stops to send the message. If this check box is not selected, a notification 
+ message is not sent out when the load program stops.</p></li>
+		
+		<li class=kadov-p><p>To assign a notification group to the load 
+ program, select the notification group from the <span style="font-weight: bold;">Notification 
  Groups</span> list and click the <span style="font-weight: bold;">Add</span> 
  button. To select more than one notification group, hold the Ctrl key 
- on the keyboard while clicking additional groups.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To unassign a notification 
- group, select the group from the <span style="font-weight: bold;">Assigned 
- Groups</span> list and click the <span style="font-weight: bold;">Remove</span> 
- button. To select more than one notification group, hold the Ctrl key 
- on the keyboard while clicking additional groups.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
- button. The new load program appears in the Program Editor. For instructions 
- on editing a load program, refer to the related topics.</p></li>
+ on the keyboard while clicking additional notification groups.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">To unassign a 
+ notification group from the load program, select the notification group 
+ from the <span style="font-weight: bold;">Assigned Groups</span> list 
+ and click the <span style="font-weight: bold;">Remove</span> button. To 
+ select more than one notification group, hold the Ctrl key on the keyboard 
+ while clicking additional notification groups.</p></li>
+	</ul>
 </ol>
 
-&nbsp; 
+<ol start=18
+	style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
+ button. The new load program is displayed in the Load Program Editor. 
+ For instructions on editing a load program, refer to the related topics.</p></li>
+</ol>
+
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -325,8 +418,8 @@ kadovFilePopupInit('a7');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -337,13 +430,12 @@ kadovFilePopupInit('a7');
 <param name="Items" value="Creating a Customer;Creating_a_Customer.htm$$**$$Creating a Load Group;Creating_a_Load_Group.htm$$**$$Editing a Customer;Editing_a_Customer.htm$$**$$Editing a Load Group;Editing_a_Load_Group.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Load_Program.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Load_Program.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
 <param name="Window" value="" >
-</object>-->
-<OBJECT
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -355,7 +447,6 @@ kadovFilePopupInit('a7');
   <PARAM  NAME="Item4"  VALUE="Editing a Load Group;Editing_a_Load_Group.htm">
   <PARAM  NAME="Item5"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

@@ -9,7 +9,7 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "C:\\YukonHelpSVN\\4.1\\tdc\\src\\Tabular Data Console Help.chm";
+var HH_ChmFilename = "C:\\YukonSVN\\tdc\\src\\Tabular Data Console Help.chm";
 var HH_WindowName = "TDC";
 var HH_GlossaryFont = "";
 var HH_Glossary = "0";

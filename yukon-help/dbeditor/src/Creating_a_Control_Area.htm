@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=640>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="Min;ReEnable">
 
 
@@ -65,7 +65,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Creating a Control Area</h1>
 
-<p>To create a Control Area:</p>
+<p>Perform the following steps to create a control area:</p>
 
 <p>&nbsp;</p>
 
@@ -84,32 +84,56 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a control internal 
  from the <span style="font-weight: bold;">Control Interval</span> drop-down 
- list. The control interval is how often Yukon checks to see if control 
- is needed. </p></li>
+ list. This controls how often the Yukon system checks to see if control 
+ is needed.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the minimum 
  response time from the <span style="font-weight: bold;">Min Response Time</span> 
  drop-down list. This is the minimum number of seconds to wait after a 
  control is sent before sending another control.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a default state 
- from the <span style="font-weight: bold;">Default Daily State</span> drop-down 
- list. The control area reverts to this state each day at midnight. The 
- available states are <span style="font-weight: bold;">None</span>, <span 
- style="font-weight: bold;">Enable/ReEnable</span>, or <span style="font-weight: bold;">Disable/Waived</span>.</p></li>
+	<li class=kadov-p><p>Select a default state from the <span style="font-weight: bold;">Default 
+ Daily State</span> drop-down list. This controls what the operational 
+ state of the control area is set to each day at midnight. The default 
+ states are:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: normal;"><span 
+ style="font-weight: bold;">No Change</span> – The default state of the 
+ control does not change from its current state.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: normal;"><span 
+ style="font-weight: bold;">Enable/ReEnable</span> – The default state 
+ <span style="margin-bottom: 9pt;">of the control </span>is set to enabled.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><span 
+ style="font-weight: bold;">Disable/Waived</span> – The default state of 
+ the control is set to disabled.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select or clear the 
  <span style="font-weight: bold;">Require All Triggers Active</span> check 
- box. Select this check box to force all triggers to be active for control 
- to occur. Clear this check box if you do not require all triggers to be 
- active for control to occur.</p></li>
+ box. This is an optional setting that requires all of the triggers in 
+ the control area to be active for control to occur. Select the check box 
+ to force all triggers to be active. Clear the check box if all triggers 
+ do not have to be active.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Under the <span style="font-weight: bold;">Optional 
- Control Window</span>, enter a start and stop time in the <span style="font-weight: bold;">Start 
- Time</span> and <span style="font-weight: bold;">Stop Time</span> text 
- boxes. This is the window of time during which Yukon is allowed to perform 
+	<li class=kadov-p><p>Enter the start and stop times of the optional 
+ control window the <span style="font-weight: bold;">Start Time</span> 
+ and <span style="font-weight: bold;">Stop Time</span> text boxes. This 
+ is the window of time during which the Yukon system is allowed to perform 
  automatic feedback load control. The start and stop times also act as 
  the peak control window.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;"><span style="font-weight: bold;">Note:</span> 
+ Changes to the control window times do not take effect until midnight.</p>
+
+<ol start=9
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
@@ -121,38 +145,42 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov-->. 
- To delete a trigger,<span style="margin-bottom: 9pt;"> see <a href="javascript:BSSCPopup('Deleting_a_Trigger.htm');"
-	id=a2>Deleting a Trigger</a><!--begin!kadov{{--><script type="text/javascript"
-															language=JavaScript1.2><!--
-kadovFilePopupInit('a2');
-//--></script><!--}}end!kadov-->.</span></p></li>
+ Up to two triggers can be defined per control area.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a load program 
- from the <span style="font-weight: bold;">Program</span> list. These are 
- the available load programs.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Perform the following 
+ steps to assign a load program to the control area:</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Set the start priority 
- in the <span style="font-weight: bold;">Assigned Start Priority</span> 
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select a load 
+ program from the <span style="font-weight: bold;">Program</span> drop-down 
+ list. This is a list of the available load programs in the Yukon system.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Set the start 
+ priority in the <span style="font-weight: bold;">Assigned Start Priority</span> 
  box. A load program with a start priority of one starts before a load 
  program with a start priority of two.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Set the stop priority 
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Set the stop priority 
  in the <span style="font-weight: bold;">Assigned Stop Priority</span> 
  box. A load program with a stop priority of one stops before a load program 
  with a stop priority of two.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
+ style="font-weight: bold;">Add</span> button. The load program is added 
+ to Assigned Programs list.</p></li>
+	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Add</span> 
- button. The load program is added to Assigned Programs list.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
  button. The new control area appears in the Control Area Editor. For instructions 
  on editing a control area, refer to the related topics.</p></li>
 </ol>
 
-&nbsp; 
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -166,8 +194,8 @@ kadovFilePopupInit('a2');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -175,26 +203,26 @@ kadovFilePopupInit('a2');
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
+<param name="Items" value="Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Control_Area.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Control_Area.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="0" >
 <param name="Frame" value="" >
 <param name="Window" value="" >
-</object>--><OBJECT
+</object>-->
+<OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item2"  VALUE="Creating a Load Program;Creating_a_Load_Program.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Control Area;Editing_a_Control_Area.htm">
-  <PARAM  NAME="Item4"  VALUE="Editing a Device;Editing_a_Device.htm">
-  <PARAM  NAME="Item5"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
+  <PARAM  NAME="Item1"  VALUE="Creating a Load Program;Creating_a_Load_Program.htm">
+  <PARAM  NAME="Item2"  VALUE="Editing a Control Area;Editing_a_Control_Area.htm">
+  <PARAM  NAME="Item3"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
 </OBJECT>
+
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

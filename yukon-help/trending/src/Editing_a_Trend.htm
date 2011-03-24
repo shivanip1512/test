@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1028>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=1419>
+<meta name=layout-width content=964>
 <meta name=x-ignored-words content="Min;kW;kVar;kWh;kVarh">
 
 
@@ -46,7 +46,7 @@
 
 <h1>Editing a Trend</h1>
 
-<p>To edit a trend:</p>
+<p>Perform the following steps to edit a trend:</p>
 
 <p>&nbsp;</p>
 
@@ -54,174 +54,287 @@
 	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the trend to 
- edit from the <span style="font-weight: bold;">Trend</span> list.</p></li>
+ edit from the <span style="font-weight: bold;">Trends</span> list.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Trend</span> 
- menu, select <span style="font-weight: bold;">Edit</span>. This displays 
- the Yukon Trending Reports Editor dialog box.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Edit</span> 
+ from the <span style="font-weight: bold;">Trend</span> menu. The Yukon 
+ Trending Reports Editor window is displayed.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the trend 
- can be modified in the <span style="font-weight: bold;">Name</span> text 
+ can be changed in the <span style="font-weight: bold;">Name</span> text 
  box.</p></li>
 	
-	<li class=kadov-p><p>The <span style="font-weight: bold;">Left Axis</span> 
- and <span style="font-weight: bold;">Right Axis</span> areas display the 
- axis scaling defined during trend creation. To manually specify the minimum 
- or maximum scaling of either axis:</p></li>
+	<li class=kadov-p><p>To specify the minimum and/or maximum value for 
+ the left axis:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
 		<li class=kadov-p><p>Clear the <span style="font-weight: bold;">Auto 
- Scaling</span> check box for either the left or right axis.</p></li>
+ Scaling</span> check box for either in the Left Axis area.<span style="font-weight: bold;"><br>
+		Note:</span> The left axis automatically scales to fit the data 
+ in a trend by default.</p></li>
 		
-		<li class=kadov-p><p>Enter a new minimum scaling value in the <span 
- style="font-weight: bold;">Min</span> text box.<br>
-		This defines the minimum graph values for display on the axis selected.</p></li>
+		<li class=kadov-p><p>Enter a minimum value for the left axis in 
+ the <span style="font-weight: bold;">Min</span> text box. This defines 
+ the smallest graph value to display on the left axis.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a new maximum 
- scaling value in the <span style="font-weight: bold;">Max</span> text 
- box.<br>
-		This defines the maximum graph values for display on axis selected.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a maximum 
+ value for the left axis in the <span style="font-weight: bold;">Max</span> 
+ text box. This defines the largest graph value to display on the left 
+ axis.</p></li>
 	</ol>
+</ol>
+
+<p style="margin-left: 40px;">To specify the minimum and/or maximum value 
+ for the right axis:</p>
+
+<ul start=4
+	style="list-style: decimal;"
+	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select either <span 
- style="font-weight: bold;">Graph Points</span> or <span style="font-weight: bold;">Usage 
- Points</span> from the <span style="font-weight: bold;">Sort By</span> 
- drop-down list.</p></li>
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p>Clear the <span style="font-weight: bold;">Auto 
+ Scaling</span> check box for either in the Right Axis area.<span style="font-weight: bold;"><br>
+		Note:</span> The right axis automatically scales to fit the data 
+ in a trend by default.</p></li>
+		
+		<li class=kadov-p><p>Enter a minimum value for the right axis in 
+ the <span style="font-weight: bold;">Min</span> text box. This is the 
+ smallest graph value to display on the right axis.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a maximum 
+ value for the right axis in the <span style="font-weight: bold;">Max</span> 
+ text box. This is the largest graph value to display on the right axis.</p></li>
+	</ol>
+</ul>
+
+<ol start=5
+	style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p>Select the type of points to display in the Devices 
+ list from the <span style="font-weight: bold;">Sort By</span> drop-down 
+ list. The points types are:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Graph Points</span></p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Usage 
+ Points</span></p></li>
+	</ul>
 	
 	<li class=kadov-p><p>Add or remove points to display in the trend.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p>To add every point of a point type for a device, 
- click on the <span style="font-weight: bold;">+</span> to display the 
- device’s point types, select the point type that contains the points to 
- add and click the <span style="font-weight: bold;">&gt;&gt;</span> button.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">To add all of 
+ the points on a device to the trend:</p></li>
 		
-		<li class=kadov-p><p>To add a single graph point attached to a 
- device, click on the <span style="font-weight: bold;">+</span> to display 
- the device’s point types, click on the <span style="font-weight: bold;">+</span> 
- of the point type that contains the point to add, select the point, and 
- click the <span style="font-weight: bold;">&gt;&gt;</span> button.</p></li>
+		<ol style="list-style: lower-alpha;"
+			type=a>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Select the 
+ device that contains the points to add from the Devices list.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click on the 
+ <span style="font-weight: bold;">+</span> (Plus symbol) located to the 
+ left of the device name to display all of the point types on the device.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click the 
+ <span style="font-weight: bold;">&gt;&gt;</span> (Add) button to add all 
+ of the points on the device to the trend.</p></li>
+		</ol>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">To remove a graph 
- point, select the point in the table and click the <span style="font-weight: bold;">&lt;&lt;</span> 
- button.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 0px;">To add a single 
+ point on a device to the trend:</p></li>
+		
+		<ol style="list-style: lower-alpha;"
+			type=a>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Select the 
+ device that contains the point to add from the Devices list.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click on the 
+ <span style="font-weight: bold;">+</span> (Plus symbol) located to the 
+ left of the device name to display the point types of the device.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click on the 
+ <span style="font-weight: bold;">+</span> (Plus symbol) located to the 
+ left of the point type that contains the point to add to the trend.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Select the 
+ point to add to the trend.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Click the 
+ <span style="font-weight: bold;">&gt;&gt;</span> (Add) button to add the 
+ selected point to the trend.</p></li>
+		</ol>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p>To remove a point from the trend, select the 
+ point that is assigned to the trend and click the <span style="font-weight: bold;">&lt;&lt;</span> 
+ (Remove) button.</p></li>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p>To remove multiple points from the trend:</p></li>
+		
+		<ol style="list-style: lower-alpha;"
+			type=a>
+			
+			<li class=kadov-p><p>Hold the Ctrl key on the keyboard while 
+ selecting the points to remove from the trend.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;">Click the 
+ <span style="font-weight: bold;">&lt;&lt;</span> (Remove) button to remove 
+ the selected points from the trend.</p></li>
+		</ol>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To change the text 
- label for a point, double-click in the <span style="font-weight: bold;">Label</span> 
- column and rename the label.</p></li>
+ label for a point assigned to the trend, double-click in the <span style="font-weight: bold;">Label</span> 
+ column of the point and enter a new label.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To change the color 
- of a point, click in the <span style="font-weight: bold;">Color</span> 
- column and select a new color.</p></li>
+ of a point assigned to the trend, click in the <span style="font-weight: bold;">Color</span> 
+ column of the point and select a new color from the drop-down list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To select a different 
- axis, click in the <span style="font-weight: bold;">Axis</span> column 
- and select an axis. Each point is plotted on the left axis by default.</p></li>
+ axis on which to plot the data for a point assigned to the trend, click 
+ in the <span style="font-weight: bold;">Axis</span> column of the point 
+ and select an axis from the drop-down list.<span style="font-weight: bold;"><br>
+	Note:</span> Each point assigned to the trend is plotted on the left 
+ axis by default.</p></li>
 	
-	<li class=kadov-p><p>To change display type, click in the <span style="font-weight: bold;">Type</span> 
- column and select a new type. The types are:</p></li>
+	<li class=kadov-p><p>To change the display type for a point assigned 
+ to the trend, click in the <span style="font-weight: bold;">Type</span> 
+ column of the point and select a different display type from the drop-down 
+ list. The display types are:</p></li>
 	
-	<ul style="list-style: disc;"
-		type=disc>
+	<ul>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">Graph</span> 
- - displays kW and kVar points as graph.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Graph</span> 
+ – Displays kW and kVar points as graph.</p></li>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">Usage</span> 
- - displays usage (kWh and kVarh) as a summary.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Usage</span> 
+ – Displays usage (kWh and kVarh) as a summary.</p></li>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">Yesterday</span> 
- - displays trend data from the previous day.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Yesterday</span> 
+ – Displays trend data from the previous day.</p></li>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">Peak Graph</span> 
- - displays trend data for the day with the highest peak value.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Peak Graph</span> 
+ – Displays trend data for the day with the highest peak value.</p></li>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">Usage Graph</span> 
- - displays usage (kWh and kVarh) as a graph and as a summary.</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Usage Graph</span> 
+ – Displays usage (kWh and kVarh) as a graph and as a summary.</p></li>
 		
-		<li class=kadov-p><p><span style="font-weight: bold;">mm/dd/yy</span> 
- - displays trend data for the day specified in mm/dd/yy format</p></li>
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">mm/dd/yy</span> 
+ – Displays trend data for the day specified in mm/dd/yy format.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Marker</span> 
- - displays the point value as a threshold marker. The threshold marker 
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Marker</span> 
+ – Displays the point value as a threshold marker. The threshold marker 
  can be changed by changing the value of the point.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To change the multiplier, 
- double-click in the <span style="font-weight: bold;">Multiplier</span> 
- column and enter a new value for the multiplier. A multiplier alters point 
- values to make them more visible on a graph.<span style="font-weight: bold;"><br>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To change the multiplier 
+ of a point assigned to the trend, double-click in the <span style="font-weight: bold;">Multiplier</span> 
+ column of the point and enter a new multiplier. A multiplier alters the 
+ value of a point to make it more visible on a graph.<span style="font-weight: bold;"><br>
 	Note:</span> The Graph Multiplier option must be selected from the 
- Options menu to enable the multiplier.</p></li>
+ Options menu of the application to enable the multiplier.</p></li>
 	
-	<li class=kadov-p><p>To change the how the data is point displayed, 
- select a display type from the <span style="font-weight: bold;">Style 
- </span>drop-down list.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">To change the how 
+ the point data is displayed, click in the <span style="font-weight: bold;">Style</span> 
+ column of the point a display and select a display style from the drop-down 
+ list. The display styles are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line</span> 
- - displays the trend data as a line graph.</p></li>
+ – Displays the trend data as a line graph.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Shapes</span> 
- - displays the trend data as a line graph and displays the points.</p></li>
+ – Displays the trend data as a line graph and displays the points.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Area</span> 
- - displays the trend data as a line graph and displays the area.</p></li>
+ – Displays the trend data as a line graph and displays the area.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Area/Shapes</span> 
- - displays the trend data as a line graph and displays the area and points.</p></li>
+ – Displays the trend data as a line graph and displays the area and points.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step</span> 
- - displays the trend data as a step graph.</p></li>
+ – Displays the trend data as a step graph.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Shapes</span> 
- - displays the trend data as a step graph and displays the points.</p></li>
+ – Displays the trend data as a step graph and displays the points.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Area</span> 
- - displays the trend data as a step graph and displays the area.</p></li>
+ – Displays the trend data as a step graph and displays the area.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Area/Shapes</span> 
- - displays the trend data as a step graph and displays the area and points.</p></li>
+ – Displays the trend data as a step graph and displays the area and points.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Bar</span> 
- - displays the trend data as a bar graph.</p></li>
+ – Displays the trend data as a bar graph.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">3D 
- Bar</span> - displays the trend data as a 3D bar graph.</p></li>
+ Bar</span> – Displays the trend data as a 3D bar graph.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p>To add a value marker to the trend, click the 
- <span style="font-weight: bold;">Add Value Marker </span>button.</p></li>
+	<li class=kadov-p><p>To add a value marker to the trend:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p>Enter a value for marker in the text box.<span 
- style="margin-bottom: 9pt;"><br>
-		The marker value must fall within the trend data values or the 
- Min and Max axis values to be visible in a graph.</span></p></li>
+		<li class=kadov-p><p>Click the <span style="font-weight: bold;">Add 
+ Value Marker </span>button.</p></li>
+		
+		<li class=kadov-p><p>Enter a value for marker in the text box. 
+ <span style="margin-bottom: 9pt;">The marker value must fall within the 
+ trend data values or the Min and Max axis values to make the marker value 
+ visible in the trend.</span></p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
  style="font-weight: bold;">OK</span> button to add the value marker to 
  the trend.</p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a graph point 
- from the <span style="font-weight: bold;">Primary Point</span> drop-down 
- list. This is the point from which the six highest value readings are 
- taken for the <span style="font-weight: bold;">Current Peaks Table</span> 
- in the <span style="font-weight: bold;">Summary</span> tab.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To assign a primary 
+ point to the trend, select a point from the <span style="font-weight: bold;">Primary 
+ Point</span> drop-down list. This is the point from which the six highest 
+ value readings are taken for the <span style="font-weight: bold;">Current 
+ Peaks Table</span> in the <span style="font-weight: bold;">Summary</span> 
+ tab.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">OK</span> 
- button to save changes to the trend.</p></li>
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">OK</span> 
+ button to save the trend.</p></li>
 </ol>
+
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -235,8 +348,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2408" >
-<param name="_ExtentY" value="609" >
+<param name="_ExtentX" value="2900" >
+<param name="_ExtentY" value="635" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="14215660" >
@@ -247,7 +360,7 @@
 <param name="Items" value="Creating a Trend;Creating_a_Trend.htm$$**$$Deleting a Trend;Deleting_a_Trend.htm$$**$$Viewing a Graphical Trend;Viewing_a_Graphical_Trend.htm$$**$$Viewing a Summary Trend;Viewing_a_Summary_Trend.htm$$**$$Viewing a Tabular Trend;Viewing_a_Tabular_Trend.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="Arial,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\trending\src\Editing_a_Trend.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\trending\src\Editing_a_Trend.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="0" >
 <param name="Frame" value="" >

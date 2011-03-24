@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;INET;ACS;VALMET;CYGMET;PointID;deadband;Deadband;Comm;Dialup;RTUs;downline;CBC;KVAR;RTU;IP;PortServer;ClassicBoard;Digi;Xyplex;Min;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCU;CCUs;TCU;w;Failover">
 
 
@@ -66,13 +66,13 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 <h1>Editing a Route</h1>
 
 <p>A route is defined as a communication path to a field device. These 
- paths are used by the system to control the number of communications distributed 
- on the system. All routes originate from a transmitter previously defined 
- in the system, such as a CCU.</p>
+ paths are used by the system to control different types of communication 
+ on the distributed on the system. All routes originate from a signal transmitter 
+ defined in the system.</p>
 
 <p>&nbsp;</p>
 
-<p>To edit a route:</p>
+<p>Perform the following steps to edit a route:</p>
 
 <p>&nbsp;</p>
 
@@ -85,18 +85,25 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Route</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click the Route 
- to modify. This opens the <a href="javascript:BSSCPopup('Route_General_Tab.htm');"
-								id=a2>General</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+	<li class=kadov-p><p>Double-click on the route to edit. The <a href="javascript:BSSCPopup('Route_General_Tab.htm');"
+	id=a2>General</a><!--begin!kadov{{--><script type="text/javascript"
+												language=JavaScript1.2><!--
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--> 
- tab of the Device Editor. If the route is a Macro Route, see <a href="javascript:BSSCPopup('Editing_a_Macro_Route.htm');"
+ tabbed page is displayed in the Route Editor. </p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the route is a macro 
+ route, see <span style="margin-bottom: 9pt; margin-left: 40px;"><a href="javascript:BSSCPopup('Editing_a_Macro_Route.htm');"
 	id=a1>Editing a Macro Route</a><!--begin!kadov{{--><script type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
-//--></script><!--}}end!kadov-->.</p></li>
+//--></script><!--}}end!kadov--> 
+ to edit the route.</span></p>
+
+<ol start=4
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">If the route is for 
  a repeater, click the <span style="font-weight: bold;">Repeater Setup</span> 
@@ -109,15 +116,13 @@ kadovFilePopupInit('a3');
  tabbed page.</p></li>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Route Editor.</p></li>
+ button to save the changes to the route or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the route and close the Route Editor.</p></li>
 </ol>
 
 <p>&nbsp;</p>
 
-&nbsp; 
-
-<p>
+<p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
 <object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
 		ID=RelatedTopics
@@ -129,8 +134,8 @@ kadovFilePopupInit('a3');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -138,10 +143,10 @@ kadovFilePopupInit('a3');
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Creating a Route;Creating_a_Route.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
+<param name="Items" value="Creating a Route;Creating_a_Route.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Route.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Route.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
@@ -153,9 +158,7 @@ kadovFilePopupInit('a3');
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item2"  VALUE="Creating a Route;Creating_a_Route.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Device;Editing_a_Device.htm">
+  <PARAM  NAME="Item1"  VALUE="Creating a Route;Creating_a_Route.htm">
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->

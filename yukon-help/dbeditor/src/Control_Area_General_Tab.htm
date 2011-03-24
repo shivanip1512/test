@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;deadband;Deadband;kVAr;RTU;CBC;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;SCADA;ILEX;Tx;RTS;Min;ReEnable">
 
 
@@ -45,8 +45,9 @@
 
 <h4>Control Area General Tab</h4>
 
-<p style="margin-bottom: 9pt;">The following changes can be made to a control 
- area:</p>
+<p>The following changes can be made to a control area:</p>
+
+<p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -58,80 +59,53 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different control 
  interval can be selected from the <span style="font-weight: bold;">Control 
  Interval</span> drop-down list. This is how often the Yukon system checks 
- to see if control is needed.</p></li>
+ to see if control is needed, </p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different minimum 
  response time can be selected from the <span style="font-weight: bold;">Min 
  Response Time</span> drop-down list. This is the minimum number of seconds 
- to wait after control is sent before <span style="margin-bottom: 9pt;">sending 
- another control.</span></p></li>
+ to wait after a control command is sent before sending another control 
+ command.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different default 
+	<li class=kadov-p><p style="margin-bottom: 0px;">A different default 
  state can be selected from the <span style="font-weight: bold;">Daily 
- Default State</span> drop-down list. The control area reverts to this 
- state each day at midnight. The available default states are <span style="font-weight: bold;">No 
- Change</span>, <span style="font-weight: bold;">Enable/ReEnable</span>, 
- or <span style="font-weight: bold;">Disable/Waived</span>.</p></li>
+ Default State</span> drop-down list. This controls what the operational 
+ state of the control area is set to each day at midnight. The default 
+ states are:</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The option that requires 
- all triggers to be active for control to occur can be enabled or disabled 
- by selecting or clearing the <span style="font-weight: bold;">Require 
- All Triggers Active</span> check box. Select the check box to force all 
- triggers to be active. Clear the check box if you do not need all triggers 
- to be active.</p></li>
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: normal;"><span 
+ style="font-weight: bold;">No Change</span> –<span style="margin-bottom: 9pt;"> 
+ The default state of the control does not change from its current state 
+ </span>at midnight.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px; font-weight: normal;"><span 
+ style="font-weight: bold;">Enable/ReEnable</span> – The default state 
+ <span style="margin-bottom: 9pt;">of the control </span>is set to enabled 
+ at midnight.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><span 
+ style="font-weight: bold;">Disable/Waived</span> – The default state of 
+ the control is set to disabled at midnight.</p></li>
+	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Require 
+ All Triggers Active</span> check box is an optional setting that requires 
+ all of the triggers in the control area to be active for control to occur. 
+ Select the check box to force all triggers to be active. Clear the check 
+ box if all of the triggers do not have to be active.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The start and stop 
- times can be changed in the <span style="font-weight: bold;">Start Time</span> 
- and <span style="font-weight: bold;">Stop Time</span> text boxes. This 
- is the window of time during which Yukon is allowed to perform automatic 
- feedback load control. The start and stop times also act as the peak control 
- window.</p></li>
+ times of the optional control window can be changed in the <span style="font-weight: bold;">Start 
+ Time</span> and <span style="font-weight: bold;">Stop Time</span> text 
+ boxes. This is the window of time during which the Yukon system is allowed 
+ to perform automatic feedback load control.</p></li>
 </ol>
 
-&nbsp; 
-
-<p>
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Control Area;Editing_a_Control_Area.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Control_Area_General_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Control Area;Editing_a_Control_Area.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
+<p style="margin-left: 40px;"><span style="font-weight: bold;">Note:</span> 
+ Changes to the control window times do not take effect until midnight.</p>
 
 </body>
 

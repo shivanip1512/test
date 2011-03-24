@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=524>
-<meta name=layout-width content=692>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU">
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;LCRs">
 
 
 <!--(Links)=========================================================-->
@@ -65,102 +65,89 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Introduction</h1>
 
-<p>The Yukon<symbol name=Registered><!--begin!kadov{{-->&#174;<!--}}end!kadov--> 
+<p>The Yukon<symbol name=Trademark><!--begin!kadov{{-->&#8482;<!--}}end!kadov--> 
  Database Editor is used to add, modify, or remove database items in the 
  Core, Load Management, and System databases.</p>
 
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p>Core database - defines comm channels, signal 
- transmitters, communication routes, MCTs, meters, RTUs, points, and state 
- groups.</p></li>
+	<li class=kadov-p><p><span style="font-weight: bold;">Core</span> – 
+ The Core database defines comm channels, communication routes, MCTs, meters, 
+ RTUs, points, signal transmitters, state groups, and two-way LCRs.</p></li>
 	
-	<li class=kadov-p><p>Load Management database - defines the control 
- scenarios, control areas, load management programs, program constrains, 
- and load groups.</p></li>
+	<li class=kadov-p><p><span style="font-weight: bold;">Load Management</span> 
+ – The Load Management database defines the control scenarios, control 
+ areas, load groups, load programs, points, and program constrains.</p></li>
 	
-	<li class=kadov-p><p>System database - defines the alarm categories, 
- baselines, customers, contacts, holiday schedules, logins, login groups, 
- notification groups, season schedules, tags, TOU schedules, and system 
- points.</p></li>
+	<li class=kadov-p><p><span style="font-weight: bold;">System</span> 
+ – The System database defines the alarm categories, baselines, customers, 
+ contacts, holiday schedules, logins, login groups, notification groups, 
+ season schedules, tags, TOU schedules, and system points.</p></li>
 </ul>
 
 <p>&nbsp;</p>
 
-<p>The Database Editor is made up of the following:</p>
-
-<p>&nbsp;</p>
+<p style="margin-bottom: 0px;">The Database Editor is made up of the following 
+ items:</p>
 
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p><a href="javascript:BSSCPopup('About_the_Menu_Bar.htm');"
-							id=a1>Menu Bar</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Menu_Bar.htm');" id="a1">Menu Bar</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp;</p>
-
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p><a href="javascript:BSSCPopup('About_the_Sort_By_List.htm');"
-							id=a2>Sort By List</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Sort_By_List.htm');"
+														id=a2>Sort By List</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp;</p>
-
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p><a href="javascript:BSSCPopup('About_the_Database_Item_List.htm');"
-							id=a3>Database Item List</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+	<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Database_Item_List.htm');"
+														id=a3>Database 
+ Item List</a><!--begin!kadov{{--><script type="text/javascript"
+											language=JavaScript1.2><!--
 kadovFilePopupInit('a3');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp;</p>
-
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p><a href="javascript:BSSCPopup('About_the_Database_Window.htm');"
-							id=a4>Database Window</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+	<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Database_Window.htm');"
+														id=a4>Database 
+ Window</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp;</p>
-
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p><a href="javascript:BSSCPopup('About_the_Message_Log.htm');"
-							id=a5>Message Log</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-bottom: 9pt;"><a href="javascript:BSSCPopup('Message_Log.htm');" id="a5">Message Log</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp;</p>
-
-<p>Yukon devices, groups, and points are referred to as Database Items. 
- Database Items are created using wizards, which guide a user through the 
- initial setup. After the initial setup is completed, the Database Items 
- can be edited using the Database Editor.</p>
+<p>Database items, such as devices, groups, and points, are created using 
+ database wizards, which guide a user through the initial setup. After 
+ the initial setup is completed, database items can be edited using the 
+ Database Editor.</p>
 
 </body>
 

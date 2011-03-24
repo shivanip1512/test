@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=570>
-<meta name=layout-width content=502>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;Logins;TCP;UDP">
 
 
@@ -63,10 +63,9 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 <!--(==============================================================)-->
 
 
-<h1>Creating a <!--kadov_tag{{<ignored>}}-->Comm<!--kadov_tag{{</ignored>}}--> 
- Channel</h1>
+<h1>Creating a Comm Channel</h1>
 
-<p>To create a Comm Channel:</p>
+<p>Perform the following steps to create a comm channel:</p>
 
 <p>&nbsp;</p>
 
@@ -79,53 +78,41 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Create</span> 
  menu, select <span style="font-weight: bold;">Comm Channel</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Local 
- Serial Port</span>, <span style="font-weight: bold;">TCP Terminal Server</span>, 
- <span style="font-weight: bold;">UDP Terminal Server</span>, or <span 
- style="font-weight: bold;">TCP Port</span>.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Select the type of 
+ communication port from the following list:</p></li>
 </ol>
 
 <ul>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-left: 40px;">Examples of Local Serial 
- Ports are:</p></li>
-</ul>
-
-<ul>
-	
-	<ul style="list-style: circle;"
-		type=circle>
-		
-		<li class=kadov-p><p style="margin-left: 40px;">Built-in serial 
- ports</p></li>
-		
-		<li class=kadov-p><p style="margin-left: 40px;">Digi® PortServer®</p></li>
-		
-		<li class=kadov-p><p style="margin-left: 40px; margin-bottom: 9pt;">Digi 
- ClassicBoard®</p></li>
-	</ul>
+		class=kadov-p><p style="margin-left: 40px;
+								font-weight: bold;
+								margin-bottom: 0px;">Local Serial Port<span 
+ style="font-weight: normal;"> – Examples of a Local Serial Port are built-in 
+ serial ports, a Digi® PortServer®, and a Digi ClassicBoard®.</span></p></li>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-left: 40px;">Examples of TCP Terminal 
- Servers are:</p></li>
-	
-	<ul style="list-style: circle;"
-		type=circle>
-		
-		<li class=kadov-p><p style="margin-left: 40px;">Digi® PortServer®</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt; margin-left: 40px;">Other 
- terminal servers</p></li>
-	</ul>
+		class=kadov-p><p style="margin-left: 40px;
+								font-weight: bold;
+								margin-bottom: 0px;">TCP Terminal Server<span 
+ style="font-weight: normal;"> – Examples of a TCP Terminal Server are 
+ a Digi PortServer and other terminal servers.</span></p></li>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 40px;">The 
- UDP Terminal Server and TCP Port comm channels are only used for Distribution 
- Automation applications.</p></li>
+		class=kadov-p><p style="margin-left: 40px;
+								font-weight: bold;
+								margin-bottom: 0px;">UDP Terminal Server<span 
+ style="font-weight: normal;"> – The UDP Terminal Server option is only 
+ used for Distribution Automation applications.</span></p></li>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 40px;"><span 
+ style="font-weight: bold;">TCP Port</span> – The TCP Port option is only 
+ used for Distribution Automation applications.</p></li>
 </ul>
 
 <ol start=4
@@ -133,15 +120,18 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
- button. Based on the type of port selected, the editor will follow one 
- of three paths.</p></li>
+ button.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">To continue creating 
+ a comm channel, click on the type of communication port that was selected 
+ in step 2.</p></li>
 </ol>
 
 <ul>
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-left: 40px; margin-bottom: 9pt;"><a 
+		class=kadov-p><p style="margin-left: 40px; margin-bottom: 0px;"><a 
  href="javascript:BSSCPopup('Local_Serial_Port.htm');"
 	id=a3>Local Serial Port</a><!--begin!kadov{{--><script type="text/javascript"
 															language=JavaScript1.2><!--
@@ -150,7 +140,7 @@ kadovFilePopupInit('a3');
 	
 	<li style="list-style: disc;"
 		type=disc
-		class=kadov-p><p style="margin-left: 40px; margin-bottom: 9pt;"><a 
+		class=kadov-p><p style="margin-left: 40px; margin-bottom: 0px;"><a 
  href="javascript:BSSCPopup('TCP_Terminal_Server.htm');"
 	id=a4>TCP Terminal Server</a><!--begin!kadov{{--><script type="text/javascript"
 															language=JavaScript1.2><!--
@@ -167,8 +157,6 @@ kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p style="margin-left: 40px;">&nbsp;</p>
-
 <ul>
 	
 	<li style="list-style: disc;"
@@ -181,7 +169,7 @@ kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
-<p>&nbsp; </p>
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt; margin-left: 0px;">
 <!--Metadata type="DesignerControl" startspan
@@ -195,8 +183,8 @@ kadovFilePopupInit('a2');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -204,10 +192,10 @@ kadovFilePopupInit('a2');
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Comm Channel;Editing_a_Comm_Channel.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
+<param name="Items" value="Editing a Comm Channel;Editing_a_Comm_Channel.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelp\trunk\dbeditor\src\Creating_a_Comm_Channel.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Comm_Channel.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
@@ -219,9 +207,7 @@ kadovFilePopupInit('a2');
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Comm Channel;Editing_a_Comm_Channel.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Device;Editing_a_Device.htm">
+  <PARAM  NAME="Item1"  VALUE="Editing a Comm Channel;Editing_a_Comm_Channel.htm">
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->

@@ -29,7 +29,7 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Exporting a Data Set">
-      <param name="Local" value="Exporting_a_Data_Set.htm">
+      <param name="Local" value="Exporting_Data.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Opening Multiple TDC Windows">
@@ -67,15 +67,15 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating a Custom Display">
-      <param name="Local" value="Creating_a_Display.htm">
+      <param name="Local" value="Creating_a_Custom_Display.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing a Custom Display">
-      <param name="Local" value="Editing_a_Display.htm">
+      <param name="Local" value="Editing_a_Custom_Display.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Copying a Custom Display">
-      <param name="Local" value="Copying_a_Display.htm">
+      <param name="Local" value="Copying_a_Custom_Display.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Removing a Custom Display">
@@ -83,7 +83,7 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Exporting a Display to SQL">
-      <param name="Local" value="Exporting_a_Display_to_SQL.htm">
+      <param name="Local" value="Exporting_a_Custom_Display_to_SQL.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating Templates">
@@ -91,15 +91,15 @@
     <ul>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating a Template">
-        <param name="Local" value="Creating_a_Template.htm">
+        <param name="Local" value="Creating_a_Display_Template.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Editing a Template">
-        <param name="Local" value="Editing_a_Template.htm">
+        <param name="Local" value="Editing_a_Display_Template.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Deleting a Template">
-        <param name="Local" value="Deleting_a_Template.htm">
+        <param name="Local" value="Deleting_a_Display_Template.htm">
       </object>
       </ul>
     </ul>

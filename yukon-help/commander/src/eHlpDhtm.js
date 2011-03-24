@@ -9,12 +9,12 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "C:\\YukonHelpSVN\\4.1\\commander\\src\\Yukon Commander Help.chm";
+var HH_ChmFilename = "C:\\YukonSVN\\commander\\src\\Yukon Commander Help.chm";
 var HH_WindowName = "Commander";
 var HH_GlossaryFont = "";
-var HH_Glossary = "1";
-var HH_Avenue = "1";
-var HH_ActiveX = true;
+var HH_Glossary = "0";
+var HH_Avenue = "0";
+var HH_ActiveX = false;
 //}}HH_SYMBOL_SECTION
 
 //Begin to support previous generic parameters

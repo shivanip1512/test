@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=528>
+<meta name=layout-width content=1004>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;SchedName;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;Logins;TCP;UDP;SIMPLE_TOU;EXTENDED_TOU;NISC's;ss">
 
 
@@ -46,7 +46,7 @@
 
 <h1>Creating a Control Scenario</h1>
 
-<p>To create a Control Scenario:</p>
+<p>Perform the following steps to create a control scenario:</p>
 
 <p>&nbsp;</p>
 
@@ -64,36 +64,42 @@
  text box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the load <!--kadov_tag{{<ignored>}}-->program(s<!--kadov_tag{{</ignored>}}-->) 
- to add to the control scenario from the <span style="font-weight: bold;">Available 
- Programs</span> area. Load programs must belong to a control area to appear 
- in this list.</p></li>
+ to assign to the control scenario from the <span style="font-weight: bold;">Available 
+ Programs</span> list. A load program must be assigned to a control area 
+ to appear in the Available Programs list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Assign 
- to Scenario</span> button to add the load <!--kadov_tag{{<ignored>}}-->program(s<!--kadov_tag{{</ignored>}}-->) 
+ to Scenario</span> button to assign the selected load <!--kadov_tag{{<ignored>}}-->program(s<!--kadov_tag{{</ignored>}}-->) 
  to the control scenario.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To give a load program 
- a start offset, click in the program's <span style="font-weight: bold;">Start 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a start 
+ offset for a load program, click in the program's <span style="font-weight: bold;">Start 
  Offset</span> field and enter an offset in mm:ss format. When a control 
  scenario starts, this is the time in minutes and seconds that the load 
  program must wait before it can start.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To give a load program 
- a stop offset, click in the program's <span style="font-weight: bold;">Stop 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a stop 
+ offset for a load program, click in the program's <span style="font-weight: bold;">Stop 
  Offset</span> field and enter an offset in mm:ss format. When a control 
  scenario stops, this is the time in minutes and seconds that the load 
  program must wait before it can start.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To select a different 
- gear to start control with, click in the program's <span style="font-weight: bold;">Start 
- Gear</span> field and select the gear.</p></li>
+ gear with which to start control, click in the program's <span style="font-weight: bold;">Start 
+ Gear</span> field and select a gear from the drop-down list.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">Note: To remove a load 
+ program that is assigned to the control scenario, select the load program 
+ from the <span style="font-weight: bold;">Assigned Programs</span> area 
+ and click the <span style="font-weight: bold;">Remove from Scenario</span> 
+ button.</p>
+
+<ol start=10
+	style="list-style: decimal;"
+	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To remove a program 
- assigned to the scenario, select the program from the <span style="font-weight: bold;">Assigned 
- Programs</span> are and click the <span style="font-weight: bold;">Remove 
- from Scenario</span> button.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
  button. The new control scenario appears in the Control Scenario Editor. 
  For instructions on editing a control scenario, refer to the related topics.</p></li>
 </ol>
@@ -112,8 +118,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -124,7 +130,7 @@
 <param name="Items" value="Creating a Control Area;Creating_a_Control_Area.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Control Scenario;Editing_a_Control_Scenario.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Control_Scenario.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor.r36877\src\Creating_a_Control_Scenario.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="0" >
 <param name="Frame" value="" >

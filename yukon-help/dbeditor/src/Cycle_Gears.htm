@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=775>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="TrueCycle;ExpressCom">
+<meta name=layout-height content=727>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="TrueCycle;ExpressCom;Cnt;kW">
 
 
 <!--(Links)=========================================================-->
@@ -46,8 +46,8 @@
 
 <h4>Smart Cycle, TrueCycle, Magnitude Cycle, or Target Cycle Gears</h4>
 
-<p style="margin-bottom: 9pt; font-weight: normal;">To add a Master Cycle, 
- Smart Cycle, TrueCycle, Magnitude Cycle, or Target Cycle gear:</p>
+<p style="margin-bottom: 9pt; font-weight: normal;">To add a Smart Cycle, 
+ TrueCycle, Magnitude Cycle, or Target Cycle gear:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -55,40 +55,40 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
  gear in the <span style="font-weight: bold;">Gear Name</span> text box.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select either <span 
- style="font-weight: bold;">Smart Cycle</span>, <span style="font-weight: bold;">TrueCycle</span>, 
- <span style="font-weight: bold;">Magnitude Cycle</span>, or <span style="font-weight: bold;">Target 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Smart 
+ Cycle</span>, <span style="font-weight: bold;">TrueCycle</span>, <span 
+ style="font-weight: bold;">Magnitude Cycle</span>, or <span style="font-weight: bold;">Target 
  Cycle</span> from the <span style="font-weight: bold;">Gear Type</span> 
  drop-down list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To disable the ramping 
- in of load groups over an interval of time, select the <span style="font-weight: bold;">No 
+ of load groups over an interval of time, select the <span style="font-weight: bold;">No 
  Ramp (ExpressCom only)</span> check box. The cycle command must be send 
  using the ExpressCom protocol. </p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Set a control percentage 
- in the <span style="font-weight: bold;">Control Percent</span> spin box. 
- This is the percentage of the cycle period that is control time.</p></li>
+ in the <span style="font-weight: bold;">Control Percent</span> box. This 
+ is the percentage of the cycle period that is control time.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Set a cycle period 
- in the <span style="font-weight: bold;">Cycle Period</span> spin box. 
- This is the cycle period in minutes.</p></li>
+ in the <span style="font-weight: bold;">Cycle Period</span> box. This 
+ is the cycle period in minutes.</p></li>
 	
-	<li class=kadov-p><p>Select a cycle count send type from the <span 
- style="font-weight: bold;">Cycle Count Send Type</span> drop-down list. 
- The types are:</p></li>
+	<li class=kadov-p><p>Select a send type for the cycle count from the 
+ <span style="font-weight: bold;">Cycle Count Send Type</span> drop-down 
+ list. The types are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Fixed Count</span> 
- - The same number of cycle counts are sent to the switch each cycle.</p></li>
+ – The same number of cycle counts are sent to the switch each cycle.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Count Down</span> 
- - The number of cycles counts sent decreases at each resend.</p></li>
+ – The number of cycles counts sent decreases at each resend.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Limited 
- Count Down</span> - Used with LCR 2000s, which do not allow cycle counts 
+ Count Down</span> – Used with LCR 2000s, which do not allow cycle counts 
  to be sent to them. The cycle count is hard coded in switch.</p></li>
 	</ul>
 </ol>
@@ -112,7 +112,10 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a resend rate 
  from the <span style="font-weight: bold;">Command Resend Rate</span> drop-down 
- list. This controls how often the cycle command is resent.</p></li>
+ list. This controls how often the cycle command is resent.<span style="font-weight: bold;"><br>
+	Note:</span> The resend rate can be in minutes or hours, depending 
+ on the selection in the drop-down list to the right of the Command Resent 
+ Rate drop-down list. </p></li>
 	
 	<li class=kadov-p><p>Select how to stop the control from the <span 
  style="font-weight: bold;">How to Stop Control</span> drop-down list. 
@@ -125,23 +128,22 @@
  - A restore command is sent to the device.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Stop 
- Cycle</span> - The period count is set to 0, so the cycle stops the next 
- period.</p></li>
+ Cycle</span> - The period count is set to 0 at the end of control, so 
+ the cycle stops the next period.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Set a group capacity 
  reduction percentage in the <span style="font-weight: bold;">Group Capacity 
- Reduction %</span> spin box. This is the percentage of each load group’s 
- kW capacity (if specified), which determines the amount of kW reduction 
- that must occur before control can stop</p></li>
+ Reduction %</span> box. This is the percentage of each load group’s kW 
+ capacity (if specified), which determines the amount of kW reduction that 
+ must occur before control can stop.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">For Target Cycle, 
- enter the amount of targeted reduction in the <span style="font-weight: bold;">kW 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">For a Target Cycle 
+ gear, enter the amount of targeted reduction in the <span style="font-weight: bold;">kW 
  Reduction</span> text box.</p></li>
 	
-	<li class=kadov-p><p>Select an automatic gear change method from the 
- <span style="font-weight: bold;">When to Change</span> drop-down list. 
- The change methods are:</p></li>
+	<li class=kadov-p><p>Select a gear change method from the <span style="font-weight: bold;">When 
+ to Change</span> drop-down list. The change methods are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -150,72 +152,31 @@
  Only</span> - The gear changes only when it is manually switched.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">After a Duration</span> 
- - Enter a duration in the Change Duration text box. The gear changes when 
- the duration ends.</p></li>
+ - The gear changes when the duration ends, which is entered in the <span 
+ style="font-weight: bold;">Change Duration</span> text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Priority 
- Change</span> - Enter a priority in the Change Priority text box. The 
- gear changes when the control area priority reaches this priority.</p></li>
+ Change</span> - The gear changes when the priority of the control area, 
+ to which this load program is assigned, reaches the priority entered in 
+ the <span style="font-weight: bold;">Change Priority</span> text box. 
+ </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Above 
- Trigger</span> - Triggers are defined in Control Areas. Select whether 
- to use trigger one or two in the <span style="font-weight: bold;">Trigger 
- Number</span> spin box. (Trigger one is the first entry and trigger two 
- is the second entry of the Control Area’s Trigger drop-down list.) The 
- gear changes when the Control Area threshold value reaches the trigger 
- plus the offset value in the <span style="font-weight: bold;">Trigger 
- Offset</span> text box.</p></li>
+ Trigger</span> - The gear changes when the trigger point of the selected 
+ trigger rises above the value that is calculated by adding the trigger 
+ threshold value and the trigger offset value. The trigger to use for the 
+ gear change, trigger one (1) or trigger two (2) of the control area to 
+ which this program is assigned, is entered in the <span style="font-weight: bold;">Trigger</span> 
+ box and the trigger offset value is entered in the <span style="font-weight: bold;">Trigger 
+ Offset</span> text box. <span style="font-weight: bold;"><br>
+		Note:</span> Trigger one (1) is the first entry in the Trigger 
+ drop-down list and trigger two (2) is the second entry in the Trigger 
+ drop-down list of the control area.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">OK</span> 
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">OK</span> 
  button to save the gear.</p></li>
 </ol>
-
-<p style="margin-bottom: 9pt;">&nbsp;</p>
-
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Cycle_Gears.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Creating a Load Program;Creating_a_Load_Program.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

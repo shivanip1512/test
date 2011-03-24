@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=872>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="d;RTU;MCT">
+<meta name=layout-height content=909>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="d;RTU;MCT;kW;kWh">
 
 
 <!--(Links)=========================================================-->
@@ -72,27 +72,38 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	type=disc>
 	
 	<li class=kadov-p><p><span style="font-weight: bold;">Analog</span> 
- - reads the value directly from the transducer or electronic device. Examples 
- include a pseudo point and Voltage or Amperage on a field device. </p></li>
+ – Reads the value directly from an electronic device. Examples include 
+ a voltage or amperage point on a meter or a pseudo point.</p></li>
 	
 	<li class=kadov-p><p><span style="font-weight: bold;">Status</span> 
- - reads the value of the contact or digital input, usually open or closed. 
- Examples include a relay on a load control receiver or a switch status 
- on a capacitor bank. A status point can also have control.</p></li>
+ – Reads the value of the contact or digital input, which is usually open 
+ or closed. Examples include a relay on a load control receiver, a switch 
+ status on a capacitor bank, or a control point on an RTU.</p></li>
 	
 	<li class=kadov-p><p><span style="font-weight: bold;">Accumulator</span> 
- - measures any quantity that is a simple count accumulation, such as the 
- number of pulses. Examples include kWh energy point or kW demand (energy 
- over time).</p></li>
+ – Measures any quantity that is a simple count accumulation, such as the 
+ number of pulses. Examples include kWh energy or kW demand (energy over 
+ time).</p></li>
 	
 	<li class=kadov-p><p><span style="font-weight: bold;">Calculated</span> 
- - calculates data gathered from other points.</p></li>
+ – Calculates a value using data gathered from other points. There are 
+ two output types for calculated points:</p></li>
+	
+	<ul style="list-style: circle;"
+		type=circle>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Analog Output</span> 
+ – The output is displayed as an analog value.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">Status Output</span> 
+ – The output is displayed as the status of a <a href="Editing_a_State_Group.htm"
+												id=a16>state group</a>.</p></li>
+	</ul>
 </ul>
 
 <p>&nbsp;</p>
 
-<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->To edit 
- a point:</p>
+<p>Perform the following steps to edit a point:</p>
 
 <p>&nbsp;</p>
 
@@ -129,9 +140,15 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  next to the <span style="font-weight: bold;">Point</span> type to display 
  the <span style="font-weight: bold;">Point</span>.</p></li>
 	
-	<li class=kadov-p><p>Double-click the point to modify. This opens the 
- General tabbed page of the Point Editor. The General tabbed page contains 
- different items depending on the type of point.</p></li>
+	<li class=kadov-p><p>Double-click the point to edit. The General tabbed 
+ page is displayed in the Point Editor.</p></li>
+</ol>
+
+<p style="margin-left: 40px;">The General tabbed page contains different 
+ items depending on the type of point.</p>
+
+<ol style="list-style: decimal;"
+	type=1>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -167,10 +184,15 @@ kadovFilePopupInit('a3');
 kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--></p></li>
 	</ul>
+</ol>
+
+<ol start=6
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p>Click the Physical Setup tab to display the Physical 
- Setup tabbed page appears, which contains different options depending 
- on the type of point.</p></li>
+ Setup tabbed page, which contains different options depending on the type 
+ of point.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -200,11 +222,10 @@ kadovFilePopupInit('a7');
  </p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the point is an 
- analog, accumulator, or calculated point, click the Limits tab to display 
- the <a href="javascript:BSSCPopup('Point_Limits_Tab.htm');"
-		id=a14>Limits</a><!--begin!kadov{{--><script type="text/javascript"
-													language=JavaScript1.2><!--
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the Limits tab 
+ to display the <a href="javascript:BSSCPopup('Point_Limits_Tab.htm');"
+					id=a14>Limits</a><!--begin!kadov{{--><script type="text/javascript"
+	language=JavaScript1.2><!--
 kadovFilePopupInit('a14');
 //--></script><!--}}end!kadov--> 
  tabbed page.</p></li>
@@ -216,21 +237,21 @@ kadovFilePopupInit('a14');
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p><a href="javascript:BSSCPopup('Setting_Up_Foreign_Data_Routing.htm');"
+		<li class=kadov-p><p><a href="javascript:BSSCPopup('Setting_Up_a_Foreign_Data_Routing_Entry.htm');"
 								id=a8>Setting Up Foreign Data Routing</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a8');
 //--></script><!--}}end!kadov--></p></li>
 		
-		<li class=kadov-p><p><a href="javascript:BSSCPopup('Updating_Foreign_Data_Routing.htm');"
+		<li class=kadov-p><p><a href="javascript:BSSCPopup('Updating_a_Foreign_Data_Routing_Entry.htm');"
 								id=a9>Updating a Foreign Data Routing Entry</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a9');
 //--></script><!--}}end!kadov--></p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><a href="javascript:BSSCPopup('Removing_Foreign_Data_Routing.htm');"
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><a href="javascript:BSSCPopup('Removing_a_Foreign_Data_Routing_Entry.htm');"
 															id=a10>Removing 
  Foreign Data Routing Entry</a><!--begin!kadov{{--><script type="text/javascript"
 															language=JavaScript1.2><!--
@@ -244,10 +265,10 @@ kadovFilePopupInit('a10');
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a15');
 //--></script><!--}}end!kadov--> 
- tabbed page appears.</p></li>
+ tabbed page, from which point limits and stale data settings can be configured.</p></li>
 	
 	<li class=kadov-p><p>If the point is a calculated point, click the 
- Calculation tab to display the Calculation tabbed page, from which Calculations 
+ Calculation tab to display the Calculation tabbed page, from which calculations 
  can be added, updated, or deleted.</p></li>
 	
 	<ul style="list-style: disc;"
@@ -276,13 +297,11 @@ kadovFilePopupInit('a13');
 	</ul>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Point Editor.</p></li>
+ button to save the changes to the point or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the point and close the Point Editor.</p></li>
 </ol>
 
 <p>&nbsp;</p>
-
-&nbsp; 
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -296,8 +315,8 @@ kadovFilePopupInit('a13');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -305,10 +324,10 @@ kadovFilePopupInit('a13');
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Core Database Point;Creating_a_Point.htm$$**$$Creating a Device;Creating_a_Device.htm$$**$$Creating a State Group;Creating_a_State_Group.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$Editing a State Group;Editing_a_State_Group.htm$$**$$" >
+<param name="Items" value="Creating a Core Database Point;Creating_a_Core_Database_Point.htm$$**$$Creating a State Group;Creating_a_State_Group.htm$$**$$Editing a State Group;Editing_a_State_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Point.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Point.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
@@ -320,11 +339,9 @@ kadovFilePopupInit('a13');
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Item1"  VALUE="Creating a Core Database Point;Creating_a_Point.htm">
-  <PARAM  NAME="Item2"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item3"  VALUE="Creating a State Group;Creating_a_State_Group.htm">
-  <PARAM  NAME="Item4"  VALUE="Editing a Device;Editing_a_Device.htm">
-  <PARAM  NAME="Item5"  VALUE="Editing a State Group;Editing_a_State_Group.htm">
+  <PARAM  NAME="Item1"  VALUE="Creating a Core Database Point;Creating_a_Core_Database_Point.htm">
+  <PARAM  NAME="Item2"  VALUE="Creating a State Group;Creating_a_State_Group.htm">
+  <PARAM  NAME="Item3"  VALUE="Editing a State Group;Editing_a_State_Group.htm">
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->

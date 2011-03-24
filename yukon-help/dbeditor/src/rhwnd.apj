@@ -4,22 +4,22 @@
 		<window>
 			<name>dbeditor</name>
 			<caption>Yukon Database Editor Help</caption>
-			<tocfile/>
-			<indexfile/>
-			<defaultfile/>
-			<homefile/>
-			<jump1filename/>
-			<jump1text/>
-			<jump2filename/>
-			<jump2text/>
-			<flags>525344</flags>
+			<tocfile></tocfile>
+			<indexfile></indexfile>
+			<defaultfile></defaultfile>
+			<homefile></homefile>
+			<jump1filename></jump1filename>
+			<jump1text></jump1text>
+			<jump2filename></jump2filename>
+			<jump2text></jump2text>
+			<flags>263200</flags>
 			<navpanewidth>200</navpanewidth>
 			<buttons>8198</buttons>
 			<windowplacement>
-				<left>423</left>
+				<left>223</left>
 				<top>0</top>
 				<right>1023</right>
-				<bottom>500</bottom>
+				<bottom>600</bottom>
 			</windowplacement>
 			<windowstyle>0</windowstyle>
 			<windowstyleex>0</windowstyleex>

@@ -119,8 +119,6 @@
     <param name="Local" value="Editing_a_Comm_Channel.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Always First Group">
@@ -132,7 +130,7 @@
     <param name="Name" value="Creating a Load Management Point">
     <param name="Local" value="Creating_a_Load_Management_Point.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Analog Point General Tab">
@@ -155,14 +153,10 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Append">
-    <param name="Name" value="Creating a Billing File">
-    <param name="Local" value="Creating_a_Billing_File.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="File">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -186,17 +180,17 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Assigned Programs list">
     <param name="Name" value="Adding a Program">
-    <param name="Local" value="Adding_a_Program.htm">
+    <param name="Local" value="Adding_a_Load_Program.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Assigned Start Priority">
     <param name="Name" value="Adding a Program">
-    <param name="Local" value="Adding_a_Program.htm">
+    <param name="Local" value="Adding_a_Load_Program.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Assigned Stop Priority">
     <param name="Name" value="Adding a Program">
-    <param name="Local" value="Adding_a_Program.htm">
+    <param name="Local" value="Adding_a_Load_Program.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Available Additional Contacts">
@@ -230,34 +224,22 @@
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Billing File">
-    <param name="Name" value="Creating a Billing File">
-    <param name="Local" value="Creating_a_Billing_File.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Billing End Date">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="CTI-CSV">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Demand Days Previous">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Energy Days Previous">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -504,8 +486,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Communication Route">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Creating a Route">
     <param name="Local" value="Creating_a_Route.htm">
     <param name="Name" value="Core Database">
@@ -607,7 +587,7 @@
       <param name="Name" value="Editing a Control Area">
       <param name="Local" value="Editing_a_Control_Area.htm">
       <param name="Name" value="Removing a Program">
-      <param name="Local" value="Removing_a_Program.htm">
+      <param name="Local" value="Removing_a_Load_Program.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Require All Triggers Active">
@@ -688,7 +668,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Control Start State">
     <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
+    <param name="Local" value="Latching_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Core Database">
@@ -698,14 +678,10 @@
     <param name="Local" value="Editing_a_Route.htm">
     <param name="Name" value="Editing a Comm Channel">
     <param name="Local" value="Editing_a_Comm_Channel.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
     <param name="Name" value="Creating a Comm Channel">
     <param name="Local" value="Creating_a_Comm_Channel.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Creating a State Group">
     <param name="Local" value="Creating_a_State_Group.htm">
     <param name="Name" value="What is the Yukon Database Editor?">
@@ -715,14 +691,14 @@
     <param name="Name" value="Editing a State Group">
     <param name="Local" value="Editing_a_State_Group.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Core Database Point">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -738,7 +714,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Calculated">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Calculated Point General Tab">
@@ -748,7 +724,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Creating">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Default Value">
@@ -816,7 +792,7 @@
       <param name="Name" value="Creating a Load Management Point">
       <param name="Local" value="Creating_a_Load_Management_Point.htm">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Status Point General">
@@ -848,8 +824,6 @@
     <param name="Local" value="Creating_a_Load_Group.htm">
     <param name="Name" value="Creating a Load Management Point">
     <param name="Local" value="Creating_a_Load_Management_Point.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
     <param name="Name" value="Creating a Comm Channel">
     <param name="Local" value="Creating_a_Comm_Channel.htm">
     <param name="Name" value="Creating a Notification Recipient">
@@ -863,7 +837,7 @@
     <param name="Name" value="Creating a Route">
     <param name="Local" value="Creating_a_Route.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Creating">
@@ -875,8 +849,6 @@
     <param name="Local" value="Creating_a_Load_Group.htm">
     <param name="Name" value="Creating a Load Management Point">
     <param name="Local" value="Creating_a_Load_Management_Point.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
     <param name="Name" value="Creating a Comm Channel">
     <param name="Local" value="Creating_a_Comm_Channel.htm">
     <param name="Name" value="Creating a Notification Recipient">
@@ -892,7 +864,7 @@
     <param name="Name" value="Creating a Route">
     <param name="Local" value="Creating_a_Route.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
     <param name="Name" value="Creating a Holiday Schedule">
     <param name="Local" value="Creating_a_Holiday_Schedule.htm">
     <param name="Name" value="Creating a Holiday">
@@ -901,12 +873,10 @@
     <param name="Local" value="Macro_Route.htm">
     <param name="Name" value="Creating a Repeater">
     <param name="Local" value="Creating_a_Repeater.htm">
-    <param name="Name" value="Creating a Billing File">
-    <param name="Local" value="Creating_a_Billing_File.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
     <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
+    <param name="Local" value="Latching_Gear.htm">
     <param name="Name" value="Time Refresh Rotation">
     <param name="Local" value="Time_Refresh_Gear.htm">
     <param name="Name" value="Creating a Control Scenario">
@@ -930,8 +900,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Billing File">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Comm Channel">
@@ -951,7 +919,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Core Database Point">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Customer">
@@ -960,8 +928,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Device">
-      <param name="Name" value="Creating a Device">
-      <param name="Local" value="Creating_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Dialout Pool">
@@ -988,7 +954,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Latching">
       <param name="Name" value="Latching">
-      <param name="Local" value="Latching.htm">
+      <param name="Local" value="Latching_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Load Group">
@@ -1035,7 +1001,7 @@
       <param name="Name" value="Creating a Load Management Point">
       <param name="Local" value="Creating_a_Load_Management_Point.htm">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Repeater">
@@ -1371,12 +1337,8 @@
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Device">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
     <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
@@ -1387,190 +1349,116 @@
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Accumulator Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Alt Interval">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Alternate Group">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Connected IED">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating">
-      <param name="Name" value="Creating a Device">
-      <param name="Local" value="Creating_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Data Collection Group">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Default Data Class">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Default Data Offset">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Device Type">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
       <param name="Name" value="Editing a Load Group">
       <param name="Local" value="Editing_a_Load_Group.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Electronic Meter">
-      <param name="Name" value="Creating a Device">
-      <param name="Local" value="Creating_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="EMETCOM MCTs">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="General Data Collection">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Health Check">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="IED Port">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="IED Scan Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Integrity Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Last Interval Demand Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Load Profile Demand Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Low Daily Performance">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Low Monthly Performance">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Low Performance Threshold">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Maximum Connect Time">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="MCT310">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Meter Number">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Minimum Connect Time">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Pager Number/Pin">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Paging">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Password">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Periodic Status Scan">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Physical Address">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Post Communication Wait">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Record Stats">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Scan Interval">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Scan Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Slave Address">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Specify Last Interval Demand Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -1584,8 +1472,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Device Name">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Editing a Load Group">
     <param name="Local" value="Editing_a_Load_Group.htm">
     <param name="Name" value="Creating an MCT Broadcast">
@@ -1621,12 +1507,12 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Latching Gear">
       <param name="Name" value="Latching">
-      <param name="Local" value="Latching.htm">
+      <param name="Local" value="Latching_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Thermostat Gear">
       <param name="Name" value="Thermostat">
-      <param name="Local" value="Thermostat.htm">
+      <param name="Local" value="Thermostat_Ramping_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Time Refresh Gear">
@@ -1670,15 +1556,11 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Disable Controls">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
       <param name="Name" value="Editing a Load Group">
       <param name="Local" value="Editing_a_Load_Group.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Disable Device">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -1713,7 +1595,7 @@
     <param name="Name" value="Creating a Notification Recipient">
     <param name="Local" value="Creating_a_Notification_Group.htm">
     <param name="Name" value="Support">
-    <param name="Local" value="Support.htm">
+    <param name="Local" value="Customer_Service.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -1752,8 +1634,6 @@
     <param name="Local" value="Editing_a_Notification_Group.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Editing a Control Area">
@@ -1781,7 +1661,7 @@
     <param name="Name" value="Editing a Login Group">
     <param name="Local" value="Editing_a_Login_Group.htm">
     <param name="Name" value="Editing Thermostat">
-    <param name="Local" value="Editing_a_Thermostat_Gear.htm">
+    <param name="Local" value="Editing_a_Thermostat_Ramping_Gear.htm">
     <param name="Name" value="Editing Latching">
     <param name="Local" value="Editing_a_Latching_Gear.htm">
     <param name="Name" value="Editing a Season Schedule">
@@ -1826,8 +1706,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Device">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Gear">
@@ -1930,7 +1808,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Thermostat Ramping">
       <param name="Name" value="Editing Thermostat">
-      <param name="Local" value="Editing_a_Thermostat_Gear.htm">
+      <param name="Local" value="Editing_a_Thermostat_Ramping_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="TOU Day">
@@ -1945,8 +1823,6 @@
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Electronic Meter">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Electronic Meters">
@@ -1988,14 +1864,10 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="File">
-    <param name="Name" value="Creating a Billing File">
-    <param name="Local" value="Creating_a_Billing_File.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Append">
-      <param name="Name" value="Creating a Billing File">
-      <param name="Local" value="Creating_a_Billing_File.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -2030,7 +1902,7 @@
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
       <param name="Name" value="Setting Up Foreign Data Routing">
-      <param name="Local" value="Setting_Up_Foreign_Data_Routing.htm">
+      <param name="Local" value="Setting_Up_a_Foreign_Data_Routing_Entry.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Deleting">
@@ -2039,7 +1911,7 @@
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
       <param name="Name" value="Removing a Foreign Data Routing Entry">
-      <param name="Local" value="Removing_Foreign_Data_Routing.htm">
+      <param name="Local" value="Removing_a_Foreign_Data_Routing_Entry.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Updating">
@@ -2048,9 +1920,9 @@
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
       <param name="Name" value="Updating a Foreign Data Routing Entry">
-      <param name="Local" value="Updating_Foreign_Data_Routing.htm">
+      <param name="Local" value="Updating_a_Foreign_Data_Routing_Entry.htm">
       <param name="Name" value="Setting Up Foreign Data Routing">
-      <param name="Local" value="Setting_Up_Foreign_Data_Routing.htm">
+      <param name="Local" value="Setting_Up_a_Foreign_Data_Routing_Entry.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -2091,8 +1963,6 @@
     <param name="Local" value="Editing_a_Notification_Group.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Editing a Control Area">
@@ -2112,8 +1982,6 @@
     <param name="Local" value="Editing_a_Load_Management_Point.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Load Management">
@@ -2126,7 +1994,7 @@
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
     <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
+    <param name="Local" value="Latching_Gear.htm">
     <param name="Name" value="Time Refresh Rotation">
     <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
@@ -2257,7 +2125,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Latching">
     <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
+    <param name="Local" value="Latching_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -2349,8 +2217,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Device Type">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
       <param name="Name" value="Editing a Load Group">
       <param name="Local" value="Editing_a_Load_Group.htm">
     </object>
@@ -2376,9 +2242,9 @@
       <param name="Name" value="Editing a Load Group">
       <param name="Local" value="Editing_a_Load_Group.htm">
       <param name="Name" value="Ripple">
-      <param name="Local" value="Ripple.htm">
+      <param name="Local" value="Ripple_Load_Group.htm">
       <param name="Name" value="Ripple Group Message Tab">
-      <param name="Local" value="Ripple_Group_Addressing_Tab.htm">
+      <param name="Local" value="Ripple_Load_Group_Message_Tab.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="VERSACOM Group">
@@ -2495,7 +2361,7 @@
       <param name="Name" value="Creating a Load Management Point">
       <param name="Local" value="Creating_a_Load_Management_Point.htm">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Status Point General">
@@ -2523,7 +2389,7 @@
     <param name="Name" value="Creating a Program Constraint">
     <param name="Local" value="Creating_a_Program_Constraint.htm">
     <param name="Name" value="Adding a Program">
-    <param name="Local" value="Adding_a_Program.htm">
+    <param name="Local" value="Adding_a_Load_Program.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -2661,9 +2527,9 @@
     <li><object type="text/sitemap">
       <param name="Name" value="VERSACOM">
       <param name="Name" value="Versacom">
-      <param name="Local" value="Versacom.htm">
+      <param name="Local" value="VERSACOM_Load_Group.htm">
       <param name="Name" value="VERSACOM Addressing Tab">
-      <param name="Local" value="VERSACOM_Group_Addressing_Tab.htm">
+      <param name="Local" value="VERSACOM_Load_Group_Addressing_Tab.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -2731,8 +2597,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Master Cycle Gear">
-    <param name="Name" value="Master Cycle Gear">
-    <param name="Local" value="Master_Cycle_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -2787,10 +2651,6 @@
     <param name="Name" value="MCTs">
     <param name="Name" value="Core Database">
     <param name="Local" value="Core_Database.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Creating an MCT Broadcast">
     <param name="Local" value="Creating_an_MCT_Broadcast.htm">
   </object>
@@ -2840,12 +2700,12 @@
     <param name="Name" value="Creating a Load Program">
     <param name="Local" value="Creating_a_Load_Program.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="No Control Gear">
     <param name="Name" value="No Control">
-    <param name="Local" value="No_Control.htm">
+    <param name="Local" value="No_Control_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -2971,13 +2831,13 @@
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating a Core Database Point">
       <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
+      <param name="Local" value="Creating_a_Core_Database_Point.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating a Load Management Point">
@@ -3349,8 +3209,6 @@
     <param name="Local" value="Core_Database.htm">
     <param name="Name" value="Editing a Comm Channel">
     <param name="Local" value="Editing_a_Comm_Channel.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Season">
@@ -3402,16 +3260,12 @@
     <param name="Local" value="Editing_a_Notification_Group.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Creating a Load Program">
     <param name="Local" value="Creating_a_Load_Program.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Alarm On">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Carrier Detect Wait">
@@ -3420,8 +3274,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Communications">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Default Route">
@@ -3447,18 +3299,12 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Disable Controls">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Disable Device">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="IED">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Limit">
@@ -3486,13 +3332,9 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Specify Last Interval Demand Rate">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Use IED Data">
-      <param name="Name" value="Editing a Device">
-      <param name="Local" value="Editing_a_Device.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Weekday Availability">
@@ -3503,7 +3345,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Select Latching">
     <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
+    <param name="Local" value="Latching_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Select Tag">
@@ -3558,8 +3400,6 @@
     <param name="Local" value="Editing_a_Notification_Group.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Editing a Control Area">
@@ -3576,7 +3416,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Start Priority">
     <param name="Name" value="Editing a Program">
-    <param name="Local" value="Editing_a_Program.htm">
+    <param name="Local" value="Editing_an_Assigned_Load_Program.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Starting Period Count">
@@ -3624,7 +3464,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Stop Priority">
     <param name="Name" value="Editing a Program">
-    <param name="Local" value="Editing_a_Program.htm">
+    <param name="Local" value="Editing_an_Assigned_Load_Program.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="System Database">
@@ -3686,7 +3526,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Editing a Thermostat Ramping Gear">
       <param name="Name" value="Editing a Thermostat Ramping Gear">
-      <param name="Local" value="Editing_a_Thermostat_Gear.htm">
+      <param name="Local" value="Editing_a_Thermostat_Ramping_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -3799,14 +3639,10 @@
     <param name="Local" value="Editing_a_Notification_Group.htm">
     <param name="Name" value="Creating a Load Management Point">
     <param name="Local" value="Creating_a_Load_Management_Point.htm">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
     <param name="Name" value="Creating a Comm Channel">
     <param name="Local" value="Creating_a_Comm_Channel.htm">
     <param name="Name" value="Editing a Core Database Point">
     <param name="Local" value="Editing_a_Point.htm">
-    <param name="Name" value="Editing a Device">
-    <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Creating a Notification Recipient">
     <param name="Local" value="Creating_a_Notification_Group.htm">
     <param name="Name" value="Editing a Load Program">
@@ -3828,7 +3664,7 @@
     <param name="Name" value="Editing a State Group">
     <param name="Local" value="Editing_a_State_Group.htm">
     <param name="Name" value="Creating a Core Database Point">
-    <param name="Local" value="Creating_a_Point.htm">
+    <param name="Local" value="Creating_a_Core_Database_Point.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Voice PIN">

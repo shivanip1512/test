@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=528>
+<meta name=layout-width content=1094>
 <meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;deadband;Deadband;Comm;Dialup;RTUs;downline;CBC;KVAR;RTU;IP;PortServer;ClassicBoard;Digi;Xyplex;Min;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;SCADA;ILEX;Dialout">
 
 
@@ -65,12 +65,12 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Editing a Comm Channel</h1>
 
-<p>A comm channels is needed to create devices. The exchange of data between 
- Yukon and field devices is performed through a comm channel.</p>
+<p>A comm channel is needed to create a signal transmitter, electronic 
+ meter, or RTU.</p>
 
 <p>&nbsp;</p>
 
-<p>To edit a Comm Channel:</p>
+<p>Perform the following steps to edit a comm channel:</p>
 
 <p>&nbsp;</p>
 
@@ -83,20 +83,29 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Comm Channel</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click the comm 
- channel to modify. This opens the <a href="javascript:BSSCPopup('Comm_Channel_General_Tab.htm');"
-										id=a1
-										style="font-weight: normal;">General</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p>Double-click on the comm channel to edit. The 
+ <a href="javascript:BSSCPopup('Comm_Channel_General_Tab.htm');"
+	id=a1
+	style="font-weight: normal;">General</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--> 
- tabbed page of the Device Editor. To edit a Dialout Pool comm channel, 
- see <a href="javascript:BSSCPopup('Editing_a_Dialout_Pool.htm');"
-		id=a6>Editing a Dialout Pool</a><!--begin!kadov{{--><script type="text/javascript"
+ tabbed page is displayed in the Comm Channel Editor.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the comm channel is 
+ Dialout Pool, see <a href="javascript:BSSCPopup('Editing_a_Dialout_Pool.htm');"
+						id=a6>Editing a Dialout Pool</a><!--begin!kadov{{--><script 
+ type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a6');
-//--></script><!--}}end!kadov-->.</p></li>
+//--></script><!--}}end!kadov--> 
+ to edit the comm channel.</p>
+
+<ol start=4
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Timing</span> 
  tab to display the <a href="javascript:BSSCPopup('Comm_Channel_Timing_Tab.htm');"
@@ -123,11 +132,12 @@ kadovFilePopupInit('a5');
  tabbed page.</p></li>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Comm Channel Editor.</p></li>
+ button to save the changes to the comm channel or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the comm channel and close the Comm Channel 
+ Editor.</p></li>
 </ol>
 
-&nbsp; 
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -141,8 +151,8 @@ kadovFilePopupInit('a5');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -150,10 +160,10 @@ kadovFilePopupInit('a5');
 <param name="UseText" value="0" >
 <param name="ControlLabel" value="Related Topics" >
 <param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Comm Channel;Creating_a_Comm_Channel.htm$$**$$Creating a Device;Creating_a_Device.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
+<param name="Items" value="Creating a Comm Channel;Creating_a_Comm_Channel.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Comm_Channel.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Comm_Channel.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
@@ -166,8 +176,6 @@ kadovFilePopupInit('a5');
   <PARAM  NAME="Button"  VALUE="Text:Related Topics">
   <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
   <PARAM  NAME="Item1"  VALUE="Creating a Comm Channel;Creating_a_Comm_Channel.htm">
-  <PARAM  NAME="Item2"  VALUE="Creating a Device;Creating_a_Device.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Device;Editing_a_Device.htm">
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->

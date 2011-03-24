@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=428>
+<meta name=layout-width content=804>
 <meta name=x-ignored-words content="RTU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;config.properties;billing_wiz_activate=;NCDC;NISC-Turtle;NISC-NCDC;Daffron;MCTs;MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;KWH;Y-intercept;kW;kWh;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Geq;Leq;arctangent;modulo;Modulo;d;INET;ACS;VALMET;CYGMET;PointID;deadband;Deadband;Comm;Dialup;RTUs;downline;IP;PortServer;ClassicBoard;Digi;Xyplex;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;CCU;CCUs;TCU;w;Failover;STEC;RCCS;TRISTATE;SCADA;ILEX;Dialout;Versacom;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;RDEX;TELGYR;TELEGYR;Clck;CBC's;ExpressCom;Telenetics;Sportster;dialup;ReEnable;Dialback;WCTP;LCU;kVar;e;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Golay">
 
 
@@ -70,7 +70,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <p>&nbsp;</p>
 
-<p>To edit a Load Group:</p>
+<p>Perform the following steps to edit a load group:</p>
 
 <p>&nbsp;</p>
 
@@ -83,8 +83,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Load Group</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">Double-click the load 
- group to modify. If the load group is a macro load group, see <a href="javascript:BSSCPopup('Editing_a_Macro_Load_Group.htm');"
+	<li class=kadov-p><p style="margin-bottom: 0px;">Double-click on the 
+ load group to edit. If the load group is a macro load group, see <a href="javascript:BSSCPopup('Editing_a_Macro_Load_Group.htm');"
 	id=a8>Editing a Macro Load Group</a><!--begin!kadov{{--><script type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a8');
@@ -98,68 +98,76 @@ kadovFilePopupInit('a8');
 												language=JavaScript1.2><!--
 kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--> 
- tabbed page appears for all groups.</p></li>
+ tabbed page appears in the Load Group Editor for all load groups.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The <span style="font-weight: bold;">Addressing</span> 
- tabbed page appears for <a href="javascript:BSSCPopup('ExpressCom_Group_Addressing_Tab.htm');"
-							id=a1>ExpressCom</a><!--begin!kadov{{--><script 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The Addressing 
+ tabbed page appears for <a href="javascript:BSSCPopup('EMETCON_Load_Group_Addressing_Tab.htm');"
+							id=a3>EMETCON</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
-kadovFilePopupInit('a1');
-//--></script><!--}}end!kadov-->, 
- <a href="javascript:BSSCPopup('VERSACOM_Group_Addressing_Tab.htm');"
-	id=a2>VERSACOM</a><!--begin!kadov{{--><script type="text/javascript"
-													language=JavaScript1.2><!--
-kadovFilePopupInit('a2');
-//--></script><!--}}end!kadov-->, 
- <a href="javascript:BSSCPopup('EMETCON_Group_Addressing_Tab.htm');"
-	id=a3>EMETCON</a><!--begin!kadov{{--><script type="text/javascript"
-												language=JavaScript1.2><!--
 kadovFilePopupInit('a3');
 //--></script><!--}}end!kadov-->, 
- and <a href="javascript:BSSCPopup('MCT_Group_Addressing_Tab.htm');"
-		id=a7>MCT</a><!--begin!kadov{{--><script type="text/javascript"
-												language=JavaScript1.2><!--
+ <a href="javascript:BSSCPopup('ExpressCom_Load_Group_Addressing_Tab.htm');"
+	id=a1>ExpressCom</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a1');
+//--></script><!--}}end!kadov-->, 
+ <a href="javascript:BSSCPopup('integration_load_group_addressing_tab.htm');"
+	id=a10>Integration</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a10');
+//--></script><!--}}end!kadov-->, 
+ <a href="javascript:BSSCPopup('MCT_Load_Group_Addressing_Tab.htm');"
+	id=a7>MCT</a><!--begin!kadov{{--><script type="text/javascript"
+											language=JavaScript1.2><!--
 kadovFilePopupInit('a7');
+//--></script><!--}}end!kadov-->, 
+ and <a href="javascript:BSSCPopup('VERSACOM_Load_Group_Addressing_Tab.htm');"
+		id=a2>VERSACOM</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--> 
- groups.</p></li>
+ load groups.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The <span style="font-weight: bold;">Message</span> 
- tabbed page appears for <a href="javascript:BSSCPopup('Ripple_Group_Addressing_Tab.htm');"
-							id=a5>Ripple</a><!--begin!kadov{{--><script 
- type="text/javascript"
+		<li class=kadov-p><p>The Settings tabbed page appears for <a href="javascript:BSSCPopup('Golay_Load_Group_Settings_Tab.htm');"
+	id=a9>Golay</a><!--begin!kadov{{--><script type="text/javascript"
+												language=JavaScript1.2><!--
+kadovFilePopupInit('a9');
+//--></script><!--}}end!kadov--> 
+ load groups.</p></li>
+		
+		<li class=kadov-p><p>The Integration Settings tabbed page appears 
+ for <a href="javascript:BSSCPopup('integration_load_group_integration_settings_tab.htm');"
+		id=a11>Integration</a><!--begin!kadov{{--><script type="text/javascript"
+															language=JavaScript1.2><!--
+kadovFilePopupInit('a11');
+//--></script><!--}}end!kadov--> 
+ load groups.</p></li>
+		
+		<li class=kadov-p><p>The Point Group tabbed page appears for <a 
+ href="javascript:BSSCPopup('Point_Load_Group_Tab.htm');"
+	id=a6>Point</a><!--begin!kadov{{--><script type="text/javascript"
+												language=JavaScript1.2><!--
+kadovFilePopupInit('a6');
+//--></script><!--}}end!kadov--> 
+ load groups.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9px;">The Message tabbed 
+ page appears for <a href="javascript:BSSCPopup('Ripple_Load_Group_Message_Tab.htm');"
+					id=a5>Ripple</a><!--begin!kadov{{--><script type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--> 
- groups.</p></li>
-		
-		<li class=kadov-p><p>The <span style="font-weight: bold;">Settings</span> 
- tabbed page appears for <a href="javascript:BSSCPopup('Golay_Group_Settings_Tab.htm');"
-							id=a9>Golay</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
-kadovFilePopupInit('a9');
-//--></script><!--}}end!kadov--> 
- groups.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Point 
- Group</span> tabbed page appears for <a href="javascript:BSSCPopup('Point_Group_Tab.htm');"
-										id=a6>Point</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
-kadovFilePopupInit('a6');
-//--></script><!--}}end!kadov--> 
- groups.</p></li>
+ load groups.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Load Group Editor.</p></li>
+ button to save the changes to the load group or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the load group and close the Load Group 
+ Editor.</p></li>
 </ol>
 
 <p>&nbsp;</p>
-
-&nbsp; 
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -173,8 +181,8 @@ kadovFilePopupInit('a6');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -185,7 +193,7 @@ kadovFilePopupInit('a6');
 <param name="Items" value="Creating a Load Group;Creating_a_Load_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Load_Group.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Load_Group.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=739>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="Min;kickup">
+<meta name=layout-height content=704>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="Min;kickup;Kickup;ATKU;kW;LSF">
 
 
 <!--(Links)=========================================================-->
@@ -47,8 +47,6 @@
 
 <p style="margin-bottom: 0px;">Up to two triggers can be defined per control 
  area.</p>
-
-<p style="margin-bottom: 0px;">&nbsp;</p>
 
 <ul>
 	
@@ -98,134 +96,93 @@
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p><span style="font-weight: bold;">Status</span> 
- - control occurs on a status change.</p></li>
+			class=kadov-p><p><span style="font-weight: bold;">Threshold</span> 
+ – Control is initiated when the value of the trigger point exceeds the 
+ specified threshold.</p></li>
 		
 		<li style="list-style: disc;"
 			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Threshold</span> 
- - control occurs when the threshold is surpassed.</p></li>
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="margin-bottom: 9pt; font-weight: bold;">Status</span><span 
+ style="margin-bottom: 9pt;"> – Control is initiated when the status of 
+ the trigger point changes from the specified normal state to a different 
+ state.</span></p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different device 
- on which the trigger point is located can be selected from the <span style="font-weight: bold;">Device</span> 
- drop-down list.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">A different device, 
+ which contains the point to use for the trigger, can be selected from 
+ the <span style="font-weight: bold;">Device</span> drop-down list in the 
+ Trigger Identification area.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different point 
- to use for this trigger can be selected from the <span style="font-weight: bold;">Point</span> 
- drop-down list.</p></li>
+ to use for the trigger can be selected from the <span style="font-weight: bold;">Point</span> 
+ drop-down list in the Trigger Identification area.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected <span 
- style="font-weight: bold;">Status</span> as the trigger type, a different 
- state can be selected from the <span style="font-weight: bold;">Normal 
- State</span> drop-down list. This is the normal state of the point selected 
- in step 4.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If Status was selected 
+ as the trigger type in step 2, a different normal state for the point 
+ selected in step 4 can be selected from the <span style="font-weight: bold;">Normal 
+ State</span> drop-down list. </p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">If you selected <span 
- style="font-weight: bold;">Threshold</span> as the trigger type:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">If Threshold was selected 
+ as the trigger type in step 2:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The threshold 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The kW threshold 
  and minimum restore offset can be changed in the <span style="font-weight: bold;">Threshold</span> 
  and <span style="font-weight: bold;">Min Restore Offset</span> text boxes. 
- The threshold minus the minimum restore offset is the level that the load 
- must be below before a program can stop controlling.</p></li>
+ The threshold minus the minimum restore offset is the kW level that the 
+ load must be below before a program can stop controlling.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The threshold 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The kW threshold 
  kickup offset can be changed in the <span style="font-weight: bold;">ATKU</span> 
- text box. If the peak load value exceeds the threshold, the threshold 
- is automatically increased to the new peak minus this offset. A value 
- of zero disables the automatic threshold kickup offset.</p></li>
+ (Automatic Threshold Kickup Offset) text box. If the peak load value exceeds 
+ the threshold, the threshold is automatically increased to the new peak 
+ load value minus this offset. A value of zero disables the Automatic Threshold 
+ Kickup Offset.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Enable or disable 
+		<li class=kadov-p><p style="margin-bottom: 9px;">Enable or disable 
  peak tracking by selecting or clearing the <span style="font-weight: bold;">Use 
  Peak Tracking</span> check box. Peak tracking records the highest peak 
- value.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">If peak tracking 
- is enabled, select a device to use for peak tracking from the <span style="font-weight: bold;">Device</span> 
- drop-down list and select a point to use for the peak tracking from the 
- <span style="font-weight: bold;">Point</span> drop-down list.</p></li>
+ load value.<span style="margin-bottom: 9pt;"><br>
+		If peak tracking is enabled, select a device to use for peak tracking 
+ from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Device</span><span 
+ style="margin-bottom: 9pt;"> drop-down list and select a point to use 
+ for the peak tracking from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Point</span><span 
+ style="margin-bottom: 9pt;"> drop-down list.</span></p></li>
 	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">To setup trigger data 
- projection, click the <span style="font-weight: bold;">Projection</span> 
- button. This projects the value of the trigger after a set number of minutes. 
- If the projected value is above the threshold, Yukon starts to control.</p></li>
+ projection for a threshold trigger, click the <span style="font-weight: bold;">Projection</span> 
+ button. The Yukon system projects what the value of the trigger will be 
+ after a specified number of minutes. If the projected value is above the 
+ threshold, the Yukon system initiates control.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select the type 
- of projection from the <span style="font-weight: bold;">Type</span> drop-down 
- list. The types are (none) or LSF (Least Squared Fit).</p></li>
+ of data projection from the <span style="font-weight: bold;">Type</span> 
+ drop-down list. The types are (none) or LSF (Least Squared Fit).</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select the number 
  of trigger values to use in the LSF projection from the <span style="font-weight: bold;">Samples</span> 
- drop-down list. If the trigger values in the projection are older than 
- one hour, the current trigger value is used.</p></li>
+ drop-down list. <span style="font-weight: bold;"><br>
+		Note:</span> If the trigger values in the projection are older 
+ than one hour, the current trigger value is used.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Select how far 
- ahead in time to project from the <span style="font-weight: bold;">Ahead</span> 
+		<li class=kadov-p><p style="margin-bottom: 0px;">Select the number 
+ of minutes ahead in time to project values from the <span style="font-weight: bold;">Ahead</span> 
  drop-down list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
- style="font-weight: bold;">OK</span> button to save the control area projection.</p></li>
+ style="font-weight: bold;">OK</span> button to save the trigger data projection.</p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Control Area Editor.</p></li>
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
+ button to save the changes to the trigger or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the trigger and close the Control Area Editor.</p></li>
 </ol>
-
-<p style="margin-bottom: 9pt;">&nbsp;</p>
-
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Adding a Program;Adding_a_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Program;Editing_a_Program.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Trigger.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Adding a Program;Adding_a_Program.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Control Area;Editing_a_Control_Area.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Program;Editing_a_Program.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

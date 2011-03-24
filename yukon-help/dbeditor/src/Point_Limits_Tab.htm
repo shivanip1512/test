@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=528>
+<meta name=layout-width content=964>
 
 
 <!--(Links)=========================================================-->
@@ -51,82 +51,80 @@
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To enable the high 
- and low limits, select the <span style="font-weight: bold;">Limit 1</span> 
+	<li class=kadov-p><p style="margin-bottom: 0px;">If the point is not 
+ a status point, the high and low limits can be enabled or disabled by 
+ selecting or clearing the <span style="font-weight: bold;">Limit 1</span> 
  and/or <span style="font-weight: bold;">Limit 2</span> check boxes.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If Limit 1 is enabled, 
- enter a high and low value for the limit in the <span style="font-weight: bold;">High</span> 
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">If Limit 1 is 
+ enabled, enter a high and low value for the limit in the <span style="font-weight: bold;">High</span> 
  and <span style="font-weight: bold;">Low</span> text boxes. If the value 
- goes outside of this range, the limit is violated and an alarm is generated.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If Limit 2 is enabled, 
- enter a high and low value for the limit in the <span style="font-weight: bold;">High</span> 
- and <span style="font-weight: bold;">Low</span> text boxes. If the value 
- goes outside of this range, the limit is violated and an alarm is generated.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The limit duration 
- of Limit 1 can be changed in the <span style="font-weight: bold;">Limit 
+ goes outside of this range, the limit is violated and an alarm is generated.<br>
+		The limit duration of Limit 1 can be changed in the <span style="font-weight: bold;">Limit 
  Duration 1</span> spin box. This specifies the number of seconds that 
  Limit 1 must be exceeded before an alarm is generated.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9px;">If Limit 2 is 
+ enabled, enter a high and low value for the limit in the <span style="font-weight: bold;">High</span> 
+ and <span style="font-weight: bold;">Low</span> text boxes. If the value 
+ goes outside of this range, the limit is violated and an alarm is generated.<span 
+ style="margin-bottom: 9pt;"><br>
+		The limit duration of Limit 2 can be changed in the </span><span 
+ style="margin-bottom: 9pt; font-weight: bold;">Limit Duration 2</span><span 
+ style="margin-bottom: 9pt;"> spin box. This specifies the number of seconds 
+ that Limit 2 must be exceeded before an alarm is generated.</span></p></li>
+	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The limit duration 
- of Limit 2 can be changed in the <span style="font-weight: bold;">Limit 
- Duration 2</span> spin box. This specifies the number of seconds that 
- Limit 2 must be exceeded before an alarm is generated.</p></li>
+	<li class=kadov-p><p>To enable checking for stale data, select the 
+ <span style="font-weight: bold;">Enable</span> check box in the Stale 
+ Data area.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To enable the reasonability 
- limits, select the <span style="font-weight: bold;">High Limit</span> 
- and/or <span style="font-weight: bold;">Low Limit</span> check boxes, 
- then enter reasonability limit values in the text boxes. If a reading 
- exceeds a reasonability limit, the reading is ignored and the last reasonable 
- value is used.</p></li>
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p>Select the length of time, in minutes, that 
+ a data point must be non-updated or bad to be considered stale from the 
+ <span style="font-weight: bold;">Time in Minutes</span> drop-down list.</p></li>
+		
+		<li class=kadov-p><p>Select the type of point update on which check 
+ if the data point is stale from the <span style="font-weight: bold;">Update 
+ Style</span> drop-down list. The type of point updates are:</p></li>
+		
+		<ul style="list-style: disc;"
+			type=disc>
+			
+			<li class=kadov-p><p><span style="font-weight: bold;">Always</span> 
+ – Checks if the data point is stale on any point change.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">On 
+ Change</span> – Checks if the data point is stale when an operand causes 
+ the point to change.</p></li>
+		</ul>
+	</ol>
+	
+	<li class=kadov-p><p>If the point is not a status point, the reasonability 
+ limits can be enabled or disabled by selecting or clearing the <span style="font-weight: bold;">High 
+ Limit</span> and/or <span style="font-weight: bold;">Low Limit</span> 
+ check boxes.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p>If high limit is enabled, enter the high reasonability 
+ limit value in the <span style="font-weight: bold;">High Limit</span> 
+ text box. </p></li>
+		
+		<li class=kadov-p><p>If low limit is enabled, enter the low reasonability 
+ limit value in the <span style="font-weight: bold;">Low Limit</span> text 
+ box. </p></li>
+	</ul>
 </ol>
 
-<p><!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}--><br>
-
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Point_Limits_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Core Database Point;Editing_a_Point.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Load Management Point;Editing_a_Load_Management_Point.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
+<p style="margin-left: 40px;">If a reading exceeds a high or low reasonability 
+ limit, the reading is ignored and the last reasonable value is used instead.</p>
 
 </body>
 

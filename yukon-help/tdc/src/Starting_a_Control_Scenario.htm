@@ -25,8 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=650>
-<meta name=layout-width content=963>
+<meta name=layout-height content=828>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content=HH>
 
 
 <!--(Links)=========================================================-->
@@ -44,42 +45,54 @@
 
 <h4>Starting a Control Scenario</h4>
 
-<p>Complete the following steps to start a control scenario.</p>
+<p>Perform the following steps to start a control scenario.</p>
 
 <p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To start a scenario, 
- click on the <span style="font-weight: bold;">Start Scenario</span> toolbar 
- button.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To start a control 
+ scenario, click on the <span style="font-weight: bold;">Start Scenario</span> 
+ toolbar button.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the control 
  scenario to start from the <span style="font-weight: bold;">Scenario</span> 
  drop-down list.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To start the scenario 
- immediately, select the <span style="font-weight: bold;">Start Now</span> 
- check box.<br>
-	To start the scenario later, clear the <span style="font-weight: bold;">Start 
- Now</span> check box, enter a start time in the <span style="font-weight: bold;">Start 
- Time</span> text box, and select a date from the drop-down list.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">To start the control 
+ scenario immediately, select the <span style="font-weight: bold;">Start 
+ Now</span> check box. <br>
+	To specify when to start the control scenario:</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a stop 
- time, enter a time in the <span style="font-weight: bold;">Stop Time</span> 
- text box and select a date from the drop-down list.<br>
-	If you do not want to specify a stop time, select the <span style="font-weight: bold;">Never 
- Stop</span> check box. The program can then only be stopped manually.</p></li>
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Clear the <span 
+ style="font-weight: bold;">Start Now</span> check box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Enter a start 
+ time in the <span style="font-weight: bold;">Start Time</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Select a start 
+ date from the drop-down list.</p></li>
+	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the gear to 
- use for all of the programs in the control scenario from the <span style="font-weight: bold;">Gear</span> 
- drop-down list. Gears define the rates at which loads in a program are 
- controlled.<br>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify when to 
+ stop the control scenario, enter a stop time in the <span style="font-weight: bold;">Stop 
+ Time</span> text box and select a stop date from the drop-down list.<br>
+	To not specify when to stop the control scenario, select the <span 
+ style="font-weight: bold;">Never Stop</span> check box. The control scenario 
+ must be manually stopped if the stop time is set to Never Stop.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify the gear 
+ for all of the load programs in the control scenario, select a gear from 
+ the <span style="font-weight: bold;">Gear</span> drop-down list. Gears 
+ define the rates at which loads in a load program are controlled.<br>
 	<br>
-	To specify gears for individual programs, select a gear from the <span 
- style="font-weight: bold;">Gear</span> drop-down list in the table on 
- the right-hand side of the window.</p></li>
+	To specify gears for individual load programs, select a gear from the 
+ <span style="font-weight: bold;">Gear</span> drop-down list to the right 
+ of the program name in the table on the right-hand side of the window.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Select whether to 
  Observe or Check the program constraints from the <span style="font-weight: bold;">Constraints</span> 
@@ -88,13 +101,14 @@
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Observe</span> 
- - if the constraint is violated, the control does not occur.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Observe</span><span 
+ style="font-family: Arial, sans-serif;"> – I</span>f the constraint is 
+ violated, the control does not occur.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Check</span> 
- - the control is checked before it is sent to the Load Management server 
- and the result is displayed in the Program Constraint Violation window. 
- </p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Check</span><span 
+ style="font-family: Arial, sans-serif;"> – T</span>he control is checked 
+ before it is sent to the Load Management server and the result is displayed 
+ in the Program Constraint Violation window. </p></li>
 		
 		<ul style="list-style: circle;"
 			type=circle>
@@ -112,14 +126,24 @@
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">By default, every 
- program in a control scenario is selected to start. To specify which programs 
- to start, clear the <span style="font-weight: bold;">Select All</span> 
- check box and select the check boxes of the programs to start.</p></li>
+ load program in a control scenario is selected to start. To specify which 
+ load programs to start, clear the <span style="font-weight: bold;">Select 
+ All</span> check box and select the check boxes of the load programs to 
+ start.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Start</span> 
- and <span style="font-weight: bold;">Stop</span> columns display the start 
- and stop offsets of the programs in the control scenario. The offsets 
- are displayed in the format of “hours:minutes”.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The Start and Stop 
+ columns display the start and stop offsets of the load programs in the 
+ control scenario. The start and stop offsets of the control scenario are 
+ defined in the Database Editor and the offsets are displayed in the format 
+ HH:MM.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a start 
+ offset for a load program in the control scenario, enter the start offset 
+ in the Start column, located to the right if the load program name.<br>
+	To specify a stop offset for a load program in the control scenario, 
+ enter the stop offset in the Stop column, located to the right if the 
+ load program name.<br>
+	Note: The start and stop offsets are entered in the format of “hours:minutes”.</p></li>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">OK</span> 
  button to start the control scenario.</p></li>
@@ -127,15 +151,45 @@
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p>If you selected the <span style="font-weight: bold;">Start 
- Now</span> check box, the program starts immediately and the status in 
- the Load Control client display changes to Manual Active.</p></li>
+		<li class=kadov-p><p style="font-weight: normal;">If the Start 
+ Now check box was selected in step 3, the load programs that are <span 
+ style="margin-bottom: 9pt;">selected in the control scenario </span>start 
+ immediately. <span style="margin-bottom: 9pt;"><br>
+		If a start time/date was selected in step 3, the status of </span>the 
+ load programs that are <span style="margin-bottom: 9pt;">selected in the 
+ control scenario</span> <span style="margin-bottom: 9pt;">change to Scheduled. 
+ When the start time/date is reached, the selected load programs start.</span><span 
+ style="margin-bottom: 9pt; font-weight: bold;"><br>
+		Note:</span><span style="margin-bottom: 9pt;"> The status of</span> 
+ the load programs that are <span style="margin-bottom: 9pt;">selected 
+ in the control scenario changes to Manual Active when the load programs 
+ start.</span></p></li>
+	</ul>
+</ol>
+
+<p style="font-weight: normal;">&nbsp;</p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<ul style="list-style: disc;"
+		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">If you specified 
- a <span style="font-weight: bold;">Start Time</span> in the future, the 
- program status in the Load Control client display changes to Scheduled. 
- When the start time is reached, the program starts and the status changes 
- to Manual Active.</p></li>
+		<li class=kadov-p><p>If <span style="margin-bottom: 9pt;">a stop 
+ time/date was selected in step 4</span>, the load programs that are <span 
+ style="margin-bottom: 9pt;">selected in the control scenario </span>stop 
+ when the stop time/date is reached.</p></li>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 0px;">If the Never Stop 
+ check box was selected i<span style="margin-bottom: 9pt;">n step 4</span>, 
+ right-click on the load program to stop and select the <span style="font-weight: bold;">Stop</span> 
+ option or refer to <a href="Stopping_a_Control_Scenario.htm">Stopping 
+ a Control Scenario</a>.<span style="margin-bottom: 9pt; font-weight: bold;"><br>
+		Note:</span><span style="margin-bottom: 9pt;"> The status of</span> 
+ the load programs that are <span style="margin-bottom: 9pt;">selected 
+ in the control scenario changes to Inactive when the load programs stop.</span></p></li>
 	</ul>
 </ol>
 

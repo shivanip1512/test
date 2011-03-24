@@ -1,0 +1,199 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>Setting Up a Foreign Data Routing Entry</title>
+
+<!--(Meta)==========================================================-->
+
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="01 23, 2006 4:08:08 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Setting Up Foreign Data Routing">
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack;allow_member_programs;kW;TrueCycle;LCR;load(s;C&amp;I;setpoint;Ta;Tf;conditioner(s;RTU;RTUs;DDC;Login;login;username;Ctrl;MCT;TOU;comm;IED;EMETCOM;MCTs;KWH;Y-intercept;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;deadband;Deadband;Comm;Dialup;downline;CBC;KVAR;IP;PortServer;ClassicBoard;Digi;Xyplex;TimeRefresh;SmartCycle;MasterCycle;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;SCADA;ILEX;Dialout;Config;config;Ke;Mp;Kh;KYZ;DNP;SOE;kWh;kVAr;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Versacom;Cnt;Fahren;Abs;F;TA;TC;TE;TF;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;ExpressCom;CCU;Telenetics;Sportster;dialup;ReEnable;Dialback;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;e;FeederEditor;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Golay;CurrentLoad;ContractIntLoad;MinimumNotice;InterruptHours;AdvBuyThrough$;AdvBuyThroughkW;ContractFrmDemand;Curtailable;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Ops;RTU-MODBUS;contact(s;Emails;LSW;MSW;SchedName;TRISTATESUB;FileName;c;Yukon\Server\Export\;control.txt;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;SNPP;N;P(N;OPC;RTC;RTU-LMI;Logins;TCP;UDP;Calc;FDR;MACS;TDC;Kickup;MinEventDuration;CI;PLC;Lantronix;repeater(s;timeout;Tue;Thu;WELCO;RTM;pspl-support@cooperindustries.com.;RF;TNPP;RFMESH;SIMPLE_TOU;EXTENDED_TOU;NISC's;group(s;meter(s;ss;VECTRON;kVa;kQ;kVA;DNPSLAVE;MULTISPEAK;MUILTISPEAK;ObjectID;MasterID;SlaveID">
+
+
+<!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h4>Setting Up a Foreign Data Routing Entry</h4>
+
+<p>Perform the following steps to set up a foreign data routing entry:</p>
+
+<p>&nbsp;</p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select an interface 
+ type from the <span style="font-weight: bold;">Interface</span> drop-down 
+ list. The available interface types are: ACS, ACSMULTI, BEPC, CYGNET, 
+ DNPSLAVE, DSM2FILEIN, DSM2IMPORT, INET, LIVEDATA, LODESTAR_ENH, LOADSTAR_STD, 
+ MULTISPEAK LM, OPC, PI, RCCS, RDEX, STEC, SYSTEM, TELGYR, TEXTEXPORT, 
+ TEXTIMPORT, TRISTATE, TRISTATESUB, VALMET, WABASH, and XA21LM.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a data direction 
+ from the <span style="font-weight: bold;">Direction</span> drop-down list. 
+ This controls whether the data is received, received for control, sent, 
+ or sent for control.</p></li>
+	
+	<li class=kadov-p><p>Depending on the type of interface selected, different 
+ options appear in the Data Parameters area:</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">ACS</span> 
+ – Select Pseudo, Real, or Calculated from the <span style="font-weight: bold;">Category</span> 
+ drop-down list, enter the remote name in the <span style="font-weight: bold;">Remote</span> 
+ text box, and enter the point name to import or export in the <span style="font-weight: bold;">Point</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">ACSMULTI</span> 
+ – Select Pseudo, Real, or Calculated from the <span style="font-weight: bold;">Category</span> 
+ drop-down list, enter the remote name in the <span style="font-weight: bold;">Remote</span> 
+ text box, enter the point name to import or export in the <span style="font-weight: bold;">Point</span> 
+ text box, and enter a destination or source address in the <span style="font-weight: bold;">Destination/Source</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">BEPC</span> 
+ – Enter the ID of the coop in the <span style="font-weight: bold;">Coop 
+ ID</span> text box and enter the name of the file to export in the <span 
+ style="font-weight: bold;">Filename</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">CYGNET</span> 
+ – Enter the point ID to import or export in the <span style="font-weight: bold;">PointID</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">DNPSLAVE</span> 
+ – Enter the DNP master ID in the <span style="font-weight: bold;">MasterID</span> 
+ text box, enter the DNP slave ID in the <span style="font-weight: bold;">SlaveID</span> 
+ text box, enter the point offset in the <span style="font-weight: bold;">Offset</span> 
+ text box, enter the destination or source address in the <span style="font-weight: bold;">Destination/Source</span> 
+ text box, and enter the point multiplier in the <span style="font-weight: bold;">Multiplier</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">DSM2FILEIN</span> 
+ – Enter the option number in the <span style="font-weight: bold;">Option 
+ Number</span> text box and enter the point ID to import in the <span style="font-weight: bold;">Point 
+ ID</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">DSM2IMPORT</span> 
+ or <span style="font-weight: bold;">VALMET</span> – Enter the point name 
+ to import or export in the <span style="font-weight: bold;">Point</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">INET</span> 
+ or <span style="font-weight: bold;">RCCS</span> – Enter the device name 
+ in the <span style="font-weight: bold;">Device</span> text box, enter 
+ the point name to import or export in the <span style="font-weight: bold;">Point</span> 
+ text box, and enter the destination or source address in the <span style="font-weight: bold;">Destination/Source</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">LIVEDATA</span> 
+ – Enter the address in the <span style="font-weight: bold;">Address</span> 
+ text box and select the type of data to import from the <span style="font-weight: bold;">Data 
+ Type</span> drop-down list.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">LODESTAR_ENH</span> 
+ or <span style="font-weight: bold;">LOADSTAR_STD</span> – Enter the customer 
+ in the <span style="font-weight: bold;">Customer</span> text box, enter 
+ the channel in the <span style="font-weight: bold;">Channel</span> text 
+ box, enter the drive path in the <span style="font-weight: bold;">DrivePath</span> 
+ text box, and enter the filename of the file to import in the <span style="font-weight: bold;">Filename</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">MUILTISPEAK 
+ LM</span> – Enter the load management object ID to import in the <span 
+ style="font-weight: bold;">ObjectID</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">OPC</span> 
+ – Enter the name of the OPC server in the <span style="font-weight: bold;">Server 
+ Name</span> text box, enter the name of the OPC Group in the <span style="font-weight: bold;">OPC 
+ Group</span> text box, and enter the name of the OPC item to import or 
+ export in the <span style="font-weight: bold;">OPC Item</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">PI</span> 
+ – Enter the tag name of the point to import in the <span style="font-weight: bold;">Tag 
+ Name</span> text box. If the polling method is being used, enter how often 
+ to poll the PI database in the <span style="font-weight: bold;">Period 
+ (sec)</span> text box. If the notification method is being used, do not 
+ enter a value in the <span style="font-weight: bold;">Period (sec)</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">RDEX</span> 
+ – Enter the name or the point to import or export in the <span style="font-weight: bold;">Translation</span> 
+ text box and enter the destination or source address in the <span style="font-weight: bold;">Destination/Source</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">STEC</span>, 
+ <span style="font-weight: bold;">TRISTATE</span>, or <span style="font-weight: bold;">TRISTATESUB</span> 
+ – Select the point to import from the <span style="font-weight: bold;">Point</span> 
+ list.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">SYSTEM</span> 
+ – Enter the client name in the <span style="font-weight: bold;">Client</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">TELEGYR</span> 
+ – Enter the name of the point to import in the <span style="font-weight: bold;">Point</span> 
+ text box and select a group from the <span style="font-weight: bold;">Group</span> 
+ drop-down list.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">TEXTEXPORT</span> 
+ – Enter the point ID to export in the <span style="font-weight: bold;">PointID</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">TEXTIMPORT</span> 
+ – Enter the point ID to import in the <span style="font-weight: bold;">PointID</span> 
+ text box, enter the location to which to save the file in the <span style="font-weight: bold;">DrivePath</span> 
+ text box, and enter the name of the file in the <span style="font-weight: bold;">FileName</span> 
+ text box.</p></li>
+		
+		<li class=kadov-p><p><span style="font-weight: bold;">WABASH</span> 
+ – Enter the name of the schedule in <span style="font-weight: bold;">SchedName</span> 
+ text box, enter the location to which to save the control file in the 
+ <span style="font-weight: bold;">Path</span> text box (c:\<!--kadov_tag{{<ignored>}}-->Yukon\Server\Export\<!--kadov_tag{{</ignored>}}-->), 
+ and enter the name of the control file to export in the <span style="font-weight: bold;">File 
+ Name</span> text box (<!--kadov_tag{{<ignored>}}-->control.txt<!--kadov_tag{{</ignored>}}-->).</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">XA21LM</span> 
+ – Enter the point number of the point on the XA/21 system to import or 
+ export in the <span style="font-weight: bold;">Translation</span> text 
+ box.</p></li>
+	</ul>
+	
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Add</span> 
+ button to add the foreign data routing.</p></li>
+</ol>
+
+</body>
+
+</html>

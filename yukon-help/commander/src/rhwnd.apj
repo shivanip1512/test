@@ -8,18 +8,18 @@
 			<indexfile></indexfile>
 			<defaultfile></defaultfile>
 			<homefile>http://www.cannontech.com</homefile>
-			<jump1filename/>
-			<jump1text/>
-			<jump2filename/>
-			<jump2text/>
-			<flags>1074267168</flags>
+			<jump1filename></jump1filename>
+			<jump1text></jump1text>
+			<jump2filename></jump2filename>
+			<jump2text></jump2text>
+			<flags>263200</flags>
 			<navpanewidth>200</navpanewidth>
-			<buttons>8206</buttons>
+			<buttons>8198</buttons>
 			<windowplacement>
-				<left>426</left>
+				<left>225</left>
 				<top>0</top>
-				<right>1026</right>
-				<bottom>500</bottom>
+				<right>1025</right>
+				<bottom>600</bottom>
 			</windowplacement>
 			<windowstyle>0</windowstyle>
 			<windowstyleex>0</windowstyleex>

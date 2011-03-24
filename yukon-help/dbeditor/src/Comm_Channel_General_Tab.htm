@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=714>
-<meta name=layout-width content=972>
-<meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;setpoint;Fahren;Min;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;deadband;Deadband;config.properties;billing_wiz_activate=;kVAr;RTU;CBC;DNP;KYZ;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP">
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack;allow_member_programs;kW;TrueCycle;LCR;load(s;C&amp;I;setpoint;Ta;Tf;conditioner(s;RTU;RTUs;DDC;Login;login;username;Ctrl;MCT;TOU;comm;IED;EMETCOM;MCTs;KWH;Y-intercept;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;deadband;Deadband;Comm;Dialup;downline;CBC;KVAR;IP;PortServer;ClassicBoard;Digi;Xyplex;TimeRefresh;SmartCycle;MasterCycle;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;SCADA;ILEX;Dialout;Config;config;Ke;Mp;Kh;KYZ;DNP;SOE;kWh;kVAr;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Versacom;Cnt;Fahren;Abs;F;TA;TC;TE;TF;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;ExpressCom;CCU;Telenetics;Sportster;dialup;ReEnable;Dialback;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;e;FeederEditor;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Golay;CurrentLoad;ContractIntLoad;MinimumNotice;InterruptHours;AdvBuyThrough$;AdvBuyThroughkW;ContractFrmDemand;Curtailable;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Ops;RTU-MODBUS;contact(s;Emails;LSW;MSW;SchedName;TRISTATESUB;FileName;c;Yukon\Server\Export\;control.txt;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;SNPP;N;P(N;OPC;RTC;RTU-LMI;Logins;TCP;UDP;Calc;FDR;MACS;TDC;Kickup;MinEventDuration;CI;PLC;Lantronix">
 
 
 <!--(Links)=========================================================-->
@@ -55,97 +55,99 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the comm 
  channel can be changed in the <span style="font-weight: bold;">Description</span> 
- text box.</p></li>
+ text box. This comm channel name that the Yukon system uses when it communicates 
+ error and informational messages.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">If the comm channel 
- type is <span style="font-weight: bold;">Local Port</span>, a different 
- port can be selected from the <span style="font-weight: bold;">Physical 
+ type is <span style="font-weight: bold;">Local Serial Port</span>, <span 
+ style="font-weight: bold;">Local Dialup</span>, or <span style="font-weight: bold;">Local 
+ Dialback</span>, a different port can be selected from the <span style="font-weight: bold;">Physical 
  Port</span> drop-down list. This is the local hardware port used by the 
- software.<br>
-	<br>
-	If the comm channel type is <span style="font-weight: bold;">TCP</span> 
- <span style="font-weight: bold;">Terminal Server</span>, the IP address 
+ Yukon system.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the comm channel type 
+ is <span style="font-weight: bold;">Terminal Server</span>, the IP address 
  and port number of the terminal server can be changed in the <span style="font-weight: bold;">IP 
  Address</span> and <span style="font-weight: bold;">Port Number</span> 
- text boxes.<br>
-	<br>
-	If the comm channel type is <span style="font-weight: bold;">UDP Terminal 
- Server</span>, the port number can be changed in the <span style="font-weight: bold;">Port 
- Number</span> text boxes. This is the port on which the Yukon system listens 
- for data from two-way CBCs.</p></li>
+ text boxes.</p>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the comm channel type 
+ is <span style="font-weight: bold;">UDP</span>, the port number can be 
+ changed in the <span style="font-weight: bold;">Port Number</span> text 
+ boxes. This is the port on which the Yukon system listens for data from 
+ two-way CBCs.</p>
+
+<ol start=3
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different baud rate 
  can be selected from <span style="font-weight: bold;">Baud Rate</span> 
- drop-down list. This is the communications line speed used by the port</p></li>
+ drop-down list. This is the communication line speed of the comm channel.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different protocol 
- wrap can be selected from the <span style="font-weight: bold;">Protocol 
- Wrap</span> drop-down list. If the comm channel has a CCU-711 attached 
- to it, select IDLC, unless directed <span style="margin-bottom: 9pt;">otherwise. 
- Select None for CCU-710s. RTUs, TCUs, and LCUs may not use IDLC depending 
- upon the firmware in these devices. If any of these devices share a communication 
- line with a CCU-711, both devices must use IDLC.</span></p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The carrier detect 
- wait option can be enabled or disable by selecting or clearing the <span 
- style="font-weight: bold;">Carrier Detect Wait</span> check box. The carrier 
- detect wait option is disabled by default.<br>
-	<br>
-	If the <span style="font-weight: bold;">Carrier Detect Wait</span> 
- check box is selected, the number of milliseconds to wait for carrier 
- detect can be changed in the <span style="font-weight: bold;">Wait for 
- carrier detect text (DCD)</span> text box.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The comm channel can 
- be enabled or disable by selecting or clearing the <span style="font-weight: bold;">Disable 
- Channel</span> check box. Select this check box to disable the channel 
- if the communication channel is temporarily not functioning.</p></li>
+	<li class=kadov-p><p>If comm channel is used to communicate with a 
+ CCU, a different protocol wrap can be selected from the <span style="font-weight: bold;">Protocol 
+ Wrap</span> drop-down list. </p></li>
 </ol>
 
-&nbsp; 
+<ul style="list-style: disc;"
+	type=disc>
+	
+	<li class=kadov-p><p style="margin-left: 40px;">If comm channel is 
+ used to communicate with a CCU-711, select IDLC from the drop-down list, 
+ unless directed otherwise.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 40px;">If comm channel is 
+ used to communicate with a CCU-710, select None from the drop-down list.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt; margin-left: 40px;">If 
+ comm channel is used to communicate with an LCU, TCU, or RTU, select IDLC 
+ from the drop-down list only if the firmware of device supports it.<br>
+	If any of these devices share a comm channel with a CCU-711, all of 
+ the devices on the comm channel must use IDLC.</p></li>
+</ul>
 
-<p>
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Comm Channel;Editing_a_Comm_Channel.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Comm_Channel_General_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Comm Channel;Editing_a_Comm_Channel.htm">
-</OBJECT>
+<ol start=3
+	style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p>The carrier detect wait option can be enabled 
+ or disable by selecting or clearing the <span style="font-weight: bold;">Carrier 
+ Detect Wait</span> check box. The carrier detect wait option is disabled 
+ by default.</p></li>
+</ol>
 
-<!--Metadata type="DesignerControl" endspan-->
- </p>
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the <span style="font-weight: bold;">Carrier 
+ Detect Wait</span> check box is selected, the number of milliseconds to 
+ wait for carrier detect can be changed in the <span style="font-weight: bold;">Wait 
+ for carrier detect text (DCD)</span> text box.</p>
+
+<ol start=6
+	style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p>If the comm channel type is <span style="font-weight: bold;">UDP</span> 
+ and the comm channel is for a CBC with a Lantronix module that uses <!--kadov_tag{{<ignored>}}-->AES-CBC<!--kadov_tag{{</ignored>}}--> 
+ 128 encryption, the communication with the CBC can be encrypted. To encrypt 
+ the communication with the CBC:</p></li>
+	
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p>Select the <span style="font-weight: bold;">Enable 
+ Encryption</span> check box</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter an encryption 
+ key, which is entered as 32 hexadecimal characters, in the <span style="font-weight: bold;">Key 
+ (Hex)</span> text box.</p></li>
+	</ol>
+	
+	<li class=kadov-p><p>The comm channel can be enabled or disable by 
+ selecting or clearing the <span style="font-weight: bold;">Disable Channel</span> 
+ check box. Select this check box to disable the channel if the communication 
+ channel is temporarily not functioning.</p></li>
+</ol>
 
 </body>
 

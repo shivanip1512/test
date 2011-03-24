@@ -16,7 +16,7 @@ Binary TOC=No
 Flat=No
 
 [WINDOWS]
-Commander="Yukon Commander Help","Yukon Commander Help.hhc","Yukon Commander Help.hhk","","http://www.cannontech.com",,,,,0x40080420,200,0x200e,[426,0,1026,500],0x0,0x0,,0,0,0
+Commander="Yukon Commander Help","Yukon Commander Help.hhc","Yukon Commander Help.hhk","","http://www.cannontech.com",,,,,0x40420,200,0x2006,[225,0,1025,600],0x0,0x0,,0,0,0
 
 [FILES]
 Sending_or_Receiving_Data.htm
@@ -25,33 +25,36 @@ Command_Options.htm
 Finding_a_Device.htm
 Deleting_a_Serial_Number.htm
 Printing_Output.htm
-Menu_Bar.htm
-Introduction.htm
 Locating_a_Route.htm
-Error_1.htm
+Introduction.htm
+Menu_Bar.htm
 Error_15.htm
 Error_16.htm
 Error_20.htm
 Error_17.htm
-Install_Addressing.htm
-Error_33.htm
-Sort_By_List.htm
 Error_31.htm
+Error_33.htm
+Install_Addressing.htm
+Command_Output_Window.htm
+Error_1.htm
 Command_Log.htm
 Error_Messages.htm
-Command_Output_Window.htm
 Command_Lists.htm
 Serial_and_Route_Lists.htm
 Database_Item_List.htm
 Custom_Commands.htm
-Error_46.htm
-Download_TOU_Schedule.htm
-Error_57.htm
-Error_65.htm
+Sort_By_List.htm
 Error_19.htm
+Error_46.htm
+Command_Syntax.htm
+Error_65.htm
 Error_18.htm
 Error_22.htm
 Error_21.htm
+Download_TOU_Schedule.htm
+Values_and_Prompts_that_Contain_Spaces.htm
+Values_That_Contain_Spaces.htm
+Error_57.htm
 eHelp.xml
 RoboHHRE.lng
 

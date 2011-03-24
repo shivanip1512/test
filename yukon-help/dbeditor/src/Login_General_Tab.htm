@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=528>
+<meta name=layout-width content=964>
 <meta name=x-ignored-words content="Login;login;username;LDAP">
 
 
@@ -46,61 +46,76 @@
 <h4>Login General Tab</h4>
 
 <p style="margin-bottom: 9pt;">The following changes can be made to the 
- general settings of a login account:</p>
+ general settings of a login:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Enable or disable 
- the login account by selecting or clearing the <span style="font-weight: bold;">Login 
- Enabled</span> check box.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The login can be enabled 
+ or disable by selecting or clearing the <span style="font-weight: bold;">Login 
+ Enabled</span> check box. Select this check box to enable the login. Clear 
+ this check box to disable the login.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The username can be 
- changed in the <span style="font-weight: bold;">User Name</span> text 
- box.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the login 
+ can be changed in the <span style="font-weight: bold;">User Name</span> 
+ text box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">The authentication 
- type can be changed by selecting a different type from the drop-down list:</p></li>
+ type of the login can be changed by selecting a different type from the 
+ drop-down list:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Normal</span> 
- - The password is stored as plain-text in the Yukon database.<br>
-		The normal authentication type is required for Yukon STARS login 
- accounts.</p></li>
+ – The password is stored as plain-text in the Yukon database. This is 
+ the type of authentication that is required for a Yukon STARS login.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Hashed</span> 
- - The password is converted to a sequence of letters and numbers and is 
- then stored in the Yukon database.</p></li>
+ – The password is converted to a sequence of letters and numbers and it 
+ is then stored in the Yukon database.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Radius</span> 
- - A radius login server is used to authenticate passwords.</p></li>
+ – A Radius login server is used to authenticate passwords.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">No Login</span> 
- - The password is disabled and the user cannot log in.</p></li>
+ – The password is disabled and the user cannot log in.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Active Directory</span> 
- - An Active Directory server is used to authenticate passwords.</p></li>
+ – An Active Directory server is used to authenticate passwords.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">LDAP</span> 
- - An LDAP server is used to authenticate passwords.</p></li>
+ – An LDAP server is used to authenticate passwords.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If either Normal or 
- Hashed is selected as the authentication type, the password can be changed 
- by clicking the <span style="font-weight: bold;">Change Password</span> 
- button.</p></li>
+	<li class=kadov-p><p>If either Normal or Hashed is selected as the 
+ authentication type, the Change Password button is displayed, which allows 
+ the password to be changed.<span style="margin-bottom: 9pt;"><br>
+	To change the password of the login:</span></p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the <span style="font-weight: bold;">Link 
- to Energy Company</span> check box is selected, the energy company that 
- the login account is assigned to can be changed by selecting a different 
- energy company from the drop-down list.</p></li>
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p>Click the <span style="font-weight: bold;">Change 
+ Password</span> button.</p></li>
+		
+		<li class=kadov-p><p>Enter a password in the <span style="font-weight: bold;">New 
+ Password</span> and <span style="font-weight: bold;">Retype Password</span> 
+ text boxes.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
+ style="font-weight: bold;">OK</span> button to save the password.</p></li>
+	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To unassign an energy 
- company from the login account, clear the <span style="font-weight: bold;">Link 
- to Energy Company</span> check box.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To assign the login 
+ to an energy company, select the <span style="font-weight: bold;">Link 
+ to Energy Company</span> check box and select an energy company from the 
+ drop-down list.</p></li>
 </ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;"><span style="margin-bottom: 9pt;">To 
+ unassign the login from the energy company, clear the </span><span style="margin-bottom: 9pt; font-weight: bold;">Link 
+ to Energy Company</span><span style="margin-bottom: 9pt;"> check box.</span></p>
 
 </body>
 

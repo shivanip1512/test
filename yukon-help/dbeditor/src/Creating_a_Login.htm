@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="Login;login;username;logins">
+<meta name=layout-height content=569>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="Login;login;username;logins;LDAP;LCR">
 
 
 <!--(Links)=========================================================-->
@@ -46,12 +46,14 @@
 
 <h1>Creating a Login</h1>
 
-<p>Logins are required to access the Yukon client software. To assign group 
- permissions to a login, edit the login after creating it.</p>
+<p>A login is required to use the Yukon software and the permissions of 
+ a login are controlled by login group(s) to which it is assigned. To assign 
+ a login to a login group, refer to <a href="Editing_a_Login.htm"
+										id=a1>Editing a Login</a>.</p>
 
 <p>&nbsp;</p>
 
-<p>To create a login for Yukon access:</p>
+<p>Perform the following steps to create a login for the Yukon system:</p>
 
 <p>&nbsp;</p>
 
@@ -65,64 +67,74 @@
  menu, select <span style="font-weight: bold;">Login</span>.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To enable the login 
- you are creating, select the <span style="font-weight: bold;">Login Enabled</span> 
- check box. Clear this check box if you want to create a login without 
- enabling it.</p></li>
+ account that is being creating, select the <span style="font-weight: bold;">Login 
+ Enabled</span> check box. Clear this check box to create a login account 
+ without enabling it.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a username for 
- the login in the <span style="font-weight: bold;">User Name</span> text 
- box.</p></li>
+ the login account in the <span style="font-weight: bold;">User Name</span> 
+ text box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Select the type of 
- password authentication from the <span style="font-weight: bold;">Authentication</span> 
+ password authentication for the login account from the <span style="font-weight: bold;">Authentication</span> 
  drop-down list. The authentication types are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Normal</span> 
- - The password is stored as plain-text in the Yukon database.</p></li>
+ – The password is stored as plain-text in the Yukon database. This is 
+ the type of authentication that is required for a Yukon STARS login.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Hashed</span> 
- - The password is converted to a sequence of letters and numbers and is 
+ – The password is converted to a sequence of letters and numbers and is 
  then stored in the Yukon database.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Radius</span> 
- - A radius login server is used to authenticate passwords.</p></li>
+ – A Radius login server is used to authenticate passwords.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">No Login</span> 
- - The password is disabled and the user cannot log in.</p></li>
+ – The password is disabled and the user cannot log in.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Active Directory</span> 
- - An Active Directory server is used to authenticate passwords.</p></li>
+ – An Active Directory server is used to authenticate passwords.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">LDAP</span> 
- - <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->An LDAP 
- server is used to authenticate passwords.</p></li>
+ – An LDAP server is used to authenticate passwords.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If either Normal or 
- Hashed is selected as the authentication type, click the <span style="font-weight: bold;">Change 
- Password</span> button and enter the password in the <span style="font-weight: bold;">New 
- Password</span> and <span style="font-weight: bold;">Retype Password</span> 
- text boxes.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">If either Normal or 
+ Hashed is selected as the authentication type, the password for the login 
+ account can be created by performing the following steps:</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">(Optional) If the 
- login will be used to access the Yukon STARS application, select the <span 
- style="font-weight: bold;">Link to Energy Company</span> check box and 
- select an energy company from the drop-down list.</p></li>
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Click the <span 
+ style="font-weight: bold;">Change Password</span> button.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Enter the password 
+ for the login account in the <span style="font-weight: bold;">New Password</span> 
+ and <span style="font-weight: bold;">Retype Password</span> text boxes.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
+ style="font-weight: bold;">OK</span> button to save the password.</p></li>
+	</ol>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To assign the login 
+ to an energy company, select the <span style="font-weight: bold;">Link 
+ to Energy Company</span> check box and select an energy company from the 
+ drop-down list.</p></li>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
  button. If a password has not been entered for the login account, enter 
  a password in the dialog box that appears and click the <span style="font-weight: bold;">OK</span> 
  button. <br>
-	The new login appears in the Login Editor. For instructions on editing 
- a login, refer to the related topics.</p></li>
+	The new login account appears in the Login Editor. For instructions 
+ on editing a login account, refer to the related topics.</p></li>
 </ol>
 
 <p>&nbsp;</p>
-
-<p>&nbsp; </p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -136,8 +148,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -148,7 +160,7 @@
 <param name="Items" value="Creating a Login Group;Creating_a_Login_Group.htm$$**$$Editing a Login;Editing_a_Login.htm$$**$$Editing a Login Group;Editing_a_Login_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Login.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Login.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

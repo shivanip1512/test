@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1802>
-<meta name=layout-width content=974>
+<meta name=layout-height content=1750>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;VERSACOM;cmd;cmd_parameters;PUTCONFIG;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;PUTSTATUS;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;PUTVALUE;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;getvalue;Unmute;Unacked;ACK;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;ReEnable;Program(s;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off">
 
 
@@ -52,12 +52,12 @@
 
 <h5 style="font-size: 11pt;"><span style="font-size: 11pt;">ExpressCom</span></h5>
 
-<p style="font-weight: bold;">putstatus xcom [serial #] [prop (display|terminate|increment)] 
- [rssi] [ping]</p>
+<p style="font-weight: bold;">putstatus xcom [prop (display|terminate|increment)] 
+ [rssi] [serial <span style="font-weight: normal; font-style: italic;">#</span>]</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The meaning of the arguments are as follows:</p>
+<p>The meanings of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 
@@ -145,42 +145,6 @@
 	bgcolor=#C0C0C0
 	width=77.537%>
 <p>Target type of putstatus message.</td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>serial <span style="font-style: italic;">#</span></td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Unique identifying address of the field device.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -381,7 +345,7 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=22.463%>
-<p>ping</td>
+<p style="font-weight: normal;">serial <span style="font-style: italic;">#</span></td>
 <td colspan=1
 	rowspan=1
 	style="width: 77.537%;
@@ -396,23 +360,24 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=77.537%>
-<p>Pings a device and listens for response. (Future use)</td></tr>
+<p>Unique identifying address of the field device.</td></tr>
 </table>
 
 <p>&nbsp;</p>
 
 <h5 style="font-size: 11pt;">Examples</h5>
 
-<p style="margin-left: 12px; font-weight: bold;">putstatus xcom serial 
+<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop display 
+ serial 5345214143</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop terminate 
+ serial 5345214143</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop increment 
+ serial 5345214143</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putstatus xcom rssi serial 
  5345214143</p>
-
-<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop display</p>
-
-<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop terminate</p>
-
-<p style="margin-left: 12px; font-weight: bold;">putstatus xcom prop increment</p>
-
-<p style="margin-left: 12px; font-weight: bold;">putstatus xcom rssi</p>
 
 <p style="margin-left: 12px; font-weight: bold;">&nbsp;</p>
 
@@ -425,7 +390,7 @@
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The meaning of the arguments are as follows:</p>
+<p>The meanings of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 
@@ -548,7 +513,7 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=77.537%>
-<p>Resets a field device's counters.</td></tr>
+<p>Resets a CCU.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -789,12 +754,13 @@
 
 <h5 style="font-size: 11pt;">VERSACOM</h5>
 
-<p style="font-weight: bold;">putstatus [VERSACOM] [serial <span style="font-style: italic;">#</span>] 
- [prop (display|terminate|increment)] [pfcount] [ovuv (enable|disable)]</p>
+<p style="font-weight: bold;">putstatus [VERSACOM] <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->[prop 
+ (display|terminate|increment)] [pfcount] [ovuv (enable|disable)] [serial 
+ <span style="font-style: italic;">#</span>]</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The meaning of the arguments are as follows:</p>
+<p>The meanings of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 
@@ -882,42 +848,6 @@
 	bgcolor=#C0C0C0
 	width=77.537%>
 <p>Target type of putstatus message. The target type defaults to VERSACOM.</td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>serial <span style="font-style: italic;">#</span></td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Unique identifying address of the field device.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -1134,24 +1064,62 @@
 	bgcolor=#C0C0C0
 	width=77.537%>
 <p>Enables or disables OverVoltage/UnderVoltage detection and protection.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.463%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>serial <span style="font-style: italic;">#</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.537%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Unique identifying address of the field device.</td></tr>
 </table>
 
 <p>&nbsp;</p>
 
 <h5 style="font-size: 11pt;">Examples</h5>
 
-<p style="margin-left: 12px; font-weight: bold;">putstatus VERSACOM serial 
- 4133409001 display</p>
+<p style="margin-left: 12px; font-weight: bold;">putstatus prop display 
+ serial 41334090</p>
 
-<p style="margin-left: 12px; font-weight: bold;"><span style="font-weight: bold;">putstatus 
- prop display</span></p>
+<p style="margin-left: 12px; font-weight: bold;">putstatus prop terminate 
+ serial 41334090</p>
 
-<p style="margin-left: 12px; font-weight: bold;">putstatus prop terminate</p>
+<p style="margin-left: 12px; font-weight: bold;">putstatus prop increment 
+ serial 41334090</p>
 
-<p style="margin-left: 12px; font-weight: bold;">putstatus prop increment</p>
+<p style="margin-left: 12px; font-weight: bold;">putstatus pfcount serial 
+ 70123456</p>
 
-<p style="margin-left: 12px; font-weight: bold;">putstatus pfcount<br>
-putstatus ovuv enable</p>
+<p style="margin-left: 12px; font-weight: bold;">putstatus ovuv enable 
+ serial 70123456</p>
 
 <p style="margin-left: 12px; font-weight: bold;">&nbsp;</p>
 
@@ -1162,7 +1130,7 @@ putstatus ovuv enable</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The meaning of the arguments are as follows:</p>
+<p>The meanings of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 

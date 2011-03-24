@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=692>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack;allow_member_programs">
+<meta name=layout-height content=1069>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack;allow_member_programs;kW;TrueCycle;LCR;load(s;C&amp;I;setpoint;Ta;Tf;conditioner(s;RTU;RTUs;DDC;Login;login;username;Ctrl;MCT;TOU;comm;IED;EMETCOM;MCTs;KWH;Y-intercept;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;deadband;Deadband;Comm;Dialup;downline;CBC;KVAR;IP;PortServer;ClassicBoard;Digi;Xyplex;TimeRefresh;SmartCycle;MasterCycle;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;SCADA;ILEX;Dialout;Config;config;Ke;Mp;Kh;KYZ;DNP;SOE;kWh;kVAr;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Versacom;Cnt;Fahren;Abs;F;TA;TC;TE;TF;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;ExpressCom;CCU;Telenetics;Sportster;dialup;ReEnable;Dialback;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;e;FeederEditor;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Golay;CurrentLoad;ContractIntLoad;MinimumNotice;InterruptHours;AdvBuyThrough$;AdvBuyThroughkW;ContractFrmDemand;Curtailable;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Ops;RTU-MODBUS;contact(s;Emails;LSW;MSW;SchedName;TRISTATESUB;FileName;c;Yukon\Server\Export\;control.txt;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;SNPP;N;P(N;OPC;RTC;RTU-LMI;Logins;TCP;UDP;Calc;FDR;MACS;TDC;Kickup;MinEventDuration;CI;PLC;Lantronix;repeater(s;timeout;Tue;Thu;WELCO;RTM;pspl-support@cooperindustries.com.;RF;TNPP;RFMESH;SIMPLE_TOU;EXTENDED_TOU;NISC's;group(s;meter(s;ss;VECTRON;kVa;kQ;kVA;DNPSLAVE;MULTISPEAK;MUILTISPEAK;ObjectID;MasterID;SlaveID;Modbus;ESCA;LCU-EastRiver;Telocator;Elster;Itron;LANDIS+Gyr;Landis+Gyr;PowerLogic;ABB;TRANSDATA;TransData;polyphase;CENTRON;Senus;iCon;MODBUS;eSubstation;eubstation;deselected;RFN;klilovolt-ampere;LTC;LGYR;EE;FocuskWh;FocusAXR;FocusAXD;UtilID;DeviceClass;DeviceGroup;AXR;RfnTemplate_LGYR_FocuskWh;RfnTemplate_LGYR_FocusAXR;RfnTemplate_LGYR_FocusAXD">
 
 
 <!--(Links)=========================================================-->
@@ -65,15 +65,14 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Editing a Load Program</h1>
 
-<p>One or more Load Programs can be defined in the database. A Load Program 
- defines how the load is controlled, the load groups to control, and the 
- customers to notify. When a Load Program is created, a status point is 
- automatically added to the load program. The status point keeps track 
- of when the load program is controlling and when it is stopped.</p>
+<p>A load program defines how the load is controlled, the load groups to 
+ control, and the customers to notify. When a load program is created, 
+ a status point is automatically added to the load program. The status 
+ point keeps track of when the load program is running and when it is stopped.</p>
 
 <p>&nbsp;</p>
 
-<p>To edit a Load Program:</p>
+<p>Perform the following steps to edit a load program:</p>
 
 <p>&nbsp;</p>
 
@@ -86,19 +85,24 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Load Program</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click the load 
- program to modify. This opens the <a href="javascript:BSSCPopup('Load_Program_General_Tab.htm');"
-										id=a4>General</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click on the 
+ load program to edit. The <a href="javascript:BSSCPopup('Load_Program_General_Tab.htm');"
+								id=a4>General</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--> 
- tab of the Load Program Editor.</p></li>
+ tabbed page is displayed in the Load Program Editor.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Gears 
  </span>tab to display the Gears tabbed page. <span style="margin-left: 40px;">Gears 
- define the different rates at which a load program can controls loads. 
- Different gear ratios result in different amounts of reduction.</span></p></li>
+ define the different rates at which a load program can control load groups. 
+ Load groups contain the addressing of the load control devices to control. 
+ Different gear ratios result in different amounts of kW reduction.</span></p></li>
+</ol>
+
+<ol style="list-style: decimal;"
+	type=1>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -107,84 +111,152 @@ kadovFilePopupInit('a4');
  the </span><span style="margin-left: 0px; font-weight: bold;">Add </span><span 
  style="margin-left: 0px;">button. </span>To edit a gear, s<span style="margin-bottom: 9pt;">elect 
  the gear to edit from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Gear</span><span 
- style="margin-bottom: 9pt;"> drop-down list. </span><span style="margin-left: 40px;">The 
- control gears that can be added or edited are:</span></p></li>
+ style="margin-bottom: 9pt;"> drop-down list. </span></p></li>
+	</ul>
+</ol>
+
+<p style="margin-left: 80px; margin-bottom: 0px;"><span style="margin-left: 40px;">The 
+ control gears that can be added/edited are:</span></p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<ul style="list-style: disc;"
+		type=disc>
 		
 		<ul style="list-style: disc;"
 			type=disc>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Time_Refresh_Gear.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Time_Refresh_Gear.htm');"
 	id=a1>Time Refresh</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--> 
- - timed commands are sent repeatedly to control.</p></li>
+ – The Time Refresh gear is used for irrigation control, C&amp;I control, 
+ and warnings/notifications. The gear controls load control devices by 
+ sending shed commands, with a fixed or dynamic shed time, to one or more 
+ load groups. The Command Resend Rate setting specifies how often the shed 
+ command is resent and the How to Stop Control setting specifies how control 
+ is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Rotation_Gear.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Rotation_Gear.htm');"
 	id=a2>Rotation</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--> 
- - the gear rotates through a list of groups to control.</p></li>
+ – The Rotation gear is used to control legacy load control devices. The 
+ gear controls load control devices by sending shed commands, with a fixed 
+ shed time, to a rotating list of load groups. The Command Resend Rate 
+ setting specifies how often the shed command is resent and How to Stop 
+ Control setting specifies how control is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Master_Cycle_Gear.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Master_Cycle_Gear.htm');"
 	id=a5>Master Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--> 
- - the Master Station sends commands to the LCR to perform cycling.</p></li>
+ – The Master Cycle gear is used to cycle load control devices that cannot 
+ perform cycling themselves. The gear controls load control devices by 
+ sending cycling commands to one or more load groups. The Control Percent 
+ and Cycle Period settings specify the percentage of control over a period 
+ of time and the How to Stop Control setting specifies how control is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
 	id=a6>Smart Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a6');
 //--></script><!--}}end!kadov--> 
- - the LCR hardware performs cycling.</p></li>
+ – The Smart Cycle gear is used to control air conditioners (AC) and water 
+ heaters attached to load control devices that can perform the cycling 
+ themselves. The gear controls load control devices by sending cycling 
+ commands to one or more load groups. The Control Percent and Cycle Period 
+ settings specify the percentage of control over a period of time. The 
+ Command Resend Rate setting specifies how often the cycle command is resent 
+ and the How to Stop Control setting specifies how control is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
 	id=a7>TrueCycle</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a7');
 //--></script><!--}}end!kadov--> 
- - the LCR uses an algorithm to perform cycling.</p></li>
+ – The TrueCycle<symbol name=Trademark><!--begin!kadov{{-->&#8482;<!--}}end!kadov--> 
+ gear is used to control air conditioners attached to load control devices 
+ that can adjust the cycling percentage based on the AC compressor runtime 
+ for the hour before control and the historical hourly runtime profile 
+ of the air conditioner. The gear controls load control devices by sending 
+ cycling commands to one or more load groups. The Control Percent and Cycle 
+ Period settings specify the percentage of control over a period of time. 
+ The Command Resend Rate setting specifies how often the cycle command 
+ is resent and the How to Stop Control setting specifies how control is 
+ stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
 	id=a8>Magnitude Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a8');
 //--></script><!--}}end!kadov--> 
- - uses an algorithm to perform cycling, which targets a percentage of 
- the max current the field device draws.</p></li>
+ – The Magnitude Cycle gear is used to control air conditioners with variable 
+ speed compressors or Direct Digital Controls (DDC) that are attached to 
+ load control devices that can measure the magnitude of the AC compressor's 
+ current. The magnitude measurement is combined with historical data collected 
+ by the LCR to generate a historical runtime for the AC unit. The gear 
+ controls load control devices by sending cycling commands to one or more 
+ load groups. The Control Percent and Cycle Period settings specify the 
+ percentage of control over a period of time. The Command Resend Rate setting 
+ specifies how often the cycle command is resent and the How to Stop Control 
+ setting specifies how control is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
 	id=a9>Target Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a9');
 //--></script><!--}}end!kadov--> 
- - control is targeted to a specific amount of kW reduction.</p></li>
+ – The Target Cycle gear is used to control air conditioners attached to 
+ load control devices, which can reduce kW usage by the amount specified 
+ in the gear. The gear controls load control devices by sending cycling 
+ commands to one or more load groups. The Control Percent and Cycle Period 
+ settings specify the percentage of control over a period of time. The 
+ Command Resend Rate setting specifies how often the cycle command is resent 
+ and the How to Stop Control setting specifies how control is stopped.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Latching_Gear.htm');"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Latching_Gear.htm');"
 	id=a10>Latching</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a10');
 //--></script><!--}}end!kadov--> 
- - one command is sent to open and another command is sent to close.</p></li>
+ – The Latching gear is used to control a point on an RTU. The gear controls 
+ RTUs by sending status point control commands to one or more load groups. 
+ The Control Start State setting specifies the starting state of the control 
+ point. </p></li>
 			
-			<li class=kadov-p><p><a href="javascript:BSSCPopup('Editing_a_Thermostat_Gear.htm');"
-									id=a11>Thermostat Ramping</a><!--begin!kadov{{--><script 
- type="text/javascript"
-	language=JavaScript1.2><!--
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Thermostat_Ramping_Gear.htm');"
+	id=a11>Thermostat Ramping</a><!--begin!kadov{{--><script type="text/javascript"
+															language=JavaScript1.2><!--
 kadovFilePopupInit('a11');
 //--></script><!--}}end!kadov--> 
- - performs thermostat temperature ramping.</p></li>
+ – The Thermostat Ramping gear is used to control air conditioner(s) by 
+ performing thermostat ramping. The gear controls the setpoint of a thermostat 
+ by sending setpoint control commands to one or more load groups. The Deltas/Absolute 
+ setting specifies whether the temperature setpoint values are delta values 
+ and absolute values. The Fahrenheit/Celsius setting specifies whether 
+ the temperature setpoint values are in degrees Fahrenheit or Celsius. 
+ The Ta through Tf values specify the times of the day that the temperature 
+ setpoint is changed and the How to Stop Control setting specifies how 
+ control of the thermostat is stopped.</p></li>
 			
-			<li class=kadov-p><p><a href="javascript:BSSCPopup('Editing_a_Simple_Thermostat_Ramping_Gear.htm');"
-									id=a17>Simple Thermostat Ramping</a><!--begin!kadov{{--><script 
- type="text/javascript"
+			<li class=kadov-p><p style="margin-bottom: 0px;"><a href="javascript:BSSCPopup('Editing_a_Simple_Thermostat_Ramping_Gear.htm');"
+	id=a17>Simple Thermostat Ramping</a><!--begin!kadov{{--><script type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a17');
 //--></script><!--}}end!kadov--> 
- - performs simple thermostat temperature ramping.</p></li>
+ – The Simple Thermostat Ramping gear is used to control air conditioner(s) 
+ by performing expanded thermostat ramping. The gear controls the setpoint 
+ of a thermostat by sending setpoint control commands to one or more load 
+ groups. The time periods of the gear are adjusted based on the control 
+ duration entered by the user. The Max Runtime specifies the maximum runtime 
+ of the load program, the Resend Rate setting specifies how often the setpoint 
+ control command is resent, and the How to Stop Control setting specifies 
+ how control is stopped.</p></li>
 			
 			<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><a 
  href="javascript:BSSCPopup('Editing_a_No_Control_Gear.htm');"
@@ -192,7 +264,8 @@ kadovFilePopupInit('a17');
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a12');
 //--></script><!--}}end!kadov--> 
- - no control command is sent.</p></li>
+ – The No Control gear is used to trigger notifications without performing 
+ control.</p></li>
 		</ul>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">To remove a gear, 
@@ -203,6 +276,11 @@ kadovFilePopupInit('a12');
 kadovFilePopupInit('a3');
 //--></script><!--}}end!kadov-->.</span></p></li>
 	</ul>
+</ol>
+
+<ol start=5
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Control 
  Window</span> tab to display the <a href="javascript:BSSCPopup('Load_Program_Control_Window_Tab.htm');"
@@ -232,7 +310,7 @@ kadovFilePopupInit('a15');
  tabbed page.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">If the allow_member_programs 
- role property within the Database Editor role is set to true , click the 
+ role property within the Database Editor role is set to true, click the 
  <span style="font-weight: bold;">Member Control</span> tab to display 
  the <a href="javascript:BSSCPopup('Load_Program_Member_Control_Tab.htm');"
 		id=a16>Member Control</a><!--begin!kadov{{--><script type="text/javascript"
@@ -241,12 +319,13 @@ kadovFilePopupInit('a16');
 //--></script><!--}}end!kadov--> 
  tabbed page.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Load Program Editor.</p></li>
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
+ button to save the changes to the load program or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the load program and close the Load Program 
+ Editor.</p></li>
 </ol>
 
-&nbsp; 
+<p>&nbsp;</p>
 
 <p style="margin-bottom: 9pt;">
 <!--Metadata type="DesignerControl" startspan
@@ -260,8 +339,8 @@ kadovFilePopupInit('a16');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -272,7 +351,7 @@ kadovFilePopupInit('a16');
 <param name="Items" value="Creating a Customer;Creating_a_Customer.htm$$**$$Creating a Load Group;Creating_a_Load_Group.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Customer;Editing_a_Customer.htm$$**$$Editing a Load Group;Editing_a_Load_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Load_Program.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Load_Program.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 
 
 <!--(Links)=========================================================-->
@@ -45,12 +45,12 @@
 <h1>Editing a Baseline</h1>
 
 <p>A baseline is a known value that is used for comparison with current 
- values. For example, the average usage can be made a baseline and can 
- be compared to the current usage.</p>
+ values. For example, the average usage can be a baseline and it can be 
+ compared to the current usage.</p>
 
 <p>&nbsp;</p>
 
-<p style="margin-bottom: 9pt;">To edit a baseline:</p>
+<p style="margin-bottom: 9pt;">Perform the following steps to edit a baseline:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -61,58 +61,66 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Baseline</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click on the 
- baseline to modify. This opens the <span style="font-weight: bold;">General</span> 
- tabbed page of the Baseline editor, from which the following changes can 
- be made:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Double-click on the 
+ baseline to edit. The General tabbed page is displayed in the Baseline 
+ Editor, from which the following changes can be made:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the 
+		<li class=kadov-p><p style="margin-bottom: 0px;">The name of the 
  baseline can be changed in the <span style="font-weight: bold;">Name</span> 
  text box.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The number of 
- previous days used can be changed in the <span style="font-weight: bold;">Previous 
- Days Used</span> text box. This is the number of days back to look for 
- valid dates. Yukon looks at the specified number days from the current 
- date to check if a day contains valid baseline data. A valid date is a 
- non-curtailed date; a non-holiday (if a holiday schedule is selected), 
- and a non-excluded day (if any excluded days are selected).</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">The number of 
+ previous days, from the current date, in which the Yukon system can search 
+ for days that contain valid baseline data, can be changed in the <span 
+ style="font-weight: bold;">Previous Days Used</span> text box. A day must 
+ meet the following requirements for the data to be considered valid:</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The load percentage 
- can be changed in the <span style="font-weight: bold;">Load Percent</span> 
- text box. This is the percentage of validity for an interval value to 
- be considered valid data. If a load percentage greater than zero is entered, 
- all interval readings must exceed this percentage calculated against another 
- point’s readings. This other point is often another baseline point that 
- is calculated with a load percent of zero. The load percent of zero is 
- used to create average data readings.</p></li>
+		<ul style="list-style: disc;"
+			type=disc>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Non-curtailed 
+ day</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Non-holiday 
+ day (if a holiday schedule is selected)</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">Non-excluded 
+ day (if any excluded days are selected)</p></li>
+		</ul>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">The number of 
- days in the calculation can be changed in the <span style="font-weight: bold;">Days 
- in Calculation</span> text box. This is the minimum number of valid days 
- needed to calculate the baseline..</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">The load percentage 
+ of the baseline can be changed in the <span style="font-weight: bold;">Load 
+ Percent</span> text box. This is the percentage of validity for an interval 
+ value to be considered valid data. If a load percentage greater than zero 
+ is entered, all interval readings must exceed this percentage calculated 
+ against another point’s readings. This other point is often another baseline 
+ point that is calculated with a load percent of zero. The load percent 
+ of zero is used to create average data readings.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">A different holiday 
- schedule can be selected from the <span style="font-weight: bold;">Holiday</span> 
- drop-down list. This prevents holidays from being used in the base line 
- calculation.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">The number of 
+ days needed to calculate the baseline can be changed in the <span style="font-weight: bold;">Days 
+ in Calculation</span> text box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">A different holiday 
+ schedule, which prevents the holidays in the schedule from being used 
+ in the baseline calculation, can be selected from the <span style="font-weight: bold;">Holiday</span> 
+ drop-down list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">The days of the 
- week to exclude from the base line calculation can be changed under <span 
- style="font-weight: bold;">Excluded Days</span>. Select the check boxes 
- of the days to excluded from the calculation. Clear all of the check boxes 
- to include all of the days in the calculation.</p></li>
+ week to exclude from the baseline calculation can be changed in the <span 
+ style="font-weight: bold;">Excluded Days</span> area. To exclude a day 
+ of the week from the calculation, select the check box of that day. To 
+ include all of the days of the week in the calculation, clear all of the 
+ check boxes.</p></li>
 	</ol>
 	
 	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Baseline Editor.</p></li>
+ button to save the changes to the baseline or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the baseline and close the Baseline Editor.</p></li>
 </ol>
-
-<p>&nbsp;</p>
 
 <p>&nbsp;</p>
 
@@ -128,8 +136,8 @@
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -140,7 +148,7 @@
 <param name="Items" value="Creating a Baseline;Creating_a_Baseline.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Baseline.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Editing_a_Baseline.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

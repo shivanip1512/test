@@ -19,8 +19,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=818>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=771>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content=kW>
 
 
 <!--(Links)=========================================================-->
@@ -38,8 +39,8 @@
 
 <h4>Editing a Master Cycle Gear</h4>
 
-<p style="margin-bottom: 9pt; font-weight: normal;">To edit a Master Cycle 
- gear:</p>
+<p style="margin-bottom: 9pt; font-weight: normal;">Perform the following 
+ steps to edit a Master Cycle gear:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -54,29 +55,31 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The control percentage 
  can be changed in the <span style="font-weight: bold;">Control Percent</span> 
- spin box. This is the percentage of the cycle period that is control time.</p></li>
+ box. This is the percentage of time in the cycle period that the attached 
+ load is being controlled.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The cycle period can 
  be changed in the <span style="font-weight: bold;">Cycle Period</span> 
- spin box. This is the cycle period in minutes.</p></li>
+ box. This is the cycle period in minutes.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">A different group 
- selection method can be selected from the <span style="font-weight: bold;">Group 
+	<li class=kadov-p><p style="margin-bottom: 0px;">A different method 
+ for selecting load groups to control can be selected from the <span style="font-weight: bold;">Group 
  Selection Method</span> drop-down list.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Last 
- Controlled</span> - selects the next load group in the list based on the 
- last load group controlled.</p></li>
+ Controlled</span> – The gear selects the next load group in the list, 
+ based on the last load group controlled.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Always 
- First Group</span> - always selects the first load group in the list.</p></li>
+ First Group</span> – The gear always selects the first load group in the 
+ list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Least 
- Control Time</span> - selects the load group whose seasonal control time 
- is the least.</p></li>
+ Control Time</span> – The gear selects the load group in the list with 
+ the least amount of seasonal control time.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p>To ramp in a percentage of the load groups over 
@@ -87,18 +90,13 @@
 		type=a>
 		
 		<li class=kadov-p><p>Enter the percentage of the load groups to 
- ramp in at each interval in the <span style="font-weight: bold;">Ramp 
+ ramp in, at each interval, in the <span style="font-weight: bold;">Ramp 
  In Percent</span> text box.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the interval 
- in seconds over which to ramp in a percentage of the load groups in the 
- <span style="font-weight: bold;">Ramp In Interval</span> text box.</p></li>
+ in seconds, during which a percentage of the load groups are ramped in, 
+ in the <span style="font-weight: bold;">Ramp In Interval</span> text box.</p></li>
 	</ol>
-</ol>
-
-<ol start=6
-	style="list-style: decimal;"
-	type=1>
 	
 	<li class=kadov-p><p>A different method for stopping control can be 
  selected from the <span style="font-weight: bold;">How to Stop Control</span> 
@@ -108,137 +106,108 @@
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Time In</span> 
- - The control stops when the shed time is over.</p></li>
+ – Control stops when the shed time is complete.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Restore</span> 
- - A restore command is sent to the device.</p></li>
+ – Control stops when a restore command is sent to the load control device.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Ramp Out/Time 
- In</span> - The control ramps out when the shed time is over.</p></li>
+ In</span> – Control ramps out when the shed time is complete.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Ramp 
- Out/Restore</span> - The control ramps out when a restore command is sent 
- to the device.</p></li>
+ Out/Restore</span> – Control ramps out when a restore command is sent 
+ to the load control device.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p>If <span style="font-weight: bold;">Ramp Out/Time 
- In</span> or <span style="font-weight: bold;">Ramp Out/Restore</span> 
- is selected from the <span style="font-weight: bold;">How to Stop Control</span> 
- drop-down list, select the order to stop the control from the Stop Order 
- drop-down list. The orders for stopping control are:</p></li>
-	
-	<ul style="list-style: disc;"
-		type=disc>
-		
-		<li class=kadov-p><p><span style="font-weight: bold;">Random</span> 
- - The system selects a random load group to stop.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">First 
- In First Out</span> - The first group that was controlled is the first 
- group to stop. Then the second group that was controlled is the second 
- group to stop, and so on.</p></li>
-	</ul>
-	
-	<li class=kadov-p><p>If <span style="font-weight: bold;">Ramp Out/Time 
- In</span> or <span style="font-weight: bold;">Ramp Out/Restore</span> 
+	<li class=kadov-p><p style="margin-bottom: 0px;">If <span style="font-weight: bold;">Ramp 
+ Out/Time In</span> or <span style="font-weight: bold;">Ramp Out/Restore</span> 
  is selected from the <span style="font-weight: bold;">How to Stop Control</span> 
  drop-down list:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p><span style="margin-bottom: 9pt;">Enter the 
- percentage of the load groups to ramp out at each interval in the </span><span 
- style="margin-bottom: 9pt; font-weight: bold;">Ramp Out Percent</span><span 
+		<li class=kadov-p><p style="margin-bottom: 0px;">A different stop 
+ control order can be selected from the <span style="font-weight: bold;">Stop 
+ Order</span> drop-down list. The stop control orders are:</p></li>
+	</ol>
+	
+	<ol>
+		
+		<ul style="list-style: disc;"
+			type=disc>
+			
+			<li class=kadov-p><p><span style="font-weight: bold;">Random</span> 
+ – The gear selects a random load group to stop.</p></li>
+			
+			<li class=kadov-p><p><span style="font-weight: bold;">First 
+ In First Out</span> – The first group that was controlled is the first 
+ group that is stopped, the second group that was controlled is the second 
+ group this is stopped, the third group that was controlled is the third 
+ group this is stopped, etc.</p></li>
+		</ul>
+	</ol>
+	
+	<ol start=2>
+		
+		<li style="list-style: lower-alpha;"
+			type=a
+			class=kadov-p><p><span style="margin-bottom: 9pt;">The percentage 
+ of the load groups to ramp out at each interval can be changed in the 
+ </span><span style="margin-bottom: 9pt; font-weight: bold;">Ramp Out Percent</span><span 
  style="margin-bottom: 9pt;"> text box.</span></p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the interval 
- in seconds over which to ramp out a percentage of the load groups in the 
- <span style="font-weight: bold;">Ramp Out Interval</span> text box.</p></li>
+		<li style="list-style: lower-alpha;"
+			type=a
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="margin-bottom: 9pt;">The 
+ interval in seconds to ramp out a percentage of the load groups can be 
+ changed in the </span><span style="margin-bottom: 9pt; font-weight: bold;">Ramp 
+ Out Interval</span><span style="margin-bottom: 9pt;"> text box.</span></p></li>
 	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The group capacity 
  reduction percentage can be changed in the <span style="font-weight: bold;">Group 
- Capacity Reduction %</span> spin box. This is the percentage of each load 
- group’s kW capacity (if specified), which determines the amount of kW 
- reduction that must occur before control can stop.</p></li>
+ Capacity Reduction %</span> box. This is the percentage of each load group’s 
+ kW capacity (if specified), which determines the amount of kW reduction 
+ that must occur before control can stop.</p></li>
 	
-	<li class=kadov-p><p>A different automatic gear change method can be 
- selected from the <span style="font-weight: bold;">When to Change</span> 
- drop-down list. The change methods are:</p></li>
+	<li class=kadov-p><p>A different gear change method can be selected 
+ from the <span style="font-weight: bold;">When to Change</span> drop-down 
+ list. The change methods are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Manually 
- Only</span> - The gear changes only when it is manually switched.</p></li>
+ Only</span> – The gear changes only when it is manually switched.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">After a Duration</span> 
- - Enter a duration in the Change Duration text box. The gear changes when 
- the duration ends.</p></li>
+ – The gear changes when the duration ends, which is entered in the <span 
+ style="font-weight: bold;">Change Duration</span> text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Priority 
- Change</span> - Enter a priority in the Change Priority text box. The 
- gear changes when the control area priority reaches this priority.</p></li>
+ Change</span> – The gear changes when the priority of the control area, 
+ to which this load program is assigned, reaches the priority entered in 
+ the <span style="font-weight: bold;">Change Priority</span> text box. 
+ </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Above 
- Trigger</span> - Triggers are defined in Control Areas. Select whether 
- to use trigger one or two in the <span style="font-weight: bold;">Trigger 
- Number</span> spin box. (Trigger one is the first entry and trigger two 
- is the second entry of the Control Area’s Trigger drop-down list.) The 
- gear changes when the Control Area threshold value reaches the trigger 
- plus the offset value in the <span style="font-weight: bold;">Trigger 
- Offset</span> text box.</p></li>
+ Trigger</span> – The gear changes when the trigger point of the selected 
+ trigger rises above the value that is calculated by adding the trigger 
+ threshold value and the trigger offset value. The trigger to use for the 
+ gear change, trigger one (1) or trigger two (2) of the control area to 
+ which this program is assigned, is entered in the <span style="font-weight: bold;">Trigger</span> 
+ box and the trigger offset value is entered in the <span style="font-weight: bold;">Trigger 
+ Offset</span> text box. <span style="font-weight: bold;"><br>
+		Note:</span> Trigger one (1) is the first entry in the Trigger 
+ drop-down list and trigger two (2) is the second entry in the Trigger 
+ drop-down list of the control area.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Load Program Editor.</p></li>
+ button to save the changes to the gear or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the gear and close the Load Program Editor.</p></li>
 </ol>
-
-<p style="margin-bottom: 9pt;">&nbsp;</p>
-
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Master_Cycle_Gear.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>--><OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Creating a Load Program;Creating_a_Load_Program.htm">
-  <PARAM  NAME="Item2"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
-</OBJECT>
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

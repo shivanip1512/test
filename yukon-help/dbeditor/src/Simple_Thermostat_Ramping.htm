@@ -19,8 +19,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=707>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=771>
+<meta name=layout-width content=964>
 
 
 <!--(Links)=========================================================-->
@@ -54,48 +54,48 @@
  thermostat must be in to accept commands: <span style="font-weight: bold;">Heat 
  Mode</span> or <span style="font-weight: bold;">Cool Mode</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter an offset between 
- zero minutes and two hours in the <span style="font-weight: bold;">Random 
- Start Time</span> spin box. A random offset between 0 minutes and the 
- Random Start Time value is added to the start of control.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter an offset, between 
+ zero minutes and two hours, in the <span style="font-weight: bold;">Random 
+ Start Time</span> box. A random offset between zero minutes and the Random 
+ Start Time value is added to the start of control.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">In the <span style="font-weight: bold;">Pre-Op 
- (Cool or Heat) Temp</span> spin box, enter the number of degrees to decrease 
+ (Cool or Heat) Temp</span> box, enter the number of degrees to decrease 
  the temperate during the Pre-Op Cool time or increase the temperature 
  during the Pre-Op Heat Time.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">In the <span style="font-weight: bold;">Pre-Op 
- (Cool or Heat) Time </span>spin box, enter the length of time that the 
- temperature is decreased during a Pre-Op Cool or the length of time that 
- the temperature is increased during a Pre-Op Heat.</p></li>
+ (Cool or Heat) Time </span>box, enter the length of time that the temperature 
+ is decreased during a Pre-Op Cool or the length of time that the temperature 
+ is increased during a Pre-Op Heat.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">In the <span style="font-weight: bold;">Pre-Op 
- (Cool or Heat) Hold </span>spin box, enter the length of time that the 
- Pre-Op Cool temperature is held or length of time that the Pre-Op Heat 
- temperature is held.</p></li>
+ (Cool or Heat) Hold </span>box, enter the length of time that the Pre-Op 
+ Cool temperature is held or length of time that the Pre-Op Heat temperature 
+ is held.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the number of 
  degrees to increase or decrease the temperate each hour during the load 
  program run time in the <span style="font-weight: bold;">Ramp °F/Hour</span> 
- spin box.</p></li>
+ box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the maximum 
  number of degrees that the temperature can ramp/change during the load 
  program run time in the <span style="font-weight: bold;">Max °&#8710;</span> 
- spin box.</p></li>
+ box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the length of 
  time that the temperature is decreased or increased to the original setpoint 
  before control stops in the <span style="font-weight: bold;">Ramp Out 
- Time</span> spin box.</p></li>
+ Time</span> box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the maximum 
  runtime of the load program in the <span style="font-weight: bold;">Max 
- Runtime</span> spin box.</p></li>
+ Runtime</span> box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the rate at 
  which the command is resent in the <span style="font-weight: bold;">Resend 
- Rate</span> spin box.</p></li>
+ Rate</span> box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Select how to stop 
  the control from the <span style="font-weight: bold;">How to Stop Control</span> 
@@ -105,10 +105,10 @@
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Time 
- In</span> - The control stops when the shed time is over.</p></li>
+ In</span> - Control stops when the shed time is over.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9px;"><span style="font-weight: bold;">Restore</span> 
- - The control stops when a restore command is sent to the device.</p></li>
+ - Control stops when a restore command is sent to the load control device.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 0px;">Select an automatic 
@@ -119,27 +119,32 @@
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Manually 
- Only</span> - The gear changes only when it is manually switched.</p></li>
+ Only</span> – The gear changes only when it is manually switched.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">After a Duration</span> 
- - Enter a duration in the Change Duration text box. The gear changes when 
- the duration ends.</p></li>
+ – The gear changes when the duration ends, which is entered in the <span 
+ style="font-weight: bold;">Change Duration</span> text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Priority 
- Change</span> - Enter a priority in the Change Priority text box. The 
- gear changes when the control area priority reaches this priority.</p></li>
+ Change</span> – The gear changes when the priority of the control area, 
+ to which this load program is assigned, reaches the priority entered in 
+ the <span style="font-weight: bold;">Change Priority</span> text box. 
+ </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Above 
- Trigger</span> - Triggers are defined in Control Areas. Select whether 
- to use trigger one or two in the <span style="font-weight: bold;">Trigger 
- Number</span> spin box. (Trigger one is the first entry and trigger two 
- is the second entry of the Control Area’s Trigger drop-down list.) The 
- gear changes when the Control Area threshold value reaches the trigger 
- plus the offset value in the <span style="font-weight: bold;">Trigger 
- Offset</span> text box.</p></li>
+ Trigger</span> – The gear changes when the trigger point of the selected 
+ trigger rises above the value that is calculated by adding the trigger 
+ threshold value and the trigger offset value. The trigger to use for the 
+ gear change, trigger one (1) or trigger two (2) of the control area to 
+ which this program is assigned, is entered in the <span style="font-weight: bold;">Trigger</span> 
+ box and the trigger offset value is entered in the <span style="font-weight: bold;">Trigger 
+ Offset</span> text box. <span style="font-weight: bold;"><br>
+		Note:</span> Trigger one (1) is the first entry in the Trigger 
+ drop-down list and trigger two (2) is the second entry in the Trigger 
+ drop-down list of the control area.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">OK</span> 
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">OK</span> 
  button to save the gear.</p></li>
 </ol>
 

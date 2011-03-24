@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=650>
-<meta name=layout-width content=963>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="Ack;TDC;Unsilence;Unmute;Unacked;ACK;MACS;HH;Tcl;MW;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;GETSTATUS;PFCOUNT;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;DNP;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;a|b|c|d|t;kwh;getvalue;kwh|kvark|kvah;powerfail;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;ReEnable;Program(s;locate|count;count|locate;TDCs;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;N;VERSACOM;cmd;cmd_parameters;PUTCONFIG;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;display|terminate|increment;xcproptest;FisherPierce;putstatus;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;PUTSTATUS;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;RSSI;OverVoltage;rssi;LCR;zero|one;ovuv;UnderVoltage;PUTVALUE;rrrrr;KYZ;putvalue;reset|reading;powerfail|ied;tou">
 
 
@@ -51,16 +51,19 @@
 
 <p>&nbsp;</p>
 
-<p style="font-weight: bold;"><span style="font-weight: bold;">putvalue 
- kyz offset [(reset|reading value] [analog]</span></p>
+<p style="font-weight: bold;">putvalue analog <span style="font-style: italic;">offset</span> 
+ <span style="font-style: italic;">value</span></p>
+
+<p style="font-weight: bold;">putvalue ied reset [alpha|s4|sentinel]</p>
+
+<p style="font-weight: bold;">putvalue kyz <span style="font-style: italic;">offset</span> 
+ [reset|reading <span style="font-style: italic;">value</span>]</p>
+
+<p style="font-weight: bold;">putvalue ovuv analog (1 1|0 1)</p>
 
 <p style="font-weight: bold;">putvalue powerfail reset</p>
 
-<p style="font-weight: bold;">putvalue ied reset [alpha|s4]</p>
-
-<p style="font-weight: bold;">putvalue tou reset [zero]</p>
-
-<p style="font-weight: bold;">&nbsp;</p>
+<p style="font-weight: bold;">putvalue tou reset [zero]<br>&nbsp;</p>
 
 <p>The meanings of the arguments are as follows:</p>
 
@@ -134,7 +137,82 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=22.463%>
-<p>kyz <span style="font-style: italic;">offset</span></td>
+<p>analog <span style="font-style: italic;">offset</span> <span style="font-style: italic;">value</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.537%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Writes the value to the specified analog output point on a DNP device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.463%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>ied reset [alpha|s4|sentinel]</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.537%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets the demand reading for an IED attached to a field device. When 
+ the alpha, s4, or sentinel option is used, the command performs a freeze 
+ and reset on the IED’s current peak demand.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.463%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>kyz <span style="font-style: italic;">offset </span><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->[reset|reading 
+ value]</td>
 <td colspan=1
 	rowspan=1
 	style="width: 77.537%;
@@ -170,7 +248,7 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=22.463%>
-<p style="font-weight: normal;">reading</td>
+<p>ovuv analog (1 1|0 1)</td>
 <td colspan=1
 	rowspan=1
 	style="width: 77.537%;
@@ -185,80 +263,8 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=77.537%>
-<p>Writes the demand reading into a field device. If reading is not specified, 
- the command defaults to reset.</td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>reset</td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Resets the demand reading in a demand type meter. </td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>analog </td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Writes the value to the specified analog output point on a DNP device.</td></tr>
+<p>Enables (1 1) or disables (0 1) Over Voltage (OV) Under Voltage (UV) 
+ for CBCs.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -315,45 +321,6 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=22.463%>
-<p>ied reset (alpha|s4|sentinel)</p>
-<p>&nbsp;</td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Resets the demand reading for an IED attached to a field device. When 
- the alpha, s4, or sentinel option is used, the command performs a freeze 
- and reset on the IED’s current peak demand.</td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
 <p>tou reset [zero]</td>
 <td colspan=1
 	rowspan=1
@@ -378,20 +345,27 @@
 
 <h5 style="font-size: 11pt;">Examples</h5>
 
-<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">putvalue 
- kyz 1 reset</span></p>
+<p style="font-weight: bold; margin-left: 12px;">putvalue analog 5 32</p>
+
+<p style="font-weight: bold; margin-left: 12px;">putvalue ied reset alpha</p>
+
+<p style="font-weight: bold; margin-left: 12px;">putvalue ied reset s4</p>
+
+<p style="font-weight: bold; margin-left: 12px;">putvalue ied reset sentinel</p>
+
+<p style="font-weight: bold; margin-left: 12px;">putvalue kyz 1 reset</p>
 
 <p style="font-weight: bold; margin-left: 12px;">putvalue kyz 1 reading 
  297</p>
 
-<p style="font-weight: bold; margin-left: 12px;">putvalue analog 5 32</p>
+<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">putvalue 
+ ovuv analog 1 1</span></p>
 
-<p style="font-weight: bold; margin-left: 12px;">putvalue powerfail reset</p>
+<p style="font-weight: bold; margin-left: 12px;">putvalue ovuv analog 1 
+ 0</p>
 
-<p style="font-weight: bold; margin-left: 12px;">putvalue ied reset</p>
-
-<p style="font-weight: bold; margin-left: 12px;">putvalue ied reset alpha<br>
-putvalue ied reset s4</p>
+<p style="font-weight: bold; margin-left: 12px;">putva<span style="font-weight: bold; margin-left: 12px;">lue 
+ powerfail reset</span></p>
 
 <p style="font-weight: bold; margin-left: 12px;">putvalue tou reset</p>
 

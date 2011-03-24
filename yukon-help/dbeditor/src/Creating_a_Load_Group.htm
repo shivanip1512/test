@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=604>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;config.properties;billing_wiz_activate=;NCDC;NISC-Turtle;NISC-NCDC;Daffron;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Geq;Leq;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;Transponders;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;Golay">
+<meta name=layout-height content=605>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;config.properties;billing_wiz_activate=;NCDC;NISC-Turtle;NISC-NCDC;Daffron;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Geq;Leq;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;Transponders;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;Golay;RF">
 
 
 <!--(Links)=========================================================-->
@@ -65,7 +65,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Creating a Load Group</h1>
 
-<p>To create a Load Group:</p>
+<p>Perform the following steps to create a load group:</p>
 
 <p>&nbsp;</p>
 
@@ -83,156 +83,123 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  Load Group</span> for the type of group.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
- button. If you selected <span style="font-weight: bold;">Macro Load Group</span>, 
- see <a href="javascript:BSSCPopup('Macro_Load_Group.htm');"
-		id=a3>Macro Load Group</a><!--begin!kadov{{--><script type="text/javascript"
+ button. If <span style="font-weight: bold;">Macro Load Group</span> was 
+ selected, see <a href="javascript:BSSCPopup('Macro_Load_Group.htm');"
+					id=a3>Macro Load Group</a><!--begin!kadov{{--><script 
+ type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a3');
 //--></script><!--}}end!kadov--> 
- for instructions. If you selected <span style="font-weight: bold;">Load 
- Group</span>, continue with step 5 of this procedure.</p></li>
+ for instructions. If <span style="font-weight: bold;">Load Group</span> 
+ was selected, continue with step 5 of this procedure.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the type of 
- device to use for this load group from the list of devices. </p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">Select the type of 
+ load group to create from the list of groups.</p></li>
 	
-	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Next</span> 
- button. Based on the type of device selected, the editor follows one of 
- the these paths:</p></li>
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">EMETCON 
+ Group</span> – Load group for devices that can be communicated with using 
+ the EMETCON protocol.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">ExpressCom 
+ Group</span> – Load group for devices that can be communicated with using 
+ the ExpressCom protocol.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Golay 
+ Group</span> – Load group for devices that use the Golay protocol.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Integration 
+ Group</span> – Load group for devices that can be communicated with using 
+ RF integration.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">MCT 
+ Group</span> – Load group for devices that can be communicated with using 
+ Bronze, Lead, and MCT address levels.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Point 
+ Group</span> – Load group for devices that can be communicated with using 
+ a point group.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Ripple 
+ Group</span> – Load group for devices that can be communicated with using 
+ the Ripple protocol.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">VERSACOM 
+ Group</span> – Load group for devices that can be communicated with using 
+ the VERSACOM protocol.</p></li>
+	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button. </p></li>
+	
+	<li class=kadov-p><p>To continue creating a load group, click on the 
+ load group, which was selected in step 5, from the list of load groups 
+ below:</p></li>
 </ol>
 
 <ul style="list-style: disc;"
 	type=disc>
 	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom.htm');"
-														id=a9>LCR 5000 
- (ExpressCom)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a9');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Versacom.htm');"
-														id=a7>LCR 5000 
- (VERSACOM)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a7');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom.htm');"
-														id=a13>LCR 4700 
- (ExpressCom)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a13');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Golay.htm');"
-														id=a14>LCR 4700 
- (Golay)</a><!--begin!kadov{{--><script type="text/javascript"
-										language=JavaScript1.2><!--
-kadovFilePopupInit('a14');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom.htm');"
-														id=a15>LCR 4500 
- (ExpressCom)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a15');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Golay.htm');"
-														id=a17>LCR 4500 
- (Golay)</a><!--begin!kadov{{--><script type="text/javascript"
-										language=JavaScript1.2><!--
-kadovFilePopupInit('a17');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Versacom.htm');"
-														id=a6>LCR 4000 
- (VERSACOM)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a6');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom.htm');"
-														id=a18>LCR 3100 
- (ExpressCom)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a18');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Versacom.htm');"
-														id=a19>LCR 3100 
- (VERSACOM)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a19');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Versacom.htm');"
-														id=a4>LCR 3000 
- (VERSACOM)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a4');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Emetcon.htm');"
-														id=a5>LCR 3000 
- (EMETCON)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('EMETCON_Load_Group.htm');"
+														id=a5>EMETCON Group</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
 kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--></p></li>
 	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Versacom.htm');"
-														id=a2>LCR 2000 
- (VERSACOM)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom_Load_Group.htm');"
+														id=a9>ExpressCom 
+ Group</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
+kadovFilePopupInit('a9');
+//--></script><!--}}end!kadov--></p></li>
+	
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Golay_Load_Group.htm');"
+														id=a14>Golay Group</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a14');
+//--></script><!--}}end!kadov--></p></li>
+	
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('integration_load_group.htm');"
+														id=a2>Integration 
+ Group</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--></p></li>
 	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Ripple.htm');"
-														id=a1>LCR 1000 
- (Ripple)</a><!--begin!kadov{{--><script type="text/javascript"
-										language=JavaScript1.2><!--
-kadovFilePopupInit('a1');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Emetcon.htm');"
-														id=a8>LMT 100 Series 
- (EMETCON)</a><!--begin!kadov{{--><script type="text/javascript"
-											language=JavaScript1.2><!--
-kadovFilePopupInit('a8');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Golay.htm');"
-														id=a16>DCU-S1180 
- (Golay)</a><!--begin!kadov{{--><script type="text/javascript"
-										language=JavaScript1.2><!--
-kadovFilePopupInit('a16');
-//--></script><!--}}end!kadov--></p></li>
-	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('ExpressCom.htm');"
-														id=a10>T-STAT (ExpressCom)</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('MCT_Load_Group.htm');"
+														id=a12>MCT Group</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
-kadovFilePopupInit('a10');
+kadovFilePopupInit('a12');
 //--></script><!--}}end!kadov--></p></li>
 	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Point_Group.htm');"
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Point_Load_Group.htm');"
 														id=a11>Point Group</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a11');
 //--></script><!--}}end!kadov--></p></li>
 	
-	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('MCT_Group.htm');"
-														id=a12>MCT Group</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('Ripple_Load_Group.htm');"
+														id=a1>Ripple Group</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
-kadovFilePopupInit('a12');
+kadovFilePopupInit('a1');
+//--></script><!--}}end!kadov--></p></li>
+	
+	<li class=kadov-p><p style="margin-left: 24px;"><a href="javascript:BSSCPopup('VERSACOM_Load_Group.htm');"
+														id=a6>VERSACOM 
+ Group</a><!--begin!kadov{{--><script type="text/javascript"
+										language=JavaScript1.2><!--
+kadovFilePopupInit('a6');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
 <p>&nbsp;</p>
-
-&nbsp; 
 
 <p>
 <!--Metadata type="DesignerControl" startspan
@@ -246,8 +213,8 @@ kadovFilePopupInit('a12');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
+<param name="_ExtentX" value="2413" >
+<param name="_ExtentY" value="593" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -258,7 +225,7 @@ kadovFilePopupInit('a12');
 <param name="Items" value="Editing a Load Group;Editing_a_Load_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Load_Group.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Creating_a_Load_Group.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >

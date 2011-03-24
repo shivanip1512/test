@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content=kW>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="kW;ExpressCom">
 
 
 <!--(Links)=========================================================-->
@@ -58,10 +58,17 @@
  text box.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The kilowatt capacity 
- of the group can be changed in the <span style="font-weight: bold;">kW 
+ of the load group can be changed in the <span style="font-weight: bold;">kW 
  Capacity</span> text box. This is the estimated kilowatt capacity of the 
  devices in the load group. To disable the estimated kilowatt capacity 
  feature, enter a value of zero.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the load group 
+ is an ExpressCom load group, a different control priority for ExpressCom 
+ messages can be selected from the <span style="font-weight: bold;">Control 
+ Priority</span> drop-down list. A message with a medium priority is ignored 
+ if a message with a high priority has already been received by the load 
+ control device.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The load group can 
  be disabled or enabled by selecting or clearing the <span style="font-weight: bold;">Disable 
@@ -72,58 +79,15 @@
  can be disabled or enabled by selecting or clearing the <span style="font-weight: bold;">Disable 
  Controls</span> check box. Select this check box to globally disallow 
  control operations on this device. Clear this check box if there are control 
- points on this device and you want to use them.</p></li>
+ points on this device.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different route 
- for the load group can be selected from the <span style="font-weight: bold;">Communication 
- Route</span> drop-down list. The Communication Route drop-down list does 
- not appear for Point Groups.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">A different communication 
+ route for the load group can be selected from the <span style="font-weight: bold;">Communication 
+ Route</span> drop-down list. </p></li>
 </ol>
 
-<p>&nbsp;</p>
-
-<p>
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Load Group;Editing_a_Load_Group.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Load_Group_General_Tab.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Load Group;Editing_a_Load_Group.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
+<p style="margin-bottom: 9pt; margin-left: 40px;"><span style="font-weight: bold;">Note:</span> 
+ The Communication Route drop-down list does not appear for Point Groups.</p>
 
 </body>
 

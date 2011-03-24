@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=775>
-<meta name=layout-width content=1123>
-<meta name=x-ignored-words content="TrueCycle;ExpressCom">
+<meta name=layout-height content=787>
+<meta name=layout-width content=964>
+<meta name=x-ignored-words content="TrueCycle;ExpressCom;kW">
 
 
 <!--(Links)=========================================================-->
@@ -47,8 +47,9 @@
 <h4>Editing a Smart Cycle, TrueCycle, Magnitude Cycle, or Target Cycle 
  Gear</h4>
 
-<p style="margin-bottom: 9pt; font-weight: normal;">To edit a Smart Cycle, 
- TrueCycle, Magnitude Cycle, or Target Cycle gear:</p>
+<p style="margin-bottom: 9pt; font-weight: normal;">Perform the following 
+ steps to edit a Smart Cycle, TrueCycle, Magnitude Cycle, or Target Cycle 
+ gear:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -65,7 +66,7 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To disable the ramping 
  in of load groups over an interval of time, select the <span style="font-weight: bold;">No 
  Ramp (ExpressCom only)</span> check box. The cycle command must be send 
- using the ExpressCom protocol. </p></li>
+ using the ExpressCom protocol.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The control percentage 
  can be changed in the <span style="font-weight: bold;">Control Percent</span> 
@@ -125,11 +126,11 @@
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Restore</span> 
- - A restore command is sent to the device.</p></li>
+ - Control stops when a restore command is sent to the load control device.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Stop 
- Cycle</span> - The period count is set to 0, so the cycle stops the next 
- period.</p></li>
+ Cycle</span> - When the period count is set to 0, the control stops the 
+ next period.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The group capacity 
@@ -150,75 +151,35 @@
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Manually 
- Only</span> - The gear changes only when it is manually switched.</p></li>
+ Only</span> – The gear changes only when it is manually switched.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">After a Duration</span> 
- - Enter a duration in the Change Duration text box. The gear changes when 
- the duration ends.</p></li>
+ – The gear changes when the duration ends, which is entered in the <span 
+ style="font-weight: bold;">Change Duration</span> text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Priority 
- Change</span> - Enter a priority in the Change Priority text box. The 
- gear changes when the control area priority reaches this priority.</p></li>
+ Change</span> – The gear changes when the priority of the control area, 
+ to which this load program is assigned, reaches the priority entered in 
+ the <span style="font-weight: bold;">Change Priority</span> text box. 
+ </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Above 
- Trigger</span> - Triggers are defined in Control Areas. Select whether 
- to use trigger one or two in the <span style="font-weight: bold;">Trigger 
- Number</span> spin box. (Trigger one is the first entry and trigger two 
- is the second entry of the Control Area’s Trigger drop-down list.) The 
- gear changes when the Control Area threshold value reaches the trigger 
- plus the offset value in the <span style="font-weight: bold;">Trigger 
- Offset</span> text box.</p></li>
+ Trigger</span> – The gear changes when the trigger point of the selected 
+ trigger rises above the value that is calculated by adding the trigger 
+ threshold value and the trigger offset value. The trigger to use for the 
+ gear change, trigger one (1) or trigger two (2) of the control area to 
+ which this program is assigned, is entered in the <span style="font-weight: bold;">Trigger</span> 
+ box and the trigger offset value is entered in the <span style="font-weight: bold;">Trigger 
+ Offset</span> text box. <span style="font-weight: bold;"><br>
+		Note:</span> Trigger one (1) is the first entry in the Trigger 
+ drop-down list and trigger two (2) is the second entry in the Trigger 
+ drop-down list of the control area.</p></li>
 	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
- button to save the changes or <span style="font-weight: bold;">OK</span> 
- button to save the changes and close the Load Program Editor.</p></li>
+ button to save the changes to the gear or click the <span style="font-weight: bold;">OK</span> 
+ button to save the changes to the gear and close the Load Program Editor.</p></li>
 </ol>
-
-<p style="margin-bottom: 9pt;">&nbsp;</p>
-
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Editing a Load Program;Editing_a_Load_Program.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_Cycle_Gears.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Editing a Load Program;Editing_a_Load_Program.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
 
 </body>
 

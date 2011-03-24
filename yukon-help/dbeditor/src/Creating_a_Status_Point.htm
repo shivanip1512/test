@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=726>
+<meta name=layout-width content=1204>
 <meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;INET;ACS;VALMET;CYGMET;PointID;deadband;Deadband;Comm;Dialup;RTUs;downline;CBC;KVAR;RTU;IP;PortServer;ClassicBoard;Digi;Xyplex;Min;TimeRefresh;SmartCycle;MasterCycle;LCR;LMT;VERSACOM;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;Vars;Tx;RTS;IDLC;DCD;TCUs;LCUs;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCU;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO">
 
 
@@ -45,8 +45,7 @@
 
 <h4>Creating a Status Point</h4>
 
-<p>If you selected <span style="font-weight: bold;">Status</span> as the 
- point type:</p>
+<p>If Status was selected as the point type:</p>
 
 <p>&nbsp;</p>
 
@@ -55,25 +54,32 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a state group 
  from the <span style="font-weight: bold;">State Group </span>list. The 
- state group defines the messages to display for the different states of 
- the point.</p></li>
+ state group defines the messages that are display for the different states 
+ of the point.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select an initial 
  state for the state group from the <span style="font-weight: bold;">Initial 
- State</span> list. The initial sate depends on the state group selected.</p></li>
+ State</span> list. The initial state depends on the state group selected.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
  button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the system is to 
- obtain physical data from the hardware, select the <span style="font-weight: bold;">Physical 
- Point Offset</span> check box. Clear this check box for a pseudo point.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the <span style="font-weight: bold;">Physical 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the Yukon system 
+ obtains physical data from the device on which the point is located or 
+ the point is a special Yukon system point, select the <span style="font-weight: bold;">Physical 
+ Point Offset</span> check box. Clear this check box if this is a pseudo 
+ point.</p></li>
+</ol>
+
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the <span style="font-weight: bold;">Physical 
  Point Offset</span> check box is selected, set the offset value in the 
  <span style="font-weight: bold;">Point Offset</span> spin box. This is 
- the physical input to which the status point is wired or it is a Yukon 
- defined point.</p></li>
+ either the physical input to which the point is wired or a Yukon system 
+ defined point.</p>
+
+<ol start=5
+	style="list-style: decimal;"
+	type=1>
 	
 	<li class=kadov-p><p>If the point is capable of control, select the 
  type of control from the <span style="font-weight: bold;">Control Type</span> 
@@ -83,18 +89,18 @@
 		type=disc>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">None</span> 
- – no control type exists.</p></li>
+ – No control type exists.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Latch</span> 
- – when a control command is sent, the relay latches into position. <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->Latch 
+ – When a control command is sent, the relay latches into position. <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->Latch 
  controls require a second command to return to the original state.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Normal</span> 
- – control is performed with a dual relay Select Before Operate (SBO). 
+ – Control is performed with a dual relay Select Before Operate (SBO). 
  Normal controls are temporary or held only for a discrete number of milliseconds.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Pseudo</span> 
- – the point is controlled by another system. Pseudo controls do not have 
+ – The point is controlled by another system. Pseudo controls do not have 
  a physical status point to indicate if control has completed.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">SBO Latch</span> 
@@ -103,65 +109,22 @@
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">SBO 
  Pulse</span> - Select Before Operate pulse (normal) command.</p></li>
 	</ul>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">For a control type 
- other than <span style="font-weight: bold;">None</span> or <span style="font-weight: bold;">Pseudo</span>, 
- select a point offset in the <span style="font-weight: bold;">Control 
- Offset</span> drop-down list. This is the physical location of the wired 
- the relay point.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
- button. The new point appears in the Point Editor. For instructions on 
- editing a point, refer to the related topics.</p></li>
 </ol>
 
-&nbsp; 
+<p style="margin-bottom: 9pt; margin-left: 40px;">If the control type is 
+ <span style="font-weight: bold;">Latch</span>, <span style="font-weight: bold;">Normal</span>, 
+ <span style="font-weight: bold;">SBO Latch</span>, or <span style="font-weight: bold;">SBO 
+ Pulse</span>, select a point offset in the <span style="font-weight: bold;">Control 
+ Offset</span> drop-down list. This is the physical location of the wired 
+ the relay point.</p>
 
-<p style="margin-bottom: 9pt;">
-<!--Metadata type="DesignerControl" startspan
-<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
-		ID=RelatedTopics
-		BORDER=0
-		style="margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 0px;
-				vertical-align: baseline;"
-		align=bottom>
-<param name="_Version" value="65536" >
-<param name="_ExtentX" value="2117" >
-<param name="_ExtentY" value="556" >
-<param name="_StockProps" value="13" >
-<param name="ForeColor" value="0" >
-<param name="BackColor" value="13160660" >
-<param name="UseButton" value="-1" >
-<param name="UseText" value="0" >
-<param name="ControlLabel" value="Related Topics" >
-<param name="UseIcon" value="0" >
-<param name="Items" value="Creating a Core Database Point;Creating_a_Point.htm$$**$$Creating a Load Management Point;Creating_a_Load_Management_Point.htm$$**$$Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
-<param name="Image" value="" >
-<param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Status_Point.htm" >
-<param name="_ID" value="RelatedTopics" >
-<param name="UseMenu" value="-1" >
-<param name="Frame" value="_top" >
-<param name="Window" value="" >
-</object>-->
-<OBJECT
-  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
-  ID="RelatedTopics"  TYPE="application/x-oleobject" >
-  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
-  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
-  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
-  <PARAM  NAME="Frame"  VALUE="_top">
-  <PARAM  NAME="Item1"  VALUE="Creating a Core Database Point;Creating_a_Point.htm">
-  <PARAM  NAME="Item2"  VALUE="Creating a Load Management Point;Creating_a_Load_Management_Point.htm">
-  <PARAM  NAME="Item3"  VALUE="Editing a Core Database Point;Editing_a_Point.htm">
-  <PARAM  NAME="Item4"  VALUE="Editing a Load Management Point;Editing_a_Load_Management_Point.htm">
-</OBJECT>
-
-<!--Metadata type="DesignerControl" endspan-->
- </p>
+<ol start=6
+	style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p>Click the <span style="font-weight: bold;">Finish</span> 
+ button. The new point appears in the Point Editor.</p></li>
+</ol>
 
 </body>
 
