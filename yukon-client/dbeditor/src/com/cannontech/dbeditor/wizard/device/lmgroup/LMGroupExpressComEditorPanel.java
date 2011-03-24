@@ -3572,6 +3572,47 @@ public boolean isInputValid()
 		setErrorString("The SPID address must be 1 or greater");
 		return false;
 	}
+	
+	if( getJCheckBoxGEO().isSelected() && Integer.parseInt(getJTextFieldGeoAddress().getText()) <= 0 ) {
+        setErrorString("When selected the GEO address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxSUB().isSelected() && Integer.parseInt(getJTextFieldSubAddress().getText()) <= 0 ) {
+        setErrorString("When selected the Substation address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxFEED().isSelected() &&
+	    ((LMGroupExpressComFeederAddressPanel)getFeederBitToggleDialog().getContentPane()).getFeederAddressBitMask() <= 0 ) {
+        setErrorString("When selected the Feeder address must have at least one feeder selected");
+        return false;
+    }
+	
+	if( getJCheckBoxZIP().isSelected() && Integer.parseInt(getJTextFieldZipAddress().getText()) <= 0 ) {
+        setErrorString("When selected the ZIP address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxUSER().isSelected() && Integer.parseInt(getJTextFieldUserAddress().getText()) <= 0 ) {
+        setErrorString("When selected the User address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxSerial().isSelected() && Integer.parseInt(getJTextFieldSerialAddress().getText()) <= 0 ) {
+        setErrorString("When selected the Serial address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxPROG().isSelected() && Integer.parseInt(getJTextFieldProgAddress().getText()) <= 0 ) {
+        setErrorString("When selected the Program address must be 1 or greater");
+        return false;
+    }
+	
+	if( getJCheckBoxSPLINTER().isSelected() && Integer.parseInt(getJTextFieldSplinterAddress().getText()) <= 0 ) {
+	    setErrorString("When selected the Splinter address must be 1 or greater");
+        return false;
+	}
 
 	if( getJCheckBoxLOAD().isSelected()
 		 && !isRelaySelected() )
