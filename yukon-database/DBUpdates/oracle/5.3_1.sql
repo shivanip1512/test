@@ -48,6 +48,24 @@ INSERT INTO DeviceTypeCommand VALUES (-814, -187, 'MCT-470', 34, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-815, -188, 'MCT-470', 35, 'Y', -1);
 /* End YUK-9595 */
 
+/* Start YUK-9646 */
+/* @error ignore-begin */
+ALTER TABLE CCMonitorBankList
+    DROP CONSTRAINT FK_CCMONBNKLIST_BNKID;
+ALTER TABLE CCMonitorBankList
+    DROP CONSTRAINT FK_CCMONBNKLST_PTID;
+
+ALTER TABLE CCMonitorBankList
+    ADD CONSTRAINT FK_CCMonBankList_CapBank FOREIGN KEY (BankId)
+        REFERENCES CapBank (DeviceId)
+            ON DELETE CASCADE;
+ALTER TABLE CCMonitorBankList
+    ADD CONSTRAINT FK_CCMonBankList_Point FOREIGN KEY (PointId)
+        REFERENCES Point (PointId)
+            ON DELETE CASCADE;
+/* @error ignore-end */
+/* End YUK-9646 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

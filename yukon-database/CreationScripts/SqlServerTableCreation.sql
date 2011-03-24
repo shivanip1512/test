@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/23/2011 11:19:57 AM                        */
+/* Created on:     3/24/2011 11:49:27 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -722,17 +722,17 @@ create table CCHOLIDAYSTRATEGYASSIGNMENT (
 go
 
 /*==============================================================*/
-/* Table: CCMONITORBANKLIST                                     */
+/* Table: CCMonitorBankList                                     */
 /*==============================================================*/
-create table CCMONITORBANKLIST (
-   BankID               numeric              not null,
-   PointID              numeric              not null,
+create table CCMonitorBankList (
+   BankId               numeric              not null,
+   PointId              numeric              not null,
    DisplayOrder         numeric              not null,
    Scannable            char(1)              not null,
    NINAvg               numeric              not null,
    UpperBandwidth       float                not null,
    LowerBandwidth       float                not null,
-   constraint PK_CCMONITORBANKLIST primary key (BankID, PointID)
+   constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
 )
 go
 
@@ -10584,14 +10584,16 @@ alter table CCHOLIDAYSTRATEGYASSIGNMENT
       references CapControlStrategy (StrategyID)
 go
 
-alter table CCMONITORBANKLIST
-   add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
+alter table CCMonitorBankList
+   add constraint FK_CCMonBankList_CapBank foreign key (BankId)
       references CAPBANK (DEVICEID)
+         on delete cascade
 go
 
-alter table CCMONITORBANKLIST
-   add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
+alter table CCMonitorBankList
+   add constraint FK_CCMonBankList_Point foreign key (PointId)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
