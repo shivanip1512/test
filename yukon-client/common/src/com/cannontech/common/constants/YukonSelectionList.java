@@ -3,164 +3,90 @@ package com.cannontech.common.constants;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author yao
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class YukonSelectionList {
-	
-	private int listID = 0;
-	private String ordering = null;
-	private String selectionLabel = null;
-	private String whereIsList = null;
-	private String listName = null;
-	private String userUpdateAvailable = null;
-	private Integer energyCompanyId = null;
-	
-	private List<YukonListEntry> yukonListEntries = null;
-	
-	
-	public static final String TABLE_NAME = "YukonSelectionList";
-	
-	/**
-	 * Constructor for YukonSelectionList.
-	 */
-	public YukonSelectionList() {
-		super();
-	}
+    private int listId = 0;
+    private String ordering = null;
+    private String selectionLabel = null;
+    private String whereIsList = null;
+    private String listName = null;
+    private String userUpdateAvailable = null;
+    private Integer energyCompanyId = null;
 
-	/**
-	 * Returns the tABLE_NAME.
-	 * @return String
-	 */
-	public static String getTABLE_NAME() {
-		return TABLE_NAME;
-	}
+    private List<YukonListEntry> yukonListEntries = null;
 
-	/**
-	 * Returns the listID.
-	 * @return int
-	 */
-	public int getListID() {
-		return listID;
-	}
+    public static final String TABLE_NAME = "YukonSelectionList";
 
-	/**
-	 * Returns the listName.
-	 * @return String
-	 */
-	public String getListName() {
-		return listName;
-	}
+    public YukonSelectionList() {
+        super();
+    }
 
-	/**
-	 * Returns the ordering.
-	 * @return String
-	 */
-	public String getOrdering() {
-		return ordering;
-	}
+    public static String getTABLE_NAME() {
+        return TABLE_NAME;
+    }
 
-	/**
-	 * Returns the selectionLabel.
-	 * @return String
-	 */
-	public String getSelectionLabel() {
-		return selectionLabel;
-	}
+    public int getListID() {
+        return listId;
+    }
 
-	/**
-	 * Returns the userUpdateAvailable.
-	 * @return String
-	 */
-	public String getUserUpdateAvailable() {
-		return userUpdateAvailable;
-	}
+    public String getListName() {
+        return listName;
+    }
 
-	/**
-	 * Returns the whereIsList.
-	 * @return String
-	 */
-	public String getWhereIsList() {
-		return whereIsList;
-	}
+    public String getOrdering() {
+        return ordering;
+    }
 
-	public Integer getEnergyCompanyId() {
+    public String getSelectionLabel() {
+        return selectionLabel;
+    }
+
+    public String getUserUpdateAvailable() {
+        return userUpdateAvailable;
+    }
+
+    public String getWhereIsList() {
+        return whereIsList;
+    }
+
+    public Integer getEnergyCompanyId() {
         return energyCompanyId;
     }
-	
-	public void setEnergyCompanyId(Integer energyCompanyId) {
+
+    public void setEnergyCompanyId(Integer energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
-	
-	/**
-	 * Sets the listID.
-	 * @param listID The listID to set
-	 */
-	public void setListID(int listID) {
-		this.listID = listID;
-	}
 
-	/**
-	 * Sets the listName.
-	 * @param listName The listName to set
-	 */
-	public void setListName(String listName) {
-		this.listName = listName;
-	}
+    public void setListID(int listId) {
+        this.listId = listId;
+    }
 
-	/**
-	 * Sets the ordering.
-	 * @param ordering The ordering to set
-	 */
-	public void setOrdering(String ordering) {
-		this.ordering = ordering;
-	}
+    public void setListName(String listName) {
+        this.listName = listName;
+    }
 
-	/**
-	 * Sets the selectionLabel.
-	 * @param selectionLabel The selectionLabel to set
-	 */
-	public void setSelectionLabel(String selectionLabel) {
-		this.selectionLabel = selectionLabel;
-	}
+    public void setOrdering(String ordering) {
+        this.ordering = ordering;
+    }
 
-	/**
-	 * Sets the userUpdateAvailable.
-	 * @param userUpdateAvailable The userUpdateAvailable to set
-	 */
-	public void setUserUpdateAvailable(String userUpdateAvailable) {
-		this.userUpdateAvailable = userUpdateAvailable;
-	}
+    public void setSelectionLabel(String selectionLabel) {
+        this.selectionLabel = selectionLabel;
+    }
 
-	/**
-	 * Sets the whereIsList.
-	 * @param whereIsList The whereIsList to set
-	 */
-	public void setWhereIsList(String whereIsList) {
-		this.whereIsList = whereIsList;
-	}
+    public void setUserUpdateAvailable(String userUpdateAvailable) {
+        this.userUpdateAvailable = userUpdateAvailable;
+    }
 
-	/**
-	 * Returns the yukonListEntries.
-	 * @return java.util.ArrayList
-	 */
-	public List<YukonListEntry> getYukonListEntries() {
-		if (yukonListEntries == null)
-			yukonListEntries = new ArrayList<YukonListEntry>();
-		return yukonListEntries;
-	}
+    public void setWhereIsList(String whereIsList) {
+        this.whereIsList = whereIsList;
+    }
 
-	/**
-	 * Sets the yukonListEntries.
-	 * @param yukonListEntries The yukonListEntries to set
-	 */
-	public void setYukonListEntries(List<YukonListEntry> yukonListEntries) {
-		this.yukonListEntries = yukonListEntries;
-	}
+    public List<YukonListEntry> getYukonListEntries() {
+        if (yukonListEntries == null)
+            yukonListEntries = new ArrayList<YukonListEntry>();
+        return yukonListEntries;
+    }
 
+    public void setYukonListEntries(List<YukonListEntry> yukonListEntries) {
+        this.yukonListEntries = yukonListEntries;
+    }
 }
