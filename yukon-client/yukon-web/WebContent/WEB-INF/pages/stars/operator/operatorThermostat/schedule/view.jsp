@@ -119,7 +119,7 @@
 	            $('scheduleName').focus();
 
 		    // no name?
-	    	} else if($F('initialScheduleName').empty()){
+	    	} else if($F('scheduleName').empty()){
 
 	            alert('${noScheduleName}');
 	            $('scheduleName').focus();
