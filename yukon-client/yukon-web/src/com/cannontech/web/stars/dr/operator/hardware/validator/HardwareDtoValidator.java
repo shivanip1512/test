@@ -6,14 +6,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
@@ -25,7 +23,6 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     
     private InventoryBaseDao inventoryBaseDao;
     private PaoDao paoDao;
-    private YukonListDao yukonListDao;
     private HardwareTypeExtensionService hardwareTypeExtensionService;
     
     public HardwareDtoValidator() {
@@ -148,12 +145,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
+
     @Autowired
     public void setHardwareTypeExtensionService(HardwareTypeExtensionService hardwareTypeExtensionService) {
         this.hardwareTypeExtensionService = hardwareTypeExtensionService;
