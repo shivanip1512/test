@@ -67,7 +67,7 @@ public:
 
     IDSet getRegistrationPoints();
 
-    LitePoint getPointByAttribute(const PointAttribute & attribute) const;
+    LitePoint getPointByAttribute(const PointAttribute & attribute);
 
     void setOperatingMode(const OperatingMode & mode);
     OperatingMode getOperatingMode() const;
@@ -78,6 +78,9 @@ public:
     void notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp);
 
     bool getPointValue(int pointId, double & value);
+
+    CtiTime updateMissingAttributeComplainTime();
+    bool isTimeForMissingAttributeComplain(CtiTime time = CtiTime());
 
     virtual void loadAttributes(AttributeService * service) = 0;
     virtual void updateFlags(const unsigned tapDelay) = 0;
@@ -95,7 +98,8 @@ protected:
     AttributeMap    _attributes;
 
     PointValueHolder    _pointValues;
-
+    
+    CtiTime         _lastMissingAttributeComplainTime;
     virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
 };
 

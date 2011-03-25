@@ -19,7 +19,8 @@ VoltageRegulator::VoltageRegulator()
     : CapControlPao(),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None)
+    _lastTapOperation(VoltageRegulator::None),
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
 {
     // empty...
 }
@@ -28,7 +29,8 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     : CapControlPao(rdr),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None)
+    _lastTapOperation(VoltageRegulator::None),
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
 {
     // empty...
 }
@@ -38,7 +40,8 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     : CapControlPao(),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None)
+    _lastTapOperation(VoltageRegulator::None),
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
 {
     operator=(toCopy);
 }
@@ -59,6 +62,8 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
         _attributes = rhs._attributes;
 
         _pointValues = rhs._pointValues;
+
+        _lastMissingAttributeComplainTime = rhs._lastMissingAttributeComplainTime;
     }
 
     return *this;
@@ -96,13 +101,13 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
 }
 
 
-LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute) const
+LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute) 
 {
     AttributeMap::const_iterator iter = _attributes.find(attribute);
 
     if ( iter == _attributes.end() )
     {
-        throw MissingPointAttribute( getPaoId(), attribute, getPaoType() );
+        throw MissingPointAttribute( getPaoId(), attribute, getPaoType(), isTimeForMissingAttributeComplain()  );
     }
 
     return iter->second;
@@ -154,6 +159,20 @@ void VoltageRegulator::loadPointAttributes(AttributeService * service, const Poi
     {
         _attributes.insert( std::make_pair( attribute, point ) );
     }
+}
+CtiTime VoltageRegulator::updateMissingAttributeComplainTime()
+{
+    _lastMissingAttributeComplainTime = CtiTime();
+    return _lastMissingAttributeComplainTime;
+}
+bool VoltageRegulator::isTimeForMissingAttributeComplain(CtiTime time)
+{
+    if ( _lastMissingAttributeComplainTime + 300 < time )
+    {
+        updateMissingAttributeComplainTime();
+        return true;
+    }
+    return false;
 }
 
 }

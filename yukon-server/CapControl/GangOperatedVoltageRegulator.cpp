@@ -117,9 +117,11 @@ void GangOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
     }
     catch ( const MissingPointAttribute & error )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - " << error.what() << std::endl;
+        if (error.complain())
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << error.what() << std::endl;
+        }
     }
 }
 

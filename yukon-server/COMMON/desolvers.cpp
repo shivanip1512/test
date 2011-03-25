@@ -207,6 +207,12 @@ string desolveDeviceType( INT aType )
         case TYPEMCT470:        Ret = "mct-470";        break;
         case TYPELMT2:          Ret = "lmt-2";          break;
 
+        case TYPERFN430A3:      Ret = "rfn-430a3"; break;
+        case TYPERFN430KV:      Ret = "rfn-430kv"; break;
+        case TYPERFN410FL:      Ret = "rfn-410fl"; break;
+        case TYPERFN410FX:      Ret = "rfn-410fx"; break;
+        case TYPERFN410FD:      Ret = "rfn-410fd"; break;
+
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 
         case TYPELTC:           Ret = "load tap changer";   break;
@@ -241,6 +247,7 @@ string desolveDeviceType( INT aType )
         case TYPEEXPRESSCOMCBC:         Ret = "cbc expresscom";     break;
         case TYPEFISHERPCBC:            Ret = "cbc fp-2800";        break;
 
+        case TYPECAPBANK:               Ret = "cap bank";           break;
         case TYPECBC6510:               Ret = "cbc 6510";           break;
         case TYPECBC7010:               Ret = "cbc 7010";           break;
         case TYPECBC7020:               Ret = "cbc 7020";           break;

@@ -45,13 +45,21 @@
 #define TYPELCR3000                          203
 #define TYPELCR4000                          204
 
-#define TYPEVERSACOMCBC                      220
-#define TYPEEXPRESSCOMCBC                    221
+#define TYPECAPBANK                          220
+#define TYPEVERSACOMCBC                      221
+#define TYPEEXPRESSCOMCBC                    222
 #define TYPEFISHERPCBC                       230
 #define TYPECBC6510                          240
 #define TYPECBC7010                          250
 #define TYPECBC7020                          260
 #define TYPECBCDNP                           261
+
+#define TYPERFN430A3                         300
+#define TYPERFN430EKA                        301
+#define TYPERFN430KV                         302
+#define TYPERFN410FL                         310
+#define TYPERFN410FX                         311
+#define TYPERFN410FD                         312
 
 #define TYPE_DAS08                           500
 #define TYPE_EVWATCH                         600

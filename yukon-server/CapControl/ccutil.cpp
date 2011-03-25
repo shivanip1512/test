@@ -37,10 +37,11 @@ bool isQualityOk(unsigned quality)
     return false;
 }
 
-MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType)
+MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag)
     : std::exception(),
       _description("Missing Point Attribute: '")
 {
+    _complain = complainFlag;
     _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
 }
 
@@ -48,6 +49,10 @@ MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute
 const char * MissingPointAttribute::what( ) const
 {
     return _description.c_str();
+}
+const bool MissingPointAttribute::complain( ) const
+{
+    return _complain;
 }
 }
 }

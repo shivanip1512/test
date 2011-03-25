@@ -86,6 +86,12 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPEMCT430]       = "MCT-430";
     type_lookups[TYPEMCT470]       = "MCT-470";
 
+    type_lookups[TYPERFN430A3]     = "RFN-430A3";
+    type_lookups[TYPERFN430KV]     = "RFN-430KV";
+    type_lookups[TYPERFN410FL]     = "RFN-410FL";
+    type_lookups[TYPERFN410FX]     = "RFN-410FX";
+    type_lookups[TYPERFN410FD]     = "RFN-410FD";
+
     type_lookups[TYPELMT2]         = "LMT-2";
 
     type_lookups[TYPELCR3102]      = "LCR-3102";
@@ -126,6 +132,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPECBC7010]              = "CBC 7010";
     type_lookups[TYPECBC7020]              = "CBC 7020";
     type_lookups[TYPECBCDNP]               = "CBC DNP";
+    type_lookups[TYPECAPBANK]              = "CAP BANK";
 
     type_lookups[TYPE_TAPTERM]             = "TAP TERMINAL";
     type_lookups[TYPE_SNPP]                = "SNPP TERMINAL";

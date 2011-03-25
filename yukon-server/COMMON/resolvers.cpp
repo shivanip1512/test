@@ -445,6 +445,26 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPELMT2;
     }
+    else if(rwsTemp == "rfn-430a3")
+    {
+        nRet = TYPERFN430A3;
+    }
+    else if(rwsTemp == "rfn-430kv")
+    {
+        nRet = TYPERFN430KV;
+    }
+    else if(rwsTemp == "rfn-410fl")
+    {
+        nRet = TYPERFN410FL;
+    }
+    else if(rwsTemp == "rfn-410fx")
+    {
+        nRet = TYPERFN410FX;
+    }
+    else if(rwsTemp == "rfn-410fd")
+    {
+        nRet = TYPERFN410FD;
+    }
     else if(rwsTemp == "rtu-ilex")
     {
         nRet = TYPE_ILEXRTU;
@@ -604,6 +624,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     else if(rwsTemp == "macro group")
     {
         nRet = TYPE_MACRO;
+    }
+    else if(rwsTemp == "cap bank")
+    {
+        nRet = TYPECAPBANK;
     }
     else if(rwsTemp == "cbc 6510")
     {

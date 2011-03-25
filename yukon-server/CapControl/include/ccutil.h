@@ -30,12 +30,14 @@ class MissingPointAttribute : public std::exception
 
 public:
 
-    MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType);
+    MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag = true);
 
     virtual const char * what( ) const;
+    const bool complain( ) const;
 
 private:
 
     std::string _description;
+    bool    _complain;
 };
 }}

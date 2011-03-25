@@ -3150,7 +3150,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             for(int k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                                currentCapBank->setCurrentDailyOperations(0);
+                currentCapBank->setCurrentDailyOperations(0);
                 currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
                 currentCapBank->setRetryOpenFailedFlag(FALSE);
