@@ -40,6 +40,8 @@ public:
 
 private:
 
+    void assignChildren();
+
     void getAllChildrenOfZone(const long parentId, Zone::IdSet & results) const;    // recursive
 
     typedef Cti::readers_writer_lock_t  Lock;

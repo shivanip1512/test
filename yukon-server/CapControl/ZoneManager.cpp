@@ -30,6 +30,8 @@ void ZoneManager::reload(const long Id)
         {
             _zones[ b->first ] = results[ b->first ];
         }
+
+        assignChildren();
     }
 }
 
@@ -45,6 +47,8 @@ void ZoneManager::unload(const long Id)
     WriterGuard guard(_lock);
 
     _zones.erase(Id);
+
+    assignChildren();
 }
 
 
@@ -123,6 +127,31 @@ void ZoneManager::getAllChildrenOfZone(const long parentId, Zone::IdSet & result
         for each ( const Zone::IdSet::value_type & ID in children )
         {
             getAllChildrenOfZone(  ID, results );
+        }
+    }
+}
+
+
+void ZoneManager::assignChildren()
+{
+    // clear out existing parent-child hierarchy
+
+    for ( ZoneMap::iterator b = _zones.begin(), e = _zones.end(); b != e; ++b )
+    {
+        b->second->clearChildIds();
+    }
+
+    // rebuild the parent-child hierarchy
+
+    for ( ZoneMap::iterator b = _zones.begin(), e = _zones.end(); b != e; ++b )
+    {
+        SharedPtr zone = b->second;
+
+        ZoneMap::iterator parent = _zones.find( zone->getParentId() );
+
+        if ( parent != _zones.end() )
+        {
+            parent->second->addChildId( zone->getId() );
         }
     }
 }

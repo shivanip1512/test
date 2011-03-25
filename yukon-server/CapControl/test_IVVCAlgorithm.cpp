@@ -149,15 +149,11 @@ private:
             case 101:
             {
                 newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 11, 35, "The Root Zone" ) );
-                newZone->addChildId(103);
-                newZone->addChildId(107);
                 break;
             }
             case 103:
             {
                 newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 22, 35, "The Left Zone" ) );
-                newZone->addChildId(104);
-                newZone->addChildId(109);
                 break;
             }
             case 104:
@@ -173,8 +169,6 @@ private:
             case 107:
             {
                 newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 33, 35, "The Right Zone" ) );
-                newZone->addChildId(106);
-                newZone->addChildId(108);
                 break;
             }
             case 108:
@@ -685,5 +679,35 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_zone_normalization)
     BOOST_CHECK_EQUAL( -2 , tapOps[107] );
     BOOST_CHECK_EQUAL(  2 , tapOps[108] );
     BOOST_CHECK_EQUAL(  0 , tapOps[109] );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_all_children_of_zone_with_zone_reload_and_reconfiguration)
+{
+    ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
+
+    zoneManager.reloadAll();
+
+    Zone::IdSet results;
+
+    results.insert(101);
+    results.insert(103);
+    results.insert(104);
+    results.insert(106);
+    results.insert(107);
+    results.insert(108);
+    results.insert(109);
+
+    Zone::IdSet subset = zoneManager.getZoneIdsBySubbus(35);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results.begin(), results.end(), subset.begin(), subset.end() );
+
+    results.erase(108);
+
+    zoneManager.unload(108);
+
+    subset = zoneManager.getZoneIdsBySubbus(35);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results.begin(), results.end(), subset.begin(), subset.end() );
 }
 

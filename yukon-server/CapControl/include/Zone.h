@@ -45,6 +45,7 @@ public:
     // Mutators
 
     void addChildId( const long Id );
+    void clearChildIds();
 
     void addBankId( const long Id );
     void addPointId( const long Id );

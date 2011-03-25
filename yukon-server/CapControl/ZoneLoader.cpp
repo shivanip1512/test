@@ -23,8 +23,6 @@ ZoneManager::ZoneMap ZoneDBLoader::load(const long Id)
     loadBankParameters(Id, loaded);
     loadPointParameters(Id, loaded);
 
-    assignChildren(loaded);
-
     return loaded;
 }
 
@@ -183,22 +181,6 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
             {
                 zone->second->addPointId(Id);
             }
-        }
-    }
-}
-
-
-void ZoneDBLoader::assignChildren(ZoneManager::ZoneMap &zones)
-{
-    for ( ZoneManager::ZoneMap::iterator b = zones.begin(), e = zones.end(); b != e; ++b )
-    {
-        ZoneManager::SharedPtr zone = b->second;
-
-        ZoneManager::ZoneMap::iterator parent = zones.find( zone->getParentId() );
-
-        if ( parent != zones.end() )
-        {
-            parent->second->addChildId( zone->getId() );
         }
     }
 }

@@ -90,6 +90,12 @@ Zone::IdSet Zone::getChildIds() const
 }
 
 
+void Zone::clearChildIds()
+{
+    _childIds.clear();
+}
+
+
 Zone::IdSet Zone::getBankIds() const
 {
     return _bankPaos;
