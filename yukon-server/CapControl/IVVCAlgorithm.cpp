@@ -969,9 +969,9 @@ bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
 
         LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
 
-        regulator->getPointValue( point.getPointId(), value );
+        bool hasValue = regulator->getPointValue( point.getPointId(), value );
 
-        return (value != 0.0);  // Remote Mode
+        return ( hasValue && ( value == 1.0 ) );    // Remote Mode
     }
     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
