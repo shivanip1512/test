@@ -18,7 +18,7 @@
 
 <c:choose>
 	<c:when test="${not empty pageScope.statusClassKey}">
-		<cti:classUpdater key="${pageScope.statusClassKey}" type="COMMANDER">
+		<cti:classUpdater key="${pageScope.statusClassKey}">
 			<span cannonClassUpdater="${pageScope.statusClassKey}" ><span id="progressStatus_${pDescId}"></span></span>
 		</cti:classUpdater>
 	</c:when>

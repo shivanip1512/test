@@ -38,7 +38,31 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
         	} else {
         		return "In Progress";
         	}
-        	
+        } else if (updaterTypeStr.equals("EXPORT_STATUS_CLASS")) {
+            
+            ExportDatabaseMigrationStatus status = databaseMigrationService.getExportStatus(id);
+            
+            if (status.isComplete()) {
+                return "OkMsg";
+
+            } else if (status.isExceptionOccured()) {
+                return "ErrorMsg";
+
+            } else {
+                return "";
+            }
+        
+        // Exporting Errors
+        } else if (updaterTypeStr.equals("EXPORT_ERROR_TEXT")) {
+
+            ExportDatabaseMigrationStatus status = databaseMigrationService.getExportStatus(id);
+
+            if (status.isExceptionOccured()) {
+                return status.getError();
+            } else {
+                return "";
+            }
+            
         // VALIDATION
         } else if (updaterTypeStr.equals("VALIDATION_COMPLETED_ITEMS")) {
         	

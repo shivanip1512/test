@@ -1044,7 +1044,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 			        getLogFileWriter(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
 			     
 			    try {
-    			    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
+                    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
     		        
     		        // build data
     		        Iterable<DataTable> data = 
@@ -1067,10 +1067,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     		        
     		        exportDatabaseMigrationStatus.addCurrentCount();
     		        
-    		        //salvage what we can
-			    } catch (Throwable t) {
-			        log.fatal(t);
-			        exportDatabaseMigrationStatus.setError(t.getLocalizedMessage());
+			    } catch (RuntimeException t) {
+			        log.error(t);
+			        exportDatabaseMigrationStatus.setError(t.getMessage());
 			        
 			    } finally {
 			        logFileWriter.close();
