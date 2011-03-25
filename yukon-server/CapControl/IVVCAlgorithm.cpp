@@ -955,10 +955,10 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
 
 bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
 {
-    double value = -1.0;
-
     try
     {
+        double value = -1.0;
+
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
         VoltageRegulatorManager::SharedPtr regulator =
@@ -967,6 +967,8 @@ bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
         LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
 
         regulator->getPointValue( point.getPointId(), value );
+
+        return (value != 0.0);  // Remote Mode
     }
     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
@@ -981,7 +983,7 @@ bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
         dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
     }
 
-    return (value != 0.0);  // Remote Mode
+    return false;
 }
 
 
