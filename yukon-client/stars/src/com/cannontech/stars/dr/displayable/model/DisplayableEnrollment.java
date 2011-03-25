@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.program.model.Program;
@@ -21,15 +23,11 @@ public final class DisplayableEnrollment {
             @Override
             public int compare(DisplayableEnrollmentProgram o1, DisplayableEnrollmentProgram o2) {
                 
-                Integer order1 = o1.getProgram().getProgramOrder();
-                Integer order2 = o2.getProgram().getProgramOrder();
-                if (order1.compareTo(order2) != 0) {
-                    return order1.compareTo(order2);
-                } else {
-                    Integer programId1 = o1.getProgram().getProgramId();
-                    Integer programId2 = o2.getProgram().getProgramId();
-                    return programId1.compareTo(programId2);
-                }
+                return new CompareToBuilder()
+                    .append(o1.getProgram().getProgramOrder(), o2.getProgram().getProgramOrder())
+                    .append(o1.getProgram().getProgramId(), o2.getProgram().getProgramId())
+                    .toComparison();
+
             }
         };
 
