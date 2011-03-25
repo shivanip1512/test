@@ -8194,11 +8194,13 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
 
     VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
-    LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
+    LitePoint point = regulator->getPointByAttribute(PointAttribute::KeepAlive); //This is supposed to be the KeepAlive 
+                                                                                 // (the AutoRemote DigitalInput is a calcultated value
+                                                                                 //of the Manual SW Status and the Heartbeat Status from the LTC )
 
     //Logging Action
     std::string text("Enable Remote Control");
-    std::string enableString(" 0");
+    int keepAliveTime = _IVVC_HEARTBEAT_CONFIG;
 
     if ( commandType == CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE )
     {
@@ -8208,13 +8210,9 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
     {
         regulator->setOperatingMode(Cti::CapControl::VoltageRegulator::LocalMode);
         text = "Disable Remote Control";
-        enableString = " 1";
-
         //sends a 0 to kill the keep alive
-        voltageRegulatorKeepAliveHelper( regulator,
-                                         0,
-                                         toDispatch,
-                                         requests );
+        keepAliveTime = 0;
+
     }
 
     toDispatch.push_back( new CtiSignalMsg( point.getPointId(),
@@ -8223,14 +8221,16 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
                                             std::string("Voltage Regulator Name: " + regulator->getPaoName()),
                                             CapControlLogType,
                                             SignalEvent,
-                                            _command->getUser() ) );
-
-    //Command Action
-    std::string commandString = "putvalue analog " + CtiNumStr( point.getPointOffset() ) + enableString;
-
-    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+                                            _command->getUser(),
+                                            0, //tag
+                                            7, //priority
+                                            0, //millis
+                                            keepAliveTime ) ); //pointDataValue 
+    
+    voltageRegulatorKeepAliveHelper( regulator,
+                                     keepAliveTime,
+                                     toDispatch,
+                                     requests );
 }
 
 void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG                  commandType,
