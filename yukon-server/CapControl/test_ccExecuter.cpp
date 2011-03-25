@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorRemoteControl_Success)
 
     BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorRemoteControl(commandMsg->getCommand(),toDispatch,events,requests) );
 
-    BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 2, toDispatch.size() );
     BOOST_CHECK_EQUAL( 0, events.size()     );
     BOOST_CHECK_EQUAL( 1, requests.size()   );
 
