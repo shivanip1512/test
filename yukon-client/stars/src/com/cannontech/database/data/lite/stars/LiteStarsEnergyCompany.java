@@ -487,9 +487,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     /**
      * Get appliance categories created in this energy company only
-     * @deprecated Use ApplianceCategoryDao.getApplianceCategoryIdsByEC
      */
-    @Deprecated
     public Iterable<LiteApplianceCategory> getApplianceCategories() {
         return appCategoryMap.values();
     }
