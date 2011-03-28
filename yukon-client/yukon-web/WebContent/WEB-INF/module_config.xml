@@ -1152,10 +1152,22 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="lists.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/lists</link>
+                                <link>/spring/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="list.VIEW" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                        <labelArgument>${list.type}</labelArgument>
+                                    </page>
+                                    <page name="list.EDIT" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                        <labelArgument>${list.type}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                             <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>

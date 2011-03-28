@@ -167,6 +167,8 @@
     <bean id="assignedProgramDao" class="com.cannontech.stars.dr.appliance.dao.impl.AssignedProgramDaoImpl"/>
     <bean id="assignedProgramService" class="com.cannontech.stars.dr.appliance.service.impl.AssignedProgramServiceImpl"/>
 
+    <bean id="selectionListService" class="com.cannontech.stars.dr.selectionList.service.impl.SelectionListServiceImpl"/>
+
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
     
     <bean id="starsProgramService" class="com.cannontech.stars.dr.program.service.impl.ProgramServiceImpl"/>

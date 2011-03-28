@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<!-- List -->
+<entry key="yukon.web.modules.adminSetup.list.list.pageName">Lists</entry>
+<entry key="yukon.web.modules.adminSetup.list.list.pageDescription">{0}</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.list.inherited">Inherited</entry>
+<entry key="yukon.web.modules.adminSetup.list.list.lists.title">Lists</entry>
+
+<!-- Edit/View -->
+<entry key="yukon.web.modules.adminSetup.list.EDIT.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.list.VIEW.pageDescription">{0}</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.where">Description</entry>
+<entry key="yukon.web.modules.adminSetup.list.label">Label</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.entries.title">Entries</entry>
+<entry key="yukon.web.modules.adminSetup.list.noEntries">There are currently no entries.</entry>
+<entry key="yukon.web.modules.adminSetup.list.entryText">Entry Text</entry>
+<entry key="yukon.web.modules.adminSetup.list.definition">Type</entry>
+<entry key="yukon.web.modules.adminSetup.list.actions">Actions</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.restoreDefault.label">Restore Default</entry>
+
+<!-- General selection list keys -->
+<entry key="yukon.dr.selectionList.LM_CUSTOMER_EVENT">Customer Event</entry>
+<entry key="yukon.dr.selectionList.LM_CUSTOMER_ACTION">Customer Action</entry>
+<entry key="yukon.dr.selectionList.INVENTORY_CATEGORY">Inventory Category</entry>
+<entry key="yukon.dr.selectionList.DEVICE_VOLTAGE">Device Voltage</entry>
+<entry key="yukon.dr.selectionList.DEVICE_TYPE">Device Type</entry>
+<entry key="yukon.dr.selectionList.DEVICE_STATUS">Device Status</entry>
+<entry key="yukon.dr.selectionList.APPLIANCE_CATEGORY">Appliance Category</entry>
+<entry key="yukon.dr.selectionList.CALL_TYPE">Call Type</entry>
+<entry key="yukon.dr.selectionList.SERVICE_TYPE">Service Type</entry>
+<entry key="yukon.dr.selectionList.SERVICE_STATUS">Service Status</entry>
+<entry key="yukon.dr.selectionList.SEARCH_TYPE">Search By</entry>
+<entry key="yukon.dr.selectionList.MANUFACTURER">Manufacturer</entry>
+<entry key="yukon.dr.selectionList.APP_LOCATION">Appliance Location</entry>
+<entry key="yukon.dr.selectionList.DEVICE_LOCATION">Device Location</entry>
+<entry key="yukon.dr.selectionList.CHANCE_OF_CONTROL">Chance of Control</entry>
+<entry key="yukon.dr.selectionList.TIME_OF_WEEK">Time of Week</entry>
+<entry key="yukon.dr.selectionList.THERMOSTAT_MODE">Thermostat Mode</entry>
+<entry key="yukon.dr.selectionList.THERMOSTAT_FAN_STATE">Thermostat Fan State</entry>
+<entry key="yukon.dr.selectionList.RESIDENCE_TYPE">Residence Type</entry>
+<entry key="yukon.dr.selectionList.CONSTRUCTION_MATERIAL">Construction Material</entry>
+<entry key="yukon.dr.selectionList.DECADE_BUILT">Decade Built</entry>
+<entry key="yukon.dr.selectionList.SQUARE_FEET">Square Feet</entry>
+<entry key="yukon.dr.selectionList.INSULATION_DEPTH">Insulation Depth</entry>
+<entry key="yukon.dr.selectionList.GENERAL_CONDITION">General Condition</entry>
+<entry key="yukon.dr.selectionList.COOLING_SYSTEM">Cooling System</entry>
+<entry key="yukon.dr.selectionList.HEATING_SYSTEM">Heating System</entry>
+<entry key="yukon.dr.selectionList.NUM_OF_OCCUPANTS">Number of Occupants</entry>
+<entry key="yukon.dr.selectionList.OWNERSHIP_TYPE">Ownership Type</entry>
+<entry key="yukon.dr.selectionList.FUEL_TYPE">Fuel Type</entry>
+<entry key="yukon.dr.selectionList.AC_TONNAGE">Tonnage</entry>
+<entry key="yukon.dr.selectionList.AC_TYPE">Type</entry>
+<entry key="yukon.dr.selectionList.WH_NUM_OF_GALLONS">Number of Gallons</entry>
+<entry key="yukon.dr.selectionList.WH_ENERGY_SOURCE">Energy Source</entry>
+<entry key="yukon.dr.selectionList.WH_LOCATION">Location</entry>
+<entry key="yukon.dr.selectionList.DF_SWITCH_OVER_TYPE">Switch Over Type</entry>
+<entry key="yukon.dr.selectionList.DF_SECONDARY_SOURCE">Secondary Source</entry>
+<entry key="yukon.dr.selectionList.GEN_TRANSFER_SWITCH_TYPE">Transfer Switch Type</entry>
+<entry key="yukon.dr.selectionList.GEN_TRANSFER_SWITCH_MFG">Transfer Switch Mfg</entry>
+<entry key="yukon.dr.selectionList.GRAIN_DRYER_TYPE">Type</entry>
+<entry key="yukon.dr.selectionList.GD_BIN_SIZE">Bin Size</entry>
+<entry key="yukon.dr.selectionList.GD_ENERGY_SOURCE">Energy Source</entry>
+<entry key="yukon.dr.selectionList.GD_HORSE_POWER">Horse Power</entry>
+<entry key="yukon.dr.selectionList.GD_HEAT_SOURCE">Heat Source</entry>
+<entry key="yukon.dr.selectionList.STORAGE_HEAT_TYPE">Type</entry>
+<entry key="yukon.dr.selectionList.HEAT_PUMP_TYPE">Type</entry>
+<entry key="yukon.dr.selectionList.HEAT_PUMP_SIZE">Size</entry>
+<entry key="yukon.dr.selectionList.HP_STANDBY_SOURCE">Standby Source</entry>
+<entry key="yukon.dr.selectionList.IRRIGATION_TYPE">Type</entry>
+<entry key="yukon.dr.selectionList.IRR_HORSE_POWER">Horse Power</entry>
+<entry key="yukon.dr.selectionList.IRR_ENERGY_SOURCE">Energy Source</entry>
+<entry key="yukon.dr.selectionList.IRR_SOIL_TYPE">Soil Type</entry>
+<entry key="yukon.dr.selectionList.IRR_METER_LOCATION">Meter Location</entry>
+<entry key="yukon.dr.selectionList.IRR_METER_VOLTAGE">Meter Voltage</entry>
+<entry key="yukon.dr.selectionList.INV_SEARCH_BY">Inventory Search By</entry>
+<entry key="yukon.dr.selectionList.INV_SORT_BY">Inventory Sort By</entry>
+<entry key="yukon.dr.selectionList.INV_FILTER_BY">Inventory Filter By</entry>
+<entry key="yukon.dr.selectionList.SO_SEARCH_BY">SO Search By</entry>
+<entry key="yukon.dr.selectionList.SO_SORT_BY">SO Sort By</entry>
+<entry key="yukon.dr.selectionList.SO_FILTER_BY">SO Filter By</entry>
+<entry key="yukon.dr.selectionList.RATE_SCHEDULE">Rate Schedule</entry>
+<entry key="yukon.dr.selectionList.CONSUMPTION_TYPE">Consumption Type</entry>
+<entry key="yukon.dr.selectionList.EVENT_SYSTEM_CATEGORY">Event System Category</entry>
+<entry key="yukon.dr.selectionList.ACCOUNT_ACTION">Event Account Actions</entry>
+<entry key="yukon.dr.selectionList.INVENTORY_ACTION">Event Inventory Actions</entry>
+<entry key="yukon.dr.selectionList.WORKORDER_ACTION">Event Work Order Actions</entry>
+<entry key="yukon.dr.selectionList.SETTLEMENT_TYPE">Settlement</entry>
+<entry key="yukon.dr.selectionList.CI_CUST_TYPE">CI Customer Type</entry>
+
+<entry key="yukon.dr.selectionList.definition.EMAIL">Email</entry>
+<entry key="yukon.dr.selectionList.definition.PHONE">Phone Number</entry>
+<entry key="yukon.dr.selectionList.definition.PIN">PIN/Login</entry>
+<entry key="yukon.dr.selectionList.definition.PAGE">Pager</entry>
+<entry key="yukon.dr.selectionList.definition.FAX">Fax Number</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMPROGRAM">Program</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMHARDWARE">Hardware</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMTHERMOSTAT_MANUAL">Thermostat Manual</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_SIGNUP">Sign-up</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_PENDING">Pending</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_COMPLETED">Completed</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_TERMINATION">Termination</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_TEMP_TERMINATION">Temporary Opt Out</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_FUTURE_ACTIVATION">Future Activation</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_INSTALL">Install</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_CONFIG">Configure</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_PROGRAMMING">Programming</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_MANUAL_OPTION">Manual Option</entry>
+<entry key="yukon.dr.selectionList.definition.CUST_ACT_UNINSTALL">Uninstall</entry>
+<entry key="yukon.dr.selectionList.definition.INV_CAT_ONEWAYREC">One Way Receiver</entry>
+<entry key="yukon.dr.selectionList.definition.INV_CAT_TWOWAYREC">Two Way Receiver</entry>
+<entry key="yukon.dr.selectionList.definition.INV_CAT_MCT">MCT</entry>
+<entry key="yukon.dr.selectionList.definition.INV_CAT_NON_YUKON_METER">Non Yukon Meter</entry>
+
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_EXPRESSSTAT">ExpressStat</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_5000_XCOM">LCR-5000(EXPRESSCOM)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_MCT">MCT</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_COMM_EXPRESSSTAT">Commercial ExpressStat</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4000">LCR-4000</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_3000">LCR-3000</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_2000">LCR-2000</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_1000">LCR-1000</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_SA205">SA-205</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_SA305">SA-305</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_5000_VCOM">LCR-5000(VERSACOM)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_SA_SIMPLE">SA Simple</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_EXPRESSSTAT_HEATPUMP">ExpressStat Heat Pump</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_UTILITYPRO">UtilityPRO</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_3102">LCR-3102</entry>
+
+<entry key="yukon.dr.selectionList.definition.APP_CAT_DEFAULT">(Default)</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_AIR_CONDITIONER">Air Conditioner</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_WATER_HEATER">Water Heater</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_STORAGE_HEAT">Storage Heat</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_HEAT_PUMP">Heat Pump</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_DUAL_FUEL">Dual Fuel</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_GENERATOR">Generator</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_GRAIN_DRYER">Grain Dryer</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_IRRIGATION">Irrigation</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_CHILLER">Chiller</entry>
+<entry key="yukon.dr.selectionList.definition.APP_CAT_DUALSTAGE">Dual Stage</entry>
+
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_PENDING">Pending</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_SCHEDULED">Scheduled</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_COMPLETED">Completed</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_CANCELLED">Cancelled</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_ASSIGNED">Assigned</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_RELEASED">Released</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_PROCESSED">Processed</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_STAT_HOLD">Hold</entry>
+
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_SERVICE_CALL">Service Call</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_INSTALL">Install</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_ACTIVATION">Activation</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_DEACTIVATION">Deactivation</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_REMOVAL">Removal</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_REPAIR">Repair</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_OTHER">Other</entry>
+<entry key="yukon.dr.selectionList.definition.SERV_TYPE_MAINTENANCE">Maintenance</entry>
+
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_ACCT_NO">Acct #</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_PHONE_NO">Phone #</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_LAST_NAME">Last Name</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_SERIAL_NO">Serial #</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_MAP_NO">Map #</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_ADDRESS">Address</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_ALT_TRACK_NO">Alt Track #</entry>
+<!-- Meter # isn't in the default list. -->
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_METER_NO">Meter #</entry>
+<entry key="yukon.dr.selectionList.definition.SEARCH_TYPE_COMPANY_NAME">Company</entry>
+
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_AVAIL">Available</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_TEMP_UNAVAIL">Temp Unavail</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_UNAVAIL">Unavailable</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_ORDERED">Ordered</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_SHIPPED">Shipped</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_RECEIVED">Received</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_ISSUED">Issued</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_INSTALLED">Installed</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_STAT_REMOVED">Removed</entry>
+
+<entry key="yukon.dr.selectionList.definition.MANU_UNKNOWN">(Unknown)</entry>
+<entry key="yukon.dr.selectionList.definition.LOC_UNKNOWN">(Unknown)</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_WEEKDAY">Weekday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_WEEKEND">Weekend</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_SATURDAY">Saturday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_SUNDAY">Sunday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_MONDAY">Monday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_TUESDAY">Tuesday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_WEDNESDAY">Wednesday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_THURSDAY">Thursday</entry>
+<entry key="yukon.dr.selectionList.definition.TOW_FRIDAY">Friday</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_DEFAULT">(Unknown)</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_COOL">Cool</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_HEAT">Heat</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_OFF">Off</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_AUTO">Auto</entry>
+<entry key="yukon.dr.selectionList.definition.THERM_MODE_EMERGENCY_HEAT">Emergency Heat</entry>
+<entry key="yukon.dr.selectionList.definition.FAN_STAT_DEFAULT">(Default)</entry>
+<entry key="yukon.dr.selectionList.definition.FAN_STAT_AUTO">Auto</entry>
+<entry key="yukon.dr.selectionList.definition.FAN_STAT_ON">On</entry>
+<entry key="yukon.dr.selectionList.definition.FAN_STAT_CIRCULATE">Circulate</entry>
+
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_SERIAL_NO">Serial #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_ACCT_NO">Acct #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_PHONE_NO">Phone #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_LAST_NAME">Last Name</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_ORDER_NO">Order #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_ADDRESS">Address</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_ALT_TRACK_NO">Alt Track #</entry>
+
+<!-- Meter # and device name have no value in default list. -->
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_METER_NO">Meter #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SEARCH_BY_DEVICE_NAME">Device Name</entry>
+
+<entry key="yukon.dr.selectionList.definition.INV_SORT_BY_SERIAL_NO">Serial #</entry>
+<entry key="yukon.dr.selectionList.definition.INV_SORT_BY_INST_DATE">Install Date</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_DEV_TYPE">Device Type</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_SRV_COMPANY">Service company</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_APPLIANCE_TYPE">Appliance Type</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_DEV_STATUS">Device status</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_MEMBER">Member</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_WAREHOUSE">Warehouse</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_SERIAL_RANGE_MIN">Min Serial Number</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_SERIAL_RANGE_MAX">Max Serial Number</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_POSTAL_CODES">Postal Code</entry>
+<entry key="yukon.dr.selectionList.definition.INV_FILTER_BY_CUST_TYPE">Customer Type</entry>
+
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_ORDER_NO">Order #</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_ACCT_NO">Acct #</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_PHONE_NO">Phone #</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_LAST_NAME">Last Name</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_SERIAL_NO">Serial #</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SEARCH_BY_ADDRESS">Address</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_ORDER_NO">Order #</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_DATE_TIME">Date/Time</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_SERV_COMP">Service Company</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_SERV_TYPE">Service Type</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_SERV_STAT">Service Status</entry>
+<entry key="yukon.dr.selectionList.definition.SO_SORT_BY_CUST_TYPE">Customer Type</entry>
+<entry key="yukon.dr.selectionList.definition.SO_FILTER_BY_STATUS">Service Status</entry>
+<entry key="yukon.dr.selectionList.definition.SO_FILTER_BY_SRV_TYPE">Service Type</entry>
+<entry key="yukon.dr.selectionList.definition.SO_FILTER_BY_SRV_COMPANY">Service Company</entry>
+<entry key="yukon.dr.selectionList.definition.SO_FILTER_BY_SRV_COMP_CODES">Postal Code</entry>
+<entry key="yukon.dr.selectionList.definition.SO_FILTER_BY_CUST_TYPE">Customer Type</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_J">J</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_PS">PS</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_PSO">Power Service Only</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_PLS">Power &amp; Lighting Service</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_PP">PP</entry>
+<entry key="yukon.dr.selectionList.definition.RATE_SCHED_PT">PT</entry>
+<entry key="yukon.dr.selectionList.definition.SETTLEMENT_HECO">HECO</entry>
+
+<entry key="yukon.dr.selectionListCategory.SYSTEM">System</entry>
+<entry key="yukon.dr.selectionListCategory.HARDWARE">Hardware</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE">Appliance</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_AIR_CONDITIONING">Appliance - Air Conditioning</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_WATER_HEATER">Appliance - Water Heater</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_DUEL_FUEL">Appliance - Duel Fuel</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_GRAIN_DRYER">Appliance - Grain Dryer</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_STORAGE_HEAT">Appliance - Storage Heat</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_HEAT_PUMP">Appliance - Heat Pump</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_IRRIGATION">Appliance - Irrigation</entry>
+<entry key="yukon.dr.selectionListCategory.APPLIANCE_GENERATOR">Appliance - Generator</entry>
+<entry key="yukon.dr.selectionListCategory.CALL_TRACKING">Call Tracking</entry>
+<entry key="yukon.dr.selectionListCategory.SERVICE_ORDER">Service Order</entry>
+<entry key="yukon.dr.selectionListCategory.CONTROL">Control</entry>
+<entry key="yukon.dr.selectionListCategory.THERMOSTAT">Thermostat</entry>
+<entry key="yukon.dr.selectionListCategory.RESIDENCE">Residence</entry>
+<entry key="yukon.dr.selectionListCategory.ACCOUNT">Account</entry>
+<entry key="yukon.dr.selectionListCategory.CAP_CONTROL">Capacitor Control</entry>
+
+</properties>

@@ -12,7 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -20,6 +21,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -310,53 +312,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 			 //listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
 	}	
 
-	public String getYukonListName(int yukonDefID) {
-		if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_RATE_SCHED_J)
-			return YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE)
-			return YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
-			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
-			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
-			return YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN)
-			return YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN)
-			return YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL)
-			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING)
-			return YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
-			return YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
-			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC)
-			return YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
-			return YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM)
-			return YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_EVENT;
-		
-		return null;
-	}
-
     public YukonListEntry getYukonListEntry(final YukonSelectionList list, final String entryText) {
         final List<YukonListEntry> entryList = list.getYukonListEntries();
         for (final YukonListEntry entry : entryList) {
@@ -371,21 +326,20 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         @Override
         public YukonSelectionList mapRow(YukonResultSet rs) throws SQLException {
             final YukonSelectionList selectionList = new YukonSelectionList();
-            
-            selectionList.setListID(rs.getInt("ListId"));
-            selectionList.setOrdering(rs.getString("Ordering"));
+
+            selectionList.setListId(rs.getInt("ListId"));
+            selectionList.setOrdering(rs.getEnum("Ordering", YukonSelectionListOrder.class));
             selectionList.setSelectionLabel(rs.getString("SelectionLabel"));
             selectionList.setWhereIsList(rs.getString("WhereIsList"));
-            selectionList.setListName(rs.getString("ListName"));
-            selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
+            selectionList.setType(rs.getEnum("ListName", YukonSelectionListEnum.class));
+            selectionList.setUserUpdateAvailable(rs.getEnum("UserUpdateAvailable", YNBoolean.class).getBoolean());
             selectionList.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 
             List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
             selectionList.setYukonListEntries(allListEntries);
-            
+
             return selectionList;
         }
-
     }
 
     /**
@@ -396,11 +350,11 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectYukonListEntriesSql);
-        sql.append("WHERE ListId").eq(selectionList.getListID());
+        sql.append("WHERE ListId").eq(selectionList.getListId());
         
-        if (selectionList.getOrdering().equalsIgnoreCase("A")) {  // Alphabetical order
+        if (selectionList.getOrdering() == YukonSelectionListOrder.ALPHABETICAL) {
             sql.append("ORDER BY EntryText");
-        } else if (selectionList.getOrdering().equalsIgnoreCase("O")) { // Order by "EntryOrder"
+        } else if (selectionList.getOrdering() == YukonSelectionListOrder.ENTRY_ORDER) {
             sql.append("ORDER BY EntryOrder");
         } else {
             sql.append("ORDER BY EntryId");

@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -486,8 +487,8 @@ public class StarsAdminUtil {
 						// This is a new entry, add it to the new entry list
 						com.cannontech.database.db.constants.YukonListEntry entry =
 								new com.cannontech.database.db.constants.YukonListEntry();
-						entry.setListID( new Integer(cList.getListID()) );
-						entry.setEntryOrder( new Integer(i+1) );
+						entry.setListID(cList.getListId());
+						entry.setEntryOrder(i+1);
 						entry.setEntryText( (String)entryData[i][1] );
 						entry.setYukonDefID( (Integer)entryData[i][2] );
 						entry.setDbConnection( conn );
@@ -541,7 +542,7 @@ public class StarsAdminUtil {
 			conn.commit();
 			
 			// Sort the entry list by the ordering specified in the selection list
-			if (cList.getOrdering().equalsIgnoreCase("A"))
+			if (cList.getOrdering() == YukonSelectionListOrder.ALPHABETICAL)
 				Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 			
 			cList.setYukonListEntries( newEntries );
@@ -1162,25 +1163,26 @@ public class StarsAdminUtil {
 		
 		ServerUtils.handleDBChange( liteUser, DbChangeType.UPDATE );
 	}
-	
-	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, StarsYukonUser user) {
-		List<YukonSelectionList> userLists = new ArrayList<YukonSelectionList>();
+
+	// TODO:  DELETE WHEN REMOVING LIST BIT FROM ConfigEnergyCompany.jsp
+	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+	    List<YukonSelectionList> userLists = new ArrayList<YukonSelectionList>();
 		
-		if (StarsUtils.isOperator( user.getYukonUser() )) {
+        if (StarsUtils.isOperator(user)) {
 			Map<String,YukonSelectionList> listMap = new TreeMap<String,YukonSelectionList>();
 			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 				energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
-			
-			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), OddsForControlRole.ROLEID) != null)
+
+			if (DaoFactory.getAuthDao().getRole(user, OddsForControlRole.ROLEID) != null)
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING))
+			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING))
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) ||
-				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE))
+			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) ||
+				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE))
 			{
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
@@ -1264,9 +1266,9 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), InventoryRole.ROLEID) != null ||
-				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
-				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE))
+			if (DaoFactory.getAuthDao().getRole(user, InventoryRole.ROLEID) != null ||
+				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
+				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE))
 			{
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
@@ -1282,8 +1284,8 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
 			}
 			
-			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null ||
-				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
+			if (DaoFactory.getAuthDao().getRole(user, WorkOrderRole.ROLEID) != null ||
+				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
 			{
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
@@ -1291,7 +1293,7 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
 			}
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE)) {
+			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE)) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL,
@@ -1316,10 +1318,10 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
 			}
 			
-			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), InventoryRole.ROLEID) != null) {
+			if (DaoFactory.getAuthDao().getRole(user, InventoryRole.ROLEID) != null) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY) );
-				if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), InventoryRole.INVENTORY_SHOW_ALL)) {
+				if (DaoFactory.getAuthDao().checkRoleProperty(user, InventoryRole.INVENTORY_SHOW_ALL)) {
 					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY,
 						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY) );
 					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY,
@@ -1327,10 +1329,10 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null) {
+			if (DaoFactory.getAuthDao().getRole(user, WorkOrderRole.ROLEID) != null) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY) );
-				if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), WorkOrderRole.WORK_ORDER_SHOW_ALL)) {
+				if (DaoFactory.getAuthDao().checkRoleProperty(user, WorkOrderRole.WORK_ORDER_SHOW_ALL)) {
 					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY,
 						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY) );
 					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY,
@@ -1338,7 +1340,7 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY)) {
+			if (DaoFactory.getAuthDao().checkRoleProperty(user, AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY)) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
 			}
@@ -1347,7 +1349,7 @@ public class StarsAdminUtil {
 			while (it.hasNext())
 				userLists.add( it.next() );
 		}
-		else if (StarsUtils.isResidentialCustomer( user.getYukonUser() )) {
+		else if (StarsUtils.isResidentialCustomer( user )) {
 			userLists.add( energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 		}
 		

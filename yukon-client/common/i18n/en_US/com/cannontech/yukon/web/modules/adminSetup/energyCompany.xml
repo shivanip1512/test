@@ -122,9 +122,6 @@
     <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageName">Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageDescription">{0}</entry>
 
-    <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageName">Lists</entry>
-    <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageDescription">{0}</entry>
-
     <!-- Schedule Pages -->
     <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageName">Schedules</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageDescription">{0}</entry>

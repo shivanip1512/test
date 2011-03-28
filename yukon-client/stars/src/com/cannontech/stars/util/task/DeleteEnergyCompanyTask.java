@@ -294,9 +294,9 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			List<YukonSelectionList> energyCompanySelectionLists = 
 			    yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
 			for (YukonSelectionList cList : energyCompanySelectionLists) {
-				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
+				if (cList.getListId() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
-				Integer listID = new Integer( cList.getListID() );
+				Integer listID = cList.getListId();
 				com.cannontech.database.data.constants.YukonSelectionList list =
 						new com.cannontech.database.data.constants.YukonSelectionList();
 				list.setListID( listID );

@@ -13,12 +13,15 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -1119,12 +1122,12 @@ public class StarsLiteFactory {
 	    com.cannontech.database.db.constants.YukonSelectionList list = 
 	        new com.cannontech.database.db.constants.YukonSelectionList();
 
-	    list.setListID(new Integer(cList.getListID()));
-        list.setOrdering(cList.getOrdering());
+	    list.setListID(cList.getListId());
+        list.setOrdering(cList.getOrdering().getDatabaseRepresentation().toString());
         list.setSelectionLabel(cList.getSelectionLabel());
         list.setWhereIsList(cList.getWhereIsList());
         list.setListName(cList.getListName());
-        list.setUserUpdateAvailable(cList.getUserUpdateAvailable());
+        list.setUserUpdateAvailable(YNBoolean.valueOf(cList.isUserUpdateAvailable()).getDatabaseRepresentation().toString());
         list.setEnergyCompanyId(cList.getEnergyCompanyId());
 		
 		return list;
@@ -1133,12 +1136,12 @@ public class StarsLiteFactory {
 	public static void setConstantYukonSelectionList(
 			com.cannontech.common.constants.YukonSelectionList cList, 
 			com.cannontech.database.db.constants.YukonSelectionList list) {
-        cList.setListID(list.getListID().intValue());
-        cList.setOrdering(list.getOrdering());
+        cList.setListId(list.getListID().intValue());
+        cList.setOrdering(YukonSelectionListOrder.getForDbString(list.getOrdering()));
         cList.setSelectionLabel(list.getSelectionLabel());
         cList.setWhereIsList(list.getWhereIsList());
-        cList.setListName(list.getListName());
-        cList.setUserUpdateAvailable(list.getUserUpdateAvailable());
+        cList.setType(YukonSelectionListEnum.getForName(list.getListName()));
+        cList.setUserUpdateAvailable(list.getUserUpdateAvailable().equals("Y"));
         cList.setEnergyCompanyId(list.getEnergyCompanyId());
 	}
 
@@ -2252,8 +2255,8 @@ public class StarsLiteFactory {
 	
 	public static StarsCustSelectionList createStarsCustSelectionList(YukonSelectionList yukonList) {
 		StarsCustSelectionList starsList = new StarsCustSelectionList();
-		
-		starsList.setListID( yukonList.getListID() );
+
+        starsList.setListID(yukonList.getListId());
 		starsList.setListName( yukonList.getListName() );
 		
         List<YukonListEntry> entries = yukonList.getYukonListEntries();

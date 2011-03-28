@@ -181,6 +181,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/userGroupEditor</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/serviceCompany</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/applianceCategory</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/selectionList</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/warehouse</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>

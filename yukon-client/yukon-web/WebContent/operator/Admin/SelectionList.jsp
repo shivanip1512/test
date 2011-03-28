@@ -1,3 +1,4 @@
+<%@page import="com.cannontech.common.constants.YukonSelectionListOrder"%>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
@@ -298,7 +299,7 @@ function setInherited(inherited) {
 }
 
 function init() {
-<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+<%	if (list.getListId() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 	changeOrdering(document.form1);
 <%	} %>
 	populateDefaultList(document.form1);
@@ -359,7 +360,7 @@ function init() {
                           
                         </td>
                       </tr>
-<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+<%	if (list.getListId() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 					  <tr> 
                         <td width="15%" align="right" class="TableCell">Description:</td>
                         <td width="85%" class="TableCell"> 
@@ -370,9 +371,9 @@ function init() {
                         <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Ordering" onchange="changeOrdering(this.form);setContentChanged(true);">
-                            <option value="O" <% if (list.getOrdering().equalsIgnoreCase("O")) out.print("selected"); %>>List 
+                            <option value="O" <% if (list.getOrdering() == YukonSelectionListOrder.ENTRY_ORDER) out.print("selected"); %>>List 
                             Order</option>
-                            <option value="A" <% if (list.getOrdering().equalsIgnoreCase("A")) out.print("selected"); %>>Alphabetical</option>
+                            <option value="A" <% if (list.getOrdering() == YukonSelectionListOrder.ALPHABETICAL) out.print("selected"); %>>Alphabetical</option>
                           </select>
                         </td>
                       </tr>
@@ -412,7 +413,7 @@ function init() {
                                 <span class="ConfirmMsg">Click on an entry to 
                                 view or edit it.</span></td>
                               <td width="50%"> 
-<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+<%	if (list.getListId() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)">
                                 <br>
                                 <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)">
@@ -488,7 +489,7 @@ function init() {
                               <td width="50%"> 
                                 <select name="DefaultListEntries" size="7" style="width:200" onclick="showDefaultEntry(this.form)"></select>
                                 <br>
-                                <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+                                <%	if (list.getListId() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)">
                                 <%	} %>
                               </td>

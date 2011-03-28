@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.stars.StarsLMDetail;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -73,7 +74,7 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 	private static final String ATT_ORDER_BY = "orderBy";
 	private static final String ATT_SHOW_CAPACITY = "showCapacity";
 
-	public Comparator<StarsLMDetail> lmDetailComparator = new Comparator<StarsLMDetail>()
+	private Comparator<StarsLMDetail> lmDetailComparator = new Comparator<StarsLMDetail>()
 	{
 		public int compare(StarsLMDetail o1, StarsLMDetail o2){
 
@@ -85,8 +86,8 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 	        {
 			    if( getOrderBy() == ORDER_BY_STATE)
 			    {
-			        thisStrVal = DaoFactory.getYukonListDao().getYukonListName(o1.getEnrollStatus().intValue());
-					anotherStrVal = DaoFactory.getYukonListDao().getYukonListName(o2.getEnrollStatus().intValue());
+			        thisStrVal = YukonDefinition.getById(o1.getEnrollStatus()).getRelevantList().getListName();
+			        anotherStrVal = YukonDefinition.getById(o2.getEnrollStatus()).getRelevantList().getListName();
 					if (thisStrVal.equalsIgnoreCase(anotherStrVal))
 					    tempOrderBy = ORDER_BY_ACCOUNT_NUMBER;	//Need to order by accountNumber
 			    }
@@ -127,13 +128,6 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 		}
 	};
 
-	/**
-	 * 
-	 */
-	public StarsLMDetailModel()
-	{
-		super();
-	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset

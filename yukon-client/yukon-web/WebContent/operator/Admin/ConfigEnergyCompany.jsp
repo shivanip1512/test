@@ -424,14 +424,14 @@ function deleteWarehouse(form, warehouseId) {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <%
-	List<YukonSelectionList> userLists = StarsAdminUtil.getSelectionListsInUse(liteEC, user);
+	List<YukonSelectionList> userLists = StarsAdminUtil.getSelectionListsInUse(liteEC, user.getYukonUser());
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
-		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
+		if (!cList.isUserUpdateAvailable()) continue;
 %>
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
-                                  <td class="TableCell" width="30%"><%= cList.getListName() %></td>
+                                  <td class="TableCell" width="30%"><a href="SelectionList.jsp?List=<%= cList.getListName() %>"><%= cList.getListName() %></a></td>
                                   <td class="TableCell" width="40%"> 
                                     <hr width="90%" align="left">
                                   </td>

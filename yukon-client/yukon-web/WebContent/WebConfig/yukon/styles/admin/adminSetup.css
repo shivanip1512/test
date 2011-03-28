@@ -194,3 +194,24 @@ table.routeAndSubstationLayout td.last {
 div.listContainer {
     max-width: 400px;
 }
+
+#selectionListList {
+    width: 100%;
+}
+
+#selectionListList td {
+    vertical-align: top;
+    width: 50%;
+}
+
+#selectionListList h3 {
+    margin-top: 10px;
+}
+
+#selectionListList .notesCell {
+    padding-left: 15px;
+}
+
+#selectionListEntries {
+    margin-top: 15px;
+}

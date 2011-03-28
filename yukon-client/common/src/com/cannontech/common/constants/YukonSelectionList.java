@@ -3,16 +3,18 @@ package com.cannontech.common.constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.util.LazyList;
+
 public class YukonSelectionList {
     private int listId = 0;
-    private String ordering = null;
+    private YukonSelectionListOrder ordering = null;
     private String selectionLabel = null;
     private String whereIsList = null;
-    private String listName = null;
-    private String userUpdateAvailable = null;
+    private YukonSelectionListEnum type = null;
+    private boolean userUpdateAvailable = false;
     private Integer energyCompanyId = null;
 
-    private List<YukonListEntry> yukonListEntries = null;
+    private List<YukonListEntry> yukonListEntries = LazyList.ofInstance(YukonListEntry.class);
 
     public static final String TABLE_NAME = "YukonSelectionList";
 
@@ -24,15 +26,19 @@ public class YukonSelectionList {
         return TABLE_NAME;
     }
 
-    public int getListID() {
+    public int getListId() {
         return listId;
     }
 
-    public String getListName() {
-        return listName;
+    public YukonSelectionListEnum getType() {
+        return type;
     }
 
-    public String getOrdering() {
+    public String getListName() {
+        return type.getListName();
+    }
+
+    public YukonSelectionListOrder getOrdering() {
         return ordering;
     }
 
@@ -40,7 +46,7 @@ public class YukonSelectionList {
         return selectionLabel;
     }
 
-    public String getUserUpdateAvailable() {
+    public boolean isUserUpdateAvailable() {
         return userUpdateAvailable;
     }
 
@@ -56,15 +62,15 @@ public class YukonSelectionList {
         this.energyCompanyId = energyCompanyId;
     }
 
-    public void setListID(int listId) {
+    public void setListId(int listId) {
         this.listId = listId;
     }
 
-    public void setListName(String listName) {
-        this.listName = listName;
+    public void setType(YukonSelectionListEnum type) {
+        this.type = type;
     }
 
-    public void setOrdering(String ordering) {
+    public void setOrdering(YukonSelectionListOrder ordering) {
         this.ordering = ordering;
     }
 
@@ -72,7 +78,7 @@ public class YukonSelectionList {
         this.selectionLabel = selectionLabel;
     }
 
-    public void setUserUpdateAvailable(String userUpdateAvailable) {
+    public void setUserUpdateAvailable(boolean userUpdateAvailable) {
         this.userUpdateAvailable = userUpdateAvailable;
     }
 

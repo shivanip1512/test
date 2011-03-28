@@ -19,6 +19,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
+// TODO:  delete this class
 public class UpdateSelectionListController extends StarsAdminActionController {
 
     public DBPersistentDao dbPersistentDao;
@@ -45,8 +46,8 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                 
                 com.cannontech.database.data.constants.YukonSelectionList list =
                         new com.cannontech.database.data.constants.YukonSelectionList();
-                list.setListID( new Integer(cList.getListID()) );
-                
+                list.setListID(cList.getListId());
+
                 dbPersistentDao.performDBChange(list, TransactionType.DELETE);
             } else {
                 String ordering = request.getParameter("Ordering");
@@ -91,7 +92,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setSelectionLabel( label );
                     listDB.setWhereIsList( whereIsList );
                     listDB.setListName( listName );
-                    listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
+                    listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).isUserUpdateAvailable() ? "Y" : "N");
                     listDB.setEnergyCompanyId( energyCompany.getEnergyCompanyId() );
                     
                     dbPersistentDao.performDBChange(list, TransactionType.INSERT);

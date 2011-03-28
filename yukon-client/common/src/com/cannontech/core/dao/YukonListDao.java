@@ -46,11 +46,6 @@ public interface YukonListDao {
      */
     public boolean isPager(int listEntryID);
 
-    /**
-     * Get the selection list name based on the specified list entry yukon definition ID 
-     */
-    public String getYukonListName(int yukonDefID);
-    
     public YukonListEntry getYukonListEntry(YukonSelectionList list, String entryText);
     
     public YukonListEntry getYukonListEntry(int listEntryID);
