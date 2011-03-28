@@ -38,6 +38,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 		case PAOGroups.LM_GROUP_DIGI_SEP:
             retLm = new LMGroupDigiSep();
             retLm.setPAOCategory(PAOGroups.getCategory(type.getPaoCategory().getCategoryId()));
+            retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
 		case PAOGroups.LM_GROUP_VERSACOM:
 			retLm = new LMGroupVersacom();
