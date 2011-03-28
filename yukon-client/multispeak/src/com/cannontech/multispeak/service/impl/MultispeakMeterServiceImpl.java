@@ -9,6 +9,7 @@ package com.cannontech.multispeak.service.impl;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -57,10 +61,10 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.core.substation.dao.SubstationDao;
-import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
+import com.cannontech.core.substation.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
@@ -88,6 +92,7 @@ import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
@@ -98,6 +103,12 @@ import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author stacey
@@ -131,6 +142,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	/** A map of Long(userMessageID) to MultispeakEvent values */
 	private static Map<Long,MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long,MultispeakEvent>());
 
+    private ImmutableSet<OutageEventType> supportedEventTypes;
+    private ImmutableSetMultimap<OutageEventType, Integer> outageConfig;
+	
 	private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
 	// Strings to represent MultiSpeak method calls, generally used for logging.
@@ -146,6 +160,35 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public void initialize() throws Exception {
         CTILogger.info("New MSP instance created");
         porterConnection.addMessageListener(this);
+
+        ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
+        Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
+        builder.putAll(OutageEventType.Outage, 20, 57, 72);
+        builder.putAll(OutageEventType.NoResponse, 31, 32, 33, 65);
+        builder.putAll(OutageEventType.Restoration, 1, 17, 74, 0);
+        ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
+
+        supportedEventTypes = ImmutableSet.of(OutageEventType.Outage,
+                                              OutageEventType.NoResponse,
+                                              OutageEventType.Restoration,
+                                              OutageEventType.PowerOff,
+                                              OutageEventType.PowerOn,
+                                              OutageEventType.Instantaneous,
+                                              OutageEventType.Inferred);
+
+        SetMultimap<OutageEventType, Integer> outageConfigTemp = HashMultimap.create(systemDefault);
+        for (OutageEventType eventType : supportedEventTypes) {
+            String valueStr = configurationSource.getString("MSP_OUTAGE_EVENT_TYPE_CONFIG_" + eventType.getValue().toUpperCase());
+            if (valueStr != null) {
+                int[] errorCodes = com.cannontech.common.util.StringUtils.parseIntStringAfterRemovingWhitespace(valueStr);
+                List<Integer> errorCodeList = Arrays.asList(ArrayUtils.toObject(errorCodes));
+                outageConfigTemp.values().removeAll(errorCodeList);
+                outageConfigTemp.putAll(eventType, errorCodeList);
+            }
+        }
+
+        outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
+        CTILogger.info("outage event configuation: " + outageConfig);
     }
     
     /**
@@ -271,7 +314,17 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         return event.getDevice().getMeterRead();
     }
-    
+
+    @Override
+    public ImmutableSet<OutageEventType> getSupportedEventTypes() {
+        return supportedEventTypes;
+    }
+
+    @Override
+    public ImmutableSetMultimap<OutageEventType, Integer> getOutageConfig() {
+        return outageConfig;
+    }
+
     @Override
 	public synchronized ErrorObject[] odEvent(MultispeakVendor vendor, 
 	        String[] meterNumbers,

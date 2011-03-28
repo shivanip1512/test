@@ -119,7 +119,7 @@ public final class StringUtils {
     }
     
     /**
-	 * Parase a comma separated string into an int[]
+	 * Parse a comma separated string into an int[]
 	 * @param s
 	 * @return
 	 */
@@ -138,6 +138,16 @@ public final class StringUtils {
 		}
 		return intArr;
 	}
+
+    /**
+     * First remove any whitespace, then parse the comma separated string into an int[].
+     * @param s
+     * @return
+     */
+    public static int[] parseIntStringAfterRemovingWhitespace(String s) {
+        s = org.apache.commons.lang.StringUtils.deleteWhitespace(s);
+        return parseIntString(s);
+    }
     
     public static String toStringList(Object... args) {
         return org.apache.commons.lang.StringUtils.join(args, ",");

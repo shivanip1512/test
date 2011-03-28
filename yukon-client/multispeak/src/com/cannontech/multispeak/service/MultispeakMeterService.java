@@ -17,7 +17,10 @@ import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 
 /**
  * @author stacey
@@ -194,4 +197,45 @@ public interface MultispeakMeterService {
      * @return true if added to a new substation group.  
      */
     public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+
+    /**
+     * Returns an ImmutableSet of supported OutageEventTypes. Currently these are being initialized
+     * to the following:
+     * <ul>
+     * <li>OutageEventType.Outage
+     * <li>OutageEventType.NoResponse
+     * <li>OutageEventType.Restoration
+     * <li>OutageEventType.PowerOff
+     * <li>OutageEventType.PowerOn
+     * <li>OutageEventType.Instantaneous
+     * <li>OutageEventType.Inferred
+     * </ul>
+     */
+    public ImmutableSet<OutageEventType> getSupportedEventTypes();
+
+    /**
+     * Returns an ImmutableSetMultimap of the OutageEventTypes and which error codes are associated
+     * with them.
+     * <p>
+     * By default we assign error codes to the Outage, NoResponse, and Restoration OutageEventTypes:
+     * <ul>
+     * <li>OutageEventType.Outage: 20, 57, 72
+     * <li>OutageEventType.NoResponse: 31, 32, 33, 65
+     * <li>OutageEventType.Restoration: 1, 17, 74, 0
+     * </ul>
+     * This is done in the initialize() method. The user can override these defaults using cparms.
+     * The syntax for this is "MSP_OUTAGE_EVENT_TYPE_CONFIG_xxx : errCode1, errorCode2, etc" where
+     * "xxx" is the name of the OutageEventType that is being overridden.
+     * <p>
+     * Example: "MSP_OUTAGE_EVENT_TYPE_CONFIG_OUTAGE : 17". This will remove the error code 17 from
+     * any other OutageEventType it is associated with and assign 17 to the OutageEventType.Outage
+     * map entry. So, since 17 is by default an error code associated with
+     * OutageEventType.Restoration... including this cparm would remove 17 from the Restoration map
+     * entry and re-assign it to OutageEventType.Outage entry
+     * 
+     * @return ImmutableSetMultimap<OutageEventType, Integer>
+     * @see getSupportedEventTypes() method for a list of the possible OutageEventTypes that can be
+     *      contained in this map.
+     */
+    public ImmutableSetMultimap<OutageEventType, Integer> getOutageConfig();
 }

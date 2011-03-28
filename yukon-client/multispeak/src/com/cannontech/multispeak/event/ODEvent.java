@@ -1,9 +1,3 @@
-/*
- * Created on Jul 11, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
@@ -23,18 +17,16 @@ import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.OutageLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 
-/**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class ODEvent extends MultispeakEvent{
 
-   private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-    
+    private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
+    private final MultispeakMeterService multispeakMeterService = YukonSpringHook.getBean("multispeakMeterService", MultispeakMeterService.class);
+
    private OutageDetectionEvent outageDetectionEvent = null;
 
 	/**
@@ -46,16 +38,11 @@ public class ODEvent extends MultispeakEvent{
 		super(mspVendor_, pilMessageID_, transactionID_);
 	}
 
-    /**
-     * @return
-     */
     public OutageDetectionEvent getOutageDetectionEvent()
     {
         return outageDetectionEvent;
     }
-    /**
-     * @param outageDetectionEvent_
-     */
+
     public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_)
     {
         this.outageDetectionEvent = outageDetectionEvent_;
@@ -100,31 +87,16 @@ public class ODEvent extends MultispeakEvent{
         ode.setOutageLocation(loc);
         ode.setComments(returnMsg.getResultString());
         
-        if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
-        {   //Meter did not respond - outage assumed
-            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Failed:" + returnMsg.getResultString());
-            ode.setOutageEventType(OutageEventType.Outage);
-            ode.setErrorString("Ping failed: " + returnMsg.getResultString());
+        ImmutableSetMultimap<OutageEventType, Integer> outageConfig = multispeakMeterService.getOutageConfig();
+        ImmutableSet<OutageEventType> supportedEventTypes = multispeakMeterService.getSupportedEventTypes();
+        for (OutageEventType eventType : supportedEventTypes) {
+            if (outageConfig.get(eventType).contains(returnMsg.getStatus())) {
+                ode.setOutageEventType(eventType);
+                ode.setErrorString(eventType.getValue() + ": " + returnMsg.getResultString());
+                break;
+            }
         }
-        else if( returnMsg.getStatus() == 31 || returnMsg.getStatus() == 32 || returnMsg.getStatus() == 33 || returnMsg.getStatus() == 65)
-        {   //Unknown, but may not be an outage
-            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Communication Failure:" + returnMsg.getResultString());
-            ode.setOutageEventType(OutageEventType.NoResponse);
-            ode.setErrorString("Communication failure: " + returnMsg.getResultString());
-        }
-        else if( returnMsg.getStatus() == 1 || returnMsg.getStatus() == 17 || returnMsg.getStatus() == 74 || returnMsg.getStatus() == 0)
-        {   //Meter responsed in some way or another, 0 status was perfect
-            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Successful");
-            ode.setOutageEventType(OutageEventType.Restoration);
-        }
-        else 
-        {   //No idea what code this is
-            CTILogger.info("Meter (" + meterNumber + ") - Unknown return status from ping: " +returnMsg.getStatus());
-            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Status Unknown");
-            ode.setOutageEventType(OutageEventType.NoResponse);
-            ode.setErrorString("Unknown return status: " + returnMsg.getResultString());
-        }
-        
+
         setOutageDetectionEvent(ode);
         
         eventNotification();
