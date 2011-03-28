@@ -681,7 +681,8 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_WCTP;
     }
-    else if(rwsTemp == "lm direct program")
+    else if(rwsTemp == "lm direct program" ||
+            rwsTemp == "lm sep program")
     {
         nRet = TYPE_LMPROGRAM_DIRECT;
     }
@@ -826,7 +827,8 @@ INT resolveLoadManagementType(const string& _rwsTemp)
     CtiToLower(rwsTemp);
     in_place_trim(rwsTemp);
 
-    if(rwsTemp == "lm direct program")
+    if(rwsTemp == "lm direct program" ||
+       rwsTemp == "lm sep program")
     {
         nRet = TYPE_LMPROGRAM_DIRECT;
     }

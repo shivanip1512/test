@@ -417,6 +417,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "lm direct program";
     devType = TYPE_LMPROGRAM_DIRECT;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "lm sep program";
+    devType = TYPE_LMPROGRAM_DIRECT;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "lm curtail program";
     devType = TYPE_LMPROGRAM_CURTAILMENT;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
