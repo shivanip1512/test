@@ -21,6 +21,8 @@ public class ImageTag extends YukonTagSupport {
     protected String key = null;
     protected String href = null;
     protected String styleClass = null;
+    protected String type = null;
+    protected String value = null;
 
     public void setId(String id) {
         this.id = id;
@@ -41,7 +43,15 @@ public class ImageTag extends YukonTagSupport {
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
     @Override
     public void doTag() throws JspException, IOException,
             NoSuchMessageException {
@@ -62,7 +72,12 @@ public class ImageTag extends YukonTagSupport {
                 out.write("\" class=\"simpleLink\">");
             }
 
-            out.write("<img");
+            if (StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input")) {
+                out.write("<input type=\"image\"");
+            } else {
+                out.write("<img");
+            }
+            
             if (StringUtils.isNotBlank(id)) {
                 out.write(" id=\"");
                 out.write(id);
@@ -71,7 +86,7 @@ public class ImageTag extends YukonTagSupport {
             
             String imgClass = "logoImage";
             
-            if (StringUtils.isNotBlank(href)) {
+            if (StringUtils.isNotBlank(href) || (StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input"))) {
                 imgClass += " hoverableImage";
             }
             
@@ -99,6 +114,13 @@ public class ImageTag extends YukonTagSupport {
                 out.write(name);
                 out.write('"');
             }
+            
+            if (StringUtils.isNotBlank(value) && (StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input"))) {
+                out.write(" value=\"");
+                out.write(value);
+                out.write('"');
+            }
+            
             out.write(">");
 
             if (StringUtils.isNotBlank(href)) {

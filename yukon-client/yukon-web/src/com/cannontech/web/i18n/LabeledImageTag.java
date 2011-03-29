@@ -15,10 +15,15 @@ import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 public class LabeledImageTag extends ImageTag {
     private String labelStyleClass = null;
+    private String imgStyleClass = null;
     private boolean imageOnRight = false;
 
     public void setLabelStyleClass(String labelStyleClass) {
         this.labelStyleClass = labelStyleClass;
+    }
+    
+    public void setImgStyleClass(String imgStyleClass) {
+        this.imgStyleClass = imgStyleClass;
     }
 
     public void setImageOnRight(boolean imageOnRight) {
@@ -47,7 +52,7 @@ public class LabeledImageTag extends ImageTag {
                 containerClass += " hoverableImageContainer";
             }
             
-            if (StringUtils.isBlank(styleClass)) {
+            if (StringUtils.isNotBlank(styleClass)) {
                 containerClass += " " + styleClass;
             }
             
@@ -104,9 +109,15 @@ public class LabeledImageTag extends ImageTag {
 
     private void writeImage(JspWriter out, String imageUrl) throws IOException {
         String imgClass = "logoImage";
+        
+        if (StringUtils.isNotBlank(imgStyleClass)) {
+            imgClass += (" " + imgStyleClass);
+        }
+        
         if (StringUtils.isNotBlank(href)) {
             imgClass += " hoverableImage";
         }
+        
         out.write("<img class=\"" + imgClass + "\" src=\"");
         out.write(imageUrl);
         out.write("\">");

@@ -1441,6 +1441,18 @@
             <description>name for generated HTML img tag</description>
         </attribute>
         <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>type of tag: possible values are 'img' or 'input' (default is 'img')</description>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>value of the generate HTML input tag (only valid when type = 'input')</description>
+        </attribute>
+        <attribute>
             <name>href</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1500,6 +1512,12 @@
             <description>
                 link class, defaults to 'simpleLink', applied to wrapping span
             </description>
+        </attribute>
+        <attribute>
+            <name>imgStyleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>class for img</description>
         </attribute>
         <attribute>
             <name>labelStyleClass</name>
@@ -1592,6 +1610,12 @@
             <description>
                 true if image should show to the right of the text, has no effect if there is no image or no text
             </description>
+        </attribute>
+        <attribute>
+            <name>naked</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>true if button should not have a border like the old labeledImage tag</description>
         </attribute>
     </tag>
 

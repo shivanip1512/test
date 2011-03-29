@@ -25,6 +25,7 @@ public class ButtonTag extends YukonTagSupport {
     protected String type = null;
     protected String name = null;
     protected Boolean imageOnRight = false;
+    protected Boolean naked = null;
 
     public void setId(String id) {
         this.id = id;
@@ -53,9 +54,13 @@ public class ButtonTag extends YukonTagSupport {
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public void setImageOnRight(Boolean imageOnRight) {
         this.imageOnRight = imageOnRight;
+    }
+
+    public void setNaked(Boolean naked) {
+        this.naked = naked;
     }
 
     @Override
@@ -66,6 +71,11 @@ public class ButtonTag extends YukonTagSupport {
         }
 
         String classes = "formSubmit pointer hoverableImageContainer";
+        
+        if (naked != null) {
+            classes += " naked";
+        }
+        
         if (StringUtils.isNotBlank(styleClass)) {
             classes += " " + styleClass;
         }
