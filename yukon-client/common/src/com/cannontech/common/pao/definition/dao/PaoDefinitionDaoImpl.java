@@ -453,9 +453,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         this.fileIdOrder = Lists.newArrayList();
         this.typesBySupportedTag = Maps.newEnumMap(PaoTag.class);
         for (PaoTag paoTag : PaoTag.values()) {
+            // fill map with empty maps that will be added to as each PaoType is processed
             typesBySupportedTag.put(paoTag, EnumHashBiMap.<PaoType, PaoDefinition>create(PaoType.class));
         }
         this.supportedTagsByType = Maps.newEnumMap(PaoType.class);
+        for (PaoType paoType : PaoType.values()) {
+            // fill map with placeholders, value will be replaced as PaoType is processed
+            supportedTagsByType.put(paoType, ImmutableBiMap.<PaoTag,PaoTagDefinition>of());
+        }
         
         // definition resources (in order from lowest level overrides to highest)
         List<Resource> definitionResources = new ArrayList<Resource>();

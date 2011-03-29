@@ -520,6 +520,12 @@ public class PaoDefinitionDaoImplTest {
 
     }
     
+    @Test
+    public void testNoTagsForType() {
+        Set<PaoTag> supportedTags = dao.getSupportedTags(PaoType.ALPHA_A1);
+        assertNotNull(supportedTags);
+    }
+    
 
     /**
      * Helper method to get the set of init point templates for device1
