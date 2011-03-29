@@ -86,5 +86,10 @@ public interface YukonSelectionListDefs {
 	
 	public static final String YUK_LIST_NAME_SETTLEMENT_TYPE = "Settlement";
 	public static final String YUK_LIST_NAME_CI_CUST_TYPE = "CICustomerType";
-	
+    public static final String YUK_LIST_NAME_CALC_FUNCTIONS = "CalcFunctions";
+
+    /* CapControl Lists */
+	public static final String YUK_LIST_NAME_CONTROLLER_TYPE = "Controller Type";
+	public static final String YUK_LIST_NAME_SWITCH_MANUFACTURER_TYPE = "Switch Manufacturer";
+    public static final String YUK_LIST_NAME_SWITCH_TYPE = "Type of Switch";
 }
