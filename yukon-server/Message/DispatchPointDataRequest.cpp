@@ -54,18 +54,15 @@ void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
                 pv.quality = pData->getQuality();
                 pv.value = pData->getValue();
 
-                if (pv.quality == NormalQuality || pv.quality == ManualQuality)
+                if (isPointDataNew(pointId, pv))
                 {
                     _values[pointId] = pv;
-                }
-                else
-                {
-                    _rejectedValues[pointId] = pv;
                 }
 
                 //Check if we are done. and set flag
                 if (_values.size() == _points.size())
                 {
+                    updateRejectedValues();
                     _complete = true;
                 }
             }//else: a point we don't care about.
@@ -73,6 +70,37 @@ void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
     }
 
     delete message;
+}
+bool DispatchPointDataRequest::isPointDataNew(long pointId, PointValue pv)
+{
+    if (_values.find(pointId) == _values.end() || pv.timestamp >=_values[pointId].timestamp)
+        return true;
+    else
+        return false;
+}
+void DispatchPointDataRequest::updateRejectedValues()
+{
+    PointValueMap::iterator itr = _values.begin();
+    // Iterate through the _values map.  
+    // Move non-normal qualities to the rejected Values map
+    // Prune Rejected Values map of pointId's that have Normal Point Value
+    while (itr != _values.end())
+    {
+        if (itr->second.quality != ManualQuality && itr->second.quality != NormalQuality)
+        {
+            //
+            _rejectedValues[itr->first] = itr->second;
+            itr = _values.erase(itr);
+        }
+        else
+        {
+            //Added this bookkeeping, to clean up rejected values if we get an updated normal quality value
+            if (_rejectedValues.find(itr->first) != _rejectedValues.end())
+                _rejectedValues.erase(itr->first);
+            itr++;
+        }
+    }
+    
 }
 
 bool DispatchPointDataRequest::watchPoints(const std::set<PointRequest>& pointRequests)

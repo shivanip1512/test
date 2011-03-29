@@ -32,7 +32,8 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         virtual void reportStatusToLog();
         virtual std::set<long> getMissingPoints();
         virtual PointValueMap getRejectedPointValues();
-
+        virtual void updateRejectedValues();
+        virtual bool isPointDataNew(long pointId, PointValue pv);
         void setDispatchConnection(DispatchConnectionPtr connection);
 
     private:
