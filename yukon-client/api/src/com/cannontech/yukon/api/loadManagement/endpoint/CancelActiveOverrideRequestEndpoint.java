@@ -30,14 +30,14 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.CancelOptOutRequestMapper;
+import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.CancelOverrideRequestMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
-public class CancelScheduledOptOutRequestEndpoint {
+public class CancelActiveOverrideRequestEndpoint {
 
     private AccountEventLogService accountEventLogService;
     private OptOutService optOutService;
@@ -49,17 +49,17 @@ public class CancelScheduledOptOutRequestEndpoint {
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
-    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "cancelScheduledOptOutRequest")
+    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "cancelActiveOverrideRequest")
     public Element invoke(Element newOptOutCancelRequest, LiteYukonUser user) throws Exception {
 
         XmlVersionUtils.verifyYukonMessageVersion(newOptOutCancelRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(newOptOutCancelRequest);
-        CancelOptOutHelper cancelOptOutHelper = template.evaluateAsObject("//y:cancelScheduledOptOutRequest", 
-                                                              new NodeToElementMapperWrapper<CancelOptOutHelper>(new CancelOptOutRequestMapper()));
+        CancelOptOutHelper cancelOptOutHelper = template.evaluateAsObject("//y:cancelActiveOverrideRequest", 
+                                                              new NodeToElementMapperWrapper<CancelOptOutHelper>(new CancelOverrideRequestMapper()));
 
-        Element resp = new Element("cancelScheduledOptOutResponse", ns);
+        Element resp = new Element("cancelActiveOverrideResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element fe = null;
@@ -68,36 +68,39 @@ public class CancelScheduledOptOutRequestEndpoint {
         LMHardwareBase lmHardwareBase = null;
         
         try {
-            accountEventLogService.scheduledOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
-                                                                            cancelOptOutHelper.getSerialNumber());
+            accountEventLogService.activeOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
+                                                                         cancelOptOutHelper.getSerialNumber());
+            
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            customerAccount = 
-                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(cancelOptOutHelper.getAccountNumber(), 
+            customerAccount =
+                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(cancelOptOutHelper.getAccountNumber(),
                                                                                    energyCompany);
             lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(cancelOptOutHelper.getSerialNumber());
-           
+            
+            
+            
             List<OptOutEventDto> events =
                 optOutEventDao.getCurrentOptOuts(customerAccount.getAccountId(), lmHardwareBase.getInventoryId());
             
             LinkedList<Integer> eventIdList = new LinkedList<Integer>();
             
-            boolean scheduledFound = false;
-            
-            for (OptOutEventDto event: events) {
-                if (event.getState() == OptOutEventState.SCHEDULED) {
-                    scheduledFound = true;
+            for (OptOutEventDto event : events) {
+                if (event.getState() == OptOutEventState.START_OPT_OUT_SENT ||
+                    event.getState() == OptOutEventState.RESET_SENT) {
                     eventIdList.add(event.getEventId());
                 }
             }
             
-            if (scheduledFound) {
-                optOutService.cancelOptOut(eventIdList, user);
-                resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+            if (eventIdList.isEmpty()) {
+                CancelOptOutException e = new CancelOptOutException("Device " + lmHardwareBase.getManufacturerSerialNumber() +
+                                                                    " has no active optout");
+                fe = XMLFailureGenerator.generateFailure(newOptOutCancelRequest, e, e.getErrorCode(), e.getMessage());
             } else {
-                throw new CancelOptOutException("No scheduled opt outs found for device " + lmHardwareBase.getManufacturerSerialNumber());
+                optOutService.cancelOptOut(eventIdList, user);
+                resp.addContent(XmlUtils.createStringElement("success", ns, "The opt out was canceled successfully"));
             }
-         
+            
         } catch (NotAuthorizedException e) {
             fe = XMLFailureGenerator.generateFailure(newOptOutCancelRequest, e, "UserNotAuthorized", e.getMessage());
         } catch (NotFoundException e) {
@@ -147,6 +150,4 @@ public class CancelScheduledOptOutRequestEndpoint {
     public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
         this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
-    
-    
 }

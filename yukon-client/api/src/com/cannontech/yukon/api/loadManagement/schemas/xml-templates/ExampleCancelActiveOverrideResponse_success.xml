@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cancelActiveOverrideResponse xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelActiveOverrideResponse.xsd"
+    version="1.0">
+    <success />
+</cancelActiveOverrideResponse>

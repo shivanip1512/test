@@ -11,7 +11,7 @@ import com.cannontech.stars.dr.optout.OptOutHelper;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.yukon.api.util.YukonXml;
 
-public class OptOutRequestElementMapper implements ObjectMapper<Element, OptOutHelper> {
+public class OverrideRequestElementMapper implements ObjectMapper<Element, OptOutHelper> {
 
     @Override
     public OptOutHelper map(Element optOutRequest) throws ObjectMappingException {

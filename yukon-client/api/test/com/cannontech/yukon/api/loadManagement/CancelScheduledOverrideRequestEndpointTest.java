@@ -26,13 +26,13 @@ import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutEventDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.YukonEnergyCompanyServiceAdapter;
-import com.cannontech.yukon.api.loadManagement.endpoint.CancelActiveOptOutRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.endpoint.CancelScheduledOverrideRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-public class CancelActiveOptOutRequestEndpointTest {
+public class CancelScheduledOverrideRequestEndpointTest {
     
     private static final LiteYukonUser AUTH_USER = new LiteYukonUser();
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
@@ -41,28 +41,28 @@ public class CancelActiveOptOutRequestEndpointTest {
     private static final String UNKNOWN_ACCOUNT_NUMBER = "B";
     
     private static Namespace ns = YukonXml.getYukonNamespace();
-    private static final String RESP_ELEMENT_NAME = "cancelActiveOptOutResponse";
-    private static final String REQU_ELEMENT_NAME = "cancelActiveOptOutRequest";
+    private static final String RESP_ELEMENT_NAME = "cancelScheduledOverrideResponse";
+    private static final String REQU_ELEMENT_NAME = "cancelScheduledOverrideRequest";
     
     private Resource requestSchemaResource = 
-        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelActiveOptOutRequest.xsd", this.getClass());
+        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelScheduledOverrideRequest.xsd", this.getClass());
     private Resource responseSchemaResource = 
-        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelActiveOptOutResponse.xsd", this.getClass());
+        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelScheduledOverrideResponse.xsd", this.getClass());
  
-    private CancelActiveOptOutRequestEndpoint impl;
+    private CancelScheduledOverrideRequestEndpoint impl;
     
     private enum TestInventory {
-        OPTED_OUT(1, true),
-        NOT_OPTED_OUT(2, false),
+        SCHEDULED(1, true),
+        NOT_SCHEDULED(2, false),
         UNKNOWN (3, false);
      
         private int inventoryId;
         
-        private boolean isOptedOut;
+        private boolean isScheduled;
 
-        private TestInventory(int inventoryId, boolean isOptedOut) {
+        private TestInventory(int inventoryId, boolean isScheduled) {
             this.inventoryId = inventoryId;
-            this.isOptedOut = isOptedOut;
+            this.isScheduled = isScheduled;
         }
         
         private static TestInventory getInventoryForId(int inventoryId) {
@@ -77,7 +77,7 @@ public class CancelActiveOptOutRequestEndpointTest {
     
     @Before
     public void setUp() throws Exception {
-        impl = new CancelActiveOptOutRequestEndpoint();
+        impl = new CancelScheduledOverrideRequestEndpoint();
         
         impl.setCustomerAccountDao(new MockCustomerAccountDao());
         impl.setLmHardwareBaseDao(new MockLmHardwareBaseDao());
@@ -90,28 +90,26 @@ public class CancelActiveOptOutRequestEndpointTest {
     
     @Test
     public void testInvoke() throws Exception {
-
         // test with unauthorized user
         // ========================================================================================
-        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, NOT_AUTH_USER, "UserNotAuthorized", false);
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.SCHEDULED, NOT_AUTH_USER, "UserNotAuthorized", false);
         
         // test with unknown account number
-        // ========================================================================================    
-        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, "NotFound", false);
+        // ========================================================================================
+        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.SCHEDULED, AUTH_USER, "NotFound", false);
         
         // test with unknown serial number
-        // ========================================================================================       
+        // ========================================================================================
         validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "NotFound", false);
         
-        // test with opted out device
+        // test with device with scheduled opt out 
+        // ========================================================================================  
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.SCHEDULED, AUTH_USER, null, true);
+       
+        // test with device without scheduled opt out
         // ========================================================================================
-        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, null, true);
-        
-        // test with not opted out device
-        // ========================================================================================
-        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT, AUTH_USER, "CancelFailed", false);
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.NOT_SCHEDULED, AUTH_USER, "CancelFailed", false);
     }
-    
     
     private void validate(String accountNumber, TestInventory inventory, LiteYukonUser user, String expectedResponse, boolean expectedSuccess) 
     throws Exception {
@@ -123,8 +121,6 @@ public class CancelActiveOptOutRequestEndpointTest {
             TestUtils.runFailureAssertions(responseTemplate, RESP_ELEMENT_NAME, expectedResponse);
         }
     }
-    
-    
     
     private SimpleXPathTemplate validateAndReturnResponse(Element requestElement, LiteYukonUser user) throws Exception{
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
@@ -208,9 +204,9 @@ public class CancelActiveOptOutRequestEndpointTest {
         public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId, int inventoryId) {
             TestInventory test = TestInventory.getInventoryForId(inventoryId);
             ArrayList<OptOutEventDto> events = new ArrayList<OptOutEventDto>();
-            if (test.isOptedOut) {
+            if (test.isScheduled) {
                 OptOutEventDto event = new OptOutEventDto();
-                event.setState(OptOutEventState.START_OPT_OUT_SENT);
+                event.setState(OptOutEventState.SCHEDULED);
                 events.add(event);
             }
             

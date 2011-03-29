@@ -27,14 +27,14 @@ import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.OptOutRequestElementMapper;
+import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.OverrideRequestElementMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
-public class OptOutRequestEndpoint {
+public class OverrideRequestEndpoint {
     private AccountEventLogService accountEventLogService;
     private OptOutService optOutService;
     private CustomerAccountDao customerAccountDao;
@@ -44,16 +44,16 @@ public class OptOutRequestEndpoint {
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
-    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "optOutRequest")
+    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "overrideRequest")
     public Element invoke(Element optOutRequest, LiteYukonUser user) throws Exception {
 
         XmlVersionUtils.verifyYukonMessageVersion(optOutRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(optOutRequest);
-        OptOutHelper optOutHelper = template.evaluateAsObject("//y:optOutRequest", 
-                                                              new NodeToElementMapperWrapper<OptOutHelper>(new OptOutRequestElementMapper()));
+        OptOutHelper optOutHelper = template.evaluateAsObject("//y:overrideRequest", 
+                                                              new NodeToElementMapperWrapper<OptOutHelper>(new OverrideRequestElementMapper()));
 
-        Element resp = new Element("optOutResponse", ns);
+        Element resp = new Element("overrideResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element fe = null;

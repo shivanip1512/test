@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
     targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.0">
 
@@ -8,12 +7,13 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-            Server response for an attempt to cancel an active or a scheduled opt out 
-            on a device.
+           Response for an override attempt by the user through API. The message informs 
+           the client if the override could have been processed successfully. In case of a 
+           failure the message contains the causing issue as well.
         </xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name = "CancelScheduledOptOutResponse">
+    <xsd:complexType name ="OverrideResponse">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:choice>
@@ -24,6 +24,6 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name = "cancelScheduledOptOutResponse" type="yukon:CancelScheduledOptOutResponse"/>
+    <xsd:element name = "overrideResponse" type="yukon:OverrideResponse"/>
 
 </xsd:schema>

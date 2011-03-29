@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cancelScheduledOptOutResponse xmlns="http://yukon.cannontech.com/api" 
+<cancelScheduledOverrideResponse xmlns="http://yukon.cannontech.com/api" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelScheduledOptOutResponse.xsd"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelScheduledOverrideResponse.xsd"
     version="1.0">
   <failure>
     <errorCode>CancelFailed</errorCode>
     <errorReference>FK0190171296</errorReference>
     <errorDescription>No scheduled opt outs found for device 3453070372</errorDescription>
   </failure>
-</cancelScheduledOptOutResponse>
+</cancelScheduledOverrideResponse>

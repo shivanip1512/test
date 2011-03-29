@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
@@ -12,11 +11,11 @@
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
          Request an opt out for an account and hardware.
-         Exclusion of startDate will schedule the opt out for 'now'. 
+         Exclusion of startDate will schedule the override for 'now'. 
         </xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name = "OptOutRequest">
+    <xsd:complexType name = "OverrideRequest">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:sequence>
@@ -30,6 +29,5 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name="optOutRequest" type="yukon:OptOutRequest"/>
-   
+    <xsd:element name="overrideRequest" type="yukon:OverrideRequest"/>
 </xsd:schema>

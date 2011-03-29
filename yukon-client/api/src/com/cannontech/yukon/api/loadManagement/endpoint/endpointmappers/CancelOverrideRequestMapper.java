@@ -9,7 +9,7 @@ import com.cannontech.stars.dr.optout.CancelOptOutHelper;
 import com.cannontech.yukon.api.util.YukonXml;
 
 
-public class CancelOptOutRequestMapper implements ObjectMapper<Element, CancelOptOutHelper> {
+public class CancelOverrideRequestMapper implements ObjectMapper<Element, CancelOptOutHelper> {
 
     @Override
     public CancelOptOutHelper map(Element cancelOptOutRequest) throws ObjectMappingException {

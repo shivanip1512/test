@@ -29,13 +29,13 @@ import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapte
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.YukonEnergyCompanyServiceAdapter;
-import com.cannontech.yukon.api.loadManagement.endpoint.OptOutRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.endpoint.OverrideRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-public class OptOutRequestEndpointTest {
+public class OverrideRequestEndpointTest {
     
     private static final String KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE = "A";
     private static final String KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE = "B";
@@ -45,15 +45,15 @@ public class OptOutRequestEndpointTest {
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
     
     private static Namespace ns = YukonXml.getYukonNamespace();
-    private static final String RESP_ELEMENT_NAME = "optOutResponse";
-    private static final String REQU_ELEMENT_NAME = "optOutRequest";
+    private static final String RESP_ELEMENT_NAME = "overrideResponse";
+    private static final String REQU_ELEMENT_NAME = "overrideRequest";
     
     private Resource requestSchemaResource = 
-        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OptOutRequest.xsd", this.getClass());
+        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideRequest.xsd", this.getClass());
     private Resource responseSchemaResource = 
-        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OptOutResponse.xsd", this.getClass());
+        new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideResponse.xsd", this.getClass());
  
-    private OptOutRequestEndpoint impl;
+    private OverrideRequestEndpoint impl;
     
     private enum TestInventory {
         OPTED_OUT_AND_SCHEDULED (1, true, true), 
@@ -85,7 +85,7 @@ public class OptOutRequestEndpointTest {
     
     @Before
     public void setUp() throws Exception {
-        impl = new OptOutRequestEndpoint();
+        impl = new OverrideRequestEndpoint();
         
         impl.setCustomerAccountDao(new MockCustomerAccountDao());
         impl.setLmHardwareBaseDao(new MockLmHardwareBaseDao());

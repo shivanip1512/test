@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<optOutRequest xmlns="http://yukon.cannontech.com/api"
+<overrideRequest xmlns="http://yukon.cannontech.com/api"
                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                             xsi:schemaLocation="http://yukon.cannontech.com/api ../OptOutRequest.xsd "
+                             xsi:schemaLocation="http://yukon.cannontech.com/api ../OverrideRequest.xsd "
                              version="1.0">
   <accountNumber>87654321</accountNumber>
   <serialNumber>3453070372</serialNumber>
   <startDate>2011-02-20T10:00:00Z</startDate>
   <durationInHours>1</durationInHours>
   <counts>true</counts>
-</optOutRequest>
+</overrideRequest>

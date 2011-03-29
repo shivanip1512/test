@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
@@ -10,11 +9,11 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-         Request for canceling an active opt out on a specific device
+         Request for canceling an active override on a specific device
         </xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name = "CancelActiveOptOutRequest">
+    <xsd:complexType name = "CancelActiveOverrideRequest">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:sequence>
@@ -25,5 +24,5 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name = "cancelActiveOptOutRequest" type="yukon:CancelActiveOptOutRequest"/>
+    <xsd:element name = "cancelActiveOverrideRequest" type="yukon:CancelActiveOverrideRequest"/>
 </xsd:schema>
