@@ -5,28 +5,21 @@ import java.util.List;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
-import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.AccountNotFoundException;
+import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.OptOutHelper;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
-import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.OverrideRequestElementMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
@@ -34,13 +27,7 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
-public class OverrideRequestEndpoint {
-    private AccountEventLogService accountEventLogService;
-    private OptOutService optOutService;
-    private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao lmHardwareBaseDao; 
-    private RolePropertyDao rolePropertyDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+public class OverrideRequestEndpoint extends OverrideRequestEndpointBase{
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -55,17 +42,15 @@ public class OverrideRequestEndpoint {
 
         Element resp = new Element("overrideResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         Element fe = null;
         try {
-            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            CustomerAccount customerAccount = 
-                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(optOutHelper.getAccountNumber(), 
-                                                                                   energyCompany);
-            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(optOutHelper.getSerialNumber());
+            getRolePropertyDao().verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             
-            accountEventLogService.optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
+            CustomerAccount customerAccount = getCustomerAccount(optOutHelper.getAccountNumber(), user);
+            LMHardwareBase lmHardwareBase = getLMHardwareBase(optOutHelper.getSerialNumber());
+            
+            getAccountEventLogService().optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
                                                              lmHardwareBase.getManufacturerSerialNumber(),
                                                              optOutHelper.getStartDate());
             
@@ -78,15 +63,17 @@ public class OverrideRequestEndpoint {
                 request.setStartDate(optOutHelper.getStartDate());
             }
            
-            optOutService.optOutWithValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
+            getOptOutService().optOutWithValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
             
             resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         } catch (OptOutException e) {
             fe = XMLFailureGenerator.generateFailure(optOutRequest,e, e.getErrorCode(), e.getMessage());
         } catch(NotAuthorizedException e) {
             fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "UserNotAuthorized", "Insufficent privileges to perform this operation.");
-        } catch (NotFoundException e){
-            fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "NotFound", e.getMessage());
+        } catch (AccountNotFoundException e){
+            fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "InvalidAccountNumber", e.getMessage());
+        } catch (InventoryNotFoundException e){
+            fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "InvalidSerialNumber", e.getMessage());
         } finally {
             if (fe != null) {
                 resp.addContent(fe);
@@ -95,35 +82,4 @@ public class OverrideRequestEndpoint {
 
         return resp;  
     }
-
-    @Autowired
-    public void setOptOutService(OptOutService optOutService) {
-        this.optOutService = optOutService;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
 }

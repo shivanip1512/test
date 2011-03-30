@@ -97,11 +97,11 @@ public class CancelActiveOverrideRequestEndpointTest {
         
         // test with unknown account number
         // ========================================================================================    
-        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, "NotFound", false);
+        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.OPTED_OUT, AUTH_USER, "InvalidAccountNumber", false);
         
         // test with unknown serial number
         // ========================================================================================       
-        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "NotFound", false);
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "InvalidSerialNumber", false);
         
         // test with opted out device
         // ========================================================================================

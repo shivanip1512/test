@@ -96,11 +96,11 @@ public class CancelScheduledOverrideRequestEndpointTest {
         
         // test with unknown account number
         // ========================================================================================
-        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.SCHEDULED, AUTH_USER, "NotFound", false);
+        validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.SCHEDULED, AUTH_USER, "InvalidAccountNumber", false);
         
         // test with unknown serial number
         // ========================================================================================
-        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "NotFound", false);
+        validate(KNOWN_ACCOUNT_NUMBER, TestInventory.UNKNOWN, AUTH_USER, "InvalidSerialNumber", false);
         
         // test with device with scheduled opt out 
         // ========================================================================================  

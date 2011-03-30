@@ -106,12 +106,12 @@ public class OverrideRequestEndpointTest {
         // test with unknown account number
         // ========================================================================================
         validate(UNKNOWN_ACCOUNT_NUMBER, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
-                 null, 1, null, AUTH_USER, "NotFound", false);
+                 null, 1, null, AUTH_USER, "InvalidAccountNumber", false);
         
         // test with unknown serial number
         // ========================================================================================
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.UNKNOWN, 
-                 null, 1, null, AUTH_USER, "NotFound", false);
+                 null, 1, null, AUTH_USER, "InvalidSerialNumber", false);
         
         // test passed start time
         // ======================================================================================== 
@@ -126,7 +126,7 @@ public class OverrideRequestEndpointTest {
         // test instant opt out on opted out device
         // ======================================================================================== 
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_NOT_SCHEDULED, 
-                 null, 1, null, AUTH_USER, "DeviceAlreadyOptedOut", false);
+                 null, 1, null, AUTH_USER, "OverrideAlreadyActive", false);
         
         // test schedule opt out on device with no schedules
         // ========================================================================================
@@ -136,12 +136,12 @@ public class OverrideRequestEndpointTest {
         // test schedule opt out on device with schedule
         // ======================================================================================== 
         validate(KNOWN_ACCOUNT_NUMBER_OPTOUTS_AVAILABLE, TestInventory.OPTED_OUT_AND_SCHEDULED, 
-                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, "OptOutAlreadyScheduled", false);
+                 "2012-01-01T10:00:00Z", 1, null, AUTH_USER, "OverrideAlreadyScheduled", false);
         
         // test counting opting out on account with no opt outs remaining 
         // ======================================================================================== 
         validate(KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE, TestInventory.NOT_OPTED_OUT_AND_NOT_SCHEDULED, 
-                 null, 1, null, AUTH_USER, "OptOutLimitReached", false);
+                 null, 1, null, AUTH_USER, "OverrideLimitReached", false);
     }
     
     private void validate(String accountNumber, TestInventory inventory, String startDate, long durationInHours, 
