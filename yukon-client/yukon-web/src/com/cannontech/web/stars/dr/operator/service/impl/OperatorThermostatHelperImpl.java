@@ -108,16 +108,16 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	
     
 	@Override
-    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, ThermostatScheduleMode mode, boolean isFahrenheit) {
+    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
+                                                                          SchedulableThermostatType schedulableThermostatType, ThermostatScheduleMode thermostatMode, 
+                                                                          boolean isFahrenheit) {
 
 		JSONObject scheduleObject = new JSONObject(jsonString);
         JSONObject seasonObject = scheduleObject.getJSONObject("season");
 
-        AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getById(accountThermostatScheduleId);
-
         List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
 
-        Set<TimeOfWeek> associatedTimeOfWeeks = mode.getAssociatedTimeOfWeeks();
+        Set<TimeOfWeek> associatedTimeOfWeeks = thermostatMode.getAssociatedTimeOfWeeks();
 
         // Add the season entries (time/value pairs) for each of the
         // TimeOfWeeks
@@ -133,8 +133,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         	List timeOfWeekList = Lists.newArrayList(timeOfWeekArray.toArray());
             for (int i = 0; i < timeOfWeekList.size(); i++) {
             	
-                if(accountThermostatSchedule.getThermostatType().getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES &&
-                   i < 2) {
+                if(schedulableThermostatType.getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES && i < 2) {
                    
                     AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
                     entry.setAccountThermostatScheduleId(accountThermostatScheduleId);

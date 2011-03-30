@@ -175,10 +175,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	// id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
-        ats.setThermostatType(SchedulableThermostatType.valueOf(type));
+        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
+        ats.setThermostatType(schedulableThermostatType);
         
         // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, thermostatScheduleMode, isFahrenheit);
+        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
         ats.setScheduleEntries(atsEntries);
         
         // Build up schedule display object, containing printable representations of the thermostat schedule entries
@@ -242,14 +243,15 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
         ats.setAccountId(account.getAccountId());
-        
-        // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, thermostatScheduleMode, isFahrenheit);
-        ats.setScheduleEntries(atsEntries);
-        
+
         // schedulableThermostatType
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
         ats.setThermostatType(schedulableThermostatType);
+        
+        // Create schedule from submitted JSON string
+        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
+        ats.setScheduleEntries(atsEntries);
+        
         
         // thermostatScheduleMode
         ats.setThermostatScheduleMode(thermostatScheduleMode);

@@ -220,10 +220,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     protected LiteStarsEnergyCompany(com.cannontech.database.db.company.EnergyCompany energyCompany) {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
-        setLiteID( energyCompany.getEnergyCompanyID().intValue() );
+        setLiteID( energyCompany.getEnergyCompanyId().intValue() );
         setName( energyCompany.getName() );
-        setPrimaryContactID( energyCompany.getPrimaryContactID().intValue() );
-        setUser(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()));
+        setPrimaryContactID( energyCompany.getPrimaryContactId().intValue() );
+        setUser(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserId()));
     }
     
     public void initialize() {
@@ -614,10 +614,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
 
     public YukonListEntry getYukonListEntry(int yukonDefId) {
-        String listName = YukonDefinition.getById(yukonDefId).getRelevantList().getListName();
-        if (listName == null) return null;
+        YukonDefinition yukonDefinition = YukonDefinition.getById(yukonDefId);
+        if (yukonDefinition == null) return null;
 
-        return getYukonListEntry(listName, yukonDefId);
+        return getYukonListEntry(yukonDefinition.getRelevantList().getListName(), yukonDefId);
     }
 
     public synchronized List<LiteServiceCompany> getServiceCompanies() {
@@ -851,9 +851,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public synchronized List<Integer> getRouteIDs() {
         if (routeIDs == null) {
-            routeIDs = Collections.synchronizedList(new ArrayList<Integer>());;
-            
-            routeIDs = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
+            routeIDs = Collections.synchronizedList(ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId()));
             List<Integer> listCopy = Lists.newArrayList(routeIDs);  /* Need this until route event listener stops blowing away routeIDs */
             if (getDefaultRouteId() > 0) {
                 // Make sure the default route ID is in the list

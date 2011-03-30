@@ -6,6 +6,7 @@ import net.sf.jsonOLD.JSONObject;
 
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
@@ -26,7 +27,9 @@ public interface OperatorThermostatHelper {
      */
 	public JSONObject getJSONForSchedule(AccountThermostatSchedule schedule, boolean isFahrenheit);
 	
-    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, ThermostatScheduleMode mode, boolean isFahrenheit);
+    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
+                                                                          SchedulableThermostatType thermostatType, ThermostatScheduleMode mode, 
+                                                                          boolean isFahrenheit);
     
     /**
      * Helper method to default the 2nd and 3rd time/temp values for a two

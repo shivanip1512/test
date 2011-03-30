@@ -202,15 +202,12 @@ public class OperatorThermostatScheduleController {
 	
 	// CONFIRM
 	@RequestMapping
-    public String confirm(String thermostatIds,
-    							String type, String scheduleMode, String temperatureUnit, Integer scheduleId,
-					            String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
-					            String schedules,
-					            HttpServletRequest request, ModelMap modelMap,
-					            AccountInfoFragment accountInfoFragment) {
+    public String confirm(String thermostatIds, String type, String scheduleMode, String temperatureUnit, 
+                          Integer scheduleId, String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
+					      String schedules, HttpServletRequest request, ModelMap modelMap, AccountInfoFragment accountInfoFragment) {
 		
 		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
-    	
+        
     	// Create the confirm schedule text
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
     	ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
@@ -218,10 +215,12 @@ public class OperatorThermostatScheduleController {
     	// id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
-        ats.setThermostatType(SchedulableThermostatType.valueOf(type));
+        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
+        ats.setThermostatType(schedulableThermostatType);
         
         // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, thermostatScheduleMode, isFahrenheit);
+        List<AccountThermostatScheduleEntry> atsEntries = 
+            operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
         ats.setScheduleEntries(atsEntries);
 
         // Build up confirmation display object, containing printable representations of the thermostat schedule entries
@@ -244,13 +243,10 @@ public class OperatorThermostatScheduleController {
 	
 	// SAVE
 	@RequestMapping
-    public String save(String thermostatIds,
-    							String type, String scheduleMode, String temperatureUnit, Integer scheduleId,
-					            String scheduleName, String saveAction, YukonUserContext userContext,
-					            String schedules,
-					            HttpServletRequest request, ModelMap modelMap,
-					            FlashScope flashScope,
-					            AccountInfoFragment accountInfoFragment) {
+    public String save(String thermostatIds, String type, String scheduleMode, String temperatureUnit, 
+                       Integer scheduleId,String scheduleName, String saveAction, YukonUserContext userContext,
+					   String schedules, HttpServletRequest request, ModelMap modelMap, FlashScope flashScope,
+					   AccountInfoFragment accountInfoFragment) {
 
 	    List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -291,13 +287,14 @@ public class OperatorThermostatScheduleController {
         ats.setAccountThermostatScheduleId(scheduleId);
         ats.setAccountId(customerAccount.getAccountId());
         
-        // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, thermostatScheduleMode, isFahrenheit);
-        ats.setScheduleEntries(atsEntries);
-        
         // schedulableThermostatType
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
         ats.setThermostatType(schedulableThermostatType);
+        
+        // Create schedule from submitted JSON string
+        List<AccountThermostatScheduleEntry> atsEntries = 
+            operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
+        ats.setScheduleEntries(atsEntries);
         
         // thermostatScheduleMode
         ats.setThermostatScheduleMode(thermostatScheduleMode);

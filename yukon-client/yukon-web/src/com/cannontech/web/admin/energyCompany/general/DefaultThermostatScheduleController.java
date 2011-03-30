@@ -150,14 +150,16 @@ public class DefaultThermostatScheduleController {
         // id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
-        
-        // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, thermostatScheduleMode, isFahrenheit);
-        ats.setScheduleEntries(atsEntries);
-        
+
         // schedulableThermostatType
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
         ats.setThermostatType(schedulableThermostatType);
+        
+        // Create schedule from submitted JSON string
+        List<AccountThermostatScheduleEntry> atsEntries = 
+            operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
+        ats.setScheduleEntries(atsEntries);
+        
         
         // thermostatScheduleMode
         ats.setThermostatScheduleMode(thermostatScheduleMode);

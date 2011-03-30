@@ -328,9 +328,9 @@ public class InventoryDaoImpl implements InventoryDao {
 
                     int actionId = event.getActionID();
 
-                    YukonListEntry actionListEntry = 
-                        liteStarsEnergyCompany.getYukonListEntry(actionId);
-                    int actionDefinitionId = actionListEntry.getYukonDefID();
+                    int actionDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                                       YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION,
+                                                                                       actionId);
 
                     if (YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED == actionDefinitionId || isSA && YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG == actionDefinitionId) {
                         return HardwareStatus.AVAILABLE;
