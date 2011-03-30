@@ -407,3 +407,24 @@ function generateMessageCode(prefix, input) {
     // This regular expression must match the one in MessageCodeGenerator.java.
     return prefix + input.replace(/\W+/g, '');
 }
+
+/**
+ * This function takes in an inputElement and an inputType and changes the
+ * current node over to the desired type.
+ *
+ * String inputElement - The id of the element.
+ * String inputType - The desired input type.
+ */ 
+function changeInputType(inputElement, inputType) {
+    var input = document.getElementById(inputElement);
+    debug(input);
+    debug(inputElement);
+    var input2 = document.createElement('input');
+    with (input2){
+        id = input.id;
+        name = input.name;
+        value = input.value;
+        type = inputType;
+    }
+    input.parentNode.replaceChild(input2,input);
+}

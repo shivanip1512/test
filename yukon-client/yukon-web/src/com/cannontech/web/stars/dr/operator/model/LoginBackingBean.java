@@ -1,22 +1,25 @@
 package com.cannontech.web.stars.dr.operator.model;
 
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class LoginBackingBean {
     
     private int userId;
-    private String customerLoginGroupName;
+    private String loginGroupName;
     private boolean loginEnabled;
     private String username;
     private String password1;
     private String password2;
-
-    public String getCustomerLoginGroupName() {
-        return customerLoginGroupName;
+    private AuthType authType;
+    
+    public String getLoginGroupName() {
+        return loginGroupName;
     }
     
-    public void setCustomerLoginGroupName(String customerLoginGroupName) {
-        this.customerLoginGroupName = customerLoginGroupName;
+    public void setLoginGroupName(String loginGroupName) {
+        this.loginGroupName = loginGroupName;
     }
 
     public boolean isLoginEnabled() {
@@ -74,6 +77,14 @@ public class LoginBackingBean {
     
     public int getUserId() {
         return userId;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
+
+    public AuthType getAuthType() {
+        return authType;
     }
     
 }

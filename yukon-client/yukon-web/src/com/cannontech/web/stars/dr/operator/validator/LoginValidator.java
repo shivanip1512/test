@@ -13,11 +13,11 @@ import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 public class LoginValidator extends SimpleValidator<LoginBackingBean> {
 
     private YukonUserDao yukonUserDao;
-    private LiteYukonUser residentialUser;
+    private LiteYukonUser user;
     
-    public LoginValidator(LiteYukonUser residentialUser, YukonUserDao yukonUserDao){
+    public LoginValidator(LiteYukonUser user, YukonUserDao yukonUserDao){
     	super(LoginBackingBean.class);
-    	this.residentialUser = residentialUser;
+    	this.user = user;
         this.yukonUserDao = yukonUserDao;
     }
 
@@ -26,23 +26,23 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
 
         LoginBackingBean loginBackingBean = (LoginBackingBean)target;
 
-        ValidationUtils.rejectIfEmpty(errors, "loginBackingBean.username", "yukon.web.modules.operator.account.loginInfoError.usernameRequired");
-        YukonValidationUtils.checkExceedsMaxLength(errors, "loginBackingBean.username", loginBackingBean.getUsername(), 64);
+        ValidationUtils.rejectIfEmpty(errors, "username", "yukon.web.modules.operator.account.loginInfoError.usernameRequired");
+        YukonValidationUtils.checkExceedsMaxLength(errors, "username", loginBackingBean.getUsername(), 64);
         LiteYukonUser usernameCheckUser = yukonUserDao.findUserByUsername(loginBackingBean.getUsername());
         if (usernameCheckUser != null &&
-            residentialUser.getUserID() != usernameCheckUser.getUserID()) {
-            errors.rejectValue("loginBackingBean.username", "yukon.web.modules.operator.account.loginInfoError.usernameAlreadyExists");
+            user.getUserID() != usernameCheckUser.getUserID()) {
+            errors.rejectValue("username", "yukon.web.modules.operator.account.loginInfoError.usernameAlreadyExists");
         }
         
         // Password Validation
-        YukonValidationUtils.checkExceedsMaxLength(errors, "loginBackingBean.password1", loginBackingBean.getPassword1(), 64);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "loginBackingBean.password2", loginBackingBean.getPassword2(), 64);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "password1", loginBackingBean.getPassword1(), 64);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "password2", loginBackingBean.getPassword2(), 64);
         if (!StringUtils.isBlank(loginBackingBean.getPassword1()) ||
             !StringUtils.isBlank(loginBackingBean.getPassword2())) {
             
             if (!loginBackingBean.getPassword1().equals(loginBackingBean.getPassword2())) {
-                errors.rejectValue("loginBackingBean.password1", "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");
-                errors.rejectValue("loginBackingBean.password2", "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");
+                errors.rejectValue("password1", "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");
+                errors.rejectValue("password2", "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");
             }
         }
     }

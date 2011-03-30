@@ -1310,10 +1310,11 @@ select:focus {
 }
 
 .pipes { overflow:hidden; display:inline-block;}
-.pipes li { margin-left: -1px;
-border-left: solid 1px;
-float: left;
-padding: 3px 10px;
+.pipes li { 
+    margin-left: -1px;
+    border-left: solid 1px;
+    float: left;
+    padding: 1px 10px;
 }
 
 .icon {
@@ -1325,6 +1326,10 @@ padding: 3px 10px;
     padding-top: 16px;
 }
 
+.ENABLED {
+    background: transparent url(../Icons/check.gif) top left no-repeat;
+}
+
 .icon_remove {
     background: transparent url(../Icons/delete.png) top left no-repeat;
 }
@@ -1332,20 +1337,4 @@ padding: 3px 10px;
 .icon_remove:hover {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
 }
-
-.di {
-    display: inline;
-}
-
-ul.buttonStack li {
-    padding-bottom: 2px;
-}
-
-button.naked {
-    border: none;
-    background: transparent;
-}
-
-button.naked:hover span {
-    text-decoration: underline;
-}
+    

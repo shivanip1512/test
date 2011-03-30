@@ -51,7 +51,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 groups.add(defaultYukonGroup);
                 
                 checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
-                LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getCustomerLoginGroupName());
+                LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
                 groups.add(residentialLoginGroup);
                 
                 // Build up the user for creation
@@ -97,7 +97,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     
                 checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
                 
-                updateResidentialCustomerGroup(loginBackingBean.getCustomerLoginGroupName(), residentialUser);
+                updateResidentialCustomerGroup(loginBackingBean.getLoginGroupName(), residentialUser);
     
                 updateLoginStatus(loginBackingBean, residentialUser);
                 
@@ -138,7 +138,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     private void checkSuppliedResidentialLoginGroup(final int energyCompanyId, final LoginBackingBean loginBackingBean) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getCustomerLoginGroupName());
+        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
         if (!ecResidentialGroups.contains(residentialLoginGroup)) {
             throw new IllegalArgumentException();
         }

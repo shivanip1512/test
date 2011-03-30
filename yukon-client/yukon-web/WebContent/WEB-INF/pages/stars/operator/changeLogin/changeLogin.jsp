@@ -75,7 +75,7 @@
 	            <input type="hidden" name="loginMode" value="${loginMode}">
 	            
 	            <tags:nameValueContainer2>
-            		<tags:selectNameValue nameKey=".customerGroup" path="customerLoginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
+            		<tags:selectNameValue nameKey=".customerGroup" path="loginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
 	                <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginEnabled"/></tags:nameValue2>
 	                
 	                <!-- Username Field -->

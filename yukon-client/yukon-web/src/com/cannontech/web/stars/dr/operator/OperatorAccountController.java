@@ -455,7 +455,7 @@ public class OperatorAccountController {
         LiteYukonGroup userResidentialGroupName = 
             yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
         if (userResidentialGroupName != null) {
-            loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName.getGroupName());
+            loginBackingBean.setLoginGroupName(userResidentialGroupName.getGroupName());
         }
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
@@ -543,7 +543,10 @@ public class OperatorAccountController {
 			
 			accountGeneralValidator.validate(accountGeneral, bindingResult);
 			if(!ignoreLogin) {
+			    
+			    bindingResult.pushNestedPath("loginBackingBean");
 			    loginValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+			    bindingResult.popNestedPath();
 			    
 			    /* Check to see if the user is trying to modify the default user */
                 checkEditingDefaultUser(accountGeneral.getLoginBackingBean().getUsername());
@@ -769,7 +772,7 @@ public class OperatorAccountController {
         boolean didNotChange = previousUsername.equals(loginBackingBean.getUsername())
             && StringUtils.isBlank(loginBackingBean.getPassword1()) 
             && StringUtils.isBlank(loginBackingBean.getPassword2())
-            && StringUtils.equals(originalLoginGroupName, loginBackingBean.getCustomerLoginGroupName())
+            && StringUtils.equals(originalLoginGroupName, loginBackingBean.getLoginGroupName())
             && residentialUser.getLoginStatus() == loginBackingBean.getLoginStatus();
         
         return !didNotChange;

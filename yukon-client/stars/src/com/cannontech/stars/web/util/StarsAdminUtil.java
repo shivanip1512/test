@@ -1106,13 +1106,12 @@ public class StarsAdminUtil {
 		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().findUserByUsername(username) != null)
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		
+		//only update try to update the password if specified
 		if (password.length() != 0) {
 			if (!authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
                 throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
             }
             authenticationService.setPassword(liteUser, password);
-		} else {
-		    throw new WebClientException( "Password cannot be empty" );
 		}
 		
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.title">Operator Logins</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.message">Are you sure you want to delete this Operator Login?</entry>
+    
+    
+    <!-- Login Model -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.username">Username</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.password">Password</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.confirmPassword">Confirm Password</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorGroup">Operator Group</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.loginEnabled">Enabled</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.newPassword">New Password</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.generatePassword">Generate Password</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.showPassword">Show Password</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.authType">Auth Type</entry>
+    
+    
+    <!-- UI Elements -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.save.label">Save</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.cancel.label">Cancel</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create Operator Login</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.edit.label">Edit</entry>
+    
+    <!--  Validation -->
+    
+    <!--  Generic success/fail messages -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated">Successfully created the Login.</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated">Successfully updated the Login.</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted">Successfully deleted the Login.</entry>
+    
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageName">Operator Logins</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageDescription">Operator Logins</entry>
+
+    <!-- edit.jsp -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.CREATE.pageName">Create Login</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.CREATE.pageDescription">Create an Operator Login</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.pageDescription">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.VIEW.pageName">Login {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.delete.label">Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.infoContainer">Service Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.edit.label">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.assignDesignationCode.label">Add Zip Code</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.add.label">Add Login</entry>
+
+</properties>

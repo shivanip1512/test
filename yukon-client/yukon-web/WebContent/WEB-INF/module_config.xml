@@ -1068,6 +1068,29 @@
                                 <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
+                            <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="operatorLogin.VIEW" type="DETAIL">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLoginId}&amp;ecId=${ecId}</link>
+                                        <labelArgument>${operatorLogin.username}</labelArgument>
+                                        <pages>
+                                            <page name="operatorLogin.EDIT" type="DETAIL">
+                                                <menu>energyCompany|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/operatorLogin/edit?operatorLoginId=${operatorLoginId}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${operatorLogin.username}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="operatorLogin.CREATE" type="DETAIL" contributeToMenu="false">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/create?ecId=${id}</link>
+                                    </page>
+                                </pages>
+                            </page>
                             <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>

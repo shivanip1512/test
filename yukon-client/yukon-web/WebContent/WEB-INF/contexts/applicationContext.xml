@@ -1787,5 +1787,4 @@
     <bean id="serviceCompanyService" class="com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl"/>
     <bean id="serviceCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator"/>
     <bean id="designationCodeDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.DesignationCodeDtoValidator"/>
-    
 </beans>

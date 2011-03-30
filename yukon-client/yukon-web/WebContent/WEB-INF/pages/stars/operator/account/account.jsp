@@ -136,25 +136,6 @@
             showPassword();
         }
 
-        /**
-         * This function takes in an inputElement and an inputType and changes the
-         * current node over to the desired type.
-         *
-         * String inputElement - The id of the element.
-         * String inputType - The desired input type.
-         */ 
-        function changeInputType(inputElement, inputType) {
-            var input = document.getElementById(inputElement);
-            var input2 = document.createElement('input');
-            with (input2){
-                id = input.id;
-                name = input.name;
-                value = input.value;
-                type = inputType;
-            }
-            input.parentNode.replaceChild(input2,input);
-        }
-
         function showPassword() {
             var showPasswordCheckbox = $('showPasswordCheckbox');
             if (showPasswordCheckbox.checked) {
@@ -297,7 +278,7 @@
                         <tags:nameValueContainer2>
                             
                             <tags:selectNameValue nameKey=".customerGroup" 
-                                path="loginBackingBean.customerLoginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
+                                path="loginBackingBean.loginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
                             <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginBackingBean.loginEnabled"/></tags:nameValue2>
                             
                             <!-- Username Field -->

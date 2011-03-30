@@ -191,6 +191,10 @@ table.routeAndSubstationLayout td.last {
     padding-left: 30px;
 }
 
+.operatorLogins {
+    min-width: 300px;
+}
+
 div.listContainer {
     max-width: 400px;
 }
