@@ -50,10 +50,10 @@
     <xsd:include schemaLocation="TotalOverriddenDevicesTypes.xsd" />
     <xsd:include schemaLocation="ResetOverrideCountBySerialNumberRequest.xsd" />
     <xsd:include schemaLocation="ResetOverrideCountBySerialNumberResponse.xsd" />
-    <xsd:include schemaLocation="OptOutRequest.xsd" />
-    <xsd:include schemaLocation="OptOutResponse.xsd" />
-    <xsd:include schemaLocation="CancelActiveOptOutRequest.xsd" />
-    <xsd:include schemaLocation="CancelActiveOptOutResponse.xsd" />
-    <xsd:include schemaLocation="CancelScheduledOptOutRequest.xsd" />
-    <xsd:include schemaLocation="CancelScheduledOptOutResponse.xsd" />
+    <xsd:include schemaLocation="OverrideRequest.xsd" />
+    <xsd:include schemaLocation="OverrideResponse.xsd" />
+    <xsd:include schemaLocation="CancelActiveOverrideRequest.xsd" />
+    <xsd:include schemaLocation="CancelActiveOverrideResponse.xsd" />
+    <xsd:include schemaLocation="CancelScheduledOverrideRequest.xsd" />
+    <xsd:include schemaLocation="CancelScheduledOverrideResponse.xsd" />
 </xsd:schema>
