@@ -5,7 +5,7 @@ public class OptOutAlreadyScheduledException extends OptOutException {
     private String serialNumber;
     
     public OptOutAlreadyScheduledException(String serialNumber) {
-        super("OptOutAlreadyScheduled");
+        super("OverrideAlreadyScheduled");
         this.serialNumber = serialNumber;
     }
 

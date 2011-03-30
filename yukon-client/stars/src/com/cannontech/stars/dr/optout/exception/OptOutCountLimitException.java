@@ -5,7 +5,7 @@ public class OptOutCountLimitException extends OptOutException {
     private String serialNumber;
 
     public OptOutCountLimitException(String serialNumber) {
-        super("OptOutLimitReached");
+        super("OverrideLimitReached");
         this.serialNumber = serialNumber;
     }
 

@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.optout.exception;
 public class InvalidOptOutDurationException extends OptOutException {
 
     public InvalidOptOutDurationException() {
-        super("InvalidOptOutDuration");
+        super("InvalidOverrideDuration");
     }
 
     @Override
