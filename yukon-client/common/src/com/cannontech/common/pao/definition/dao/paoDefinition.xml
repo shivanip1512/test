@@ -4962,7 +4962,18 @@
     	<changeGroup>lm</changeGroup>
     </pao>
     <pao id="LM_GROUP" abstract="true">
-    	<tags>
+        <points>
+            <point type="Status" offset="0">
+                <name>CONTROL STATUS</name>
+                <stategroup value="TwoStateActive"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="LM_GROUP_STATUS">
+                <basicLookup point="CONTROL STATUS" />
+            </attribute>
+        </attributes>
+        <tags>
        		<tag name="LM_GROUP" />
 		</tags>
     </pao>
@@ -5609,10 +5620,12 @@
         <displayName>Zigbee Utility Pro</displayName>
         <points>
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>Connection Status</name>
                 <stategroup value="Comm Status State"/>
             </point>
             <point type="Status" offset="2">
+                <init>true</init>
                 <name>Commissioned State</name>
                 <stategroup value="Commissioned State"/>
             </point>
@@ -5631,10 +5644,12 @@
         <displayName>Digi Gateway</displayName>
         <points>
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>Connection Status</name>
                 <stategroup value="Comm Status State"/>
             </point>
             <point type="Status" offset="2">
+                <init>true</init>
                 <name>Commissioned State</name>
                 <stategroup value="Commissioned State"/>
             </point>

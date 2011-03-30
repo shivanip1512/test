@@ -12,6 +12,8 @@
         This file defines beans that live under the com.cannontech.thirdparty package
     </description>
 
+    <bean id="digiControlMessageHandler" class="com.cannontech.thirdparty.digi.DigiControlMessageHandler"/>
+
     <bean id="gatewayCreationProvider" class="com.cannontech.thirdparty.digi.dao.provider.GatewayCreationProvider"/>
     <bean id="utilityProZigbeeCreationProvider" class="com.cannontech.thirdparty.digi.dao.provider.UtilityProZigbeeCreationProvider"/>
 

@@ -63,7 +63,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        //Build up all the fields for inserting a digiGateway.        
+        //Build up all the fields for inserting a Zigbee Util Pro.        
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields();
         //Serial Number is unique, using that as the PaoName
         yukonPaObjectFields.setName(hardwareDto.getSerialNumber());

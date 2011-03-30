@@ -366,15 +366,16 @@ public class OperatorHardwareController {
             
             try {
                 inventoryId = hardwareUiService.createHardware(hardwareDto, fragment.getAccountId(), context);
+
+                /* If the device status was set, spawn an event for it. */
+                /* This is within the try block because it relies on inventoryId being set */
+                if (hardwareDto.getDeviceStatusEntryId() != null && hardwareDto.getDeviceStatusEntryId() != 0) {
+                    EventUtils.logSTARSEvent(context.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
+                }
             } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
             } catch (ObjectInOtherEnergyCompanyException e) {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-            }
-            
-            /* If the device status was set, spawn an event for it. */
-            if (hardwareDto.getDeviceStatusEntryId() != null && hardwareDto.getDeviceStatusEntryId() != 0) {
-                EventUtils.logSTARSEvent(context.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
             }
 
             AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);

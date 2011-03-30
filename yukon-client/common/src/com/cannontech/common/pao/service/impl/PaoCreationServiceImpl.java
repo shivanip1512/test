@@ -58,7 +58,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         applyPoints(paoIdentifier, pointsToCreate);
         
         // Send db change message
-        processDeviceDbChange(paoIdentifier);
+        processDbChange(paoIdentifier);
         
         return paoIdentifier;
     }
@@ -96,7 +96,7 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
     }
     
-    private void processDeviceDbChange(PaoIdentifier paoIdentifier) {
+    private void processDbChange(PaoIdentifier paoIdentifier) {
 
         DBChangeMsg msg = new DBChangeMsg(paoIdentifier.getPaoId(),
                                           DBChangeMsg.CHANGE_PAO_DB,

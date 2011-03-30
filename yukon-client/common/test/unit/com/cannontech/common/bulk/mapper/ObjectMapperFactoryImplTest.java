@@ -340,6 +340,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 			throw new UnsupportedOperationException("Method not implemented");
 		}
 
+        @Override
+        public PaoIdentifier getPaoIdentifierForPaoId(int paoId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
     }
 
     /**

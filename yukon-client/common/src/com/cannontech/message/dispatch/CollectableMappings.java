@@ -1,28 +1,30 @@
 package com.cannontech.message.dispatch;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.message.dispatch.message.DefineCollectableDBChangeMsg;
+import com.cannontech.message.dispatch.message.DefineCollectableMulti;
+import com.cannontech.message.dispatch.message.DefineCollectablePointData;
+import com.cannontech.message.dispatch.message.DefineCollectablePointRegistration;
+import com.cannontech.message.dispatch.message.DefineCollectableRegistration;
+import com.cannontech.message.dispatch.message.DefineCollectableSignal;
+import com.cannontech.message.dispatch.message.DefineCollectableTagMsg;
+import com.cannontech.thirdparty.messaging.rw.DefineCollectableControlHistory;
 import com.roguewave.vsj.DefineCollectable;
-
 
 public class CollectableMappings {
 
 	private static DefineCollectable[] mappings =
 	{		
-		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
-		new com.cannontech.message.dispatch.message.DefineCollectablePointRegistration(),
-		new com.cannontech.message.dispatch.message.DefineCollectableRegistration(),
-		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
-		new com.cannontech.message.dispatch.message.DefineCollectableDBChangeMsg(),
-		new com.cannontech.message.dispatch.message.DefineCollectableSignal(),
-		new com.cannontech.message.dispatch.message.DefineCollectableTagMsg()
+		new DefineCollectableMulti(),
+		new DefineCollectablePointRegistration(),
+		new DefineCollectableRegistration(),
+		new DefineCollectablePointData(),
+		new DefineCollectableDBChangeMsg(),
+		new DefineCollectableSignal(),
+		new DefineCollectableTagMsg(),
+		new DefineCollectableControlHistory()
 	};
-/**
- * This method was created in VisualAge.
- * @return com.roguewave.vsj.DefineCollectable[]
- */
-public static DefineCollectable[] getMappings() {
-	return mappings;
-}
+	
+    public static DefineCollectable[] getMappings() {
+    	return mappings;
+    }
 }

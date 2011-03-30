@@ -51,6 +51,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
@@ -491,6 +492,14 @@ public final class PaoDaoImpl implements PaoDao {
         return template.mappedQuery(sqlGenerator, identifiers, rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
 
+    @Override
+    public PaoIdentifier getPaoIdentifierForPaoId(int paoId) {
+        List<Integer> ids = Lists.newArrayList();
+        ids.add(paoId);
+        
+        return getPaoIdentifiersForPaoIds(ids).get(0);
+    }
+    
     @Override
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
     	

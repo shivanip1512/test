@@ -138,7 +138,7 @@ public class PointDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
         fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator typeValidator = new IntegerValidator();
-            typeValidator.setMinInclusive(1);
+            typeValidator.setMinInclusive(0);
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

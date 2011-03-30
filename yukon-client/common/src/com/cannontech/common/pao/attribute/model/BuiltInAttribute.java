@@ -12,6 +12,7 @@ public enum BuiltInAttribute implements Attribute {
     KEEP_ALIVE("Keep Alive"),
     KVAR("kVAr"),
     KVARH("kVArh"),
+    LM_GROUP_STATUS("LM Group Status"),
     LOAD_PROFILE("Load Profile", true),
     TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),

@@ -106,7 +106,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         fields.setFirmwareVersion(hardwareDto.getFirmwareVersion());
         fields.setMacAddress(hardwareDto.getMacAddress());
 
-        //Digi Id is set later after we get commission the device on Digi.
+        //The DigiId is set later after we commission the device on Digi
         //Default to the value in hardwareDto
         fields.setDigiId(hardwareDto.getCommissionedId());
         

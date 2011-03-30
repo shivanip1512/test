@@ -36,9 +36,8 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
                     ZigbeeThermostat zigbeeThermostat = new ZigbeeThermostat();
                     
                     int deviceId = rs.getInt("DeviceId");
-                    String typeStr = rs.getString("Type");
-                    PaoType paoType = PaoType.getForDbString(typeStr);
-                    
+                    PaoType paoType = rs.getEnum("Type", PaoType.class);
+
                     zigbeeThermostat.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
                     zigbeeThermostat.setInstallCode(rs.getString("InstallCode"));
                     zigbeeThermostat.setMacAddress(rs.getString("MacAddress"));
