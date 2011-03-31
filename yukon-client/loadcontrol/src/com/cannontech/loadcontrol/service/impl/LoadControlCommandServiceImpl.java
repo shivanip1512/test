@@ -10,6 +10,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.util.ServerRequestHelper.BadServerResponseException;
 
 public class LoadControlCommandServiceImpl implements LoadControlCommandService {
 
@@ -22,6 +23,9 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
         
         LMManualControlResponse lmResponse = (LMManualControlResponse)response.getPayload();
         
+        if(lmResponse == null) {
+            throw new BadServerResponseException();
+        }
         return new ConstraintViolations(LCUtils.convertViolationsToContainers(lmResponse.getConstraintViolations()));
     }
 

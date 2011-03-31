@@ -23,6 +23,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.message.util.ServerRequestHelper.BadServerResponseException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -92,6 +93,10 @@ public class ProgramStartRequestEndpoint {
             return resp;
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "UserNotAuthorized", "The user is not authorized to start program.");
+            resp.addContent(fe);
+            return resp;
+        } catch (BadServerResponseException e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
             resp.addContent(fe);
             return resp;
         }
