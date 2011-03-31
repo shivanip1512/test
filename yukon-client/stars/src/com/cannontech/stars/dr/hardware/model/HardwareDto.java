@@ -42,6 +42,7 @@ public class HardwareDto {
     private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
+    private boolean creatingNewTwoWayDevice;
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -291,4 +292,13 @@ public class HardwareDto {
         PaoType paoType = PaoType.getForDbString(displayType);
         return new PaoIdentifier(deviceId, paoType);
     }
+
+    public void setCreatingNewTwoWayDevice(boolean creatingNewTwoWayDevice) {
+        this.creatingNewTwoWayDevice = creatingNewTwoWayDevice;
+    }
+
+    public boolean isCreatingNewTwoWayDevice() {
+        return creatingNewTwoWayDevice;
+    }
+    
 }

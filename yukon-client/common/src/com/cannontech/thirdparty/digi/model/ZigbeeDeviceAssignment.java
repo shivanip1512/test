@@ -1,19 +1,23 @@
 package com.cannontech.thirdparty.digi.model;
 
 public class ZigbeeDeviceAssignment {
-	private int gatewayId;
+	private Integer gatewayId;
 	private int deviceId;
 	
-	public int getGatewayId() {
+	public Integer getGatewayId() {
 		return gatewayId;
 	}
-	public void setGatewayId(int gatewayId) {
+	
+	public void setGatewayId(Integer gatewayId) {
 		this.gatewayId = gatewayId;
 	}
+	
 	public int getDeviceId() {
 		return deviceId;
 	}
+
 	public void setDeviceId(int deviceId) {
 		this.deviceId = deviceId;
 	}
+	
 }

@@ -1,17 +1,18 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -21,92 +22,113 @@ import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
-    private static final String updateSql;
-    private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectBySerialNumber;
-    private static final String selectByLMHwardTypeId;
-    private static final String selectByRouteId;
-    private static final String selectByConfigurationId;
-    private static final ParameterizedRowMapper<LMHardwareBase> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareEventDao lmHardwareEventDao;
     private InventoryBaseDao inventoryBaseDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private static final YukonRowMapper<LMHardwareBase> rowMapper = new YukonRowMapper<LMHardwareBase>() {
+        public LMHardwareBase mapRow(YukonResultSet rs) throws SQLException {
+            LMHardwareBase hardwareBase = new LMHardwareBase();
+            hardwareBase.setConfigurationId(rs.getInt("ConfigurationID"));
+            hardwareBase.setInventoryId(rs.getInt("InventoryID"));
+            hardwareBase.setLMHarewareTypeId(rs.getInt("LMHardwareTypeID"));
+            hardwareBase.setManufacturerSerialNumber(rs.getString("ManufacturerSerialNumber"));
+            hardwareBase.setRouteId(rs.getInt("RouteID"));
+            return hardwareBase;
+        }
+    };
     
-    static {
-        updateSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, ConfigurationID = ? WHERE InventoryID = ?";
-        
-        selectAllSql = "SELECT InventoryID,ManufacturerSerialNumber,LMHardwareTypeID,RouteID,ConfigurationID from LMHardwareBase";
-    
-        selectById = selectAllSql + " WHERE InventoryID = ?";
-        
-        selectBySerialNumber = selectAllSql + " WHERE ManufacturerSerialNumber = ?";
-        
-        selectByLMHwardTypeId = selectAllSql + " WHERE LMHardwareTypeID = ?";
-        
-        selectByRouteId = selectAllSql + " WHERE RouteID = ?";
-        
-        selectByConfigurationId = selectAllSql + " WHERE ConfigurationID = ?";
-        
-        rowMapper = LMHardwareBaseDaoImpl.createRowMapper();
-    }
-    
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final LMHardwareBase hardwareBase) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql, hardwareBase.getManufacturerSerialNumber(),
-                                                                hardwareBase.getLMHarewareTypeId(),
-                                                                hardwareBase.getRouteId(),
-                                                                hardwareBase.getConfigurationId(),
-                                                                hardwareBase.getInventoryId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE LMHardwareBase");
+        sql.append("SET ManufacturerSerialNumber =").append(hardwareBase.getManufacturerSerialNumber());
+        sql.append(  ", LMHardwareTypeID =").append(hardwareBase.getLMHarewareTypeId());
+        sql.append(  ", RouteID =").append(hardwareBase.getRouteId());
+        sql.append(  ", ConfigurationID =").append(hardwareBase.getConfigurationId());
+        sql.append("WHERE InventoryID =").append(hardwareBase.getInventoryId());
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql.toString());
         boolean result = (rowsAffected == 1);
         return result;
     }
     
+    @Override
     public LMHardwareBase getById(final int inventoryId) {
         try {
-            LMHardwareBase hardwareBase = simpleJdbcTemplate.queryForObject(selectById, rowMapper, inventoryId);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+            sql.append("FROM LMHardwareBase");
+            sql.append("WHERE InventoryID").eq(inventoryId);
+            
+            LMHardwareBase hardwareBase = yukonJdbcTemplate.queryForObject(sql, rowMapper);
             return hardwareBase;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No LMHardware found for id:" + inventoryId);
         }
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareBase getBySerialNumber(final String serialNumber) {
         try {
-            return simpleJdbcTemplate.queryForObject(selectBySerialNumber, rowMapper, serialNumber);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+            sql.append("FROM LMHardwareBase");
+            sql.append("WHERE ManufacturerSerialNumber").eq(serialNumber);
+            return yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch(EmptyResultDataAccessException ex) {
             throw new NotFoundException("The serial number supplied does not exist: " + serialNumber);
         }
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByLMHardwareTypeId(final int typeId) {
-        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByLMHwardTypeId, rowMapper, typeId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+        sql.append("FROM LMHardwareBase");
+        sql.append("WHERE LMHardwareTypeID").eq(typeId);
+        List<LMHardwareBase> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByRouteId(final int routeId) {
-        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByRouteId, rowMapper, routeId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+        sql.append("FROM LMHardwareBase");
+        sql.append("WHERE RouteID").eq(routeId);
+        List<LMHardwareBase> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByConfigurationId(final int configurationId) {
-        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByConfigurationId, rowMapper, configurationId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+        sql.append("FROM LMHardwareBase");
+        sql.append("WHERE ConfigurationID").eq(configurationId);
+        List<LMHardwareBase> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getAll() {
-        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID, ManufacturerSerialNumber, LMHardwareTypeID, RouteID, ConfigurationID");
+        sql.append("FROM LMHardwareBase");
+        List<LMHardwareBase> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
     
+    @Override
     @Transactional
     public void clearLMHardwareInfo(Integer inventoryId) {
         lmHardwareConfigurationDao.delete(inventoryId);
@@ -116,24 +138,21 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         inventoryBaseDao.uninstallInventory(inventoryId);
     }
     
-    private static final ParameterizedRowMapper<LMHardwareBase> createRowMapper() {
-        final ParameterizedRowMapper<LMHardwareBase> rowMapper = new ParameterizedRowMapper<LMHardwareBase>() {
-            public LMHardwareBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-                LMHardwareBase hardwareBase = new LMHardwareBase();
-                hardwareBase.setConfigurationId(rs.getInt("ConfigurationID"));
-                hardwareBase.setInventoryId(rs.getInt("InventoryID"));
-                hardwareBase.setLMHarewareTypeId(rs.getInt("LMHardwareTypeID"));
-                hardwareBase.setManufacturerSerialNumber(rs.getString("ManufacturerSerialNumber"));
-                hardwareBase.setRouteId(rs.getInt("RouteID"));
-                return hardwareBase;
-            }
-        };
-        return rowMapper;
+    @Override
+    public String getSerialNumberForDevice(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN LMHardwareBase HB on HB.InventoryId = IB.InventoryId");
+        sql.append("WHERE IB.DeviceId").eq(deviceId);
+        
+        String serialNumber = yukonJdbcTemplate.queryForString(sql);
+        return serialNumber;
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired
@@ -160,4 +179,5 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
+    
 }

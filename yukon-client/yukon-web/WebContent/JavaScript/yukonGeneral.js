@@ -299,7 +299,7 @@ Object.extend(YEvent, {
     _handleClickEvent: function(event) {
         YEvent.clickMemory.each(function(memItem) {
             var element = Event.element(event);
-            if (element.match(memItem.selector)) {
+            if (element.match(memItem.selector) || element.up(memItem.selector)) {
                 memItem.callback(event);
             }
         });

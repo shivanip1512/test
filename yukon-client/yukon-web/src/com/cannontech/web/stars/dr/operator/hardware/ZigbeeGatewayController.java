@@ -5,20 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.thirdparty.digi.model.GatewayDto;
@@ -26,262 +19,124 @@ import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
-import com.cannontech.web.util.JsonView;
-import com.google.common.collect.Lists;
 
-@RequestMapping("/operator/hardware/gateway/*")
 @Controller
+@RequestMapping("/operator/hardware/gateway/*")
 public class ZigbeeGatewayController {
 
     private ZigbeeWebService zigbeeWebService;
     private GatewayDeviceDao gatewayDeviceDao;
     private HardwareUiService hardwareUiService;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
-    private YukonListDao yukonListDao;
-    private AttributeService attributeService;
+    private ZigbeeDeviceService zigbeeDeviceService;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     
     /* Gateway Configuration Page */
     @RequestMapping
-    public String configuration(YukonUserContext userContext, ModelMap modelMap, 
-                                AccountInfoFragment accountInfoFragment, int inventoryId) {
-    	HardwareDto hardwareDto = hardwareUiService.getHardwareDto( inventoryId, 
-				   													accountInfoFragment.getEnergyCompanyId(), 
-				   													accountInfoFragment.getAccountId());
+    public String view(YukonUserContext context, ModelMap model, AccountInfoFragment fragment, int inventoryId) {
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        model.addAttribute("mode", PageEditMode.VIEW);
+        
+    	int energyCompanyId = fragment.getEnergyCompanyId();
+        int accountId = fragment.getAccountId();
+        HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, energyCompanyId, accountId);
+        model.addAttribute("gatewayId", hardwareDto.getDeviceId());
+        
     	DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(hardwareDto.getDeviceId());
+        GatewayDto gatewayDto = zigbeeDeviceService.createGatewayDto(digiGateway, hardwareDto);
         
-        GatewayDto gatewayDto = createGatewayDto(digiGateway,hardwareDto);
+        model.addAttribute("displayName", gatewayDto.getSerialNumber());
+        model.addAttribute("inventoryId", inventoryId);
+        model.addAttribute("gatewayDto", gatewayDto);
         
-        return loadConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId,gatewayDto,digiGateway);
+        List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> zigbeeDevices = zigbeeDeviceService.buildZigbeeDeviceDtoList(fragment.getAccountId());
+        model.addAttribute("zigbeeDevices", zigbeeDevices);
+        
+        return "operator/hardware/gateway.jsp";
     }
     
-    private String loadConfigurationPage(YukonUserContext userContext, ModelMap modelMap, 
-            							 AccountInfoFragment accountInfoFragment, int inventoryId,
-            							 GatewayDto gatewayDto, DigiGateway digiGateway) {
+    @RequestMapping(value="gatewayAction", params="commission", method=RequestMethod.POST)
+    public String commission(ModelMap model, FlashScope flash, int gatewayId, int accountId, int inventoryId) {
+        zigbeeWebService.installGateway(gatewayId);
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayCommissioned", gatewaySerialNumber));
+        
+        return redirectView(model, accountId, inventoryId);
+    }
+    
+    @RequestMapping(value="gatewayAction", params="decommission", method=RequestMethod.POST)
+    public String decommission(ModelMap model, FlashScope flash, int gatewayId, int accountId, int inventoryId) {
+        zigbeeWebService.removeGateway(gatewayId);
+        
+        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayDecommissioned", gatewaySerialNumber));
+        
+        return redirectView(model, accountId, inventoryId);
+    }
+    
+    @RequestMapping(value="gatewayAction", params="sendTextMsg", method=RequestMethod.POST)
+    public String sendTextMessage(ModelMap model, FlashScope flash, int gatewayId, int accountId, int inventoryId, String message) {
+        zigbeeWebService.sendTextMessage(gatewayId, message);
+        
+        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.messageSent", gatewaySerialNumber));
+        
+        return redirectView(model, accountId, inventoryId);
+    }
+    
+    @RequestMapping(value="deviceAction", params="add", method=RequestMethod.POST)
+    public String add(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+    	gatewayDeviceDao.assignDeviceToGateway(deviceId, gatewayId);
 
-        modelMap.addAttribute("displayName", gatewayDto.getSerialNumber());
-        modelMap.addAttribute("mode", PageEditMode.EDIT);
-        modelMap.addAttribute("inventoryId", inventoryId);
-        modelMap.addAttribute("gatewayDto", gatewayDto);
-        
-        //Get list of assigned devices
-        List<ZigbeeDeviceAssignment> assignedDeviceIds = gatewayDeviceDao.getAssignedDevices(digiGateway.getPaoIdentifier().getPaoId());
-        List<ZigbeeDeviceDto> assignedDevices = buildZigbeeDeviceDtoList(assignedDeviceIds);
-        
-        modelMap.addAttribute("assignedDevices", assignedDevices);
-        
-    	return "operator/hardware/gateway.jsp";
+    	String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
+    	String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
+    	flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatAdded", deviceSerialNumber, gatewaySerialNumber));
+    	
+    	return redirectView(model, accountId, inventoryId);
     }
     
-    /**
-     * Creates a ZigbeeDeviceDto for each device assignment and returns a List
-     * 
-     * @param assignments
-     * @return
-     */
-    private List<ZigbeeDeviceDto> buildZigbeeDeviceDtoList(List<ZigbeeDeviceAssignment> assignments) {
-    	List<ZigbeeDeviceDto> deviceList = Lists.newArrayList();
-    	
-    	for (ZigbeeDeviceAssignment assignment : assignments) {
-    		deviceList.add(buildZigbeeDeviceDto(assignment.getDeviceId()));
-    	}
-    	
-    	return deviceList;
-    }
-    
-    /**
-     * Creates a single ZigbeeDeviceDto from the deviceId (paoId)
-     * 
-     * @param deviceId
-     * @return
-     */
-    private ZigbeeDeviceDto buildZigbeeDeviceDto(int deviceId) {
-    	ZigbeeDeviceDto device = new ZigbeeDeviceDto();
-		
-    	LiteStarsLMHardware lmHardware = (LiteStarsLMHardware)starsInventoryBaseDao.getByDeviceId(deviceId);
-        YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardware.getLmHardwareTypeID());
-    	
-        device.setDeviceId(deviceId);
-		device.setDeviceType(deviceTypeEntry.getEntryText());
-		device.setSerialNumber(lmHardware.getManufacturerSerialNumber());
-        
-		ZigbeeThermostat tStat = new ZigbeeThermostat();
-		tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO));
-		
-		LitePoint connPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.CONNECTION_STATUS);
-        LitePoint linkPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-		
-        device.setConnectionStatusId(connPt.getLiteID());
-		device.setCommissionId(linkPt.getLiteID());
-        
-        return device;
-    }
-    
-    @RequestMapping
-    public String updateGateway(@ModelAttribute("gatewayDto") GatewayDto gatewayDto, 
-                                YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                                AccountInfoFragment accountInfoFragment, int inventoryId) {
-    	//do update
-    	HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
-    	
-    	DigiGateway digiGateway = new DigiGateway();
-    	
-    	digiGateway.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.DIGIGATEWAY));
-    	
-    	digiGateway.setDigiId(gatewayDto.getDigiId());
-    	digiGateway.setFirmwareVersion(gatewayDto.getFirmwareVersion());
-    	digiGateway.setMacAddress(gatewayDto.getMacAddress());
-    	
-    	try{
-    		gatewayDeviceDao.updateDigiGateway(digiGateway);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-    		//TODO Change this to a more accurate error..!!>!..!!
-    	} catch ( Exception e ) {
-    		flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.fieldErrorExists"));
-    	}
-    	//
-    	
-        return loadConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId,gatewayDto,digiGateway);
-    }
-    
-    private String redirectToConfigurationPage( YukonUserContext userContext, ModelMap modelMap, 
-    											AccountInfoFragment accountInfoFragment, int inventoryId) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        modelMap.addAttribute("inventoryId", inventoryId);
-		
-		return "redirect:/spring/stars/operator/hardware/gateway/configuration";
-	}
-    
-    @RequestMapping
-    public String commission(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment, int inventoryId) {        
-        //Get deviceId from a dao/service or a gateway
-        int deviceId = starsInventoryBaseDao.getByInventoryId(inventoryId).getDeviceID();
-        
-        zigbeeWebService.installGateway(deviceId);
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayCommissioned"));
-        
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId);
-    }
-    
-    @RequestMapping
-    public String decommission(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment, int inventoryId) {       
-        //Get deviceId from a dao/service or a gateway
-        int deviceId = starsInventoryBaseDao.getByInventoryId(inventoryId).getDeviceID();
-        
-        zigbeeWebService.removeGateway(deviceId);
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.gatewayDecommissioned"));
-        
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId);
-    }
-    
-    @RequestMapping
-    public String installStat(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment, int deviceId, int gatewayInvId) {
-        
-        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
-        
-        zigbeeWebService.installStat(deviceId, gatewayId);
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatInstalled"));
-        
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
-    }
-    
-    @RequestMapping
-    public String uninstallStat(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment, int deviceId, int gatewayInvId) {
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatUninstalled"));
-        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
-        
-        zigbeeWebService.uninstallStat(deviceId, gatewayId);
-    	return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
-    }
-    
-    @RequestMapping
-    public String sendTextMessage(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment, int deviceId, String message, int gatewayInvId) {
-        
-        int gatewayId = starsInventoryBaseDao.getByInventoryId(gatewayInvId).getDeviceID();
-        
-        zigbeeWebService.sendTextMessage(deviceId, gatewayId, message);
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.messageSent"));
-        
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,gatewayInvId);
-    }
-    
-    @RequestMapping
-    public String reportAllDevices(YukonUserContext userContext, ModelMap modelMap, 
-                            	   AccountInfoFragment accountInfoFragment, int inventoryId) {
-        modelMap.addAttribute("mode", PageEditMode.EDIT);
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        
-        modelMap.addAttribute("inventoryId", inventoryId);
-        
-        String result = zigbeeWebService.getAllDevices();
-        
-        return redirectToConfigurationPage(userContext,modelMap,accountInfoFragment,inventoryId);
-    }
-    
-    @RequestMapping
-    public String assignDevice(YukonUserContext userContext, AccountInfoFragment accountInfoFragment, 
-    		                   ModelMap modelMap, int gatewayId, int deviceId) {
-    	
-    	LiteInventoryBase gateway = starsInventoryBaseDao.getByInventoryId(gatewayId);
-    	LiteInventoryBase device = starsInventoryBaseDao.getByInventoryId(deviceId);
-    	
-    	gatewayDeviceDao.assignDeviceToGateway(device.getDeviceID(), gateway.getDeviceID());
-    	
-    	modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
-    	modelMap.addAttribute("inventoryId", gatewayId);
-    	
-    	ZigbeeDeviceDto zigbeeDto = buildZigbeeDeviceDto(device.getDeviceID());
-    	modelMap.addAttribute("zigbeeDto", zigbeeDto);
-    	
-    	return "operator/hardware/addDeviceTableRow.jsp";
-    }
-    
-    @RequestMapping
-    public JsonView unassignDevice(YukonUserContext userContext, ModelMap modelMap, 
-    							AccountInfoFragment accountInfoFragment, int deviceId) {
+    @RequestMapping(value="deviceAction", params="remove", method=RequestMethod.POST)
+    public String remove(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
     	//Send Digi Unlink commands?
-    	
     	gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
     	
-    	return new JsonView();
+    	String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
+        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatRemoved", deviceSerialNumber, gatewaySerialNumber));
+    	
+    	return redirectView(model, accountId, inventoryId);
     }
     
-    private GatewayDto createGatewayDto(DigiGateway digiGateway, HardwareDto hardwareDto) {
-    	GatewayDto gatewayDto = new GatewayDto();
+    @RequestMapping(value="deviceAction", params="uninstall", method=RequestMethod.POST)
+    public String uninstall(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+        zigbeeWebService.uninstallStat(deviceId, gatewayId);
         
-        gatewayDto.setSerialNumber(hardwareDto.getSerialNumber());
-        gatewayDto.setGatewayType(hardwareDto.getDisplayType());
+        String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatUninstalled", deviceSerialNumber));
         
-        gatewayDto.setMacAddress(digiGateway.getMacAddress());
-        gatewayDto.setDigiId(digiGateway.getDigiId());
-        gatewayDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
+        return redirectView(model, accountId, inventoryId);
+    }
+    
+    @RequestMapping(value="deviceAction", params="install", method=RequestMethod.POST)
+    public String install(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+        zigbeeWebService.installStat(deviceId, gatewayId);
         
-        LitePoint connPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
-        LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.gateway.thermostatInstalled", deviceSerialNumber));
         
-        gatewayDto.setConnectionStatusId(connPt.getLiteID());
-        gatewayDto.setGatewayStatusId(linkPt.getLiteID());
-        
-        return gatewayDto;
+        return redirectView(model, accountId, inventoryId);
+    }
+
+    private String redirectView(ModelMap model, int accountId, int inventoryId) {
+        model.addAttribute("accountId", accountId);
+        model.addAttribute("inventoryId", inventoryId);
+        return "redirect:view";
     }
     
     @Autowired
@@ -300,17 +155,13 @@ public class ZigbeeGatewayController {
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-    	this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
+        this.zigbeeDeviceService = zigbeeDeviceService;
     }
     
     @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao){
-        this.yukonListDao = yukonListDao;
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
 }

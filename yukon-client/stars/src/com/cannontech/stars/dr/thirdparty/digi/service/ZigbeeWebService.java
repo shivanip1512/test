@@ -12,6 +12,6 @@ public interface ZigbeeWebService {
 	
 	public void uninstallStat(int deviceId, int gatewayId);
 	
-	public void sendTextMessage(int deviceId, int gatewayId, String message);
+	public void sendTextMessage(int gatewayId, String message);
 	
 }

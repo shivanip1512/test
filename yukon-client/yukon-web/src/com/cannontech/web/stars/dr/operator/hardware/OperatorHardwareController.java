@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,11 +20,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.View;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
@@ -84,7 +81,6 @@ import com.cannontech.web.stars.dr.operator.hardware.model.SerialNumber;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
-import com.cannontech.web.util.JsonView;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
@@ -251,6 +247,7 @@ public class OperatorHardwareController {
     public String hardwareEdit(HttpServletRequest request, ModelMap model, YukonUserContext userContext,  AccountInfoFragment fragment, int inventoryId) {
         /* Page Edit Mode */
         setPageMode(model, userContext);
+        model.addAttribute("mode", PageEditMode.VIEW);
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         
@@ -271,11 +268,11 @@ public class OperatorHardwareController {
     }
     
     @RequestMapping
-    public String updateHardware(@ModelAttribute("hardwareDto") HardwareDto hardwareDto, BindingResult bindingResult,
+    public String updateHardware(@ModelAttribute("hardwareDto") HardwareDto hardwareDto, BindingResult result,
                                  ModelMap model, 
                                  YukonUserContext context,
                                  HttpServletRequest request,
-                                 FlashScope flashScope,
+                                 FlashScope flash,
                                  AccountInfoFragment fragment,
                                  int inventoryId) throws ServletRequestBindingException {
 
@@ -294,45 +291,66 @@ public class OperatorHardwareController {
         hardwareDto.setInventoryId(inventoryId);
         
         /* Validate and Update*/
-        hardwareDtoValidator.validate(hardwareDto, bindingResult);
-
-        if (!bindingResult.hasErrors()) {
-            boolean statusChange = false;
-            
-            try {
-                statusChange = hardwareUiService.updateHardware(context, hardwareDto);
-            } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-                bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-            } catch (ObjectInOtherEnergyCompanyException e) {
-                bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
+        hardwareDtoValidator.validate(hardwareDto, result);
+        if (result.hasErrors()) {
+            return returnWithErrors(context, model, fragment, flash, hardwareDto, result);
+        }
+        
+        boolean statusChange = false;
+        
+        try {
+            statusChange = hardwareUiService.updateHardware(context, hardwareDto);
+        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
+            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
+        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
+            switch (e.getType()) {
+            case UNKOWN:
+                result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");
+                break;
+            case REQUIRED:
+                result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.required");
+                break;
+            case UNAVAILABLE:
+                result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unavailable");
+                break;
+            case NON_NUMERIC:
+                result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
+                break;
             }
-            
-            /* If the device status was changed, spawn an event for it */
-            if (statusChange) {
-                EventUtils.logSTARSEvent(context.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
-            }
-            
-            /* Flash hardware updated */
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareUpdated"));
-            AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-            
-            return "redirect:hardwareList";
+        }
+        if (result.hasErrors()) {
+            return returnWithErrors(context, model, fragment, flash, hardwareDto, result);
+        }
+        
+        /* If the device status was changed, spawn an event for it */
+        if (statusChange) {
+            EventUtils.logSTARSEvent(context.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
+        }
+        
+        /* Flash hardware updated */
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareUpdated"));
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        
+        return "redirect:hardwareList";
+    }
+    
+    private String returnWithErrors(YukonUserContext context, ModelMap model, AccountInfoFragment fragment, 
+                                    FlashScope flash, HardwareDto dto, BindingResult result) {
+        /* Return back to the jsp with the errors */
+        setupHardwareEditModelMap(fragment, dto, model, context);
+        setPageMode(model, context);
+        model.addAttribute("displayName", dto.getDisplayName());
+        
+        /* Add errors to flash scope */
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+        flash.setMessage(messages, FlashScopeMessageType.ERROR);
+        
+        if (dto.getHardwareType() == HardwareType.NON_YUKON_METER) {
+            return "operator/hardware/meterProfile.jsp";
         } else {
-            
-            /* Return back to the jsp with the errors */
-            setupHardwareEditModelMap(fragment, hardwareDto, model, context);
-            setPageMode(model, context);
-            model.addAttribute("displayName", hardwareDto.getDisplayName());
-            
-            /* Add errors to flash scope */
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            
-            if (hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
-                return "operator/hardware/meterProfile.jsp";
-            } else {
-                return "operator/hardware/hardware.jsp";
-            }
+            return "operator/hardware/hardware.jsp";
         }
     }
     
@@ -352,6 +370,10 @@ public class OperatorHardwareController {
         hardwareEventLogService.hardwareCreationAttemptedByOperator(context.getYukonUser(),
                                                                     fragment.getAccountNumber(),
                                                                     hardwareDto.getSerialNumber());
+        
+        if (hardwareDto.isCreatingNewTwoWayDevice()) {
+            hardwareEventLogService.twoWayHardwareCreationAttemptedByOperator(context.getYukonUser(), hardwareDto.getTwoWayDeviceName());
+        }
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, context.getYukonUser());
@@ -376,6 +398,21 @@ public class OperatorHardwareController {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
             } catch (ObjectInOtherEnergyCompanyException e) {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
+            } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
+                switch (e.getType()) {
+                case UNKOWN:
+                    bindingResult.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");
+                    break;
+                case REQUIRED:
+                    bindingResult.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.required");
+                    break;
+                case UNAVAILABLE:
+                    bindingResult.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unavailable");
+                    break;
+                case NON_NUMERIC:
+                    bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
+                    break;
+                }
             }
 
             AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
@@ -419,30 +456,6 @@ public class OperatorHardwareController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemoved"));
         }
         return "redirect:hardwareList";
-    }
-    
-
-    @RequestMapping
-    public View createYukonDevice(ModelMap model, String deviceName, HttpServletResponse response, YukonUserContext context,
-                                  int inventoryId) throws ServletRequestBindingException {
-        
-        hardwareEventLogService.twoWayHardwareCreationAttemptedByOperator(context.getYukonUser(), 
-                                                                          deviceName);
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
-        int deviceId = -1;
-        try {
-            SimpleDevice yukonDevice = hardwareUiService.createTwoWayDevice(context, inventoryId, deviceName);
-            deviceId = yukonDevice.getDeviceId();
-        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
-            model.addAttribute("errorOccurred", Boolean.TRUE);
-            model.addAttribute("errorMsg", e.getMessage());
-            return new JsonView();
-        }
-        model.addAttribute("errorOccurred", Boolean.FALSE);
-        model.addAttribute("deviceId", deviceId);
-        
-        return new JsonView();
     }
     
     @RequestMapping

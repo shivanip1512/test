@@ -76,22 +76,11 @@ table.bitTable th {
 	font-weight: bold;
 }
 
-.Connected {
+td.pointStateColumn,
+tr.pointState td.value {
     font-weight: bold;
-    color: #006633;
 }
 
-.Disconnected {
-    font-weight: bold;
-    color: #CC0000;
-}
-
-.Commissioned {
-    font-weight: bold;
-    color: #006633;
-}
-
-.Uncommissioned {
-    font-weight: bold;
-    color: #CC0000;
+tr.pickerRow td.name {
+    vertical-align: middle;
 }

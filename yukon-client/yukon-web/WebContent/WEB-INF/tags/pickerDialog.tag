@@ -20,6 +20,7 @@
 <%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." rtexprvalue="true"%>
 <%@ attribute name="mode" description="mode (inline or dialog; dialog is default)" rtexprvalue="true"%>
 <%@ attribute name="containerDiv" description="causes picker to be inlined; placed in this div" rtexprvalue="true"%>
+<%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="causes picker display the value only; only usable with selection linkType" rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -99,46 +100,53 @@
 </c:if>
 </span>
 
-<c:if test="${pageScope.linkType != 'none'}">
-    <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
-        <c:choose>
-    	    <c:when test="${pageScope.linkType == 'button'}">
-                <cti:button key="${pageScope.nameKey}" onclick="${id}.show()"
-                    styleClass="${pageScope.buttonStyleClass}"/>
-    	    </c:when>
-    	    <c:when test="${pageScope.linkType == 'selection'}">
-                <c:if test="${empty pageScope.selectionProperty}">
-                    <span class="errorMessage">The "selectionProperty" attribute is
-                        required when using "selection" linkType on tags:pickerDialog.</span>
-                </c:if>
-                <c:if test="${empty pageScope.nameKey}">
-                    <c:set var="nameKey" value="selectionPicker"/>
-                </c:if>
-                <cti:labeledImg id="picker_${id}_label" key="${pageScope.nameKey}"
-                    labelStyleClass="noSelectionPickerLabel"
-                    href="javascript:${id}.show()" imageOnRight="true"/>
-                <c:if test="${pageScope.multiSelectMode}">
-                    <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" key="zoom"/>
-                </c:if>
-                <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
-                    <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
-                    <div class="actionArea">
-                        <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
-                            value="${closeMsg}"/>
-                    </div>
-                </tags:simplePopup>
-    	    </c:when>
-    	    <c:otherwise>
-                <c:set var="anchorAttributes" value=""/>
-                <c:if test="${!empty pageScope.anchorStyleClass}">
-                    <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
-                </c:if>
-                <a href="javascript:${id}.show()"${anchorAttributes}><jsp:doBody/></a>
-    	    </c:otherwise>
-        </c:choose>
-    </span>
+<c:if test="${pageScope.viewOnlyMode}">
+    <c:set var="viewMode" value="true"/>
+    <span id="picker_${id}_label"><span></span></span>
+</c:if>
+<c:if test="${!pageScope.viewOnlyMode}">
+    <c:set var="viewMode" value="false"/>
+    <c:if test="${pageScope.linkType != 'none'}">
+        <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
+            <c:choose>
+        	    <c:when test="${pageScope.linkType == 'button'}">
+                    <cti:button key="${pageScope.nameKey}" onclick="${id}.show()"
+                        styleClass="${pageScope.buttonStyleClass}"/>
+        	    </c:when>
+        	    <c:when test="${pageScope.linkType == 'selection'}">
+                    <c:if test="${empty pageScope.selectionProperty}">
+                        <span class="errorMessage">The "selectionProperty" attribute is
+                            required when using "selection" linkType on tags:pickerDialog.</span>
+                    </c:if>
+                    <c:if test="${empty pageScope.nameKey}">
+                        <c:set var="nameKey" value="selectionPicker"/>
+                    </c:if>
+                    <cti:labeledImg id="picker_${id}_label" key="${pageScope.nameKey}"
+                        labelStyleClass="noSelectionPickerLabel"
+                        href="javascript:${id}.show()" imageOnRight="true"/>
+                    <c:if test="${pageScope.multiSelectMode}">
+                        <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" key="zoom"/>
+                    </c:if>
+                    <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
+                        <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
+                        <div class="actionArea">
+                            <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
+                                value="${closeMsg}"/>
+                        </div>
+                    </tags:simplePopup>
+        	    </c:when>
+        	    <c:otherwise>
+                    <c:set var="anchorAttributes" value=""/>
+                    <c:if test="${!empty pageScope.anchorStyleClass}">
+                        <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
+                    </c:if>
+                    <a href="javascript:${id}.show()"${anchorAttributes}><jsp:doBody/></a>
+        	    </c:otherwise>
+            </c:choose>
+        </span>
+    </c:if>
 </c:if>
 
 <script type="text/javascript">
-callAfterMainWindowLoad(${id}.init.bind(${id}));
+callAfterMainWindowLoad(${id}.init.bind(${id}, '${viewMode}'));
 </script>

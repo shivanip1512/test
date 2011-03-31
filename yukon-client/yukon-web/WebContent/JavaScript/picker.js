@@ -147,23 +147,27 @@ Picker.prototype = {
 
 	/**
 	 * This method does secondary initialization which needs to happen after
-	 * the HTML elements in the tag file have been fully created.
+	 * the HTML elements in the tag file have been fully created.  This method
+	 * should only be called from the pickerDialog.tag.  Use viewMode when
+	 * the picker should be a read-only view.
 	 */
-	init : function() {
-		this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
-		if (this.selectionProperty) {
-			this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup');
-			this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea');
-			var showSelectedImg = $('picker_' + this.pickerId + '_showSelectedImg');
-			if (showSelectedImg) {
-				this.showSelectedLink = $(showSelectedImg.parentNode);
-				this.showSelectedLink.hide();
-			}
+	init : function(viewMode) {
+	    this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
+	    if (!viewMode) {
 	        if (this.selectionProperty) {
-	            this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0];
-	            this.originalSelectionLabel = this.selectionLabel.innerHTML;
+	            this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup');
+	            this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea');
+	            var showSelectedImg = $('picker_' + this.pickerId + '_showSelectedImg');
+	            if (showSelectedImg) {
+	                this.showSelectedLink = $(showSelectedImg.parentNode);
+	                this.showSelectedLink.hide();
+	            }
 	        }
-		}
+	    }
+	    if (this.selectionProperty) {
+	        this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0];
+	        this.originalSelectionLabel = this.selectionLabel.innerHTML;
+	    }
 
 		var initialIds = [];
 		if (this.destinationFieldId) {
@@ -174,10 +178,14 @@ Picker.prototype = {
 			initialIds = this.inputAreaDiv.getElementsBySelector('input').pluck('value');
 		}
 
-		if (initialIds && initialIds.length > 0) {
-			this.prime(false, initialIds);
-		} else if (this.useInitialIdsIfEmpty) {
-		    this.selectedItems = [];
+		if (viewMode) {
+		    this.doIdSearch(initialIds);
+		} else {
+	        if (initialIds && initialIds.length > 0) {
+	            this.prime(false, initialIds);
+	        } else if (this.useInitialIdsIfEmpty) {
+	            this.selectedItems = [];
+	        }
 		}
 	},
 
@@ -271,27 +279,31 @@ Picker.prototype = {
 		this.outputColumns = json.outputColumns;
 		this.idFieldName = json.idFieldName;
 
-		if (initialIds && initialIds.length > 0) {
-			var parameters = {
-					'type' : this.pickerType,
-					'id' : this.pickerId,
-					'initialIds' : initialIds
-				};
-			if (this.extraArgs) {
-				parameters.extraArgs = this.extraArgs;
-			}
-
-			new Ajax.Request('/picker/v2/idSearch', {
-				'method' : 'post',
-				'parameters': parameters,
-				'onComplete': this.onIdSearchComplete.bind(this)
-			});
-		}
+		this.doIdSearch(initialIds);
 
 		if (showPicker) {
 			this.doShow();
 		}
 		this.primed = true;
+	},
+
+	doIdSearch : function(selectedIds) {
+        if (selectedIds && selectedIds.length > 0) {
+            var parameters = {
+                    'type' : this.pickerType,
+                    'id' : this.pickerId,
+                    'initialIds' : selectedIds
+                };
+            if (this.extraArgs) {
+                parameters.extraArgs = this.extraArgs;
+            }
+
+            new Ajax.Request('/picker/v2/idSearch', {
+                'method' : 'post',
+                'parameters': parameters,
+                'onComplete': this.onIdSearchComplete.bind(this)
+            });
+        }
 	},
 
 	onIdSearchComplete : function(transport) {

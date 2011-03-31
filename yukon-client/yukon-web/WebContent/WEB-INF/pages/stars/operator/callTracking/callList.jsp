@@ -14,10 +14,6 @@
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
 
-	<form id="createCallForm" action="/spring/stars/operator/callTracking/viewCall" method="get">
-		<input type="hidden" name="accountId" value="${accountId}">
-	</form>
-
 	<tags:boxContainer2 nameKey="callsBox">
 	<table class="compactResultsTable callListTable rowHighlighting">
 	
@@ -74,12 +70,17 @@
 			</tr>
 		</c:forEach>
 	</table>
+    
+    <%-- create button --%>
+    <cti:displayForPageEditModes modes="CREATE">
+        <div class="actionArea">
+            <form id="createCallForm" action="/spring/stars/operator/callTracking/viewCall" method="get">
+                <input type="hidden" name="accountId" value="${accountId}">
+                <cti:button key="create" type="submit"/>
+            </form>
+        </div>
+    </cti:displayForPageEditModes>
+    
 	</tags:boxContainer2>
 		
-	<%-- create button --%>
-	<cti:displayForPageEditModes modes="CREATE">
-		<br>
-		<tags:slowInput2 formId="createCallForm" key="create"/>
-	</cti:displayForPageEditModes>
-
 </cti:standardPage>

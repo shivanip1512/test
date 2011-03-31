@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -240,7 +241,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append("WHERE icti.InventoryConfigTaskId").eq(taskId);
         sql.append(  "AND Status").eq(status);
         
-        return yukonJdbcTemplate.query(sql, new InventoryDaoImpl.InventoryIdentifierMapper());
+        return yukonJdbcTemplate.query(sql, new InventoryIdentifierMapper());
     }
 
     @Override

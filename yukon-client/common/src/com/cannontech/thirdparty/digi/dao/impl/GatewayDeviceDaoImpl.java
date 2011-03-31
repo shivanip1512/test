@@ -2,8 +2,12 @@ package com.cannontech.thirdparty.digi.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -118,27 +122,27 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
-    public List<ZigbeeDeviceAssignment> getAssignedDevices(int gatewayId) {
+    public List<ZigbeeDeviceAssignment> getZigbeeDevicesForAccount(int accountId, List<Integer> hardwareTypeIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT DeviceId,GatewayId");
-        sql.append("FROM ZBGatewayToDeviceMapping");
-        sql.append("WHERE GatewayId").eq(gatewayId);
+        sql.append("SELECT ib.DeviceId, zb.GatewayId");
+        sql.append("FROM InventoryBase ib");
+        sql.append(  "JOIN LMHardwareBase lmhb on lmhb.InventoryId = ib.InventoryId");
+        sql.append(  "LEFT OUTER JOIN ZBGatewayToDeviceMapping zb on zb.DeviceId = ib.DeviceId");
+        sql.append("WHERE ib.AccountId").eq(accountId);
+        sql.append(  "AND lmhb.LMHardwareTypeId").in(hardwareTypeIds);
         
-        return yukonJdbcTemplate.query(sql, new YukonRowMapper<ZigbeeDeviceAssignment>()
-                {
-                    @Override
-                    public ZigbeeDeviceAssignment mapRow(YukonResultSet rs)
-                            throws SQLException {
-                    	ZigbeeDeviceAssignment assignment = new ZigbeeDeviceAssignment();
-                        
-                    	assignment.setDeviceId(rs.getInt("DeviceId"));
-                    	assignment.setGatewayId(rs.getInt("GatewayId"));
-                        
-                        return assignment;
-                    }
+        return yukonJdbcTemplate.query(sql, new YukonRowMapper<ZigbeeDeviceAssignment>() {
+                @Override
+                public ZigbeeDeviceAssignment mapRow(YukonResultSet rs) throws SQLException {
+                	ZigbeeDeviceAssignment assignment = new ZigbeeDeviceAssignment();
+                	assignment.setDeviceId(rs.getInt("DeviceId"));
+                	Integer gatewayId = rs.getNullableInt("GatewayId");
+                	assignment.setGatewayId(gatewayId);
+                    return assignment;
                 }
-            );
+            }
+        );
     }
     
     @Override
@@ -157,6 +161,37 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     	sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE DeviceId").eq(deviceId);
 
     	yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public InventoryIdentifier findGatewayByDeviceMapping(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.InventoryId, yle.YukonDefinitionId");
+        sql.append("FROM InventoryBase ib");
+        sql.append(  "JOIN LMHardwareBase hb ON hb.InventoryId = ib.InventoryId");
+        sql.append(  "JOIN YukonListEntry yle ON yle.EntryId = hb.LmHardwareTypeId");
+        sql.append(  "JOIN ZBGatewayToDeviceMapping zb on zb.GatewayId = ib.DeviceId");
+        sql.append("WHERE zb.DeviceId").eq(deviceId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new InventoryIdentifierMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public Integer findGatewayIdForDeviceId(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GatewayId");
+        sql.append("FROM ZBGatewayToDeviceMapping");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     @Autowired

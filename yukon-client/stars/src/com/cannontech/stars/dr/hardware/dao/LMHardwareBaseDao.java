@@ -60,5 +60,10 @@ public interface LMHardwareBaseDao {
      * @param inventoryId
      */
     public void clearLMHardwareInfo(Integer inventoryId);
+
+    /**
+     * Returns the serial number for the inventory with the given device id. 
+     */
+    public String getSerialNumberForDevice(int deviceId);
     
 }

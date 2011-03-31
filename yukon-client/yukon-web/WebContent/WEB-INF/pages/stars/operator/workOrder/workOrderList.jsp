@@ -42,10 +42,6 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
   
-    <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/viewWorkOrder" method="get">
-        <input type="hidden" name="accountId" value="${accountId}">
-    </form>
-
     <tags:boxContainer2 nameKey="workOrdersBox">
     <table class="compactResultsTable callListTable rowHighlighting">
     
@@ -122,12 +118,16 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
         </form>
     </tags:simplePopup>
     
-    </tags:boxContainer2>
-        
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
-        <br>
-        <tags:slowInput2 formId="createWorkOrderForm" key="create"/>
+        <div class="actionArea">
+            <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/viewWorkOrder" method="get">
+                <input type="hidden" name="accountId" value="${accountId}">
+                <cti:button key="create" type="submit"/>
+            </form>
+        </div>
     </cti:displayForPageEditModes>
-
+    
+    </tags:boxContainer2>
+        
 </cti:standardPage>

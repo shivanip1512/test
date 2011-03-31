@@ -88,21 +88,21 @@
                 <c:if test="${configurable}">
                     <input type="submit" value="<cti:msg2 key=".config"/>"
                            title="<cti:msg2 key=".config.description"/>"
-                           onclick="$('actionInput').value = 'config';"/>
+                           onclick="$('actionInput').value = 'config';" class="formSubmit">
                     <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
                            title="<cti:msg2 key=".saveToBatch.description"/>"
-                           onclick="$('actionInput').value = 'saveToBatch';"/>
+                           onclick="$('actionInput').value = 'saveToBatch';" class="formSubmit">
                 </c:if>
                 <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
                        title="<cti:msg2 key=".saveConfigOnly.description"/>"
-                       onclick="$('actionInput').value = 'saveConfigOnly';"/>
+                       onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
             </c:if>
         </cti:checkRolesAndProperties>
         <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/hardwareList">
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
-               onclick="window.location='${cancelUrl}'"/>
+               onclick="window.location='${cancelUrl}'" class="formSubmit">
     </div>
 </form:form>
 

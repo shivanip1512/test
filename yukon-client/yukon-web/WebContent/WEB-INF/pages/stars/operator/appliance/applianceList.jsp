@@ -19,8 +19,8 @@
             </script>
 
             <%-- CREATE APPLIANCE POPUP --%>
-            <i:simplePopup titleKey=".create" id="createAppliancePopup" 
-                           styleClass="mediumSimplePopup" 
+            <i:simplePopup titleKey=".createAppliancePopup.title" id="createAppliancePopup" 
+                           styleClass="smallSimplePopup" 
                            showImmediately="${param.showSwitchCheckingPopup}">
                 <form action="/spring/stars/operator/appliances/applianceNew">
                     <input type="hidden" name="accountId" value="${accountId}"/>
@@ -37,9 +37,12 @@
                                     </option>
                                 </c:forEach>
                             </select>
-                            <button type="submit" class="formSubmit"><i:inline key=".create"/></button>
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
+                    <div class="actionArea">
+                        <cti:button key="ok" type="submit"/>
+                        <cti:button key="cancel" onclick="$('createAppliancePopup').hide();"/>
+                    </div>
                 </form>
             </i:simplePopup>
         </cti:checkRolesAndProperties>
@@ -54,7 +57,7 @@
                          <th><i:inline key=".deviceName" /></th>
                          <th><i:inline key=".programName" /></th>
                          <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                             <th><i:inline key=".actions" /></th>
+                             <th class="removeColumn"><i:inline key=".delete" /></th>
                          </cti:checkRolesAndProperties>
                      </tr>
 
@@ -96,7 +99,7 @@
                                  </c:choose>
                              </td>
                              <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                                 <td>
+                                 <td class="removeColumn">
                                     <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
                                         <cti:param name="accountId" value="${accountId}" />
                                         <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
@@ -119,10 +122,7 @@
                     <tr align="right">
                         <td colspan="4">
                             <br>
-                            <button type="submit" onclick="showCreateAppliancePopup();" 
-                                    class="formSubmit">
-                                <i:inline key=".create"/>
-                            </button>
+                            <cti:button key="create" type="submit" onclick="showCreateAppliancePopup();"/>
                         </td>
                     </tr>
                 </cti:checkRolesAndProperties>

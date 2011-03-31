@@ -42,6 +42,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 
@@ -65,19 +67,24 @@ public class DefaultThermostatScheduleController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
         List<HardwareType> availableThermostatTypes = energyCompany.getAvailableThermostatTypes();
+        Iterable<HardwareType> availableThermostats = Iterables.filter(availableThermostatTypes, new Predicate<HardwareType>() {
+            @Override
+            public boolean apply(HardwareType input) {
+                return input.isSupportsSchedules();
+            }
+        });
+        availableThermostatTypes = Lists.newArrayList(availableThermostats);
+        
         List<SchedulableThermostatType> schedulableThermostatTypes =
             Lists.transform(availableThermostatTypes, new Function<HardwareType, SchedulableThermostatType>() {
-
                 @Override
                 public SchedulableThermostatType apply(HardwareType hardwareType) {
                     return SchedulableThermostatType.getByHardwareType(hardwareType);
                 }
-                
             });
         
         modelMap.addAttribute("schedulableThermostatTypes", schedulableThermostatTypes);
         modelMap.addAttribute("availableThermostatTypes", availableThermostatTypes);        
-        
         
         return "energyCompany/defaultThermostatScheduleList.jsp";
     }

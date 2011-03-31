@@ -185,7 +185,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
 
     @Override
-    public void sendTextMessage(int deviceId, int gatewayId, String message) {
+    public void sendTextMessage(int gatewayId, String message) {
 
         DigiGateway gateway = gatewayDeviceDao.getDigiGateway(gatewayId);
            

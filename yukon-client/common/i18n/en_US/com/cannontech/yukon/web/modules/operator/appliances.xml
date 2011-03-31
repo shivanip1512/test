@@ -11,16 +11,17 @@
     <entry key="yukon.web.modules.operator.appliance.list.applianceName">Appliance Name</entry>
     <entry key="yukon.web.modules.operator.appliance.list.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.operator.appliance.list.programName">Program Name</entry>
-    <entry key="yukon.web.modules.operator.appliance.list.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.appliance.list.delete">Delete</entry>
     <entry key="yukon.web.modules.operator.appliance.list.noAppliances">No existing appliances</entry>
     <entry key="yukon.web.modules.operator.appliance.list.notApplicable">N/A</entry>
     
     <!-- Appliance Icon Links -->
     <entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
 	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
-	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverText">Delete appliance</entry>
+	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverText">Delete this appliance</entry>
 	
-	<entry key="yukon.web.modules.operator.appliance.create">Create</entry>
+	<entry key="yukon.web.modules.operator.appliance.list.createAppliancePopup.title">Choose Appliance Name</entry>
+    
     <entry key="yukon.web.modules.operator.appliance.save">Save</entry>
     <entry key="yukon.web.modules.operator.appliance.delete">Delete</entry>
     <entry key="yukon.web.modules.operator.appliance.cancel">Cancel</entry>

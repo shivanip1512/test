@@ -27,6 +27,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.util.Validator;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
@@ -318,6 +319,18 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
             if (entry.getEntryText().equalsIgnoreCase(entryText)) return entry;
         }
         return null;
+    }
+    
+    @Override
+    public YukonListEntry getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yle.*");
+        sql.append("FROM YukonListEntry yle"); 
+        sql.append(  "JOIN YukonSelectionList ysl on ysl.ListID = yle.ListID"); 
+        sql.append("WHERE yle.YukonDefinitionID").eq_k(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO); 
+        sql.append(  "AND ysl.energyCompanyId").eq(ec.getEnergyCompanyId()); 
+ 
+        return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());
     }
 	
     // Row Mappers

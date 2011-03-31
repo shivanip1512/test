@@ -14,6 +14,7 @@
     <!-- hardwareList.jsp -->
     <entry key="yukon.web.modules.operator.hardware.list.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.list.add.label">Add...</entry>
     
     <!-- Action Images -->
     <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
@@ -53,7 +54,6 @@
     
     <entry key="yukon.web.modules.operator.hardware.accountNumber">Account #</entry>
     <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
-    <entry key="yukon.web.modules.operator.hardware.add">Add</entry>
     <entry key="yukon.web.modules.operator.hardware.altTrackingNumber">Alt Tracking Number</entry>
     <entry key="yukon.web.modules.operator.hardware.checkInventoryButton">Check Inventory</entry>
     <entry key="yukon.web.modules.operator.hardware.createTwoWay">Create Two-Way LCR</entry>
@@ -90,18 +90,18 @@
     <entry key="yukon.web.modules.operator.hardware.serviceCompanyInfo">Service Company Info</entry>
     <entry key="yukon.web.modules.operator.hardware.status">Status</entry>
     <entry key="yukon.web.modules.operator.hardware.twoWayDevice">Two Way Device</entry>
-    <entry key="yukon.web.modules.operator.hardware.twoWayPickerButton.label">Choose</entry>
-    <entry key="yukon.web.modules.operator.hardware.twoWayNewButton.label">New</entry>
+    <entry key="yukon.web.modules.operator.hardware.new.label">New</entry>
+    <entry key="yukon.web.modules.operator.hardware.choose.label">Choose</entry>
     <entry key="yukon.web.modules.operator.hardware.voltage">Voltage</entry>
     <entry key="yukon.web.modules.operator.hardware.warehouse">Warehouse</entry>
     <entry key="yukon.web.modules.operator.hardware.macAddress">MAC Address</entry>
     <entry key="yukon.web.modules.operator.hardware.firmwareVersion">Firmware Version</entry>
     
     <!-- Errors -->
-    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.nameAlreadyExists">Yukon device with that name already exists.</entry>
-    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.mustSupplyName">Yukon device name is required.</entry>
-    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.nonNumericSerialNumber">Two Way LCR serial number must be numeric.</entry>
-    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.unknown">Unable to create new yukon device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unavailable.twoWayDeviceName">Yukon device with that name already exists.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.required.twoWayDeviceName">Yukon device name is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unknown.twoWayDeviceName">Unable to create new yukon device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.nonNumericSerialNumber.serialNumber">Two Way LCR serial number must be numeric.</entry>
     
     <entry key="yukon.web.modules.operator.hardware.error.required.serialNumber">A serial number is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.serialNumber">This serial number is already in use.</entry>

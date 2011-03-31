@@ -23,21 +23,15 @@ public class PointStatusColorTag extends YukonTagSupport {
         if (!isPointIdSet) throw new JspException("pointId must be set");
         
         final UpdateValue latestValue = pointDataRegistrationService.getLatestValue(pointId, format, getUserContext());
-        final String color = latestValue.getValue();
+        final String color = latestValue.isUnavailable() ? "black" :  latestValue.getValue();
         
         final StringBuilder beforeBodyBuilder = new StringBuilder();
-        beforeBodyBuilder.append("<span id=\"cannonColorUpdater_" + pointId + "\" style=\"color: ");
-        beforeBodyBuilder.append(color + " !important");
-        beforeBodyBuilder.append(";\" cannonColorUpdater=\"" + latestValue.getFullIdentifier() + "\">");
-        String before = beforeBodyBuilder.toString(); 
+        beforeBodyBuilder.append("<span style=\"color: " + color + " !important;\"");
+        beforeBodyBuilder.append(" cannonColorUpdater=\"" + latestValue.getFullIdentifier() + "\">");
+        String before = beforeBodyBuilder.toString();
         
         final StringBuilder afterBodyBuilder = new StringBuilder();
-        afterBodyBuilder.append("</span>\n");
-        afterBodyBuilder.append("<script type=\"text/javascript\" language=\"JavaScript\">\n");
-        afterBodyBuilder.append("   $('cannonColorUpdater_" + pointId + "').childElements().each(function(child) {\n");
-        afterBodyBuilder.append("       child.style.color = '" + color + "';\n");
-        afterBodyBuilder.append("   });\n");
-        afterBodyBuilder.append("</script>\n");
+        afterBodyBuilder.append("</span>");
         String after = afterBodyBuilder.toString();
         
         final JspWriter writer = getJspContext().getOut();

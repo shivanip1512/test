@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -21,7 +22,6 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl.InventoryIdentifierMapper;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;

@@ -60,7 +60,7 @@ public class DigiDummyWebServiceImpl implements ZigbeeWebService {
 	}
 
 	@Override
-	public void sendTextMessage(int deviceId, int gatewayId,  String message) {
+	public void sendTextMessage(int gatewayId,  String message) {
 		// TODO Auto-generated method stub
 		
 	}

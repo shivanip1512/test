@@ -116,23 +116,15 @@
                     <br>
                     
                     <cti:displayForPageEditModes modes="CREATE">
-                        <button type="submit" name="create" class="formSubmit">
-                            <i:inline key=".create"/>
-                        </button>
+                        <cti:button key="save" name="create" type="submit"/>
                     </cti:displayForPageEditModes>
                     
                     <cti:displayForPageEditModes modes="EDIT">
-                        <button type="submit" name="update" class="formSubmit">
-                            <i:inline key=".save"/>
-                        </button>
-                        <button type="submit" name="delete" class="formSubmit">
-                            <i:inline key=".delete"/>
-                        </button>
+                        <cti:button key="save" name="update" type="submit"/>
+                        <cti:button key="delete" name="delete" type="submit"/>
                     </cti:displayForPageEditModes>
+                    <cti:button key="cancel" name="cancel" type="submit"/>
                     
-                    <button type="submit" name="cancel" class="formSubmit">
-                        <i:inline key=".cancel"/>
-                    </button>
                 </form:form>
 
                 <br>

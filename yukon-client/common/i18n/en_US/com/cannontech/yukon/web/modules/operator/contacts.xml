@@ -7,8 +7,10 @@
     <entry key="yukon.web.modules.operator.contactList.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.contactList.header.contact">Name</entry>
     <entry key="yukon.web.modules.operator.contactList.header.notifications">Notifications</entry>
-    <entry key="yukon.web.modules.operator.contactList.header.remove">Remove</entry>
-    <entry key="yukon.web.modules.operator.contactList.button.addContact.label">Create</entry>
+    <entry key="yukon.web.modules.operator.contactList.header.remove">Delete</entry>
+    <entry key="yukon.web.modules.operator.contactList.deleteContact.label">Delete</entry>
+    <entry key="yukon.web.modules.operator.contactList.deleteContact.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.operator.contactList.deleteContact.hoverText">Delete this contact</entry>
     <entry key="yukon.web.modules.operator.contactList.isPrimary">(Primary)</entry>
     
 	<!-- contactEdit -->

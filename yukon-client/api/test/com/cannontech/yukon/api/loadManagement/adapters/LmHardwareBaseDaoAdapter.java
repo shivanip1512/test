@@ -50,4 +50,9 @@ public class LmHardwareBaseDaoAdapter implements LMHardwareBaseDao {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public String getSerialNumberForDevice(int deviceId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
 }

@@ -47,7 +47,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                 if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
                     /* This is a two way lcr so the serial number can only have numeric chars and must be a valid integer. */
                     if(!StringUtils.isNumeric(hardwareDto.getSerialNumber())){
-                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.numeric");
+                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
                     } else {
                        try {
                            Integer.parseInt(hardwareDto.getSerialNumber());
@@ -94,44 +94,53 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             YukonValidationUtils.checkExceedsMaxLength(errors, "installNotes", hardwareDto.getInstallNotes(), 500);
         }
         
-        /* Two Way LCR's */
-        if(hardwareDto.getInventoryId() != null && hardwareType.isSwitch() && hardwareType.isTwoWay()){
-            /* If they have not picked a device for this two way inventory, reject this device id */
-            if(!(hardwareDto.getDeviceId() > 0)){
-                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalid");
-            } else {
+        /* Two Way LCR's: If they are not creating a new two way device, they need to have picked one. */
+        if (hardwareType.isSwitch() && hardwareType.isTwoWay() && !hardwareDto.isCreatingNewTwoWayDevice()) {
             
-                try {
-                    /* If this device no longer exists, reject this device id. */
-                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(hardwareDto.getDeviceId());
-                    PaoType paoType = pao.getPaoIdentifier().getPaoType();
-                    
-                    if(!DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
-                        /* The device with this id is no longer a two way lcr. */
-                        errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalidDeviceType", new Object[] {pao.getLiteID(), pao.getPaoName()}, null);
-                    }
-                    
-                    /* Device can only be used by one lcr at a time */
-                    List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardwareDto.getDeviceId());
-                    InventoryBase inventory = inventoryBaseDao.getById(hardwareDto.getInventoryId());
-                    /* If something is using this device and it's not this inventory reject this device id */
-                    if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != inventory.getDeviceId()) {
+            /* If they have not picked a device for this two way inventory, reject this device id */
+            if (!(hardwareDto.getDeviceId() > 0)) {
+                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalid");
+            }
+        
+            try {
+                /* If this device no longer exists, reject this device id. */
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(hardwareDto.getDeviceId());
+                PaoType paoType = pao.getPaoIdentifier().getPaoType();
+                
+                if(!DeviceTypesFuncs.isTwoWayLcr(paoType.getDeviceTypeId())) {
+                    /* The device with this id is no longer a two way lcr. */
+                    errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.invalidDeviceType", new Object[] {pao.getLiteID(), pao.getPaoName()}, null);
+                }
+                
+                /* Device can only be used by one lcr at a time */
+                List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardwareDto.getDeviceId());
+                if (!matchedInventory.isEmpty()) {
+                    if (hardwareDto.getInventoryId() == null) {
+                        /* Creating a two way lcr and the two way device is already in use */
                         String unavailableDeviceName = pao.getPaoName();
                         errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
-                    }
-                    
-                    /* The device's address must match the LCR's serial number */
-                    try {
-                        int serial = Integer.valueOf(hardwareDto.getSerialNumber());
-                        if (pao.getAddress() != serial) {
-                            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.addressMismatch", new String[] {pao.getPaoName()}, null);
+                    } else {
+                        /* Updating a two way lcr, see if the inventory for this device is us */
+                        InventoryBase inventory = inventoryBaseDao.getById(hardwareDto.getInventoryId());
+                        /* If something is using this device and it's not this inventory reject this device id */
+                        if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != inventory.getDeviceId()) {
+                            String unavailableDeviceName = pao.getPaoName();
+                            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
                         }
-                    } catch (NumberFormatException ignore) {/* Ignore this since we are checking serial number above. */}
-                    
-                } catch (NotFoundException e) {
-                    /* Device no longer exists.*/
-                    errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.notFound");
+                    }
                 }
+                
+                /* The device's address must match the LCR's serial number */
+                try {
+                    int serial = Integer.valueOf(hardwareDto.getSerialNumber());
+                    if (pao.getAddress() != serial) {
+                        errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.addressMismatch", new String[] {pao.getPaoName()}, null);
+                    }
+                } catch (NumberFormatException ignore) {/* Ignore this since we are checking serial number above. */}
+                
+            } catch (NotFoundException e) {
+                /* Device no longer exists.*/
+                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.notFound");
             }
         }
     }

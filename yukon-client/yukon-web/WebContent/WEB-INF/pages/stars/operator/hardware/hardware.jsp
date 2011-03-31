@@ -7,101 +7,54 @@
 
 <cti:standardPage module="operator" page="hardware.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
-    <script type="text/javascript">
-        function changeTwoWayDeviceName(selectedItems) {
-            var selectedPao = selectedItems[0];
-            var nameField = $('chosenYukonDeviceNameField');
-            nameField.innerHTML = selectedPao.paoName.escapeHTML();
-            flashYellow(nameField);
-            return true;
-        }
+<script type="text/javascript">
+YEvent.observeSelectorClick('#newButton', function(event) {
+    $('twoWayPickerContainer').hide();
+    $('newTwoWayDeviceContainer').show();
+    var deviceNameInput = $('twoWayDeviceName');
+    deviceNameInput.value = '';
+    deviceNameInput.focus();
+    $('creatingNewTwoWayDevice').value = true;
+});
 
-        function showDeviceCreationPopup() {
-        	$('createTwoWayDeviceName').value = '';
-            clearCreationErrors();
-            $('createDevicePopup').show();
-        }
+YEvent.observeSelectorClick('#chooseButton', function(event) {
+    $('twoWayPickerContainer').show();
+    $('newTwoWayDeviceContainer').hide();
+    $('creatingNewTwoWayDevice').value = false;
+});
 
-        function clearCreationErrors() {
-        	var errorSpans = $$('div#creationErrors span');
-            for(i = 0; i < errorSpans.length; i++){
-                errorSpans[i].hide();
-            }
-        }
+function showDeletePopup() {
+    $('deleteHardwarePopup').show();
+}
 
-        function showDeletePopup() {
-            $('deleteHardwarePopup').show();
-        }
+function hideDeletePopup() {
+	$('deleteHardwarePopup').hide();
+}
 
-        function hideDeletePopup() {
-        	$('deleteHardwarePopup').hide();
-        }
+function updateServiceCompanyInfo() {
+    var url = '/spring/stars/operator/hardware/serviceCompanyInfo';
+    var serviceCompanyId = 
 
-        function updateServiceCompanyInfo() {
-            var url = '/spring/stars/operator/hardware/serviceCompanyInfo';
-            var serviceCompanyId = 
+    	<cti:displayForPageEditModes modes="EDIT,CREATE">
+            $F('serviceCompanyId');
+        </cti:displayForPageEditModes>
 
-            	<cti:displayForPageEditModes modes="EDIT,CREATE">
-                    $F('serviceCompanyId');
-                </cti:displayForPageEditModes>
-
-            	<cti:displayForPageEditModes modes="VIEW">
-                    ${hardwareDto.serviceCompanyId};
-                </cti:displayForPageEditModes>
-                
-            if(serviceCompanyId > 0) {
-                var params = {'serviceCompanyId' : serviceCompanyId};
-                new Ajax.Updater('serviceCompanyContainer', url, {method: 'get', evalScripts: true, parameters: params});
-            } else {
-                $('serviceCompanyContainer').innerHTML = '';
-            }
-        }
-
-        function createTwoWayDevice() {
-        	clearCreationErrors();
-        	var url = '/spring/stars/operator/hardware/createYukonDevice';
-            var deviceName = $F('createTwoWayDeviceName');
-        	var params = {'accountId' : '${accountId}', 'inventoryId' : '${inventoryId}', 'deviceName' : deviceName};
-            
-        	new Ajax.Request(url, {
-                method: 'post',
-                evalScripts: true,
-                parameters: params,
-                onSuccess: function(resp, json) {
-                    if(json.errorOccurred){
-                        $(json.errorMsg).show();
-                    } else {
-                        /* Successfully created two way device */
-                        $('chosenYukonDeviceId').value = json.deviceId;
-                        $('chosenYukonDeviceNameField').innerHTML = deviceName;
-                        $('createTwoWayDeviceName').value = '';
-                        $('createDevicePopup').hide();
-                        var nameField = $('chosenYukonDeviceNameField');
-                        flashYellow(nameField);
-                    }
-                }
-            });
-        }
+    	<cti:displayForPageEditModes modes="VIEW">
+            ${hardwareDto.serviceCompanyId};
+        </cti:displayForPageEditModes>
         
-        Event.observe(window, 'load', updateServiceCompanyInfo);
-    </script>
-    
-    <!-- Create Two Way Device Popup -->
-    <i:simplePopup titleKey=".createTwoWay" id="createDevicePopup" styleClass="smallSimplePopup">
-        <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".displayName">
-                <input type="text" name="deviceName" id="createTwoWayDeviceName">
-                <input type="button" value="Create" onclick="createTwoWayDevice()">
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-        <div id="creationErrors" class="errorMessage">
-            <span id="nameAlreadyExists" style="display:none;"><i:inline key=".createTwoWay.error.nameAlreadyExists"/></span>
-            <span id="mustSupplyName" style="display:none;"><i:inline key=".createTwoWay.error.mustSupplyName"/></span>
-            <span id="unknown" style="display:none;"><i:inline key=".createTwoWay.error.unknown"/></span>
-        </div>
-    </i:simplePopup>
+    if (serviceCompanyId > 0) {
+        var params = {'serviceCompanyId' : serviceCompanyId};
+        new Ajax.Updater('serviceCompanyContainer', url, {method: 'get', evalScripts: true, parameters: params});
+    } else {
+        $('serviceCompanyContainer').innerHTML = '';
+    }
+}
+
+Event.observe(window, 'load', updateServiceCompanyInfo);
+</script>
     
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
@@ -128,9 +81,9 @@
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <tags:slowInput2 formId="deleteForm" key="delete"/>
+                            <cti:button key="delete" type="submit" name="delete"/>
                         </cti:checkRolesAndProperties>
-                        <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
+                        <cti:button key="cancel" onclick="hideDeletePopup()"/>
                     </td>
                 </tr>
             </table>
@@ -153,7 +106,6 @@
         <form:hidden path="energyCompanyId"/>
         <form:hidden path="displayType"/>
         <form:hidden path="displayName"/>
-        <form:hidden path="twoWayDeviceName"/>
         <form:hidden path="hardwareType"/>
         <form:hidden path="hardwareClass"/>
         <c:if test="${not showTwoWay}">
@@ -170,16 +122,20 @@
                     <tags:nameValueContainer2>
                     
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            <tags:nameValue2 nameKey=".deviceType"><spring:escapeBody htmlEscape="true">
-                            	${hardwareDto.displayType}</spring:escapeBody>
+                        
+                            <tags:nameValue2 nameKey=".deviceType">
+                                <spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody>
                             </tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="CREATE">
-                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" 
-                             					  itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
+                        
                         </cti:displayForPageEditModes>
                         
-                        <%-- If this is a Thermostat, display the install code. Field is disabled by default on --%>
+                        <cti:displayForPageEditModes modes="CREATE">
+                            
+                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" 
+                             					  itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
+                                                  
+                        </cti:displayForPageEditModes>
+                        
 						<c:if test="${showInstallCode}">
 	                            <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false"/>
                         </c:if>
@@ -221,7 +177,7 @@
                         
                         <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
                         
-                        <c:if test="${showVoltage}">    
+                        <c:if test="${showVoltage}">
                         	<tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
                         </c:if>
                         
@@ -250,21 +206,29 @@
                             <form:hidden path="originalDeviceStatusEntryId"/>
                             
                             <c:if test="${showTwoWay}">
-                                
+                                <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
                                 <%-- Two Way LCR's Yukon Device --%>
-                                <tags:nameValue2 nameKey=".twoWayDevice">
-                                    <span id="chosenYukonDeviceNameField">
-                                        <spring:escapeBody htmlEscape="true">${hardwareDto.twoWayDeviceName}</spring:escapeBody>
-                                    </span> 
-                                    <div>
+                                <tags:nameValue2 nameKey=".twoWayDevice" rowClass="pickerRow">
+
+                                    <div id="twoWayPickerContainer" <c:if test="${hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                                        <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="selection" immediateSelectMode="true"
+                                            destinationFieldName="deviceId" selectionProperty="paoName" initialId="${hardwareDto.deviceId}" viewOnlyMode="${mode == 'VIEW'}"/>
+                                            
                                         <cti:displayForPageEditModes modes="EDIT">
-                                            <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="button" immediateSelectMode="true"
-                                                nameKey="twoWayPickerButton" destinationFieldId="chosenYukonDeviceId"
-                                                endAction="changeTwoWayDeviceName"/>
-                                            <cti:button key="twoWayNewButton" type="button" onclick="showDeviceCreationPopup();"/>
+                                            <cti:button key="new" id="newButton"/>
                                         </cti:displayForPageEditModes>
                                     </div>
-                                    <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>
+                                    <div id="newTwoWayDeviceContainer" <c:if test="${!hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                                        <spring:bind path="twoWayDeviceName">
+                                            <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
+                                            <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
+                                            <cti:button key="choose" id="chooseButton"/>
+                                            <c:if test="${status.error}">
+                                                <br>
+                                                <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
+                                            </c:if>
+                                        </spring:bind>
+                                    </div>
                                 </tags:nameValue2>
                             
                             </c:if>
