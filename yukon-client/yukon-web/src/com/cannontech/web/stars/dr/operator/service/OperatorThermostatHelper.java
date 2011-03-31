@@ -1,11 +1,13 @@
 package com.cannontech.web.stars.dr.operator.service;
 
 import java.util.List;
+import java.util.Set;
 
 import net.sf.jsonOLD.JSONObject;
 
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
@@ -53,9 +55,19 @@ public interface OperatorThermostatHelper {
     public List<ThermostatScheduleDisplay> getScheduleDisplays(YukonUserContext yukonUserContext, String type, ThermostatScheduleMode thermostatScheduleMode, AccountThermostatSchedule accountThermostatSchedule, boolean isFahrenheit, String i18nKey);
     
     /**
-     * Returns the schedule mode for the provided schedule.  If the mode is Weekday, Weekend, it will
-     * be changed to Weekday, Saturday, Sunday unless the schedule is a UPro schedule and the
-     * schedule52Enabled role value is true.
+     * Returns a Set of all the ThermostatScheduleModes that the user is allowed to use.
      */
-    public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, boolean schedule52Enabled);
+    public Set<ThermostatScheduleMode> getAllowedModes(LiteYukonUser user);
+    
+    /**
+     * Returns true if the specified user is permitted to use the specified schedule mode.
+     */
+    public boolean isModeAllowed(ThermostatScheduleMode mode, LiteYukonUser user);
+    
+    /**
+     * Returns the mode of the specified schedule unless the user is not permitted to use that mode,
+     * in which case it will return the first schedule mode supported by the schedule type that the
+     * user is permitted to use.
+     */
+    public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, LiteYukonUser user);
 }

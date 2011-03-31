@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +16,11 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -47,6 +51,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
 	private DateFormattingService dateFormattingService;
+	private RolePropertyDao rolePropertyDao;
 	
 	@Override
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
@@ -292,13 +297,31 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	    return scheduleDisplays;
 	}
 	
-	public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, boolean schedule52Enabled) {
-        ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
-        if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
-            scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
-        }
-        return scheduleMode;
-    }
+	public Set<ThermostatScheduleMode> getAllowedModes(LiteYukonUser user) {
+	    Set<ThermostatScheduleMode> allowedModes = EnumSet.allOf(ThermostatScheduleMode.class);
+	    boolean schedule52Enabled = rolePropertyDao.checkAnyProperties(user, YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2);
+	    if(!schedule52Enabled) {
+	        allowedModes.remove(ThermostatScheduleMode.WEEKDAY_WEEKEND);
+	    }
+	    return allowedModes;
+	}
+	
+	public boolean isModeAllowed(ThermostatScheduleMode mode, LiteYukonUser user) {
+	    return getAllowedModes(user).contains(mode);
+	}
+	
+	public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, LiteYukonUser user) {
+	    ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
+	    if(!isModeAllowed(scheduleMode, user)) {
+	        scheduleMode = schedule.getThermostatType().getFirstSupportedThermostatScheduleMode(getAllowedModes(user));
+	    }
+	    return scheduleMode;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+	    this.rolePropertyDao = rolePropertyDao;
+	}
 	
 	@Autowired
 	public void setInventoryDao(InventoryDao inventoryDao) {

@@ -117,7 +117,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	map.addAttribute("schedule52Enabled", schedule52Enabled);
     	
     	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, schedule52Enabled);
+    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, yukonUserContext.getYukonUser());
     	map.addAttribute("scheduleMode", scheduleMode);
     	
         // thermostatLabel
@@ -145,7 +145,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         map.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
         
-        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, schedule52Enabled);
+        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, yukonUserContext.getYukonUser());
         map.addAttribute("defaultScheduleMode", defaultScheduleMode);
         
         return "consumer/thermostatSchedule.jsp";

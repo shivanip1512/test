@@ -141,7 +141,7 @@ public class OperatorThermostatScheduleController {
     	modelMap.addAttribute("schedule52Enabled", schedule52Enabled);
     	
     	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, schedule52Enabled);
+    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, yukonUserContext.getYukonUser());
     	modelMap.addAttribute("scheduleMode", scheduleMode);
     	
         // temperatureUnit
@@ -160,7 +160,7 @@ public class OperatorThermostatScheduleController {
         JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         modelMap.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
         
-        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, schedule52Enabled);
+        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, yukonUserContext.getYukonUser());
         modelMap.addAttribute("defaultScheduleMode", defaultScheduleMode);
         
         // if arriving at the view page due to a canceled send/save operation

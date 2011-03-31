@@ -12,29 +12,25 @@ public enum SchedulableThermostatType {
 	RESIDENTIAL_EXPRESSSTAT(HardwareType.EXPRESSSTAT,
 	            45, 88,
 	            45, 88,
-				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+				Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL),
 				ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
 	            45, 88,
 	            45, 88,
-				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+				Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL),
                 ThermostatSchedulePeriodStyle.TWO_TIMES
 	),
 	UTILITY_PRO(HardwareType.UTILITY_PRO,
 				50, 99, //yes, you read it right. Cool has higher upper-limit than Heat, and Heat has a lower lower-limit than Cool. Go ask a Honeywell device engineer.
 				40, 90,
-				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.WEEKDAY_WEEKEND),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+				Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND),
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
                 45, 88, 
                 45, 88,
-                Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-                ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+                Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL),
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	;
@@ -45,14 +41,12 @@ public enum SchedulableThermostatType {
 	private int lowerLimitHeatInFahrenheit;
 	private int upperLimitHeatInFahrenheit;
 	private Set<ThermostatScheduleMode> supportedScheduleModes;
-	private ThermostatScheduleMode defaultThermostatScheduleMode;
 	private final ThermostatSchedulePeriodStyle periodStyle;
 	
 	SchedulableThermostatType(HardwareType hardwareType,
 							  int lowerLimitCoolInFahrenheit, int upperLimitCoolInFahrenheit,
 							  int lowerLimitHeatInFahrenheit, int upperLimitHeatInFahrenheit,
 							  Set<ThermostatScheduleMode> supportedScheduleModes,
-							  ThermostatScheduleMode defaultThermostatScheduleMode,
 							  ThermostatSchedulePeriodStyle periodStyle) {
 		
 		this.hardwareType = hardwareType;
@@ -61,7 +55,6 @@ public enum SchedulableThermostatType {
 		this.lowerLimitHeatInFahrenheit = lowerLimitHeatInFahrenheit;
 		this.upperLimitHeatInFahrenheit = upperLimitHeatInFahrenheit;
 		this.supportedScheduleModes = supportedScheduleModes;
-		this.defaultThermostatScheduleMode = defaultThermostatScheduleMode;
 		this.periodStyle = periodStyle;
 	}
 	
@@ -75,7 +68,7 @@ public enum SchedulableThermostatType {
 	
 	/**
 	 * Modes that this thermostat type supports.
-	 * Note: Utility Pro <i>supports</i> WEEKDAY_WEEKEND, however there is a role property that is used to determine if the option is made available in the UI (ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2).
+	 * Note: Utility Pro <i>supports</i> WEEKDAY_WEEKEND, however there is a role property that is  used to determine if the option is made available in the UI (ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2).
 	 */
 	public Set<ThermostatScheduleMode> getSupportedScheduleModes() {
 		return supportedScheduleModes;
@@ -116,8 +109,22 @@ public enum SchedulableThermostatType {
         }
     }
 	
+	/**
+	 * Returns the first ThermostatScheduleMode supported by this SchedulableThermostatType that is
+	 * also in the specified allowed modes for the user.
+	 */
+	public ThermostatScheduleMode getFirstSupportedThermostatScheduleMode(Set<ThermostatScheduleMode> allowedModes) {
+	    Set<ThermostatScheduleMode> supportedAndAllowedScheduleModes =  Sets.intersection(supportedScheduleModes, allowedModes);
+	    if(supportedAndAllowedScheduleModes.isEmpty()) {
+	        throw new IllegalStateException("User is not allowed to use any schedule modes supported by " + this.name());
+	    }
+	    ThermostatScheduleMode firstSupportedScheduleMode = supportedAndAllowedScheduleModes.iterator().next();
+	    return firstSupportedScheduleMode;
+	}
+	
 	public ThermostatScheduleMode getDefaultThermostatScheduleMode() {
-        return defaultThermostatScheduleMode;
+	    //get the first mode in the supported modes list
+	    return supportedScheduleModes.iterator().next();
     }
 	
     public static SchedulableThermostatType getByHardwareType(HardwareType hardwareType) {
