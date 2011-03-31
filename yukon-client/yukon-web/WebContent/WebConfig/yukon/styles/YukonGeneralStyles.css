@@ -1337,4 +1337,20 @@ select:focus {
 .icon_remove:hover {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
 }
-    
+
+.di {
+    display: inline;
+}
+
+ul.buttonStack li {
+    padding-bottom: 2px;
+}
+
+button.naked {
+    border: none;
+    background: transparent;
+}
+
+button.naked:hover span {
+    text-decoration: underline;
+}
