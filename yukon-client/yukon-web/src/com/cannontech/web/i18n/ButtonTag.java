@@ -22,10 +22,18 @@ public class ButtonTag extends YukonTagSupport {
     protected String href = null;
     protected String onclick = null;
     protected String styleClass = null;
-    protected String type = null;
+    
+    /* type is the actual type attribute of the generated HTML button tag
+     * Possible values are 'submit', 'reset' and 'button' (default) */
+    protected String type = "button";
+    
     protected String name = null;
+    protected String value = null;
     protected Boolean imageOnRight = false;
-    protected Boolean naked = null;
+    
+    /* renderMode is to describe how the button should look:
+     * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
+    protected String renderMode = "button";
 
     public void setId(String id) {
         this.id = id;
@@ -55,12 +63,16 @@ public class ButtonTag extends YukonTagSupport {
         this.name = name;
     }
     
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
     public void setImageOnRight(Boolean imageOnRight) {
         this.imageOnRight = imageOnRight;
     }
 
-    public void setNaked(Boolean naked) {
-        this.naked = naked;
+    public void setRenderMode(String renderMode) {
+        this.renderMode = renderMode;
     }
 
     @Override
@@ -70,10 +82,18 @@ public class ButtonTag extends YukonTagSupport {
             id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
         }
 
-        String classes = "formSubmit pointer hoverableImageContainer";
+        String classes = "pointer hoverableImageContainer"; 
         
-        if (naked != null) {
-            classes += " naked";
+        if (!renderMode.equalsIgnoreCase("image")) {
+            classes+= " formSubmit"; // addes padding to left and right inside button tag
+        }
+        
+        if (renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) {
+            classes += " naked"; // draws a button with no border and transparent background
+        }
+        
+        if (renderMode.equalsIgnoreCase("labeledImage")) {
+            classes += " labeledImage"; // addes text decoration underline when hovering over button
         }
         
         if (StringUtils.isNotBlank(styleClass)) {
@@ -96,6 +116,11 @@ public class ButtonTag extends YukonTagSupport {
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
                 throw new RuntimeException("at least one of .imageUrl or .label is required for " + key);
             }
+            
+            if ((renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) 
+                    && StringUtils.isBlank(imageUrl)) {
+                throw new RuntimeException(".imageUrl is required for " + key + " when renderMode is 'image' or 'labeledImage'");
+            }
 
             /* Hover Text */
             MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText");
@@ -108,9 +133,6 @@ public class ButtonTag extends YukonTagSupport {
             out.write("\"");
 
             /* Type */
-            if (type == null) {
-                type = "button";
-            }
             out.write(" type=\"");
             out.write(type);
             out.write("\"");
@@ -119,6 +141,13 @@ public class ButtonTag extends YukonTagSupport {
             if (name != null) {
                 out.write(" name=\"");
                 out.write(name);
+                out.write("\"");
+            }
+            
+            /* Value */
+            if (value != null) {
+                out.write(" value=\"");
+                out.write(value);
                 out.write("\"");
             }
 
@@ -153,7 +182,7 @@ public class ButtonTag extends YukonTagSupport {
                 }
             }
 
-            if (!StringUtils.isBlank(labelText)) {
+            if (!renderMode.equalsIgnoreCase("image") && !StringUtils.isBlank(labelText)) {
                 out.write("<span");
                 if (hasImage) {
                     out.write(" class=\"");
@@ -194,4 +223,5 @@ public class ButtonTag extends YukonTagSupport {
         }
         return retVal;
     }
+    
 }

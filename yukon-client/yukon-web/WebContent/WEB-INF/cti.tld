@@ -1604,6 +1604,14 @@
             </description>
         </attribute>
         <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                button value
+            </description>
+        </attribute>
+        <attribute>
             <name>imageOnRight</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1612,10 +1620,13 @@
             </description>
         </attribute>
         <attribute>
-            <name>naked</name>
+            <name>renderMode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>true if button should not have a border like the old labeledImage tag</description>
+            <description>
+                renderMode is to describe how the button should look:
+                Possible values for renderMode are 'image', 'labeledImage' and 'button' (default)
+            </description>
         </attribute>
     </tag>
 

@@ -1338,9 +1338,15 @@ select:focus {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
 }
 
+.bn {
+    border:none;
+}
+
 .di {
     display: inline;
 }
+
+.dib {display:inline-block;}
 
 ul.buttonStack li {
     padding-bottom: 2px;
@@ -1351,6 +1357,6 @@ button.naked {
     background: transparent;
 }
 
-button.naked:hover span {
+button.labeledImage:hover span {
     text-decoration: underline;
 }

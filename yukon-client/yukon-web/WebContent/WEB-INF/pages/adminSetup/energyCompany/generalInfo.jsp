@@ -127,7 +127,11 @@ function addCustomerGroups() {
                                                     <td><a href="${viewEcUrl}">${company.name}</a></td>
                                                     <c:if test="${canManageMembers}">
                                                         <td class="removeColumn">
-                                                            <input type="image" src="/WebConfig/yukon/Icons/delete.png" class="pointer hoverableImage" name="remove" value="${company.energyCompanyId}">
+                                                            <div class="dib">
+                                                                <cti:button key="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
+                                                            <%--<button class="bn icon_remove icon pointer" type="submit" name="remove" value="${company.energyCompanyId}"/>--%>
+                                                            <%--<input type="image" src="/WebConfig/yukon/Icons/delete.png" class="pointer hoverableImage" name="remove" value="${company.energyCompanyId}">--%>
+                                                            </div>
                                                         </td>
                                                     </c:if>
                                                 </tr>
