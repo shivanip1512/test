@@ -20,6 +20,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
@@ -58,12 +59,12 @@ import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater921;
+import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.SNPPTerminal;
 import com.cannontech.database.data.device.Schlumberger;
 import com.cannontech.database.data.device.Series5Base;
@@ -80,8 +81,8 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.v2.LongRange;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
@@ -143,6 +144,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JLabel serialNumberLabel;
     private JLabel manufacturerLabel;
     private JLabel modelLabel;
+    
+    private DeviceAddressRangeService deviceAddressRangeService =
+        YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
     
     class EventHandler implements ActionListener, CaretListener, JCValueListener {
 		public void actionPerformed(ActionEvent e) {
@@ -1973,7 +1977,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	add(getIdentificationPanel(), identificationPanelConstraints);
     	add(getJPanelMCTSettings(), mctSettingsConstraints);
     	add(getCommunicationPanel(), commPanelConstraints);
-    		
     	try {
       		initConnections();
     	} catch (java.lang.Throwable ivjExc) {
@@ -2000,13 +2003,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     
     	if( getPhysicalAddressTextField().isVisible() ) {
     		int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
-            String error = DeviceAddressRange.getRangeBase(deviceType).getRangeDescription();
+    		PaoType paoType = PaoType.getForId(deviceType);
             try{
                 int address = Integer.parseInt( getPhysicalAddressTextField().getText() );
-                RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+                LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
                 // Verify Address is within range
-                if (!rangeBase.isValidRange(address)) {
-                   setErrorString(error);
+                if (!range.isWithinRange((long)address)) {
+                   setErrorString("Invalid address. Device address range: " + range );
                    return false;
                 }
                 
@@ -2027,7 +2030,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             	}
             	
             } catch (NumberFormatException nfe) {
-                setErrorString(error);
+                setErrorString(nfe.getMessage());
                 return false;
             }
         }
@@ -2564,8 +2567,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		getSlaveAddressComboBox().removeAllItems();
     		JTextFieldComboEditor editor = new JTextFieldComboEditor();
     		int devType = PAOGroups.getDeviceType( rBase.getPAOType() );
-    		RangeBase rangeBase = DeviceAddressRange.getRangeBase(devType);
-    		editor.setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()));
+    		PaoType paoType = PaoType.getForId(devType);
+    		LongRange longRange = deviceAddressRangeService.getAddressRangeForDevice(paoType);
+    		long minimum = longRange.getMinimum() < 0 ? longRange.getMinimum() : 0;
+    		editor.setDocument( new LongRangeDocument(minimum, longRange.getMaximum()));
           	editor.addCaretListener(eventHandler);  //be sure to fireInputUpdate() messages!
           	getSlaveAddressComboBox().setEditor( editor );
           	getSlaveAddressComboBox().addItem( ((CCU721)rBase).getDeviceAddress().getSlaveAddress() );
@@ -2612,8 +2617,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	CtiUtilities.setCheckBoxState( getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
     
     	if (DeviceTypesFuncs.isCCU(deviceType)) {
-    		RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
-    		getPhysicalAddressTextField().setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()) );
+    	    PaoType paoType = PaoType.getForId(deviceType);
+    	    LongRange longRange = deviceAddressRangeService.getAddressRangeForDevice(paoType);
+    	    long minimum = longRange.getMinimum() < 0 ? longRange.getMinimum() : 0;
+    		getPhysicalAddressTextField().setDocument( new LongRangeDocument(minimum, longRange.getMaximum()));
     	}
     	
     	//This is a bit ugly
@@ -2754,4 +2761,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 		}
 		return jPanelMCTSettings;
 	}
+	
+	@Autowired
+    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
+        this.deviceAddressRangeService = deviceAddressRangeService;
+    }
+	
+	
 }

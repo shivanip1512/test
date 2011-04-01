@@ -17,6 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -25,7 +26,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
-import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -38,6 +38,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater921;
+import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -54,8 +55,9 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.v2.LongRange;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemListener, CaretListener {
@@ -70,6 +72,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 	private javax.swing.JTextField ivjJTextFieldMeterNumber = null;
    	private DeviceBase deviceBase = null;
    	private JLabel jLabelErrorMessage = null;
+   	private DeviceAddressRangeService deviceAddressRangeService = 
+   	    YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
    	
    	private static final Logger log = YukonLogManager.getLogger(DeviceCopyNameAddressPanel.class);
 
@@ -664,9 +668,10 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			{
 		      	long addy = Long.parseLong(getAddressTextField().getText());
 		      	int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
-		      	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
-		      	if (!rangeBase.isValidRange(Long.valueOf(addy))) {
-		        	setErrorString( rangeBase.getRangeDescription() );
+		      	PaoType paoType = PaoType.getForId(deviceType);
+		      	LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
+		      	if (!range.isWithinRange(addy)) {
+		        	setErrorString("Invalid address. Device address range: " + range);
 		
 		         	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
 		         	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -856,4 +861,6 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
             }
         }
     }
+
+   
 }

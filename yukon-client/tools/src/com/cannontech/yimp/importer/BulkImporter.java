@@ -34,6 +34,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -57,8 +58,8 @@ import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.v2.LongRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
@@ -115,6 +116,8 @@ public final class BulkImporter extends Observable implements MessageListener
     private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
+	private DeviceAddressRangeService deviceAddressRangeService = 
+        YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
 	
 public BulkImporter() {
 	super();
@@ -343,8 +346,9 @@ public void runImport(List<ImportData> imps) {
         /*Address range check for 400 series*/
         if(template400SeriesBase instanceof MCT400SeriesBase) {
         	int deviceType = PAOGroups.getDeviceType(template400SeriesBase.getPAOType());
-        	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
-        	if (!rangeBase.isValidRange(Long.parseLong(address))) {
+        	PaoType paoType = PaoType.getForId(deviceType);
+            LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
+        	if (!range.isWithinRange(Long.valueOf(address))) {
         		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
         		log.error(logMsgPrefix + error);
         		errorMsg.add(error);

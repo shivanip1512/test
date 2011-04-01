@@ -1,16 +1,19 @@
 package com.cannontech.web.stars.dr.operator.hardware.validator;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.v2.LongRange;
 
 public class MeterConfigValidator extends SimpleValidator<Meter> {
+    
+    private DeviceAddressRangeService deviceAddressRangeService;
     
     public MeterConfigValidator() {
         super(Meter.class);
@@ -32,9 +35,8 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
         } else {
             PaoType deviceType = meter.getPaoType();
             try {
-                Long physicalAddress = Long.parseLong(meter.getAddress());
-                RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
-                if(!rangeBase.isValidRange(physicalAddress)) {
+                Long physicalAddress = Long.parseLong(meter.getAddress()); 
+                if(!deviceAddressRangeService.isValidAddress(deviceType, physicalAddress)) {
                     failAddress(meter, errors);
                 }
             } catch (NumberFormatException e) {
@@ -46,9 +48,15 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
     
     private void failAddress(Meter meter, Errors errors) {
         String paoTypeString = meter.getPaoType().getPaoTypeName();
-        RangeBase range = DeviceAddressRange.getRangeBase(meter.getPaoType());
-        Long lowRange = new Long(range.getLowRange());
-        Long upperRange = new Long(range.getUpperRange());
-        errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", new Object[]{paoTypeString, lowRange, upperRange}, null);
+        LongRange range = deviceAddressRangeService.getAddressRangeForDevice(meter.getPaoType());
+
+        errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", new Object[]{paoTypeString, range}, null);
     }
+
+    @Autowired
+    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
+        this.deviceAddressRangeService = deviceAddressRangeService;
+    }
+    
+    
 }

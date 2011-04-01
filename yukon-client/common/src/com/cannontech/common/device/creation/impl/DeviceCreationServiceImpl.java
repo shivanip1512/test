@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -35,8 +37,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -50,6 +51,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private PaoDefinitionService paoDefinitionService = null;
+    private DeviceAddressRangeService deviceAddressRangeService;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -104,9 +106,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         try {
             
             // test
-        	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
-            if (!rangeBase.isValidRange(address)) {
-                throw new DeviceCreationException("Invalid address: " + address + ". " + rangeBase.getRangeDescription());
+            PaoType type = PaoType.getForId(deviceType);   
+            if (!deviceAddressRangeService.isValidAddress(type, address)) {
+                throw new DeviceCreationException("Invalid address: " + address + ".");
             }
             else if (StringUtils.isBlank(name)) {
                 throw new DeviceCreationException("Device name is blank.");
@@ -265,4 +267,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
         this.paoDefinitionService = paoDefinitionService;
     }
+    
+    @Autowired
+    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
+        this.deviceAddressRangeService = deviceAddressRangeService;
+    }
+    
+    
 }

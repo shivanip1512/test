@@ -56,8 +56,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.device.range.RangeBase;
+import com.cannontech.device.range.v2.DeviceAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -72,15 +71,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private PointCreationService pointCreationService = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private DBPersistentDao dbPersistentDao = null;
+    private DeviceAddressRangeService deviceAddressRangeService = null;
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
-    	
-    	RangeBase rangeBase = DeviceAddressRange.getRangeBase(device.getPaoIdentifier().getPaoType());
-        boolean validAddressForType = rangeBase.isValidRange(newAddress);
-
-        if (!validAddressForType) {
+    
+        if (!deviceAddressRangeService.isValidAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
         }
 
@@ -97,7 +94,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         deviceDao.changeRoute(device, routeId);
     }
-    
+
     public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException {
 
         deviceDao.changeRoute(device, newRouteId);
@@ -432,4 +429,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
 		this.dbPersistentDao = dbPersistentDao;
 	}
+    
+    @Autowired
+    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
+        this.deviceAddressRangeService = deviceAddressRangeService;
+    }
 }
