@@ -70,7 +70,7 @@ GO
 /* @error ignore-end */
 /* End YUK-9646 */
 
-/* Start YUK-9686 */
+/* Start YUK-9648 */
 ALTER TABLE ZBDevice 
 ADD MacAddress VARCHAR2(255); 
 GO
@@ -87,7 +87,7 @@ EXEC SP_RENAME 'ZBDevice', 'ZBEndPoint';
 EXEC SP_RENAME 'PK_ZBDevice', 'PK_ZBEndPoint', 'OBJECT';
 EXEC SP_RENAME 'FK_ZBDevice_Device', 'FK_ZBEndPoint_Device', 'OBJECT';
 EXEC SP_RENAME 'FK_ZBGateDeviceMap_ZBDevice', 'FK_ZBGateDeviceMap_ZBEndPoint', 'OBJECT';
-/* End YUK-9686 */
+/* End YUK-9648 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
