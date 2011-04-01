@@ -129,8 +129,6 @@ function addCustomerGroups() {
                                                         <td class="removeColumn">
                                                             <div class="dib">
                                                                 <cti:button key="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
-                                                            <%--<button class="bn icon_remove icon pointer" type="submit" name="remove" value="${company.energyCompanyId}"/>--%>
-                                                            <%--<input type="image" src="/WebConfig/yukon/Icons/delete.png" class="pointer hoverableImage" name="remove" value="${company.energyCompanyId}">--%>
                                                             </div>
                                                         </td>
                                                     </c:if>
@@ -176,8 +174,9 @@ function addCustomerGroups() {
                                             <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
                                             <c:if test="${fn:length(operatorGroups) > 1}">
                                                 <td class="removeColumn">
-                                                    <input type="image" src="/WebConfig/yukon/Icons/delete.png" name="removeOperatorGroup" 
-                                                        value="${group.groupID}" class="hoverableImage pointer">
+                                                    <div class="dib">
+                                                        <cti:button key="remove" type="submit" name="removeOperatorGroup" value="${group.groupID}" renderMode="image"/>
+                                                    </div>
                                                 </td>
                                             </c:if>
                                         </tr>
@@ -207,7 +206,9 @@ function addCustomerGroups() {
                                                 <tr>
                                                     <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
                                                     <td class="removeColumn">
-                                                        <input type="image" src="/WebConfig/yukon/Icons/delete.png" name="removeCustomerGroup" value="${group.groupID}" class="hoverableImage pointer">
+                                                        <div class="dib">
+                                                            <cti:button key="remove" type="submit" name="removeCustomerGroup" value="${group.groupID}" renderMode="image"/>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </c:forEach>

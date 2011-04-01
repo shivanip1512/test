@@ -67,13 +67,13 @@
                     
                     <ul>
                         <li>
-                           <cti:button key="commission" type="submit" name="commission" naked="true"/>
+                           <cti:button key="commission" type="submit" name="commission" renderMode="labeledImage"/>
                         </li>
                         <li>
-                           <cti:button key="decommission" type="submit" name="decommission" naked="true"/>
+                           <cti:button key="decommission" type="submit" name="decommission" renderMode="labeledImage"/>
                         </li>
                         <li>
-                            <cti:button key="textMessage" id="sendTextMsg" naked="true"/>
+                            <cti:button key="textMessage" id="sendTextMsg" renderMode="labeledImage"/>
                             <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup">
                                     <textarea rows="6" cols="60" name="message"></textarea>
                                     <div class="actionArea">
