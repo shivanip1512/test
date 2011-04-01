@@ -95,7 +95,7 @@
     				
     					<c:choose>
     						<c:when test="${!contact.primary}">
-                                <cti:button key="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" naked="true"/>
+                                <cti:button key="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage"/>
     						</c:when>
     						<c:otherwise>
     							<i:inline key=".isPrimary"/>
