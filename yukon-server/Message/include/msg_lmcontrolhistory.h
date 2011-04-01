@@ -34,6 +34,7 @@ protected:
    string   _activeRestore;          // Indicates whether group will time-in or a message is required.
    double      _reductionValue;         // kW reduction on this group.
    int         _controlPriority;        // 0=highest priority. higher = lower priority. In Expresscom, 3 = lowest priority
+   int         _associationKey;
 
 private:
 
@@ -55,7 +56,8 @@ public:
                           string  type       = string("N/A"),
                           string  restore    = string("N"),
                           double     reduce     = 0.0,
-                          int        pri        = 7);
+                          int        pri        = 7,
+                          int        assocKey   = 0);
 
    CtiLMControlHistoryMsg(const CtiLMControlHistoryMsg& aRef);
    virtual ~CtiLMControlHistoryMsg();
@@ -91,6 +93,9 @@ public:
 
    double getReductionValue() const;
    CtiLMControlHistoryMsg& setReductionValue( const double value );
+
+   int getAssociationKey() const;
+   CtiLMControlHistoryMsg& setAssociationKey(const int key);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);

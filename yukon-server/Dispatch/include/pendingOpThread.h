@@ -113,8 +113,9 @@ private:
 
     CtiMutex _controlMux;
 
-    CtiFIFOQueue< CtiTableLMControlHistory > _lmControlHistoryQueue;
-    CtiFIFOQueue< CtiTableLMControlHistory > _dynLMControlHistoryQueue;
+    typedef CtiFIFOQueue< CtiTableLMControlHistory > ControlHistoryQueue;
+    ControlHistoryQueue _lmControlHistoryQueue;
+    ControlHistoryQueue _dynLMControlHistoryQueue;
 
     CtiICLMControlHistMap_t _controlHistoryPrimeValues;
     static CtiICLMControlHistMap_t _initialConditionControlHistMap;

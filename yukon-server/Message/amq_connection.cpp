@@ -64,6 +64,7 @@ ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
 {
     _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.stream.amr.PorterResponseMessage"));
     _queue_names.insert(make_pair(Queue_SmartEnergyProfileControl, "yukon.notif.stream.dr.SmartEnergyProfileControlMessage"));
+    _queue_names.insert(make_pair(Queue_HistoryRowAssociationResponse, "yukon.notif.stream.dr.HistoryRowAssociationResponse"));
 }
 
 

@@ -32,7 +32,8 @@ _controlState( noControl ),
 _controlTimeout(300),
 _controlCompleteValue(-1.0),
 _controlCompleteDeadband(0),
-_excludeFromHistory(false)
+_excludeFromHistory(false),
+_associationKey(0)
 {
 }
 
@@ -205,6 +206,10 @@ bool CtiPendingPointOperations::getExcludeFromHistory() const
 {
     return _excludeFromHistory;
 }
+int CtiPendingPointOperations::getAssociationKey() const
+{
+    return _associationKey;
+}
 CtiPendingPointOperations& CtiPendingPointOperations::setControlCompleteValue( const DOUBLE &aDbl )
 {
     _controlCompleteValue = aDbl;
@@ -218,6 +223,12 @@ CtiPendingPointOperations& CtiPendingPointOperations::setControlCompleteDeadband
 CtiPendingPointOperations& CtiPendingPointOperations::setExcludeFromHistory( const bool exclude )
 {
     _excludeFromHistory = exclude;
+    return *this;
+}
+
+CtiPendingPointOperations& CtiPendingPointOperations::setAssociationKey( const int key )
+{
+    _associationKey = key;
     return *this;
 }
 
@@ -250,6 +261,7 @@ CtiPendingPointOperations& CtiPendingPointOperations::operator=(const CtiPending
         _controlCompleteDeadband = aRef.getControlCompleteDeadband();
         _control = aRef.getControl();
         _excludeFromHistory = aRef.getExcludeFromHistory();
+        _associationKey = aRef.getAssociationKey();
 
         _opidMap = aRef.getOffsetMap();
 

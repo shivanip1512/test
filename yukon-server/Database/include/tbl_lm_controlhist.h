@@ -177,5 +177,7 @@ public:
     bool UpdateDynamic(Cti::Database::DatabaseConnection &conn);
     bool InsertDynamic(Cti::Database::DatabaseConnection &conn);
 
+    virtual int getAssociationId() {return 0;};
+
 };
 

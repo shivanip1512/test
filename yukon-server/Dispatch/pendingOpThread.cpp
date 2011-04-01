@@ -9,6 +9,9 @@
 #include "millisecond_timer.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "control_history_association.h"
+#include "amq_connection.h"
+#include "ControlHistoryAssociationResponse.h"
 
 using namespace std;
 
@@ -1003,9 +1006,10 @@ void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc
         if(ppc.getControl().getActiveRestore() != LMAR_LOGTIMER &&
            ppc.getControl().getActiveRestore() != LMAR_DISPATCH_SHUTDOWN)
         {
-            pTbl = CTIDBG_new CtiTableLMControlHistory(ppc.getControl());
+            pTbl = CTIDBG_new ControlHistoryTableAssociation(ppc.getControl(), ppc.getAssociationKey());
             pTbl->setLMControlHistoryID( chid );
             _lmControlHistoryQueue.putQueue( pTbl );
+            ppc.setAssociationKey(0);
         }
 
         if(ppc.getControl().isNewControl())
@@ -1086,6 +1090,8 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
            || lmentries > MAX_ARCHIVER_ENTRIES
            || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
         {
+            ControlHistoryQueue writtenEntries;
+
             if(lmentries > 0)
             {
                 Cti::Database::DatabaseConnection   conn;
@@ -1098,7 +1104,7 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     {
                         panicCounter++;
                         pTblEntry->Insert(conn);
-                        delete pTblEntry;
+                        writtenEntries.putQueue(pTblEntry);
                     }
                 }
                 catch(...)
@@ -1125,6 +1131,17 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " LM Control History queue has " << _lmControlHistoryQueue.entries() << " entries" << endl;
                 }
+            }
+
+            while((pTblEntry = writtenEntries.getQueue(0)) != NULL)
+            {
+                if(pTblEntry->getAssociationId() != 0)
+                {
+                    using namespace Cti::Messaging;
+                    std::auto_ptr<StreamableMessage> msg(new ControlHistoryAssociationResponse(pTblEntry->getLMControlHistoryID(), pTblEntry->getAssociationId()));
+                    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_HistoryRowAssociationResponse, msg);
+                }
+                delete pTblEntry;
             }
         }
     }

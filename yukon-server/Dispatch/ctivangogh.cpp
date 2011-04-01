@@ -2685,6 +2685,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->getControl().setReductionRatio(pMsg->getReductionRatio());
                 pendingControlLMMsg->getControl().setStartTime(pMsg->getStartDateTime());
                 pendingControlLMMsg->getControl().setControlPriority(pMsg->getControlPriority());
+                pendingControlLMMsg->setAssociationKey(pMsg->getAssociationKey());
 
                 CtiTime cntrlStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 if(pMsg->getControlDuration() < 0) cntrlStopTime = pMsg->getStartDateTime();

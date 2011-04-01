@@ -14,7 +14,8 @@ INCLPATHS+= \
 -I$(RW) \
 -I$(BOOST) \
 -I$(SQLAPI)\include \
--I$(DBGHELP)\include
+-I$(DBGHELP)\include \
+-I$(ACTIVEMQ) \
 
 
 .PATH.H = \
@@ -34,7 +35,10 @@ INCLPATHS+= \
 ;$(SIGNAL)\include \
 ;$(RW) \
 ;$(BOOST) \
-;$(DBGHELP)\include
+;$(DBGHELP)\include \
+;$(ACTIVEMQ) \
+;$(ACTIVEMQ)\cms \
+;$(ACTIVEMQ)\activemq\library \
 
 
 TSTEST=\
@@ -464,7 +468,9 @@ pendingopthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_ptdispatch.h tbl_pt_limit.h rtdb.h tbl_rawpthistory.h \
 		msg_cmd.h pendingopthread.h pendable.h pending_info.h \
 		msg_signal.h tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h signalmanager.h millisecond_timer.h
+		tbl_unitmeasure.h signalmanager.h millisecond_timer.h \
+		amq_connection.h activemqcpp.h \
+		ControlHistoryAssociationResponse.h
 pending_info.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \

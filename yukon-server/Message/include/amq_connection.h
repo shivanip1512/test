@@ -80,7 +80,8 @@ public:
     enum Queues
     {
         Queue_PorterResponses,
-        Queue_SmartEnergyProfileControl
+        Queue_SmartEnergyProfileControl,
+        Queue_HistoryRowAssociationResponse
     };
 };
 

@@ -38,7 +38,8 @@ void CtiLMControlHistoryMsg::saveGuts(RWvostream &aStream) const
         getControlType() <<
         getActiveRestore() <<
         getReductionValue() <<
-        getControlPriority();
+        getControlPriority() <<
+        getAssociationKey();
 }
 
 void CtiLMControlHistoryMsg::restoreGuts(RWvistream& aStream)
@@ -55,7 +56,8 @@ void CtiLMControlHistoryMsg::restoreGuts(RWvistream& aStream)
         _controlType >>
         _activeRestore >>
         _reductionValue >>
-        _controlPriority;
+        _controlPriority >>
+        _associationKey;
 }
 
 long CtiLMControlHistoryMsg::getPAOId() const
@@ -88,6 +90,17 @@ int CtiLMControlHistoryMsg::getControlPriority() const
 CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlPriority( const int priority )
 {
     _controlPriority = priority;
+    return *this;
+}
+
+int CtiLMControlHistoryMsg::getAssociationKey() const
+{
+    return _associationKey;
+}
+
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setAssociationKey(const int key)
+{
+    _associationKey = key;
     return *this;
 }
 
@@ -183,6 +196,7 @@ void CtiLMControlHistoryMsg::dump() const
     dout << " Active Restore                " << getActiveRestore() << endl;
     dout << " Reduction Value               " << getReductionValue() << endl;
     dout << " Control Priority              " << getControlPriority() << endl;
+    dout << " Association Key               " << getAssociationKey() << endl;
 }
 
 
@@ -197,10 +211,10 @@ CtiMessage* CtiLMControlHistoryMsg::replicateMessage() const
 
 CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(long paoid, long pointid, int raw, CtiTime start,
                                                int dur, int redrat, int ctrlPriority, string type, string restore,
-                                               double reduce, int pri) :
+                                               double reduce, int pri, int associationKey) :
 Inherited(pri), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime(start),
 _controlDuration(dur), _reductionRatio(redrat), _controlType(type), _activeRestore(restore),
-_reductionValue(reduce), _controlPriority(ctrlPriority)
+_reductionValue(reduce), _controlPriority(ctrlPriority), _associationKey(associationKey)
 {
     _instanceCount++;
 }
@@ -232,6 +246,7 @@ CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::operator=(const CtiLMControlHist
         _activeRestore      = aRef.getActiveRestore();
         _reductionValue     = aRef.getReductionValue();
         _controlPriority    = aRef.getControlPriority();
+        _associationKey     = aRef.getAssociationKey();
     }
     return *this;
 }

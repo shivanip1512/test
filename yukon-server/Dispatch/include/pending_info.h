@@ -98,7 +98,8 @@ protected:
     DOUBLE      _controlCompleteDeadband; // How close do I need to get to be considered successful?
 
     CtiTime      _lastHistoryPost;       // Time this was last posted.
-    bool        _excludeFromHistory;  //Do not create history logs for this point!
+    bool         _excludeFromHistory;  //Do not create history logs for this point!
+    int          _associationKey;      //Key to respond to clients waiting on new rows being written out.
 
     CtiTableLMControlHistory _control;
 
@@ -136,6 +137,7 @@ private:
     DOUBLE getControlCompleteValue() const;
     DOUBLE getControlCompleteDeadband() const;
     bool getExcludeFromHistory() const;
+    int getAssociationKey() const;
 
     bool isInControlCompleteState( DOUBLE &value );
 
@@ -157,6 +159,7 @@ private:
     CtiPendingPointOperations& setControlCompleteDeadband( const DOUBLE &aDbl );
     CtiPendingPointOperations& setExcludeFromHistory(bool exclude);
     CtiPendingPointOperations& setPointData( CtiPointDataMsg *pDat );
+    CtiPendingPointOperations& setAssociationKey( const int key );
 
     const CtiTableLMControlHistory& getControl() const;
     CtiTableLMControlHistory& getControl();
