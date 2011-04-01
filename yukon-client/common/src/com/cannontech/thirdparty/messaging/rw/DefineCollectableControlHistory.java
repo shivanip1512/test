@@ -74,6 +74,7 @@ public class DefineCollectableControlHistory extends DefineCollectableMessage im
         outputStream.saveObject(message.getActiveRestore(),SimpleMappings.CString);
         outputStream.insertDouble(message.getReductionValue());
         outputStream.insertInt(message.getControlPriority());
+        outputStream.insertInt(message.getAssociationId());
         
     }
 

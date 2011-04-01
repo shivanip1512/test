@@ -16,6 +16,7 @@ public class ControlHistoryMessage extends Message {
     private String activeRestore;
     private double reductionValue;
     private int controlPriority;
+    private int associationId;
     
     public int getPaoId() {
         return paoId;
@@ -76,5 +77,11 @@ public class ControlHistoryMessage extends Message {
     }
     public void setControlPriority(int controlPriority) {
         this.controlPriority = controlPriority;
+    }
+    public void setAssociationId(int associationId) {
+        this.associationId = associationId;
+    }
+    public int getAssociationId() {
+        return associationId;
     }
 }

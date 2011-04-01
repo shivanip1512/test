@@ -104,6 +104,8 @@ public class DigiControlMessageHandler implements SepControlMessageHandler {
         
         chMessage.setControlPriority(0);
         
+        chMessage.setAssociationId(0);
+        
         return chMessage;
     }
     
