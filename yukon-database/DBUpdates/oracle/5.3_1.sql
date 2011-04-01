@@ -85,6 +85,13 @@ ALTER TABLE ZBEndPoint RENAME CONSTRAINT FK_ZBDevice_Device to FK_ZBEndPoint_Dev
 ALTER TABLE ZBGatewayToDeviceMapping RENAME CONSTRAINT FK_ZBGateDeviceMap_ZBDevice to FK_ZBGateDeviceMap_ZBEndPoint;
 /* End YUK-9648 */
 
+/* Start YUK-9669 */
+UPDATE State 
+SET Text = 'Decommissioned' 
+WHERE StateGroupId = -13 
+  AND RawState = 1;
+/* End YUK-9669 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

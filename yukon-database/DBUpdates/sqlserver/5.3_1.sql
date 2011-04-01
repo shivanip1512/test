@@ -89,6 +89,13 @@ EXEC SP_RENAME 'FK_ZBDevice_Device', 'FK_ZBEndPoint_Device', 'OBJECT';
 EXEC SP_RENAME 'FK_ZBGateDeviceMap_ZBDevice', 'FK_ZBGateDeviceMap_ZBEndPoint', 'OBJECT';
 /* End YUK-9648 */
 
+/* Start YUK-9669 */
+UPDATE State 
+SET Text = 'Decommissioned' 
+WHERE StateGroupId = -13 
+  AND RawState = 1;
+/* End YUK-9669 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
