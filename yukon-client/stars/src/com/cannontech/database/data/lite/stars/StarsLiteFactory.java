@@ -1084,11 +1084,11 @@ public class StarsLiteFactory {
 			account.setCustomer( customer );
 		}
 		
-		for (int i = 0; i < liteAccount.getInventories().size(); i++)
-			account.getInventoryVector().add( liteAccount.getInventories().get(i) );
+		for (Integer inventoryId : liteAccount.getInventories()) {
+			account.getInventoryVector().add(inventoryId);
+		}
 		
-		for (int i = 0; i < liteAccount.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = liteAccount.getAppliances().get(i);
+		for (LiteStarsAppliance liteApp : liteAccount.getAppliances()) {
 			account.getApplianceVector().add( new Integer(liteApp.getApplianceID()) );
 		}
 		
@@ -1836,8 +1836,7 @@ public class StarsLiteFactory {
 					}
 					else {
 						// Opt out event for a hardware
-						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-							LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
+						for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
 							if (liteApp.getInventoryID() == optoutEvents[i].getInventoryID() && liteApp.getProgramID() > 0) {
 								boolean programAdded = false;
 								for (int k = 0; k < relatedEvent.getProgramIDCount(); k++) {
@@ -2319,8 +2318,7 @@ public class StarsLiteFactory {
 		    starsCustAccountInformationDao.getById(event.getAccountID(), energyCompany.getEnergyCompanyId());
 		
 		if (event.getInventoryID() != 0) {
-			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
+			for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
 				if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0) {
 					boolean programAdded = false;
 					for (int j = 0; j < starsEvent.getProgramIDCount(); j++) {

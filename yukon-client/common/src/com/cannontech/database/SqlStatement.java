@@ -12,7 +12,7 @@ public class SqlStatement implements com.cannontech.common.util.Command, ISQLSta
 	
 	private synchronized ISQLStatement getSqlStatement() {
 		if (sqlStatement == null) {
-			sqlStatement = YukonSpringHook.getBean(ISQLStatement.class);
+			sqlStatement = YukonSpringHook.getBean("sqlStatementBean", ISQLStatement.class);
 		}
 
 		return sqlStatement;

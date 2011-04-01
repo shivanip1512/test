@@ -171,7 +171,7 @@ private static String prepareObjectForSQLStatement( Object o )
 private synchronized com.cannontech.yukon.IDBPersistent getDB()
 {
    if (db == null) { 
-      db = YukonSpringHook.getBean(IDBPersistent.class);
+      db = YukonSpringHook.getBean("dbPersistentBean", IDBPersistent.class);
    }
 
    return db;

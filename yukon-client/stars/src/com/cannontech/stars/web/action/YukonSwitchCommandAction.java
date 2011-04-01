@@ -562,8 +562,7 @@ public class YukonSwitchCommandAction {
                 LiteStarsCustAccountInformation liteAcctInfo = 
                     starsCustAccountInformationDao.getByAccountId(liteHw.getAccountID());
 
-                for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-                    LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
+                for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
                     if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) {
                         try {
                             String groupName = DaoFactory.getPaoDao().getYukonPAOName(liteApp.getAddressingGroupID());

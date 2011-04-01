@@ -340,8 +340,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				StarsFactory.newStarsInv( updateHw, StarsCreateLMHardware.class );
         
 		if (createHw.getLMHardware() != null) {
-			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
+			for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
 				if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
 					StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
 					starsConfig.setApplianceID( liteApp.getApplianceID() );

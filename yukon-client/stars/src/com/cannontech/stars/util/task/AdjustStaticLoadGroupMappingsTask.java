@@ -21,6 +21,7 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -200,11 +201,10 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get ApplianceCategoryID
             Integer applianceCatID = -1;
             int programId = -1;
-            for(int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue()){
-                    applianceCatID = 
-                        liteAcctInfo.getAppliances().get(j).getApplianceCategory().getApplianceCategoryId();
-                    programId = liteAcctInfo.getAppliances().get(j).getProgramID();
+            for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
+                if(liteApp.getApplianceID() == configDB.getApplianceID().intValue()){
+                    applianceCatID = liteApp.getApplianceCategory().getApplianceCategoryId();
+                    programId = liteApp.getProgramID();
                     break;
                 }
             }

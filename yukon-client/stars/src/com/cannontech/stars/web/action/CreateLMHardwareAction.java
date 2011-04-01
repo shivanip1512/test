@@ -349,8 +349,7 @@ public class CreateLMHardwareAction implements ActionBase {
                         int appCatID = 0;
                         LiteStarsAppliance keeperApp = null;
                         if(createHw.getLMHardware().getStarsLMHardwareConfigCount() < 1) {
-                            for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                                LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
+                        	for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
                                 if(liteApp.getInventoryID() < 1) {
                                     appID = liteApp.getApplianceID();
                                     appCatID = liteApp.getApplianceCategory().getApplianceCategoryId();

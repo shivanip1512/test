@@ -968,9 +968,8 @@ public class AccountImportService {
                                              YukonUserContext userContext) throws WebClientException {
         LiteInventoryBase liteInv = null;
 
-        for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-            int invID = liteAcctInfo.getInventories().get(i);
-            LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(invID);
+        for (Integer inventoryId : liteAcctInfo.getInventories()) {
+            LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(inventoryId);
             if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
                 liteInv = lInv;
                 break;

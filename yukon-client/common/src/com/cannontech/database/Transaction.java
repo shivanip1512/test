@@ -45,7 +45,7 @@ public class Transaction<E extends DBPersistent> {
 
     private IDBPersistent getDB() {
        if (db == null) { 
-          db = YukonSpringHook.getBean(IDBPersistent.class);
+          db = YukonSpringHook.getBean("dbPersistentBean", IDBPersistent.class);
        }
        return db;
     }

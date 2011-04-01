@@ -448,8 +448,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	}
 	
 	public static boolean isToConfig(LiteStarsLMHardware liteHw, LiteStarsCustAccountInformation liteAcctInfo) {
-		for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-			LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
+		for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
 			if (liteApp.getInventoryID() == liteHw.getInventoryID())
 				return true;
 		}

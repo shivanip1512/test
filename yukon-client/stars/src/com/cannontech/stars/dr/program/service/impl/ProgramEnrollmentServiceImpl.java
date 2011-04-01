@@ -419,17 +419,16 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     
                     // If no hardware found above, then assign all hardwares
                     if (!program.hasInventoryID()) {
-                        for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-                            int invID = liteAcctInfo.getInventories().get(j).intValue();
-                            if (starsInventoryBaseDao.getByInventoryId(invID) instanceof LiteStarsLMHardware) {
+                    	for (Integer inventoryId : liteAcctInfo.getInventories()) {
+                            if (starsInventoryBaseDao.getByInventoryId(inventoryId) instanceof LiteStarsLMHardware) {
                                 if (!program.hasInventoryID()) {
-                                    program.setInventoryID( invID );
+                                    program.setInventoryID(inventoryId);
                                 }
                                 else {
                                     SULMProgram prog = new SULMProgram();
                                     prog.setProgramID( program.getProgramID() );
                                     prog.setApplianceCategoryID( program.getApplianceCategoryID() );
-                                    prog.setInventoryID( invID );
+                                    prog.setInventoryID(inventoryId);
                                     if (program.hasAddressingGroupID())
                                         prog.setAddressingGroupID( program.getAddressingGroupID() );
                                     if (program.hasLoadNumber())
