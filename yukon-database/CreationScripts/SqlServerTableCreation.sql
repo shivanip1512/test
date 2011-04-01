@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/24/2011 11:49:27 AM                        */
+/* Created on:     4/1/2011 2:49:19 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9679,12 +9679,13 @@ INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settin
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 /*==============================================================*/
-/* Table: ZBDevice                                              */
+/* Table: ZBEndPoint                                            */
 /*==============================================================*/
-create table ZBDevice (
+create table ZBEndPoint (
    DeviceId             numeric              not null,
    InstallCode          varchar(255)         not null,
-   constraint PK_ZBDevice primary key (DeviceId)
+   MacAddress           varchar(255)         not null,
+   constraint PK_ZBEndPoint primary key (DeviceId)
 )
 go
 
@@ -12999,8 +13000,8 @@ alter table YukonUserRole
       references YukonUser (UserID)
 go
 
-alter table ZBDevice
-   add constraint FK_ZBDevice_Device foreign key (DeviceId)
+alter table ZBEndPoint
+   add constraint FK_ZBEndPoint_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
 go
 
@@ -13010,8 +13011,8 @@ alter table ZBGateway
 go
 
 alter table ZBGatewayToDeviceMapping
-   add constraint FK_ZBGateDeviceMap_ZBDevice foreign key (DeviceId)
-      references ZBDevice (DeviceId)
+   add constraint FK_ZBGateDeviceMap_ZBEndPoint foreign key (DeviceId)
+      references ZBEndPoint (DeviceId)
          on delete cascade
 go
 

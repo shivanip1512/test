@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/24/2011 11:37:26 AM                        */
+/* Created on:     4/1/2011 2:50:38 PM                          */
 /*==============================================================*/
 
 
@@ -9195,12 +9195,13 @@ INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settin
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 /*==============================================================*/
-/* Table: ZBDevice                                              */
+/* Table: ZBEndPoint                                            */
 /*==============================================================*/
-create table ZBDevice  (
+create table ZBEndPoint  (
    DeviceId             NUMBER                          not null,
    InstallCode          VARCHAR2(255)                   not null,
-   constraint PK_ZBDevice primary key (DeviceId)
+   MacAddress           VARCHAR2(255)                   not null,
+   constraint PK_ZBEndPoint primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -11914,8 +11915,8 @@ alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID);
 
-alter table ZBDevice
-   add constraint FK_ZBDevice_Device foreign key (DeviceId)
+alter table ZBEndPoint
+   add constraint FK_ZBEndPoint_Device foreign key (DeviceId)
       references DEVICE (DEVICEID);
 
 alter table ZBGateway
@@ -11923,8 +11924,8 @@ alter table ZBGateway
       references DEVICE (DEVICEID);
 
 alter table ZBGatewayToDeviceMapping
-   add constraint FK_ZBGateDeviceMap_ZBDevice foreign key (DeviceId)
-      references ZBDevice (DeviceId)
+   add constraint FK_ZBGateDeviceMap_ZBEndPoint foreign key (DeviceId)
+      references ZBEndPoint (DeviceId)
       on delete cascade;
 
 alter table ZBGatewayToDeviceMapping

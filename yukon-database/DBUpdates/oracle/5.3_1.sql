@@ -66,6 +66,25 @@ ALTER TABLE CCMonitorBankList
 /* @error ignore-end */
 /* End YUK-9646 */
 
+/* Start YUK-9686 */
+ALTER TABLE ZBDevice 
+ADD MacAddress VARCHAR2(255); 
+
+UPDATE ZBDevice
+SET MacAddress = ' ';
+
+ALTER TABLE ZBDevice 
+MODIFY MacAddress VARCHAR2(255) NOT NULL; 
+
+ALTER TABLE ZBDevice RENAME TO ZBEndPoint;
+
+ALTER TABLE ZBEndPoint RENAME CONSTRAINT PK_ZBDevice to PK_ZBEndPoint;
+ALTER INDEX PK_ZBDevice RENAME TO PK_ZBEndPoint;
+
+ALTER TABLE ZBEndPoint RENAME CONSTRAINT FK_ZBDevice_Device to FK_ZBEndPoint_Device;
+ALTER TABLE ZBGatewayToDeviceMapping RENAME CONSTRAINT FK_ZBGateDeviceMap_ZBDevice to FK_ZBGateDeviceMap_ZBEndPoint;
+/* End YUK-9686 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
