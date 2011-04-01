@@ -102,6 +102,12 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, controlMinutes, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, averageCyclePercent, standardCyclePercent, eventFlags));
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending SEP Cycle command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", percent: " << cyclePercent << endl;
+    }
+
     setLastControlSent(CtiTime());
     
     if( getGroupControlState() != CtiLMGroupBase::ActiveState )
@@ -123,6 +129,12 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediatelly)
 
     std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, 0, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, SEPAverageCycleUnused, SEPStandardCycleUnused, 0));
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediatelly: " << (stopImmediatelly ? "TRUE" : "FALSE") << endl;
+    }
     
     setLastControlSent(CtiTime::now());
     return true;

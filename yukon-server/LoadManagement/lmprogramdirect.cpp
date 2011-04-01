@@ -3607,23 +3607,27 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
         {
             for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
             {
-                LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
-
-                // .checkControl below can modify (shorten) the shed time
-                CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
-                if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                if( currentLMGroup->getNextControlTime().seconds() > gInvalidCtiTime &&
+                    currentLMGroup->getNextControlTime().seconds() <= secondsFrom1901 )
                 {
-                    double expectedLoadReduced; // Apparently unused in refreshStandardProgramControl.
-                    if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                    LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+    
+                    // .checkControl below can modify (shorten) the shed time
+                    CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                    if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
                     {
-                        setLastControlSent(CtiTime());
+                        double expectedLoadReduced; // Apparently unused in refreshStandardProgramControl.
+                        if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                        {
+                            setLastControlSent(CtiTime());
+                        }
                     }
-                }
-                else
-                {
-                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    else
                     {
-                        con_checker.dumpViolations();
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                        {
+                            con_checker.dumpViolations();
+                        }
                     }
                 }
 
