@@ -591,10 +591,19 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                     {
                         errorCount++;
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                        }
                     }
                     catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                     {
                         errorCount++;
+                        if (missingAttribute.complain())
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                        }
                     }
                 }
 
