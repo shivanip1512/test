@@ -207,7 +207,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 			<cti:button id="deleteButton" key="delete"/>
 			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitorDto.name}" submitName="delete" on="#deleteButton"/>
 
-            <cti:button key="cancel" type="submit" name="cancel"/>
+            <cti:button key="cancel" type="submit" name="cancelToView"/>
 		</div>
 	</form:form>
 

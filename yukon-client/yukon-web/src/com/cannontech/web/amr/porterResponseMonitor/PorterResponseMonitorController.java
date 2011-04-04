@@ -210,8 +210,13 @@ public class PorterResponseMonitorController {
 		return "redirect:editPage";
 	}
 
-	@RequestMapping(params = "cancel")
-	public String cancel(int monitorId, ModelMap modelMap, HttpServletRequest request) {
+    @RequestMapping(params = "cancel")
+    public String cancel(ModelMap modelMap, HttpServletRequest request) {
+        return "redirect:/spring/meter/start";
+    }
+
+	@RequestMapping(params = "cancelToView")
+	public String cancelToView(int monitorId, ModelMap modelMap, HttpServletRequest request) {
         modelMap.addAttribute("monitorId", monitorId);
         return "redirect:viewPage";
 	}
