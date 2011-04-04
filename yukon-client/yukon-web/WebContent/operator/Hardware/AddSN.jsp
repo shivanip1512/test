@@ -236,13 +236,13 @@ function validate(form) {
 	if (savedReq.getProperty("Route") != null)
 		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
 	
-	LiteYukonPAObject[] routeList = member.getAllRoutes();
-	for (int i = 0; i < routeList.length; i++) {
-		String selected = (routeList[i].getYukonID() == savedRoute)? "selected" : "";
+    List<LiteYukonPAObject> routeList = member.getAllRoutes();
+    for (LiteYukonPAObject route : routeList) {
+        String selected = (route.getYukonID() == savedRoute)? "selected" : "";
 %>
-                              <option value="<%= routeList[i].getYukonID() %>" <%= selected %>><%= routeList[i].getPaoName() %></option>
+                              <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
                               <%
-	}
+    }
 %>
                             </select>
                           </td>

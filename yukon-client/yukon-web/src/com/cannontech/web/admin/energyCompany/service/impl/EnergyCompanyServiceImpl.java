@@ -12,6 +12,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.ExceptionHelper;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -38,6 +40,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -61,6 +64,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private SiteInformationDao siteInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
     private RolePropertyDao rolePropertyDao;
+    private DefaultRouteService defaultRouteService;
     
     @Override
     @Transactional
@@ -127,18 +131,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
         
         /* Set Default Route */
-        StarsAdminUtil.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
-        /* StarsAdminUtil.updateDefaultRoute doesn't actually set the default route id on the LiteStarsEnergyCompany.
-         * It only writes it to the database, to actually set it properly you have to set it to zero with resetDefaultRouteId()
-         * and the first time someone uses the getDefaultRouteId() method it will lookup it up and set it on the cached 
-         * LiteStarsEnergyCompany before returning it.  The first thing StarsAdminUtil.updateDefaultRoute actually does  
-         * is call getDefaultRouteId() and at this point I think it needs to be -1 so the save to the db will actually happen.
-         * Without calling resetDefaultRouteId() after the save, the cached LiteStarsEnergyCompany will still have a
-         * defaultRouteId of -1.  Although I don't know why we couldn't just set it on the cached LiteStarsEnergyCompany now,
-         * there is no setter method for the defaultRouteId.
-         * 
-         * This is the most soul crushing poo code I've ever witnessed. */
-        liteEnergyCompany.resetDefaultRouteId();
+        defaultRouteService.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
         
         /* Set Operator Group List */
         List<Integer> operatorGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorGroupIds());
@@ -298,22 +291,54 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void deleteEnergyCompany(int energyCompanyId) {
     }
 
-    public void addRouteToEnergyCompany(int energyCompanyId, int routeId) {
+    public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {
+        
+        // remove (i.e. steal) route from children
+        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<LiteStarsEnergyCompany>() {
+            @Override
+            public void handle(LiteStarsEnergyCompany item) throws Exception {
+                if (item.equals(energyCompany)) {
+                    // might as well skip ourselves
+                    return;
+                }
+                // just blindly remove it, don't care if it isn't really there
+                
+                // we don't want the full behavior of removeRouteFromEnergyCompany
+                // because it is okay if our children still map routeId as the default
+                ecMappingDao.deleteECToRouteMapping(item.getEnergyCompanyId(), routeId);
+                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
+                                                      DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                                                      item.getEnergyCompanyId());
+            }
+            
+        });
         
         ecMappingDao.addEcToRouteMapping(energyCompanyId, routeId);
         
         dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
-                                              DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                              DbChangeCategory.ENERGY_COMPANY_ROUTE,
                                               energyCompanyId);
 
     }
 
-    public int removeRouteFromEnergyCompany(int energyCompanyId, int routeId) {
+    public int removeRouteFromEnergyCompany(int energyCompanyId, final int routeId) {
         
+        // make sure removed route isn't the default route
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<LiteStarsEnergyCompany>() {
+            @Override
+            public void handle(LiteStarsEnergyCompany item) throws Exception {
+                if (routeId == item.getDefaultRouteId()) {
+                    throw new RuntimeException("cannot delete the default route");
+                }
+            }
+            
+        });
         int rowsDeleted = ecMappingDao.deleteECToRouteMapping(energyCompanyId, routeId);
         
         dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                              DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                              DbChangeCategory.ENERGY_COMPANY_ROUTE,
                                               energyCompanyId);
 
         return rowsDeleted;
@@ -341,6 +366,20 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         return rowsDeleted;
     }
+    
+    private static void callbackWithSelfAndEachDescendant(LiteStarsEnergyCompany energyCompany,
+                                                   SimpleCallback<LiteStarsEnergyCompany> simpleCallback) {
+        try {
+            simpleCallback.handle(energyCompany);
+        } catch (Exception e) {
+            ExceptionHelper.throwOrWrap(e);
+        }
+        Iterable<LiteStarsEnergyCompany> children = energyCompany.getChildren();
+        for (LiteStarsEnergyCompany liteStarsEnergyCompany : children) {
+            callbackWithSelfAndEachDescendant(liteStarsEnergyCompany, simpleCallback);
+        }
+    }
+
     
     // DI Setters
     @Autowired
@@ -398,4 +437,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         this.rolePropertyDao = rolePropertyDao;
     }
     
+    @Autowired
+    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
+        this.defaultRouteService = defaultRouteService;
+    }
 }

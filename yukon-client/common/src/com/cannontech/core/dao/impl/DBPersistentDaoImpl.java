@@ -59,7 +59,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         if( liteObject != null) {
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
             try {
-                dbPersistent = dbPersistentBeanFactory.createNewDbPersistentBean().execute(TransactionType.RETRIEVE, dbPersistent);
+                dbPersistentBeanFactory.createNewDbPersistentBean().execute(TransactionType.RETRIEVE, dbPersistent);
             } catch(Exception e) {
                 com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
             }

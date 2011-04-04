@@ -1,12 +1,15 @@
 package com.cannontech.web.admin.energyCompany.general;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -27,12 +30,38 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 @RequestMapping("/energyCompany/routesAndSubstations/*")
 @Controller
 public class RouteAndSubstationController { 
+
+    public enum Reason implements DisplayableEnum {
+        CAN_DELETE(true),
+        THIS_DEFAULT(false),
+        CHILD_DEFAULT(false),
+        INHERITED(false),
+        ;
+        
+        private final boolean deletable;
+
+        private Reason(boolean deletable) {
+            this.deletable = deletable;
+        }
+        
+        public boolean isDeletable() {
+            return deletable;
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.adminSetup.routesAndSubstations.routeReasons." + name();
+        }
+    }
 
     private EnergyCompanyService energyCompanyService;
     private GeneralInfoService generalInfoService;
@@ -88,8 +117,6 @@ public class RouteAndSubstationController {
 
         // Validate Access
         energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
-        boolean routeAccess = checkRoutePermission(energyCompanyInfoFragment, userContext.getYukonUser());
-        modelMap.addAttribute("routeAccess", routeAccess);
         
         energyCompanyService.addRouteToEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), routeId);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeAdded"));
@@ -99,15 +126,13 @@ public class RouteAndSubstationController {
     }
 
     /**
-     * This method adds a route to the given energy company.
+     * This method removes a route from the given energy company.
      */
     @RequestMapping(params="removeRoute")
     public String removeRoute(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                               int removeRoute, EnergyCompanyInfoFragment energyCompanyInfoFragment){
         // Validate Access
         energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
-        boolean routeAccess = checkRoutePermission(energyCompanyInfoFragment, userContext.getYukonUser());
-        modelMap.addAttribute("routeAccess", routeAccess);
         
         energyCompanyService.removeRouteFromEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), removeRoute);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved"));
@@ -173,10 +198,30 @@ public class RouteAndSubstationController {
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);
         
-        List<LiteYukonPAObject> inheritedRoutes = getInheritedRoutes(energyCompany);
-        modelMap.addAttribute("inheritedRoutes", inheritedRoutes);
-        List<LiteYukonPAObject> ecRoutes = getECRoutes(energyCompany);
-        modelMap.addAttribute("ecRoutes", ecRoutes);
+        Iterable<LiteYukonPAObject> allRoutes = energyCompany.getAllRoutes();
+        Map<LiteYukonPAObject, Reason> routeToReason = Maps.newLinkedHashMap();
+        for (LiteYukonPAObject liteYukonPAObject : allRoutes) {
+            routeToReason.put(liteYukonPAObject, Reason.CAN_DELETE);
+        }
+        
+        if (energyCompany.getParent() != null) {
+            Iterable<LiteYukonPAObject> ineritedRoutes = energyCompany.getParent().getAllRoutes();
+            for (LiteYukonPAObject liteYukonPAObject : ineritedRoutes) {
+                routeToReason.put(liteYukonPAObject, Reason.INHERITED);
+            }
+        }
+        
+        LiteYukonPAObject defaultRoute = energyCompany.getDefaultRoute();
+        if (defaultRoute != null) {
+            routeToReason.put(defaultRoute, Reason.THIS_DEFAULT);
+        }
+        
+        Iterable<LiteYukonPAObject> allChildDefaultRoutes = getAllChildDefaultRoutes(energyCompany);
+        for (LiteYukonPAObject childDefault : allChildDefaultRoutes) {
+            routeToReason.put(childDefault, Reason.CHILD_DEFAULT);
+        }
+        
+        modelMap.addAttribute("ecRoutes", routeToReason);
 
         List<LiteSubstation> inheritedSubstations = getInheritedSubstations(energyCompany);
         modelMap.addAttribute("inheritedSubstations", inheritedSubstations);
@@ -194,40 +239,27 @@ public class RouteAndSubstationController {
         List<LiteYukonPAObject> availableRoutes = Lists.newArrayList();
         
         availableRoutes.addAll(Lists.newArrayList(paoDao.getAllLiteRoutes()));
-        availableRoutes.removeAll(Lists.newArrayList(energyCompany.getAllRoutes()));
+        availableRoutes.removeAll(energyCompany.getAllRoutes());
 
         return availableRoutes;
     }
     
-    /**
-     * This method returns all the routes the given energy company inherits from its parent.
-     */
-    private List<LiteYukonPAObject> getInheritedRoutes(LiteStarsEnergyCompany energyCompany) {
-        List<LiteYukonPAObject> inheritedRoutes = Lists.newArrayList();
-        
-        if (energyCompany.getParent() != null) {
-            inheritedRoutes.addAll(Lists.newArrayList(energyCompany.getParent().getAllRoutes()));
+    private Set<LiteYukonPAObject> getAllChildDefaultRoutes(LiteStarsEnergyCompany energyCompany) {
+        Iterable<LiteStarsEnergyCompany> children = energyCompany.getChildren();
+        if (Iterables.isEmpty(children)) {
+            return ImmutableSet.of();
         }
-        
-        return inheritedRoutes;
+        ImmutableSet.Builder<LiteYukonPAObject> builder = ImmutableSet.builder();
+        for (LiteStarsEnergyCompany child : children) {
+            LiteYukonPAObject defaultRoute = child.getDefaultRoute();
+            if (defaultRoute != null) {
+                builder.add(defaultRoute);
+            }
+            builder.addAll(getAllChildDefaultRoutes(child));
+        }
+        return builder.build();
     }
     
-    /**
-     * This method returns all the routes that are directly associated with the given energy company.
-     * These routes can be changed by an energy company unlike the inherited routes
-     * that can only be used.
-     */
-    private List<LiteYukonPAObject> getECRoutes(LiteStarsEnergyCompany energyCompany) {
-        List<LiteYukonPAObject> ecRoutes = Lists.newArrayList();
-        
-        ecRoutes.addAll(Lists.newArrayList(energyCompany.getAllRoutes()));
-        
-        List<LiteYukonPAObject> inheritedRoutes = getInheritedRoutes(energyCompany);
-        ecRoutes.removeAll(inheritedRoutes);
-        
-        return ecRoutes;
-    }
-
     /**
      * This method verifies that an operator has access to the route select page.  If it does not
      * it will throw a not authorized exception.

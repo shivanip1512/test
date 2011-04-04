@@ -620,7 +620,7 @@ public class OperatorHardwareController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        LiteYukonPAObject[] routes = energyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
         model.addAttribute("routes", routes);
         
         model.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));

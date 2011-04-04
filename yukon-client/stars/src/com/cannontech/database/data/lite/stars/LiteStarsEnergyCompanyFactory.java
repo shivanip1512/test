@@ -2,9 +2,9 @@ package com.cannontech.database.data.lite.stars;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -20,6 +20,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.service.DefaultRouteService;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
@@ -27,7 +28,7 @@ public class LiteStarsEnergyCompanyFactory {
     private DBPersistentDao dbPersistentDao;
     private ECMappingDao ecMappingDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private PaoPermissionService paoPermissionService;
+    private DefaultRouteService defaultRouteService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
@@ -36,6 +37,7 @@ public class LiteStarsEnergyCompanyFactory {
 	private YukonJdbcTemplate yukonJdbcTemplate;
 	private YukonGroupDao yukonGroupDao;
 	private YukonListDao yukonListDao;
+	private PaoDao paoDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -54,7 +56,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setDbPersistentDao(dbPersistentDao);
         energyCompany.setEcMappingDao(ecMappingDao);
         energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
-        energyCompany.setPaoPermissionService(paoPermissionService);
+        energyCompany.setDefaultRouteService(defaultRouteService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         energyCompany.setStarsSearchDao(starsSearchDao);
@@ -63,57 +65,39 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setYukonJdbcTemplate(yukonJdbcTemplate);
         energyCompany.setYukonGroupDao(yukonGroupDao);
         energyCompany.setYukonListDao(yukonListDao);
+        energyCompany.setPaoDao(paoDao);
 
         energyCompany.initialize();
 
-        // Adding Database Change listeners
-        DatabaseChangeEventListener defaultRouteEventListener = new DatabaseChangeEventListener() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                                                              new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
-                    energyCompany.resetDefaultRouteId();
+                    energyCompany.resetAllStoredRoutes();
                 }
             }
-        };
+        });
 
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE,
-                                                              defaultRouteEventListener);
-
-        DatabaseChangeEventListener ecRouteEventListener = new DatabaseChangeEventListener() {
-            @Override
-            public void eventReceived(DatabaseChangeEvent event) {
-                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
-                    energyCompany.resetRouteIds();
-                }
-            }
-        };
-
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTES,
-                                                              ecRouteEventListener);
-
-        DatabaseChangeEventListener ecSubstationEventListener = new DatabaseChangeEventListener() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                                              new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
                     energyCompany.resetSubstations();
                 }
             }
-        };
+        });
 
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
-                                                              ecSubstationEventListener);
 
-        
-        
-        DatabaseChangeEventListener applianceCategoryEventListener = new DatabaseChangeEventListener() {
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE,
+                                                              new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 energyCompany.resetApplianceCategoryList();
             }
-        };
-
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE,
-                                                              applianceCategoryEventListener);
+        });
     }
     
     // DI Setter
@@ -143,8 +127,8 @@ public class LiteStarsEnergyCompanyFactory {
     }
 
     @Autowired
-    public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
-        this.paoPermissionService = paoPermissionService;
+    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
+        this.defaultRouteService = defaultRouteService;
     }
     
     @Autowired
@@ -185,5 +169,10 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

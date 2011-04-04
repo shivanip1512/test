@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,14 +27,12 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
-import com.cannontech.common.util.SqlFragmentCollection;
-import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authorization.service.PaoPermissionService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -51,6 +47,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -58,14 +55,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.LMProgramWebPublishing;
 import com.cannontech.database.db.stars.appliance.ApplianceCategory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -76,6 +71,7 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -91,15 +87,17 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
     private AddressDao addressDao;
+    private PaoDao paoDao;
     private DBPersistentDao dbPersistentDao;
     private ECMappingDao ecMappingDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private PaoPermissionService paoPermissionService;
+    private DefaultRouteService defaultRouteService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
@@ -187,12 +185,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = 
     	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
     
-    private List<Integer> routeIDs = null;
+    private volatile List<Integer> routeIds = null;
     
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
-    private volatile int dftRouteID = CtiUtilities.NONE_ZERO_ID;
+    private volatile int defaultRouteId = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
     
     private class EnergyCompanyHierarchy {
@@ -236,11 +234,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     @Deprecated
     public Integer getEnergyCompanyID() {
-        return new Integer( getLiteID() );
+        return getEnergyCompanyId();
     }
     
-    
-
     /**
      * Returns the name.
      * @return String
@@ -289,91 +285,40 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.user = user;
     }
 
-    @Deprecated
-    public int getDefaultRouteID() {
-        return getDefaultRouteId();
-    }
-    
     /**
      * This method gets the default route.  It will either use the cached value stored in this class 
      * or try to figure out the default route from the database if the routeId is CtiUtilities.NONE_ZERO_ID(0).
      */
     public int getDefaultRouteId() {
-        if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
-        
-        if (dftRouteID == CtiUtilities.NONE_ZERO_ID) {
-            
-            Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
-            if(! permittedPaoIDs.isEmpty()) {
-                
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT LMGEC.LMGroupId");
-                sql.append("FROM LMGroupExpressCom LMGEC");
-                sql.append("JOIN GenericMacro GM ON GM.ChildId = LMGEC.LMGroupId");
-                sql.append("WHERE GM.MacroType").eq(MacroTypes.GROUP);
-                sql.append("  AND LMGEC.SerialNumber = '0'");
-                sql.append("  AND GM.OwnerId").in(permittedPaoIDs);
-                
-                List<Integer> serialGroupIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-                
-                // get a serial group whose serial number is set to 0, the route id of this group is the default route id
-                if (serialGroupIds != null && serialGroupIds.size() > 0) {
-                    
-                    // get versacom serial groups
-                    SqlStatementBuilder sql2 = new SqlStatementBuilder();
-                    sql2.append("SELECT LMGV.RouteId");
-                    sql2.append("FROM YukonPAObject PAO");
-                    sql2.append("JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
-
-                    SqlFragmentCollection lmGroupVersacomDeviceIdOred = SqlFragmentCollection.newOrCollection();
-                    for (int serialGroupId : serialGroupIds) {
-                        SqlStatementBuilder lmGroupVersecomSql = new SqlStatementBuilder();
-                        lmGroupVersecomSql.append("LMGV.DeviceId").eq(serialGroupId);
-                        lmGroupVersacomDeviceIdOred.add(lmGroupVersecomSql);
-                    }
-                    sql2.append("WHERE").appendFragment(lmGroupVersacomDeviceIdOred);
-                    
-                    List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, new IntegerRowMapper());
-                    if (versacomDefaultRouteIds != null && versacomDefaultRouteIds.size() > 0) {
-                        dftRouteID = versacomDefaultRouteIds.get(0);
-                        return dftRouteID;
-                    }
-                    
-                    // get expresscom serial groups 
-                    SqlStatementBuilder sql3 = new SqlStatementBuilder();
-                    sql3.append("SELECT LMGE.RouteId");
-                    sql3.append("FROM YukonPAObject PAO");
-                    sql3.append("JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
-                    
-                    SqlFragmentCollection lmGroupExpresscomLmGroupIdOred = SqlFragmentCollection.newOrCollection();
-                    for (int serialGroupId : serialGroupIds) {
-                        SqlStatementBuilder lmGroupExpresscomSql = new SqlStatementBuilder();
-                        lmGroupExpresscomSql.append("LMGE.LmGroupId").eq(serialGroupId);
-                        lmGroupExpresscomLmGroupIdOred.add(lmGroupExpresscomSql);
-                    }
-                    sql3.append("WHERE").appendFragment(lmGroupExpresscomLmGroupIdOred);
-                    
-                    List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, new IntegerRowMapper());
-                    if (expresscomDefaultRouteIds != null && expresscomDefaultRouteIds.size() > 0) {
-                        dftRouteID = expresscomDefaultRouteIds.get(0);
-                        return dftRouteID;
-                    }
-                }
-            }
-            
-            CTILogger.info( "WARNING: no default route id found for energy company #" + getLiteID() );
-            dftRouteID = INVALID_ROUTE_ID;
+        // the following is thread safe as long as defaultRouteId is volatile
+        int tempDefaultRouteId = defaultRouteId;
+        if (tempDefaultRouteId == CtiUtilities.NONE_ZERO_ID) {
+            tempDefaultRouteId = defaultRouteService.getDefaultRoute(this);
+            defaultRouteId = tempDefaultRouteId;
         }
         
-        return dftRouteID;
+        return tempDefaultRouteId;
+    }
+    
+    /**
+     * This method gets the default route.  It will return null if the routeId is 0 or invalid.
+     */
+    public LiteYukonPAObject getDefaultRoute() {
+        int routeId = getDefaultRouteId();
+        LiteYukonPAObject liteRoute = null;
+        if (routeId != CtiUtilities.NONE_ZERO_ID && routeId != INVALID_ROUTE_ID) {
+            liteRoute = paoDao.getLiteYukonPAO(routeId);
+        }
+        return liteRoute;
     }
     
     /**
      * This method resets the default routeId for the given energy company.  This will cause the
      * get method to look up the value next time it is needed instead of using the cached value.
      */
-    public void resetDefaultRouteId() {
-        dftRouteID = CtiUtilities.NONE_ZERO_ID;
+    public void resetAllStoredRoutes() {
+        defaultRouteId = CtiUtilities.NONE_ZERO_ID;
+        routeIds = null;
     }
     
     /**
@@ -780,97 +725,54 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return list;
     }
     
-    public synchronized LiteYukonPAObject[] getRoutes(LiteYukonPAObject[] inheritedRoutes) {
-        List<LiteYukonPAObject> routeList = new ArrayList<LiteYukonPAObject>();
-        List<Integer> routeIDs = getRouteIDs();
-        
-        Iterator<Integer> it = routeIDs.iterator();
-        while (it.hasNext()) {
-            Integer routeID = it.next();
-            LiteYukonPAObject liteRoute = DaoFactory.getPaoDao().getLiteYukonPAO( routeID.intValue() );
-            
-            // Check to see if the route is already assigned to the parent company, if so, remove it from the member
-            boolean foundInParent = false;
-            if (inheritedRoutes != null) {
-                for (int j = 0; j < inheritedRoutes.length; j++) {
-                    if (inheritedRoutes[j].equals( liteRoute )) {
-                        foundInParent = true;
-                        break;
-                    }
-                }
-            }
-            
-            if (foundInParent) {
-                ecMappingDao.deleteECToRouteMapping(getEnergyCompanyId(), routeID);
-                it.remove();
-                
-                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                                      DbChangeCategory.ENERGY_COMPANY_ROUTES,
-                                                      getEnergyCompanyId());
-            } else {
-                routeList.add( liteRoute );
-            }
-        }
-    
-        java.util.Collections.sort( routeList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-        
-        LiteYukonPAObject[] routes = new LiteYukonPAObject[ routeList.size() ];
-        routeList.toArray( routes );
-        return routes;
-    }
-    
     /**
      * Returns all routes assigned to this energy company (or all routes in yukon
      * if it is a single energy company system), ordered alphabetically.
      */
-    public LiteYukonPAObject[] getAllRoutes() {
+    public List<LiteYukonPAObject> getAllRoutes() {
         if (ECUtils.isSingleEnergyCompany(this)) {
-            return DaoFactory.getPaoDao().getAllLiteRoutes();
+            List<LiteYukonPAObject> result = IterableUtils.safeList(paoDao.getAllLiteRoutes());
+            return result; 
         }
-        List<LiteYukonPAObject> routeList = new ArrayList<LiteYukonPAObject>();
 
-        LiteYukonPAObject[] inheritedRoutes = null;
-        if (getParent() != null)
+        List<LiteYukonPAObject> inheritedRoutes = ImmutableList.of();
+        if (getParent() != null) {
             inheritedRoutes = getParent().getAllRoutes();
-
-        LiteYukonPAObject[] routes = getRoutes( inheritedRoutes );
-        for (int i = 0; i < routes.length; i++)
-            routeList.add( routes[i] );
-
-        if (inheritedRoutes != null) {
-            for (int i = 0; i < inheritedRoutes.length; i++)
-                routeList.add( inheritedRoutes[i] );
         }
+        List<LiteYukonPAObject> routeList = Lists.newArrayList(inheritedRoutes);
+        
+        routeList.addAll(getRoutes());
 
-        java.util.Collections.sort( routeList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-
-        LiteYukonPAObject[] allRoutes = new LiteYukonPAObject[ routeList.size() ];
-        routeList.toArray( allRoutes );
-        return allRoutes;
+        Collections.sort( routeList, LiteComparators.liteStringComparator );
+        return Collections.unmodifiableList(routeList);
     }
     
-    public synchronized List<Integer> getRouteIDs() {
-        if (routeIDs == null) {
-            routeIDs = Collections.synchronizedList(ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId()));
-            List<Integer> listCopy = Lists.newArrayList(routeIDs);  /* Need this until route event listener stops blowing away routeIDs */
-            if (getDefaultRouteId() > 0) {
-                // Make sure the default route ID is in the list
-                Integer dftRouteID = new Integer( getDefaultRouteId() );
-                
-                if (!routeIDs.contains( dftRouteID )) {
-                    routeIDs.add(dftRouteID);
-                    listCopy.add(dftRouteID);
-
-                    ecMappingDao.addEcToRouteMapping(getEnergyCompanyId(), dftRouteID);
-                    dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
-                                                          DbChangeCategory.ENERGY_COMPANY_ROUTES,
-                                                          getEnergyCompanyId());
-                }
-            }
-            return listCopy;
+    public List<LiteYukonPAObject> getRoutes() {
+        List<Integer> routeIDs = getRouteIDs();
+        List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
+        for (Integer routeId : routeIDs) {
+            LiteYukonPAObject liteRoute = paoDao.getLiteYukonPAO(routeId);
+            routeList.add(liteRoute);
         }
         
-        return routeIDs;
+        return Collections.unmodifiableList(routeList);
+    }
+    
+    public List<Integer> getRouteIDs() {
+        // This method doesn't honor the isSingleEnergyCompany setting,
+        // maybe getRoutes and getAllRoutes should always delegate to this guy.
+        // However, that would make caching more interesting because we would have
+        // to dump the routeIds whenever the role property was changed.
+        
+        
+        // the following is thread safe as long as routeIds is volatile
+        List<Integer> tempRouteIds = routeIds;
+        if (tempRouteIds == null) {
+            tempRouteIds = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
+            routeIds = ImmutableList.copyOf(tempRouteIds);
+        }
+
+        return tempRouteIds;
     }
     
     /**
@@ -1081,7 +983,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * get methods to look up the routes from the database next time instead of using the cached value.
      */
     public synchronized void resetRouteIds() {
-        routeIDs = null;
+        routeIds = null;
     }
 
     
@@ -1978,10 +1880,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
     }
 
-    public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
-        this.paoPermissionService = paoPermissionService;
-    }
-    
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
@@ -2012,5 +1910,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+    
+    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
+        this.defaultRouteService = defaultRouteService;
+    }
+    
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

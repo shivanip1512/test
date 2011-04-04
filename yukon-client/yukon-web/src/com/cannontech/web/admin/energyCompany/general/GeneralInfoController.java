@@ -270,7 +270,7 @@ public class GeneralInfoController {
     }
     
     @ModelAttribute("routes")
-    public LiteYukonPAObject[] getRoutes(int ecId) {
+    public List<LiteYukonPAObject> getRoutes(int ecId) {
         return starsDatabaseCache.getEnergyCompany(ecId).getAllRoutes();
     }
     

@@ -1,8 +1,6 @@
 package com.cannontech.web.stars.action.admin;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -19,7 +17,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
@@ -29,8 +26,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -49,9 +44,9 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
 
         TransactionTemplate template = new TransactionTemplate(transactionManager);
-        template.execute(new TransactionCallback() {
+        template.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
 
                 ServletUtils.saveRequest( request, session, new String[] {
                         "CompanyName", "AddMember", "Email", "OperatorGroup", "CustomerGroup", "Username", "Username2", "Route"} );
@@ -145,7 +140,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     address.setStateCode( "" );
                     contact.setAddress( address );
                     
-                    contact = Transaction.createTransaction( TransactionType.INSERT, contact ).execute();
+                    dbPersistentDao.performDBChange(contact, TransactionType.INSERT);
                     
                     LiteContact liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
                     StarsLiteFactory.setLiteContact( liteContact, contact );
@@ -155,13 +150,13 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     com.cannontech.database.db.company.EnergyCompany company =
                         new com.cannontech.database.db.company.EnergyCompany();
                     company.setName(companyName);
-                    company.setPrimaryContactID( contact.getContact().getContactID() );
-                    company.setUserID( new Integer(liteUser.getUserID()) );
-                    company = Transaction.createTransaction(TransactionType.INSERT, company).execute();
+                    company.setPrimaryContactId( contact.getContact().getContactID() );
+                    company.setUserId(liteUser.getUserID());
+                    dbPersistentDao.performDBChange(company, TransactionType.INSERT);
                     
                     SqlStatement stmt = new SqlStatement(
                                                          "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
-                                                         company.getEnergyCompanyID() + ", " + liteUser.getUserID() + ")",
+                                                         company.getEnergyCompanyId() + ", " + liteUser.getUserID() + ")",
                                                          CtiUtilities.getDatabaseAlias()
                     );
                     stmt.execute();
@@ -185,7 +180,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     
                     // Assign default route to the energy company
                     int routeID = Integer.parseInt( request.getParameter("Route") );
-                    StarsAdminUtil.updateDefaultRoute( newCompany, routeID, user.getYukonUser());
+                    defaultRouteService.updateDefaultRoute( newCompany, routeID, user.getYukonUser());
                     
                     // Add the new energy company as a member of the current company
                     if (isAddMember)
@@ -208,7 +203,6 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     // Manually rollback this transaction - can't throw an exception here as that
                     // causes the redirect above to not work
                     status.setRollbackOnly();
-                    return null;
                 } catch (Exception e) {
                     // Unknown issue in this case - show error page to user and throw the 
                 	// exception so the transaction rolls back
@@ -229,7 +223,6 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     throw new RuntimeException(e);
                 }
 
-                return null;
             }
         });
         

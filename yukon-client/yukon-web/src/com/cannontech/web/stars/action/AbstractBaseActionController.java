@@ -24,8 +24,10 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.login.LoginService;
 
 public abstract class AbstractBaseActionController implements Controller {
@@ -46,6 +48,8 @@ public abstract class AbstractBaseActionController implements Controller {
     protected StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     protected StarsSearchDao starsSearchDao;
     protected RolePropertyDao rolePropertyDao;
+    protected DefaultRouteService defaultRouteService;
+    protected EnergyCompanyService energyCompanyService;
 	
     
     public void setLoginService(LoginService loginService) {
@@ -132,5 +136,13 @@ public abstract class AbstractBaseActionController implements Controller {
     public void setContactNotificationDao(
             ContactNotificationDao contactNotificationDao) {
         this.contactNotificationDao = contactNotificationDao;
+    }
+    
+    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
+        this.defaultRouteService = defaultRouteService;
+    }
+    
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
 }

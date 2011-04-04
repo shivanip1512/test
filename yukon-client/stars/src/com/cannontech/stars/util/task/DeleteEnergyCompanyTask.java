@@ -34,6 +34,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -48,6 +49,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 
     private DBPersistentDao dbPersistentDao;
     private YukonListDao yukonListDao;
+    private DefaultRouteService defaultRouteService;
     
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
@@ -63,10 +65,11 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 	
 	private final Logger log = YukonLogManager.getLogger(getClass());
 	
-	public DeleteEnergyCompanyTask(int energyCompanyId, DBPersistentDao dbPersistentDao, YukonListDao yukonListDao) {
+	public DeleteEnergyCompanyTask(int energyCompanyId, DBPersistentDao dbPersistentDao, YukonListDao yukonListDao, DefaultRouteService defaultRouteService) {
 		this.energyCompanyID = energyCompanyId;
         this.dbPersistentDao = dbPersistentDao;
         this.yukonListDao = yukonListDao;
+        this.defaultRouteService = defaultRouteService;
 	}
 
 	/* (non-Javadoc)
@@ -320,7 +323,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			// Delete LM groups created for the default route
 			if (energyCompany.getDefaultRouteId() >= 0) {
 				currentAction = "Deleting LM groups created for the default route";
-				StarsAdminUtil.removeDefaultRoute( energyCompany );
+				defaultRouteService.removeDefaultRoute(energyCompany);
 			}
 			
 			// Get the privilege group before the default login is deleted

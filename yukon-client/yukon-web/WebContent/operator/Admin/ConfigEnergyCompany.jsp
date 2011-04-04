@@ -268,28 +268,29 @@ function deleteWarehouse(form, warehouseId) {
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="70%"> 
                                     <%
-	LiteYukonPAObject[] inheritedRoutes = null;
-	if (liteEC.getParent() != null)
-		inheritedRoutes= liteEC.getParent().getAllRoutes();
-	LiteYukonPAObject[] routes = liteEC.getRoutes(inheritedRoutes);
-	
-	for (int i = 0; i < routes.length && i < 3; i++) {
+    List<LiteYukonPAObject> inheritedRoutes = null;
+    if (liteEC.getParent() != null) {
+        inheritedRoutes= liteEC.getParent().getAllRoutes();
+    }
+    List<LiteYukonPAObject> routes = liteEC.getRoutes();
+    
+    for (int i = 0; i < routes.size() && i < 3; i++) {
 %>
-                                    <%= routes[i].getPaoName() %><br>
+                                    <%= routes.get(i).getPaoName() %><br>
                                     <%
-	}
-	if (routes.length < 3 && inheritedRoutes != null) {
-		for (int i = 0; i < inheritedRoutes.length && i < 3 - routes.length; i++) {
+    }
+    if (routes.size() < 3 && inheritedRoutes != null) {
+        for (int i = 0; i < inheritedRoutes.size() && i < 3 - routes.size(); i++) {
 %>
-                                    <%= inheritedRoutes[i].getPaoName() %> (Inherited)<br>
+                                    <%= inheritedRoutes.get(i).getPaoName() %> (Inherited)<br>
                                     <%
-		}
-	}
-	if (routes.length > 3) {
+        }
+    }
+    if (routes.size() > 3) {
 %>
                                     And more...<br>
                                     <%
-	}
+    }
 %>
                                   </td>
                                   <td width="25%" class="TableCell"> 

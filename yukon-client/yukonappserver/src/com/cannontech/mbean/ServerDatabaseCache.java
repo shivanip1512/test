@@ -1279,195 +1279,191 @@ public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
  *
  */
 public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
-        boolean noObjectNeeded)
+                                                   boolean noObjectNeeded)
 {
-	String objectType = dbChangeMsg.getObjectType();
-	String dbCategory = dbChangeMsg.getCategory();
-	DbChangeType dbChangeType = dbChangeMsg.getDbChangeType();
-	int database = dbChangeMsg.getDatabase();
-	int id = dbChangeMsg.getId();
-	LiteBase retLBase = null;
+    String objectType = dbChangeMsg.getObjectType();
+    String dbCategory = dbChangeMsg.getCategory();
+    DbChangeType dbChangeType = dbChangeMsg.getDbChangeType();
+    int database = dbChangeMsg.getDatabase();
+    int id = dbChangeMsg.getId();
+    LiteBase retLBase = null;
 
-	if( database == DBChangeMsg.CHANGE_POINT_DB )
-	{
-		allPointLimits = null;
-		retLBase = handlePointChange( dbChangeType, id, noObjectNeeded );
-	}
-	else if( database == DBChangeMsg.CHANGE_PAO_DB )
-	{
-		retLBase = handleYukonPAOChange( dbChangeType, id);
-		
+    if( database == DBChangeMsg.CHANGE_POINT_DB )
+    {
+        allPointLimits = null;
+        retLBase = handlePointChange( dbChangeType, id, noObjectNeeded );
+    }
+    else if( database == DBChangeMsg.CHANGE_PAO_DB )
+    {
+        retLBase = handleYukonPAOChange( dbChangeType, id);
 
-		//if any device changes, 
-		// reload all the DeviceMeterGroup data (may be inefficient!!)
-		if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE) )
-		{
-			allDevices = null;
-			allMCTs = null;
-			allUnusedCCDevices = null;
-			allLoadManagement = null; //PAOGroups are here, oops!
-			
-			//we should not have to return the DeviceMeterGroup since
-			// the liteObject that was edited/added was actually a Device
-			//retLBase = handleDeviceMeterGroupChange( dbType, id);
-			
-			//Verify that this a device that even cares about DeviceMeterGroups
-			int type = PAOGroups.getDeviceType(objectType);
-			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
-			{
-				handleDeviceMeterGroupChange( dbChangeType, id);
-			}
-		}
-		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
-		{
-			allLoadManagement = null;
-			allLMPrograms = null;
-			allLMControlAreas = null;
-			allLMGroups = null;
-			allLMScenarios = null;
-			allLMScenarioProgs = null;
-			allLMPAOExclusions = null;
-		}
-		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
-		{
-			allCapControlFeeders = null;
-			allCapControlSubBuses = null;	
+
+        //if any device changes, 
+        // reload all the DeviceMeterGroup data (may be inefficient!!)
+        if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE) )
+        {
+            allDevices = null;
+            allMCTs = null;
+            allUnusedCCDevices = null;
+            allLoadManagement = null; //PAOGroups are here, oops!
+
+            //we should not have to return the DeviceMeterGroup since
+            // the liteObject that was edited/added was actually a Device
+            //retLBase = handleDeviceMeterGroupChange( dbType, id);
+
+            //Verify that this a device that even cares about DeviceMeterGroups
+            int type = PAOGroups.getDeviceType(objectType);
+            if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
+            {
+                handleDeviceMeterGroupChange( dbChangeType, id);
+            }
+        }
+        else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
+        {
+            allLoadManagement = null;
+            allLMPrograms = null;
+            allLMControlAreas = null;
+            allLMGroups = null;
+            allLMScenarios = null;
+            allLMScenarioProgs = null;
+            allLMPAOExclusions = null;
+        }
+        else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
+        {
+            allCapControlFeeders = null;
+            allCapControlSubBuses = null;	
             allCapControlSubStations = null;
-		}
-		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
-		{
-			allPorts = null;
-		}
-		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE) )
-		{
-			allRoutes = null;	
-		}
+        }
+        else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
+        {
+            allPorts = null;
+        }
+        else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE) )
+        {
+            allRoutes = null;	
+        }
 
-	}
-	else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
-	{
-		retLBase = handleStateGroupChange( dbChangeType, id );		
-	}
-	else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
-	{
-		retLBase = handleAlarmCategoryChange( dbChangeType, id );
-	}
-   else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
-   { 
-	  retLBase = handleYukonImageChange( dbChangeType, id );
-   }
-	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
-	{
-		//clear out the Contacts as they may have changed
-		releaseAllContacts();
-		
-		retLBase = handleNotificationGroupChange( dbChangeType, id );
-	}
-//	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
-//	{
-//		retLBase = handleContactNotificationChange( dbType, id );
-//	}
-	else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
-	{
-	    //clear out the CICustomers & NotificationGroups as they may have changed
-	    allCICustomers = null;
-	    allNotificationGroups = null;
-	    
-	    releaseAllCustomers();
-	    
-	    retLBase = handleContactChange( dbChangeType, id );		
-	}
-	else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
-	{
-		retLBase = handleGraphDefinitionChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
-	{
-		retLBase = handleHolidayScheduleChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_BASELINE_DB )
-	{
-		retLBase = handleBaselineChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB )
-	{
-		retLBase = handleSeasonScheduleChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB )
-	{
-		retLBase = handleTOUScheduleChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
-	{
+    }
+    else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
+    {
+        retLBase = handleStateGroupChange( dbChangeType, id );		
+    }
+    else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
+    {
+        retLBase = handleAlarmCategoryChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
+    { 
+        retLBase = handleYukonImageChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
+    {
+        //clear out the Contacts as they may have changed
+        releaseAllContacts();
+
+        retLBase = handleNotificationGroupChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
+    {
+        //clear out the CICustomers & NotificationGroups as they may have changed
+        allCICustomers = null;
+        allNotificationGroups = null;
+
+        releaseAllCustomers();
+
+        retLBase = handleContactChange( dbChangeType, id );		
+    }
+    else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
+    {
+        retLBase = handleGraphDefinitionChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
+    {
+        retLBase = handleHolidayScheduleChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_BASELINE_DB )
+    {
+        retLBase = handleBaselineChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB )
+    {
+        retLBase = handleSeasonScheduleChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB )
+    {
+        retLBase = handleTOUScheduleChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
+    {
         if (DBChangeMsg.CAT_DEVICE_CONFIG.equals(dbCategory)) {
-         // Do nothing - no cache for device configs
+            // Do nothing - no cache for device configs
         } else {
             retLBase = handleConfigChange(dbChangeType, id);
         }
-	}
-	else if( database == DBChangeMsg.CHANGE_TAG_DB )
-	{
-		retLBase = handleTagChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
-	{
-		retLBase = handleLMProgramConstraintChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB)
-	{
-		retLBase = handleDeviceTypeCommandChange(dbChangeType, id);
-	}
-	else if( database == DBChangeMsg.CHANGE_COMMAND_DB )
-	{
-		retLBase = handleCommandChange( dbChangeType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
-	{
-		allEnergyCompanies = null;
-		userEnergyCompanyCache.clear();
+    }
+    else if( database == DBChangeMsg.CHANGE_TAG_DB )
+    {
+        retLBase = handleTagChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
+    {
+        retLBase = handleLMProgramConstraintChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB)
+    {
+        retLBase = handleDeviceTypeCommandChange(dbChangeType, id);
+    }
+    else if( database == DBChangeMsg.CHANGE_COMMAND_DB )
+    {
+        retLBase = handleCommandChange( dbChangeType, id );
+    }
+    else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
+    {
+        allEnergyCompanies = null;
+        userEnergyCompanyCache.clear();
 
-	} else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB ) {
-		allNotificationGroups = null;
-		retLBase = handleCustomerChange( dbChangeType, id, dbCategory, noObjectNeeded );
-		
-		if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
-			allCICustomers = null;
-			
-			// LiteEnergyCompany has a list of all cicustomers
-			allEnergyCompanies = null;
-			userEnergyCompanyCache.clear();
-		}
-		
-	}
-	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
-	{
-		if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
-			retLBase = handleYukonGroupChange( dbChangeType, id );
-		else
-			retLBase = handleYukonUserChange( dbChangeType, id, noObjectNeeded);
-		
-		// This seems heavy handed!
-		allYukonGroups = null;
-		allYukonRoles = null;
-		allYukonGroupRolePropertiesMap = null;
-		userEnergyCompanyCache.clear();
-	}
-	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
-	{
-		if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
-			//allContacts = null;
-		}
-		retLBase = null;
-	}
-	else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
-	{
-		retLBase = handleSettlementConfigChange(dbChangeType, id);
+    } else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB ) {
+        allNotificationGroups = null;
+        retLBase = handleCustomerChange( dbChangeType, id, dbCategory, noObjectNeeded );
+
+        if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
+            allCICustomers = null;
+
+            // LiteEnergyCompany has a list of all cicustomers
+            allEnergyCompanies = null;
+            userEnergyCompanyCache.clear();
+        }
+
+    }
+    else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
+    {
+        if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
+            retLBase = handleYukonGroupChange( dbChangeType, id );
+        else
+            retLBase = handleYukonUserChange( dbChangeType, id, noObjectNeeded);
+
+        // This seems heavy handed!
+        allYukonGroups = null;
+        allYukonRoles = null;
+        allYukonGroupRolePropertiesMap = null;
+        userEnergyCompanyCache.clear();
+    }
+    else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
+    {
+        if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
+            //allContacts = null;
+        }
+        retLBase = null;
+    }
+    else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
+    {
+        retLBase = handleSettlementConfigChange(dbChangeType, id);
     } else {
-	    // There are several messages we don't care about.
-	    CTILogger.debug("Unhandled DBChangeMessage with category " + dbCategory);
-	}
+        // There are several messages we don't care about.
+        CTILogger.debug("Unhandled DBChangeMessage with category " + dbCategory);
+    }
 
-	return retLBase;
+    return retLBase;
 }
 /**
  * Insert the method's description here.

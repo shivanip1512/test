@@ -24,6 +24,7 @@ import com.cannontech.common.inventory.LMHardwareClass;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -268,7 +269,7 @@ public class InventoryDaoImpl implements InventoryDao {
             thermostat.setType(hardwareType);
 
             int routeId = rs.getInt("RouteId");
-            if (routeId == 0) {
+            if (routeId == CtiUtilities.NONE_ZERO_ID) {
                 routeId = liteStarsEnergyCompany.getDefaultRouteId();
             }
             thermostat.setRouteId(routeId);

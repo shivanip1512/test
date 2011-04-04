@@ -330,12 +330,12 @@ function removeAllConfig(form) {
 %>
                               <option value="0"><%= dftRoute %></option>
 <%
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
+    List<LiteYukonPAObject> routes = liteEC.getAllRoutes();
+    for (LiteYukonPAObject route : routes) {
 %>
-                              <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+                              <option value="<%= route.getYukonID() %>"><%= route.getPaoName() %></option>
 <%
-	}
+    }
 %>
                             </select>
                           </td>

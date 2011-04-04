@@ -12,7 +12,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
@@ -21,15 +20,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListOrder;
-import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authorization.service.PaoPermissionService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -41,11 +35,9 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.device.lm.LMFactory;
-import com.cannontech.database.data.device.lm.LMGroupExpressCom;
-import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
@@ -59,10 +51,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
-import com.cannontech.database.db.macro.GenericMacro;
-import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -81,7 +70,6 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -99,166 +87,6 @@ public class StarsAdminUtil {
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
-	
-	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, LiteYukonUser user) 
-	throws CommandExecutionException, WebClientException {
-	    StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
-	    
-	    int previousRouteId = energyCompany.getDefaultRouteId();
-		if (energyCompany.getDefaultRouteId() != routeID) {
-			if(routeID == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
-			    removeDefaultRoute(energyCompany);
-            }
-		    else if (energyCompany.getDefaultRouteId() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
-				// Assign the default route to the energy company
-		        // Checks to see if the LMGroupExpressCom exists
-		        LMGroupExpressCom grpExpresscom = new LMGroupExpressCom();
-				grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );
-				String sqlLMGE = "SELECT PAO.PAObjectId "+
-				                 "FROM YukonPAObject PAO "+
-				                 "WHERE PAO.Category = 'DEVICE' "+
-				                 "AND PAO.PAOClass = 'GROUP' "+
-				                 "AND PAO.PAOName = '"+grpExpresscom.getPAOName()+"'";
-				
-                SqlStatement stmtLMGE = new SqlStatement( sqlLMGE, CtiUtilities.getDatabaseAlias() );
-                stmtLMGE.execute();
-
-                if (stmtLMGE.getRowCount() > 0) {
-                    int deviceID = ((java.math.BigDecimal) stmtLMGE.getRow(0)[0]).intValue();
-                    grpExpresscom.setDeviceID(deviceID);
-                    grpExpresscom = Transaction.createTransaction( Transaction.RETRIEVE, grpExpresscom ).execute();
-                } else {
-                    //  Creates the expresscom if it doesn't exist.
-                    grpExpresscom = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-                    grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );  
-                    grpExpresscom.setRouteID( new Integer(routeID) );  
-                    grpExpresscom = Transaction.createTransaction( Transaction.INSERT, grpExpresscom ).execute();
-                    ServerUtils.handleDBChangeMsg( grpExpresscom.getDBChangeMsgs(DbChangeType.ADD)[0] );
-                }
-
-
-                // Checks to see if the MacroGroup Exists
-                MacroGroup grpSerial = new MacroGroup();
-                grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
-                String sqlMG = "SELECT PAO.PAObjectId "+
-                               "FROM YukonPAObject PAO "+
-                               "WHERE PAO.Category = 'DEVICE' "+
-                               "AND PAO.PAOClass = 'GROUP' "+
-                               "AND PAO.PAOName = '"+grpSerial.getPAOName()+"'";
-                
-                SqlStatement stmtMG = new SqlStatement( sqlMG, CtiUtilities.getDatabaseAlias() );
-                stmtMG.execute();
-
-                if (stmtMG.getRowCount() > 0) {
-                    int deviceID = ((java.math.BigDecimal) stmtMG.getRow(0)[0]).intValue();
-                    grpSerial.setDeviceID(deviceID);
-                    grpSerial = Transaction.createTransaction( Transaction.RETRIEVE, grpSerial ).execute();
-                } else {
-                    // Creates a macrogroup if it doesn't exist.
-                    grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );  
-    				grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
-    				GenericMacro macro = new GenericMacro();
-                    macro.setChildID( grpExpresscom.getPAObjectID() );  
-    				macro.setChildOrder( new Integer(0) );
-    				macro.setMacroType( MacroTypes.GROUP );
-    				grpSerial.getMacroGroupVector().add( macro );
-    				grpSerial = Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
-    				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.ADD)[0] );
-                }
-                
-                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                String paoTypeString = grpSerial.getPAOType();
-                PaoType paoType = PaoType.getForDbString(paoTypeString);
-                PaoIdentifier pao = new PaoIdentifier(grpSerial.getPAObjectID(), paoType);
-				pService.addPermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE, true);
-			}
-			else if (routeID > 0 || energyCompany.getDefaultRouteId() > 0) {
-				if (routeID < 0) routeID = 0;
-				
-                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
-                if(! permittedPaoIDs.isEmpty()) {
-                    String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
-                        "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
-                    sql += " AND macro.OwnerID in (";
-                    Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
-                    permittedIDs = permittedPaoIDs.toArray(permittedIDs);
-                    for(Integer paoID : permittedIDs) {
-                        sql += paoID.toString() + ",";
-                    }
-                    sql = sql.substring(0, sql.length() - 1);
-                    sql += ")";
-                    
-                    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-                    stmt.execute();
-				
-    				if (stmt.getRowCount() == 0)
-    					throw new WebClientException( "Not able to find the default route group, sql = \"" + sql + "\"" );
-    				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-    				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-    				group.setLMGroupID( new Integer(groupID) );
-    				group = Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
-				
-    				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
-    				grpDB.setRouteID( new Integer(routeID) );
-    				Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
-    				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DbChangeType.UPDATE)[0] );
-                }
-			}
-			
-			// Sending out DB change to notify possible other servers.
-			DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
-			dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, 
-			                                      DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE, 
-			                                      energyCompany.getEnergyCompanyId());
-
-			// Logging Default Route Id
-			starsEventLogService.energyCompanyDefaultRouteChanged(user, energyCompany.getName(),
-			                                                      previousRouteId, routeID);
-		}
-	}
-	
-	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws CommandExecutionException {
-        PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
-        if(! permittedPaoIDs.isEmpty()) {
-            String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
-				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
-            sql += " AND macro.OwnerID in (";
-            Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
-            permittedIDs = permittedPaoIDs.toArray(permittedIDs);
-            for(Integer paoID : permittedIDs) {
-                sql += paoID.toString() + ",";
-            }
-            sql = sql.substring(0, sql.length() - 1);
-            sql += ")";
-            
-    		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-    		stmt.execute();
-    		
-    		if (stmt.getRowCount() > 0) {
-    			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-    			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
-                /*Load groups are only assigned to users, so for now we only have to worry about removing from
-                 * the user.
-                 */
-                pService.removePermission(energyCompany.getUser(), new PaoIdentifier(serialGrpID, PaoType.MACRO_GROUP), Permission.DEFAULT_ROUTE);
-    			stmt.setSQLString( sql );
-    			stmt.execute();
-    			
-    			MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );
-    			grpSerial.setDeviceID( new Integer(serialGrpID) );
-    			Transaction.createTransaction( Transaction.DELETE, grpSerial ).execute();
-    			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.DELETE)[0] );
-    			
-    			LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-    			grpDftRoute.setLMGroupID( new Integer(dftRtGrpID) );
-    			Transaction.createTransaction( Transaction.DELETE, grpDftRoute ).execute();
-    			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DbChangeType.DELETE)[0] );
-    		}
-        }
-	}
-
 	
 	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
@@ -861,42 +689,45 @@ public class StarsAdminUtil {
 		}
 	}
 	
-	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)
-		throws TransactionException
-	{
-        List<Integer> routeIDs = energyCompany.getRouteIDs();
-		Integer rtID = new Integer(routeID);
-		if (!routeIDs.contains( rtID )) return;
-		
-		StarsSearchDao starsSearchDao = 
-			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-		List<LiteStarsLMHardware> inventory = 
-			starsSearchDao.searchLMHardwareByRoute(routeID, Collections.singletonList(energyCompany));
-		for (LiteStarsLMHardware liteHw : inventory) {
-			
-			LMHardwareBase hw = new LMHardwareBase();
-			StarsLiteFactory.setLMHardwareBase( hw, liteHw );
-			hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ZERO_ID) );
-			
-			Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
-			liteHw.setRouteID( CtiUtilities.NONE_ZERO_ID );
-			
-			if (liteHw.getAccountID() > 0) {
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-				if (starsAcctInfo != null) {
-					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					HardwareAction.removeRouteResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
-				}
-			}
-		}
-		
-		ECToGenericMapping map = new ECToGenericMapping();
-		map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-		map.setItemID( rtID );
-		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
-		Transaction.createTransaction( Transaction.DELETE, map ).execute();
-		
-		synchronized (routeIDs) { routeIDs.remove(rtID); }
+	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId)
+	    throws TransactionException {
+	    List<Integer> routeIds = energyCompany.getRouteIDs();
+	    if (!routeIds.contains(routeId)) return;
+
+	    StarsSearchDao starsSearchDao = YukonSpringHook.getBean(StarsSearchDao.class);
+	    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
+	    List<LiteStarsLMHardware> inventory = 
+	        starsSearchDao.searchLMHardwareByRoute(routeId, 
+	                                               Collections.singletonList(energyCompany));
+	    for (LiteStarsLMHardware liteHw : inventory) {
+
+	        LMHardwareBase hw = new LMHardwareBase();
+	        StarsLiteFactory.setLMHardwareBase(hw, liteHw);
+	        hw.getLMHardwareBase().setRouteID(CtiUtilities.NONE_ZERO_ID);
+
+	        dbPersistentDao.performDBChange(hw.getLMHardwareBase(), TransactionType.UPDATE);
+	        liteHw.setRouteID( CtiUtilities.NONE_ZERO_ID );
+
+	        if (liteHw.getAccountID() > 0) {
+	            StarsCustAccountInformation starsAcctInfo = 
+	                energyCompany.getStarsCustAccountInformation(liteHw.getAccountID());
+	            if (starsAcctInfo != null) {
+	                StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteHw, 
+	                                                                                energyCompany);
+	                HardwareAction.removeRouteResponse(liteHw.getInventoryID(), 
+	                                                   starsInv, 
+	                                                   starsAcctInfo, 
+	                                                   null);
+	            }
+	        }
+	    }
+
+	    ECToGenericMapping map = new ECToGenericMapping();
+	    map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+	    map.setItemID(routeId);
+	    map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_ROUTE);
+	    dbPersistentDao.performDBChangeWithNoMsg(map, TransactionType.DELETE);
+	    dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, DbChangeCategory.ENERGY_COMPANY_ROUTE, energyCompany.getEnergyCompanyId());
 	}
 	
 	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws TransactionException {

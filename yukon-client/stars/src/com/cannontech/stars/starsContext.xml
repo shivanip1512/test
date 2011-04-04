@@ -296,4 +296,6 @@
     
     <bean id="faqDao" class="com.cannontech.stars.dr.general.dao.impl.FaqDaoImpl"/>
     
+    <bean id="defaultRouteService" class="com.cannontech.stars.service.impl.DefaultRouteServiceImpl"/>
+    
 </beans>

@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -131,14 +132,14 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                     addr.setStateCode( "" );
                 contact.setAddress( addr );
 
-                contact = Transaction.createTransaction( TransactionType.INSERT, contact ).execute();
+                dbPersistentDao.performDBChange(contact, TransactionType.INSERT);
                 liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
                 StarsLiteFactory.setLiteContact( liteContact, contact );
 
                 ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
             }
             else if(contact.getContact().getContLastName() != null) {
-                contact = Transaction.createTransaction( TransactionType.UPDATE, contact ).execute();
+                dbPersistentDao.performDBChange(contact, TransactionType.UPDATE);
                 StarsLiteFactory.setLiteContact( liteContact, contact );
 
                 ServerUtils.handleDBChange( liteContact, DbChangeType.UPDATE );
@@ -148,11 +149,12 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             if (newContact || !energyCompany.getName().equals( compName )) {
                 energyCompany.setName( compName );
                 energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
-                Transaction.createTransaction( TransactionType.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
+                DBPersistent energyCompanyDb = StarsLiteFactory.createDBPersistent(energyCompany);
+                dbPersistentDao.performDBChange(energyCompanyDb, TransactionType.UPDATE);
             }
 
             int routeID = Integer.parseInt(request.getParameter("Route"));
-            StarsAdminUtil.updateDefaultRoute( energyCompany, routeID, user.getYukonUser());
+            defaultRouteService.updateDefaultRoute( energyCompany, routeID, user.getYukonUser());
 
             // Update energy company role DEFAULT_TIME_ZONE if necessary
             LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();

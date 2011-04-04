@@ -1,19 +1,17 @@
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
-	LiteYukonPAObject[] inheritedRoutes = null;
-	if (liteEC.getParent() != null)
-		inheritedRoutes = liteEC.getParent().getAllRoutes();
-	LiteYukonPAObject[] routes = liteEC.getRoutes(inheritedRoutes);
-	
-	ArrayList assignedRoutes = new ArrayList();
-	for (int i = 0; i < routes.length; i++)
-		assignedRoutes.add(routes[i]);
-	
-	if (inheritedRoutes != null) {
-		for (int i = 0; i < inheritedRoutes.length; i++)
-			assignedRoutes.add(inheritedRoutes[i]);
-	}
+    List<LiteYukonPAObject> inheritedRoutes = null;
+    if (liteEC.getParent() != null)
+        inheritedRoutes = liteEC.getParent().getAllRoutes();
+    List<LiteYukonPAObject> routes = liteEC.getRoutes();
+    
+    List<LiteYukonPAObject> assignedRoutes = new ArrayList<LiteYukonPAObject>();
+    assignedRoutes.addAll(routes);
+    
+    if (inheritedRoutes != null) {
+        assignedRoutes.addAll(inheritedRoutes);
+    }
 %>
 <html>
 <head>
@@ -28,9 +26,9 @@ var removeWarned = false;
 function isRemovable(routeID) {
 <%
 	if (inheritedRoutes != null) {
-		for (int i = 0; i < inheritedRoutes.length; i++) {
+		for (int i = 0; i < inheritedRoutes.size(); i++) {
 %>
-	if (routeID == <%= inheritedRoutes[i].getYukonID() %>)
+	if (routeID == <%= inheritedRoutes.get(i).getYukonID() %>)
 		return false;
 <%
 		}
@@ -206,18 +204,18 @@ function prepareSubmit(form) {
                                     <td width="45%" valign="top"> Assigned Routes:<br>
                                       <select id="RoutesAssigned" name="RoutesAssigned" size="20" style="width:235" multiple onchange="selectionChanged(this.form)">
 <%
-	for (int i = 0; i < routes.length; i++) {
+    for (LiteYukonPAObject route : routes) {
 %>
-                                        <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+                                        <option value="<%= route.getYukonID() %>"><%= route.getPaoName() %></option>
 <%
-	}
-	if (inheritedRoutes != null) {
-		for (int i = 0; i < inheritedRoutes.length; i++) {
+    }
+    if (inheritedRoutes != null) {
+        for (LiteYukonPAObject inheritedRoute : inheritedRoutes) {
 %>
-                                        <option value="<%= inheritedRoutes[i].getYukonID() %>" style="color:#999999"><%= inheritedRoutes[i].getPaoName() %></option>
+                                        <option value="<%= inheritedRoute.getYukonID() %>" style="color:#999999"><%= inheritedRoute.getPaoName() %></option>
 <%
-		}
-	}
+        }
+    }
 %>
                                       </select>
                                       <br>
@@ -247,6 +245,7 @@ function prepareSubmit(form) {
                 </tr>
               </table>
             </form>
+            <div id="browserWarning" style="display:none; font-weight: bold; color: red; font-size: 14px; text-align: center; margin: 12px 0">This page only works with Internet Explorer.</div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
@@ -255,5 +254,10 @@ function prepareSubmit(form) {
 	</tr>
 </table>
 <br>
+<script type="text/javascript">
+if (!Prototype.Browser.IE) {
+    $('browserWarning').show();
+}
+</script>
 </body>
 </html>

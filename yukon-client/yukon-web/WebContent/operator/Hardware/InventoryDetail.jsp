@@ -594,13 +594,13 @@ var setChoosenYukonDevice = function() {
     }
 %>
                                     <option value="0"><%=dftRoute%></option>
-<%LiteYukonPAObject[] routes = liteEC.getAllRoutes();
-                for (int i = 0; i < routes.length; i++) {
-                    String selected = (routes[i].getYukonID() == inventory.getLMHardware()
+<%              List<LiteYukonPAObject> routes = liteEC.getAllRoutes();
+                for (LiteYukonPAObject route : routes) {
+                    String selected = (route.getYukonID() == inventory.getLMHardware()
                                                                           .getRouteID()) ? "selected"
                             : "";
 %>
-                                    <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%=routes[i].getPaoName()%></option>
+                                    <option value="<%= route.getYukonID() %>" <%= selected %>><%=route.getPaoName()%></option>
 <%}
             %>
                                   </select>

@@ -16,6 +16,9 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="loginService" ref="loginService"/>
         <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
+        <property name="defaultRouteService" ref="defaultRouteService"/>
+        <property name="energyCompanyService" ref="energyCompanyService"/>
     </bean>
 
 	<bean id="adminUpdateAddress" class="com.cannontech.web.stars.action.admin.UpdateAddressController" 
@@ -53,7 +56,6 @@
 	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController" 
           parent="starsAdminActionController">
           <property name="transactionManager" ref="transactionManager"/>
-          <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>      
 	
 	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController" 

@@ -631,7 +631,7 @@ public class YukonSwitchCommandAction {
         } else {
             routeID = liteHw.getRouteID();
         }
-        if (routeID == 0) {
+        if (routeID == CtiUtilities.NONE_ZERO_ID) {
             routeID = liteStarsEnergyCompany.getDefaultRouteId();
         }
     
@@ -735,7 +735,7 @@ public class YukonSwitchCommandAction {
         if (routeId == null) {
             routeId = liteHw.getRouteID();
         }
-        if (routeId == null || routeId == 0)
+        if (routeId == null || routeId == CtiUtilities.NONE_ZERO_ID)
             routeId = liteStarsEnergyCompany.getDefaultRouteId();
 
         for (String command : commands) {
@@ -820,7 +820,7 @@ public class YukonSwitchCommandAction {
         if (routeId == null) {
             routeId = liteHw.getRouteID();
         }
-        if (routeId == null || routeId == 0) {
+        if (routeId == null || routeId == CtiUtilities.NONE_ZERO_ID) {
             LiteStarsEnergyCompany energyCompany = 
                 starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             routeId = energyCompany.getDefaultRouteId();

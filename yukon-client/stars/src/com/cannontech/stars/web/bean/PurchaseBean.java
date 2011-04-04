@@ -285,7 +285,7 @@ public class PurchaseBean
         
         for(int i = 0; i < getAvailableMembers().size(); i++)
         {
-            if(getAvailableMembers().get(i).getEnergyCompanyID().compareTo(ecID) == 0)
+            if(getAvailableMembers().get(i).getEnergyCompanyId() == ecID)
                 serialNumberMember = getAvailableMembers().get(i);
         }
         

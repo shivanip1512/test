@@ -223,17 +223,17 @@ function addCustomerGroup(form) {
                           <select name="Route" onchange="setContentChanged(true)">
                             <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
 <%
-    int routeID = liteEC.getDefaultRouteId();
-	if (savedReq.getProperty("Route") != null)
-		routeID = Integer.parseInt(savedReq.getProperty("Route"));
-	
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
-		String selected = (routes[i].getYukonID() == routeID)? "selected" : "";
+    int routeID = liteEC.getDefaultRouteID();
+    if (savedReq.getProperty("Route") != null)
+        routeID = Integer.parseInt(savedReq.getProperty("Route"));
+    
+    List<LiteYukonPAObject> routes = liteEC.getAllRoutes();
+    for (LiteYukonPAObject route : routes) {
+        String selected = (route.getYukonID() == routeID)? "selected" : "";
 %>
-                            <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
+                            <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
 <%
-	}
+    }
 %>
                           </select>
                         </td>

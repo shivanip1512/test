@@ -71,13 +71,13 @@
                           <select name="Route" onchange="setContentChanged(true)">
                             <option value="0">(none)</option>
 <%
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
-		String selected = (routes[i].getYukonID() == substation.getRouteID())? "selected" : "";
+    List<LiteYukonPAObject> routes = liteEC.getAllRoutes();
+    for (LiteYukonPAObject route : routes) {
+        String selected = (route.getYukonID() == substation.getRouteID())? "selected" : "";
 %>
-                            <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
+                            <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
 <%
-	}
+    }
 %>
                           </select>
                         </td>

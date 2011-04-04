@@ -335,13 +335,13 @@ var setChoosenYukonDevice = function() {
 	if (savedReq.getProperty("Route") != null)
 		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
 	
-	LiteYukonPAObject[] routes = member.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
-		String selected = (routes[i].getYukonID() == savedRoute)? "selected" : "";
+    List<LiteYukonPAObject> routes = member.getAllRoutes();
+    for (LiteYukonPAObject route : routes) {
+        String selected = (route.getYukonID() == savedRoute)? "selected" : "";
 %>
-                                    <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
+                                    <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
                                     <%
-	}
+    }
 %>
                                   </select>
                                 </td>

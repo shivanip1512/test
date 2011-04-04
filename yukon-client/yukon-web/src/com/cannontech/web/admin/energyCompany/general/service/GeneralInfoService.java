@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
@@ -29,6 +30,7 @@ public class GeneralInfoService {
     private StarsDatabaseCache starsDatabaseCache;
     private EnergyCompanyDao energyCompanyDao;
     private ECMappingDao ecMappingDao;
+    private DefaultRouteService defaultRouteService;
     
     public GeneralInfo getGeneralInfo(LiteStarsEnergyCompany energyCompany) {
         GeneralInfo info = new GeneralInfo();
@@ -89,7 +91,7 @@ public class GeneralInfoService {
         addressDao.update(generalInfo.getAddress().getLiteAddress(addressId));
         
         /* Route */
-        StarsAdminUtil.updateDefaultRoute( energyCompany, generalInfo.getDefaultRouteId(), user);
+        defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);
         
         if (energyCompany.getParent() != null) {
             int parentEcId = energyCompany.getParent().getEnergyCompanyId();
@@ -155,6 +157,11 @@ public class GeneralInfoService {
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
+    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
+        this.defaultRouteService = defaultRouteService;
     }
     
 }

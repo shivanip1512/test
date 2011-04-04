@@ -34,25 +34,22 @@
                                         <th><i:inline key=".route"/></th>
                                         <th class="removeColumn"><i:inline key=".remove"/></th>
                                     </tr>
-    
-                                    <!-- Inherited Routes -->
-                                    <c:forEach items="${inheritedRoutes}" var="route" >
-                                        <tr>
-                                            <td><spring:escapeBody htmlEscape="true">${route.paoName}</spring:escapeBody></td>
-                                            <td class="removeColumn"><i:inline key=".inherited" /></td>
-                                        </tr>
-                                    </c:forEach>
                                     
-                                    <!-- EC Routes -->
                                     <c:forEach items="${ecRoutes}" var="route" >
                                         <tr>
-                                            <td><spring:escapeBody htmlEscape="true">${route.paoName}</spring:escapeBody></td>
+                                            <td><spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody></td>
+                                            <c:if test="${not route.value.deletable}">
+                                            <td class="removeColumn"><i:inline key="${route.value}" /></td>
+                                            </c:if>
+                                            <c:if test="${route.value.deletable}">
                                             <td class="removeColumn">
                                                 <input type="image" src="/WebConfig/yukon/Icons/delete.png" 
-                                                       class="pointer hoverableImage" name="removeRoute" value="${route.yukonID}">
+                                                       class="pointer hoverableImage" name="removeRoute" value="${route.key.yukonID}">
                                             </td>
+                                            </c:if>
                                         </tr>
                                     </c:forEach>
+    
                                 </table>
                             </div>
                         </c:otherwise>
