@@ -52,7 +52,7 @@ private:
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
    // The weak pointers contained in this map are no longer guaranteed to exist.
-   // They should be assumed to exist only immediatelly after being entered, then never used again!
+   // They should be assumed to exist only immediately after being entered, then never used again!
    ConnectionMgrPointMap    _conMgrPointMap;
    ReasonabilityLimitMap    _reasonabilityLimits;
    PointLimitSet            _limits;

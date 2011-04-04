@@ -1153,7 +1153,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     if( !program )
     {
-        //This would cause very very very bad things (program would die immediatelly due to assertions and exceptions)
+        //This would cause very very very bad things (program would die immediately due to assertions and exceptions)
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " *** CHECKPOINT *** - This should not happen. Program ID was: " << _controlMsg->getPAOId() << endl;
         return;

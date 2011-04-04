@@ -755,7 +755,7 @@ void CtiCalculateThread::baselineThread( void )
         }
         if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("CALC_LOGIC_RUN_BASELINE_ON_STARTUP"),"true") )
         {
-            nextCalcTime.addDays(-1);//Should let us run immediatelly
+            nextCalcTime.addDays(-1);//Should let us run immediately
         }
 
         strcpy(var, "CALC_BASELINE_INITIAL_DAYS_CALCULATED");

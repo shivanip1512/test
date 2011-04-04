@@ -123,7 +123,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
 }
 
 
-bool LMGroupDigiSEP::sendStopControl(bool stopImmediatelly)
+bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {
     using namespace Cti::Messaging;
 
@@ -133,7 +133,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediatelly)
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediatelly: " << (stopImmediatelly ? "TRUE" : "FALSE") << endl;
+        dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediately: " << (stopImmediately ? "TRUE" : "FALSE") << endl;
     }
     
     setLastControlSent(CtiTime::now());

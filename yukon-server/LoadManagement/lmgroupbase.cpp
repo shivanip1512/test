@@ -885,7 +885,7 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
     return NULL;
 }
 
-bool CtiLMGroupBase::sendStopControl(bool stopImmediatelly)
+bool CtiLMGroupBase::sendStopControl(bool stopImmediately)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

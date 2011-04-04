@@ -140,7 +140,7 @@ public:
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;// CtiLMGroupExpresscom
     virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
-    virtual bool sendStopControl(bool stopImmediatelly);
+    virtual bool sendStopControl(bool stopImmediately);
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

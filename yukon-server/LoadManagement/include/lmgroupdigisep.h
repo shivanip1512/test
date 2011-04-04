@@ -29,7 +29,7 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     int operator!=(const LMGroupDigiSEP& right) const;
 
     virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
-    virtual bool sendStopControl(bool stopImmediatelly);
+    virtual bool sendStopControl(bool stopImmediately);
 
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;

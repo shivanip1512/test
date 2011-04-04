@@ -97,7 +97,7 @@ const int CtiDeviceTnppPagingTerminal::_a_capcode_max                    = 62;
 const int CtiDeviceTnppPagingTerminal::_a_capcode_min                    = 0;
 
 //*****************************************************************************
-/* NOTE! The tnpp device must be set to immediatelly send all messages
+/* NOTE! The tnpp device must be set to immediately send all messages
 ** If this is not the case, this code may cause errors (sending 0 packet
 ** every time causes problems if buffering is attempted) -Jess
 ******************************************************************************/
