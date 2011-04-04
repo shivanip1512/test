@@ -552,6 +552,68 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOpDelay = timeNow;
 
+                // Verify that the regulators and regulator attributes we need are available
+
+                unsigned errorCount = 0;
+
+                for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
+                {
+                    long zoneID     = operation.first;
+                    int  tapOpCount = operation.second;
+
+                    ZoneManager & zoneManager = store->getZoneManager();
+                    long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+
+
+                    try
+                    {
+                        if ( tapOpCount < 0 )
+                        {
+                            VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+                            if ( regulatorId > 0 )
+                            {
+                                regulator->getPointByAttribute( PointAttribute::TapDown );
+                            }
+                        }
+                        else if ( tapOpCount > 0 )
+                        {
+                            VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+                            if ( regulatorId > 0 )
+                            {
+                                regulator->getPointByAttribute( PointAttribute::TapUp );
+                            }
+                        }
+                        else    // tapOpCount == 0
+                        {
+                            // Nothing to do here....
+                        }
+                    }
+                    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                    {
+                        errorCount++;
+                    }
+                    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                    {
+                        errorCount++;
+                    }
+                }
+
+                // If we have some errors - clear out the tapOp mapping... (cancel pending operations)
+
+                if ( errorCount != 0 )
+                {
+                    state->_tapOps.clear();
+
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<" - Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." << endl;
+                    }
+                }
+
+                // Send the tap commands
+
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
                     long zoneID     = operation.first;
