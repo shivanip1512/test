@@ -177,9 +177,12 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .dn { display: none; }
 .di { display: inline; }
 .db, .box { display:block; }
+.dib { display:inline-block; }
 
 .oh, .box { overflow:hidden; }
 .pr, .box { position: relative; }
+
+.pf { position: fixed; }
 
 .bn { border:none; border-style:none; }
 

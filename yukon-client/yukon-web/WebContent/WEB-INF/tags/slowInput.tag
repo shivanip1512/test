@@ -7,6 +7,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+
 <cti:includeScript link="/JavaScript/slowInput.js"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="slowinput_"/>
@@ -27,7 +29,7 @@
     <input id="${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
-           class="formSubmit"
+           class="formSubmit ${styleClass}"
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});">
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 

@@ -23,6 +23,9 @@ public enum JsLibrary {
     SCRIPTACULOUS_EFFECTS("/JavaScript/lib/scriptaculous/1.8.3/effects.js"),
     OVERLIB("/JavaScript/ol/overlib_mini.js"),
     RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
+    EXT_BASE("/JavaScript/extjs/ext-base.js"),
+    EXT_ALL("/JavaScript/extjs/ext-all.js"),
+    COOPER_UI("/JavaScript/cooper/ui/general.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js");

@@ -64,6 +64,7 @@ public class LayoutController {
     public void initialize() {
         Builder<String> builder = ImmutableList.builder();
     	builder.add(JsLibrary.PROTOTYPE.getPath());
+    	builder.add(JsLibrary.COOPER_UI.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");

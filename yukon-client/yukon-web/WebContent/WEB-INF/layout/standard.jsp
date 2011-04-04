@@ -36,6 +36,17 @@
         </c:forEach>
     </head>
 <body class="<c:out value="${module.moduleName}"/>_module">
+
+<div id="modal_glass" style="display:none;">
+    <div class="tint"></div>
+    <div class="loading">
+        <!-- The lookup for your own custom message would be: $$("#modal_glass .message")[0] -->
+        <div class="box message">
+            <cti:msg key="yukon.web.layout.standard.loading"/>
+        </div>
+    </div>
+</div>
+
 <div id="Header">
     <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
     <div class="stdhdr_right"><img src="<cti:theme key="yukon.web.layout.standard.upperrightlogo" default="/WebConfig/yukon/YukonBW.gif" url="true"/>" alt=""></div>
