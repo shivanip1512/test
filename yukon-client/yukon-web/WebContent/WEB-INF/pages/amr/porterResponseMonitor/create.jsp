@@ -24,7 +24,7 @@
 	<form:form commandName="monitor" id="basicInfoForm"
 		action="/spring/amr/porterResponseMonitor/create" method="post">
 
-		<form:hidden path="${monitor.monitorId}" />
+        <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
 
 		<tags:formElementContainer nameKey="setup">
 			<tags:nameValueContainer2
@@ -33,17 +33,8 @@
 				<%-- name --%>
 				<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 
-                <%-- state group --%>
-                <tags:nameValue2 nameKey=".stateGroup">
-                    <select name="stateGroup">
-                        <c:forEach items="${stateGroups}" var="stateGroup">
-                            <option value="${stateGroup}">${stateGroup.stateGroupName}</option>
-                        </c:forEach>
-                    </select>
-                </tags:nameValue2>
-
-			</tags:nameValueContainer2>
-		</tags:formElementContainer>
+            </tags:nameValueContainer2>
+        </tags:formElementContainer>
 
 		<%-- create / cancel --%>
 		<div class="pageActionArea">

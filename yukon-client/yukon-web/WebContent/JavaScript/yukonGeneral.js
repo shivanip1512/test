@@ -305,23 +305,26 @@ Object.extend(YEvent, {
         });
     },
     
-    markBusy: function(event) {
-        var originalButton = event.element();
+    markBusy: function(element) {
         var spinner = document.createElement("span");
         spinner.innerHTML = "<img src=\"/WebConfig/yukon/Icons/indicator_arrows.gif\">";
-        var disabledElement = originalButton.cloneNode(true);
+        var disabledElement = element.cloneNode(true);
         disabledElement.addClassName('ajaxBusy');
+        try {
+            disabledElement.disable();
+            element.blur();
+        } catch (e) {
+            disabledElement.innerHTML = '';
+        }
         disabledElement.appendChild(spinner);
 
-        originalButton.insert({before: disabledElement});
-        disabledElement.disable();
-        originalButton.hide();
-        originalButton.blur();
+        element.insert({before: disabledElement});
+        element.hide();
     },
     
-    unmarkBusy: function(event) {
-        event.element().previous().remove();
-        event.element().show();
+    unmarkBusy: function(element) {
+        element.previous().remove();
+        element.show();
     }
 });
 

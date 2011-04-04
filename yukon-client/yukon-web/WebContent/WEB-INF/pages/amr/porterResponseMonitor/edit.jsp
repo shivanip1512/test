@@ -124,15 +124,6 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
                     </tags:helpInfoPopup>
                 </tags:nameValue2>
 
-                <%-- attribute --%>
-                <tags:selectNameValue items="${allAttributes}" itemLabel="description"
-                    itemValue="key" nameKey=".attribute" path="attribute" />
-
-                <%-- state group --%>
-                <tags:nameValue2 nameKey=".stateGroup">
-                    <spring:escapeBody htmlEscape="true">${monitorDto.stateGroup.stateGroupName}</spring:escapeBody>
-                </tags:nameValue2>
-
                 <%-- enable/disable monitoring --%>
                 <tags:nameValue2 nameKey=".monitoring">
 					<i:inline key="${monitorDto.evaluatorStatus}" />

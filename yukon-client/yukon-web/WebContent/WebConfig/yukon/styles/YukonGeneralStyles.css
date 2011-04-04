@@ -801,6 +801,12 @@ div.pagedBox table.boxTable {
 	vertical-align: middle;
 }
 
+table td .nameValueLogoImage {
+	vertical-align: baseline;
+    position: relative;
+    top: 3px;
+}
+
 .widgetColumns td.widgetColumnCell .titledContainerOverride {
   margin: 0px 0px;
 }

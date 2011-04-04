@@ -71,10 +71,12 @@
 		   			<c:set var="sharedPointsTrueSelected" value="${sharedPoints ? 'selected' : ''}"/>
 		   			<c:set var="sharedPointsFalseSelected" value="${sharedPoints ? '' : 'selected'}"/>
 	            	<tags:nameValue name="${sharedPointsOptionLabel}" nameColumnWidth="${optionNameWidth}">
-			            <select name="sharedPoints" style="width:${selectInputWidth};" onchange="toggleShowSharedPoints(this);">
-			            	<option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
-			            	<option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
-			            </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('sharedPointsOptionInfoPopup').toggle();">
+                        <span class="nonwrapping">
+    			            <select name="sharedPoints" style="width:${selectInputWidth};" onchange="toggleShowSharedPoints(this);">
+    			            	<option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
+    			            	<option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
+    			            </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('sharedPointsOptionInfoPopup').toggle();">
+                        </span>
 	            	</tags:nameValue>
 	            
 	            	<cti:msg var="updatePointsOptionLabel" key="yukon.common.device.bulk.addPointsHome.updatePointsOptionLabel"/>
@@ -85,10 +87,12 @@
            			<c:set var="updatePointsFalseSelected" value="${updatePoints ? '' : 'selected'}"/>
 		   			<c:set var="updatePointsTrueSelected" value="${updatePoints ? 'selected' : ''}"/>
 	             	<tags:nameValue name="${updatePointsOptionLabel}" id="updatePointsSelectTr">
-			            <select id="updatePointsSelectEl" name="updatePoints" style="width:${selectInputWidth};">
-			            	<option value="false" title="${updatePointsFalseOptionTooltip}" ${updatePointsFalseSelected}>${updatePointsFalseOptionText}</option>
-			            	<option value="true" title="${updatePointsTrueOptionTooltip}" ${updatePointsTrueSelected}>${updatePointsTrueOptionText}</option>
-			            </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('updatePointsOptionInfoPopup').toggle();">
+                        <span class="nonwrapping">
+    			            <select id="updatePointsSelectEl" name="updatePoints" style="width:${selectInputWidth};">
+    			            	<option value="false" title="${updatePointsFalseOptionTooltip}" ${updatePointsFalseSelected}>${updatePointsFalseOptionText}</option>
+    			            	<option value="true" title="${updatePointsTrueOptionTooltip}" ${updatePointsTrueSelected}>${updatePointsTrueOptionText}</option>
+    			            </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('updatePointsOptionInfoPopup').toggle();">
+                        </span>
 	            	</tags:nameValue>
 	            	
 	            	<cti:msg var="maskExistingPointsOptionLabel" key="yukon.common.device.bulk.addPointsHome.maskExistingPointsOptionLabel"/>

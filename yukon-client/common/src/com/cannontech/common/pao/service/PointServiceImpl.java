@@ -25,7 +25,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
@@ -39,7 +39,7 @@ public class PointServiceImpl implements PointService {
     private RawPointHistoryDao rphDao = null;
     private AttributeService attributeService;
     private DeviceGroupService deviceGroupService;
-    private YukonJdbcOperations jdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
 
@@ -135,7 +135,7 @@ public class PointServiceImpl implements PointService {
         SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
         sql.append(  "and").appendFragment(groupSqlWhereClause);
         
-        int result = jdbcTemplate.queryForInt(sql);
+        int result = yukonJdbcTemplate.queryForInt(sql);
         
         return result;
     }
@@ -156,8 +156,8 @@ public class PointServiceImpl implements PointService {
     }
     
     @Autowired
-    public void setJdbcTemplate(YukonJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
+        this.yukonJdbcTemplate = jdbcTemplate;
     }
     
     @Autowired

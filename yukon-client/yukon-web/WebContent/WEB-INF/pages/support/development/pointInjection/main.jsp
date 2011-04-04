@@ -63,13 +63,13 @@ YEvent.observeSelectorClick('.removeRow', function(event) {
 });
 
 YEvent.observeSelectorClick('.sendData', function(event) {
-    YEvent.markBusy(event);
+    YEvent.markBusy(event.element());
     var theRow = Event.findElement(event, 'tr');
     var parameters = Form.serializeElements(theRow.getElementsBySelector('input,select'), true);
     new Ajax.Request("sendData",{
         parameters: parameters,
         onComplete: function(transport) {
-            YEvent.unmarkBusy(event);
+            YEvent.unmarkBusy(event.element());
         }
     });
 });

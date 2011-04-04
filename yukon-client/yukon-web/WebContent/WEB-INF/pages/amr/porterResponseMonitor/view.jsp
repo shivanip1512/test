@@ -8,21 +8,41 @@
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
     <script type="text/javascript">
-        YEvent.observeSelectorClick('.doCountCalculation', function(event) {
-            var resultSpan = event.element().next('span');
-            resultSpan.hide();
-            YEvent.markBusy(event);
+        Event.observe(window, "load", function() {
+            var totalGroupCountSpan = $('totalGroupCount');
+            var supportedDevicesMsgSpan = $('supportedDevicesMsg');
+            
+            YEvent.markBusy(totalGroupCountSpan);
+            YEvent.markBusy(supportedDevicesMsgSpan);
     
-            new Ajax.Request("getPointCount",{
+            new Ajax.Request("getCounts",{
                 parameters: {'monitorId': ${monitorDto.monitorId}},
-                onComplete: function(response) {
-                    var calculatedCount = response.responseText;
-                    resultSpan.innerHTML = calculatedCount;
-                    YEvent.unmarkBusy(event);
-                    resultSpan.show();
-                    flashYellow(resultSpan, 2);
+                onComplete: function(transport) {
+                    var json = transport.responseText.evalJSON();
+
+                    var totalGroupCount = json.totalGroupCount;
+                    var supportedDevicesMsg = json.supportedDevicesMessage;
+                    var missingPointCount = json.missingPointCount;
+
+                    totalGroupCountSpan.innerHTML = totalGroupCount;
+                    supportedDevicesMsgSpan.innerHTML = supportedDevicesMsg;
+                    
+                    if (missingPointCount > 0) {
+                        supportedDevicesMsgSpan.show();
+
+                        if (${showAddRemovePoints}) {
+                            $('addPointsSpan').show();
+                        }
+                    }
+
+                    YEvent.unmarkBusy(totalGroupCountSpan);
+                    YEvent.unmarkBusy(supportedDevicesMsgSpan);
                 }
             });
+        });
+
+        YEvent.observeSelectorClick('#supportedDevicesHelpIcon', function(event) {
+            $('supportedDevicesHelpPopup').toggle();
         });
     </script>
 
@@ -36,6 +56,10 @@
 	</cti:breadCrumbs>
 
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view" />
+
+    <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup">
+        <cti:msg2 key=".supportedDevicesHelpText"  arguments="${monitorDto.groupName},${attributeString}" argumentSeparator=","/>
+    </i:simplePopup>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
         <div class="largeDialogScrollArea">
@@ -77,24 +101,28 @@
                 <a href="${deviceGroupUrl}">${monitorDto.groupName}</a>
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey=".attribute">
-                <spring:escapeBody htmlEscape="true">${monitorDto.attribute.description}</spring:escapeBody>
+            <%-- Device Count --%>
+            <tags:nameValue2 nameKey=".deviceCount">
+                <span id="totalGroupCount"></span>
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey=".stateGroup">
-                <spring:escapeBody htmlEscape="true">${monitorDto.stateGroup.stateGroupName}</spring:escapeBody>
+            <%-- Supported Devices --%>
+            <tags:nameValue2 nameKey=".supportedDevices">
+                <span id="supportedDevicesMsg"></span>
+                <span id="addPointsSpan" style="display: none;">
+                    <cti:url value="/spring/bulk/addPoints/home" var="addPointsLink">
+                        <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                    </cti:url>
+                    <span> - </span>
+                    <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
+                </span>
+                <cti:img id="supportedDevicesHelpIcon" key="help" styleClass="pointer hoverableImage nameValueLogoImage" />
             </tags:nameValue2>
 
 			<%-- enable/disable monitoring --%>
 			<tags:nameValue2 nameKey=".monitoring">
 				<i:inline key="${monitorDto.evaluatorStatus}" />
 			</tags:nameValue2>
-
-            <%-- Point Count --%>
-            <tags:nameValue2 nameKey=".pointCount" rowClass="middle">
-                <cti:button key="calculatePointCount" styleClass="doCountCalculation" />
-                <span></span>
-            </tags:nameValue2>
         </tags:nameValueContainer2>
 
 		<c:choose>
