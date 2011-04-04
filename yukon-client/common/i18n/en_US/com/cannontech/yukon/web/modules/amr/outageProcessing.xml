@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <!-- breadcrumb placeholder -->
+    <entry key="yukon.web.modules.amr.outageProcessingParent.pageName">Outage Processing</entry>
 
 	<!-- OutageMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
@@ -18,11 +20,22 @@
     <!-- OutageMonitorEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.pageName">Edit Name</entry>     
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.pageDescription">Edit Description</entry>     
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.EDIT.pageName">Edit Monitor</entry>     
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.EDIT.pageDescription">Edit: {0}</entry>     
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.CREATE.pageName">Create Outage Monitor</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.CREATE.pageDescription">New Monitor</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.pageTitle">Outage Monitoring</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.headerTitle">Outage Monitoring Setup</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.section.setup">Setup</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.section.editSetup">Edit Setup</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.section.schedule">Schedule Blink Count Read (Optional)</entry>
+    
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.testButton.label">Placeholder</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.testButton2.label">Placeholder2</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.testButton3.label">Placeholder3</entry>
+
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outagesGroup">Outages Group</entry>
@@ -96,6 +109,8 @@
     <!-- OutageProcessingController process.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.outageProcessing.pageName">Outage Processing</entry>     
+    <entry key="yukon.web.modules.amr.outageProcessing.pageDescription">{0}</entry>     
     <entry key="yukon.web.modules.amr.outageProcessing.pageTitle">Outage Processing</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.reportingLink">View Outage Logs Report</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.sectionHeader">Info</entry>
@@ -105,11 +120,12 @@
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.violations">Violations</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages">Number of Outages</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outage">Outage</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outages">Outages</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod">Number of Days</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.days">Days</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.day">Day</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.edit">Edit</entry>
-    
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title">Read Outage Logs</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button">Read Logs</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.readOk">Read Outage Log Commands Have Been Sent.</entry>
@@ -131,18 +147,15 @@
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.detail">Detail</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.status">Status</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.viewDetailLink">View</entry>
-
     <entry key="yukon.web.modules.amr.outageProcessing.section.options.title">Options</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.options.outagesGroupReport">View Outages Group Devices Report</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.options.clearOutagesGroup">Clear Outages Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.options.otherActions">Other Actions</entry>
-    
 	<entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert"><![CDATA[
 	Outage Logs read has completed for Outage Monitor "{outageMonitorName}" with {percentSuccess|#0.0#}% success 
 	  <a href="/spring/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 	    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
 	  </a>
 	]]></entry>
-	
 
 </properties>

@@ -1,39 +1,21 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="Meter Home Page" module="amr">
-	<cti:standardMenu menuSelection="meters" />
-	<cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-    	<cti:crumbLink><cti:deviceName deviceId="${deviceId}"></cti:deviceName></cti:crumbLink>
-</cti:breadCrumbs>
+<cti:standardPage module="amr" page="meterDetail">
 
-	<table class="widgetColumns">
-		<tr>
-			<td class="widgetColumnCell" valign="top">
-				<h2>
-					Meter Detail
-				</h2>
-			</td>
-			<td  class="widgetColumnCell" align="right">
-				<amr:searchResultsLink></amr:searchResultsLink>
-			</td>
-		</tr>
-	</table>
-
+	<div style="float: right;">
+		<amr:searchResultsLink></amr:searchResultsLink>
+	</div>
 
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
 		<table class="widgetColumns">
 			<tr>
 				<td class="widgetColumnCell" valign="top">
-					<ct:widget bean="meterInformationWidget" />
+				    <ct:widget bean="meterInformationWidget" />
 	
 					<ct:widget bean="meterReadingsWidget" />
                     
@@ -45,21 +27,21 @@
 						<ct:widget bean="${cisInfoWidgetName}" />
 					</c:if>
 	
-	                <ct:widget bean="deviceGroupWidget" />
-	
-					<ct:boxContainer title="Actions" styleClass="widgetContainer">
+	                <ct:widget bean="deviceGroupWidget"/>
+
+					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
 	                
 	                    <!-- Actions: Move In/Out -->
                         <c:if test="${moveSupported}">
                             <cti:url var="moveInUrl" value="/spring/meter/moveIn">
                                 <cti:param name="deviceId" value="${deviceId}" />
                             </cti:url>
-                            <a href="${moveInUrl}">Move In</a><br/>
+                            <a href="${moveInUrl}"><i:inline key=".moveIn"/></a><br/>
 
                             <cti:url var="moveOutUrl" value="/spring/meter/moveOut">
                                 <cti:param name="deviceId" value="${deviceId}" />
                             </cti:url>
-                            <a href="${moveOutUrl}">Move Out</a><br/>
+                            <a href="${moveOutUrl}"><i:inline key=".moveOut"/></a><br/>
                         </c:if>
 	                    
 						<!-- Actions: High Bill Complaint -->
@@ -68,7 +50,7 @@
 	                            <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
 	                                <cti:param name="deviceId" value="${deviceId}" />
 	                            </cti:url>
-	                            <a href="${highBillUrl}">High Bill Complaint</a><br/>
+	                            <a href="${highBillUrl}"><i:inline key=".highBill"/></a><br/>
 	                        </c:if>
 	                    </cti:checkProperty>
 	                    
@@ -78,7 +60,7 @@
         					<cti:url var="profileUrl" value="/spring/amr/profile/home">
         						<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>
-                            <a href="${profileUrl}">Profile</a><br/>
+                            <a href="${profileUrl}"><i:inline key=".profile"/></a><br/>
 						</c:if >
 	                        
 						<!-- Actions: Voltage & TOU -->
@@ -86,7 +68,7 @@
 							<cti:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
 								<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>
-       						<a href="${voltageTouUrl}">Voltage &amp; TOU</a><br/>
+       						<a href="${voltageTouUrl}"><i:inline key=".voltageAndTou"/></a><br/>
 						</c:if>
                        
 						<!-- Actions: Manual Commander -->
@@ -95,7 +77,7 @@
 								<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
         							<cti:param name="deviceId" value="${deviceId}" />
         						</cti:url>
-        						<a href="${commanderUrl}">Manual Commander</a><br/>
+        						<a href="${commanderUrl}"><i:inline key=".manualCommander"/></a><br/>
         					</c:if>
         				</cti:checkProperty>
 	                        
@@ -106,7 +88,7 @@
         	                    	<cti:param name="collectionType" value="idList" />
         	                        <cti:param name="idList.ids" value="${deviceId}" />
 								</cti:url>
-        	                    <a href="${routeLocateUrl}">Locate Route</a><br/>
+        	                    <a href="${routeLocateUrl}"><i:inline key=".locateRoute"/></a><br/>
 							</c:if>
 						</cti:checkProperty>
 
@@ -115,9 +97,9 @@
 	                        <cti:param name="collectionType" value="idList" />
 	                        <cti:param name="idList.ids" value="${deviceId}" />
 	                    </cti:url>
-	                    <a href="${collectionActionsUrl}">Other Actions...</a><br/>
+	                    <a href="${collectionActionsUrl}"><i:inline key=".otherActions"/></a><br/>
 	                    
-					</ct:boxContainer>
+					</ct:boxContainer2>
 	
 				</td>
 				<td class="widgetColumnCell" valign="top">

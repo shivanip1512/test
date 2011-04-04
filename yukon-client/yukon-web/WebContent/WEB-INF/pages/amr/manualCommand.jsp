@@ -1,20 +1,9 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
     
-<cti:standardPage title="Manual Commander Page" module="amr">
-	<cti:standardMenu menuSelection="meters" />
-	<cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-	    <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
-	    &gt; Manual Commander
-	</cti:breadCrumbs>
+<cti:standardPage module="amr" page="manualCommand">
 
 <style type="text/css">
 	div.scroll { font-size: 12px; 
@@ -40,8 +29,6 @@
     }
 </script>
 
-
-	<h2>Manual Commander</h2>
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
         <table class="widgetColumns">
             <tr>
@@ -51,7 +38,7 @@
                        <tags:widget bean="meterInformationWidget" />
                     </tags:widgetContainer>
                     </div>
-                    <tags:boxContainer title="Execute Command" hideEnabled="false" styleClass="widgetContainer">
+                    <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="widgetContainer">
                         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
                 
                             <input type="hidden" name="deviceID" value="${device.yukonID}">
@@ -59,33 +46,31 @@
                             <input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
                             <input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
                 
-                            <tags:nameValueContainer altRowOn="true">
-                                <tags:nameValue name="Common Commands">
+                            <tags:nameValueContainer2> <!--  altRowOn="true"> -->
+                                <tags:nameValue2 nameKey=".commonCommands">
                                     <select name="commonCommand" onchange="loadCommanderCommand(this, 'command');">
-                                        <option value="">Select a Command</option>                
+                                        <option value=""><i:inline key=".selectCommand"/></option>                
                                         
                                         <c:forEach var="command" items="${commandList}">
                                             <option value="${command.command}" >${command.label}</option>
                                         </c:forEach>
                                     </select>
-                                </tags:nameValue>
-                                <tags:nameValue name="Execute Command">
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".executeCommand">
                                     <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
-                                    <input type="submit" name="execute" value="Execute" onClick="disableButton(this)" class="formSubmit">                  
-                                    
-                                </tags:nameValue>
-                            </tags:nameValueContainer>  
+                                    <cti:button key="execute" name="execute" onclick="disableButton(this)" type="submit" />
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>  
 							<br>
                             <div class="scroll">
                                 <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
                             </div>
                             <div>
-                                <input type="submit" name="clearText" value="Clear Results" class="formSubmit">
-                                <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()" class="formSubmit">
+                                <cti:button key="clearResults" name="clearText" type="submit"/>
+                                <cti:button key="refresh" name="refresh" onclick="window.location.reload()"/>
                             </div>
-                            
                         </form>
-                    </tags:boxContainer>
+                    </tags:boxContainer2>
         
                 </td>
             </tr>

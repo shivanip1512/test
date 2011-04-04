@@ -7,20 +7,6 @@
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
-	<cti:standardMenu menuSelection="meters" />
-
-    <cti:url var="monitorViewPage" value="/spring/amr/porterResponseMonitor/viewPage">
-        <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
-    </cti:url>
-
-	<cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
-        <cti:crumbLink><a href="${monitorViewPage}"><spring:escapeBody>${monitorDto.name}</spring:escapeBody></a></cti:crumbLink>
-        <cti:crumbLink><i:inline key=".sectionHeader.title"/></cti:crumbLink>
-	</cti:breadCrumbs>
-
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
@@ -43,9 +29,6 @@
         </span>
         </div>
     </i:simplePopup>
-
-    <h2><i:inline key=".title" /></h2>
-	<br>
 
 <script type="text/javascript">
 

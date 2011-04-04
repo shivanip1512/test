@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -23,11 +25,13 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -43,6 +47,7 @@ public class MoveInMoveOutController extends MultiActionController {
     private MeterDao meterDao = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
     private MoveInMoveOutService moveInMoveOutService = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     /**
      * @param request
@@ -65,6 +70,7 @@ public class MoveInMoveOutController extends MultiActionController {
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
+        mav.addObject("deviceName", meter.getName());
         mav.addObject("currentDate", currentDateFormatted);
         
         // readable?
@@ -141,7 +147,28 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("deviceGroups", moveInResult.getDeviceGroupsRemoved());
         mav.addObject("submissionType", moveInResult.getSubmissionType());
         mav.addObject("scheduled", moveInResult.isScheduled());
-
+        
+        //Build i18n strings with multiple arguments
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String moveInSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveIn.success", 
+                                                                          moveInResult.getNewMeter().getName(),
+                                                                          dateFormattingService.format(moveInForm.getMoveInDate(),
+                                                                                                       DateFormatEnum.BOTH,
+                                                                                                       userContext));
+        mav.addObject("moveInSuccessMsg", moveInSuccessMsg);
+        if(moveInResult.getPreviousMeter().getName() != moveInResult.getNewMeter().getName()) {
+            String renameSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveIn.rename",
+                                                                       moveInResult.getPreviousMeter().getName(),
+                                                                       moveInResult.getNewMeter().getName());
+            mav.addObject("renameSuccessMsg", renameSuccessMsg);
+        }
+        if(moveInResult.getPreviousMeter().getMeterNumber() != moveInResult.getNewMeter().getMeterNumber()) {
+            String newNumberSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveIn.newNumber",
+                                                                          moveInResult.getPreviousMeter().getMeterNumber(),
+                                                                          moveInResult.getNewMeter().getMeterNumber());
+            mav.addObject("newNumberSuccessMsg", newNumberSuccessMsg);
+        }
+        
         return mav;
     }
 
@@ -160,6 +187,7 @@ public class MoveInMoveOutController extends MultiActionController {
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
+        mav.addObject("deviceName", meter.getName());
         mav.addObject("currentDate", currentDateFormatted);
         
         // readable?
@@ -231,7 +259,14 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("deviceGroups", moveOutResult.getDeviceGroupsAdded());
         mav.addObject("submissionType", moveOutResult.getSubmissionType());
         mav.addObject("scheduled", moveOutResult.isScheduled());
-
+        //Build i18n strings with multiple arguments
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String moveOutSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveOut.success", 
+                                                                          moveOutResult.getPreviousMeter().getName(),
+                                                                          dateFormattingService.format(moveOutForm.getMoveOutDate(),
+                                                                                                       DateFormatEnum.BOTH,
+                                                                                                       userContext));
+        mav.addObject("moveOutSuccessMsg", moveOutSuccessMsg);
         return mav;
     }
 
@@ -349,5 +384,11 @@ public class MoveInMoveOutController extends MultiActionController {
     public void setMoveInMoveOutService(
             MoveInMoveOutService moveInMoveOutService) {
         this.moveInMoveOutService = moveInMoveOutService;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(
+            YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }

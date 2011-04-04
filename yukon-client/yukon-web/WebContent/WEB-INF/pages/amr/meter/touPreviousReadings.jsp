@@ -1,4 +1,3 @@
-
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <div id="touTable" class="widgetInternalSection">
 

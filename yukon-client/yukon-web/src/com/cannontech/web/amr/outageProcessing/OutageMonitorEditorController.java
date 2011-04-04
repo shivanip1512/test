@@ -33,6 +33,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -75,7 +76,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	
 	        // existing outage processor
 	        if (outageMonitorId > 0) {
-	        	
+	            mav.addObject("mode", PageEditMode.EDIT);
 	        	outageMonitor = outageMonitorDao.getById(outageMonitorId);
 	        	
 	        	// use entered values instead of existing value if error
@@ -84,8 +85,12 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        		deviceGroupName = outageMonitor.getGroupName();
 	        		numberOfOutages = outageMonitor.getNumberOfOutages();
 	        		timePeriod = outageMonitor.getTimePeriodDays();
+	        		
 	        	}
 	        }
+	        else {
+                mav.addObject("mode", PageEditMode.CREATE);
+            }
 	        
         } catch (OutageMonitorNotFoundException e) {
         	mav = new ModelAndView("redirect:edit");
@@ -93,7 +98,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	return mav;
         }
         
-	        
+                
         mav.addObject("editError", editError);
         mav.addObject("outageMonitorId", outageMonitorId);
         mav.addObject("name", name);

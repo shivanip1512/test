@@ -222,7 +222,7 @@ public class PhaseDetectController {
     public String testPage(ModelMap model) {
         List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectData().getSubstationId());
         if(phaseDetectService.getPhaseDetectState() == null){
-            return "redirect:home"; /* Redirect to start page if they no test is in progress */
+            return "redirect:home"; /* Redirect to start page if no test is in progress */
         }
         model.addAttribute("data", phaseDetectService.getPhaseDetectData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());

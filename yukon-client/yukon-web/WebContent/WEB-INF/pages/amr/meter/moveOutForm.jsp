@@ -1,34 +1,34 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <c:forEach items="${validationErrors}" var="error">
     <span class="internalSectionHeader" style>${error}</span>
     <br />
 </c:forEach>
 
-
 <form action="/spring/meter/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
 
     <input name="deviceId" type="hidden" value="${meter.deviceId}" />
 
-	<ct:boxContainer title="Move Out" hideEnabled="false">
+	<ct:boxContainer2 nameKey="moveOutForm" hideEnabled="false">
 	
-		<ct:nameValueContainer>
+		<ct:nameValueContainer2>
 		
-			<ct:nameValue name="Move Out Date">
+			<ct:nameValue2 nameKey=".moveOutDate">
 			    <ct:dateInputCalendar fieldName="moveOutDate" fieldValue="${currentDate}" />
-			</ct:nameValue>
-			<ct:nameValue name="Email Notification">
+			</ct:nameValue2>
+			<ct:nameValue2 nameKey=".emailNotification">
 			    <input name="emailAddress" type="text" />
-			</ct:nameValue>
+			</ct:nameValue2>
 		
-		</ct:nameValueContainer>
+		</ct:nameValueContainer2>
 	
 	    <br /><br />
-	
-	    <ct:slowInput myFormId="moveOutForm" label="Move Out"
-	        labelBusy="Moving Out" description="A meter reading is being calculated based on usage for the date supplied" />
+        <cti:msg2 var="moveOut" key=".moveOut"/>
+        <cti:msg2 var="movingOut" key=".movingOut"/>
+        <cti:msg2 var="moveOutDesc" key=".moveOutDesc"/>
+	    <ct:slowInput myFormId="moveOutForm" label="${moveOut}" labelBusy="${movingOut}" description="${moveOutDesc}" />
 
-	</ct:boxContainer>
+	</ct:boxContainer2>
 </form>

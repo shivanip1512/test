@@ -260,6 +260,7 @@ public class MeterController extends MultiActionController {
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         mav.addObject("deviceId", deviceId);
+        mav.addObject("deviceName", deviceDao.getFormattedName(device));
         
         // do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);

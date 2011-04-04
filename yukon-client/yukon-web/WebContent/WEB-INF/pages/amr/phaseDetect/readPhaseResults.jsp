@@ -1,13 +1,14 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:choose>
     <c:when test="${not empty errorMsg}">
-        <span class="errorRed" style="font-weight: bold;">Error Sending Read Command: ${errorMsg}</span>
+        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.results.errorRead"/>${errorMsg}</span>
     </c:when>
     <c:when test="${readCanceled}">
-        <span class="errorRed" style="font-weight: bold;">Read Canceled</span>
+        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.results.readCanceled"/></span>
     </c:when>
     <c:otherwise>
         <div style="float: left;padding-right: 10px;">
@@ -19,7 +20,7 @@
                         </td>
                         <td style="padding-top: 0px;">
                             <tags:updateableProgressBar totalCount="${totalCount}" countKey="PHASE_DETECT/${id}/RESULTS_COUNT" />
-                            <cti:dataUpdaterEventCallback function="readFinished" id="PHASE_DETECT/${id}/IS_COMPLETE" />
+                            <cti:dataUpdaterEventCallback function="readFinished" id="PHASE_DETECT/${id}/IS_COMPLETE"/>
                         </td>
                     </tr>
                 </table>
@@ -27,7 +28,8 @@
         </div>
         <div style="float: left;" id ="cancelReadDiv">
             <form action="/spring/amr/phaseDetect/cancelRead" method="get">
-                <input type="submit" value="Cancel Read" <c:if test="${readComplete}">disabled</c:if> id="cancelReadButton">
+                <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.results.cancelRead"/>
+                <input type="submit" value="${cancelRead}" <c:if test="${readComplete}">disabled</c:if> id="cancelReadButton">
             </form>
         </div>
     </c:otherwise>

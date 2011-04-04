@@ -1620,6 +1620,14 @@
             </description>
         </attribute>
         <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                disables the button when set to true
+            </description>
+        </attribute>
+        <attribute>
             <name>renderMode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

@@ -1,31 +1,18 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step6.sectionTitle" var="sectionTitle"/>
-
-<cti:standardPage title="Phase Detection" module="amr">
-    <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
-    <cti:standardMenu menuSelection="meters" />
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink title="${pageTitle}" />
-    </cti:breadCrumbs>
-
-    <%-- Phase Detect Title --%>
-    <h2 style="display: inline;">
-        ${pageTitle}
-    </h2>
-    <br>
-    <br>
+<cti:standardPage module="amr" page="phaseDetect.results">
+    <cti:msg2 key="yukon.web.modules.amr.phaseDetect.step6.sectionTitle" var="sectionTitle"/>
     <tags:sectionContainer title="${sectionTitle}">
         <table width="100%">
             <c:if test="${not empty cacheKey}">
                 <tr>
                     <td style="padding-bottom: 10px;">
-                        <cti:simpleReportLinkFromNameTag definitionName="phaseDetectDefinition" viewType="csvView" cacheKey="${cacheKey}">Export to CSV</cti:simpleReportLinkFromNameTag>
+                        <cti:simpleReportLinkFromNameTag definitionName="phaseDetectDefinition" viewType="csvView" cacheKey="${cacheKey}">
+                        <i:inline key=".exportCsv"/>
+                        </cti:simpleReportLinkFromNameTag>
                     </td>
                 </tr>
             </c:if>
@@ -34,12 +21,12 @@
                     <div>
                         <div style="padding-bottom: 5px;">
 		                    <c:set var="showA" value="${phaseAMetersSize > 0}" />
-					        <tags:abstractContainer type="box" title="Meters detected on phase A: ${phaseAMetersSize}" hideEnabled="true" showInitially="${showA}">
+					        <tags:boxContainer2 nameKey="metersDetectedA" arguments="${phaseAMetersSize}" hideEnabled="true" showInitially="${showA}">
 					            <div style="max-height: 300px;overflow: auto;">
 						            <table>
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th></c:if>
+                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
                                         </tr>
 							            <c:forEach var="meter" items="${phaseAMeters}">
                                             <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -47,15 +34,15 @@
 							                    <td style="padding-right: 10px;">${meter.name}</td>
 							                    <c:if test="${!data.readAfterAll}">
                                                     <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
-                                                    <td>Initial: 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> Delta:
+                                                    <td><i:inline key=".initial"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose>
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span>
@@ -65,7 +52,7 @@
 							            </c:forEach>
 						            </table>
 					            </div>
-					        </tags:abstractContainer>
+					        </tags:boxContainer2>
                             <c:if test="${phaseACollection.deviceCount > 0}">
                                 <div id="phaseAActionsDiv" style="padding:5px;">
                                     <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseA.collectionActionLabel" class="small">
@@ -77,12 +64,12 @@
 				        </div>
 				        <div style="padding-bottom: 5px;">
 					        <c:set var="showB" value="${phaseBMetersSize > 0}" />
-		                    <tags:abstractContainer type="box" title="Meters detected on phase B: ${phaseBMetersSize}" hideEnabled="true" showInitially="${showB}">
+                            <tags:boxContainer2 nameKey="metersDetectedB" arguments="${phaseBMetersSize}" hideEnabled="true" showInitially="false">
 		                        <div style="max-height: 300px;overflow: auto;">
 			                        <table>
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th></c:if>
+                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
                                         </tr>
 			                            <c:forEach var="meter" items="${phaseBMeters}">
                                             <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -90,15 +77,15 @@
 			                                    <td style="padding-right: 10px;">${meter.name}</td>
 			                                    <c:if test="${!data.readAfterAll}">
                                                     <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <td>Initial: 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> Delta:
+                                                    <td><i:inline key=".initial"/>
+                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
@@ -108,7 +95,7 @@
 			                            </c:forEach>
 			                        </table>
 		                        </div>
-		                    </tags:abstractContainer>
+		                    </tags:boxContainer2>
                             <c:if test="${phaseBCollection.deviceCount > 0}">
                                 <div id="phaseBActionsDiv" style="padding:5px;">
                                     <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseB.collectionActionLabel" class="small">
@@ -120,12 +107,12 @@
 	                    </div>
 	                    <div style="padding-bottom: 5px;">
 		                    <c:set var="showC" value="${phaseCMetersSize > 0}" />
-		                    <tags:abstractContainer type="box" title="Meters detected on phase C: ${phaseCMetersSize}" hideEnabled="true" showInitially="${showC}">
+		                    <tags:boxContainer2 nameKey="metersDetectedC" arguments="${phaseCMetersSize}" hideEnabled="true" showInitially="false">
 		                        <div style="max-height: 300px;overflow: auto;">
 			                        <table>
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th></c:if>
+                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
                                         </tr>
 			                            <c:forEach var="meter" items="${phaseCMeters}">
                                             <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -133,15 +120,15 @@
 			                                    <td style="padding-right: 10px;">${meter.name}</td>
 			                                    <c:if test="${!data.readAfterAll}">
                                                     <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td>Initial: 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> Delta:
+                                                    <td><i:inline key=".initial"/> 
+                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -151,7 +138,7 @@
 			                            </c:forEach>
 			                        </table>
 		                        </div>
-		                    </tags:abstractContainer>
+		                    </tags:boxContainer2>
                             <c:if test="${phaseCCollection.deviceCount > 0}">
                                 <div id="phaseCActionsDiv" style="padding:5px;">
                                     <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseC.collectionActionLabel" class="small">
@@ -164,12 +151,13 @@
     	                <c:if test="${!data.readAfterAll}">
 	    	                <div style="padding-bottom: 5px;">
 	                            <c:set var="showAB" value="${phaseABMetersSize > 0}" />
-	                            <tags:abstractContainer type="box" title="Meters detected on phases A and B: ${phaseABMetersSize}" hideEnabled="true" showInitially="${showAB}">
+<%-- 	                            <cti:msg2 key=".metersDetectedAB" var="metersDetectedAB"/> --%>
+                                <tags:boxContainer2 nameKey="metersDetectedAB" arguments="${phaseABMetersSize}" hideEnabled="true" showInitially="${showAB}">
 	                                <div style="max-height: 300px;overflow: auto;">
 	                                    <table>
                                             <tr>
-	                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-	                                            <th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th>
+	                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+	                                            <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
 	                                        </tr>
 	                                        <c:forEach var="meter" items="${phaseABMeters}">
                                                 <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -177,27 +165,27 @@
 	                                                <td style="padding-right: 10px;">${meter.name}</td>
                                                     <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
                                                     <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <td>Phase A Initial: 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> Delta:
+                                                    <td><i:inline key=".phaseAInit"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        Phase B Initial: 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> Delta:
+                                                        <i:inline key=".phaseBInit"/> 
+                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
@@ -206,7 +194,7 @@
 	                                        </c:forEach>
 	                                    </table>
 	                                </div>
-	                            </tags:abstractContainer>
+	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCollection.deviceCount > 0}">
                                     <div id="phaseABActionsDiv" style="padding:5px;">
                                         <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseAB.collectionActionLabel" class="small">
@@ -218,12 +206,12 @@
 	                        </div>
 	                        <div style="padding-bottom: 5px;">
 	                            <c:set var="showAC" value="${phaseACMetersSize > 0}" />
-	                            <tags:abstractContainer type="box" title="Meters detected on phases A and C: ${phaseACMetersSize}" hideEnabled="true" showInitially="${showAC}">
+                                <tags:boxContainer2 nameKey="metersDetectedAC" arguments="${phaseACMetersSize}" hideEnabled="true" showInitially="${showAC}">
 	                                <div style="max-height: 300px;overflow: auto;">
 	                                    <table>
                                             <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th>
+                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
                                             </tr>
 	                                        <c:forEach var="meter" items="${phaseACMeters}">
                                                 <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -231,27 +219,27 @@
 	                                                <td style="padding-right: 10px;">${meter.name}</td>
 	                                                <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
                                                     <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td>Phase A Initial: 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> Delta:
+                                                    <td><i:inline key=".phaseAInit"/> 
+                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        Phase C Initial: 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> Delta:
+                                                        <i:inline key=".phaseCInit"/> 
+                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -260,7 +248,7 @@
 	                                        </c:forEach>
 	                                    </table>
 	                                </div>
-	                            </tags:abstractContainer>
+	                            </tags:boxContainer2>
                                 <c:if test="${phaseACCollection.deviceCount > 0}">
                                     <div id="phaseACActionsDiv" style="padding:5px;">
                                         <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseAC.collectionActionLabel" class="small">
@@ -272,12 +260,12 @@
 	                        </div>
 	                        <div style="padding-bottom: 5px;">
 	                            <c:set var="showBC" value="${phaseBCMetersSize > 0}" />
-	                            <tags:abstractContainer type="box" title="Meters detected on phases B and C: ${phaseBCMetersSize}" hideEnabled="true" showInitially="${showBC}">
+                                <tags:boxContainer2 nameKey="metersDetectedBC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${showBC}">
 	                                <div style="max-height: 300px;overflow: auto;">
 	                                    <table>
                                             <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th>
+                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
                                             </tr>
 	                                        <c:forEach var="meter" items="${phaseBCMeters}">
                                                 <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -285,27 +273,27 @@
 	                                                <td style="padding-right: 10px;">${meter.name}</td>
                                                     <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
                                                     <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-	                                                <td>Phase B Initial: 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> Delta:
+	                                                <td><i:inline key=".phaseBInit"/> 
+                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
-                                                        Phase C Initial: 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> Delta:
+                                                        <i:inline key=".phaseCInit"/>
+                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -314,7 +302,7 @@
 	                                        </c:forEach>
 	                                    </table>
 	                                </div>
-	                            </tags:abstractContainer>
+	                            </tags:boxContainer2>
                                 <c:if test="${phaseBCCollection.deviceCount > 0}">
                                     <div id="phaseBCActionsDiv" style="padding:5px;">
                                         <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseBC.collectionActionLabel" class="small">
@@ -326,12 +314,12 @@
 	                        </div>
 	    	                <div style="padding-bottom: 5px;">
 	                            <c:set var="showABC" value="${phaseABCMetersSize > 0}" />
-	                            <tags:abstractContainer type="box" title="Meters detected on phases A, B and C: ${phaseABCMetersSize}" hideEnabled="true" showInitially="${showABC}">
+	                            <tags:boxContainer2 nameKey="metersDetectedABC" arguments="${phaseABCMetersSize}" hideEnabled="true" showInitially="${showABC}">
 	                                <div style="max-height: 300px;overflow: auto;">
 	                                    <table>
                                             <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b>Voltage Readings</b></th>
+                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
                                             </tr>
 	                                        <c:forEach var="meter" items="${phaseABCDevices}">
                                                 <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
@@ -340,39 +328,39 @@
 	                                                <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
 	                                                <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
                                                     <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td>Phase A Initial: 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> Delta:
+                                                    <td><i:inline key=".phaseAInit"/> 
+                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        Phase B Initial: 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> Delta:
+                                                        <i:inline key=".phaseBInit"/> 
+                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
-                                                        Phase C Initial: 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> Last: 
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> Delta:
+                                                        <i:inline key=".phaseCInit"/> 
+                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
+                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
                                                         <c:choose >
                                                             <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="okGreen"/>
+                                                                <c:set var="spanClass" value="successMessage"/>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <c:set var="spanClass" value="errorRed"/>
+                                                                <c:set var="spanClass" value="errorMessage"/>
                                                             </c:otherwise>
                                                         </c:choose> 
                                                         <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
@@ -381,7 +369,7 @@
 	                                        </c:forEach>
 	                                    </table>
 	                                </div>
-	                            </tags:abstractContainer>
+	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCCollection.deviceCount > 0}">
                                     <div id="phaseABCActionsDiv" style="padding:5px;">
                                         <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseABC.collectionActionLabel" class="small">
@@ -394,7 +382,7 @@
                         </c:if>
     	                <div style="padding-bottom: 5px;">
 	    	                <c:set var="showUndefined" value="${undefinedMetersSize > 0}" />
-		                    <tags:abstractContainer type="box" title="Meters with undefined phase: ${undefinedMetersSize}" hideEnabled="true" showInitially="${showUndefined}">
+		                    <tags:boxContainer2 nameKey="metersUndefined" arguments="${undefinedMetersSize}" hideEnabled="true" showInitially="${showUndefined}">
 		                        <div style="max-height: 300px;overflow: auto;">
 			                        <table>
 			                            <c:forEach var="meter" items="${undefinedMeters}">
@@ -404,7 +392,7 @@
 			                            </c:forEach>
 			                        </table>
 		                        </div>
-		                    </tags:abstractContainer>
+		                    </tags:boxContainer2>
                             <c:if test="${undefinedCollection.deviceCount > 0}">
                                 <div id="undefinedActionsDiv" style="padding:5px;">
                                     <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.undefined.collectionActionLabel" class="small">
@@ -416,12 +404,12 @@
 	                    </div>
 	                    <div>
                             <c:set var="showFailure" value="${failureMetersSize > 0}" />
-                            <tags:abstractContainer type="box" title="Failure Group: ${failureMetersSize}" hideEnabled="true" showInitially="${showFailure}">
+                            <tags:boxContainer2 nameKey="failureGroup" arguments="${failureMetersSize}" hideEnabled="true" showInitially="${showFailure}">
                                 <div style="max-height: 300px;overflow: auto;">
                                     <table>
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b>Meter Name</b></th>
-                                            <th style="border-bottom: 1px solid #ccc;"><b>Error Message</b></th>
+                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
+                                            <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".errorMsg"/></b></th>
                                         </tr>
                                         <c:forEach var="meter" items="${failureMeters}">
                                             <tr>
@@ -431,7 +419,7 @@
                                         </c:forEach>
                                     </table>
                                 </div>
-                            </tags:abstractContainer>
+                            </tags:boxContainer2>
                             <c:if test="${failureCollection.deviceCount > 0}">
                                 <div id="failureActionsDiv" style="padding:5px;">
                                     <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.failure.collectionActionLabel" class="small">
@@ -465,9 +453,9 @@
 			            <div style="width:90%;text-align:center;">
 			                <br>
 			                <br>
-			                <h4>The Adobe Flash Player is required to view this graph.</h4>
+			                <h4><i:inline key=".adobeRequired"/></h4>
 			                <br>
-			                Please download the latest version of the Flash Player by following the link below.
+			                <i:inline key=".adobePleaseDL"/>
 			                <br>
 			                <br>
 			                <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>

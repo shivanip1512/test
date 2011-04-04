@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -33,6 +34,7 @@ import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.exception.PeakSummaryReportRequestException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.FriendlyExceptionResolver;
@@ -53,6 +55,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
@@ -79,6 +82,7 @@ public class HighBillController extends MultiActionController {
     private ContactDao contactDao = null;
     private RawPointHistoryDao rphDao = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
     
@@ -159,7 +163,7 @@ public class HighBillController extends MultiActionController {
         
         mav.addObject("startDate", startDate);
         mav.addObject("stopDate", stopDate);
-        
+        mav.addObject("deviceName", meter.getName());
         
         
         // GATHER ARCHIVED RESULTS
@@ -349,34 +353,40 @@ public class HighBillController extends MultiActionController {
         Date postCommandStartDate = null;
         Date postCommandStopDate = new Date();
         
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
         try {
             preCommandStartDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
         } catch (ParseException e) {
-            mav.addObject("errorMsg", "Start date: " + startDateStr + " is not formatted correctly - example (mm/dd/yyyy).");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart1", startDateStr);
+            mav.addObject("errorMsg", errorMsg);
             return mav;
         }
-        
         
         try {
             preCommandStopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
         } catch (ParseException e) {
-            mav.addObject("errorMsg", "Stop date: " + stopDateStr + " is not formatted correctly - example (mm/dd/yyyy).");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStop1", stopDateStr);
+            mav.addObject("errorMsg", errorMsg);
             return mav;
         }
 
         if (preCommandStopDate.before(preCommandStartDate) || preCommandStartDate.getTime() == preCommandStopDate.getTime()) {
-            mav.addObject("errorMsg", "Start date must be before stop date.");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart2");
+            mav.addObject("errorMsg", errorMsg);
             return mav;
         }
         
         Date today = new Date();
         if (preCommandStartDate.after(today)) {
-            mav.addObject("errorMsg", "Start date must be before today.");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart3");
+            mav.addObject("errorMsg", errorMsg);
             return mav;
         }
         
         if (preCommandStopDate.after(today)) {
-            mav.addObject("errorMsg", "Stop date must on or before today.");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStop2");
+            mav.addObject("errorMsg", errorMsg);
             return mav;
         }
         
@@ -668,5 +678,11 @@ public class HighBillController extends MultiActionController {
     public void setTemplateProcessorFactory(
             TemplateProcessorFactory templateProcessorFactory) {
         this.templateProcessorFactory = templateProcessorFactory;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(
+            YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }

@@ -1,97 +1,37 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle" />
-<cti:msg var="mainDetailSectionHeaderText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader" />
-<cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.name" />
-<cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.deviceGroup" />
-<cti:msg var="mainDetailTamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup" />
-<cti:msg var="mainDetailViolationsText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.violations" />
-<cti:msg var="mainDetailMonitoringText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.monitoring" />
-<cti:msg var="mainDetailEditText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.edit" />
-<cti:msg var="readInternalFlagsSectionTitleText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.title" />
-<cti:msg var="readInternalFlagsButtonText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.button" />
-<cti:msg var="readOkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.readOk" />
-<cti:msg var="readInternalFlagsSectionNoteLabelText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.noteLabel" />
-<cti:msg var="readInternalFlagsSectionNoteBodyText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.noteBody" />
-<cti:msg var="viewPointsDescriptionText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsDescription" />
-<cti:msg var="viewPointsLinkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsLink" />
-<cti:msg var="resetInternalFlagsSectionTitleText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.title" />
-<cti:msg var="resetInternalFlagsButtonText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.button" />
-<cti:msg var="resetOkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.resetOk" />
-<cti:msg var="resetInternalFlagsSectionNoteLabelText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.noteLabel" />
-<cti:msg var="resetInternalFlagsSectionNoteBodyText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.noteBody" />
-<cti:msg var="readFlagsSectionRecentReadLogsResultsText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults" />
-<cti:msg var="readFlagsSectiondateTimeText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.dateTime" />
-<cti:msg var="readFlagsSectionSuccessCountText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.successCount" />
-<cti:msg var="readFlagsSectionFailureCountText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.failureCount" />
-<cti:msg var="readFlagsSectionUnsupportedCountText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount" />
-<cti:msg var="readFlagsSectionDetailText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.detail" />
-<cti:msg var="readFlagsSectionStatusText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.status" />
-<cti:msg var="readFlagsSectionVieDetailLinkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.viewDetailLink" />
-<cti:msg var="resetFlagsSectionRecentResetLogsResultsText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults" />
-<cti:msg var="resetFlagsSectiondateTimeText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.dateTime" />
-<cti:msg var="resetFlagsSectionSuccessCountText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.successCount" />
-<cti:msg var="resetFlagsSectionFailureCountText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.failureCount" />
-<cti:msg var="resetFlagsSectionDetailText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.detail" />
-<cti:msg var="resetFlagsSectionStatusText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.status" />
-<cti:msg var="resetFlagsSectionVieDetailLinkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.viewDetailLink" />
-<cti:msg var="optionsSectionTitleText" key="yukon.web.modules.amr.tamperFlagProcessing.section.options.title" />
-<cti:msg var="tamperFlagGroupReportText" key="yukon.web.modules.amr.tamperFlagProcessing.section.options.tamperFlagGroupReport" />
-<cti:msg var="clearTamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.options.clearTamperFlagGroup" />
-<cti:msg var="otherActionsText" key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions" />
-
-
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-    </cti:breadCrumbs>
-    
-    <script type="text/javascript">
-		
-	</script>
-
-    <h2>${pageTitle}</h2>
-    <br>
+<cti:standardPage module="amr" page="tamperFlagProcessing">
 	
 	<c:if test="${not empty param.processError}">
-		<div class="errorRed">${param.processError}</div>
+		<div class="errorMessage">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
-	<tags:sectionContainer title="${mainDetailSectionHeaderText}">
+    <tags:sectionContainer2 nameKey="section.mainDetail.sectionHeader">
 	
-	<tags:nameValueContainer>
+	<tags:nameValueContainer2>
 
-		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
+        <tags:nameValue2 nameKey=".section.mainDetail.name">
 			${tamperFlagMonitor.tamperFlagMonitorName}
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailViolationsText}">
+        <tags:nameValue2 nameKey=".section.mainDetail.violations">
 			<cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${tamperFlagMonitor.tamperFlagMonitorId}/VIOLATIONS_COUNT"/>
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailMonitoringText}">
+        <tags:nameValue2 nameKey=".section.mainDetail.monitoring">
 			<cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${tamperFlagMonitor.tamperFlagMonitorId}/MONITORING_COUNT"/>
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="">
-			&nbsp;
-		</tags:nameValue>
+		<tags:nameValueGap2 gapHeight="20px"/>
 		
-		<tags:nameValue name="${mainDetailDeviceGroupText}">
+        <tags:nameValue2 nameKey=".section.mainDetail.deviceGroup">
 			
 			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
 				<cti:param name="groupName">${tamperFlagMonitor.groupName}</cti:param>
@@ -100,9 +40,8 @@
 			<a href="${deviceGroupUrl}">${tamperFlagMonitor.groupName}</a>
 			<br>
 			
-		</tags:nameValue>
-		
-		<tags:nameValue name="${mainDetailTamperFlagGroupText}">
+		</tags:nameValue2>
+		<tags:nameValue2 nameKey=".section.mainDetail.tamperFlagGroup">
 			
 			<cti:url var="tamperFlagGroupUrl" value="/spring/group/editor/home">
 				<cti:param name="groupName">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</cti:param>
@@ -115,24 +54,23 @@
 			<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 			</cti:url>
-			<a href="${tamperFlagGroupReportUrl}">${tamperFlagGroupReportText}</a>
+			<a href="${tamperFlagGroupReportUrl}"><i:inline key=".section.options.tamperFlagGroupReport"/></a>
 			
-			
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-	</tags:nameValueContainer>
+	</tags:nameValueContainer2>
 	
 	<form id="editMonitorForm" action="/spring/amr/tamperFlagProcessing/edit" method="get">
 		<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
 	</form>
-	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" />
+	<cti:msg2 var="mainDetailEditText" key=".section.mainDetail.edit"/>
+    <tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}"/>
 	
-	</tags:sectionContainer>
-	<br>
+	</tags:sectionContainer2>
 	<br>
 	
 	<%-- READ INTERNAL FLAGS --%>
-	<tags:sectionContainer id="readInternalFlagsSection" title="${readInternalFlagsSectionTitleText}">
+    <tags:sectionContainer2 id="readInternalFlagsSection" nameKey="section.readInternalFlags">
 	
 		<form id="readInternalFlagsForm" action="/spring/amr/tamperFlagProcessing/process/readFlags">
 
@@ -142,15 +80,16 @@
 			<table cellpadding="2">
 	            <tr>
 	                <td valign="top" class="smallBoldLabel">
-	                	${readInternalFlagsSectionNoteLabelText}
+	                	<i:inline key=".section.readInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
-	                	${readInternalFlagsSectionNoteBodyText}
+                        <cti:msg2 key=".section.readInternalFlags.noteBody" htmlEscape="false"/>
 	                	<br>
 	                	<cti:url var="viewPointsUrl" value="/spring/bulk/addPoints/home">
 	                		<cti:mapParam value="${tamperFlagGroupDeviceCollection.collectionParameters}"/>
 	                	</cti:url>
-	                	${viewPointsDescriptionText} <a href="${viewPointsUrl}">${viewPointsLinkText}</a>
+                        <i:inline key=".section.readInternalFlags.viewPointsDescription"/>
+	                	<a href="${viewPointsUrl}"><i:inline key=".section.readInternalFlags.viewPointsLink"/></a>
 	                </td>
 	            </tr>
 	    	</table>
@@ -158,11 +97,12 @@
 	    	
 	    	<%-- read internal flags button --%>
 	    	<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}" />
+			<cti:msg2 var="readInternalFlagsButtonText" key=".section.readInternalFlags.button"/>
+            <tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}"/>
 			
 			<%-- read ok --%>
 	    	<c:if test="${param.readOk}">
-	    		${readOkText}
+	    		<i:inline key=".section.readInternalFlags.readOk"/>
 	    	</c:if>
 	    	</span>
 			
@@ -170,17 +110,17 @@
 			<c:if test="${fn:length(readResults) > 0}">
 				
 				<br><br>
-				<div class="normalBoldLabel">${readFlagsSectionRecentReadLogsResultsText}</div>
+				<div class="normalBoldLabel"><i:inline key=".section.readFlags.recentReadFlagsResults"/></div>
 				<br>	
 				
 				<table class="miniResultsTable">
 					<tr>
-						<th>${readFlagsSectiondateTimeText}</th>
-						<th>${readFlagsSectionSuccessCountText}</th>
-						<th>${readFlagsSectionFailureCountText}</th>
-						<th>${readFlagsSectionUnsupportedCountText}</th>
-						<th>${readFlagsSectionDetailText}</th>
-						<th>${readFlagsSectionStatusText}</th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.dateTime"/></th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.successCount"/></th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.failureCount"/></th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount"/></th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.detail"/></th>
+						<th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.status"/></th>
 					</tr>
 					
 					<c:forEach var="result" items="${readResults}">
@@ -202,7 +142,7 @@
 								<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
-								<a href="${readLogsDetailUrl}">${readFlagsSectionVieDetailLinkText}</a>
+								<a href="${readLogsDetailUrl}"><i:inline key=".section.readFlags.recentReadFlagsResults.viewDetailLink"/></a>
 							</td>
 							<td>
 								<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
@@ -216,12 +156,11 @@
 			</c:if>
 	    </form>
 	
-	</tags:sectionContainer>
-	<br>
+	</tags:sectionContainer2>
 	<br>
 	
 	<%-- RESET INTERNAL FLAGS --%>
-	<tags:sectionContainer id="resetInternalFlagsSection" title="${resetInternalFlagsSectionTitleText}">
+    <tags:sectionContainer2 id="resetInternalFlagsSection" nameKey="section.resetInternalFlags">
 	
 		<form id="resetInternalFlagsForm" action="/spring/amr/tamperFlagProcessing/process/resetFlags">
 
@@ -231,37 +170,38 @@
 			<table cellpadding="2">
 	            <tr>
 	                <td valign="top" class="smallBoldLabel">
-	                	${resetInternalFlagsSectionNoteLabelText}
+	                	<i:inline key=".section.resetInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
-	                	${resetInternalFlagsSectionNoteBodyText}
+	                	<cti:msg2 key=".section.resetInternalFlags.noteBody" htmlEscape="false"/>
 	                </td>
 	            </tr>
 	    	</table>
 	    	<br>
 	    	
 	    	<%-- reset internal flags button --%>
-			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}" />
+			<cti:msg2 var="resetInternalFlagsButtonText" key=".section.resetInternalFlags.button"/>
+            <tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}"/>
 			
 			<%-- reset ok --%>
 	    	<c:if test="${param.resetOk}">
-	    		${resetOkText}
+	    	    <i:inline key=".section.resetInternalFlags.resetOk"/>
 	    	</c:if>
 	    	
 			<%-- recent resets --%>
 			<c:if test="${fn:length(resetResults) > 0}">
 			
 				<br><br>
-				<div class="normalBoldLabel">${resetFlagsSectionRecentResetLogsResultsText}</div>
+				<div class="normalBoldLabel"><i:inline key=".section.resetFlags.recentResetFlagsResults"/></div>
 				<br>
 				
 				<table class="miniResultsTable">
 					<tr>
-						<th>${resetFlagsSectiondateTimeText}</th>
-						<th>${resetFlagsSectionSuccessCountText}</th>
-						<th>${resetFlagsSectionFailureCountText}</th>
-						<th>${resetFlagsSectionDetailText}</th>
-						<th>${resetFlagsSectionStatusText}</th>
+						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.dateTime"/></th>
+						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.successCount"/></th>
+						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.failureCount"/></th>
+						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.detail"/></th>
+						<th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.status"/></th>
 					</tr>
 					
 					<c:forEach var="result" items="${resetResults}">
@@ -280,7 +220,7 @@
 								<cti:url var="resetLogsDetailUrl" value="/spring/group/commander/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
-								<a href="${resetLogsDetailUrl}">${resetFlagsSectionVieDetailLinkText}</a>
+								<a href="${resetLogsDetailUrl}"><i:inline key=".section.resetFlags.recentResetFlagsResults.viewDetailLink"/></a>
 							</td>
 							<td>
 								<cti:classUpdater type="COMMANDER" identifier="${result.key}/STATUS_CLASS">
@@ -294,18 +234,17 @@
 			</c:if>
 	    </form>
 	
-	</tags:sectionContainer>
-	<br>
+	</tags:sectionContainer2>
 	<br>
 
 	<%-- OPTIONS SECTION --%>
-	<tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
+    <tags:sectionContainer2 id="optionsSection" nameKey="section.options">
 	
 		<%-- clear tamper flag group --%>
 		<cti:url var="clearTamperFlagGroupUrl" value="/spring/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
 			<cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
 		</cti:url>
-		<a href="${clearTamperFlagGroupUrl}">${clearTamperFlagGroupText}</a>
+		<a href="${clearTamperFlagGroupUrl}"><i:inline key=".section.options.clearTamperFlagGroup"/></a>
 		<br>
 		
 		<%-- other actions --%>
@@ -313,8 +252,8 @@
 			<cti:param name="collectionType" value="group"/>
 			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 		</cti:url>
-		<a href="${otherActionsUrl}">${otherActionsText}</a>
+		<a href="${otherActionsUrl}"><i:inline key=".section.options.otherActions"/></a>
 	    	
-	</tags:sectionContainer>
+	</tags:sectionContainer2>
 	
 </cti:standardPage>

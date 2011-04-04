@@ -1,36 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Device Profile Page" module="amr">
-	<cti:standardMenu menuSelection="meters" />
-	<cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-	    <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
-	    &gt; Profile
-	</cti:breadCrumbs>
-	
-	<table class="widgetColumns">
-        <tr>
-            <td>
-                <h2 style="display: inline;">
-                    Profile
-                </h2>
-            </td>
-            <td align="right">
-                &nbsp; <!-- quick search? -->
-            </td>
-        </tr>
-    </table>
-    
-    <br>
-    
+<cti:standardPage module="amr" page="meterDetailProfile">
+
     <ct:widgetContainer deviceId="${deviceId}">
     <table class="widgetColumns">
         
@@ -61,6 +34,4 @@
     </table>
     </ct:widgetContainer>
 	
-	
-
 </cti:standardPage>

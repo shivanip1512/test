@@ -30,6 +30,7 @@ public class ButtonTag extends YukonTagSupport {
     protected String name = null;
     protected String value = null;
     protected Boolean imageOnRight = false;
+    protected Boolean disabled = false;
     
     /* renderMode is to describe how the button should look:
      * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
@@ -69,6 +70,10 @@ public class ButtonTag extends YukonTagSupport {
     
     public void setImageOnRight(Boolean imageOnRight) {
         this.imageOnRight = imageOnRight;
+    }
+    
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
     }
 
     public void setRenderMode(String renderMode) {
@@ -165,6 +170,10 @@ public class ButtonTag extends YukonTagSupport {
                 out.write(" title=\"");
                 out.write(hoverText);
                 out.write("\"");
+            }
+            
+            if (disabled) {
+                out.write(" disabled=\"disabled\"");
             }
 
             if (StringUtils.isNotBlank(onclick)) {

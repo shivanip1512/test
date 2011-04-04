@@ -1,5 +1,139 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <!-- start.jsp -->
     <entry key="yukon.web.modules.amr.moduleName">Metering</entry>
+    <entry key="yukon.web.modules.blank.moduleName"></entry>
+    <entry key="yukon.web.modules.amr.meteringStart.pageName">Metering</entry>
+    <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>        
+    
+    <!-- meters.jsp -->
+    <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meters</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meters</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.noResultsForFilter">No results for Filter: {0}</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.showAll.label">Show All</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.showAll">Show All</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.filter.label">Filter</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
+    
+    <!-- meterHome.jsp -->
+    <entry key="yukon.web.modules.amr.meterDetail.pageName">Meter Detail</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.pageTitle">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.moveIn">Move In</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.moveOut">Move Out</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.highBill">High Bill Complaint</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.profile">Profile</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.voltageAndTou">Voltage &amp; Tou</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.manualCommander">Manual Commander</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.locateRoute">Locate Route</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.otherActions">Other Actions...</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.actions.title">Actions</entry>
+    
+    <!-- moveIn.jsp -->
+    <entry key="yukon.web.modules.amr.moveIn.pageName">Move In</entry>
+    <entry key="yukon.web.modules.amr.moveIn.pageDescription">Move In</entry>
+    <entry key="yukon.web.modules.amr.moveIn.notAuthorized">User is not authorized to perform Move In</entry>
+    <!-- moveInForm.jsp -->
+    <entry key="yukon.web.modules.amr.moveIn.moveInForm.title">Move In</entry>
+    <entry key="yukon.web.modules.amr.moveIn.moveIn">Move In</entry>
+    <entry key="yukon.web.modules.amr.moveIn.movingIn">Moving In</entry>
+    <entry key="yukon.web.modules.amr.moveIn.moveInDesc">A meter reading is being calculated based on usage for the date supplied.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.amr.moveIn.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.amr.moveIn.moveInDate">Move In Date</entry>
+    <entry key="yukon.web.modules.amr.moveIn.emailNotification">Email Notification</entry>
+    <!--  moveInResults.jsp -->
+    <entry key="yukon.web.modules.amr.moveIn.success">A meter reading for {0} is scheduled to be retrieved for {1}.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.rename">Device Name {0} is scheduled to be {1}.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.newNumber">Meter Number {0} is scheduled to be {1}.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.updatedTo">was updated to</entry>
+    <entry key="yukon.web.modules.amr.moveIn.requestComplete">Move in request for {0} is complete.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.moveInReading">Move In Reading:</entry>
+    <entry key="yukon.web.modules.amr.moveIn.usageReading">Usage Reading:</entry>
+    <entry key="yukon.web.modules.amr.moveIn.unableToProcess">The system was not able to process the move in request for {0} for the following reasons:</entry>
+    <entry key="yukon.web.modules.amr.moveIn.archive">archive</entry>
+    <entry key="yukon.web.modules.amr.moveIn.removedFromGroup">Meter was removed from the {0} Group.</entry>
+    <entry key="yukon.web.modules.amr.moveIn.retry">Click here to retry your entry</entry>
+    
+    <!-- moveOut.jsp -->
+    <entry key="yukon.web.modules.amr.moveOut.pageName">Move Out</entry>
+    <entry key="yukon.web.modules.amr.moveOut.pageDescription">Move Out</entry>
+    <entry key="yukon.web.modules.amr.moveOut.notAuthorized">User is not authorized to perform Move Out</entry>
+    <!-- moveOutForm.jsp -->
+    <entry key="yukon.web.modules.amr.moveOut.moveOutForm.title">Move Out</entry>
+    <entry key="yukon.web.modules.amr.moveOut.moveOutDate">Move Out Date</entry>
+    <entry key="yukon.web.modules.amr.moveOut.emailNotification">Email Notification</entry>
+    <entry key="yukon.web.modules.amr.moveOut.moveOutDesc">A meter reading is being calculated based on usage for the date supplied</entry>
+    <entry key="yukon.web.modules.amr.moveOut.moveOut">Move Out</entry>
+    <entry key="yukon.web.modules.amr.moveOut.movingOut">Moving Out</entry>
+    <!-- moveOutResults.jsp -->
+    <entry key="yukon.web.modules.amr.moveOut.success">A meter reading for {0} is scheduled to be retrieved for {1}.</entry>
+    <entry key="yukon.web.modules.amr.moveOut.unableToProcess">The system was not able to process the move in request for {0} for the following reasons:</entry>
+    <entry key="yukon.web.modules.amr.moveOut.retry">Click here to retry your entry</entry>
+
+    <!-- highBill.jsp -->
+    <entry key="yukon.web.modules.amr.highBill.pageName">High Bill Complaint</entry>
+    <entry key="yukon.web.modules.amr.highBill.pageDescription">High Bill Complaint</entry>
+    <entry key="yukon.web.modules.amr.highBill.error">Error: {0}</entry>
+    <entry key="yukon.web.modules.amr.highBill.endDate">End Date:</entry>
+    <entry key="yukon.web.modules.amr.highBill.startDate">Start Date:</entry>
+    <entry key="yukon.web.modules.amr.highBill.getReport">Get Report</entry>
+    <entry key="yukon.web.modules.amr.highBill.retrievingReport">Retrieving Report...</entry>
+    <entry key="yukon.web.modules.amr.highBill.prevReports">Previous Reports</entry>
+    <entry key="yukon.web.modules.amr.highBill.expandAvailableReport">Expand Available Report</entry>
+    <entry key="yukon.web.modules.amr.highBill.availableReports">Available Reports:</entry>
+    <entry key="yukon.web.modules.amr.highBill.step1">Step 1: Find The Peak day</entry>
+    <entry key="yukon.web.modules.amr.highBill.step2">Step 2: Collect Profile Data</entry>
+    <entry key="yukon.web.modules.amr.highBill.step3">Step 3: Analyze Profile Data</entry>
+    <entry key="yukon.web.modules.amr.highBill.chartRange">Chart Range:</entry>
+    <entry key="yukon.web.modules.amr.highBill.peakPlusMinus3days">Peak +/- 3 Days</entry>
+    <entry key="yukon.web.modules.amr.highBill.plusMinus3days">+/- 3 Days</entry>
+    <entry key="yukon.web.modules.amr.highBill.peakDay">Peak Day</entry>
+    <entry key="yukon.web.modules.amr.highBill.reportPeriod">Report Period</entry>
+    <entry key="yukon.web.modules.amr.highBill.tabularData">Tabular Data:</entry>
+    <entry key="yukon.web.modules.amr.highBill.dailyUsage">Daily Usage Report:</entry>
+    <entry key="yukon.web.modules.amr.highBill.isNotConfigured">is not configured for High Bill Processing.</entry>
+    <entry key="yukon.web.modules.amr.highBill.errorMsgStart1">Start date: {0} is not formatted correctly - example (mm/dd/yyyy).</entry>
+    <entry key="yukon.web.modules.amr.highBill.errorMsgStart2">Start date must be before stop date.</entry>
+    <entry key="yukon.web.modules.amr.highBill.errorMsgStart3">Start date must be before today.</entry>
+    <entry key="yukon.web.modules.amr.highBill.errorMsgStop1">Stop date: {0} is not formatted correctly - example (mm/dd/yyyy).</entry>
+    <entry key="yukon.web.modules.amr.highBill.errorMsgStop2">Stop date must on or before today.</entry>
+    <entry key="yukon.web.modules.amr.highBill.fileFormatHtml">HTML</entry>
+    <entry key="yukon.web.modules.amr.highBill.fileFormatCsv">CSV</entry>
+    <entry key="yukon.web.modules.amr.highBill.fileFormatPdf">PDF</entry>
+    
+    <!-- profile.jsp -->
+    <entry key="yukon.web.modules.amr.meterDetailProfile.pageName">Profile</entry>
+    <entry key="yukon.web.modules.amr.meterDetailProfile.pageDescription">Profile</entry>
+    
+    <!-- voltageAndTou.jsp -->
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>
+    <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageDescription">Voltage &amp; TOU</entry>
+    
+    <!-- manualCommand.jsp -->
+    <entry key="yukon.web.modules.amr.manualCommand.pageName">Manual Commander</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.pageDescription">Manual Commander</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.selectCommand">Select a Command</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.execute">Execute</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.execute.label">Execute</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.clearResults.label">Clear Results</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.refresh.label">Refresh</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.executeCommand">Execute Command</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.executeCommand.title">Execute Command</entry>
+    <entry key="yukon.web.modules.amr.manualCommand.commonCommands">Common Commands</entry>
+    
+    <!-- meterReadErrors.jsp -->
+    <entry key="yukon.web.modules.amr.meterReadErrors.errorLabel">There was an error reading the meter:</entry>
+    
+    <!-- bulkimporter/importer.jsp -->
+    <entry key="yukon.web.modules.blank.bulkImporter.pageName">Bulk Importer</entry>
+    
+    <!-- common/vee/monitor/edit.jsp -->
+    <entry key="yukon.web.modules.amr.validationProcessing.pageName">Validation Processing</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.EDIT.pageName">Validation Monitoring</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.CREATE.pageName">Create Validation Monitor</entry>
+    
 </properties>

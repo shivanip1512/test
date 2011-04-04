@@ -257,4 +257,5 @@ public class RouteLocateController extends BulkControllerBase {
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
+    
 }

@@ -1,25 +1,9 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle" var="sectionTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step2.noteLabel" var="noteLabel"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step2.noteText" var="noteText"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected" var="noRouteSelected"/>
-
-<cti:standardPage title="Phase Detection" module="amr">
-    <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
-    <cti:standardMenu menuSelection="meters" />
-
-    <cti:url var="routesUrl" value="/spring/amr/phaseDetect/routes"/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink title="${pageTitle}" />
-    </cti:breadCrumbs>
-    
+<cti:standardPage module="amr" page="phaseDetect.routeSelection">
     <script type="text/javascript">
         function checkRoutes(){
         	var button = $('nextButton');
@@ -41,30 +25,31 @@
         }
 	</script>
     
-    <%-- Phase Detect Title --%>
-    <h2 style="display: inline;">
-        ${pageTitle}
-    </h2>
-    <br>
-    <br>
-    <form action="/spring/amr/phaseDetect/saveBroadcastRoutes" method=post>
+    <form action="/spring/amr/phaseDetect/saveBroadcastRoutes" method="post">
+        <cti:msg key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle" var="sectionTitle"/>
         <tags:sectionContainer title="${sectionTitle}">
             <table style="padding-bottom: 5px;">
                 <tr>
-                    <td valign="top" class="smallBoldLabel">${noteLabel}</td>
-                    <td style="font-size:11px;">${noteText}</td>
+                    <td valign="top" class="smallBoldLabel">
+                        <i:inline key="yukon.web.modules.amr.phaseDetect.step2.noteLabel"/>
+                    </td>
+                    <td style="font-size:11px;">
+                        <i:inline key="yukon.web.modules.amr.phaseDetect.step2.noteText"/>
+                    </td>
                 </tr>
             </table>
             
             <div id="errorDiv" style="display: none;padding-bottom: 5px;">
-		        <span id="errorSpan" class="errorRed">${noRouteSelected}</span>
+		        <span id="errorSpan" class="errorRed">
+                    <i:inline key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected"/>
+                </span>
             </div>
             
             <table class="resultsTable" style="padding-top: 5px;width: 10%;">
                 <thead>
                     <tr>
                         <th nowrap="nowrap">
-                            Route Name
+                            <i:inline key=".routeName"/>
                         </th>
                     </tr>
                 </thead>
@@ -81,8 +66,8 @@
             </table>
                 
         </tags:sectionContainer>
-        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test" class="formSubmit">
-        <input id="nextButton" type="submit" value="Next" class="formSubmit">
+        <cti:button key="cancelTest" type="submit" name="cancel"/>
+        <cti:button key="next" type="submit" id="nextButton"/>
     </form>
 </cti:standardPage>
     

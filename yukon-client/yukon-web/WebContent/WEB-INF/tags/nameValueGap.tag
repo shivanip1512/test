@@ -10,8 +10,8 @@
 		</tr>
 	</c:when>
 	<c:otherwise>
-		<div class="errorRed" style="font-weight: bold">
-			ERROR: The &lt;nameValueTap&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag
+		<div class="errorMessage" style="font-weight: bold">
+			ERROR: The &lt;nameValueGap&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag
 		</div>
 	</c:otherwise>
 </c:choose>

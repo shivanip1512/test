@@ -116,7 +116,7 @@ public class OutageProcessingController extends MultiActionController {
             	}
             	
             	// alert
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert");
+                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.outageDetail.readOutagesLog.completionAlert");
                 resolvableTemplate.addData("outageMonitorName", outageMonitor.getOutageMonitorName());
                 resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
                 int successCount = result.getResultHolder().getResultStrings().size();

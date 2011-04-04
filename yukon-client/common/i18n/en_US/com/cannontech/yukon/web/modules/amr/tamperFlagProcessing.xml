@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-
-	<!-- TamperFlagMonitorsWidget render.jsp -->
+    <!-- breadcrumb placeholder -->    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessingParent.pageName">Tamper Flag Processing</entry>     
+	
+    <!-- TamperFlagMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup">No Tamper Flag Monitors Setup</entry>
@@ -16,7 +18,11 @@
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->
-    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->    
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.EDIT.pageName">Tamper Flag Processing</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.EDIT.pageDescription">Edit: {0}</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.CREATE.pageName">Tamper Flag Processing</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.CREATE.pageDescription">New Tamper Flag</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.pageTitle">Tamper Flag Monitoring</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.headerTitle">Tamper Flag Monitoring Setup</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.section.setup">Setup</entry>
@@ -58,13 +64,14 @@
 	     Those devices with tamper flags will be moved into a separate Tamper Flag Device Group for this monitor.
 	     <br><br>
     ]]></entry>
-    
-    
+        
     <!-- TamperFlagProcessingController process.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.pageName">Tamper Flag Processing</entry>     
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle">Tamper Flag Processing</entry>
-	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader">Info</entry>
+	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader.title">Info</entry>
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup">Tamper Flag Group</entry>
@@ -119,6 +126,6 @@
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.title">Options</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.tamperFlagGroupReport">View Tamper Flag Group Devices Report</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.clearTamperFlagGroup">Clear Tamper Flag Group</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>     
     
 </properties>

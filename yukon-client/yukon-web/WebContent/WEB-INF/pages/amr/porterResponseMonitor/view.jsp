@@ -46,15 +46,6 @@
         });
     </script>
 
-    <cti:standardMenu menuSelection="meters" />
-
-	<cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
-        <cti:crumbLink><spring:escapeBody>${monitorDto.name}</spring:escapeBody></cti:crumbLink>
-	</cti:breadCrumbs>
-
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view" />
 
     <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup">
@@ -81,9 +72,6 @@
         </span>
         </div>
     </i:simplePopup>
-
-    <h2><i:inline key=".title" /></h2>
-	<br>
 
 	<%-- MAIN DETAILS --%>
 	<tags:formElementContainer nameKey="sectionHeader">

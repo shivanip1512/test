@@ -1,43 +1,32 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle" var="sectionTitle"/>
+<cti:standardPage module="amr" page="phaseDetect.testSettings">
 
-<cti:standardPage title="Phase Detection" module="amr">
-    <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
-    <cti:standardMenu menuSelection="meters" />
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink title="${pageTitle}" />
-    </cti:breadCrumbs>
-    
-    <%-- Phase Detect Title --%>
-    <h2 style="display: inline;">
-        ${pageTitle}
-    </h2>
-    <br>
-    <br>
     <form action="/spring/amr/phaseDetect/saveTestSettings" method="post">
+    <cti:msg key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle" var="sectionTitle"/>
         <tags:sectionContainer title="${sectionTitle}">
             <table style="padding-right: 20px;padding-bottom: 10px;">
                 <tr valign="top">
                     <td>
-                        <tags:nameValueContainer>
-                            <tags:nameValue name="Substation">
+                        <tags:nameValueContainer2>
+                            <cti:msg2 var="substation" key=".substation"/>
+                            <cti:msg2 var="intervalLength" key=".intervalLength"/>
+                            <cti:msg2 var="deltaVoltage" key=".deltaVoltage"/>
+                            <cti:msg2 var="numOfIntervals" key=".numOfIntervals"/>
+                            <tags:nameValue2 nameKey=".substation">
                                 ${substationName}
-                            </tags:nameValue>
-                            <tags:nameValue name="Interval Length">
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".intervalLength">
                                <select id="intervalLength" name="intervalLength">
                                    <option value="60">60</option>
                                    <option value="45">45</option>
                                    <option value="30" selected="selected">30</option>
                                    <option value="15">15</option>
                                </select>
-                           </tags:nameValue>
-                           <tags:nameValue name="Delta Voltage">
+                           </tags:nameValue2>
+                           <tags:nameValue2 nameKey=".deltaVoltage">
                                <select id="deltaVoltage" name="deltaVoltage">
                                    <option value="4">+4</option>
                                    <option value="3">+3</option>
@@ -48,20 +37,20 @@
                                    <option value="-3">-3</option>
                                    <option value="-4">-4</option>
                                </select>
-                           </tags:nameValue>
-                           <tags:nameValue name="Number of Intervals">
+                           </tags:nameValue2>
+                           <tags:nameValue2 nameKey=".numOfIntervals">
                                <select id="numIntervals" name="numIntervals">
                                    <option value="6" selected="selected">6</option>
                                    <option value="5">5</option>
                                    <option value="4">4</option>
                                </select>
-                           </tags:nameValue>
-                       </tags:nameValueContainer>
+                           </tags:nameValue2>
+                       </tags:nameValueContainer2>
                     </td>
                 </tr>
             </table>
         </tags:sectionContainer>
-        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
-        <input id="nextButton" type="submit" value="Next">
+        <cti:button key="cancel" type="submit" name="cancel"/>
+        <cti:button key="next" type="submit" name="next"/>
     </form>
 </cti:standardPage>

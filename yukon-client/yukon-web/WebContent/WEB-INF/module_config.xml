@@ -267,7 +267,173 @@
       </options>
     </menu>
     <search bean="amrSearchProducer" />
-	
+	<pages>
+        <page name="meteringStart" type="BASIC">
+            <link>/spring/meter/start</link>
+            <menu>meters</menu>
+            <pages>
+                <page name="outageProcessingParent" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="outageProcessing" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                        </page>
+                        <page name="outageMonitorConfig" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                        </page>
+                        <page name="outageMonitorConfig.EDIT" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                        </page>
+                        <page name="outageMonitorConfig.CREATE" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="tamperFlagProcessingParent" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="tamperFlagProcessing" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+                        </page>
+                        <page name="tamperFlagEditor.EDIT" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+                        </page>
+                        <page name="tamperFlagEditor.CREATE" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="statusPointMonitorProcessing" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="statusPointMonitorView" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+                        </page>
+                        <page name="statusPointMonitorEditor" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+                        </page>
+                        <page name="statusPointMonitorCreator" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="porterResponseProcessing" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="porterResponseMonitor.VIEW" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${monitorDto.name}</labelArgument>
+                        </page>
+                        <page name="porterResponseMonitor.EDIT" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${monitorDto.name}</labelArgument>
+                        </page>
+                        <page name="porterResponseMonitor.CREATE" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${monitorDto.name}</labelArgument>
+                        </page>
+                    </pages>
+                </page>    
+                <page name="validationProcessing" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="validationEditor.EDIT" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${editPageDesc}</labelArgument>
+                        </page>
+                        <page name="validationEditor.CREATE" type="BASIC">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="scheduledGroupRequestProcessing" type="BASIC">
+                    <menu>commandRequestExecution</menu>
+                    <pages>
+                        <page name="scheduledGroupRequestHome" type="DETAIL">
+                            <menu>commandRequestExecution|createSchedule</menu>
+                        </page>
+                        <page name="scheduledGroupRequestAllJobs">
+                            <menu>commandRequestExecution|scheduleLogs</menu>
+                            <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
+                            <pages>
+                                <page name="scheduledGroupRequestDetail" type="DETAIL">
+                                    <menu>commandRequestExecution|scheduledGroupCommands</menu>
+                                    <labelArgument>${jobWrapper.name}</labelArgument>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="meterSearchResults" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="meterDetail" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${deviceName}</labelArgument>
+                            <link>/spring/meter/home?deviceId=${deviceId}</link>
+                            <pages>
+                                <page name="moveIn" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="moveOut" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="highBill" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="meterDetailProfile" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="meterDetailVoltageAndTou" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="manualCommand" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                                <page name="meterDetailLocateRoute" type="BASIC">
+                                    <menu>meters</menu>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="phaseDetectProcessing" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="phaseDetect.home" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.routeSelection" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.clearPhaseData" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.testSettings" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.sendTest" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.readBetweenPhaseTest" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="phaseDetect.results" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
+                
+            </pages>
+        </page>
+    </pages>
   </module>
 
   <module name="monitors">
@@ -908,9 +1074,14 @@
   </module>
 
   <module name="blank">
-    <skin name="STANDARD" />
+      <skin name="STANDARD" />
+      <pages>
+          <page name="bulkImporter" type="BASIC">
+            <menu>blank</menu>
+          </page>
+      </pages>
   </module>
-
+  
   <module name="dr_user">
     <skin name="STANDARD" />
   </module>

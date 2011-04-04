@@ -5,10 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -26,18 +29,21 @@ public class ProfileController extends MultiActionController {
 
     private RolePropertyDao rolePropertyDao;
     private DeviceDao deviceDao;
+    private MeterDao meterDao;
     private PaoDefinitionDao paoDefinitionDao;
     
     public ModelAndView home(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("profile.jsp");
-
+        
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        Meter meter = meterDao.getForId(deviceId);
         
         mav.addObject("deviceId", deviceId);
+        mav.addObject("deviceName", meter.getName()); 
         
         boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
         mav.addObject("lpSupported", lpSupported);
@@ -60,6 +66,11 @@ public class ProfileController extends MultiActionController {
     public void setDeviceDao(DeviceDao deviceDao) {
 		this.deviceDao = deviceDao;
 	}
+    
+    @Autowired
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
     
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {

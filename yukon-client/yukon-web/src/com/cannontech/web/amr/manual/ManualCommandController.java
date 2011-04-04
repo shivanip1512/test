@@ -8,10 +8,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
 
@@ -31,6 +34,7 @@ import com.cannontech.yc.bean.YCBean;
 public class ManualCommandController extends MultiActionController {
 
 	private PaoDao paoDao = null;
+	private MeterDao meterDao = null;
 	private CommandDao commandDao = null;
 
 	public ManualCommandController() {
@@ -53,7 +57,9 @@ public class ManualCommandController extends MultiActionController {
 
 		int deviceId = ServletRequestUtils.getRequiredIntParameter(request,
 				"deviceId");
+		Meter meter = meterDao.getForId(deviceId);
 		mav.addObject("deviceId", deviceId);
+		mav.addObject("deviceName", meter.getName());
 
 		// Get or create the YCBean and put it into the session
 		YCBean ycBean = (YCBean) request.getSession().getAttribute("YC_BEAN");
@@ -98,4 +104,9 @@ public class ManualCommandController extends MultiActionController {
 		return mav;
 	}
 
+	@Autowired
+	public void setMeterDao(MeterDao meterDao) {
+	    this.meterDao = meterDao;
+	}
+	
 }

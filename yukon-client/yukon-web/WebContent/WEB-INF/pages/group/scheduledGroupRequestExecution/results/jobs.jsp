@@ -27,15 +27,7 @@
 <cti:msg var="executionsEnabledStatusText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.enabledStatus" />
 <cti:msg var="executionsUserText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.user" />  
     
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="commandRequestExecution|scheduleLogs"/>
-    
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-    </cti:breadCrumbs>
+<cti:standardPage page="scheduledGroupRequestAllJobs" module="amr">
     
     <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
 	<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
@@ -51,10 +43,7 @@
 	}
 
     </script>
-    
-    <h2>${pageTitle}</h2>
-    <br>
-    
+      
     <%-- FILTER POPUP --%>
     <tags:simplePopup id="filterPopup" title="${filterSectionText}">
      	

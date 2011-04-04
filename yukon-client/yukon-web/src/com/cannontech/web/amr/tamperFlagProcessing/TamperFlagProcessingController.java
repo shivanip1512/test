@@ -128,7 +128,7 @@ public class TamperFlagProcessingController {
             public void handle(GroupMeterReadResult result) {
             	
             	// alert
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert");
+                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.tamperFlagDetail.readInternalFlags.completionAlert");
                 resolvableTemplate.addData("tamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
                 resolvableTemplate.addData("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
                 int successCount = result.getResultHolder().getResultStrings().size();

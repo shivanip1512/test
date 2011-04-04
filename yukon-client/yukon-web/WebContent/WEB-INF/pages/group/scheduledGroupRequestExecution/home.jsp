@@ -35,16 +35,7 @@
 	</c:otherwise>
 </c:choose>
 
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="commandRequestExecution|createSchedule"/>
-
-		<%-- BREAD CRUMBS --%>
-       	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/meter/start" title="Metering" />
-    	    <cti:crumbLink title="${pageTitle}"/>
-    	</cti:breadCrumbs>
+<cti:standardPage page="scheduledGroupRequestHome" module="amr">
         
         <%-- JAVASCRIPT --%>
         <script type="text/javascript">
@@ -53,9 +44,6 @@
         <style type="text/css">
 			.scheduleButtonDiv {border-top:solid 1px #cccccc;padding-top:6px;}
 		</style>
-        
-        <h2>${pageTitle}</h2>
-        <br>
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">

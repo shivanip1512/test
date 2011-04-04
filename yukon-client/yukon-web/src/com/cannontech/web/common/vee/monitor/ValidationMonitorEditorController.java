@@ -17,6 +17,7 @@ import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/vee/monitor/*")
@@ -36,8 +37,10 @@ public class ValidationMonitorEditorController {
         try {
             if( validationMonitorId > -1 ){
                 validationMonitor = validationMonitorDao.getById(validationMonitorId);
+                model.addAttribute("mode", PageEditMode.EDIT);
             } else {
                 validationMonitor = new ValidationMonitor();
+                model.addAttribute("mode", PageEditMode.CREATE);
             }
             
             /* Use entered values instead of existing values if present. */
@@ -67,10 +70,11 @@ public class ValidationMonitorEditorController {
             model.addAttribute("editError", e.getMessage());
             return "redirect:edit";
         }
-            
+        
         model.addAttribute("editError", editError);
         model.addAttribute("validationMonitorId", validationMonitorId);
         model.addAttribute("name", name);
+        model.addAttribute("editPageDesc", name);
         model.addAttribute("deviceGroupName", deviceGroupName);
         model.addAttribute("threshold", threshold);
         model.addAttribute("reread", reread);

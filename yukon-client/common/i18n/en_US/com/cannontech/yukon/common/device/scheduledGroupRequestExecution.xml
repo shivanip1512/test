@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <!-- breadcrumb placeholder -->
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
 
 	<!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageName">Scheduled Group Request Processing</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageDescription">Create Schedule</entry>
+    
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
@@ -48,6 +53,8 @@
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.pageName">All Schedules</entry>
+    
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle">All Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.section">Filters</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.dateFrom">From</entry>
@@ -83,6 +90,11 @@
     <!-- ScheduledGroupRequestExecutionController jobDetail.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <!-- group/scheduledGroupRequestExecution/jobDetail.jsp -->    
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.pageName">Schedule Detail</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestDetail.groupDoesNotExist">Group does not exist.</entry>
+
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle">Schedule Detail</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section">Info</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType">Job Type</entry>

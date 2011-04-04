@@ -1,50 +1,41 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="Meters" module="amr">
-<cti:standardMenu menuSelection="meters"/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/meter/start" title="Metering"  />
-    <cti:crumbLink title="Search"  />
-</cti:breadCrumbs>
+<cti:standardPage module="amr" page="meterSearchResults">
 
 <cti:url value="/spring/meter/home" var="meterHomeUrl"/>
 
-<script language="JavaScript">
-
-	function forwardToMeterHome(row, id) {
-		$('deviceTable').removeClassName('activeResultsTable');
-		window.location = "${meterHomeUrl}?deviceId=" + id;
-	}
-
-	function clearFilter() {
-
-		<c:forEach var="filter" items="${filterByList}">
-			$('${filter.name}').value = '';
-		</c:forEach>
-		
-		$('filterForm').submit();
-	}
-	
-</script>
-	
-	<h2>Meters</h2>
-	<br>
+    <script type="text/javascript">
+    
+    	function forwardToMeterHome(row, id) {
+    		$('deviceTable').removeClassName('activeResultsTable');
+    		window.location = "${meterHomeUrl}?deviceId=" + id;
+    	}
+    
+    	function clearFilter() {
+    
+    		<c:forEach var="filter" items="${filterByList}">
+    			$('${filter.name}').value = '';
+    		</c:forEach>
+    		
+    		$('filterForm').submit();
+    	}
+    	
+    </script>
 	
 	<b>
 	<c:choose>
 		<c:when test="${results.hitCount == 0}">
-			No results for Filter: ${filterByString}
+        <i:inline key=".noResultsForFilter" arguments="${filterByString}"/>  
 		</c:when>
 		<c:otherwise>
-	
-				Filter: 
+				<i:inline key=".filter"/> 
 				<c:choose>
 					<c:when test="${empty filterByString}">
-						Show All
+						<i:inline key=".showAll"/>
 					</c:when>
 					<c:otherwise>
 						${filterByString}
@@ -56,16 +47,16 @@
 	
 	<br/><br/>
 
-    <tags:hideReveal title="Edit Filters" showInitially="true" slide="true">
+    <cti:msg2 var="editFilters" key="yukon.web.modules.amr.meterSearchResults.editFilters"/>
+    <tags:hideReveal title="${editFilters}" showInitially="true" slide="true">
     <form id="filterForm" action="/spring/meter/search">
         <input type="hidden" name="Filter" value="true" />
         <input type="hidden" name="startIndex" value="${results.startIndex}" />
-        <input type="hidden"  name="count" value="${results.count}" />
-        <input type="hidden"  name="orderBy" value="${orderBy.field}" />
+        <input type="hidden" name="count" value="${results.count}" />
+        <input type="hidden" name="orderBy" value="${orderBy.field}" />
         <c:if test="${orderBy.descending}">
             <input type="hidden" name="descending" value="true"/>
         </c:if>
-        
         
         <div>
 	        <c:forEach var="filter" items="${filterByList}">
@@ -73,10 +64,9 @@
 	        </c:forEach>
         </div>
         <div style="clear:both"></div>
-        
         <br>
-        <input type="submit" value="Filter" class="formSubmit">
-        <input type="button" value="Show All" onclick="javascript:clearFilter()" class="formSubmit">
+        <cti:button key="filter" type="submit"/>
+        <cti:button key="showAll" onclick="javascript:clearFilter()"/>
     </form>
     </tags:hideReveal>
     <br>
@@ -152,5 +142,4 @@
     
 	</c:if>
 
-	
 </cti:standardPage>

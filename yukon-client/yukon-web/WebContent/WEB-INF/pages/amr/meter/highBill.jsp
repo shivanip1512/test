@@ -1,21 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage title="High Bill Complaint" module="amr">
-    <cti:standardMenu menuSelection="meters" />
-    <cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
-    &gt; High Bill Complaint
-</cti:breadCrumbs>
+<cti:standardPage module="amr" page="highBill">
 
 <script type="text/javascript">
 
@@ -24,11 +13,11 @@
 	}
     
     function getReport(getReportUrl, redirectUrl) {
-    
+        <cti:msg2 var="retrievingReport" key="yukon.web.modules.amr.highBill.retrievingReport" javaScriptEscape="true"/>
         // prettynessifier
         $('getReportProcessImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif';
         $('getReportProcessImg').show();
-        $('getReportButton').value = 'Retrieving Report...';
+        $('getReportButton').value = '${retrievingReport}';
         $('getReportButton').disable();
     
         // pluck start and end dates from the page
@@ -61,8 +50,9 @@
                     $('meterReadErrors').show();
                     $('meterReadErrors').update(transport.responseText);
                     
+                    <cti:msg2 var="getReport" key=".getReport" javaScriptEscape="true"/>
                     $('getReportProcessImg').hide();
-                    $('getReportButton').value = 'Get Report';
+                    $('getReportButton').value = '${getReport}';
                     $('getReportButton').enable();
                 }
             },
@@ -73,7 +63,7 @@
                 $('meterReadErrors').update(transport.responseText);
                 
                 $('getReportProcessImg').hide();
-                $('getReportButton').value = 'Get Report';
+                $('getReportButton').value = '${getReport}';
                 $('getReportButton').enable();
             }
             
@@ -86,24 +76,9 @@
     <cti:formatDate var="formattedStartDate" value="${startDate}" type="DATE" />
     <cti:formatDate var="formattedStopDate" value="${stopDate}" type="DATE" />
     
-    <%-- HBC TITLE --%>
-    <table class="widgetColumns">
-        <tr>
-            <td>
-                <h2 style="display: inline;">
-                    High Bill Complaint
-                </h2>
-            </td>
-            <td align="right">
-                &nbsp; <!-- quick search? -->
-            </td>
-        </tr>
-    </table>
-    <br>
-    
     <%-- ERROR MSG --%>
     <c:if test="${errorMsg != null}">
-        <div style="color: red;margin: 10px 0px;">Error: ${errorMsg}</div>
+        <div style="color: red;margin: 10px 0px;"><i:inline key=".error" arguments="${errorMsg}"/></div>
     </c:if>
     
     <%-- LEFT SIDE --%>
@@ -115,17 +90,18 @@
         <c:when test="${lmPointExists}">
         
         <%-- STEP 1: FIND PEAK DAY --%>
-        <tags:sectionContainer title="Step 1: Find The Peak day" id="hbcStep1">
+        <cti:msg2 var="step1" key=".step1"/>
+        <tags:sectionContainer title="${step1}" id="hbcStep1">
             
             <%-- GET REPORT --%>
-            <div class="smallBoldLabel" style="display:inline;">Start Date: </div><tags:dateInputCalendar fieldName="getReportStartDate" fieldValue="${formattedStartDate}"/>
-            <div class="smallBoldLabel" style="display:inline;">End Date: </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
+            <div class="smallBoldLabel" style="display:inline;"><i:inline key=".startDate"/> </div><tags:dateInputCalendar fieldName="getReportStartDate" fieldValue="${formattedStartDate}"/>
+            <div class="smallBoldLabel" style="display:inline;"><i:inline key=".endDate"/> </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
             
             <c:if test="${readable}">
                 <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
                 <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
-                <input type="button" id="getReportButton" value="Get Report" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" value="click me" class="formSubmit">
+                <input type="button" id="getReportButton" value="${getReport}" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit"> 
                 <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
                     
@@ -143,7 +119,7 @@
                                     <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
                                     <cti:param name="getReportStopDate" value="${formattedStopDate}"/>
                                 </cti:url>
-                                Previous Reports: <a href="${analyzeThisDataUrl}">Expand Available Report</a>
+                                <i:inline key=".prevReports"/><a href="${analyzeThisDataUrl}"><i:inline key=".expandAvailableReport"/></a>
                             </jsp:attribute>
                         </c:set>
                         </c:when>
@@ -154,7 +130,8 @@
                     
                 </c:when>
                 <c:otherwise>
-                    <c:set var="reportHeader" value="Available Reports:"/>
+                    <cti:msg2 var="availableReports" key=".availableReports"/>
+                    <c:set var="reportHeader" value="${availableReports}"/>
                 </c:otherwise>
             </c:choose>
             
@@ -171,7 +148,8 @@
 
         <%-- STEP 2: COLLECT PROFILE DATA LINKS --%>
         <c:if test="${analyze}">
-        <tags:sectionContainer title="Step 2: Collect Profile Data" id="hbcStep2">  
+        <cti:msg2 var="step2" key=".step2"/>
+        <tags:sectionContainer title="${step2}" id="hbcStep2">  
         
             <%-- COLLECT PROFILE DATA AROUND PEAK --%>
             <c:set var="pre"/>
@@ -194,7 +172,9 @@
         
         <%-- STEP 3: COLLECT PROFILE DATA LINKS --%>
         <c:if test="${analyze}">
-        <tags:sectionContainer title="Step 3: Analyze Profile Data" id="hbcStep3">  
+        <cti:msg2 var="step3" key=".step3"/>
+        <cti:msg2 var="plusMinus3days" key=".plusMinus3days"/>
+        <tags:sectionContainer title="${step3}" id="hbcStep3">  
             
             <cti:url var="chartUrlPrefix" value="/spring/meter/highBill/view">
                 <cti:param name="deviceId" value="${deviceId}"/>
@@ -219,15 +199,15 @@
                     <cti:param name="chartRange" value="ENTIRE"/>
                 </cti:url>
                 
-                <div class="smallBoldLabel" style="display:inline;">Chart Range: </div>
-                <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;">Peak Day</div></c:if> 
-                <c:if test="${chartRange != 'PEAK'}"><a href="${prePeakDayChartUrl}">Peak Day</a></c:if> 
+                <div class="smallBoldLabel" style="display:inline;"><i:inline key=".chartRange"/></div>
+                <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;"><i:inline key=".peakDay"/></div></c:if> 
+                <c:if test="${chartRange != 'PEAK'}"><a href="${prePeakDayChartUrl}"><i:inline key=".peakDay"/></a></c:if> 
                 |
-                <c:if test="${chartRange == 'PEAKPLUSMINUS3'}"><div style="display:inline;">Peak +/- 3 Days</div></c:if> 
-                <c:if test="${chartRange != 'PEAKPLUSMINUS3'}"><a href="${prePeakPlusMinus3ChartUrl}">Peak +/- 3 Days</a></c:if> 
+                <c:if test="${chartRange == 'PEAKPLUSMINUS3'}"><div style="display:inline;"><i:inline key=".peakPlusMinus3days"/></div></c:if> 
+                <c:if test="${chartRange != 'PEAKPLUSMINUS3'}"><a href="${prePeakPlusMinus3ChartUrl}"><i:inline key=".peakPlusMinus3days"/></a></c:if> 
                 | 
-                <c:if test="${chartRange == 'ENTIRE'}"><div style="display:inline;">Report Period</div></c:if>
-                <c:if test="${chartRange != 'ENTIRE'}"><a href="${preEntireRangeChartUrl}">Report Period</a></c:if>
+                <c:if test="${chartRange == 'ENTIRE'}"><div style="display:inline;"><i:inline key=".reportPeriod"/></div></c:if>
+                <c:if test="${chartRange != 'ENTIRE'}"><a href="${preEntireRangeChartUrl}"><i:inline key=".reportPeriod"/></a></c:if>
                 
                 <%-- chart title --%>
                 <c:choose>
@@ -237,7 +217,7 @@
                     <c:when test="${chartRange == 'PEAKPLUSMINUS3'}">
                         <cti:formatDate var="chartTitleStartDate" value="${preChartStartDate}" type="DATE" />
                         <cti:formatDate var="chartTitleStopDate" value="${preChartStopDate}" type="DATE_MIDNIGHT_PREV" />
-                        <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${preResult.peakValue} +/- 3 Days)" />
+                        <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${preResult.peakValue} ${plusMinus3days})" />
                     </c:when>
                     <c:when test="${chartRange == 'ENTIRE'}">
                         <cti:formatDate var="chartTitleStartDate" value="${preChartStartDate}" type="DATE" />
@@ -250,7 +230,7 @@
                 <br>
                 
                 <%-- tabular data links --%>
-                <div class="smallBoldLabel" style="display:inline;">Tabular Data: </div>
+                <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
                 
                 <cti:url var="preHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
                     <cti:param name="def" value="rawPointHistoryDefinition"/>
@@ -266,20 +246,20 @@
                     <cti:param name="chartRange" value="${chartRange}"/>
                 </cti:url>
 
-                <a href="${preHbcArchivedDataReportUrl}"/>HTML</a>
+                <a href="${preHbcArchivedDataReportUrl}"/><i:inline key=".fileFormatHtml"/></a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>
-                <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/> </div>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
             </c:if>
             
@@ -294,7 +274,7 @@
                     <c:when test="${chartRange == 'PEAKPLUSMINUS3'}">
                         <cti:formatDate var="chartTitleStartDate" value="${postChartStartDate}" type="DATE" />
                         <cti:formatDate var="chartTitleStopDate" value="${postChartStopDate}" type="DATE_MIDNIGHT_PREV" />
-                        <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${postResult.peakValue} +/- 3 Days)" />
+                        <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${postResult.peakValue} ${plusMinus3days})" />
                     </c:when>
                     <c:when test="${chartRange == 'ENTIRE'}">
                         <cti:formatDate var="chartTitleStartDate" value="${postChartStartDate}" type="DATE" />
@@ -307,7 +287,7 @@
                 <br>
                 
                 <%-- tabular data links --%>
-                <div class="smallBoldLabel" style="display:inline;">Tabular Data: </div>
+                <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
                 
                 <cti:url var="postHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
                     <cti:param name="def" value="rawPointHistoryDefinition"/>
@@ -323,20 +303,20 @@
                     <cti:param name="chartRange" value="${chartRange}"/>
                 </cti:url>
                 
-                <a href="${postHbcArchivedDataReportUrl}"/>HTML</a>
+                <a href="${postHbcArchivedDataReportUrl}"/><i:inline key=".fileFormatHtml"/></a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>
-                <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/></div>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 
             </c:if>
@@ -352,8 +332,8 @@
                 <cti:param name="deviceId" value="${deviceId}" />
                 <cti:param name="createLPPoint" value="true" />
             </cti:url>
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName> is not configured for 
-            High Bill Processing. <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="formSubmit">
+            <cti:deviceName deviceId="${deviceId}"></cti:deviceName><i:inline key=".isNotConfigured"/> 
+            <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="formSubmit">
             
         </c:otherwise>
         </c:choose>

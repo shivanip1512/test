@@ -3,6 +3,8 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<cti:standardPage page="validationEditor.${mode}" module="amr">
+
 <cti:msg var="pageTitle" key="yukon.web.modules.common.vee.monitor.editor.pageTitle" />
 <cti:msg var="setupSectiontext" key="yukon.web.modules.common.vee.monitor.editor.section.setup" />
 <cti:msg var="editSetupSectionText" key="yukon.web.modules.common.vee.monitor.editor.section.editSetup" />
@@ -57,21 +59,6 @@
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- metering home --%>
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        
-        <%-- locate route --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
     
     <script type="text/javascript">
         function validationMonitorEditor_deleteValidationMonitor(id) {
@@ -88,10 +75,7 @@
             }
         }
     </script>
-    
-    <h2>${pageTitle}</h2>
-    <br>
-    
+
     <c:if test="${not empty editError}">
         <div class="errorRed">${editError}</div>
     </c:if>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <!-- breadcrumb placeholder -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorProcessing.pageName">Status Point Processing</entry>
 
 	<!-- StatusPointMonitorsWidget render.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.noMonitorsSetup">No Status Point Monitors Setup</entry>
@@ -11,6 +13,8 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointMonitoring">View Status Point Monitor Details</entry>
 
     <!-- StatusPointMonitorController create.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageName">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageDescription">New Status Point Monitor</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.title">Status Point Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.setup.title">Setup</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.name">Name</entry>
@@ -19,8 +23,11 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.create.labelBusy">Creating</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel">Cancel</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel.labelBusy">Canceling</entry>
+    
 
     <!-- StatusPointMonitorController edit.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.pageName">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.title">Status Point Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.sectionHeader.title">Edit</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.section.editSetup">Edit Setup</entry>
@@ -79,6 +86,8 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.alreadyExists.statusPointMonitorName">Name already exists.</entry>
     
     <!-- StatusPointMonitorController view.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorView.pageName">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorView.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.amr.statusPointMonitorView.title">Status Point Monitoring</entry>
 	<entry key="yukon.web.modules.amr.statusPointMonitorView.sectionHeader.title">Info</entry>
 	<entry key="yukon.web.modules.amr.statusPointMonitorView.name">Name</entry>
@@ -119,5 +128,5 @@
     <entry key="yukon.web.modules.amr.statusPointMonitor.created">Status Point Monitor Created</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.updated">Status Point Monitor Updated: {0}</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.deleted">Status Point Monitor Deleted: {0}</entry>
-    
+
 </properties>

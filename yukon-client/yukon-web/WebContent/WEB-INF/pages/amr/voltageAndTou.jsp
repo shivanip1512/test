@@ -1,28 +1,9 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
-
-<cti:standardPage title="Voltage & TOU" module="amr">
-
-    <cti:standardMenu menuSelection="meters" />
-    
-    <cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
-        &gt; Voltage &amp; TOU
-    </cti:breadCrumbs>
-    
-    <h2>Voltage &amp; TOU</h2>
-    <br>
+<cti:standardPage module="amr" page="meterDetailVoltageAndTou">
     
 	<div style="width:600px;">
         <%-- METER INFORMATION WIDGET --%>
@@ -45,6 +26,5 @@
         </c:if>
     
     </div>
-    
 
 </cti:standardPage>

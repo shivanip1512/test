@@ -3,15 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- MODULE, MENU --%>
-<cti:standardPage title="Bulk Importer" module="blank">
-<cti:standardMenu menuSelection="" />
-
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    &gt; Bulk Importer
-</cti:breadCrumbs>
-
-<h2>Bulk Importer</h2>
+<cti:standardPage page="bulkImporter" module="blank">
 
 <div class="notAuthorized">Note: <a href="/spring/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
 <br>

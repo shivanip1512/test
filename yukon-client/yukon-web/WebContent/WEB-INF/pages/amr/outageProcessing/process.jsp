@@ -1,115 +1,79 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.amr.outageProcessing.pageTitle" />
-<cti:msg var="reportingLinkText" key="yukon.web.modules.amr.outageProcessing.reportingLink" />
-<cti:msg var="mainDetailSectionHeaderText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.sectionHeader" />
-<cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.name" />
-<cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.deviceGroup" />
-<cti:msg var="mainDetailOutagesGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.outagesGroup" />
-<cti:msg var="mainDetailViolationsText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.violations" />
-<cti:msg var="mainDetailMonitoringText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.monitoring" />
-<cti:msg var="mainDetailNumberOfOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages" />
-<cti:msg var="mainDetailNumberOfOutagesOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outages" />
-<cti:msg var="mainDetailTimePeriodText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod" />
-<cti:msg var="mainDetailTimePeriodDaysText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.days" />
-<cti:msg var="mainDetailEditText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.edit" />
-<cti:msg var="readOutageLogsSectionTitleText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title" />
-<cti:msg var="readOutageLogsButtonText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button" />
-<cti:msg var="readOutageLogsSectionNoteLabelText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel" />
-<cti:msg var="readOutageLogsSectionNoteBodyText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteBody" />
-<cti:msg var="readOutageLogsSectionRemoveAfterReadText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.removeAfterRead" />
-<cti:msg var="readOkText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.readOk" />
-<cti:msg var="readOutageLogsSectionRecentReadLogsResultsText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults" />
-<cti:msg var="readOutageLogsSectiondateTimeText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.dateTime" />
-<cti:msg var="readOutageLogsSectionSuccessCountText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.successCount" />
-<cti:msg var="readOutageLogsSectionFailureCountText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.failureCount" />
-<cti:msg var="readOutageLogsSectionUnsupportedCountText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.unsupportedCount" />
-<cti:msg var="readOutageLogsSectionDetailText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.detail" />
-<cti:msg var="readOutageLogsSectionStatusText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.status" />
-<cti:msg var="readOutageLogsSectionVieDetailLinkText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.viewDetailLink" />
-<cti:msg var="optionsSectionTitleText" key="yukon.web.modules.amr.outageProcessing.section.options.title" />
-<cti:msg var="outagesGroupReportText" key="yukon.web.modules.amr.outageProcessing.section.options.outagesGroupReport" />
-<cti:msg var="clearOutagesGroupText" key="yukon.web.modules.amr.outageProcessing.section.options.clearOutagesGroup" />
-<cti:msg var="otherActionsText" key="yukon.web.modules.amr.outageProcessing.section.options.otherActions" />
-    
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- metering home --%>
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        
-        <%-- outage processing --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
+<cti:standardPage module="amr" page="outageProcessing">
     
     <script type="text/javascript">
+    
+    </script>
 
-		
-	</script>
-
-    <h2>${pageTitle}</h2>
-    <br>
-	
 	<c:if test="${not empty param.processError}">
-		<div class="errorRed">${param.processError}</div>
+		<div class="errorMessage">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
+    <cti:msg2 var="mainDetailSectionHeaderText" key=".section.mainDetail.sectionHeader" />
 	<tags:sectionContainer title="${mainDetailSectionHeaderText}">
 	
-	<tags:nameValueContainer>
+	<tags:nameValueContainer2>
 
-		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
+		<tags:nameValue2 nameKey=".section.mainDetail.name"> <!--  nameColumnWidth="250px"> -->
 			${outageMonitor.outageMonitorName}
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailViolationsText}">
+		<tags:nameValue2 nameKey=".section.mainDetail.violations">
 			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailMonitoringText}">
+		<tags:nameValue2 nameKey=".section.mainDetail.monitoring">
 			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/MONITORING_COUNT"/>
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValueGap gapHeight="20px"/>
+		<tags:nameValueGap2 gapHeight="20px"/>
 		
-		<tags:nameValue name="${mainDetailNumberOfOutagesText}">
-			${outageMonitor.numberOfOutages} ${mainDetailNumberOfOutagesOutagesText}
-		</tags:nameValue>
+		<tags:nameValue2 nameKey=".section.mainDetail.numberOfOutages">
+			${outageMonitor.numberOfOutages} 
+            <c:choose>
+                <c:when test="${outageMonitor.numberOfOutages != 1}">
+                    <i:inline key=".section.mainDetail.numberOfOutages.outages"/>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key=".section.mainDetail.numberOfOutages.outage"/>
+                </c:otherwise>
+            </c:choose>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailTimePeriodText}">
-			${outageMonitor.timePeriodDays} ${mainDetailTimePeriodDaysText}
-		</tags:nameValue>
+		<tags:nameValue2 nameKey=".section.mainDetail.timePeriod">
+			${outageMonitor.timePeriodDays} 
+            <c:choose>
+                <c:when test="${outageMonitor.timePeriodDays != 1}">
+                    <i:inline key=".section.mainDetail.timePeriod.days"/>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key=".section.mainDetail.timePeriod.day"/>
+                </c:otherwise>
+            </c:choose>
+		</tags:nameValue2>
 		
-		<tags:nameValueGap gapHeight="20px"/>
+		<tags:nameValueGap2 gapHeight="20px"/>
 		
-		<tags:nameValue name="${mainDetailDeviceGroupText}">
-			
+		<tags:nameValue2 nameKey=".section.mainDetail.deviceGroup">
 			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
 				<cti:param name="groupName">${outageMonitor.groupName}</cti:param>
 			</cti:url>
-			
 			<a href="${deviceGroupUrl}">${outageMonitor.groupName}</a>
 			<br>
-			
-		</tags:nameValue>
+		</tags:nameValue2>
 		
-		<tags:nameValue name="${mainDetailOutagesGroupText}">
-			
+		<tags:nameValue2 nameKey=".section.mainDetail.outagesGroup">
 			<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
 				<cti:param name="groupName">${outageGroupBase}${outageMonitor.outageMonitorName}</cti:param>
 			</cti:url>
@@ -120,24 +84,24 @@
 			<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 			</cti:url>
-			<a href="${outagesGroupReportUrl}">${outagesGroupReportText}</a>
 			
-		</tags:nameValue>
+            <a href="${outagesGroupReportUrl}"><i:inline key=".section.options.outagesGroupReport"/></a>
+			
+		</tags:nameValue2>
 		
-	</tags:nameValueContainer>
-	
+	</tags:nameValueContainer2>
+	<br>
 	<form id="editMonitorForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
 		<input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
 	</form>
-	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" />
-	
-	
+    <cti:msg2 var="mainDetailEditText" key=".section.mainDetail.edit"/>
+    <tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" />
 	</tags:sectionContainer>
 	<br>
-	<br>
-		
+
 	<%-- READ OUTAGE LOGS --%>
-	<tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
+    <cti:msg2 var="readOutageLogsSectionTitleText" key=".section.readOutageLogs.title" />
+    <tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
 	
 		<form id="readOutagesForm" action="/spring/amr/outageProcessing/process/readOutageLogs">
 
@@ -147,10 +111,10 @@
 			<table cellpadding="2">
 	            <tr>
 	                <td valign="top" class="smallBoldLabel">
-	                	${readOutageLogsSectionNoteLabelText}
+                        <i:inline key=".section.readOutageLogs.noteLabel" />
 	                </td>
 	                <td style="font-size:11px;">
-	                	${readOutageLogsSectionNoteBodyText}
+                        <cti:msg2 key=".section.readOutageLogs.noteBody" htmlEscape="false"/>
 	                </td>
 	            </tr>
 	    	</table>
@@ -158,32 +122,33 @@
 		
 			<%-- remove after read checkbox --%>
 			<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}" />
+            <cti:msg2 var="readOutageLogsButtonText" key=".section.readOutageLogs.button" />
+            <tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}" />
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
-			${readOutageLogsSectionRemoveAfterReadText}
+			<i:inline key=".section.readOutageLogs.removeAfterRead" />
 			</span>
 			
 			<%-- read ok --%>
 	    	<c:if test="${param.readOk}">
 	    		<br>
-	    		${readOkText}
+                <i:inline key=".section.readOutageLogs.readOk" />
 	    	</c:if>
 			
 			<%-- recent reads --%>
 			<c:if test="${fn:length(readResults) > 0}">
 			
 				<br><br>
-				<div class="normalBoldLabel">${readOutageLogsSectionRecentReadLogsResultsText}</div>
+				<div class="normalBoldLabel"><i:inline key=".section.readOutageLogs.recentReadLogsResults"/></div>
 				<br>
 				
 				<table class="miniResultsTable">
 					<tr>
-						<th>${readOutageLogsSectiondateTimeText}</th>
-						<th>${readOutageLogsSectionSuccessCountText}</th>
-						<th>${readOutageLogsSectionFailureCountText}</th>
-						<th>${readOutageLogsSectionUnsupportedCountText}</th>
-						<th>${readOutageLogsSectionDetailText}</th>
-						<th>${readOutageLogsSectionStatusText}</th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.dateTime"/></th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.successCount"/></th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.failureCount"/></th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.unsupportedCount"/></th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.detail"/></th>
+						<th><i:inline key=".section.readOutageLogs.recentReadLogsResults.tableHeader.status"/></th>
 					</tr>
 					
 					<c:forEach var="result" items="${readResults}">
@@ -205,7 +170,7 @@
 								<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
-								<a href="${readLogsDetailUrl}">${readOutageLogsSectionVieDetailLinkText}</a>
+								<a href="${readLogsDetailUrl}"><i:inline key=".section.readOutageLogs.recentReadLogsResults.viewDetailLink"/></a>
 							</td>
 							<td>
 								<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
@@ -224,11 +189,12 @@
 	<br>
 	
 	<%-- OPTIONS SECTION --%>
-	<tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
+	<cti:msg2 var="optionsSectionTitleText" key=".section.options.title" />
+    <tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
 	
 		<%-- outages log report --%>
 		<cti:formatDate var="startDate" type="DATE" value="${reportStartDate}"/>
-		<cti:link href="/analysis/Reports.jsp" key="yukon.web.modules.amr.outageProcessing.reportingLink">
+		<cti:link href="/analysis/Reports.jsp" key=".reportingLink">
 			<cti:param name="groupType" value="METERING"/>
 			<cti:param name="type" value="METER_OUTAGE_LOG"/>
 			<cti:param name="selectedReportFilter" value="GROUPS"/>
@@ -241,7 +207,7 @@
 		<cti:url var="clearOutagesGroupUrl" value="/spring/amr/outageProcessing/process/clearOutagesGroup">
 			<cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
 		</cti:url>
-		<a href="${clearOutagesGroupUrl}">${clearOutagesGroupText}</a>
+		<a href="${clearOutagesGroupUrl}"><i:inline key=".section.options.clearOutagesGroup"/></a>
 		<br>
 		
 		<%-- other actions --%>
@@ -249,7 +215,7 @@
 			<cti:param name="collectionType" value="group"/>
 			<cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 		</cti:url>
-		<a href="${otherActionsUrl}">${otherActionsText}</a>
+		<a href="${otherActionsUrl}"><i:inline key=".section.options.otherActions" /></a>
 	    	
 	</tags:sectionContainer>
 

@@ -1,52 +1,18 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.amr.tamperFlagEditor.pageTitle" />
-<cti:msg var="headerTitle" key="yukon.web.modules.amr.tamperFlagEditor.headerTitle" />
-<cti:msg var="setupSectiontext" key="yukon.web.modules.amr.tamperFlagEditor.section.setup" />
-<cti:msg var="editSetupSectionText" key="yukon.web.modules.amr.tamperFlagEditor.section.editSetup" />
-<cti:msg var="nameText" key="yukon.web.modules.amr.tamperFlagEditor.label.name"/>
-<cti:msg var="deviceGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.deviceGroup"/>
-<cti:msg var="tamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagGroup"/>
-<cti:msg var="chooseGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.chooseGroup"/>
-<cti:msg var="changeGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.changeGroup"/>
-<cti:msg var="tamperFlagMonitoringText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoring"/>
-<cti:msg var="tamperFlagMonitoringEnableText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoringEnable"/>
-<cti:msg var="tamperFlagMonitoringDisableText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoringDisable"/>
-<cti:msg var="tamperFlagMonitoringDisableText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoringDisable"/>
-<cti:msg var="tamperFlagMonitoringEnablePopupInfo" key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.tamperFlagMonitoringEnable"/>
-<cti:msg var="tamperFlagMonitoringDisablePopupInfo" key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.tamperFlagMonitoringDisable"/>
-<cti:msg var="createText" key="yukon.web.modules.amr.tamperFlagEditor.label.create"/>
-<cti:msg var="createBusyText" key="yukon.web.modules.amr.tamperFlagEditor.label.create.busy"/>
-<cti:msg var="updateText" key="yukon.web.modules.amr.tamperFlagEditor.label.update"/>
-<cti:msg var="updateBusyText" key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy"/>
-<cti:msg var="deleteText" key="yukon.web.modules.amr.tamperFlagEditor.label.delete"/>
-<cti:msg var="deleteBusyText" key="yukon.web.modules.amr.tamperFlagEditor.label.delete.busy"/>
-<cti:msg var="cancelText" key="yukon.web.modules.amr.tamperFlagEditor.label.cancel"/>
-<cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.tamperFlagEditor.deleteConfirm"/>
-<cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"/>
+<cti:standardPage module="amr" page="tamperFlagEditor.${mode}">
 
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-    </cti:breadCrumbs>
-    
     <script type="text/javascript">
+    var deleteConfirmMsg = '<cti:msg2 key="yukon.web.modules.amr.tamperFlagEditor.deleteConfirm" javaScriptEscape="true"/>';
 
 		function tamperFlagMonitorEditor_deleteTamperFlagMonitor(id) {
 
-			var deleteOk = confirm('${deleteConfirmText}');
+			var deleteOk = confirm(deleteConfirmMsg);
 
 			if (deleteOk) {
 				$('deleteTamperFlagMonitorId').value = id;
@@ -64,9 +30,6 @@
 		
 	</script>
 
-    <h2>${pageTitle}</h2>
-    <br>
-    
 		<c:if test="${not empty editError}">
 	    	<div class="errorRed">${editError}</div>
 	    </c:if>
@@ -88,22 +51,24 @@
 		
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
 			
-			<c:set var="setupSectionTitle" value="${setupSectiontext}"/>
+            <cti:msg2 var="setupSectionText" key=".section.setup" />
+            <cti:msg2 var="editSetupSectionText" key=".section.editSetup" />  
+			<c:set var="setupSectionTitle" value="${setupSectionText}"/>
 			<c:if test="${tamperFlagMonitorId > 0}">
 				<c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
 			</c:if>
 			
 			<tags:sectionContainer title="${setupSectionTitle}">
 			
-			<tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
+			<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
 			
 				<%-- name --%>
-				<tags:nameValue name="${nameText}" nameColumnWidth="250px">
+				<tags:nameValue2 nameKey=".label.name">
 					<input type="text" name="name" size="50" value="${name}" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);">
-				</tags:nameValue>
+				</tags:nameValue2>
 				
 				<%-- device group --%>
-				<tags:nameValue name="${deviceGroupText}">
+				<tags:nameValue2 nameKey=".label.deviceGroup">
 					
 					<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
 					<tags:deviceGroupNameSelector fieldName="deviceGroupName" 
@@ -112,24 +77,24 @@
 											      linkGroupName="true"/>
 	                                                    
 	                <tags:helpInfoPopup title="${deviceGroupText}">
-	            		${deviceGroupPopupInfoText}
+	            		<cti:msg2 key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup" htmlEscape="false"/>
 					</tags:helpInfoPopup>
 					
-				</tags:nameValue>
+				</tags:nameValue2>
 			
 				<%-- tamper flag group --%>
-				<tags:nameValue name="${tamperFlagGroupText}">
+				<tags:nameValue2 nameKey=".label.tamperFlagGroup">
 					<div id="tamperFlagGroupNameDiv">${tamperFlagGroupBase}${name}</div>			
-				</tags:nameValue>
+				</tags:nameValue2>
 			
 				<%-- enable/disable monitoring --%>
 				<c:if test="${tamperFlagMonitorId > 0}">
-					<tags:nameValue name="${tamperFlagMonitoringText}">
+					<tags:nameValue2 nameKey=".label.tamperFlagMonitoring">
 						${tamperFlagMonitor.evaluatorStatus.description}
-					</tags:nameValue>
+					</tags:nameValue2>
 				</c:if>
 				
-			</tags:nameValueContainer>
+			</tags:nameValueContainer2>
 			
 			</tags:sectionContainer>
 				
@@ -137,22 +102,32 @@
 			<br>
 			<c:choose>
 				<c:when test="${tamperFlagMonitorId > 0}">
-					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
+					<cti:msg2 var="updateText" key=".label.update"/>
+                    <cti:msg2 var="updateBusyText" key=".label.update.busy"/>
+                    <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
 					<c:choose>
 						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
-							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}" disableOtherButtons="true"/>
+							<cti:msg2 var="tamperFlagMonitoringDisableText" key=".label.tamperFlagMonitoringDisable"/>
+                            <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}" disableOtherButtons="true"/>
 						</c:when>
 						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'DISABLED'}">
-							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}" disableOtherButtons="true"/>
+							<cti:msg2 var="tamperFlagMonitoringEnableText" key=".label.tamperFlagMonitoringEnable"/>
+                            <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}" disableOtherButtons="true"/>
 						</c:when>
 					</c:choose>
-					<input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}" class="formSubmit"/>
+                    <cti:msg2 var="deleteText" key=".label.delete"/>
+					<cti:msg2 var="deleteBusyText" key=".label.delete.busy"/>
+                    <cti:msg2 var="deleteConfirmText" key=".deleteConfirm"/>
+                    <input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}" class="formSubmit"/>
 				</c:when>
 				<c:otherwise>
-					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
+					<cti:msg2 var="createText" key=".label.create"/>
+                    <cti:msg2 var="createBusyText" key=".label.create.busy"/>
+                    <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
 				</c:otherwise>
 			</c:choose>
-			<tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
+			<cti:msg2 var="cancelText" key=".label.cancel"/>
+            <tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
 			
 		</form>
 		

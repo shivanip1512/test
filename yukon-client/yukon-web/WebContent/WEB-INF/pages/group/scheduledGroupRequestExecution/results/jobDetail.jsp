@@ -33,25 +33,7 @@
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="commandRequestExecution|scheduledGroupCommands"/>
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- metering home --%>
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        
-        <%-- jobs --%>
-        <cti:msg var="jobsPageTitle" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle" />
-        <cti:crumbLink url="/spring/group/scheduledGroupRequestExecutionResults/jobs" title="${jobsPageTitle}" />
-        
-        <%-- job detail --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
+<cti:standardPage page="scheduledGroupRequestDetail" module="amr">
     
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 	
@@ -72,9 +54,6 @@
 		}
 	
 	</script>
-
-    <h2 title="ID: ${jobWrapper.job.id}">${pageTitle}</h2>
-    <br>
     
     <%-- JOB INFO --%>
     <tags:sectionContainer title="${infoSectionText}" id="jobInfoSection">
@@ -98,7 +77,7 @@
 			<c:if test="${not empty jobWrapper.command}">
 				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>
 			</c:if>
-			
+
 			<%-- device group --%>
 			<tags:nameValue name="${deviceGroupText}">
 				<c:choose>
@@ -111,7 +90,7 @@
 						</a>
 					</c:when>
 					<c:otherwise>
-						<span class="errorRed">Group does not exist.</span>
+						<span class="errorRed"><i:inline key=".groupDoesNotExist"/></span>
 					</c:otherwise>
 				</c:choose>
 			</tags:nameValue>

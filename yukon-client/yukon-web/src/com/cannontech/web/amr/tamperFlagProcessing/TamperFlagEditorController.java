@@ -25,6 +25,7 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -50,12 +51,12 @@ public class TamperFlagEditorController {
 
         TamperFlagMonitor tamperFlagMonitor = null;
         try {
-        	
+            model.addAttribute("mode", PageEditMode.CREATE);
 	        // existing tamper flag monitor
 	        if (tamperFlagMonitorId > 0) {
 	        	
 	        	tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
-	        	
+	        	model.addAttribute("mode", PageEditMode.EDIT);
 	        	// use entered values instead of existing value if present
 	        	if (name == null) {
 	        		name = tamperFlagMonitor.getTamperFlagMonitorName();

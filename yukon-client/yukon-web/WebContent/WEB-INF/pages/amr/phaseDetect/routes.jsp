@@ -1,6 +1,7 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:if test="${show}">
     <tags:nameValueContainer>
@@ -13,10 +14,10 @@
         <thead>
             <tr>
                 <th nowrap="nowrap">
-                    Route Name
+                    <i:inline key="yukon.web.modules.amr.phaseDetect.routeName"/>
                 </th>
                 <th>
-                    Devices
+                    <i:inline key="yukon.web.modules.amr.phaseDetect.devices"/>
                 </th>
             </tr>
         </thead>

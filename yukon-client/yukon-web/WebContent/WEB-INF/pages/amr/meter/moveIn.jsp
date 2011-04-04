@@ -1,30 +1,18 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
 <cti:url var="moveInFormUrl"
     value="/WEB-INF/pages/amr/meter/moveInForm.jsp" />
 <cti:url var="moveInResultsUrl"
     value="/WEB-INF/pages/amr/meter/moveInResults.jsp" />
-<cti:standardPage title="Move In" module="amr">
-    <cti:standardMenu menuSelection="meters" />
-    <cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-        <cti:crumbLink url="/spring/meter/home?deviceId=${meter.deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
-        &gt; Move In
-    </cti:breadCrumbs>
 
-	<h2>Move In</h2>
-	<br><br>
+<cti:standardPage module="amr" page="moveIn">
 	
 	<%-- show widget or show results? --%>
 	<c:choose>
-		<c:when test="${not (submissionType eq 'moveIn')}">
+		<c:when test="${submissionType != 'moveIn'}">
 	
 			<%-- only show widget if user has permission --%>
             <c:choose>
@@ -40,7 +28,7 @@
 			        </div>
 			    </c:when>
 			    <c:otherwise>
-			    	<div class="notAuthorized">User is not authorized to perform Move In</div>
+			    	<div class="notAuthorized"><i:inline key=".notAuthorized"/></div>
 			    </c:otherwise>
 			</c:choose>
 	    </c:when>
