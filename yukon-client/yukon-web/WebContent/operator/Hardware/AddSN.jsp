@@ -222,7 +222,7 @@ function validate(form) {
 	String dftRoute;
     try
     {
-        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteId());
         dftRoute = "Default - " + dftRoute;
     }
     catch(NotFoundException e)
