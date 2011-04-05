@@ -6,6 +6,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
@@ -3565,20 +3567,17 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	if( getJTextFieldSPIDAddress().getText() == null 
-		 || getJTextFieldSPIDAddress().getText().length() <= 0
-		 || Integer.parseInt(getJTextFieldSPIDAddress().getText()) <= 0 )
-	{
+	if( !isTextValid(getJTextFieldSPIDAddress().getText())) {
 		setErrorString("The SPID address must be 1 or greater");
 		return false;
 	}
 	
-	if( getJCheckBoxGEO().isSelected() && Integer.parseInt(getJTextFieldGeoAddress().getText()) <= 0 ) {
+	if( getJCheckBoxGEO().isSelected() && !isTextValid(getJTextFieldGeoAddress().getText())) {
         setErrorString("When selected the GEO address must be 1 or greater");
         return false;
     }
 	
-	if( getJCheckBoxSUB().isSelected() && Integer.parseInt(getJTextFieldSubAddress().getText()) <= 0 ) {
+	if( getJCheckBoxSUB().isSelected() && !isTextValid(getJTextFieldSubAddress().getText())) {
         setErrorString("When selected the Substation address must be 1 or greater");
         return false;
     }
@@ -3589,27 +3588,27 @@ public boolean isInputValid()
         return false;
     }
 	
-	if( getJCheckBoxZIP().isSelected() && Integer.parseInt(getJTextFieldZipAddress().getText()) <= 0 ) {
+	if( getJCheckBoxZIP().isSelected() && !isTextValid(getJTextFieldZipAddress().getText())) {
         setErrorString("When selected the ZIP address must be 1 or greater");
         return false;
     }
 	
-	if( getJCheckBoxUSER().isSelected() && Integer.parseInt(getJTextFieldUserAddress().getText()) <= 0 ) {
+	if( getJCheckBoxUSER().isSelected() && !isTextValid(getJTextFieldUserAddress().getText())) {
         setErrorString("When selected the User address must be 1 or greater");
         return false;
     }
 	
-	if( getJCheckBoxSerial().isSelected() && Integer.parseInt(getJTextFieldSerialAddress().getText()) <= 0 ) {
+	if( getJCheckBoxSerial().isSelected() && !isTextValid(getJTextFieldSerialAddress().getText())) {
         setErrorString("When selected the Serial address must be 1 or greater");
         return false;
     }
 	
-	if( getJCheckBoxPROG().isSelected() && Integer.parseInt(getJTextFieldProgAddress().getText()) <= 0 ) {
+	if( getJCheckBoxPROG().isSelected() && !isTextValid(getJTextFieldProgAddress().getText())) {
         setErrorString("When selected the Program address must be 1 or greater");
         return false;
     }
 	
-	if( getJCheckBoxSPLINTER().isSelected() && Integer.parseInt(getJTextFieldSplinterAddress().getText()) <= 0 ) {
+	if( getJCheckBoxSPLINTER().isSelected() && !isTextValid(getJTextFieldSplinterAddress().getText())) {
 	    setErrorString("When selected the Splinter address must be 1 or greater");
         return false;
 	}
@@ -3629,6 +3628,11 @@ public boolean isInputValid()
 	
 	return true;
 }
+
+private boolean isTextValid(String text) {
+	return (StringUtils.isNotBlank(text) && Integer.parseInt(text) > 0);
+}
+
 public boolean isRelaySelected()
 {
 	for( int i = 0; i < getJPanelRelayUsage().getComponentCount(); i++ )
