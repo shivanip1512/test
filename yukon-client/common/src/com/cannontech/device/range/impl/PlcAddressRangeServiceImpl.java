@@ -1,13 +1,14 @@
 package com.cannontech.device.range.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
+import com.cannontech.device.range.PlcAddressRangeService;
 
 public class PlcAddressRangeServiceImpl implements PlcAddressRangeService {
 
@@ -15,12 +16,13 @@ public class PlcAddressRangeServiceImpl implements PlcAddressRangeService {
     
     private PaoDefinitionDao paoDefinitionDao;
 
+    private static final Logger logger = YukonLogManager.getLogger(PlcAddressRangeServiceImpl.class);
     
     @Override
     public IntegerRange getAddressRangeForDevice(PaoType paoType) {
        
        if(!paoDefinitionDao.isTagSupported(paoType, PaoTag.PLC_ADDRESS_RANGE)) {
-           CTILogger.debug("No Range found for " + paoType + ". Using Default Range");
+           logger.debug("No Range found for " + paoType + ". Using Default Range");
            return DEFAULT_RANGE;
        }
        
