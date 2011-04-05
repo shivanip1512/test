@@ -58,8 +58,8 @@ import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
-import com.cannontech.device.range.v2.LongRange;
+import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.IntegerRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
@@ -116,8 +116,8 @@ public final class BulkImporter extends Observable implements MessageListener
     private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
-	private DeviceAddressRangeService deviceAddressRangeService = 
-        YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
+	private PlcAddressRangeService plcAddressRangeService = 
+        YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
 	
 public BulkImporter() {
 	super();
@@ -347,8 +347,8 @@ public void runImport(List<ImportData> imps) {
         if(template400SeriesBase instanceof MCT400SeriesBase) {
         	int deviceType = PAOGroups.getDeviceType(template400SeriesBase.getPAOType());
         	PaoType paoType = PaoType.getForId(deviceType);
-            LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
-        	if (!range.isWithinRange(Long.valueOf(address))) {
+            IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
+        	if (!range.isWithinRange(Integer.valueOf(address))) {
         		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
         		log.error(logMsgPrefix + error);
         		errorMsg.add(error);

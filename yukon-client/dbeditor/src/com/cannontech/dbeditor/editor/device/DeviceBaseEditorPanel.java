@@ -81,8 +81,8 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
-import com.cannontech.device.range.v2.LongRange;
+import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
@@ -145,8 +145,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JLabel manufacturerLabel;
     private JLabel modelLabel;
     
-    private DeviceAddressRangeService deviceAddressRangeService =
-        YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
+    private PlcAddressRangeService plcAddressRangeService =
+        YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
     
     class EventHandler implements ActionListener, CaretListener, JCValueListener {
 		public void actionPerformed(ActionEvent e) {
@@ -2006,9 +2006,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		PaoType paoType = PaoType.getForId(deviceType);
             try{
                 int address = Integer.parseInt( getPhysicalAddressTextField().getText() );
-                LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
+                IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
                 // Verify Address is within range
-                if (!range.isWithinRange((long)address)) {
+                if (!range.isWithinRange(address)) {
                    setErrorString("Invalid address. Device address range: " + range );
                    return false;
                 }
@@ -2566,11 +2566,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		getSlaveAddressComboBox().setEditable( true );
     		getSlaveAddressComboBox().removeAllItems();
     		JTextFieldComboEditor editor = new JTextFieldComboEditor();
-    		int devType = PAOGroups.getDeviceType( rBase.getPAOType() );
-    		PaoType paoType = PaoType.getForId(devType);
-    		LongRange longRange = deviceAddressRangeService.getAddressRangeForDevice(paoType);
-    		long minimum = longRange.getMinimum() < 0 ? longRange.getMinimum() : 0;
-    		editor.setDocument( new LongRangeDocument(minimum, longRange.getMaximum()));
           	editor.addCaretListener(eventHandler);  //be sure to fireInputUpdate() messages!
           	getSlaveAddressComboBox().setEditor( editor );
           	getSlaveAddressComboBox().addItem( ((CCU721)rBase).getDeviceAddress().getSlaveAddress() );
@@ -2615,13 +2610,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	
     	CtiUtilities.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());
     	CtiUtilities.setCheckBoxState( getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
-    
-    	if (DeviceTypesFuncs.isCCU(deviceType)) {
-    	    PaoType paoType = PaoType.getForId(deviceType);
-    	    LongRange longRange = deviceAddressRangeService.getAddressRangeForDevice(paoType);
-    	    long minimum = longRange.getMinimum() < 0 ? longRange.getMinimum() : 0;
-    		getPhysicalAddressTextField().setDocument( new LongRangeDocument(minimum, longRange.getMaximum()));
-    	}
     	
     	//This is a bit ugly
     	//The address could come from one of three different types of
@@ -2761,11 +2749,4 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 		}
 		return jPanelMCTSettings;
 	}
-	
-	@Autowired
-    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
-        this.deviceAddressRangeService = deviceAddressRangeService;
-    }
-	
-	
 }

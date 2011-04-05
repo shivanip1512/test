@@ -37,7 +37,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -51,7 +51,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private PaoDefinitionService paoDefinitionService = null;
-    private DeviceAddressRangeService deviceAddressRangeService;
+    private PlcAddressRangeService plcAddressRangeService;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -107,7 +107,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             // test
             PaoType type = PaoType.getForId(deviceType);   
-            if (!deviceAddressRangeService.isValidAddress(type, address)) {
+            if (!plcAddressRangeService.isValidAddress(type, address)) {
                 throw new DeviceCreationException("Invalid address: " + address + ".");
             }
             else if (StringUtils.isBlank(name)) {
@@ -269,8 +269,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Autowired
-    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
-        this.deviceAddressRangeService = deviceAddressRangeService;
+    public void setplcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
+        this.plcAddressRangeService = plcAddressRangeService;
     }
     
     

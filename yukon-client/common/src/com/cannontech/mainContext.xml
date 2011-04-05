@@ -281,7 +281,4 @@
     </bean>
           
     <bean id="energyCompanyRolePropertyDao" class="com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl"/>
-    
-    <bean id="deviceAddressRangeService" class="com.cannontech.device.range.v2.impl.DeviceAddressRangeServiceImpl"/>
-    
 </beans>

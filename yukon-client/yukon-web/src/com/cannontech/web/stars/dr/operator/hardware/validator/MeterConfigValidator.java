@@ -8,12 +8,12 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
-import com.cannontech.device.range.v2.LongRange;
+import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.IntegerRange;
 
 public class MeterConfigValidator extends SimpleValidator<Meter> {
     
-    private DeviceAddressRangeService deviceAddressRangeService;
+    private PlcAddressRangeService plcAddressRangeService;
     
     public MeterConfigValidator() {
         super(Meter.class);
@@ -35,8 +35,8 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
         } else {
             PaoType deviceType = meter.getPaoType();
             try {
-                Long physicalAddress = Long.parseLong(meter.getAddress()); 
-                if(!deviceAddressRangeService.isValidAddress(deviceType, physicalAddress)) {
+                int physicalAddress = Integer.parseInt(meter.getAddress()); 
+                if(!plcAddressRangeService.isValidAddress(deviceType, physicalAddress)) {
                     failAddress(meter, errors);
                 }
             } catch (NumberFormatException e) {
@@ -48,14 +48,14 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
     
     private void failAddress(Meter meter, Errors errors) {
         String paoTypeString = meter.getPaoType().getPaoTypeName();
-        LongRange range = deviceAddressRangeService.getAddressRangeForDevice(meter.getPaoType());
+        IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(meter.getPaoType());
 
         errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", new Object[]{paoTypeString, range}, null);
     }
 
     @Autowired
-    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
-        this.deviceAddressRangeService = deviceAddressRangeService;
+    public void setPlcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
+        this.plcAddressRangeService = plcAddressRangeService;
     }
     
     

@@ -39,8 +39,8 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
-import com.cannontech.device.range.v2.LongRange;
+import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -60,8 +60,8 @@ public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataI
     
     private JCheckBox createPointsCheck = null;
     
-    private DeviceAddressRangeService deviceAddressRangeService = 
-        YukonSpringHook.getBean("deviceAddressRangeService", DeviceAddressRangeService.class);
+    private PlcAddressRangeService plcAddressRangeService = 
+        YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
 
 /**
  * Constructor
@@ -577,8 +577,8 @@ public boolean isInputValid()
 	int address = Integer.parseInt( getAddress());
 	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
 	PaoType paoType = PaoType.getForId(deviceType);
-    LongRange range = deviceAddressRangeService.getAddressRangeForDevice(paoType);
-	if (!range.isWithinRange(Long.valueOf(address))) {
+    IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
+	if (!range.isWithinRange(address)) {
 		setErrorString("Invalid address. Device address range: " + range);
 		getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
 		getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -640,11 +640,6 @@ public void setDeviceType(int deviceType)
 		  getPhysicalAddressLabel().setText("Serial Number:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
-   
-   PaoType paoType = PaoType.getForId(deviceType);
-   LongRange longRange = deviceAddressRangeService.getAddressRangeForDevice(paoType);
-   long minimum = longRange.getMinimum() < 0 ? longRange.getMinimum() : 0;
-   getAddressTextField().setDocument( new LongRangeDocument(minimum, longRange.getMaximum()) );
    
    if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)
             || DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {

@@ -240,6 +240,8 @@
         <property name="paoDefinitionService" ref="paoDefinitionService" />
     </bean>
     
+    <bean id="plcAddressRangeService" class="com.cannontech.device.range.impl.PlcAddressRangeServiceImpl"/>
+    
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
     </bean>
     

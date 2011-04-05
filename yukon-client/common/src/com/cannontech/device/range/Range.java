@@ -1,11 +1,16 @@
-package com.cannontech.device.range.v2;
+package com.cannontech.device.range;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
 
-public class Range<T extends Comparable<T>> {
+/**
+ * Models a range of values defined by one or more value intervals. Each interval is defined 
+ * by a lower and upper bound. These bounds are inclusive.
+ * 
+ */
+public abstract class Range<T extends Comparable<T>> {
     
     public class Interval<E> {
         
@@ -22,7 +27,12 @@ public class Range<T extends Comparable<T>> {
         }
         
         public String toString() {
-            return ""+ lowerBound + " - " + upperBound; 
+            
+            if(lowerBound.equals(upperBound)) {
+                return "" + lowerBound;
+            } else {
+                return ""+ lowerBound + " - " + upperBound;
+            }
         }
     }
     
@@ -39,12 +49,46 @@ public class Range<T extends Comparable<T>> {
         addInterval(lowerBound, upperBound);
     }
     
-    public void addInterval(T lowerBound, T upperBound) {
+    public Range(String range) {
+        this();
+        
+        String[] intervals = range.split(",");
+        
+        for(String interval : intervals) {
+            parseAndAddInterval(interval);
+        }
+    }
+    
+    private void parseAndAddInterval(String subString) {
+        String[] bounds = subString.split("-");
+        
+        if (bounds.length == 1) {
+            T atomic = parseToken(bounds[0].trim());
+            addInterval(atomic, atomic);
+        } else if(bounds.length == 2) {
+            T lowerBound = parseToken(bounds[0].trim());
+            T upperBound = parseToken(bounds[1].trim());
+
+            addInterval(lowerBound, upperBound);
+        } else {
+            throw new InvalidRangeException();
+        }       
+    }
+    
+    private void addInterval(T lowerBound, T upperBound) {
         Interval<T> interval = new Interval<T>(lowerBound, upperBound);
         intervals.add(interval);
     }
-
     
+    protected abstract T parseToken(String token);
+
+    /**
+     * Tests if the parameters is a valid value within the defined range. 
+     * In order to be valid, it has to be within at least one interval that defines the range or
+     * equal to one of it's endpoints since the interval is inclusive.  
+     * @param value
+     * @return true if the given value is within range, otherwise false
+     */
     public boolean isWithinRange(T value) {
         
         for (Interval<T> interval : intervals) {
@@ -66,10 +110,6 @@ public class Range<T extends Comparable<T>> {
 
     public void setRangeDescription(String rangeDescription) {
         this.rangeDescription = rangeDescription;
-    }
-
-    public List<Interval<T>> getAddressIntervals() {
-        return intervals;
     }
     
     public String toString() {

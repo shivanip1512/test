@@ -56,7 +56,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.device.range.v2.DeviceAddressRangeService;
+import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -71,13 +71,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private PointCreationService pointCreationService = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private DBPersistentDao dbPersistentDao = null;
-    private DeviceAddressRangeService deviceAddressRangeService = null;
+    private PlcAddressRangeService plcAddressRangeService = null;
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
     
-        if (!deviceAddressRangeService.isValidAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
+        if (!plcAddressRangeService.isValidAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
         }
 
@@ -431,7 +431,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 	}
     
     @Autowired
-    public void setDeviceAddressRangeService(DeviceAddressRangeService deviceAddressRangeService) {
-        this.deviceAddressRangeService = deviceAddressRangeService;
+    public void setPlcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
+        this.plcAddressRangeService = plcAddressRangeService;
     }
 }
