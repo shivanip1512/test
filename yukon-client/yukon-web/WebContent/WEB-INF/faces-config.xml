@@ -31,8 +31,12 @@
             <property-name>authDao</property-name>
             <value>#{authDao}</value>
         </managed-property>
+        <managed-property>
+            <property-name>cbcHelperService</property-name>
+             <value>#{cbcHelperService}</value>
+        </managed-property>
     </managed-bean>
-
+    
 	<!-- Navigation bean -->
     <managed-bean>
         <managed-bean-name>CtiNavObject</managed-bean-name>

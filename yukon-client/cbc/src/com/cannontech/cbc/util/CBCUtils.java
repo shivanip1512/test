@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
@@ -18,7 +16,6 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
@@ -62,7 +59,6 @@ public final class CBCUtils {
     private static final CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     private static final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
     private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
-    private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
 
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
@@ -786,23 +782,5 @@ public final class CBCUtils {
 
         // we are not pending
         return null;
-    }
-    
-    /**
-     * Retrieves the Capbank fixed/static text property for a LiteYukonUser.  If the user is not in the CAP_BANK_FIXED_TEXT
-     * role, the default value of "Fixed" is returned.
-     */
-    public static String getFixedText(LiteYukonUser yukonUser) {
-        String fixedText = null;
-        
-        try {
-            fixedText = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, yukonUser);
-        } catch(UserNotInRoleException e) {
-            CTILogger.warn("User not in CAP_BANK_FIXED_TEXT role, using default text: Fixed.");
-        }
-        
-        if(StringUtils.isBlank(fixedText)) fixedText = "Fixed";
-        
-        return fixedText;
     }
 }

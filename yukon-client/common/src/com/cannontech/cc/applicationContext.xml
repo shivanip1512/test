@@ -260,4 +260,9 @@
       <property name="deviceDao" ref="deviceDao" />
       <property name="dbPersistentDao" ref="dbPersistentDao" />
   </bean>
+  
+  <bean id="cbcHelperService" class="com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl">
+      <property name="rolePropertyDao" ref="rolePropertyDao" />
+  </bean>
+  
 </beans>

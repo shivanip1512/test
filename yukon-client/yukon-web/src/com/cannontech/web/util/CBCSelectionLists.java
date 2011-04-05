@@ -9,7 +9,7 @@ import javax.faces.model.SelectItem;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
-import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
@@ -65,6 +65,7 @@ public class CBCSelectionLists {
 	
 	private LiteYukonUser yukonUser;
 	private AuthDao authDao;
+	private CbcHelperService cbcHelperService;
 	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -374,7 +375,7 @@ public class CBCSelectionLists {
 	 * @return SelectItem[]
 	 */
 	public SelectItem[] getCapBankOpStates() {
-	    String fixedText = CBCUtils.getFixedText(yukonUser);
+	    String fixedText = cbcHelperService.getFixedText(yukonUser);
 	    capBankOpStates[0] = new SelectItem(fixedText, fixedText);
 		return capBankOpStates;
 	}
@@ -638,4 +639,7 @@ public class CBCSelectionLists {
         this.authDao = authDao;
     }
     
+    public void setCbcHelperService(CbcHelperService cbcHelperService) {
+        this.cbcHelperService = cbcHelperService;
+    }
 }

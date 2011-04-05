@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.gui.util.Colors;
@@ -141,7 +142,6 @@ public class CBCDisplay {
     public static final int SUB_VAR_EST_LOAD_COLUMN = 33;
     public static final int SUB_VOLTS_COLUMN = 34;
     
-    
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
     public static final int AREA_VOLT_REDUCTION = 1;
 
@@ -189,7 +189,8 @@ public class CBCDisplay {
         }
 
         case CB_STATUS_COLUMN: {
-            String fixedCapbankLabel = CBCUtils.getFixedText(userContext.getYukonUser());
+            CbcHelperService cbcHelperService = YukonSpringHook.getBean("cbcHelperService", CbcHelperService.class);
+            String fixedCapbankLabel = cbcHelperService.getFixedText(userContext.getYukonUser());
             
             boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 
                 || capBank.getControlStatus().intValue() >= CBCUtils.getCBCStateNames().length;
