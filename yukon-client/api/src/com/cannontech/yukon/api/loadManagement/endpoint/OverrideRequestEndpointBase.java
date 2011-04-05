@@ -18,12 +18,13 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public abstract class OverrideRequestEndpointBase {
     
-    private AccountEventLogService accountEventLogService;
-    private OptOutService optOutService;
     private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
-    private RolePropertyDao rolePropertyDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
+    
+    protected AccountEventLogService accountEventLogService;
+    protected OptOutService optOutService;
+    protected LMHardwareBaseDao lmHardwareBaseDao;
+    protected RolePropertyDao rolePropertyDao;
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
         try {
@@ -47,17 +48,9 @@ public abstract class OverrideRequestEndpointBase {
         this.accountEventLogService = accountEventLogService;
     }
     
-    protected AccountEventLogService getAccountEventLogService() {
-        return accountEventLogService;
-    }
-    
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
-    }
-    
-    protected OptOutService getOptOutService() {
-        return optOutService;
     }
     
     @Autowired
@@ -73,10 +66,6 @@ public abstract class OverrideRequestEndpointBase {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    protected RolePropertyDao getRolePropertyDao() {
-        return rolePropertyDao;
     }
     
     @Autowired

@@ -56,10 +56,10 @@ public class CancelActiveOverrideRequestEndpoint extends OverrideRequestEndpoint
         LMHardwareBase lmHardwareBase = null;
         
         try {
-            getAccountEventLogService().activeOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
+            accountEventLogService.activeOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
                                                                          cancelOptOutHelper.getSerialNumber());
             
-            getRolePropertyDao().verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
 
             customerAccount = getCustomerAccount(cancelOptOutHelper.getAccountNumber(), user);
             lmHardwareBase = getLMHardwareBase(cancelOptOutHelper.getSerialNumber());
@@ -82,7 +82,7 @@ public class CancelActiveOverrideRequestEndpoint extends OverrideRequestEndpoint
                                                                     " has no active optout");
                 fe = XMLFailureGenerator.generateFailure(newOptOutCancelRequest, e, e.getErrorCode(), e.getMessage());
             } else {
-                getOptOutService().cancelOptOut(eventIdList, user);
+                optOutService.cancelOptOut(eventIdList, user);
                 resp.addContent(XmlUtils.createStringElement("success", ns, "The opt out was canceled successfully"));
             }
             

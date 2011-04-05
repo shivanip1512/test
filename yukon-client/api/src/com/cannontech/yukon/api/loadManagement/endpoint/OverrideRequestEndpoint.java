@@ -45,12 +45,12 @@ public class OverrideRequestEndpoint extends OverrideRequestEndpointBase{
 
         Element fe = null;
         try {
-            getRolePropertyDao().verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             
             CustomerAccount customerAccount = getCustomerAccount(optOutHelper.getAccountNumber(), user);
             LMHardwareBase lmHardwareBase = getLMHardwareBase(optOutHelper.getSerialNumber());
             
-            getAccountEventLogService().optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
+            accountEventLogService.optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
                                                              lmHardwareBase.getManufacturerSerialNumber(),
                                                              optOutHelper.getStartDate());
             
@@ -63,7 +63,7 @@ public class OverrideRequestEndpoint extends OverrideRequestEndpointBase{
                 request.setStartDate(optOutHelper.getStartDate());
             }
            
-            getOptOutService().optOutWithValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
+            optOutService.optOutWithValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
             
             resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         } catch (OptOutException e) {

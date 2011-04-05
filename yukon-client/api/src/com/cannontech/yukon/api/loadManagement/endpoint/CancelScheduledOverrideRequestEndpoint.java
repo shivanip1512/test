@@ -56,9 +56,9 @@ public class CancelScheduledOverrideRequestEndpoint extends OverrideRequestEndpo
         LMHardwareBase lmHardwareBase = null;
         
         try {
-            getAccountEventLogService().scheduledOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
+            accountEventLogService.scheduledOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
                                                                             cancelOptOutHelper.getSerialNumber());
-            getRolePropertyDao().verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
            
             customerAccount = getCustomerAccount(cancelOptOutHelper.getAccountNumber(), user);
             lmHardwareBase = getLMHardwareBase(cancelOptOutHelper.getSerialNumber());
@@ -78,7 +78,7 @@ public class CancelScheduledOverrideRequestEndpoint extends OverrideRequestEndpo
             }
             
             if (scheduledFound) {
-                getOptOutService().cancelOptOut(eventIdList, user);
+                optOutService.cancelOptOut(eventIdList, user);
                 resp.addContent(XmlUtils.createStringElement("success", ns, ""));
             } else {
                 throw new CancelOptOutException("No scheduled opt outs found for device " + lmHardwareBase.getManufacturerSerialNumber());
