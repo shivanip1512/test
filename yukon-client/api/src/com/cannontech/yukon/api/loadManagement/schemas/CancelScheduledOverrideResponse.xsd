@@ -7,7 +7,7 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-            Server response for an attempt to cancel a scheduled opt out 
+            Server response for an attempt to cancel a scheduled override 
             on a device.
         </xsd:documentation>
     </xsd:annotation>

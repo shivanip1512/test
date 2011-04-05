@@ -6,6 +6,6 @@
   <failure>
     <errorCode>CancelFailed</errorCode>
     <errorReference>FK0190171296</errorReference>
-    <errorDescription>No scheduled opt outs found for device 3453070372</errorDescription>
+    <errorDescription>No scheduled overrides found for device 3453070372</errorDescription>
   </failure>
 </cancelScheduledOverrideResponse>

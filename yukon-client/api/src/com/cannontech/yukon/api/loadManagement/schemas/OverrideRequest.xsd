@@ -10,7 +10,7 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-         Request an opt out for an account and hardware.
+         Request an override for an account and hardware.
          Exclusion of startDate will schedule the override for 'now'. 
         </xsd:documentation>
     </xsd:annotation>
