@@ -11,7 +11,7 @@ public class OptOutCountLimitException extends OptOutException {
 
     @Override
     public String getMessage() {
-        return "Device " + serialNumber + " has already reached its opt out limit.";
+        return "Device " + serialNumber + " has already reached its override limit.";
     }
 
 }

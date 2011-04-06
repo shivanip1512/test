@@ -11,7 +11,7 @@ public class OptOutAlreadyScheduledException extends OptOutException {
 
     @Override
     public String getMessage() {
-        return "Device "+ serialNumber + "is already scheduled for an opt out.";
+        return "An override on device "+ serialNumber + "is already scheduled.";
     }
 
     public String getSerialNumber() {
