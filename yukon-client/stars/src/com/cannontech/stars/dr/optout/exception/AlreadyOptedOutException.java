@@ -9,12 +9,12 @@ public class AlreadyOptedOutException extends OptOutException {
 
     public AlreadyOptedOutException(String serialNumber) {
         super("OverrideAlreadyActive");
-        message = "Device " + serialNumber + " is already opted out.";
+        message = "An override on device " + serialNumber + " is already active.";
     }
     
     public AlreadyOptedOutException(int inventoryId) {
         super("OverrideAlreadyActive");
-        message = "Inventory with id " + inventoryId + " is already opted out";
+        message = "An override on device with id " + inventoryId + " is already active.";
     }
 
     @Override
