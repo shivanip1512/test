@@ -15,23 +15,23 @@
     <cti:standardMenu/>
     
     <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
-    	<cti:param name="areaId" value="${areaId}"/>
-    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+        <cti:param name="areaId" value="${areaId}"/>
+        <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     </cti:url>
     
     <cti:breadCrumbs>
-    	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-    	<c:choose>
-    		<c:when test="${isSpecialArea}">
-    		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
-    		</c:when>
-    		<c:otherwise>
-    			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
-    		</c:otherwise>
-    	</c:choose>
+        <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+        <c:choose>
+            <c:when test="${isSpecialArea}">
+                  <cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
+            </c:when>
+            <c:otherwise>
+                <cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
+            </c:otherwise>
+        </c:choose>
     
         <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-        <cti:crumbLink title="${substation.ccName}" />	
+        <cti:crumbLink title="${substation.ccName}" />    
     
     </cti:breadCrumbs>
     
@@ -67,9 +67,9 @@
             return void(0);
         }
     
-       	function onGreyBoxClose () {
-       		window.location.href = window.location.href;
-       	}
+           function onGreyBoxClose () {
+               window.location.href = window.location.href;
+           }
     
      </script>
     
@@ -85,14 +85,14 @@
     </c:choose>
     
     <tags:abstractContainer type="box" title="Substation" hideEnabled="false">
-		<table id="substationTable" class="tierTable">
+        <table id="substationTable" class="tierTable">
             
             <thead>
-			    <tr>
-    				<th>Substation Name</th>
+                <tr>
+                    <th>Substation Name</th>
                     <th>Actions</th>
-    				<th>State</th>
-    			</tr>
+                    <th>State</th>
+                </tr>
             </thead>
             
             <tr class="tableCell" id="tr_substation_${substation.ccId}">
@@ -113,46 +113,46 @@
                 </td>
                 
                 <td>
-                	<capTags:warningImg paoId="${substation.ccId}" type="SUBSTATION"/>
+                    <capTags:warningImg paoId="${substation.ccId}" type="SUBSTATION"/>
                     <a id="substation_state_${substation.ccId}" <c:if test="${hasSubstationControl}">href="javascript:void(0);" onclick="getSubstationMenu('${substation.ccId}', event);"</c:if>>
-						<cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE"/>
+                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE"/>
                     </a>
                     <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${substation.ccId}')" initialize="true" value="SUBSTATION/${substation.ccId}/STATE"/>
                 </td>
                 
             </tr>
 
-		</table>
-	</tags:abstractContainer>
-	
-	<br>
+        </table>
+    </tags:abstractContainer>
+    
+    <br>
 
-	<tags:boxContainer title="Substation Bus" hideEnabled="true" showInitially="true">
+    <tags:boxContainer title="Substation Bus" hideEnabled="true" showInitially="true">
 
-		<table id="subBusTable" class="tierTable rowHighlighting">
+        <table id="subBusTable" class="tierTable rowHighlighting">
             
             <thead>
-    			
+                
                 <tr>
-    				<th>
+                    <th>
                         <input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" class="tierCheckBox">
-    				    <span class="checkBoxLabel">Substation Bus Name</span>
-    				</th>
+                        <span class="checkBoxLabel">Substation Bus Name</span>
+                    </th>
                     <th>Actions</th>
-    				<th>State</th>
-    				<th>Target</th>
-    				<th>kVAR Load / Est.</th>
-    				<th>Date/Time</th>
-    				<th>PFactor / Est.</th>
-    				<th>kW / Volts</th>
-    				<th>Daily / <span class="nonwrapping">Max Ops</span></th>
-    			</tr>
+                    <th>State</th>
+                    <th>Target</th>
+                    <th>kVAR Load / Est.</th>
+                    <th>Date/Time</th>
+                    <th>PFactor / Est.</th>
+                    <th>kW / Volts</th>
+                    <th>Daily / <span class="nonwrapping">Max Ops</span></th>
+                </tr>
                 
             </thead>
 
             <c:forEach var="viewableSubBus" items="${subBusList}">
                 <!-- Setup Variables -->
-    			<c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
+                <c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
                 <cti:url value="${onelineCBCServlet}" var="oneLineLink">
                     <cti:param name="id" value="${thisSubBusId}"/>
                     <cti:param name="redirectURL" value="${fullURL}"/>
@@ -171,8 +171,8 @@
                     <cti:param name="specialArea" value="${isSpecialArea}"/>
                 </cti:url>
                 
-    			<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>"  id="tr_sub_${thisSubBusId}">
-    				
+                <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>"  id="tr_sub_${thisSubBusId}">
+                    
                     <td id="anc_${thisSubBusId}">
                         <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${thisSubBusId}">
                         <input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}" class="tierCheckBox">
@@ -180,10 +180,10 @@
                            onclick="showRowElems('subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;">
                         <spring:escapeBody htmlEscape="true">${viewableSubBus.subBus.ccName}</spring:escapeBody>
                         <a href="${dualBusLink}" class="tierIconLink">
-                        	<capTags:dualBusImg paoId="${thisSubBusId}" type="SUBBUS"/>
+                            <capTags:dualBusImg paoId="${thisSubBusId}" type="SUBBUS"/>
                         </a>
                         <capTags:verificationImg paoId="${thisSubBusId}" type="SUBBUS"/>
-    				</td>
+                    </td>
                     
                     <td>
                         <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisSubBusId}" styleClass="tierIconLink"/>
@@ -199,166 +199,168 @@
                         </c:if>
                     </td>
                     
-    				<td>
+                    <td>
                         <capTags:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>
-    					<a id="subbus_state_${thisSubBusId}"<c:if test="${hasSubBusControl}">href="javascript:void(0);" onclick="getSubBusMenu('${thisSubBusId}', event);"</c:if>>
+                        <a id="subbus_state_${thisSubBusId}"<c:if test="${hasSubBusControl}">href="javascript:void(0);" onclick="getSubBusMenu('${thisSubBusId}', event);"</c:if>>
                             <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE"/>
-    					</a>
+                        </a>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" initialize="true" value="SUBBUS/${thisSubBusId}/STATE"/>
-    				</td>
+                    </td>
                     
-    				<td>
+                    <td>
                         <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                         <c:choose>
                             <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
-    		                    <a onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
-    								onmouseout="nd();">
-									<c:choose>
-										<c:when test="${viewableSubBus.ivvcControlled}">
-			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
-			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/></span>
-			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
-			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLAG"/></span>
-			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
-			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/></span>
-			                            </c:when>
-			                            <c:otherwise>
-	    									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
-	    								</c:otherwise>
-    								</c:choose>
-    							</a>
+                                <a <c:if test="${viewableSubBus.showTargetTooltip}">
+                                        onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
+                                        onmouseout="nd();"
+                                    </c:if>>
+                                    <c:choose>
+                                        <c:when test="${viewableSubBus.ivvcControlled}">
+                                            <span style='font-weight:bold;font-size:11px;'>U:</span>
+                                            <span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/></span>
+                                            <span style='font-weight:bold;font-size:11px;'> L:</span>
+                                            <span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLAG"/></span>
+                                            <span style='font-weight:bold;font-size:11px;'> PF:</span>
+                                            <span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/></span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
                             </c:when>
                             <c:otherwise>
-                            	<span class="updatingSpan">
-                                	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+                                <span class="updatingSpan">
+                                    <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
                                 </span>
                             </c:otherwise>
-    					</c:choose>
-    					<div class="ccPFPopup" id="subPFPopup_${thisSubBusId}_${isPowerFactorControlled}" style="display: none;" >
+                        </c:choose>
+                        <div class="ccPFPopup" id="subPFPopup_${thisSubBusId}_${isPowerFactorControlled}" style="display: none;" >
                             <span class="updatingSpan">
-                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
+                                <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
                             </span>     
-    					</div>
-    				</td>
-    				<td>
-    					<c:choose>
-    						<c:when test="${viewableSubBus.subBus.usePhaseData}">
-    							<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
-    							   onmouseout="nd();">
-									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
-			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
+                        </div>
+                    </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${viewableSubBus.subBus.usePhaseData}">
+                                <a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
+                                   onmouseout="nd();">
+                                    <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                                    <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
                                     </cti:classUpdater>
-			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
-    		                    </a>
-    						</c:when>
-    						<c:otherwise>
-    							<a>
-									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
-			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
+                                    <span> / </span> 
+                                    <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <a>
+                                    <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                                    <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
                                     </cti:classUpdater>
-			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
-    		                    </a>
-    						</c:otherwise>
-    					</c:choose>
-    				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
+                                    <span> / </span> 
+                                    <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
+                        <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
                             <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
-    				    </div>
-    				</td>
-    				<td>
+                        </div>
+                    </td>
+                    <td>
                         <a id="dateTime_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DATE_TIME"/></a>
-    				</td>
-    				<td>
+                    </td>
+                    <td>
                         <a id="pFactor_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="PFACTOR"/></a>
-    				</td>
-    				<td>
+                    </td>
+                    <td>
                         <a id="kwVolts_${thisSubBusId}">
-                        	<span class="updatingSpan">
-                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW"/>
+                            <span class="updatingSpan">
+                                <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW"/>
                             </span>
-                        	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/WATT_QUALITY">
+                            <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/WATT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
-                        	<span style="vertical-align:top"> / </span>
-                        	<span class="updatingSpan">
-                        		<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS"/>
-                        	</span>
-                        	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/VOLT_QUALITY">
+                            <span style="vertical-align:top"> / </span>
+                            <span class="updatingSpan">
+                                <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS"/>
+                            </span>
+                            <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/VOLT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         </a>
-    				</td>
-    				<td>
+                    </td>
+                    <td>
                         <a id="dailyMaxOps_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
-    				</td>
+                    </td>
                     
-    			</tr>
+                </tr>
                 
-    			<tr class="tableCellSnapShot">
-    				<td colspan="9" class="tableCellSnapShot">
-        				<table id="subSnapShot${thisSubBusId}">
-        				
-        			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td colspan="2">
-        				            <span class="snapShotSubLabel">Substation Info</span>
-        				        </td>	
-        			        </tr>
-        			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="smallIndent">Area: </span></td>
-        	                    <td>
+                <tr class="tableCellSnapShot">
+                    <td colspan="9" class="tableCellSnapShot">
+                        <table id="subSnapShot${thisSubBusId}">
+                        
+                            <tr class="tableCellSnapShot" style="display: none;">
+                                <td colspan="2">
+                                    <span class="snapShotSubLabel">Substation Info</span>
+                                </td>    
+                            </tr>
+                            <tr class="tableCellSnapShot" style="display: none;">
+                                <td><span class="smallIndent">Area: </span></td>
+                                <td>
                                     <span class="smallIndent">${areaName}</span>
-        		                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED"/></span>
-        				        </td>
-        					</tr>
-        			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="smallIndent">Control Method: </span></td>
-        				        <td>
+                                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED"/></span>
+                                </td>
+                            </tr>
+                            <tr class="tableCellSnapShot" style="display: none;">
+                                <td><span class="smallIndent">Control Method: </span></td>
+                                <td>
                                     <span class="smallIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</span>
                                 </td>
-        					</tr>
-        			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="smallIndent">Var Point: </span></td>
-        				        <td>
+                            </tr>
+                            <tr class="tableCellSnapShot" style="display: none;">
+                                <td><span class="smallIndent">Var Point: </span></td>
+                                <td>
                                     <span class="smallIndent">
-                				        <c:choose>
-                					        <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
-                					        <c:otherwise>(none)</c:otherwise>
-                				        </c:choose>
-        				            </span>
+                                        <c:choose>
+                                            <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
+                                            <c:otherwise>(none)</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </td>
-        					</tr>
-        				    <tr class="tableCellSnapShot" style="display: none;">
+                            </tr>
+                            <tr class="tableCellSnapShot" style="display: none;">
                                 <td><span class="smallIndent">Watt Point: </span></td>
                                 <td>
                                     <span class="smallIndent">
-        			        	    <c:choose>
-        					           <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
-        					           <c:otherwise>(none)</c:otherwise>
-        				            </c:choose>
+                                    <c:choose>
+                                       <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
+                                       <c:otherwise>(none)</c:otherwise>
+                                    </c:choose>
                                     </span>
                                 </td>
-        					</tr>
-        				    <tr class="tableCellSnapShot" style="display: none;">
+                            </tr>
+                            <tr class="tableCellSnapShot" style="display: none;">
                                 <td><span class="smallIndent">Volt Point: </span></td>
                                 <td><span class="smallIndent">
-            			        	<c:choose>
-            					        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
-            					        <c:otherwise>(none)</c:otherwise>
-            				        </c:choose>
+                                    <c:choose>
+                                        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
+                                        <c:otherwise>(none)</c:otherwise>
+                                    </c:choose>
                                     </span>
                                 </td>
-        			        </tr>
-        				
-        				</table>
-    				</td>
-    			</tr>
+                            </tr>
+                        
+                        </table>
+                    </td>
+                </tr>
     
-    		</c:forEach>
-		</table>
-	</tags:boxContainer>
+            </c:forEach>
+        </table>
+    </tags:boxContainer>
     <c:if test="${fn:length(subBusList) > 1}">
         <tags:boxContainerFooter>
             <cti:labeledImg key="filter"/>
@@ -371,46 +373,46 @@
         </tags:boxContainerFooter>
     </c:if>
 
-	<br>
+    <br>
 
     <tags:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
 
-		<table id="fdrTable" class="tierTable rowHighlighting">
+        <table id="fdrTable" class="tierTable rowHighlighting">
             
             <thead>
             
-            	<tr>
-             		<th>
+                <tr>
+                     <th>
                         <input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" class="tierCheckBox">
                         <span class="checkBoxLabel">Feeder Name</span>
                     </th>
                     <th>Actions</th>
-             		<th>State</th>
-             		<th>Target</th>
-             		<th>kVAR Load / Est.</th>
-             		<th>Date/Time</th>
-             		<th>PFactor / Est.</th>
-             		<th>kW / Volts</th>
+                     <th>State</th>
+                     <th>Target</th>
+                     <th>kVAR Load / Est.</th>
+                     <th>Date/Time</th>
+                     <th>PFactor / Est.</th>
+                     <th>kW / Volts</th>
                     <th>Daily / <span class="nonwrapping">Max Ops</span></th>
-             	</tr>
+                 </tr>
                 
             </thead>
             
             <!-- Reset the alternating row style -->
             <tags:alternateRowReset/>
             
-			<c:forEach var="viewfeeder" items="${feederList}">
+            <c:forEach var="viewfeeder" items="${feederList}">
                 <c:set var="thisFeederId" value="${viewfeeder.feeder.ccId}"/>
                 <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
-				
+                
                 <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>" id="tr_feeder_${thisFeederId}_parent_${parentId}">
-					<td>
+                    <td>
                         <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}">
-						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" class="tierCheckBox">
-						<span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
+                        <input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" class="tierCheckBox">
+                        <span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
                             <spring:escapeBody htmlEscape="true">${viewfeeder.feeder.ccName}</spring:escapeBody>
                         </span>
-					</td>
+                    </td>
                     
                     <td>
                         <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisFeederId}" styleClass="tierIconLink"/>
@@ -419,105 +421,107 @@
                         </c:if>
                         <cti:img key="location" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
                     </td>
-					
-					<td>
+                    
+                    <td>
                         <capTags:warningImg paoId="${thisFeederId}" type="FEEDER"/>
                         <a id="feeder_state_${thisFeederId}"<c:if test="${hasFeederControl}">href="javascript:void(0);" onclick="getFeederMenu('${thisFeederId}', event);"</c:if>>
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
-						</a>
+                        </a>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
-					</td>
+                    </td>
                     
-					<td>
+                    <td>
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <c:choose>
                             <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
-		                        <a onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
-								   onmouseout="nd();">
-								   	<c:choose>
-										<c:when test="${viewfeeder.ivvcControlled}">
-			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
-			                            	<span class="updatingSpan">
-			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
-			                            	</span>
-			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
-			                            	<span class="updatingSpan">
-			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
-											</span>
-			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
-			                            	<span class="updatingSpan">
-			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
-			                            	</span>
-			                            </c:when>
-			                            <c:otherwise>
-	    									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" />
-	    								</c:otherwise>
-    								</c:choose>
-		                        </a>
-	                        </c:when>
-	                        <c:otherwise>
-	                           <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
-	                        </c:otherwise>
+                                <a <c:if test="${viewfeeder.showTargetTooltip}">
+                                        onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
+                                        onmouseout="nd();"
+                                    </c:if>>
+                                    <c:choose>
+                                        <c:when test="${viewfeeder.ivvcControlled}">
+                                            <span style='font-weight:bold;font-size:11px;'>U:</span>
+                                            <span class="updatingSpan">
+                                                <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
+                                            </span>
+                                            <span style='font-weight:bold;font-size:11px;'> L:</span>
+                                            <span class="updatingSpan">
+                                                <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+                                            </span>
+                                            <span style='font-weight:bold;font-size:11px;'> PF:</span>
+                                            <span class="updatingSpan">
+                                                <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                               <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+                            </c:otherwise>
                         </c:choose>
                         <div class="ccPFPopup" id="feederPFPopup_${thisFeederId}_${isPowerFactorControlled}" style="display: none;">
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
-					   </div>
-					</td>
+                       </div>
+                    </td>
                     
-					<td>
-						<c:choose>
-							<c:when test="${viewfeeder.feeder.usePhaseData}">
-		                        <a onmouseover="showDynamicPopupAbove($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
-			                    	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
+                    <td>
+                        <c:choose>
+                            <c:when test="${viewfeeder.feeder.usePhaseData}">
+                                <a onmouseover="showDynamicPopupAbove($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
+                                    <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+                                    <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                                     </cti:classUpdater>    
-			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
-		                        </a>
-						  	</c:when>
-						  	<c:otherwise>
-								<a>
-									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
-			                        <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
+                                    <span> / </span> 
+                                    <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
+                                </a>
+                              </c:when>
+                              <c:otherwise>
+                                <a>
+                                    <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+                                    <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                                      </cti:classUpdater>
-			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
-		                        </a>
-						  	</c:otherwise>
-						</c:choose>
+                                    <span> / </span> 
+                                    <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
+                                </a>
+                              </c:otherwise>
+                        </c:choose>
                         <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                         </div>
-					</td>
+                    </td>
                     
-					<td>
+                    <td>
                         <a id="dateTime_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DATE_TIME"/></a>
-					</td>
-					<td>
+                    </td>
+                    <td>
                         <a id="pFactor_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="PFACTOR"/></a>
-					</td>
-					<td>
+                    </td>
+                    <td>
                         <a id="kwVolts_${thisFeederId}">
-                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW"/> 
-                        	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/WATT_QUALITY">
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW"/> 
+                            <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/WATT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
-                        	/
-                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="VOLTS"/>
-                        	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/VOLT_QUALITY">
+                            /
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="VOLTS"/>
+                            <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/VOLT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         </a>
-					</td>
-					<td>
+                    </td>
+                    <td>
                         <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
-					</td>
-				</tr>
-			</c:forEach>
+                    </td>
+                </tr>
+            </c:forEach>
 
-		</table>
+        </table>
 
     </tags:abstractContainer>
     <c:if test="${fn:length(feederList) > 1}">
@@ -532,9 +536,9 @@
         </tags:boxContainerFooter>
     </c:if>
 
-	<br>
-	
-	<tags:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
+    <br>
+    
+    <tags:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
         
         <table id="capBankTable" class="tierTable rowHighlighting">
         
@@ -559,19 +563,19 @@
                     <th>Bank Size</th>
                     <th>Parent Feeder</th>
                     <th>Daily / Max / <span class="nonwrapping">Total Ops</span></th>
-    			</tr>
+                </tr>
             
             </thead>
             
             <!-- Reset the alternating row style -->
             <tags:alternateRowReset/>
             
-    		<c:forEach var="viewableCapBank" items="${capBankList}">
+            <c:forEach var="viewableCapBank" items="${capBankList}">
                 
                 <c:set var="thisCapBankId" value="${viewableCapBank.capBankDevice.ccId}"/>
                 <c:set var="parentId" value="${viewableCapBank.capBankDevice.parentID}"/>
                 
-    			<tr id="tr_cap_${thisCapBankId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                <tr id="tr_cap_${thisCapBankId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
                     <td>
                         <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}">
                         <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}" class="tierCheckBox">
@@ -604,18 +608,18 @@
                         <c:if test="${hasCapbankControl}"><a href="javascript:void(0);" onclick="getCapBankMenu('${thisCapBankId}', event);"></c:if>
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
                         <c:if test="${hasCapbankControl}"></a></c:if>
-    				</td>
+                    </td>
                     
                     <td>
                         <cti:img key="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" styleClass="tierIconLink"/>
-	                    <c:if test="${hasEditingRole}">
+                        <c:if test="${hasEditingRole}">
                             <cti:img key="remove" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" styleClass="tierIconLink"/>
                         </c:if>
-    					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
+                        <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <span onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
                                 <cti:img key="view" href="javascript:showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')" styleClass="tierIconLink"/>
                             </span>
-    					</cti:checkRolesAndProperties>
+                        </cti:checkRolesAndProperties>
                     </td>
     
                     <td>
@@ -627,89 +631,89 @@
                                     href="javascript:void(0);" onclick ="getCapBankSystemMenu('${thisCapBankId}', event);"
                                 </c:if> 
                             >
-    					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
+                               <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
                             </a>
                         </cti:capBankStateColor>
                         
-    				    <span id="opcount_span${thisCapBankId}" style="display: none;" >Op Count:
-    					   <input type="text" id="opcount_${thisCapBankId}" maxlength="5" size="5">
-    					   <a href="javascript:void(0);" onclick="executeCapBankResetOpCount(${thisCapBankId});" >Reset</a>
-    				    </span>
-    					<div id="capBankStatusPopup_${thisCapBankId}" style="display: none">
+                        <span id="opcount_span${thisCapBankId}" style="display: none;" >Op Count:
+                           <input type="text" id="opcount_${thisCapBankId}" maxlength="5" size="5">
+                           <a href="javascript:void(0);" onclick="executeCapBankResetOpCount(${thisCapBankId});" >Reset</a>
+                        </span>
+                        <div id="capBankStatusPopup_${thisCapBankId}" style="display: none">
                             <table class='tierTable'>
-                            	<tr>
-                            		<th>kVAR</th>
-                            		<th>PhaseA</th>
-                            		<th>PhaseB</th>
-                            		<th>PhaseC</th>
-                            		<th>Total</th>
-                            	</tr>
-                            	<tr>
-	                            	<td>Before:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
-                            	</tr>
-                            	<tr>
-	                            	<td>After:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
-                            	</tr>
-                            	<tr>
-	                            	<td>Change:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
-                            	</tr>
+                                <tr>
+                                    <th>kVAR</th>
+                                    <th>PhaseA</th>
+                                    <th>PhaseB</th>
+                                    <th>PhaseC</th>
+                                    <th>Total</th>
+                                </tr>
+                                <tr>
+                                    <td>Before:</td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
+                                </tr>
+                                <tr>
+                                    <td>After:</td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Change:</td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+                                    <td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
+                                </tr>
                             </table>
-    					</div>
-    				</td>
+                        </div>
+                    </td>
                     
-    				<td>
+                    <td>
                         <a id="dateTime_${thisCapBankId}"
-    				       onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'), 250)"
-    				       onmouseout="nd()">
+                           onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'), 250)"
+                           onmouseout="nd()">
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME"/> 
                         </a>
-    				</td>
+                    </td>
                     
-    				<td>
+                    <td>
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_SIZE"/>
                     </td>
                     
                     <td>
                         <a href="javascript:void(0);"
-    	                    <c:if test="${hasCapbankControl}">
-    							<c:choose>
-    							<c:when test="${viewableCapBank.capBankDevice.bankMoved}">
-    			                    class="warning pointer" onclick="getCapBankTempMoveBack('${thisCapBankId}', event);" 
-    		                    </c:when>
-    		                    <c:otherwise>
-    		                        onmouseover="statusMsgAbove(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
-    		                        onmouseout="nd();"
-    		                        onclick="return GB_show('CapBank Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
-    		                            '/spring/capcontrol/move/bankMove?bankid=${thisCapBankId}', 580, 710, onGreyBoxClose);"
-    		                    </c:otherwise>
-    		                    </c:choose>
-    		                </c:if>
+                            <c:if test="${hasCapbankControl}">
+                                <c:choose>
+                                <c:when test="${viewableCapBank.capBankDevice.bankMoved}">
+                                    class="warning pointer" onclick="getCapBankTempMoveBack('${thisCapBankId}', event);" 
+                                </c:when>
+                                <c:otherwise>
+                                    onmouseover="statusMsgAbove(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
+                                    onmouseout="nd();"
+                                    onclick="return GB_show('CapBank Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
+                                        '/spring/capcontrol/move/bankMove?bankid=${thisCapBankId}', 580, 710, onGreyBoxClose);"
+                                </c:otherwise>
+                                </c:choose>
+                            </c:if>
                         >
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>
-                    	</a>                    
+                        </a>                    
                     </td>
-					<td>
-						<a>
-						  <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
+                    <td>
+                        <a>
+                          <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
                         </a>
-					</td>
-				</tr>
+                    </td>
+                </tr>
                 
-			</c:forEach>
+            </c:forEach>
             
-		</table>
+        </table>
             
-	</tags:abstractContainer>
+    </tags:abstractContainer>
 </cti:standardPage>

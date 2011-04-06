@@ -29,8 +29,16 @@ import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 public class CapControlWebUtils {
+    
+    private static Builder<ControlAlgorithm> builder = ImmutableSet.builder();
+    private static ImmutableSet<ControlAlgorithm> noToolTipAlgorithms = builder.add(ControlAlgorithm.VOLTS,
+                                                    ControlAlgorithm.MULTI_VOLT,
+                                                    ControlAlgorithm.MULTI_VOLT_VAR,
+                                                    ControlAlgorithm.TIME_OF_DAY).build();
     
     public static List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
         List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
@@ -41,6 +49,7 @@ public class CapControlWebUtils {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBus(subBus);
             viewable.setIvvcControlled(subBus.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
+            viewable.setShowTargetTooltip(!noToolTipAlgorithms.contains(subBus.getControlUnits()));
             
             int alternateStationId = 0;
             int alternateAreaId = 0;
@@ -95,6 +104,7 @@ public class CapControlWebUtils {
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
             viewable.setIvvcControlled(feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
+            viewable.setShowTargetTooltip(!noToolTipAlgorithms.contains(feeder.getControlUnits()));
             
             if (feeder.getOriginalParentId() > 0) {
                 viewable.setMovedFeeder(true); 

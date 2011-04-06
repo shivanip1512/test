@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
-import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -17,6 +16,7 @@ public class ViewableSubBus {
 	private int alternateAreaId;
 	private List<ViewableFeeder> feeders = null;
 	private boolean ivvcControlled = false;
+	private boolean showTargetTooltip = true;
 	
 	public SubBus getSubBus() {
 		return this.subBus;
@@ -81,5 +81,13 @@ public class ViewableSubBus {
     public void setIvvcControlled(boolean ivvcControlled) {
         this.ivvcControlled = ivvcControlled;
     }
-    
+
+    public boolean isShowTargetTooltip() {
+        return showTargetTooltip;
+    }
+
+    public void setShowTargetTooltip(boolean showTargetTooltip) {
+        this.showTargetTooltip = showTargetTooltip;
+    }
+
 }

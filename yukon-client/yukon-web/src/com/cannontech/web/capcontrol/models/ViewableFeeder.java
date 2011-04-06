@@ -12,6 +12,7 @@ public class ViewableFeeder {
 	private boolean movedFeeder = false;
 	private List<ViewableCapBank> capbanks = null;
 	private boolean ivvcControlled = false;
+    private boolean showTargetTooltip = true;
 	
 	public Feeder getFeeder() {
 		return feeder;
@@ -60,4 +61,13 @@ public class ViewableFeeder {
 			return false;
 		}
     }
+
+    public boolean isShowTargetTooltip() {
+        return showTargetTooltip;
+    }
+
+    public void setShowTargetTooltip(boolean showTargetTooltip) {
+        this.showTargetTooltip = showTargetTooltip;
+    }
+
 }
