@@ -86,6 +86,8 @@ public class ODEvent extends MultispeakEvent{
         loc.setMeterNo(meterNumber);
         ode.setOutageLocation(loc);
         ode.setComments(returnMsg.getResultString());
+        ode.setOutageEventType(OutageEventType.NoResponse);
+        ode.setErrorString("Unknown return status: " + returnMsg.getResultString());
         
         ImmutableSetMultimap<OutageEventType, Integer> outageConfig = multispeakMeterService.getOutageConfig();
         ImmutableSet<OutageEventType> supportedEventTypes = multispeakMeterService.getSupportedEventTypes();

@@ -217,10 +217,9 @@ public interface MultispeakMeterService {
      * Returns an ImmutableSetMultimap of the OutageEventTypes and which error codes are associated
      * with them.
      * <p>
-     * By default we assign error codes to the Outage, NoResponse, and Restoration OutageEventTypes:
+     * By default we assign error codes to the Outage and Restoration OutageEventTypes:
      * <ul>
      * <li>OutageEventType.Outage: 20, 57, 72
-     * <li>OutageEventType.NoResponse: 31, 32, 33, 65
      * <li>OutageEventType.Restoration: 1, 17, 74, 0
      * </ul>
      * This is done in the initialize() method. The user can override these defaults using cparms.
@@ -231,7 +230,10 @@ public interface MultispeakMeterService {
      * any other OutageEventType it is associated with and assign 17 to the OutageEventType.Outage
      * map entry. So, since 17 is by default an error code associated with
      * OutageEventType.Restoration... including this cparm would remove 17 from the Restoration map
-     * entry and re-assign it to OutageEventType.Outage entry
+     * entry and re-assign it to OutageEventType.Outage entry.
+     * <p>
+     * If an incoming error code is not found in the Outage or Restoration default codes above, then an
+     * OutageEventType of NoResponse is assigned.
      * 
      * @return ImmutableSetMultimap<OutageEventType, Integer>
      * @see getSupportedEventTypes() method for a list of the possible OutageEventTypes that can be

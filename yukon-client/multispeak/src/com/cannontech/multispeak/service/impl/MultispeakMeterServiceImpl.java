@@ -164,7 +164,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
         builder.putAll(OutageEventType.Outage, 20, 57, 72);
-        builder.putAll(OutageEventType.NoResponse, 31, 32, 33, 65);
         builder.putAll(OutageEventType.Restoration, 1, 17, 74, 0);
         ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
 
