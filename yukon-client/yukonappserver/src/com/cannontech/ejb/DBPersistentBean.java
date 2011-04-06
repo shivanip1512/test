@@ -764,7 +764,7 @@ public class DBPersistentBean implements IDBPersistent {
    private static String prepareObjectForSQLStatement( Object o ) 
    {
       if( o == null )
-         return null;
+    	  return new String("NULL").trim();
       else
       if( o instanceof Integer ||
           o instanceof Double ||
