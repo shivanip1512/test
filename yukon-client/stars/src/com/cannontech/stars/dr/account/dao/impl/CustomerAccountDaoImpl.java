@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -252,18 +251,16 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                                              Date startDate, Date stopDate){
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
+        sql.append("SELECT DISTINCT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
         sql.append("FROM CustomerAccount ca JOIN Customer cust ON ca.CustomerId = cust.CustomerId");
         sql.append("  JOIN Contact cont ON cont.ContactId = cust.PrimaryContactId");
         sql.append("  JOIN ECToAccountMapping ec ON ec.AccountId = ca.AccountId");
+        sql.append("  JOIN LMHardwareControlGroup LMHCG ON LMHCG.AccountId = ca.AccountId");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
-        sql.append("  AND ca.AccountId IN");
-        sql.append("    (SELECT LMHCG.AccountId");
-        sql.append("    FROM LMHardwareControlGroup LMHCG ");
-        sql.append("    WHERE LMHCG.LMGroupId").in(groupIds);
-        sql.append("      AND (LMHCG.GroupEnrollStart").lte(stopDate).append(") ");
-        sql.append("      AND ((LMHCG.GroupEnrollStop IS NULL) ");
-        sql.append("      OR (LMHCG.GroupEnrollStop").gte(startDate).append("))) ");
+        sql.append("  AND LMHCG.LMGroupId").in(groupIds);
+        sql.append("  AND (LMHCG.GroupEnrollStart").lte(stopDate).append(")");
+        sql.append("  AND ((LMHCG.GroupEnrollStop IS NULL) ");
+        sql.append("    OR (LMHCG.GroupEnrollStop").gte(startDate).append("))");
     
         List<CustomerAccountWithNames> list = yukonJdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return list;
