@@ -9,6 +9,8 @@ public class SepControlMessage {
     //unsigned short on C++ side
     private short controlMinutes;
     //unsigned char on C++ side
+    private byte criticality;
+    //unsigned char on C++ side
     private byte coolTempOffset;
     //unsigned char  on C++ side
     private byte heatTempOffset;
@@ -42,6 +44,13 @@ public class SepControlMessage {
     }
     public void setControlMinutes(short controlMinutes) {
         this.controlMinutes = controlMinutes;
+    }
+    
+    public void setCriticality(byte criticality) {
+        this.criticality = criticality;
+    }
+    public byte getCriticality() {
+        return criticality;
     }
     
     public byte getCoolTempOffset() {

@@ -55,5 +55,13 @@ public class SepCycleGear extends com.cannontech.database.db.device.lm.LMProgram
             setMethodOptionType(CtiUtilities.STRING_NONE);
         }
     }
+    
+    public Integer getCriticality() {
+        return getMethodPeriod();
+    }
+    
+    public void setCriticality(Integer criticality) {
+        setMethodPeriod(criticality);
+    }
 
 }

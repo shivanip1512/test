@@ -42,11 +42,13 @@ public class SepCycleGearPanel extends GenericGearPanel {
     private JCSpinField changeTriggerNumberSpinField = null;
     private JCSpinField controlPercentSpinField = null;
     private JCSpinField percentReductionSpinField = null;
+    private JCSpinField criticalitySpinField = null;
     private JLabel changeDurationLabel = null;
     private JLabel changePriorityLabel = null;
     private JLabel changeTriggerNumberLabel = null;
     private JLabel changeTriggerOffsetLabel = null;
     private JLabel controlPercentLabel = null;
+    private JLabel criticalityLabel = null;
     private JLabel howToStopLabel = null;
     private JLabel minutesChangeDurationLabel = null;
     private JLabel percentReductionLabel = null;
@@ -80,7 +82,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             try {
                 ivjJComboBoxHowToStop = new JComboBox();
                 ivjJComboBoxHowToStop.setName("JComboBoxHowToStop");
-                ivjJComboBoxHowToStop.setPreferredSize(new Dimension(75, 23));
+                ivjJComboBoxHowToStop.setPreferredSize(new Dimension(95, 23));
                 ivjJComboBoxHowToStop.setAlignmentY(TOP_ALIGNMENT);
                 ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
                 ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_RESTORE));
@@ -225,6 +227,33 @@ public class SepCycleGearPanel extends GenericGearPanel {
         return controlPercentSpinField;
     }
 
+    private JCSpinField getJCSpinFieldCriticality() {
+        if (criticalitySpinField == null) {
+            try {
+                criticalitySpinField = new JCSpinField();
+                criticalitySpinField.setPreferredSize(new Dimension(48, 20));
+                criticalitySpinField.setAlignmentX(LEFT_ALIGNMENT);
+                criticalitySpinField.setAlignmentY(TOP_ALIGNMENT);
+                criticalitySpinField.setMaximumSize(new Dimension(50, 20));
+                criticalitySpinField.setMinimumSize(new Dimension(48, 20));
+                criticalitySpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, new Integer(1),
+                                                                                                 new Integer(15), null, true,
+                                                                                                 null, new Integer(1),
+                                                                                                 "#,##0.###;-#,##0.###", false,
+                                                                                                 false, false, null,
+                                                                                                 new Integer(6)),
+                                                                                  new MutableValueModel(java.lang.Integer.class, new Integer(0)),
+                                                                                  new JCInvalidInfo(true, 2,
+                                                                                                    new Color(0, 0, 0,255),
+                                                                                                    new Color(255, 255, 255, 255))));
+
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return criticalitySpinField;
+    }
+
     private JCSpinField getJCSpinFieldPercentReduction() {
         if (percentReductionSpinField == null) {
             try {
@@ -346,6 +375,24 @@ public class SepCycleGearPanel extends GenericGearPanel {
             }
         }
         return controlPercentLabel;
+    }
+    
+    private JLabel getJLabelCriticality() {
+        if (criticalityLabel == null) {
+            try {
+                criticalityLabel = new JLabel();
+                criticalityLabel.setAlignmentY(TOP_ALIGNMENT);
+                criticalityLabel.setText("Criticality:");
+                criticalityLabel.setMaximumSize(new Dimension(112, 14));
+                criticalityLabel.setPreferredSize(new Dimension(112, 14));
+                criticalityLabel.setFont(new Font("dialog", 0, 12));
+                criticalityLabel.setAlignmentX(LEFT_ALIGNMENT);
+                criticalityLabel.setMinimumSize(new Dimension(112, 14));
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return criticalityLabel;
     }
 
     private JLabel getJLabelHowToStop() {
@@ -569,6 +616,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
 
         gear.setControlPercent(toInteger(getJCSpinFieldControlPercent().getValue()));
+        gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
 
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
@@ -592,6 +640,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldChangePriority().addValueListener(this);
         getJCSpinFieldChangeTriggerNumber().addValueListener(this);
         getJCSpinFieldControlPercent().addValueListener(this);
+        getJCSpinFieldCriticality().addValueListener(this);
         getJCSpinFieldPercentReduction().addValueListener(this);
         getJComboBoxWhenChange().addActionListener(this);
         getJComboBoxHowToStop().addActionListener(this);
@@ -610,8 +659,10 @@ public class SepCycleGearPanel extends GenericGearPanel {
             GridBagConstraints constraintJCSpinFieldControlPercent = new GridBagConstraints();
             GridBagConstraints constraintJPanelChangeMethod = new GridBagConstraints();
             GridBagConstraints constraintJLabelPercentReduction = new GridBagConstraints();
+            GridBagConstraints constraintJLabelCriticality = new GridBagConstraints();
             GridBagConstraints constraintJLabelHowToStop = new GridBagConstraints();
             GridBagConstraints constraintJCSpinFieldPercentReduction = new GridBagConstraints();
+            GridBagConstraints constraintJCSpinFieldCriticality = new GridBagConstraints();
             GridBagConstraints constraintJComboBoxHowToStop = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampIn = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampOut = new GridBagConstraints();
@@ -651,6 +702,16 @@ public class SepCycleGearPanel extends GenericGearPanel {
             constraintJCSpinFieldControlPercent.gridy = 4;
             constraintJCSpinFieldControlPercent.gridx = 2;
 
+            constraintJLabelCriticality.insets = new Insets(0, 0, 5, 5);
+            constraintJLabelCriticality.anchor = GridBagConstraints.WEST;
+            constraintJLabelCriticality.gridy = 5;
+            constraintJLabelCriticality.gridx = 1;
+
+            constraintJCSpinFieldCriticality.insets = new Insets(0, 0, 5, 5);
+            constraintJCSpinFieldCriticality.anchor = GridBagConstraints.WEST;
+            constraintJCSpinFieldCriticality.gridy = 5;
+            constraintJCSpinFieldCriticality.gridx = 2;
+
             constraintJLabelHowToStop.insets = new Insets(0, 0, 5, 5);
             constraintJLabelHowToStop.anchor = GridBagConstraints.WEST;
             constraintJLabelHowToStop.gridy = 8;
@@ -680,6 +741,8 @@ public class SepCycleGearPanel extends GenericGearPanel {
             setLayout(new GridBagLayout());
             this.add(getJLabelControlPercent(), constraintJLabelControlPercent);
             this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldControlPercent);
+            this.add(getJLabelCriticality(), constraintJLabelCriticality);
+            this.add(getJCSpinFieldCriticality(), constraintJCSpinFieldCriticality);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
             this.add(getJLabelPercentReduction(), constraintJLabelPercentReduction);
             this.add(getJLabelHowToStop(), constraintJLabelHowToStop);
@@ -781,6 +844,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
 
         getJCSpinFieldControlPercent().setValue(gear.getControlPercent());
+        getJCSpinFieldCriticality().setValue(gear.getCriticality());
 
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());

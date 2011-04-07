@@ -59,6 +59,7 @@ public class SepControlMessageListener implements MessageListener {
         int groupId  = message.readInt();
         int utcStartTime = message.readInt();
         short controlMinutes = message.readShort();
+        byte criticality = message.readByte();
         byte coolTempOffset = message.readByte();
         byte heatTempOffset = message.readByte();
         short coolTempSetpoint = message.readShort();
@@ -71,6 +72,7 @@ public class SepControlMessageListener implements MessageListener {
         logger.info("Sep Message: " + "Group Id: " + groupId 
                                               + " utcStartTime: " + utcStartTime 
                                               + " controlMinutes: " + controlMinutes
+                                              + " criticality: " + criticality
                                               + " coolTempOffset: " + coolTempOffset
                                               + " heatTempOffset: " +heatTempOffset
                                               + " coolTempSetPoint: " + coolTempSetpoint
@@ -83,6 +85,7 @@ public class SepControlMessageListener implements MessageListener {
         sep.setGroupId(groupId);
         sep.setUtcStartTime(utcStartTime);
         sep.setControlMinutes(controlMinutes);
+        sep.setCriticality(criticality);
         sep.setCoolTempOffset(coolTempOffset);
         sep.setHeatTempOffset(heatTempOffset);
         sep.setCoolTempSetpoint(coolTempSetpoint);
