@@ -17,6 +17,7 @@
 #include "CommInterface.h"
 #include "BehaviorCollection.h"
 #include "DelayBehavior.h"
+#include "BchBehavior.h"
 #include "cparms.h"
 #include "guard.h"
 #include "sema.h"
@@ -257,11 +258,26 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortL
 
     SocketComms socket_interface(mySocket, 1200);
 
+    // Check for behaviors that may be used during the simulator runtime.
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_DELAY_CHANCE_PERCENT") )
     {   
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << "*****  Delay Behavior Enabled With Probability " << chance << "%  **********" << endl;
+        }
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());
         d->setChance(chance);
         socket_interface.setBehavior(d);
+    }
+    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_FAILED_READING_ERROR_100_CHANCE_PERCENT") )
+    {   
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << "*****  BCH Behavior Enabled With Probability " << chance << "%  **********" << endl;
+        }
+        std::auto_ptr<PlcBehavior> d(new BchBehavior());
+        d->setChance(chance);
+        Grid.setBehavior(d);
     }
 
     //  both the CCU-710 and CCU-711 have their address info in the first two bytes

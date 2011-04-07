@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommsBehavior.h"
-
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include <vector>
 #include <memory>
+
+#include "Types.h"
 
 namespace Cti {
 namespace Simulator{

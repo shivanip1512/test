@@ -67,9 +67,21 @@ bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply)
          result_words.end(),
          EmetconWord::serializer(byte_appender(reply)));
 
+    // Apply behaviors!
+    processMessage(reply);
+
     return true;
 }
 
+void PlcInfrastructure::setBehavior(std::auto_ptr<PlcBehavior> behavior)
+{
+    _behaviorCollection.push_back(behavior);
+}
+
+bool PlcInfrastructure::processMessage(bytes &buf)
+{
+    return _behaviorCollection.processMessage(buf);
+}
 
 bool PlcInfrastructure::getMct(const words_t &request_words, mct_map_t::ptr_type &mct)
 {

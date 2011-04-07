@@ -51,6 +51,7 @@ Ccu721.obj \
 CcuIDLC.obj \
 Mct410.obj \
 DelayBehavior.obj \
+BchBehavior.obj \
 simulator_main.obj \
 ccusimsvc.obj \
 

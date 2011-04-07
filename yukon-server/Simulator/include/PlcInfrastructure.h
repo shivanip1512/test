@@ -8,6 +8,9 @@
 
 #include "smartmap.h"
 
+#include "PlcBehavior.h"
+#include "BehaviorCollection.h"
+
 namespace Cti {
 namespace Simulator {
 
@@ -22,11 +25,17 @@ private:
 
     mct_map_t _mcts;
 
+    BehaviorCollection<PlcBehavior> _behaviorCollection;
+
     bool getMct(const words_t &request_words, mct_map_t::ptr_type &mct);
 
 public:
 
     PlcInfrastructure();
+
+    void setBehavior(std::auto_ptr<PlcBehavior> behavior);
+
+    bool processMessage(bytes &buf);
 
     bool oneWayCommand(const bytes &request);
     bool twoWayCommand(const bytes &request, bytes &reply_buf);

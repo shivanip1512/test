@@ -41,6 +41,7 @@ TESTOBJS=\
 test_ccusim.obj \
 test_behavior_collection.obj \
 test_delay_behavior.obj \
+test_bch_behavior.obj \
 test_mct410_sim.obj \
 
 
@@ -48,6 +49,7 @@ CCU_SIMULATOR_BASE_OBJS=\
 $(OBJ)\EmetconWords.obj \
 $(OBJ)\Mct410.obj \
 $(OBJ)\DelayBehavior.obj \
+$(OBJ)\BchBehavior.obj \
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \
