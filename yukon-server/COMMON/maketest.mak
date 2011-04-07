@@ -415,6 +415,7 @@ test_rwutil.obj:	rwutil.h yukon.h precompiled.h types.h ctidbgmem.h \
 		netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		ctidate.h logger.h thread.h CtiPCPtrQueue.h
+test_string_utility.obj:	string_utility.h dlldefs.h
 test_timeperiod.obj:	timeperiod.h dlldefs.h ctitime.h ctidate.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \

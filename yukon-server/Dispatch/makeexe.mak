@@ -283,6 +283,13 @@ cmdtest.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h \
 		CtiPCPtrQueue.h string_utility.h exchange.h message.h \
 		collectable.h msg_cmd.h msg_reg.h msg_pcreturn.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h connection.h
+control_history_association.obj:	yukon.h precompiled.h types.h \
+		ctidbgmem.h control_history_association.h \
+		tbl_lm_controlhist.h row_reader.h ctitime.h dlldefs.h \
+		dbmemobject.h dbaccess.h dllbase.h os2_2w32.h cticalls.h \
+		dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
+		sorted_vector.h dbghelp.h cticonnect.h netports.h dsm2err.h \
+		words.h optional.h sema.h database_connection.h
 con_mgr_vg.obj:	yukon.h precompiled.h types.h ctidbgmem.h con_mgr_vg.h \
 		exchange.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -469,7 +476,7 @@ pendingopthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		msg_cmd.h pendingopthread.h pendable.h pending_info.h \
 		msg_signal.h tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h millisecond_timer.h \
-		amq_connection.h activemqcpp.h \
+		control_history_association.h amq_connection.h activemqcpp.h \
 		ControlHistoryAssociationResponse.h
 pending_info.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
