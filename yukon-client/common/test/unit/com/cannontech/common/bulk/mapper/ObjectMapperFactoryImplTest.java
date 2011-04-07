@@ -42,16 +42,12 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
                                                                     null,
-                                                                    0,
-                                                                    PaoType.MCT310.getDeviceTypeId(),
-                                                                    0,
+                                                                    PaoType.MCT310,
                                                                     null,
                                                                     null);
             private LiteYukonPAObject lite2 = new LiteYukonPAObject(2,
                                                                     null,
-                                                                    0,
-                                                                    PaoType.MCT310.getDeviceTypeId(),
-                                                                    0,
+                                                                    PaoType.MCT310,
                                                                     null,
                                                                     null);
 

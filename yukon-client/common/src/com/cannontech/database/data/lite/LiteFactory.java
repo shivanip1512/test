@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -10,7 +11,6 @@ import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.notification.NotificationGroup;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
@@ -440,11 +440,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		YukonPAObject yukonPAObject = ((com.cannontech.database.data.pao.YukonPAObject)val);
-        LiteYukonPAObject thisLite = new LiteYukonPAObject( 
-			yukonPAObject.getPAObjectID().intValue(),
-			yukonPAObject.getPAOName() );
-        int type = PAOGroups.getPAOType(yukonPAObject.getPAOCategory(), yukonPAObject.getPAOType());
-        thisLite.setType(type);
+        LiteYukonPAObject thisLite = new LiteYukonPAObject(yukonPAObject.getPAObjectID().intValue(),
+        													yukonPAObject.getPAOName(), 
+        													PaoType.getForDbString(yukonPAObject.getPAOType()),
+        													yukonPAObject.getPAODescription(),
+        													String.valueOf(yukonPAObject.getPAODisableFlag()));
         returnLite = thisLite;
 	}
    else if( val instanceof com.cannontech.database.db.state.YukonImage )

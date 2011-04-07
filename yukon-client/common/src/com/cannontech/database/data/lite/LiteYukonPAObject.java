@@ -1,6 +1,8 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -22,9 +24,7 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
 	(
 		0,
 		"System Device",
-		PAOGroups.INVALID,
-		PAOGroups.INVALID,
-		PAOGroups.INVALID,
+		PaoType.SYSTEM,
 		CtiUtilities.STRING_NONE,
         CtiUtilities.STRING_NONE
 	);
@@ -35,9 +35,7 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
 	(
 		0,
 		CtiUtilities.STRING_NONE,
-		PAOGroups.INVALID,
-		PAOGroups.INVALID,
-		PAOGroups.INVALID,
+		PaoType.SYSTEM,
 		CtiUtilities.STRING_NONE,
         CtiUtilities.STRING_NONE
 	);
@@ -58,55 +56,51 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
 	private int address = PAOGroups.INVALID;
 	
 /**
- * LiteDevice
+ * Use this constructor ONLY when the full LiteYukonPaobject will be loaded before using the object.
+ *  For example: Constructing a LiteYukonPaobject to call dbPersistent.retrieve() for is okay.
+ * The paoType MUST be set (either explicitly or by a retrieve()) for correct usage of 
+ * 	this object (required by implements YukonPao). 
+ * @param paoID
  */
-public LiteYukonPAObject( int paoID) 
+public LiteYukonPAObject(int paoId) 
 {
 	super();
 
-	setLiteID( paoID );
+	setLiteID( paoId );
 	setLiteType( LiteTypes.YUKON_PAOBJECT );
 }
 
 /**
- * LiteDevice
+ * @param paoId
+ * @param paoName
+ * @param paoType - paoCategory and paoClass will also be loaded from paoType
+ * @param paoDescription
+ * @param disableFlag
  */
-public LiteYukonPAObject( int paoID, String name_ )
+public LiteYukonPAObject(int paoId, String paoName, PaoType paoType, String paoDescription, String disableFlag) 
 {
-	this( paoID );
-	setPaoName( name_ );
+	this(paoId);
+
+	setPaoName(paoName);
+	setCategory(paoType.getPaoCategory().getCategoryId());
+	setPaoClass(paoType.getPaoClass().getPaoClassId());
+	setPaoType(paoType);
+	setPaoDescription(paoDescription);
+    setDisableFlag(disableFlag);
 }
 
-/**
- * LiteDevice
- */
-public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc, String flag ) 
+public LiteYukonPAObject(int paoId, String paoName, PaoCategory paoCategory, PaoClass paoClass, PaoType paoType, 
+		String paoDescription, String disableFlag) 
 {
-	this( paoID, name );
+	this(paoId);
 
-	setCategory( paoCategory );
-	setType( paoType );
-	setPaoClass( pClass );
-	setPaoDescription( desc );
-    setDisableFlag( flag );
+	setPaoName(paoName);
+	setCategory(paoCategory.getCategoryId());
+	setPaoClass(paoClass.getPaoClassId());
+	setPaoType(paoType);
+	setPaoDescription(paoDescription);
+    setDisableFlag(disableFlag);
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/23/00 3:15:58 PM)
- * @return int
- * @param val java.lang.Object
- */
-/*public boolean equals(Object val) 
-{
-	return ( val != null
-		  		&& val instanceof LiteYukonPAObject
-		  		&& super.equals(val) );
-//		  		&&
-//		  		( ((LiteYukonPAObject)val).getCategory() == getCategory()
-//			  	  && ((LiteYukonPAObject)val).getPaoClass() == getPaoClass()
-//			  	  && ((LiteYukonPAObject)val).getType() == getType() ) );
-}
-*/
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:57:42 PM)
@@ -281,6 +275,11 @@ public void setPortID(int newPortID) {
 public void setType(int newType) {
     paoType = newType == PAOGroups.INVALID ? null : PaoType.getForId(newType);
 }
+
+public void setPaoType(PaoType paoType) {
+	this.paoType = paoType;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/27/2001 12:07:44 PM)

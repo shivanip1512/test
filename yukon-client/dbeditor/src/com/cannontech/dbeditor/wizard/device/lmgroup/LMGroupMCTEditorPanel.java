@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -12,9 +13,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -41,8 +39,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private static final LiteYukonPAObject NONE_PAO =
 		new LiteYukonPAObject( 
 				CtiUtilities.NONE_ZERO_ID, CtiUtilities.STRING_NONE, 
-				PAOGroups.CAT_DEVICE, DeviceTypes.MCT370,
-				DeviceClasses.CARRIER, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE );
+				PaoType.MCT370, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE );
 
 	/**
 	 * Constructor

@@ -2,7 +2,6 @@ package com.cannontech.core.service.impl;
 
 import static org.junit.Assert.fail;
 
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -22,6 +21,7 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoAdapter;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -32,8 +32,6 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -220,8 +218,13 @@ public class LongLoadProfileServiceImplTest {
     
     @Test
     public void testCommandStringWithStart() throws ParseException {
-        LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice.setType(DeviceTypes.MCT410IL);
+        LiteYukonPAObject myDevice = 
+        	new LiteYukonPAObject(5, 
+        			"Test Device Id:5", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // five is arbitrary
+
         int channel = 4;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
@@ -241,9 +244,13 @@ public class LongLoadProfileServiceImplTest {
     public void testInitiateLongLoadProfileBasic() throws ParseException {
         // check that outQueue is empty
         Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
-        LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice.setType(DeviceTypes.MCT410IL);
-        myDevice.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice = 
+        	new LiteYukonPAObject(5, 
+        			"Test Device Id:5", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // five is arbitrary
+
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
@@ -289,12 +296,20 @@ public class LongLoadProfileServiceImplTest {
 
     @Test
     public void testInitiateLongLoadProfileMultiple() throws ParseException {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = 
+        	new LiteYukonPAObject(5, 
+        			"Test Device Id:5", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // five is arbitrary
+
+        LiteYukonPAObject myDevice2 = 
+        	new LiteYukonPAObject(8, 
+        			"Test Device Id:8", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // eight is arbitrary
+
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
@@ -359,12 +374,20 @@ public class LongLoadProfileServiceImplTest {
     
     @Test
     public void testWriteError() throws ParseException {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = 
+        	new LiteYukonPAObject(5, 
+        			"Test Device Id:5", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // five is arbitrary
+
+        LiteYukonPAObject myDevice2 = 
+        	new LiteYukonPAObject(8, 
+        			"Test Device Id:8", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // eight is arbitrary
+
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
@@ -400,12 +423,20 @@ public class LongLoadProfileServiceImplTest {
 
     @Test
     public void testPorterTimeout() throws ParseException, Exception {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = 
+        	new LiteYukonPAObject(5, 
+        			"Test Device Id:5", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // five is arbitrary
+        
+        LiteYukonPAObject myDevice2 = 
+        	new LiteYukonPAObject(8, 
+        			"Test Device Id:6", 
+        			PaoType.MCT410IL,
+        			CtiUtilities.STRING_NONE,
+        			"N");	 // eight is arbitrary
+
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");

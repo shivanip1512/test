@@ -21,7 +21,7 @@ public class CommChannelTreeModel extends DBTreeModel
 {
 	//a mutable lite point used for comparisons
 	private static final LiteYukonPAObject DUMMY_LITE_PAO = 
-					new LiteYukonPAObject(Integer.MIN_VALUE, "**DUMMY**");
+					new LiteYukonPAObject(Integer.MIN_VALUE);
 
 	//a Vector only needed to store temporary things
 	private java.util.List tempList = new java.util.Vector(32);

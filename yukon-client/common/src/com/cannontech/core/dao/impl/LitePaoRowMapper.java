@@ -8,9 +8,11 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 
 public class LitePaoRowMapper implements ParameterizedRowMapper<LiteYukonPAObject> {
     
@@ -28,11 +30,9 @@ public class LitePaoRowMapper implements ParameterizedRowMapper<LiteYukonPAObjec
 
         LiteYukonPAObject pao = new LiteYukonPAObject(paoID,
                                                       paoName,
-                                                      PAOGroups.getCategory(paoCategory),
-                                                      PAOGroups.getPAOType(paoCategory,
-                                                                           paoType),
-                                                      PAOGroups.getPAOClass(paoCategory,
-                                                                            paoClass),
+                                                      PaoCategory.valueOf(paoCategory),
+                                                      PaoClass.getForDbString(paoClass),
+                                                      PaoType.getForDbString(paoType),
                                                       paoDescription,
                                                       paoDisableFlag);
         
