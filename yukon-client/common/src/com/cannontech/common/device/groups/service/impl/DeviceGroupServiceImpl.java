@@ -14,37 +14,23 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
-import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private PaoGroupsWrapper paoGroupsWrapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
@@ -148,27 +134,6 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
     }
 
-    @Override
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
-        Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
-        Multimap<Attribute, PaoType> dest = HashMultimap.create();
-        Multimaps.invertFrom(allDefinedAttributes, dest);
-        Collection<PaoType> collection = dest.get(attribute);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid, ypo.type");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.type").in(collection);
-        SqlFragmentSource groupSqlWhereClause = getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.paObjectId");
-        sql.append("AND").appendFragment(groupSqlWhereClause);
-
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
-        List<SimpleDevice> devices = yukonJdbcTemplate.query(sql, mapper);
-
-        return devices;
-    }
-
     public DeviceGroup resolveGroupName(String groupName) {
         Validate.notNull(groupName, "groupName must not be null");
         Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': " + groupName);
@@ -232,20 +197,5 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     @Required
     public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

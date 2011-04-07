@@ -347,7 +347,7 @@ public class PorterResponseMonitorController {
         PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
         DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
         int totalGroupCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
-        List<SimpleDevice> supportedDevices = deviceGroupService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
+        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
         int existingPointCount = pointService.getCountOfGroupAttributeStateGroup(group,
                                                             monitor.getAttribute(),
                                                             monitor.getStateGroup());
@@ -397,7 +397,7 @@ public class PorterResponseMonitorController {
         model.addAttribute("showAddRemovePoints", showAddRemovePoints);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
-        List<SimpleDevice> supportedDevices = deviceGroupService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
+        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
         StoredDeviceGroup supportedTempGroup = temporaryDeviceGroupService.createTempGroup(null);
         deviceGroupMemberEditorDao.addDevices(supportedTempGroup, supportedDevices);
 

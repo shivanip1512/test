@@ -1,13 +1,11 @@
 package com.cannontech.common.device.groups.service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -114,12 +112,4 @@ public interface DeviceGroupService {
      */
     public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao);
 
-    /**
-     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute. 
-     * @param group
-     * @param attribute
-     * @return
-     */
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
-    
 }

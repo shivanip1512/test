@@ -80,9 +80,8 @@
          <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.supportedDevicesHelpText"><![CDATA[
-         This "Supported Devices" field represents the number of devices in the "{0}" device group that
-         support the required "{1}" status point. This status point must exist on any device that you wish
-         this Porter Response Monitor to act on.
+         The number of devices in the "{0}" device group that support the required "{1}" status point. 
+         This status point must exist on any device that you wish this Porter Response Monitor to act on.
     ]]></entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>

@@ -1,7 +1,10 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -98,4 +101,13 @@ public interface AttributeService {
      * @param attribute
      */
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
+
+    /**
+     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
+     * This method works recursively on each child group of the requested group.
+     * @param group
+     * @param attribute
+     * @return
+     */
+    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
 }

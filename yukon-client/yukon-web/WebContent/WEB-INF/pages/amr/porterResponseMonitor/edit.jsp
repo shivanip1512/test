@@ -141,16 +141,16 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 					<c:forEach var="ruleEntry" items="${monitorDto.rules}">
 						<c:set var="key" value="${ruleEntry.key}" />
 						<tr id="rule_${key}" class="ruleTableRow">
-							<td>
+							<td class="orderColumn">
 								<form:hidden path="rules[${key}].ruleId" />
-								<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" size="1" />
+								<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" maxlength="2"/>
 							</td>
                             <td class="checkBox outcomeColumn">
                                 <form:checkbox path="rules[${key}].success"/>
                                 <span><i:inline key=".rule.success"/></span>
                             </td>
-							<td>
-                                <form:input size="8" path="rules[${key}].errorCodes"/>
+							<td class="errorsColumn">
+                                <form:input path="rules[${key}].errorCodes"/>
 							</td>
 							<td class="matchColumn">
 								<form:select path="rules[${key}].matchStyle">

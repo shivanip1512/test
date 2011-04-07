@@ -1,7 +1,9 @@
 package com.cannontech.common.pao.attribute.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -9,6 +11,10 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -31,10 +37,14 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
@@ -44,6 +54,9 @@ public class AttributeServiceImpl implements AttributeService {
     private PaoDefinitionDao paoDefinitionDao;
     private PointService pointService;
     private PointCreationService pointCreationService;
+    private DeviceGroupService deviceGroupService;
+    private PaoGroupsWrapper paoGroupsWrapper;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     private Set<Attribute> readableAttributes;
     {
@@ -129,7 +142,28 @@ public class AttributeServiceImpl implements AttributeService {
         }
         throw new IllegalUseOfAttribute("Cannot create " + attribute + " on " + pao);
     }
-    
+
+    @Override
+    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
+        Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+        Multimap<Attribute, PaoType> dest = HashMultimap.create();
+        Multimaps.invertFrom(allDefinedAttributes, dest);
+        Collection<PaoType> collection = dest.get(attribute);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.paobjectid, ypo.type");
+        sql.append("FROM Device d");
+        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        sql.append("WHERE ypo.type").in(collection);
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        List<SimpleDevice> devices = yukonJdbcTemplate.query(sql, mapper);
+
+        return devices;
+    }
+
     public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         
 
@@ -244,4 +278,16 @@ public class AttributeServiceImpl implements AttributeService {
     public void setPointCreationService(PointCreationService pointCreationService) {
 		this.pointCreationService = pointCreationService;
 	}
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
+    @Autowired
+    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
+        this.paoGroupsWrapper = paoGroupsWrapper;
+    }
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

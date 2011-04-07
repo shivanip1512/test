@@ -1,9 +1,13 @@
 #rulesTable th.orderColumn {
-    width: 50px;
+    width: 30px;
+}
+
+#rulesTable td.orderColumn input {
+    width: 2em;
 }
 
 #rulesTable th.outcomeColumn {
-    width: 80px;
+    width: 60px;
 }
 
 #rulesTable td.outcomeColumn span {
@@ -11,12 +15,16 @@
 }
 
 #rulesTable th.errorsColumn {
-    width: 85px;
+    width: 80px;
     white-space: nowrap;
 }
 
+#rulesTable td.errorsColumn input {
+    width: 90%;
+}
+
 #rulesTable th.matchColumn {
-    width: 20%;    
+    width: 70px;
 }
 
 #rulesTable td.matchColumn select {
@@ -24,15 +32,15 @@
 }
 
 #rulesTable th.stateColumn {
-    width: 30%;    
+    width: 120px;
 }
 
 #rulesTable td.stateColumn select {
-    width: 105px;
+    width: 110px;
 }
 
 #rulesTable th.ruleRemoveColumn {
-    width: 55px;
+    width: 50px;
 }
 
 table.compactResultsTable tr.removed td img {
