@@ -7474,6 +7474,8 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
     {
         long monPointId = 0;
 
+        std::set< std::pair<long, int> >    requiredPointResponses;
+
         CtiTime currentDateTime;
         {
             //LOADING OF MONITOR POINTS.
@@ -7540,7 +7542,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                         break;
                     }
 
-                    list<CtiCCCapBankPtr> monitorBanks;
                     if(!stringCompareIgnoreCase(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
                     {
                         //Get all banks on SubBus all Feeders.
@@ -7557,7 +7558,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                             CtiCCCapBank_SVector& banks = feeder->getCCCapBanks();
                             for each (CtiCCCapBankPtr bank in banks)
                             {
-                                monitorBanks.push_back(bank);
+                                requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
                             }
                         }
                     }
@@ -7567,15 +7568,8 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                         CtiCCCapBank_SVector& banks = feederPtr->getCCCapBanks();
                         for each (CtiCCCapBankPtr bank in banks)
                         {
-                            monitorBanks.push_back(bank);
+                            requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
                         }
-                    }
-
-                    for each(CtiCCCapBankPtr bankPtr in monitorBanks)
-                    {
-                        //Set default point delta
-                        PointResponse defaultPointResponse(currentMonPoint->getPointId(),bankPtr->getPaoId(),0,_IVVC_DEFAULT_DELTA, false);
-                        bankPtr->addPointResponse(defaultPointResponse);
                     }
                 }
             }
@@ -7652,9 +7646,25 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
             {
                 CtiCCCapBankPtr bank = paobject_capbank_map->find(pointResponse.getBankId())->second;
                 bank->addPointResponse(pointResponse);
+
+                requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getBankId() ) );
+
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " currentPointResponse bankId: " << bank->getPaoId() << " pointId: " << pointResponse.getPointId() << endl;
+                }
+            }
+
+            for each ( std::pair<long, int>  thePair in requiredPointResponses )
+            {
+                CtiCCCapBankPtr bank = paobject_capbank_map->find(thePair.second)->second;
+
+                PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false);
+                bank->addPointResponse(defaultPointResponse);
+
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " currentPointResponse bankId: " << thePair.second << " pointId: " << thePair.first << endl;
                 }
             }
         }
