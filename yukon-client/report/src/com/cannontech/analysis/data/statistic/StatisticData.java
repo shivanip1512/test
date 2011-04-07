@@ -13,13 +13,7 @@ import java.util.Date;
  */
 public class StatisticData
 {	
-	/** Valid statType from DynamicPaoStatistics.statisticalType value critera, null results in all?*/
-	public static final String DAILY_STAT_TYPE = "Daily";
-	public static final String YESTERDAY_STAT_TYPE = "Yesterday";	
-	public static final String MONTHLY_STAT_TYPE = "Monthly";
-	public static final String LAST_MONTH_STAT_TYPE = "LastMonth";
 	private static final SimpleDateFormat dailyDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-	
 	
 	private String paoName = null;
 	private Integer attempts = null;
@@ -28,7 +22,7 @@ public class StatisticData
 	private Integer protocolErrs = null;
 	private Integer completions = null;
 	private Integer requests = null;
-	private Integer dateOffset = null;
+	private Date timestamp = null;
 	
 	/** (attempts - commErrors) / attempts */
 	private Double portPercent = null;
@@ -77,7 +71,7 @@ public class StatisticData
 	 * @param completions_
 	 * @param requests_
 	 */
-	public StatisticData(String paoName_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_, Integer offset_)
+	public StatisticData(String paoName_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_, Date timestamp_)
 	{	
 		setPAOName( paoName_);
 		setAttempts( attempts_);
@@ -86,7 +80,7 @@ public class StatisticData
 		setProtocolErrs( protocolErrs_);
 		setCompletions( completions_);
 		setRequests( requests_);
-		setDateOffset( offset_);
+		setDate( timestamp_);
 	}
 
 	/**
@@ -212,9 +206,9 @@ public class StatisticData
 	/**
 	 * @param integer
 	 */
-	private void setDateOffset(Integer offset_) 
+	private void setDate(Date date) 
 	{
-		dateOffset = offset_;
+		timestamp = date;
 		
 	}
 	
@@ -223,7 +217,7 @@ public class StatisticData
 	 */
 	public Double getPortPercent()
 	{
-		if (portPercent == null)
+	    if (portPercent == null)
 			portPercent =new Double((getAttempts().doubleValue() - getCommErrors().doubleValue()) / getAttempts().doubleValue());
 		return portPercent;
 	}
@@ -233,8 +227,13 @@ public class StatisticData
 	 */
 	public Double getSuccessPercent()
 	{
-		if( successPercent == null)
-			successPercent = new Double((getCompletions().doubleValue()/ getRequests().doubleValue()));
+		if( successPercent == null) {
+		    final double requests = getRequests().doubleValue(); 
+		    // We could have more completions than requests in a day, so take the lesser of the two.
+		    final double completions = java.lang.Math.min(getCompletions().doubleValue(), requests); 
+			
+		    successPercent = new Double(completions / requests);
+		}
 		return successPercent;
 	}
 
@@ -283,10 +282,10 @@ public class StatisticData
 	 */
 	public String getDate()
 	{
-		Calendar newCal = Calendar.getInstance();
-		newCal.set(1970, 0, 1, 0, 0);
-		newCal.add(Calendar.DAY_OF_YEAR, dateOffset);
-		String toLocaleString = dailyDateFormat.format(newCal.getTime());
-		return toLocaleString;
+		if( timestamp != null ) {
+			return dailyDateFormat.format(timestamp.getTime());
+		} else {
+			return "";
+		}
 	}
 }

@@ -121,9 +121,6 @@ public enum ReportTypes {
         "Detailed report of communication statistics by device."),
     DEVICE_REQUEST_DETAIL("Device Request Detail", DeviceRequestDetailController.class, ReportGroup.STATISTICAL,
         "Detailed report of data requests by devices."),
-    //STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
-    //STATISTIC_HISTORY_DEVICE_DATA("Historical Daily Device Statistics", StatisticHistoryDeviceModel.class, ReportGroup.STATISTICAL),
-    //STATISTIC_HISTORY_TRANSMITTER_DATA("Historical Daily Transmitter Statistics", StatisticHistoryTransmitterModel.class, ReportGroup.STATISTICAL),
     
     EC_ACTIVITY_LOG_SUMMARY("Energy Company Activity Log Summary", ActivityModel.class, ReportGroup.STARS,
         "Summary report of energy company activity; includes aggregate count by contact name, username, account number, and action."),

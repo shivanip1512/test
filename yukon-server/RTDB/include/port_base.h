@@ -19,10 +19,6 @@ using std::list;
 #include "critical_section.h"
 #include "counter.h"
 
-#ifdef CTIOLDSTATS
-  #include "tbl_port_statistics.h"
-#endif
-
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 
 #include <boost/noncopyable.hpp>

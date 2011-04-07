@@ -18,7 +18,6 @@
 #include "ctinexus.h"
 #include "porter.h"
 #include "logger.h"
-#include "statistics.h"
 
 #define PORTER_DEBUG_VERBOSE           0x00000001
 #define PORTER_DEBUG_NEXUSREAD         0x00000004

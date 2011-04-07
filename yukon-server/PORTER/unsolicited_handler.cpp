@@ -12,7 +12,7 @@
 #include "cparms.h"
 #include "msg_dbchg.h"
 #include "msg_trace.h"
-#include "portdecl.h"  //  for statisticsNewAttempt
+#include "StatisticsManager.h"
 
 using namespace std;
 
@@ -573,7 +573,7 @@ void UnsolicitedHandler::generateDnpKeepalive(om_list &local_queue, const device
 
     for each(OUTMESS *om in om_list )
     {
-        statisticsNewRequest(om->Port, om->DeviceID, om->TargetID, om->MessageFlags);
+        PorterStatisticsManager.newRequest(om->Port, om->DeviceID, om->TargetID, om->MessageFlags);
     }
 
     delete_container(vg_list);
@@ -1182,17 +1182,17 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
 
                 //  error, but we're going to keep going
                 //    this is the equivalent of a "retry" in the old school code
-                statisticsNewAttempt(dr->device->getPortID(), dr->device->getID(), dr->device->getID(), dr->device_status, dr->outbound.front()->MessageFlags);
+                PorterStatisticsManager.newAttempt(dr->device->getPortID(), dr->device->getID(), dr->device->getID(), dr->device_status, dr->outbound.front()->MessageFlags);
 
                 _request_queue.push_back(om);
             }
             else
             {
                 //  if dr->status is nonzero, ReturnResultMessage() calls SendError(),
-                //    which calls statisticsNewCompletion()...  so we don't need to call it if we're not in error
+                //    which calls PorterStatisticsManager.newCompletion()...  so we don't need to call it if we're not in error
                 if( ! dr->device_status )
                 {
-                    statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->device_status, om->MessageFlags );
+                    PorterStatisticsManager.newCompletion( om->Port, om->DeviceID, om->TargetID, dr->device_status, om->MessageFlags );
                 }
 
                 //  This method may delete the OM!

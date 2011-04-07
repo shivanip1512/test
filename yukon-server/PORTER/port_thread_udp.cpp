@@ -18,7 +18,6 @@
 #include "dev_rds.h"
 #include "cparms.h"
 #include "numstr.h"
-#include "portdecl.h"  //  for statisticsNewCompletion
 
 #include "portfield.h"
 

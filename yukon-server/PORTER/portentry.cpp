@@ -5,6 +5,7 @@
 #include "queue.h"
 #include "dsm2.h"
 #include "portdecl.h"
+#include "StatisticsManager.h"
 
 #include "portglob.h"
 
@@ -19,6 +20,7 @@
 #include "trx_711.h"
 
 using namespace std;
+using Cti::Porter::PorterStatisticsManager;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
@@ -325,7 +327,7 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     }
 
      //This could go after more checking, but I like it here. I think the message has been checked enough?
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->MessageFlags);
+    PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->MessageFlags);
 
     /*
      * Ok, all checks passed so far, so lets operate on this remote

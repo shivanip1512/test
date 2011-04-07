@@ -80,12 +80,14 @@ public class StatisticModel extends ReportModelBase {
 		STAT_TRANS_COMM_DATA
 	};
 
-	/** DynamicPaoStatistics.statisticalType value critera, null results in all? */
-	/** valid types are: Daily | Yesterday | Monthlyf| LastMonth | HourXX  */
+	/** DynamicPaoStatistics.statisticType column critera, null results in all?
+	 * valid types are: Daily | Monthly | HourXX | Lifetime
+	 * "Last Month" and "Yesterday" are only used to display to the user, 
+	 * and are converted to "Monthly" and "Daily" with appropriate start- and stopDates */
 	public static String DAILY_STAT_PERIOD_TYPE_STRING = "Daily";
 	public static String YESTERDAY_STAT_PERIOD_TYPE_STRING = "Yesterday";
 	public static String MONTHLY_STAT_PERIOD_TYPE_STRING = "Monthly";
-	public static String LASTMONTH_STAT_PERIOD_TYPE_STRING = "LastMonth";
+	public static String LASTMONTH_STAT_PERIOD_TYPE_STRING = "Last Month";
 	public static String LIFETIME_STAT_PERIOD_TYPE_STRING = "Lifetime";
 	private String statPeriodType = null;	
 
@@ -149,7 +151,8 @@ public class StatisticModel extends ReportModelBase {
         if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
         	log.info("Ignoring date range settings.");
         } else {
-        	log.info("START DATE >= " + getStartDate());
+            log.info("START DATE = " + getStartDate());
+            log.info("STOP DATE = " + getStopDate());
         }
         
         JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
@@ -165,7 +168,7 @@ public class StatisticModel extends ReportModelBase {
 		 
 	/**
 	 * Build the SQL statement to retrieve <StatisticDeviceDataBase> data.
-	 * @return StringBuffer  an sqlstatement
+	 * @return SqlFragmentSource  an sql statement
 	 */
 	public SqlFragmentSource buildSQLStatement()
 	{
@@ -205,11 +208,12 @@ public class StatisticModel extends ReportModelBase {
             sql.append(" AND ", deviceGroupSqlWhereClause);
         }
 		  
-        if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
-            sql.append(" ORDER BY PAO.PAOName");
-        } else {
-            sql.append(" AND (STARTDATETIME >= ").appendArgument(getStartDate()).append(") ORDER BY PAO.PAOName");
+        if(getStatPeriodType() == null || ! getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
+            sql.append(" AND STARTDATETIME >= ").appendArgument(getStartDate());
+            sql.append(" AND STARTDATETIME < ").appendArgument(getStopDate());
         }
+
+        sql.append(" ORDER BY PAO.PAOName");
         
 		return sql;
 		
@@ -309,6 +313,8 @@ public class StatisticModel extends ReportModelBase {
 			setStartDate(cal.getTime());
 			cal.add(java.util.Calendar.DATE, 1);
 			setStopDate(cal.getTime());
+
+			statPeriodType = DAILY_STAT_PERIOD_TYPE_STRING;
 		}
 		else if (statPeriodType_.equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING))
 		{
@@ -322,6 +328,7 @@ public class StatisticModel extends ReportModelBase {
 			cal.add(java.util.Calendar.MONTH, 1);
 			setStopDate(cal.getTime());
 			
+            statPeriodType = MONTHLY_STAT_PERIOD_TYPE_STRING;
 		}
 		else if (statPeriodType_.equalsIgnoreCase(YESTERDAY_STAT_PERIOD_TYPE_STRING))
 		{
@@ -334,6 +341,8 @@ public class StatisticModel extends ReportModelBase {
 			setStartDate(cal.getTime());
 			cal.add(java.util.Calendar.DATE, 1);
 			setStopDate(cal.getTime());
+
+			statPeriodType = DAILY_STAT_PERIOD_TYPE_STRING;
 		}
 		else if (statPeriodType_.equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
 		{
@@ -345,9 +354,10 @@ public class StatisticModel extends ReportModelBase {
 			cal.set(java.util.Calendar.MILLISECOND, 0);
 			cal.add(java.util.Calendar.MONTH, -1);
 			setStartDate(cal.getTime());
-			
+            cal.add(java.util.Calendar.MONTH, 1);
 			setStopDate(cal.getTime());
 	
+            statPeriodType = MONTHLY_STAT_PERIOD_TYPE_STRING;
 		}
 		else if (statPeriodType_.equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
 		{
@@ -355,16 +365,15 @@ public class StatisticModel extends ReportModelBase {
 			cal.set(java.util.Calendar.MILLISECOND, 0);
 			setStartDate(cal.getTime());
 			setStopDate(cal.getTime());
-			
+
+			statPeriodType = LIFETIME_STAT_PERIOD_TYPE_STRING;
 		}
-		statPeriodType = statPeriodType_;
 	}
 	
 	@Override
 	public String getDateRangeString()
 	{
-		if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING) ||
-			getStatPeriodType().equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
+		if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING) )
 		{
 			SimpleDateFormat monthlyFormat = new SimpleDateFormat("MMMMM yyyy");
 			return getStatPeriodType() + ": " + monthlyFormat.format(getStartDate());

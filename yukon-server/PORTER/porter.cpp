@@ -40,6 +40,7 @@
 #include "porter.h"
 #include "portdecl.h"
 #include "portverify.h"
+#include "StatisticsThread.h"
 #include "master.h"
 #include "elogger.h"
 #include "thread_monitor.h"
@@ -90,7 +91,6 @@
 #define DO_VCONFIGTHREAD               1
 #define DO_PORTERCONNECTIONTHREAD      1
 #define DO_TIMESYNCTHREAD              1
-#define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
 #define DO_VERIFICATIONTHREAD          1
@@ -155,7 +155,7 @@ RWThreadFunction _guiThread;
 RWThreadFunction _gwThread;
 RWThreadFunction _pilThread;
 RWThreadFunction _tsyncThread;
-RWThreadFunction _perfuThread;
+RWThreadFunction _statisticsThread;
 RWThreadFunction _fillerThread;
 RWThreadFunction _vconfThread;
 
@@ -865,12 +865,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _tsyncThread.start();
     }
 
-    /* Start the performance update thread */
-    if(DO_PERFUPDATETHREAD)
-    {
-        _perfuThread = rwMakeThreadFunction( PerfUpdateThread, (void*)NULL );
-        _perfuThread.start();
-    }
+    _statisticsThread = rwMakeThreadFunction( Cti::Porter::StatisticsThread, (void*)NULL );
+    _statisticsThread.start();
 
     /* Start the verification thread */
     if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_START_VERIFICATIONTHREAD", "TRUE"),"true"))
@@ -1097,7 +1093,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     if(_connThread.isValid())               _connThread.requestCancellation(200);
     if(_guiThread.isValid())                _guiThread.requestCancellation(200);
     if(_tsyncThread.isValid())              _tsyncThread.requestCancellation(200);
-    if(_perfuThread.isValid())              _perfuThread.requestCancellation(200);
+    if(_statisticsThread.isValid())         _statisticsThread.requestCancellation(200);
     if(_fillerThread.isValid())             _fillerThread.requestCancellation(200);
     if(_vconfThread.isValid())              _vconfThread.requestCancellation(200);
     if(_queueCCU711Thread.isValid())        _queueCCU711Thread.requestCancellation(200);
@@ -1133,20 +1129,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " _guiThread shutdown" << endl;
-        }
-    }
-
-    if(_perfuThread.isValid())
-    {
-        if(_perfuThread.join(2000) != RW_THR_COMPLETED )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _perfuThread did not shutdown" << endl;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _perfuThread shutdown" << endl;
         }
     }
 
@@ -1270,6 +1252,20 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " _verificationThread shutdown" << endl;
+        }
+    }
+
+    if(_statisticsThread.isValid())
+    {
+        while( _statisticsThread.join(1500) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " _statisticsThread has not shutdown" << endl;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " _statisticsThread shutdown" << endl;
         }
     }
 

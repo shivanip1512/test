@@ -5,6 +5,7 @@
 #include "dsm2.h"
 #include "master.h"
 #include "portdecl.h"
+#include "StatisticsManager.h"
 #include "portglob.h"
 #include "portverify.h"
 
@@ -33,6 +34,8 @@
 #include "portfield.h"
 
 using namespace std;
+
+using Cti::Porter::PorterStatisticsManager;
 
 extern CtiPorterVerification PorterVerificationThread;
 extern CtiRouteManager RouteManager;
@@ -1313,7 +1316,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                     addCommResult(im->TargetID, im->EventCode & 0x3fff, false);
 
                                     //  always a completion - om->retry is generally for comms-related retries for transmitter/single devices
-                                    statisticsNewCompletion( im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags );
+                                    PorterStatisticsManager.newCompletion( im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags );
 
                                     ReturnResultMessage(im->EventCode & 0x3fff, im, om);
                                 }
@@ -2806,7 +2809,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( port, deviceID, targetID, CommResult, msgFlags );
+        PorterStatisticsManager.newAttempt( port, deviceID, targetID, CommResult, msgFlags );
     }
     else if(CommResult == ErrPortSimulated)
     {
@@ -3214,22 +3217,22 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     {
         if(status == RETRY_SUBMITTED)
         {
-            statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
+            PorterStatisticsManager.newAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
         }
         else
         {
-            statisticsNewCompletion( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
+            PorterStatisticsManager.newCompletion( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
         }
     }
     else if( InMessage )
     {
         if(status == RETRY_SUBMITTED)
         {
-            statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
+            PorterStatisticsManager.newAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
         }
         else
         {
-            statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
+            PorterStatisticsManager.newCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
         }
     }
 

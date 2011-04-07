@@ -63,40 +63,30 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
     
     private SqlFragmentSource getSqlSource(Collection<Integer> subList){
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        if(!lifetime){
-            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, sum(requests) requests, sum(attempts) attempts, sum(completions) completions");
-            sql.append("from DYNAMICPAOSTATISTICSHISTORY dpsh");
-            sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dpsh.PAObjectID");
-            sql.append("  join DeviceRoutes dr on dr.DEVICEID = dpsh.PAObjectID");
-            sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
-            sql.append("WHERE dpsh.PAObjectID IN (").appendArgumentList(subList).append(")");
-            sql.append("  and DateOffset").gte(getStartDateOffset()).append("and DateOffset").lte(getStopDateOffset());
-            sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
-        } else {
+
+        if(lifetime){
             sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
-            sql.append("from DYNAMICPAOSTATISTICS dps");
-            sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dps.PAObjectID");
-            sql.append("  join DeviceRoutes dr on dr.DEVICEID = dps.PAObjectID");
-            sql.append("  join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
-            sql.append("WHERE dps.PAObjectID IN (").appendArgumentList(subList).append(")");
-            sql.append("  and dps.StatisticType = 'Lifetime'");
-            sql.append("group by ypo.PAOName,ypo.type, route.PAOName, Requests, Attempts, Completions");
+        } else {
+            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, sum(requests) requests, sum(attempts) attempts, sum(completions) completions");
         }
+        
+        sql.append("from DYNAMICPAOSTATISTICS dps");
+        sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dps.PAObjectID");
+        sql.append("  join DeviceRoutes dr on dr.DEVICEID = dps.PAObjectID");
+        sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
+        sql.append("WHERE dps.PAObjectID IN (").appendArgumentList(subList).append(")");
+        
+        if(lifetime){
+            sql.append("  and dps.StatisticType = 'Lifetime'");
+        } else {
+            sql.append("  and dps.StatisticType = 'Daily'");
+            sql.append("  and StartDateTime").gte(getStartDate()).append("and StartDateTime").lt(getStopDate());
+            sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
+        }
+
         return sql;
     }
     
-    private long getStartDateOffset() {
-        long startDateMillis = getStartDate().getTime();
-        long startOffset = ((((startDateMillis / 1000) / 60) / 60) / 24);
-        return startOffset;
-    }
-    
-    private long getStopDateOffset(){
-        long stopDateMillis = getStopDate().getTime();
-        long stopOffset = ((((stopDateMillis / 1000) / 60) / 60) / 24);
-        return stopOffset;
-    }
-
     @Override
     public void doLoadData() {
         Iterable<SimpleDevice> devices = getDeviceList();

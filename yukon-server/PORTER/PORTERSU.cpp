@@ -38,6 +38,7 @@
 /* define the global area */
 #include "portglob.h"
 #include "portdecl.h"
+#include "StatisticsManager.h"
 #include "c_port_interface.h"
 #include "rtdb.h"
 #include "dev_base.h"
@@ -50,6 +51,8 @@
 #include "utility.h"
 
 using namespace std;
+
+using Cti::Porter::PorterStatisticsManager;
 
 extern CtiDeviceManager DeviceManager;
 
@@ -198,7 +201,7 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     }
 
     //If using statistics, send an error attempt.
-    statisticsNewCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorCode, OutMessage->MessageFlags);
+    PorterStatisticsManager.newCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorCode, OutMessage->MessageFlags);
 
     /* free up the Memory */
     delete (OutMessage);

@@ -40,7 +40,7 @@ struct NewDBInfoStruct
     string dll; // currently ora15d/ora12d/msq15d/msq12d...
 
     std::list<DBConnectionHolder> connectionList;
-    
+
 };
 
 static NewDBInfoStruct NewDBInfo;
@@ -65,41 +65,73 @@ void setDatabaseParams(const string& dll, const string& name,
     NewDBInfo.dll = dll;
 }
 
-/* 
-    assignSQLPlaceholders()
- 
-    This function replaces the '?' placeholder characters in a SQL query with the ':#' sequence
-        that SQLAPI++ expects.
- 
-    Example:
- 
-    replaces
- 
-        "update tableX set lastfreezetime = ?, prevfreezetime = ? where deviceid = ?"
- 
-    with
- 
-        "update tableX set lastfreezetime = :1, prevfreezetime = :2 where deviceid = :3"
-*/
+/**
+ * Replaces the '?' placeholder characters in a SQL query with
+ *       the ':#' sequence that SQLAPI++ expects.
+ *
+ * For example,
+ *
+ *      "update tableX set lastfreezetime = ?, prevfreezetime =
+ *      ? where deviceid = ?"
+ *
+ * will be changed to
+ *
+ *      "update tableX set lastfreezetime = :1, prevfreezetime =
+ *      :2 where deviceid = :3"
+ *
+ * @param sql the SQL with "?" placeholders
+ *
+ * @return the SQL with ":#" placeholders
+ */
 DLLEXPORT
 std::string assignSQLPlaceholders(const std::string &sql)
 {
-    unsigned            offset = 1;
-    std::ostringstream  output;
+    unsigned    offset = 1;
+    std::string result;
 
-    for each (char c in sql)
+    unsigned placeholder_chars = std::count(sql.begin(), sql.end(), '?');
+
+    if( placeholder_chars > 9 )
     {
-        if ( c == '?' )
+        //  each placeholder after 9 will require 2 chars
+        placeholder_chars *= 2;
+        placeholder_chars -= 9;
+    }
+
+    result.reserve(sql.size() + placeholder_chars);
+
+    std::string::const_iterator sql_itr = sql.begin();
+
+    while( sql_itr != sql.end() )
+    {
+        //  try to find a placeholder
+        std::string::const_iterator placeholder = find(sql_itr, sql.end(), '?');
+
+        result.append(sql_itr, placeholder);
+
+        sql_itr = placeholder;
+
+        //  did we find a placeholder?
+        if( placeholder != sql.end() )
         {
-            output << ':' << offset++;
-        }
-        else
-        {
-            output << c;
+            result.push_back(':');
+
+            //  This only writes out 2 digits, so we can only support up to 99 placeholders.
+            if( offset > 9 )
+            {
+                result.push_back('0' + offset / 10);
+            }
+
+            result.push_back('0' + offset % 10);
+
+            offset++;
+
+            //  Move past the placeholder character.
+            sql_itr++;
         }
     }
 
-    return output.str();
+    return result;
 }
 
 // Attempts to create a connection to the database, returns NULL if not successful.
@@ -154,7 +186,7 @@ SAConnection* getNewConnection()
             {
                 return connHolder.connection;
             }
-            else 
+            else
             {
                 delete connHolder.connection;
                 connHolder.connection = createDBConnection();
@@ -178,7 +210,7 @@ SAConnection* getNewConnection()
         }
     }
 
-    return connHolder.connection;   
+    return connHolder.connection;
 }
 
 DLLEXPORT

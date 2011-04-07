@@ -35,6 +35,7 @@ public:
     bool isNull();
     bool operator()();
 
+    RowReader &operator[](const char *columnName);
     RowReader &operator[](const std::string &columnName);
     RowReader &operator[](int columnNumber); // 0 based
 
@@ -51,6 +52,7 @@ public:
     RowReader &operator>>(CtiTime &operand);
     RowReader &operator>>(boost::posix_time::ptime &operand);
     RowReader &operator>>(std::string &operand);
+    RowReader &extractChars(char *destination, unsigned count);
 
     // inputs for variable binding
     RowReader &operator<<(const bool operand);

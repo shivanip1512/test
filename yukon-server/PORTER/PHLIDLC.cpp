@@ -54,6 +54,7 @@
 #include "dsm2err.h"
 #include "porter.h"
 #include "portdecl.h"
+#include "StatisticsManager.h"
 
 #include "cparms.h"
 #include "portglob.h"
@@ -65,6 +66,7 @@
 #include "trx_711.h"
 
 extern CtiPortManager PortManager;
+using Cti::Porter::PorterStatisticsManager;
 
 
 /* routine to initialize an idlc device and its counters */
@@ -157,7 +159,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
     OutMessage->Buffer.OutMessage[PREIDL] = (UCHAR)Function;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+    PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (CHAR *) OutMessage, OutMessage->Priority))
@@ -236,7 +238,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
     OutMessage->Destination = DEST_QUEUE;
     OutMessage->Command = CMND_RCONT;
     OutMessage->ReturnNexus = NULL;
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+    PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (CHAR *) OutMessage, OutMessage->Priority))
@@ -340,7 +342,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         OutMessage->Destination = DEST_QUEUE;
         OutMessage->Command = CMND_RCOLQ;
         OutMessage->ReturnNexus = NULL;
-        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+        PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
         OutMessage->Buffer.OutMessage[PREIDL] = (UCHAR)p711Info->RContInLength;
 
@@ -428,7 +430,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
     /* Thats it so send the message */
     OutMessage->OutLength = Index - PREIDL + 2;
 
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+    PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -500,7 +502,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     /* Thats it so send the message */
     OutMessage->OutLength = Index - PREIDL + 2;
 
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+    PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -772,7 +774,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         /* Thats it so send the message */
         OutMessage->OutLength = Index - PREIDL + 2;
 
-        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+        PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);

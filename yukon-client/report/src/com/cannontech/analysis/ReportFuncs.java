@@ -53,7 +53,6 @@ import com.cannontech.analysis.report.ScheduledMeterReadReport;
 import com.cannontech.analysis.report.StarsAMRDetailReport;
 import com.cannontech.analysis.report.StarsLMDetailReport;
 import com.cannontech.analysis.report.StarsLMSummaryReport;
-import com.cannontech.analysis.report.StatisticHistoryReport;
 import com.cannontech.analysis.report.StatisticReport;
 import com.cannontech.analysis.report.SystemLogReport;
 import com.cannontech.analysis.report.WorkOrder;
@@ -93,10 +92,6 @@ import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryDeviceModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryPortModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryTransmitterModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
@@ -135,15 +130,7 @@ public class ReportFuncs
         YukonReportBase returnVal = null;
         if( model instanceof StatisticModel)
             returnVal = new StatisticReport();
-        else if(model instanceof StatisticHistoryPortModel)
-        	returnVal = new StatisticHistoryReport((StatisticHistoryPortModel)model);
-        else if(model instanceof StatisticHistoryTransmitterModel)
-        	returnVal = new StatisticHistoryReport((StatisticHistoryTransmitterModel)model);
-        else if(model instanceof StatisticHistoryDeviceModel)
-        	returnVal = new StatisticHistoryReport((StatisticHistoryDeviceModel)model);
-        else if( model instanceof StatisticHistoryModel)
-            returnVal = new StatisticHistoryReport();
-         else if( model instanceof SystemLogModel)
+        else if( model instanceof SystemLogModel)
             returnVal = new SystemLogReport();
         else if( model instanceof LMControlLogModel)
             returnVal = new SystemLogReport((LMControlLogModel)model);

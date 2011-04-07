@@ -70,6 +70,11 @@ public:
         return _currentRow < _values.size();
     }
 
+    RowReader &operator[](const char *columnName)
+    {
+        return this->operator[](std::string(columnName));
+    }
+
     RowReader &operator[](const std::string &columnName)
     {
         bool found = false;
@@ -170,6 +175,28 @@ public:
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             operand = _values[_currentRow][_currentColumn];
+        }
+        else
+        {
+            throw;
+        }
+
+        _currentColumn++;
+        return *this;
+    }
+
+    //  only implemented for StringRow so far
+    RowReader &extractChars(char *destination, unsigned count)
+    {
+        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
+        {
+            const std::string &s = _values[_currentRow][_currentColumn];
+
+            unsigned to_copy = std::min(s.size(), count - 1);
+
+            std::copy(s.begin(), s.begin() + to_copy, destination);
+
+            std::fill(destination + to_copy, destination + count, 0);
         }
         else
         {

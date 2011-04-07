@@ -604,8 +604,8 @@ dev_ccu721.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_ccu721.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h config_data_mct.h ctidate.h porter.h \
 		devicetypes.h portdecl.h port_base.h tbl_port_base.h \
-		counter.h tbl_port_statistics.h mgr_route.h repeaterrole.h \
-		slctdev.h smartmap.h readers_writer_lock.h
+		counter.h mgr_route.h repeaterrole.h slctdev.h smartmap.h \
+		readers_writer_lock.h
 dev_ccu_queue_interface.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dev_ccu_queue_interface.h device_queue_interface.h dlldefs.h \
 		trx_711.h trx_info.h logger.h thread.h mutex.h guard.h \
@@ -1562,8 +1562,7 @@ dev_mct410.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
 		config_data_mct.h dev_mct410_commands.h \
 		cmd_mct410_hourlyRead.h cmd_mct410.h tbl_ptdispatch.h \
-		pt_status.h tbl_pt_status.h portglob.h porter.h devicetypes.h \
-		statistics.h
+		pt_status.h tbl_pt_status.h portglob.h porter.h devicetypes.h
 dev_mct420.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_mct420.h \
 		dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h mutex.h dlldefs.h guard.h \
@@ -1784,9 +1783,9 @@ dev_pagingreceiver.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		devicetypes.h pt_accum.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h tbl_pt_accum.h tbl_pt_accumhistory.h \
 		port_base.h tbl_port_base.h critical_section.h counter.h \
-		tbl_port_statistics.h mgr_route.h repeaterrole.h slctdev.h \
-		smartmap.h readers_writer_lock.h msg_trace.h \
-		dev_pagingreceiver.h tbl_dv_pagingreceiver.h
+		mgr_route.h repeaterrole.h slctdev.h smartmap.h \
+		readers_writer_lock.h msg_trace.h dev_pagingreceiver.h \
+		tbl_dv_pagingreceiver.h
 dev_quantum.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctidate.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2087,14 +2086,14 @@ dev_snpp.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		collectable.h tbl_pao_lite.h tbl_rtcomm.h msg_signal.h \
 		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		tbl_static_paoinfo.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h tbl_port_statistics.h \
-		connection.h exchange.h msg_multi.h msg_pdata.h msg_ptreg.h \
-		msg_reg.h queue.h mgr_route.h repeaterrole.h slctdev.h \
-		smartmap.h readers_writer_lock.h msg_pcrequest.h \
-		msg_pcreturn.h msg_trace.h verification_objects.h dev_snpp.h \
-		dev_paging.h tbl_dv_tappaging.h dev_ied.h dev_remote.h \
-		dev_single.h tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
-		tbl_dialup.h tbl_direct.h tbl_dv_ied.h
+		critical_section.h counter.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h queue.h \
+		mgr_route.h repeaterrole.h slctdev.h smartmap.h \
+		readers_writer_lock.h msg_pcrequest.h msg_pcreturn.h \
+		msg_trace.h verification_objects.h dev_snpp.h dev_paging.h \
+		tbl_dv_tappaging.h dev_ied.h dev_remote.h dev_single.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h tbl_dialup.h \
+		tbl_direct.h tbl_dv_ied.h
 dev_system.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
@@ -2193,9 +2192,8 @@ dev_tnpp.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		devicetypes.h pt_accum.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h tbl_pt_accum.h tbl_pt_accumhistory.h \
 		port_base.h tbl_port_base.h critical_section.h counter.h \
-		tbl_port_statistics.h mgr_route.h repeaterrole.h slctdev.h \
-		smartmap.h readers_writer_lock.h msg_trace.h dev_tnpp.h \
-		tbl_dv_tnpp.h
+		mgr_route.h repeaterrole.h slctdev.h smartmap.h \
+		readers_writer_lock.h msg_trace.h dev_tnpp.h tbl_dv_tnpp.h
 dev_vectron.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctidate.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2426,12 +2424,11 @@ mgr_port.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_port.h \
 		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
-		tbl_port_base.h xfer.h counter.h tbl_port_statistics.h \
-		slctprt.h port_direct.h port_serial.h tbl_port_settings.h \
-		tbl_port_timing.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_serial.h port_dialout.h \
-		port_pool_out.h port_tcpipdirect.h tbl_port_tcpip.h \
-		port_tcp.h port_udp.h
+		tbl_port_base.h xfer.h counter.h slctprt.h port_direct.h \
+		port_serial.h tbl_port_settings.h tbl_port_timing.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_serial.h port_dialout.h port_pool_out.h \
+		port_tcpipdirect.h tbl_port_tcpip.h port_tcp.h port_udp.h
 mgr_route.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_route.h \
 		repeaterrole.h dlldefs.h rte_base.h boostutil.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2501,8 +2498,7 @@ port_base.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h prot_emetcon.h color.h porter.h \
-		devicetypes.h msg_trace.h
+		prot_emetcon.h color.h porter.h devicetypes.h msg_trace.h
 port_dialable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		port_dialable.h port_base.h dev_base.h dsm2.h mutex.h \
 		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -2520,7 +2516,7 @@ port_dialable.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h port_modem.h tbl_port_dialup.h
+		port_modem.h tbl_port_dialup.h
 port_dialin.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h \
 		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
@@ -2538,8 +2534,7 @@ port_dialin.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h
+		port_dialable.h port_modem.h tbl_port_dialup.h
 port_dialout.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h \
 		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
@@ -2557,8 +2552,7 @@ port_dialout.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h
+		port_dialable.h port_modem.h tbl_port_dialup.h
 port_direct.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
@@ -2576,9 +2570,9 @@ port_direct.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h tbl_port_settings.h \
-		tbl_port_timing.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_serial.h
+		counter.h tbl_port_settings.h tbl_port_timing.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_serial.h
 port_modem.obj:	yukon.h precompiled.h types.h ctidbgmem.h numstr.h \
 		dlldefs.h port_modem.h port_base.h dev_base.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -2595,7 +2589,7 @@ port_modem.obj:	yukon.h precompiled.h types.h ctidbgmem.h numstr.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h
+		counter.h
 port_pool_out.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
@@ -2613,7 +2607,7 @@ port_pool_out.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h
+		counter.h
 port_serial.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		port_serial.h port_base.h dev_base.h dsm2.h mutex.h dlldefs.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -2630,8 +2624,7 @@ port_serial.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h tbl_port_settings.h \
-		tbl_port_timing.h
+		counter.h tbl_port_settings.h tbl_port_timing.h
 port_tcp.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
@@ -2649,7 +2642,7 @@ port_tcp.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h tbl_port_settings.h tbl_port_timing.h
+		tbl_port_settings.h tbl_port_timing.h
 port_tcpipdirect.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		cparms.h dlldefs.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
@@ -2667,9 +2660,9 @@ port_tcpipdirect.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h tbl_port_settings.h \
-		tbl_port_timing.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_tcpip.h
+		counter.h tbl_port_settings.h tbl_port_timing.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_tcpip.h
 port_udp.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
@@ -2687,8 +2680,7 @@ port_udp.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
 		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		tbl_port_statistics.h tbl_port_settings.h tbl_port_timing.h \
-		tbl_port_tcpip.h
+		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 pttrigger.obj:	yukon.h precompiled.h types.h ctidbgmem.h boostutil.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
@@ -2998,11 +2990,11 @@ slctprt.obj:	yukon.h precompiled.h types.h ctidbgmem.h port_dialout.h \
 		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h port_dialin.h port_direct.h port_serial.h \
-		tbl_port_settings.h tbl_port_timing.h tbl_port_serial.h \
-		port_pool_out.h port_tcpipdirect.h tbl_port_tcpip.h \
-		port_tcp.h port_udp.h devicetypes.h slctprt.h
+		counter.h port_dialable.h port_modem.h tbl_port_dialup.h \
+		port_dialin.h port_direct.h port_serial.h tbl_port_settings.h \
+		tbl_port_timing.h tbl_port_serial.h port_pool_out.h \
+		port_tcpipdirect.h tbl_port_tcpip.h port_tcp.h port_udp.h \
+		devicetypes.h slctprt.h
 test_cmd_dlc.obj:	cmd_mct410_hourlyread.h cmd_mct410.h cmd_dlc.h \
 		cmd_base.h dev_single.h dsm2.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \

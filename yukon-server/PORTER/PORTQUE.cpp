@@ -24,6 +24,7 @@
 
 #include "portglob.h"
 #include "portdecl.h"
+#include "StatisticsManager.h"
 #include "c_port_interface.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
@@ -38,6 +39,7 @@
 
 using namespace std;
 using Cti::ThreadStatusKeeper;
+using Cti::Porter::PorterStatisticsManager;
 
 extern CtiPortManager            PortManager;
 extern map<long, CtiPortShare *> PortShareManager;
@@ -1055,7 +1057,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                     //We had a comm error and need to report it.
                     addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
 
-                    statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
+                    PorterStatisticsManager.newCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
                 }
                 else
                 {
@@ -1624,7 +1626,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 if(OutMessage->Priority < gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11))
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
-                statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+                PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
                 if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -1845,7 +1847,7 @@ INT DeQueue (INMESS *InMessage)
                         //We had a comm error and need to report it.
                         addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
 
-                        statisticsNewCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
+                        PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
                         /* Now send it back */
                         if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)))
                         {
@@ -1929,7 +1931,7 @@ void cancelOutMessages(void *doSendError, void* om)
     }
     else
     {
-        statisticsNewCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorRequestCancelled, OutMessage->MessageFlags);
+        PorterStatisticsManager.newCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorRequestCancelled, OutMessage->MessageFlags);
         delete OutMessage;
         OutMessage = 0;
     }

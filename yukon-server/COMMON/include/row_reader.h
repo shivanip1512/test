@@ -31,6 +31,7 @@ public:
     virtual bool operator()() = 0;
 
     virtual bool setCommandText(const std::string &command) = 0;
+    virtual RowReader &operator[](const char *columnName) = 0;
     virtual RowReader &operator[](const std::string &columnName) = 0;
     virtual RowReader &operator[](int columnNumber) = 0;
 
@@ -47,6 +48,12 @@ public:
     virtual RowReader &operator>>(CtiTime &operand) = 0;
     virtual RowReader &operator>>(boost::posix_time::ptime &operand) = 0;
     virtual RowReader &operator>>(std::string &operand) = 0;
+    template<unsigned N>
+    RowReader &operator>>(char (&operand)[N])
+    {
+        return extractChars(operand, N);
+    }
+    virtual RowReader &extractChars(char *destination, unsigned count) = 0;
 
     // inputs for variable binding
     virtual RowReader &operator<<(const bool operand) = 0;

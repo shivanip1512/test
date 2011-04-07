@@ -60,6 +60,7 @@
 #include "utility.h"
 
 #include "unsolicited_handler.h"
+#include "StatisticsManager.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -73,7 +74,6 @@ extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *
 extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid);
 extern bool processInputFunction(CHAR Char);
 extern void KickPIL();
-extern void deletePaoStatistics( const long paoId );
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
@@ -152,7 +152,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                         if ( dbchg->getTypeOfChange() == ChangeTypeDelete )
                         {
-                            deletePaoStatistics( dbchg->getId() );
+                            PorterStatisticsManager.deleteRecord(dbchg->getId());
                         }
 
                         break;
@@ -277,7 +277,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     {
                         previous = next;
                         NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
-    
+
                         VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                     }
                 }

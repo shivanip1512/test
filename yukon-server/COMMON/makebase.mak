@@ -66,7 +66,6 @@ regression.obj \
 repeaterrole.obj \
 rtdb.obj \
 sema.obj \
-statistics.obj \
 stdexcepthdlr.obj \
 string_utility.obj \
 thread.obj \
@@ -396,15 +395,6 @@ rtdb.obj:	yukon.h precompiled.h types.h ctidbgmem.h dlldefs.h rtdb.h \
 		string_utility.h dllbase.h dsm2.h mutex.h guard.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h
 sema.obj:	yukon.h precompiled.h types.h ctidbgmem.h sema.h dlldefs.h
-statistics.obj:	yukon.h precompiled.h types.h ctidbgmem.h row_reader.h \
-		ctitime.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
-		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h sema.h logger.h thread.h CtiPCPtrQueue.h \
-		statistics.h ctidate.h cparms.h rwutil.h \
-		database_connection.h database_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h database_writer.h \
-		row_writer.h
 stdexcepthdlr.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		stdexcepthdlr.h dlldefs.h
 string_utility.obj:	yukon.h precompiled.h types.h ctidbgmem.h \

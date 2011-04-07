@@ -98,6 +98,12 @@ dllyukon.obj:	yukon.h precompiled.h types.h ctidbgmem.h tbl_route.h \
 		tbl_rtversacom.h msg_pcrequest.h message.h collectable.h \
 		rwutil.h database_connection.h database_reader.h boost_time.h \
 		boostutil.h tbl_state_grp.h tbl_state.h
+invalidreaderexception.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		InvalidReaderException.h dlldefs.h database_reader.h \
+		ctitime.h database_connection.h dbaccess.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
+		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \
+		dsm2err.h words.h optional.h sema.h row_reader.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 tbl_alm_ndest.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		row_reader.h ctitime.h dlldefs.h dbaccess.h dllbase.h \
@@ -465,12 +471,6 @@ tbl_port_settings.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
-		row_reader.h logger.h thread.h CtiPCPtrQueue.h
-tbl_port_statistics.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		tbl_port_statistics.h dbaccess.h dlldefs.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h sema.h dbmemobject.h \
 		row_reader.h logger.h thread.h CtiPCPtrQueue.h
 tbl_port_tcpip.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_port_tcpip.h row_reader.h ctitime.h dlldefs.h dllbase.h \

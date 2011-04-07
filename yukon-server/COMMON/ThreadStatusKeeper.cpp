@@ -12,12 +12,12 @@ ThreadStatusKeeper::ThreadStatusKeeper(const std::string &threadName) :
     _tickleTime((unsigned long) 0)
 {}
 
-ThreadStatusKeeper::~ThreadStatusKeeper() 
+ThreadStatusKeeper::~ThreadStatusKeeper()
 {
     ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), _threadName, CtiThreadRegData::LogOut ) );
 }
 
-bool ThreadStatusKeeper::monitorCheck() 
+bool ThreadStatusKeeper::monitorCheck()
 {
     return monitorCheck(CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &ThreadStatusKeeper::awolComplain);
 }
@@ -46,7 +46,7 @@ bool ThreadStatusKeeper::monitorCheck(CtiThreadRegData::Behaviours behavior, int
 {
     CtiTime now;
     bool retVal = (now > _tickleTime);
-    
+
     if(retVal)
     {
         _tickleTime = nextScheduledTimeAlignedOnRate( now, CtiThreadMonitor::StandardTickleTime );
@@ -61,11 +61,6 @@ bool ThreadStatusKeeper::monitorCheck(CtiThreadRegData::Behaviours behavior, int
     }
 
     return retVal;
-}
-
-void ThreadStatusKeeper::forceTickle(CtiThreadRegData::Behaviours behavior, int tickleInterval)
-{
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), _threadName, behavior, tickleInterval ) );
 }
 
 void ThreadStatusKeeper::awolComplain( void *who )

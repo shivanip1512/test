@@ -12,6 +12,7 @@
 #include "devicetypes.h"
 
 #include <boost/regex.hpp>
+#include <boost/optional.hpp>
 
 using namespace std;
 
@@ -252,6 +253,48 @@ LONG VerificationSequenceGen(bool force, int force_value)
     }
 
     return tempid;
+}
+
+/**
+ * Generates an ID value for a new DynamicPaoStatistics table
+ * row.
+ *
+ * @return int
+ * @throw runtime_error if the DB read fails.
+ */
+int DynamicPaoStatisticsIdGen()
+{
+    static RWMutexLock mux;
+    RWMutexLock::LockGuard guard(mux);
+
+    static boost::optional<int> id;
+
+    if( ! id )
+    {
+        static const std::string sql = "SELECT MAX(DynamicPaoStatisticsId) FROM DynamicPaoStatistics";
+
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+
+        if(rdr())
+        {
+            int temp_id;
+
+            rdr >> temp_id;
+
+            if( temp_id >= *id )
+            {
+                id = temp_id;
+            }
+        }
+        else
+        {
+            throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
+        }
+    }
+
+    return ++(*id);
 }
 
 INT ChangeIdGen(bool force)

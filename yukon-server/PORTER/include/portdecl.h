@@ -29,13 +29,6 @@ INT SendError(OUTMESS *&, USHORT, INMESS *InMessage = NULL);
 /* Prototypes from PORTFILL.C */
 VOID FillerThread (PVOID);
 
-/* Prototypes from PORTPERF.C */
-VOID PerfUpdateThread (PVOID);
-void statisticsNewRequest(long paoportid, long trxpaoid, long targpaoid, UINT &messageFlags);
-void statisticsNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result, UINT messageFlags);
-void statisticsNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result, UINT &messageFlags);
-
-
 /* Prototypes from PORTPIPE.C */
 VOID PorterConnectionThread (PVOID);
 

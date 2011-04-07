@@ -112,6 +112,12 @@ bool DatabaseReader::operator()()
     return false;
 }
 
+RowReader &DatabaseReader::operator[](const char *columnName)
+{
+    _currentIndex = _command[columnName].Pos();
+    return *this;
+}
+
 RowReader &DatabaseReader::operator[](const std::string &columnName)
 {
     _currentIndex = _command[columnName.c_str()].Pos();
@@ -201,6 +207,25 @@ RowReader &DatabaseReader::operator>>(std::string &operand)
     operand = _command[_currentIndex++].asString();
     return *this;
 }
+
+
+RowReader &DatabaseReader::extractChars(char *destination, unsigned count)
+    {
+        SAString s = _command[_currentIndex++].asString();
+
+        if( count )
+        {
+            const unsigned chars_to_extract = std::min<unsigned>(count - 1, s.GetLength());
+
+            const char *source = s.GetBuffer(chars_to_extract);
+
+            std::copy(source, source + chars_to_extract, destination);
+
+            std::fill(destination + chars_to_extract, destination + count, 0);
+        }
+
+        return *this;
+    }
 
 
 
