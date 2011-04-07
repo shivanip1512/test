@@ -23,7 +23,7 @@
                 <td class="titleArea">${pageScope.title}</td>
                 <td class="filterArea">
                     <c:if test="${!empty pageScope.filterDialog}">
-                        <tags:filterLink popupId="${pageScope.filterDialog}" defaultFilterInput="${pageScope.defaultFilterInput}"/>
+                        <cti:button key="filter" styleClass="navlink" onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');" renderMode="labeledImage"/>
                         <c:if test="${pageScope.isFiltered}">
                             &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
                             <cti:msg key="yukon.common.paging.showAll"/>

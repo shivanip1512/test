@@ -45,7 +45,7 @@
     </script>
       
     <%-- FILTER POPUP --%>
-    <tags:simplePopup id="filterPopup" title="${filterSectionText}">
+    <tags:simplePopup id="filterPopup" title="${filterSectionText}" on="#filterButton">
      	
 		<form name="clearForm" id="clearForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
    		</form>
@@ -101,8 +101,8 @@
 	
 	<%-- RESULTS TABLE --%>
     <div style="padding-bottom:5px;">
-	    <tags:filterLink popupId="filterPopup"/>
-	</div>
+        <cti:button key="filter" styleClass="navlink" renderMode="labeledImage" id="filterButton" />
+    </div>
 
 	<table id="jobsTable" class="resultsTable activeResultsTable">
 	

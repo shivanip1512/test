@@ -237,6 +237,7 @@ table.resultsTable th a:visited, span.navLink a:visited {color: #06C}
 table.resultsTable th a:link, span.navLink a:link {color: #06C}
 table.resultsTable th a:hover, span.navLink a:hover {color: #06C}
 
+button.navlink {color: #06C;}
 
 /* Data results table styles */
 table.miniResultsTable {
