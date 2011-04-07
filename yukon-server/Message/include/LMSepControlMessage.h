@@ -12,6 +12,7 @@ class IM_EX_MSG LMSepControlMessage : public StreamableMessage
     int             _groupId;
     unsigned int    _utcStartTime;
     unsigned short  _controlMinutes;
+    unsigned char   _criticality;
     unsigned char   _coolTempOffset;
     unsigned char   _heatTempOffset;
     short           _coolTempSetpoint;
@@ -25,6 +26,7 @@ public:
     LMSepControlMessage(int _groupId,
                         unsigned int  utcStartTime,
                         unsigned short controlMinutes,
+                        unsigned char  criticality,
                         unsigned char  coolTempOffset,
                         unsigned char  heatTempOffset,
                         short          coolTempSetpoint,

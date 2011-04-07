@@ -90,7 +90,7 @@ void LMGroupDigiSEP::restore(Cti::RowReader &rdr)
     CtiLMGroupBase::restore(rdr);
 }
 
-bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
+bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
 {
     using namespace Cti::Messaging;
 
@@ -99,7 +99,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     long standardCyclePercent = isTrueCycle ? SEPStandardCycleUnused : cyclePercent;
     unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, controlMinutes, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, averageCyclePercent, standardCyclePercent, eventFlags));
+    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, controlMinutes, criticality, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, averageCyclePercent, standardCyclePercent, eventFlags));
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -127,7 +127,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {
     using namespace Cti::Messaging;
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, 0, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, SEPAverageCycleUnused, SEPStandardCycleUnused, 0));
+    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, 0, 0, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, SEPAverageCycleUnused, SEPStandardCycleUnused, 0));
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )

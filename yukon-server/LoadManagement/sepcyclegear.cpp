@@ -48,6 +48,8 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
     bool randomizeStart = (getFrontRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
     bool randomizeStop = (getBackRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
 
+    long criticality = getMethodPeriod(); // We are using the MethodPeriod in the database to hold the criticality
+
     if( getPercentReduction() > 0.0 )
     {
         expectedLoadReduced += (getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -57,7 +59,7 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
         expectedLoadReduced += currentLMGroup->getKWCapacity();
     }
 
-    return currentLMGroup->sendSEPCycleControl(controlSeconds/60, getMethodRate(), isTrueCycle, randomizeStart, randomizeStop);
+    return currentLMGroup->sendSEPCycleControl(controlSeconds/60, getMethodRate(), criticality, isTrueCycle, randomizeStart, randomizeStop);
 }
 
 bool SEPCycleGear::stopControl(CtiLMGroupPtr currentLMGroup)

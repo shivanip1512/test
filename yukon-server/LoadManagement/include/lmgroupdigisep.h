@@ -28,7 +28,7 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     int operator==(const LMGroupDigiSEP& right) const;
     int operator!=(const LMGroupDigiSEP& right) const;
 
-    virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
+    virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
     virtual bool sendStopControl(bool stopImmediately);
 
     //Unused

@@ -894,7 +894,7 @@ bool CtiLMGroupBase::sendStopControl(bool stopImmediately)
     return false;
 }
 
-bool CtiLMGroupBase::sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
+bool CtiLMGroupBase::sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
