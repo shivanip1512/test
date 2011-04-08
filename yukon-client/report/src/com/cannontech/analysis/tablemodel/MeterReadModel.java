@@ -110,6 +110,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		super(start_, null);
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
+				ReportFilter.DEVICE,
 				ReportFilter.GROUPS
 				} 
 		);
