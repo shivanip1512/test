@@ -1118,7 +1118,6 @@ CtiLMControlArea* CtiLMProgramBase::getControlArea()
 void CtiLMProgramBase::restore(Cti::RowReader &rdr)
 {
     string tempBoolString;
-    string tempTypeString;
     _insertDynamicDataFlag = FALSE;
 
     rdr["paobjectid"] >> _paoid;

@@ -1158,7 +1158,6 @@ void CtiLMGroupBase::restore(Cti::RowReader &rdr)
 {
     CtiTime dynamicTimeStamp;
     string tempBoolString;
-    string tempTypeString;
     _insertDynamicDataFlag = FALSE;
 
     rdr["groupid"] >> _paoid;
