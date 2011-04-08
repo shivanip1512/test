@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogram.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMProgramBase.
-                        CtiLMProgramBase maintains the state and handles
-                        the persistence of programs for Load Management.
-
-        Initial Date:  2/12/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -38,7 +25,7 @@ using std::transform;
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase() :
 _paoid(0),
-_paotype(0),
+_paoType(0),
 _disableflag(false),
 _start_priority(0),
 _stop_priority(0),
@@ -131,7 +118,17 @@ const string& CtiLMProgramBase::getPAOName() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getPAOType() const
 {
-    return _paotype;
+    return _paoType;
+}
+
+/*---------------------------------------------------------------------------
+    getPAOTypeString
+
+    Returns the pao type string of the substation
+---------------------------------------------------------------------------*/
+const string& CtiLMProgramBase::getPAOTypeString() const
+{
+    return _paoTypeString;
 }
 
 /*---------------------------------------------------------------------------
@@ -437,17 +434,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const string& pclass)
 CtiLMProgramBase& CtiLMProgramBase::setPAOName(const string& name)
 {
     _paoname = name;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the substation
----------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOType(LONG type)
-{
-    _paotype = type;
     return *this;
 }
 
@@ -852,7 +838,7 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     >> _paocategory
     >> _paoclass
     >> _paoname
-    >> _paotype
+    >> _paoTypeString
     >> _paodescription
     >> _disableflag
     >> _start_priority
@@ -876,6 +862,8 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     >> _manualcontrolreceivedflag
     >> _lmprogramcontrolwindows;
 
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
+
     _startedcontrolling = CtiTime(tempTime1);
     _lastcontrolsent = CtiTime(tempTime2);
 }
@@ -893,7 +881,7 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
     << _paocategory
     << _paoclass
     << _paoname
-    << _paotype
+    << _paoTypeString
     << _paodescription
     << _disableflag
     << _start_priority
@@ -933,7 +921,8 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _paocategory = right._paocategory;
         _paoclass = right._paoclass;
         _paoname = right._paoname;
-        _paotype = right._paotype;
+        _paoType = right._paoType;
+        _paoTypeString = right._paoTypeString;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
         _start_priority = right._start_priority;
@@ -1136,8 +1125,8 @@ void CtiLMProgramBase::restore(Cti::RowReader &rdr)
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;
     rdr["paoname"] >> _paoname;
-    rdr["type"] >> tempTypeString;
-    _paotype = resolvePAOType(_paocategory,tempTypeString);
+    rdr["type"] >> _paoTypeString;
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
     rdr["description"] >> _paodescription;
     rdr["disableflag"] >> tempBoolString;
     transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);

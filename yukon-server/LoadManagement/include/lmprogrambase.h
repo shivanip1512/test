@@ -1,24 +1,9 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogrambase.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMProgramBase
-                        CtiLMProgramBase 
-
-        Initial Date:  2/2/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMPROGRAMIMPL_H
-#define CTILMPROGRAMIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "dbmemobject.h"
 #include "observe.h"
@@ -28,7 +13,7 @@
 #include "ctidate.h"
 #include "row_reader.h"
 #include "database_connection.h"
-         
+
 class CtiLMProgramControlWindow;
 class CtiLMControlArea;
 
@@ -44,7 +29,7 @@ class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 
 public:
 
-#ifdef _DEBUG_MEMORY    
+#ifdef _DEBUG_MEMORY
     static LONG numberOfReferences;
 #endif
     CtiLMProgramBase();
@@ -58,6 +43,7 @@ public:
     const string& getPAOClass() const;
     const string& getPAOName() const;
     LONG getPAOType() const;
+    const string& getPAOTypeString() const;
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     int getStartPriority() const;
@@ -77,19 +63,18 @@ public:
     LONG getHolidayScheduleId() const;
     LONG getSeasonScheduleId() const;
     LONG getProgramStatusPointId() const;
-    LONG getProgramState() const; 
+    LONG getProgramState() const;
     LONG getReductionAnalogPointId() const;
     DOUBLE getReductionTotal() const;
     const CtiTime& getStartedControlling() const;
     const CtiTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
     std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows();
-    
+
     CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const string& category);
     CtiLMProgramBase& setPAOClass(const string& pclass);
     CtiLMProgramBase& setPAOName(const string& name);
-    CtiLMProgramBase& setPAOType(LONG type);
     CtiLMProgramBase& setPAODescription(const string& description);
     CtiLMProgramBase& setDisableFlag(BOOL disable);
     CtiLMProgramBase& setStartPriority(int start_priority);
@@ -128,7 +113,7 @@ public:
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBaseSPtr replicate() const = 0;
-    
+
     virtual BOOL hasControlHoursAvailable() = 0;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901) = 0;
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg) = 0;
@@ -141,7 +126,7 @@ public:
     virtual void setDirty(BOOL b=TRUE);
     virtual void setChangeReason(const string& reason);
     virtual void setLastUser(const string& user);
-    
+
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -157,7 +142,7 @@ public:
     static const string AutomaticType;
     static const string ManualOnlyType;
     static const string TimedType;
-    
+
     // Possible program states
     static const int InactiveState;
     static const int ActiveState;
@@ -172,16 +157,17 @@ public:
 
 protected:
 
-    
+
     void restore(Cti::RowReader &rdr);
 
 private:
-    
+
     LONG _paoid;
     string _paocategory;
     string _paoclass;
     string _paoname;
-    LONG _paotype;
+    LONG _paoType;
+    string _paoTypeString;
     string _paodescription;
     BOOL _disableflag;
     int _start_priority;
@@ -215,5 +201,4 @@ private:
     //don't stream
     BOOL _insertDynamicDataFlag;
 };
-#endif
 

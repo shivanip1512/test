@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupbase.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMGroupBase
-                        CtiLMGroupBase
-
-        Initial Date:  2/5/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMGROUPBASEIMPL_H
-#define CTILMGROUPBASEIMPL_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -24,7 +9,7 @@
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "dbmemobject.h"
 #include "observe.h"
@@ -38,7 +23,7 @@ using std::string;
 using boost::shared_ptr;
 
 
-class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject 
+class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject
 {
 
 public:
@@ -47,12 +32,13 @@ public:
     CtiLMGroupBase(const CtiLMGroupBase& groupbase);
 
     virtual ~CtiLMGroupBase();
-    
+
     virtual LONG getPAOId() const;
     virtual const string& getPAOCategory() const;
     virtual const string& getPAOClass() const;
     virtual const string& getPAOName() const;
-    virtual LONG getPAOType() const;
+    LONG getPAOType() const;
+    const string& getPAOTypeString() const;
     virtual const string& getPAODescription() const;
     virtual BOOL getDisableFlag() const;
     virtual LONG getGroupOrder() const;
@@ -71,12 +57,12 @@ public:
     virtual const CtiTime& getNextControlTime() const; //FIXME
     virtual const CtiTime& getDynamicTimestamp() const;
     virtual LONG getDailyOps();
-    
+
     virtual bool getIsRampingIn() const;
     virtual bool getIsRampingOut() const;
 
     virtual ULONG getCurrentControlDuration() const;
-    
+
     virtual LONG getHoursDailyPointId() const;
     virtual LONG getHoursMonthlyPointId() const;
     virtual LONG getHoursSeasonalPointId() const;
@@ -88,7 +74,6 @@ public:
     virtual CtiLMGroupBase& setPAOCategory(const string& category);
     virtual CtiLMGroupBase& setPAOClass(const string& pclass);
     virtual CtiLMGroupBase& setPAOName(const string& name);
-    virtual CtiLMGroupBase& setPAOType(LONG type);
     virtual CtiLMGroupBase& setPAODescription(const string& description);
     virtual CtiLMGroupBase& setDisableFlag(BOOL disable);
     virtual CtiLMGroupBase& setGroupOrder(LONG order);
@@ -159,10 +144,10 @@ public:
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
     bool operator<(const CtiLMGroupBase& right) const;
-    
+
     string buildShedString(LONG shedTime) const;
     string buildPeriodString(LONG periodTime) const;
-    
+
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
 
@@ -182,12 +167,13 @@ protected:
 private:
 
     void updateDailyOps();
-    
+
     LONG _paoid;
     string _paocategory;
     string _paoclass;
     string _paoname;
-    LONG _paotype;
+    LONG _paoType;
+    string _paoTypeString;
     string _paodescription;
     BOOL _disableflag;
     LONG _grouporder;
@@ -195,7 +181,7 @@ private:
     LONG _childorder;
     BOOL _alarminhibit;
     BOOL _controlinhibit;
-    
+
     LONG _groupcontrolstate;
     LONG _currenthoursdaily;
     LONG _currenthoursmonthly;
@@ -204,12 +190,12 @@ private:
     CtiTime _lastcontrolsent;
     CtiTime _controlstarttime;
     CtiTime _controlcompletetime;
-   
+
     CtiTime _next_control_time;
     LONG _daily_ops;
-    
+
     CtiTime _dynamic_timestamp;
-    
+
     unsigned  _internalState;
 
     LONG _hoursdailypointid;
@@ -227,6 +213,4 @@ typedef shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
 typedef vector<CtiLMGroupPtr> CtiLMGroupVec;
 typedef CtiLMGroupVec::iterator CtiLMGroupIter;
 typedef CtiLMGroupVec::const_iterator CtiLMGroupConstIter;
-
-#endif
 

@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcontrolareastore.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMControlAreaStore
-                        CtiLMControlAreaStore maintains a pool of
-                        CtiLMControlAreas.
-
-        Initial Date:  2/8/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <map>
@@ -319,7 +306,7 @@ void CtiLMControlAreaStore::reset()
         std::multimap<long, long >     temp_point_control_area_map;
         std::map<long, CtiLMProgramBaseSPtr > temp_all_program_map;
         std::map<long, CtiLMControlArea* > temp_all_control_area_map;
-        
+
 
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
@@ -393,7 +380,7 @@ void CtiLMControlAreaStore::reset()
                                            "FROM yukonpaobject YP, device DV, lmgroup LG "
                                            "WHERE YP.paobjectid = LG.deviceid AND YP.paobjectid = DV.deviceid AND "
                                              "YP.paobjectid > 0";
-               
+
                 CtiLMGroupFactory lm_group_factory;
                 Cti::Database::DatabaseReader rdr(connection);
 
@@ -989,7 +976,7 @@ void CtiLMControlAreaStore::reset()
             RWTimer gearsTimer;
             gearsTimer.start();
             {//loading direct gears start
-                
+
                 static const string sql =  "SELECT PDG.deviceid, PDG.gearname, PDG.gearnumber, PDG.controlmethod, "
                                                "PDG.methodrate, PDG.methodperiod, PDG.methodratecount, "
                                                "PDG.cyclerefreshrate, PDG.methodstoptype, PDG.changecondition, "
@@ -1420,7 +1407,7 @@ void CtiLMControlAreaStore::reset()
                                                    "WHERE CCB.customerid = XCL.customerid AND "
                                                        "CUS.customerid = CCB.customerid AND XCL.programid = ? "
                                                    "ORDER BY XCL.customerorder ASC";
-                        
+
                         Cti::Database::DatabaseReader rdr(connection, sql);
 
                         rdr << currentLMProgramEnergyExchange->getPAOId();
@@ -1545,7 +1532,7 @@ void CtiLMControlAreaStore::reset()
                                              "PCW.windownumber ASC";
 
                 Cti::Database::DatabaseReader rdr(connection);
-                
+
                 rdr.setCommandText(sql);
                 rdr.execute();
 
@@ -1556,7 +1543,7 @@ void CtiLMControlAreaStore::reset()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << loggedSQLstring << endl;
                     }
-                } 
+                }
 
                 while( rdr() )
                 {
@@ -1769,7 +1756,7 @@ void CtiLMControlAreaStore::reset()
                             currentLMControlArea->getLMControlAreaTriggers().push_back(newTrigger);
                             break;
                         }
-                        
+
                     }
 
                     temp_point_control_area_map.insert(make_pair(newTrigger->getPointId(), tempControlAreaId));
@@ -2098,7 +2085,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
     if ( success )
     {
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
                                                              ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
@@ -2139,7 +2126,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
     if ( success )
     {
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
-                                                             program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
+                                                             program->getPAOCategory(), program->getPAOTypeString(),
                                                              ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
@@ -2180,7 +2167,7 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
     if ( success )
     {
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
-                                                             group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
+                                                             group->getPAOCategory(), group->getPAOTypeString(),
                                                              ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
@@ -2225,7 +2212,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
     if ( success )
     {
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
                                                              ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);

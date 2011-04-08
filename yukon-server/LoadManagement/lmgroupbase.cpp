@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmgroupbase.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMGroupBase.
-                        CtiLMGroupBase maintains the state and handles
-                        the persistence of groups in Load Management.
-
-        Initial Date:  2/9/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -123,7 +110,18 @@ const string& CtiLMGroupBase::getPAOName() const
 LONG CtiLMGroupBase::getPAOType() const
 {
 
-    return _paotype;
+    return _paoType;
+}
+
+/*---------------------------------------------------------------------------
+    getPAOTypeString
+
+    Returns the pao type string of the substation
+---------------------------------------------------------------------------*/
+const string& CtiLMGroupBase::getPAOTypeString() const
+{
+
+    return _paoTypeString;
 }
 
 /*---------------------------------------------------------------------------
@@ -463,18 +461,6 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOName(const string& name)
 {
 
     _paoname = name;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the substation
----------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOType(LONG type)
-{
-
-    _paotype = type;
     return *this;
 }
 
@@ -967,7 +953,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     >> _paocategory
     >> _paoclass
     >> _paoname
-    >> _paotype
+    >> _paoTypeString
     >> _paodescription
     >> _disableflag
     >> _grouporder
@@ -986,6 +972,8 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     >> tempTime4
     >> _internalState
     >> _daily_ops;
+
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
 
     _lastcontrolsent = CtiTime(tempTime1);
     _controlstarttime = CtiTime(tempTime2);
@@ -1006,7 +994,7 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
     << _paocategory
     << _paoclass
     << _paoname
-    << _paotype
+    << _paoTypeString
     << _paodescription
     << _disableflag
     << _grouporder
@@ -1042,7 +1030,8 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _paocategory = right._paocategory;
         _paoclass = right._paoclass;
         _paoname = right._paoname;
-        _paotype = right._paotype;
+        _paoType = right._paoType;
+        _paoTypeString = right._paoTypeString;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
         _grouporder = right._grouporder;
@@ -1176,9 +1165,9 @@ void CtiLMGroupBase::restore(Cti::RowReader &rdr)
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;
     rdr["paoname"] >> _paoname;
-    rdr["type"] >> tempTypeString;
+    rdr["type"] >> _paoTypeString;
 
-    _paotype = resolvePAOType(_paocategory,tempTypeString);
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
 
     rdr["description"] >> _paodescription;
 

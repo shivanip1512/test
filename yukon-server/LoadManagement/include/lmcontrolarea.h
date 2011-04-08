@@ -1,25 +1,9 @@
-/*---------------------------------------------------------------------------
-        Filename:  controlarea.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMControlArea
-                        CtiLMControlArea maintains the state and handles
-                        the persistence of control areas for Load Management.
-
-        Initial Date:  2/1/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMCONTROLAREAIMPL_H
-#define CTILMCONTROLAREAIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 
 #include "dbmemobject.h"
 #include "connection.h"
@@ -52,6 +36,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     const string& getPAOClass() const;
     const string& getPAOName() const;
     LONG getPAOType() const;
+    const string& getPAOTypeString() const;
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     const string& getDefOperationalState() const;
@@ -80,7 +65,6 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setPAOCategory(const string& category);
     CtiLMControlArea& setPAOClass(const string& pclass);
     CtiLMControlArea& setPAOName(const string& name);
-    CtiLMControlArea& setPAOType(LONG type);
     CtiLMControlArea& setPAODescription(const string& description);
     CtiLMControlArea& setDisableFlag(BOOL disable);
     CtiLMControlArea& setDefOperationalState(const string& opstate);
@@ -110,16 +94,16 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL hasThresholdTrigger();
     BOOL hasStatusTrigger();
     BOOL isStatusTriggerTripped(CtiLMProgramBaseSPtr program = CtiLMProgramBaseSPtr());
-    
+
     DOUBLE calculateLoadReductionNeeded();
     double calculateExpectedLoadIncrease(int stop_priority);
     bool shouldReduceControl();
-        
+
     DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     void reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     void manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
-    void manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll);    
+    void manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll);
     BOOL stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL examinedControlAreaForControlNeededFlag);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
@@ -128,7 +112,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiNotifMsg);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
-    
+
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
@@ -157,12 +141,13 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     static int AttemptingControlState;
 
 private:
-    
+
     LONG _paoid;
     string _paocategory;
     string _paoclass;
     string _paoname;
-    LONG _paotype;
+    LONG _paoType;
+    string _paoTypeString;
     string _paodescription;
     BOOL _disableflag;
     string _defoperationalstate;
@@ -189,4 +174,4 @@ private:
     void restore(Cti::RowReader &rdr);
     string* getAutomaticallyStartedSignalString();
 };
-#endif
+

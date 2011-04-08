@@ -1,17 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcontrolarea.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMControlArea.
-                        CtiLMControlArea maintains the state and handles
-                        the persistence of control areas for Load
-                        Management.
-
-        Initial Date:  2/12/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -49,7 +35,7 @@ RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 ---------------------------------------------------------------------------*/
 CtiLMControlArea::CtiLMControlArea() :
 _paoid(0),
-_paotype(0),
+_paoType(0),
 _disableflag(false),
 _controlinterval(0),
 _minresponsetime(0),
@@ -134,7 +120,17 @@ const string& CtiLMControlArea::getPAOName() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getPAOType() const
 {
-    return _paotype;
+    return _paoType;
+}
+
+/*---------------------------------------------------------------------------
+    getPAOTypeString
+
+    Returns the pao type string of the control area
+---------------------------------------------------------------------------*/
+const string& CtiLMControlArea::getPAOTypeString() const
+{
+    return _paoTypeString;
 }
 
 /*---------------------------------------------------------------------------
@@ -468,18 +464,6 @@ CtiLMControlArea& CtiLMControlArea::setPAOName(const string& name)
 {
 
     _paoname = name;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the control area
----------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setPAOType(LONG type)
-{
-
-    _paotype = type;
     return *this;
 }
 
@@ -1201,7 +1185,7 @@ bool CtiLMControlArea::shouldReduceControl()
     for( int i = 0; i < _lmcontrolareatriggers.size(); i++ )
     {
         CtiLMControlAreaTrigger* lm_trigger = (CtiLMControlAreaTrigger*) _lmcontrolareatriggers[i];
-    
+
         if( lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType ||
             lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdPointTriggerType )
         {
@@ -1705,7 +1689,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                     }
 
                     if( currentLMProgram->getProgramState() == CtiLMProgramBase::InactiveState &&
-                        hasStatusTrigger() && isStatusTriggerTripped() && 
+                        hasStatusTrigger() && isStatusTriggerTripped() &&
                         currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT)
                     {
                         boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->setControlActivatedByStatusTrigger(TRUE);
@@ -1808,7 +1792,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
 
-            if( forceAll &&           
+            if( forceAll &&
                 (currentLMProgram->getProgramState() != CtiLMProgramBase::InactiveState ||
                 (currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState &&
                  boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getIsRampingIn())) )
@@ -1953,7 +1937,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
                     CtiLockGuard<CtiLogger> dout_guard(dout);
                     dout << CtiTime() << " " <<  text << " - " << additional << endl;
                 }
-                
+
                 lm_program_direct->setChangeReason("Threshold Stop");
                 if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE) )
                 {
@@ -2468,7 +2452,7 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
 
   Updates the start/stop time of all the timed programs in this control
   area based on both program and control area windows
- 
+
   If a manual control was received, this will not override it.
 ----------------------------------------------------------------------------*/
 void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
@@ -2645,7 +2629,7 @@ void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
     << _paocategory
     << _paoclass
     << _paoname
-    << _paotype
+    << _paoTypeString
     << _paodescription
     << _disableflag
     << _defoperationalstate
@@ -2681,7 +2665,8 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
         _paocategory = right._paocategory;
         _paoclass = right._paoclass;
         _paoname = right._paoname;
-        _paotype = right._paotype;
+        _paoType = right._paoType;
+        _paoTypeString = right._paoTypeString;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
         _defoperationalstate = right._defoperationalstate;
@@ -2760,8 +2745,8 @@ void CtiLMControlArea::restore(Cti::RowReader &rdr)
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;
     rdr["paoname"] >> _paoname;
-    rdr["type"] >> tempTypeString;
-    _paotype = resolvePAOType(_paocategory,tempTypeString);
+    rdr["type"] >> _paoTypeString;
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
     rdr["description"] >> _paodescription;
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
@@ -2776,7 +2761,7 @@ void CtiLMControlArea::restore(Cti::RowReader &rdr)
     setRequireAllTriggersActiveFlag(tempBoolString=="t"?TRUE:FALSE);
 
     setControlAreaStatusPointId(0);
-    
+
     if( !rdr["pointid"].isNull() )
     {
         LONG tempPointId = 0;
