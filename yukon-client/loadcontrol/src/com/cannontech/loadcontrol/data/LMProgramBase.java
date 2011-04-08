@@ -5,31 +5,26 @@ import java.util.Vector;
 
 import com.cannontech.dr.program.model.ProgramState;
 
-/**
- * Insert the type's description here.
- * Creation date: (8/17/00 3:06:09 PM)
- * @author: 
- */
-public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData, Cloneable
-{
-	//constants that must match values in lmprogrambase.h/lmprogrambase.cpp
-	//control types
+public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData, Cloneable {
+	
+	// constants that must match values in lmprogrambase.h/lmprogrambase.cpp
+	// control types
 	public static final String CONTROL_AUTOMATIC = "Automatic";
 	public static final String CONTROL_TIMED = "Timed";
 	public static final String CONTROL_MANUAL = "ManualOnly";
 
-	//status of a LMProgramBase, programStatus values
-	public static final int STATUS_INACTIVE = 0; //start only
-	public static final int STATUS_ACTIVE = 1; //active
-	public static final int STATUS_MANUAL_ACTIVE = 2; //active
-	public static final int STATUS_SCHEDULED = 3; //scheduled
-	public static final int STATUS_NOTIFIED = 4;  //notified
+	// status of a LMProgramBase, programStatus values
+	public static final int STATUS_INACTIVE = 0; // start only
+	public static final int STATUS_ACTIVE = 1; // active
+	public static final int STATUS_MANUAL_ACTIVE = 2; // active
+	public static final int STATUS_SCHEDULED = 3; // scheduled
+	public static final int STATUS_NOTIFIED = 4; // notified
 	public static final int STATUS_FULL_ACTIVE = 5;
 	public static final int STATUS_STOPPING = 6;
-	public static final int STATUS_CNTRL_ATTEMPT = 7;	
+	public static final int STATUS_CNTRL_ATTEMPT = 7;
 	public static final int STATUS_NON_CNTRL = 8;
 	public static final int STATUS_TIMED_ACTIVE = 9;
-	
+
 	private Integer yukonID = null;
 	private String yukonCategory = null;
 	private String yukonClass = null;
@@ -57,599 +52,377 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 
 	private java.util.Vector controlWindowVector = null;
 
-	//contains objects of type ILMGroup
+	// contains objects of type ILMGroup
 	private List<LMGroupBase> loadControlGroupVector = null;
 
-	//data not restored when sent/received
+	// data not restored when sent/received
 	private java.util.GregorianCalendar stoppedControlling = null;
 
-    public LMProgramBase clone() {
-        LMProgramBase clone = cloneKeepingLoadGroups();
-        if (loadControlGroupVector != null) {
-            clone.loadControlGroupVector = new Vector<LMGroupBase>();
-            for (LMGroupBase group : loadControlGroupVector) {
-                clone.loadControlGroupVector.add((LMGroupBase) group.clone());
-            }
-        }
-        return clone;
-    }
+	public LMProgramBase clone() {
+		LMProgramBase clone = cloneKeepingLoadGroups();
+		if (loadControlGroupVector != null) {
+			clone.loadControlGroupVector = new Vector<LMGroupBase>();
+			for (LMGroupBase group : loadControlGroupVector) {
+				clone.loadControlGroupVector.add(group.clone());
+			}
+		}
+		return clone;
+	}
 
-    public LMProgramBase cloneKeepingLoadGroups() {
-        LMProgramBase clone;
-        try {
-            clone = (LMProgramBase) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        return clone;
-    }
+	public LMProgramBase cloneKeepingLoadGroups() {
+		LMProgramBase clone;
+		try {
+			clone = (LMProgramBase) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		return clone;
+	}
 
-    public LMProgramBase cloneUpdatingLoadGroup(LMGroupBase newGroup) {
-        LMProgramBase clone = cloneKeepingLoadGroups();
-        if (loadControlGroupVector != null) {
-            clone.loadControlGroupVector = new Vector<LMGroupBase>();
-            for (LMGroupBase loadGroup : loadControlGroupVector) {
-                if (loadGroup.getYukonID().equals(newGroup.getYukonID())) {
-                    clone.loadControlGroupVector.add(newGroup);
-                } else {
-                    clone.loadControlGroupVector.add(loadGroup);
-                }
-            }
-        }
-        return clone;
-    }
+	public LMProgramBase cloneUpdatingLoadGroup(LMGroupBase newGroup) {
+		LMProgramBase clone = cloneKeepingLoadGroups();
+		if (loadControlGroupVector != null) {
+			clone.loadControlGroupVector = new Vector<LMGroupBase>();
+			for (LMGroupBase loadGroup : loadControlGroupVector) {
+				if (loadGroup.getYukonID().equals(newGroup.getYukonID())) {
+					clone.loadControlGroupVector.add(newGroup);
+				} else {
+					clone.loadControlGroupVector.add(loadGroup);
+				}
+			}
+		}
+		return clone;
+	}
 
-    public Integer getStartPriority() {
-        return startPriority;
-    }
+	public Integer getStartPriority() {
+		return startPriority;
+	}
 
-    public void setStartPriority(Integer startPriority) {
-        this.startPriority = startPriority;
-    }
+	public void setStartPriority(Integer startPriority) {
+		this.startPriority = startPriority;
+	}
 
-    public Integer getStopPriority() {
-        return stopPriority;
-    }
+	public Integer getStopPriority() {
+		return stopPriority;
+	}
 
-    public void setStopPriority(Integer stopPriority) {
-        this.stopPriority = stopPriority;
-    }
+	public void setStopPriority(Integer stopPriority) {
+		this.stopPriority = stopPriority;
+	}
 
-public boolean equals(Object o) 
-{
-	return ( (o != null) &&
-			 (o instanceof LMProgramBase) &&
-		     ((LMProgramBase) o).getYukonID().equals(getYukonID()) );
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.String
- */
-public java.lang.String getAvailableWeekDays() {
-	return availableWeekDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.String
- */
-public java.lang.String getControlType() {
-	return controlType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.util.Vector
- */
-public java.util.Vector getControlWindowVector() {
-	return controlWindowVector;
-}
+	public boolean equals(Object o) {
+		return ((o != null) && (o instanceof LMProgramBase) && ((LMProgramBase) o)
+				.getYukonID().equals(getYukonID()));
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getDisableFlag() {
-	return disableFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.util.GregorianCalendar
- */
-public java.util.GregorianCalendar getLastControlSent() {
-	return lastControlSent;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/10/2001 10:23:43 AM)
- * @return java.util.Vector
- */
-public List<LMGroupBase> getLoadControlGroupVector() 
-{
-	if( loadControlGroupVector == null )
-		loadControlGroupVector = new Vector<LMGroupBase>(10);
+	public java.lang.String getAvailableWeekDays() {
+		return availableWeekDays;
+	}
 
-	return loadControlGroupVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getManualControlReceivedFlag() {
-	return manualControlReceivedFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursAnnually() {
-	return maxHoursAnnually;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursDaily() {
-	return maxHoursDaily;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursMonthly() {
-	return maxHoursMonthly;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursSeasonal() {
-	return maxHoursSeasonal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMinActivateTime() {
-	return minActivateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMinResponseTime() {
-	return minResponseTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/16/2001 12:36:21 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getProgramStatus() {
-	return programStatus;
-}
+	public java.lang.String getControlType() {
+		return controlType;
+	}
 
-public ProgramState getProgramState() {
-    return ProgramState.valueOf(programStatus);
-}
+	public java.util.Vector getControlWindowVector() {
+		return controlWindowVector;
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getProgramStatusPointID() {
-	return programStatusPointID;
-}
+	public java.lang.Boolean getDisableFlag() {
+		return disableFlag;
+	}
 
-/**
- * @deprecated Use internationalized strings in demandResponse.xml instead.
-s */
-public static String getProgramStatusString(int status) 
-{
-	
-	switch( status )
-	{
+	public java.util.GregorianCalendar getLastControlSent() {
+		return lastControlSent;
+	}
+
+	public List<LMGroupBase> getLoadControlGroupVector() {
+		if (loadControlGroupVector == null)
+			loadControlGroupVector = new Vector<LMGroupBase>(10);
+
+		return loadControlGroupVector;
+	}
+
+	public java.lang.Boolean getManualControlReceivedFlag() {
+		return manualControlReceivedFlag;
+	}
+
+	public java.lang.Integer getMaxHoursAnnually() {
+		return maxHoursAnnually;
+	}
+
+	public java.lang.Integer getMaxHoursDaily() {
+		return maxHoursDaily;
+	}
+
+	public java.lang.Integer getMaxHoursMonthly() {
+		return maxHoursMonthly;
+	}
+
+	public java.lang.Integer getMaxHoursSeasonal() {
+		return maxHoursSeasonal;
+	}
+
+	public java.lang.Integer getMinActivateTime() {
+		return minActivateTime;
+	}
+
+	public java.lang.Integer getMinResponseTime() {
+		return minResponseTime;
+	}
+
+	public java.lang.Integer getProgramStatus() {
+		return programStatus;
+	}
+
+	public ProgramState getProgramState() {
+		return ProgramState.valueOf(programStatus);
+	}
+
+	public java.lang.Integer getProgramStatusPointID() {
+		return programStatusPointID;
+	}
+
+	/**
+	 * @deprecated Use internationalized strings in demandResponse.xml instead.
+	 */
+	public static String getProgramStatusString(int status) {
+		switch (status) {
 		case STATUS_INACTIVE:
-		return "Inactive";
-		
+			return "Inactive";
+
 		case STATUS_ACTIVE:
-		return "Active";
+			return "Active";
 
 		case STATUS_MANUAL_ACTIVE:
-		return "Manual Active";
+			return "Manual Active";
 
 		case STATUS_SCHEDULED:
-		return "Scheduled";
+			return "Scheduled";
 
 		case STATUS_NOTIFIED:
-		return "Notified";
+			return "Notified";
 
 		case STATUS_FULL_ACTIVE:
-		return "Full Active";
+			return "Full Active";
 
 		case STATUS_NON_CNTRL:
-		return "Control Attempt";
-		
+			return "Control Attempt";
+
 		case STATUS_STOPPING:
-		return "Stopping";
-		
+			return "Stopping";
+
 		case STATUS_TIMED_ACTIVE:
-		return "Timed Active";
-		
+			return "Timed Active";
+
 		default:
-		throw new RuntimeException("*** Unknown status(" + status + ") in getProgramStatusString(int) in : " + LMProgramBase.class.getName() );
+			throw new RuntimeException("*** Unknown status(" + status
+					+ ") in getProgramStatusString(int) in : "
+					+ LMProgramBase.class.getName());
+		}
+
 	}
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getReductionAnalogPointId() {
-	return reductionAnalogPointId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Double
- */
-public java.lang.Double getReductionTotal() {
-	return reductionTotal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.util.GregorianCalendar
- */
-public java.util.GregorianCalendar getStartedControlling() {
-	return startedControlling;
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/23/2001 10:43:17 AM)
- * @return java.util.GregorianCalendar
- */
-public abstract java.util.GregorianCalendar getStartTime();
 
-/**
- * Insert the method's description here.
- * Creation date: (4/23/2001 1:29:50 PM)
- * @return java.util.GregorianCalendar
- */
-public java.util.GregorianCalendar getStoppedControlling() {
-	return stoppedControlling;
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/23/2001 10:43:17 AM)
- * @return java.util.GregorianCalendar
- */
-public abstract java.util.GregorianCalendar getStopTime();
+	public java.lang.Integer getReductionAnalogPointId() {
+		return reductionAnalogPointId;
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.String
- */
-public java.lang.String getYukonCategory() {
-	return yukonCategory;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.String
- */
-public java.lang.String getYukonClass() {
-	return yukonClass;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.String
- */
-public java.lang.String getYukonDescription() {
-	return yukonDescription;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getYukonID() {
-	return yukonID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.String
- */
-public java.lang.String getYukonName() {
-	return yukonName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getYukonType() {
-	return yukonType;
-}
-/**
- * Creation date: (6/26/2001 2:42:53 PM)
- * @return int
- */
-public int hashCode() {
-	return getYukonID().intValue();
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newAvailableWeekDays java.lang.String
- */
-public void setAvailableWeekDays(java.lang.String newAvailableWeekDays) {
-	availableWeekDays = newAvailableWeekDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newControlType java.lang.String
- */
-public void setControlType(java.lang.String newControlType) {
-	controlType = newControlType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newControlWindowVector java.util.Vector
- */
-public void setControlWindowVector(java.util.Vector newControlWindowVector) {
-	controlWindowVector = newControlWindowVector;
-}
+	public java.lang.Double getReductionTotal() {
+		return reductionTotal;
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newDisableFlag java.lang.Boolean
- */
-public void setDisableFlag(java.lang.Boolean newDisableFlag) {
-	disableFlag = newDisableFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newLastControlSent java.util.GregorianCalendar
- */
-public void setLastControlSent(java.util.GregorianCalendar newLastControlSent) {
-	lastControlSent = newLastControlSent;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/10/2001 10:23:43 AM)
- * @param newLoadControlGroupVector java.util.Vector
- */
-public void setLoadControlGroupVector(List<LMGroupBase> newLoadControlGroupVector) {
-	loadControlGroupVector = newLoadControlGroupVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newManualControlReceivedFlag java.lang.Boolean
- */
-public void setManualControlReceivedFlag(java.lang.Boolean newManualControlReceivedFlag) {
-	manualControlReceivedFlag = newManualControlReceivedFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMaxHoursAnnually java.lang.Integer
- */
-public void setMaxHoursAnnually(java.lang.Integer newMaxHoursAnnually) {
-	maxHoursAnnually = newMaxHoursAnnually;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMaxHoursDaily java.lang.Integer
- */
-public void setMaxHoursDaily(java.lang.Integer newMaxHoursDaily) {
-	maxHoursDaily = newMaxHoursDaily;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMaxHoursMonthly java.lang.Integer
- */
-public void setMaxHoursMonthly(java.lang.Integer newMaxHoursMonthly) {
-	maxHoursMonthly = newMaxHoursMonthly;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMaxHoursSeasonal java.lang.Integer
- */
-public void setMaxHoursSeasonal(java.lang.Integer newMaxHoursSeasonal) {
-	maxHoursSeasonal = newMaxHoursSeasonal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMinActivateTime java.lang.Integer
- */
-public void setMinActivateTime(java.lang.Integer newMinActivateTime) {
-	minActivateTime = newMinActivateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newMinResponseTime java.lang.Integer
- */
-public void setMinResponseTime(java.lang.Integer newMinResponseTime) {
-	minResponseTime = newMinResponseTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/16/2001 12:36:21 PM)
- * @param newProgramStatus java.lang.Integer
- */
-public void setProgramStatus(java.lang.Integer newProgramStatus) {
-	programStatus = newProgramStatus;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newProgramStatusPointID java.lang.Integer
- */
-public void setProgramStatusPointID(java.lang.Integer newProgramStatusPointID) {
-	programStatusPointID = newProgramStatusPointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newReductionAnalogPointId java.lang.Integer
- */
-public void setReductionAnalogPointId(java.lang.Integer newReductionAnalogPointId) {
-	reductionAnalogPointId = newReductionAnalogPointId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newReductionTotal java.lang.Double
- */
-public void setReductionTotal(java.lang.Double newReductionTotal) {
-	reductionTotal = newReductionTotal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newStartedControlling java.util.GregorianCalendar
- */
-public void setStartedControlling(java.util.GregorianCalendar newStartedControlling) {
-	startedControlling = newStartedControlling;
-}
+	public java.util.GregorianCalendar getStartedControlling() {
+		return startedControlling;
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (4/23/2001 1:29:50 PM)
- * @param newStoppedControlling java.util.GregorianCalendar
- */
-public void setStoppedControlling(java.util.GregorianCalendar newStoppedControlling) {
-	stoppedControlling = newStoppedControlling;
-}
+	public abstract java.util.GregorianCalendar getStartTime();
 
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonCategory java.lang.String
- */
-public void setYukonCategory(java.lang.String newYukonCategory) {
-	yukonCategory = newYukonCategory;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonClass java.lang.String
- */
-public void setYukonClass(java.lang.String newYukonClass) {
-	yukonClass = newYukonClass;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonDescription java.lang.String
- */
-public void setYukonDescription(java.lang.String newYukonDescription) {
-	yukonDescription = newYukonDescription;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonID java.lang.Integer
- */
-public void setYukonID(java.lang.Integer newYukonID) {
-	yukonID = newYukonID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonName java.lang.String
- */
-public void setYukonName(java.lang.String newYukonName) {
-	yukonName = newYukonName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:44:53 AM)
- * @param newYukonType java.lang.Integer
- */
-public void setYukonType(java.lang.Integer newYukonType) {
-	yukonType = newYukonType;
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/18/2001 11:46:24 AM)
- * @return java.lang.String
- */
-public String toString() {
-	return getYukonName();
-}
+	public java.util.GregorianCalendar getStoppedControlling() {
+		return stoppedControlling;
+	}
 
-/**
- * Returns true if any of the groups in this program are Ramping In
- * 
- * @return
- */
-public boolean isRampingIn()
-{
-    for( int i = 0; i < getLoadControlGroupVector().size(); i++ )
-    {
-        ILMGroup grp = (ILMGroup)getLoadControlGroupVector().get(i);
-        if( grp.isRampingIn() )
-            return true;
-    }
-    
-    return false;
-}
+	public abstract java.util.GregorianCalendar getStopTime();
 
-/**
- * Returns true if any of the groups in this program are Ramping Out
- * 
- * @return
- */
-public boolean isRampingOut()
-{
-    for( int i = 0; i < getLoadControlGroupVector().size(); i++ )
-    {
-        ILMGroup grp = (ILMGroup)getLoadControlGroupVector().get(i);
-        if( grp.isRampingOut() )
-            return true;
-    }
-    
-    return false;
-}
+	public java.lang.String getYukonCategory() {
+		return yukonCategory;
+	}
+
+	public java.lang.String getYukonClass() {
+		return yukonClass;
+	}
+
+	public java.lang.String getYukonDescription() {
+		return yukonDescription;
+	}
+
+	public java.lang.Integer getYukonID() {
+		return yukonID;
+	}
+
+	public java.lang.String getYukonName() {
+		return yukonName;
+	}
+
+	public java.lang.Integer getYukonType() {
+		return yukonType;
+	}
+
+	public int hashCode() {
+		return getYukonID().intValue();
+	}
+
+	public void setAvailableWeekDays(java.lang.String newAvailableWeekDays) {
+		availableWeekDays = newAvailableWeekDays;
+	}
+
+	public void setControlType(java.lang.String newControlType) {
+		controlType = newControlType;
+	}
+
+	public void setControlWindowVector(java.util.Vector newControlWindowVector) {
+		controlWindowVector = newControlWindowVector;
+	}
+
+	public void setDisableFlag(java.lang.Boolean newDisableFlag) {
+		disableFlag = newDisableFlag;
+	}
+
+	public void setLastControlSent(
+			java.util.GregorianCalendar newLastControlSent) {
+		lastControlSent = newLastControlSent;
+	}
+
+	public void setLoadControlGroupVector(
+			List<LMGroupBase> newLoadControlGroupVector) {
+		loadControlGroupVector = newLoadControlGroupVector;
+	}
+
+	public void setManualControlReceivedFlag(
+			java.lang.Boolean newManualControlReceivedFlag) {
+		manualControlReceivedFlag = newManualControlReceivedFlag;
+	}
+
+	public void setMaxHoursAnnually(java.lang.Integer newMaxHoursAnnually) {
+		maxHoursAnnually = newMaxHoursAnnually;
+	}
+
+	public void setMaxHoursDaily(java.lang.Integer newMaxHoursDaily) {
+		maxHoursDaily = newMaxHoursDaily;
+	}
+
+	public void setMaxHoursMonthly(java.lang.Integer newMaxHoursMonthly) {
+		maxHoursMonthly = newMaxHoursMonthly;
+	}
+
+	public void setMaxHoursSeasonal(java.lang.Integer newMaxHoursSeasonal) {
+		maxHoursSeasonal = newMaxHoursSeasonal;
+	}
+
+	public void setMinActivateTime(java.lang.Integer newMinActivateTime) {
+		minActivateTime = newMinActivateTime;
+	}
+
+	public void setMinResponseTime(java.lang.Integer newMinResponseTime) {
+		minResponseTime = newMinResponseTime;
+	}
+
+	public void setProgramStatus(java.lang.Integer newProgramStatus) {
+		programStatus = newProgramStatus;
+	}
+
+	public void setProgramStatusPointID(
+			java.lang.Integer newProgramStatusPointID) {
+		programStatusPointID = newProgramStatusPointID;
+	}
+
+	public void setReductionAnalogPointId(
+			java.lang.Integer newReductionAnalogPointId) {
+		reductionAnalogPointId = newReductionAnalogPointId;
+	}
+
+	public void setReductionTotal(java.lang.Double newReductionTotal) {
+		reductionTotal = newReductionTotal;
+	}
+
+	public void setStartedControlling(
+			java.util.GregorianCalendar newStartedControlling) {
+		startedControlling = newStartedControlling;
+	}
+
+	public void setStoppedControlling(
+			java.util.GregorianCalendar newStoppedControlling) {
+		stoppedControlling = newStoppedControlling;
+	}
+
+	public void setYukonCategory(java.lang.String newYukonCategory) {
+		yukonCategory = newYukonCategory;
+	}
+
+	public void setYukonClass(java.lang.String newYukonClass) {
+		yukonClass = newYukonClass;
+	}
+
+	public void setYukonDescription(java.lang.String newYukonDescription) {
+		yukonDescription = newYukonDescription;
+	}
+
+	public void setYukonID(java.lang.Integer newYukonID) {
+		yukonID = newYukonID;
+	}
+
+	public void setYukonName(java.lang.String newYukonName) {
+		yukonName = newYukonName;
+	}
+
+	public void setYukonType(java.lang.Integer newYukonType) {
+		yukonType = newYukonType;
+	}
+
+	public String toString() {
+		return getYukonName();
+	}
+
+	/**
+	 * Returns true if any of the groups in this program are Ramping In
+	 * 
+	 * @return
+	 */
+	public boolean isRampingIn() {
+		for (int i = 0; i < getLoadControlGroupVector().size(); i++) {
+			ILMGroup grp = (ILMGroup) getLoadControlGroupVector().get(i);
+			if (grp.isRampingIn())
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns true if any of the groups in this program are Ramping Out
+	 * 
+	 * @return
+	 */
+	public boolean isRampingOut() {
+		for (int i = 0; i < getLoadControlGroupVector().size(); i++) {
+			ILMGroup grp = (ILMGroup) getLoadControlGroupVector().get(i);
+			if (grp.isRampingOut())
+				return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Returns true when programStatus is in an ACTIVE state
+	 * 
 	 * @return
 	 */
 	public boolean isActive() {
-	switch (programStatus) {
+		switch (programStatus) {
 		case STATUS_ACTIVE:
 		case STATUS_FULL_ACTIVE:
 		case STATUS_MANUAL_ACTIVE:
 		case STATUS_TIMED_ACTIVE:
-			return true;		
+			return true;
 		default:
 			return false;
 		}
