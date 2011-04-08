@@ -281,7 +281,6 @@
    <!-- Disconnect Collar -->
    <bean id="disconnectCollarModel" class="com.cannontech.analysis.tablemodel.DisconnectCollarModel"
          scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
     </bean>
     
     <bean id="disconnectCollarDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">

@@ -4,26 +4,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.YukonJdbcTemplate;
 
-public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarModel.ModelRow> {
+public class DisconnectCollarModel extends MeterReportModelBase<DisconnectCollarModel.ModelRow> {
     
     // dependencies
-    private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+	private YukonJdbcTemplate yukonJdbcTemplate;
     
-    // inputs
-    private Set<Integer> deviceIds;
-    private Set<Integer> deviceNames;
-    
-    // member veriables
+    // member variables
     private static String title = "Disconnect Collar Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
@@ -38,12 +34,10 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
     
     public void doLoadData() {
         
-        StringBuffer sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
-        
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                
+        SqlFragmentSource sql = buildSQLStatement();
+        List<ModelRow> rows = yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<ModelRow>() {
+            @Override
+            public ModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
                 DisconnectCollarModel.ModelRow row = new DisconnectCollarModel.ModelRow();
 
                 String deviceName = rs.getString("deviceName");
@@ -54,41 +48,23 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
                 row.meterNumber = rs.getString("meterNumber");
                 row.disconnectAddress = rs.getString("disconnectAddress");
                 row.physicalAddress = rs.getString("physicalAddress");
-                data.add(row);
+                return row;
             }
         });
-        
+        data.addAll(rows);
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public StringBuffer buildSQLStatement()
+    public SqlFragmentSource buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("SELECT PAO.PAONAME as deviceName, PAO.TYPE as deviceType, DMG.METERNUMBER as meterNumber, "); 
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT PAO.PAONAME as deviceName, PAO.TYPE as deviceType, DMG.METERNUMBER as meterNumber, "); 
         sql.append("DMCT400.DISCONNECTADDRESS as disconnectAddress, DCS.ADDRESS as physicalAddress, DISABLEFLAG as disableFlag ");
         sql.append("FROM YUKONPAOBJECT PAO, DEVICEMCT400SERIES DMCT400, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS ");
         sql.append("WHERE PAO.PAOBJECTID = DMCT400.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
-String result = null;
-        
-        if(deviceIds != null && !deviceIds.isEmpty()) {
-            result = "DMG.DEVICEID in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceIds);
-            result += wheres;
-            result += " ) ";
-        }
-        else if(deviceNames != null && !deviceNames.isEmpty()) {
-            result = "PAO.PAOBJECTID in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceNames);
-            result += wheres;
-            result += " ) ";
-        }
-        
-        if (result != null) {
-            sql.append(" and ");
-            sql.append(result);
-        }
-        sql.append(";");
+        sql.append(" AND").appendFragment(getFilterSqlWhereClause("PAO.PaobjectId"));
         return sql;
     }
 
@@ -109,25 +85,9 @@ String result = null;
     public String getTitle() {
         return title;
     }
-
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-
-    public Set<Integer> getDeviceIds() {
-        return deviceIds;
-    }
     
-    public void setDeviceIds(Set<Integer> deviceIds) {
-        this.deviceIds = deviceIds;
-    }
-
-    public Set<Integer> getDeviceNames() {
-        return deviceNames;
-    }
-
-    public void setDeviceNames(Set<Integer> deviceNames) {
-        this.deviceNames = deviceNames;
-    }
-
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
 }
