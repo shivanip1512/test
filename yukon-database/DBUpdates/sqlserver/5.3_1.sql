@@ -72,7 +72,7 @@ GO
 
 /* Start YUK-9648 */
 ALTER TABLE ZBDevice 
-ADD MacAddress VARCHAR2(255); 
+ADD MacAddress VARCHAR(255); 
 GO
 
 UPDATE ZBDevice
@@ -80,7 +80,7 @@ SET MacAddress = ' ';
 GO
 
 ALTER TABLE ZBDevice 
-ALTER COLUMN MacAddress VARCHAR2(255) NOT NULL; 
+ALTER COLUMN MacAddress VARCHAR(255) NOT NULL; 
 GO
 
 EXEC SP_RENAME 'ZBDevice', 'ZBEndPoint';
