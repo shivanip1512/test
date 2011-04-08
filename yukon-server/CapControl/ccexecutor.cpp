@@ -7413,6 +7413,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             }
 
             movedCapBankPtr->setParentId(newFeederId);
+            movedCapBankPtr->setDirty(true);
 
         }
 

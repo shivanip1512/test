@@ -260,6 +260,7 @@ public:
     CtiCCTwoWayPoints* getTwoWayPoints();
 
     BOOL isDirty() const;
+    void setDirty(const bool flag);
     BOOL getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 

@@ -2621,6 +2621,13 @@ int CtiCCCapBank::getPointIdByAttribute(const PointAttribute & attribute)
     return getTwoWayPoints()->getPointIdByAttribute(attribute);
 }
 
+
+void CtiCCCapBank::setDirty(const bool flag)
+{
+    _dirty = flag;
+}
+
+
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";
