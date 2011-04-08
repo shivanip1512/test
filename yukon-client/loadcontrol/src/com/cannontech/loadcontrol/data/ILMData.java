@@ -13,12 +13,12 @@ public interface ILMData
 	String getYukonDescription();
 	Integer getYukonID();
 	String getYukonName();
-	Integer getYukonType();
+	String getYukonType();
 		
 	void setYukonCategory(String newYukonCategory);
 	void setYukonClass(String newYukonClass);
 	void setYukonDescription(String newYukonDescription);
 	void setYukonID(Integer newYukonID);
 	void setYukonName(String newYukonName);
-	void setYukonType(Integer newYukonType);
+	void setYukonType(String newYukonType);
 }

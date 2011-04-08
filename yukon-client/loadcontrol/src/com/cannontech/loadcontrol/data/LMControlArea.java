@@ -18,7 +18,7 @@ public class LMControlArea implements ILMData, Cloneable {
 	private String yukonCategory = null;
 	private String yukonClass = null;
 	private String yukonName = null;
-	private Integer yukonType = null;
+	private String yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
 	private String defOperationalState = null;
@@ -251,7 +251,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		return yukonName;
 	}
 
-	public java.lang.Integer getYukonType() {
+	public String getYukonType() {
 		return yukonType;
 	}
 
@@ -348,7 +348,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		yukonName = newYukonName;
 	}
 
-	public void setYukonType(java.lang.Integer newYukonType) {
+	public void setYukonType(String newYukonType) {
 		yukonType = newYukonType;
 	}
 

@@ -3,9 +3,12 @@ package com.cannontech.loadcontrol.data;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.program.model.ProgramState;
 
-public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData, Cloneable {
+public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData, Cloneable, YukonPao {
 	
 	// constants that must match values in lmprogrambase.h/lmprogrambase.cpp
 	// control types
@@ -29,7 +32,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private String yukonCategory = null;
 	private String yukonClass = null;
 	private String yukonName = null;
-	private Integer yukonType = null;
+	private String yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
 	private Integer startPriority = null;
@@ -262,7 +265,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		return yukonName;
 	}
 
-	public java.lang.Integer getYukonType() {
+	public String getYukonType() {
 		return yukonType;
 	}
 
@@ -373,7 +376,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		yukonName = newYukonName;
 	}
 
-	public void setYukonType(java.lang.Integer newYukonType) {
+	public void setYukonType(String newYukonType) {
 		yukonType = newYukonType;
 	}
 
@@ -426,5 +429,10 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		default:
 			return false;
 		}
+	}
+	
+	@Override
+	public PaoIdentifier getPaoIdentifier() {
+		return new PaoIdentifier(yukonID, PaoType.getForDbString(yukonType));
 	}
 }

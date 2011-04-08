@@ -75,7 +75,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmGroupBase.setYukonCategory( (String) vstr.restoreObject(SimpleMappings.CString) );
 	lmGroupBase.setYukonClass( (String) vstr.restoreObject(SimpleMappings.CString) );
 	lmGroupBase.setYukonName( (String) vstr.restoreObject(SimpleMappings.CString) );
-	lmGroupBase.setYukonType( new Integer((int)vstr.extractUnsignedInt()) );
+	lmGroupBase.setYukonType( (String) vstr.restoreObject( SimpleMappings.CString) );
 	lmGroupBase.setYukonDescription( (String)vstr.restoreObject(SimpleMappings.CString) );
 	lmGroupBase.setDisableFlag( new Boolean((int)vstr.extractUnsignedInt() > 0) );
 	lmGroupBase.setGroupOrder( new Integer((int)vstr.extractUnsignedInt()) );	

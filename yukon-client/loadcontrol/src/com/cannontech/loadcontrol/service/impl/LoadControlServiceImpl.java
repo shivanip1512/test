@@ -45,7 +45,6 @@ import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class LoadControlServiceImpl implements LoadControlService {
@@ -94,22 +93,14 @@ public class LoadControlServiceImpl implements LoadControlService {
             }
         }
         
-        // YukonPao to active LMProgramBase map
-        Map<YukonPao, LMProgramBase> allProgramPaoToProgramBaseMap = Maps.newHashMapWithExpectedSize(allProgramBaseSet.size());
-        for (LMProgramBase programBase : activeProgramBaseSet) {
-        	YukonPao yukonPao = paoDao.getYukonPao(programBase.getYukonID());
-        	allProgramPaoToProgramBaseMap.put(yukonPao, programBase);
-        }
-        
         // filter out unauthorized YukonPao
-        List<YukonPao> authorizedProgramPaos = paoAuthorizationService.filterAuthorized(user, allProgramPaoToProgramBaseMap.keySet(), Permission.LM_VISIBLE);
+        List<LMProgramBase> authorizedProgramPaos = paoAuthorizationService.filterAuthorized(user, activeProgramBaseSet, Permission.LM_VISIBLE);
         
         // build ProgramStatus list
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-        for (YukonPao programPao : authorizedProgramPaos) {
+        for (LMProgramBase programPao : authorizedProgramPaos) {
         	
-        	LMProgramBase programBase = allProgramPaoToProgramBaseMap.get(programPao);
-        	ProgramStatus programStatus = new ProgramStatus(programBase);
+        	ProgramStatus programStatus = new ProgramStatus(programPao);
             if (programStatus.isActive()) {
                 programStatuses.add(programStatus);
             }

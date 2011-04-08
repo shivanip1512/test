@@ -76,7 +76,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );
 	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );
 	String yukonName = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer yukonType = new Integer( (int)vstr.extractUnsignedInt() );
+	String yukonType = (String) vstr.restoreObject( SimpleMappings.CString );
 	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
 	int disableFlag = (int)vstr.extractUnsignedInt();
 	Integer startPriority = new Integer( (int) vstr.extractUnsignedInt());

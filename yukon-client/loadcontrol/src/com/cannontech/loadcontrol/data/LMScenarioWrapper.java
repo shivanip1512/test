@@ -13,7 +13,7 @@ public class LMScenarioWrapper implements ILMData {
 	private String _yukDescription;
 	private Integer _yukID;
 	private String _yukName;
-	private Integer _yukType;
+	private String _yukType;
 
 	public LMScenarioWrapper(LiteYukonPAObject liteLMScenario) {
 		super();
@@ -24,7 +24,7 @@ public class LMScenarioWrapper implements ILMData {
 		_yukDescription = liteLMScenario.getPaoDescription();
 		_yukID = new Integer(liteLMScenario.getYukonID());
 		_yukName = liteLMScenario.getPaoName();
-		_yukType = new Integer(liteLMScenario.getType());
+		_yukType = liteLMScenario.getPaoIdentifier().getPaoType().getDbString();
 	}
 
 	public java.lang.String getYukonCategory() {
@@ -47,7 +47,7 @@ public class LMScenarioWrapper implements ILMData {
 		return _yukName;
 	}
 
-	public java.lang.Integer getYukonType() {
+	public String getYukonType() {
 		return _yukType;
 	}
 
@@ -69,7 +69,7 @@ public class LMScenarioWrapper implements ILMData {
 	public void setYukonName(java.lang.String newYukonName) {
 	}
 
-	public void setYukonType(java.lang.Integer newYukonType) {
+	public void setYukonType(String newYukonType) {
 	}
 
 }
