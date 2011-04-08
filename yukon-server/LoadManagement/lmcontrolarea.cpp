@@ -2738,7 +2738,6 @@ void CtiLMControlArea::restore(Cti::RowReader &rdr)
 {
     CtiTime dynamicTimeStamp;
     string tempBoolString;
-    string tempTypeString;
     _insertDynamicDataFlag = FALSE;
 
     rdr["paobjectid"] >> _paoid;
