@@ -44,7 +44,7 @@ YEvent.observeSelectorClick('.removeRow', function(event) {
     theRow.next().show();
 });
 
-YEvent.observeSelectorClick('.undoRemovedRow', function(event) {
+YEvent.observeSelectorClick('.undoRemoveBtn', function(event) {
     var theUndoRow = event.findElement('tr');
     $('deleteInput_' + theUndoRow.previous().id).remove();
     theUndoRow.hide();
@@ -176,13 +176,13 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 								<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
 							</td>
 						</tr>
-						<tr style="display: none" id="rule_${key}_undo" class="removed">
+						<tr style="display: none" id="rule_${key}_undo" class="removed undoRow">
                             <td colspan="1">
                                 <cti:img key="rulesTable.delete"/>
                             </td>
 							<td colspan="4"><i:inline key=".rulesTable.removedRow"/></td>
 							<td colspan="1">
-								<span class="undoRemovedRow pointer"><i:inline key=".rulesTable.undoLink"/></span>
+								<span class="undoRemoveBtn"><i:inline key=".rulesTable.undoLink"/></span>
 							</td>
 						</tr>
 					</c:forEach>

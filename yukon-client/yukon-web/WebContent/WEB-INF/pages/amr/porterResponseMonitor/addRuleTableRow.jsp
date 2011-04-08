@@ -36,13 +36,13 @@
                 <cti:img key="delete" styleClass="removeRow pointer"/>
             </td>
 		</tr>
-        <tr id="rule_${newMapKey}_undo" class="removed" style="display: none">
+        <tr id="rule_${newMapKey}_undo" class="removed undoRow" style="display: none">
             <td colspan="1">
                 <cti:img key="delete"/>
             </td>
             <td colspan="4" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
             <td colspan="1" class="removed">
-                <span class="undoRemovedRow pointer"><i:inline key=".rulesTable.undoLink"/></span>
+                <span class="undoRemoveBtn"><i:inline key=".rulesTable.undoLink"/></span>
             </td>
         </tr>
     </table>

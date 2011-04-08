@@ -1,6 +1,5 @@
 package com.cannontech.web.admin.energyCompany.applianceCategory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +26,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -36,7 +34,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramNameFilter;
@@ -72,7 +69,7 @@ public class ApplianceCategoryController {
     private AssignedProgramService assignedProgramService;
     private ApplianceCategoryDao applianceCategoryDao;
     private ApplianceCategoryService applianceCategoryService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    private ObjectFormattingService objectFormattingService;
     private StarsDatabaseCache starsDatabaseCache;
     private PaoDao paoDao;
     private EnergyCompanyService energyCompanyService;
@@ -275,13 +272,15 @@ public class ApplianceCategoryController {
         model.addAttribute("isEditable", isEditable);
 
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
-            ApplianceTypeEnum[] applianceTypes = ApplianceTypeEnum.values();
-            sortDisplayableEnum(applianceTypes, ApplianceTypeEnum.DEFAULT, null, context);
+            List<ApplianceTypeEnum> applianceTypes =
+                objectFormattingService.sortEnumValues(ApplianceTypeEnum.values(),
+                                                       ApplianceTypeEnum.DEFAULT, null, context);
             model.addAttribute("applianceTypes", applianceTypes);
 
-            ApplianceCategoryIcon[] icons = ApplianceCategoryIcon.values();
-            sortDisplayableEnum(icons, ApplianceCategoryIcon.NONE,
-                                ApplianceCategoryIcon.OTHER, context);
+            List<ApplianceCategoryIcon> icons =
+                objectFormattingService.sortEnumValues(ApplianceCategoryIcon.values(),
+                                                       ApplianceCategoryIcon.NONE,
+                                                       ApplianceCategoryIcon.OTHER, context);
             model.addAttribute("icons", icons);
         }
 
@@ -556,28 +555,6 @@ public class ApplianceCategoryController {
         }
     }
 
-    // put into a service?
-    private <T extends DisplayableEnum> void sortDisplayableEnum(T[] values,
-            final T first, final T last, YukonUserContext context) {
-        final MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(context);
-        Arrays.sort(values, new Comparator<T>() {
-            @Override
-            public int compare(T t1, T t2) {
-                if (t1 == t2) return 0;
-                if (t1 == first || t2 == last) {
-                    return -1;
-                }
-                if (t1 == last || t2 == first) {
-                    return 1;
-                }
-                String localName1 = messageSourceAccessor.getMessage(t1.getFormatKey());
-                String localName2 = messageSourceAccessor.getMessage(t2.getFormatKey());
-                return localName1.compareToIgnoreCase(localName2);
-            }
-        });
-    }
-
     public static class ChanceOfControl {
         private int chanceOfControlId;
         private String name;
@@ -616,9 +593,8 @@ public class ApplianceCategoryController {
     }
 
     @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 
     @Autowired

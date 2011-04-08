@@ -4,7 +4,6 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
-<%@ taglib tagdir="/WEB-INF/tags/dr/forms" prefix="drForms" %>
 
 <cti:standardPage module="operator" page="appliance.edit">
     

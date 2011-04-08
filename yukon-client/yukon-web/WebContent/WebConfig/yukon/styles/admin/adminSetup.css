@@ -219,3 +219,7 @@ div.listContainer {
 #selectionListEntries {
     margin-top: 15px;
 }
+
+#editListForm input[type='text'] {
+    width: 300px;
+}

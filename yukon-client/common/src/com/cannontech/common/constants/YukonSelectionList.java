@@ -3,8 +3,6 @@ package com.cannontech.common.constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.util.LazyList;
-
 public class YukonSelectionList {
     private int listId = 0;
     private YukonSelectionListOrder ordering = null;
@@ -14,7 +12,7 @@ public class YukonSelectionList {
     private boolean userUpdateAvailable = false;
     private Integer energyCompanyId = null;
 
-    private List<YukonListEntry> yukonListEntries = LazyList.ofInstance(YukonListEntry.class);
+    private List<YukonListEntry> yukonListEntries = null;
 
     public static final String TABLE_NAME = "YukonSelectionList";
 

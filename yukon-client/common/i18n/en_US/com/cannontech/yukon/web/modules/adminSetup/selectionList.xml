@@ -10,17 +10,34 @@
 <entry key="yukon.web.modules.adminSetup.list.list.lists.title">Lists</entry>
 
 <!-- Edit/View -->
-<entry key="yukon.web.modules.adminSetup.list.EDIT.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.list.VIEW.pageName">List</entry>
 <entry key="yukon.web.modules.adminSetup.list.VIEW.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.list.EDIT.pageName">List</entry>
+<entry key="yukon.web.modules.adminSetup.list.EDIT.pageDescription">{0}</entry>
 
 <entry key="yukon.web.modules.adminSetup.list.where">Description</entry>
 <entry key="yukon.web.modules.adminSetup.list.label">Label</entry>
 
 <entry key="yukon.web.modules.adminSetup.list.entries.title">Entries</entry>
-<entry key="yukon.web.modules.adminSetup.list.noEntries">There are currently no entries.</entry>
+<entry key="yukon.web.modules.adminSetup.list.entries.noItems">There are currently no entries.</entry>
 <entry key="yukon.web.modules.adminSetup.list.entryText">Entry Text</entry>
+<entry key="yukon.web.modules.adminSetup.list.noEntryText">N/A</entry>
 <entry key="yukon.web.modules.adminSetup.list.definition">Type</entry>
 <entry key="yukon.web.modules.adminSetup.list.actions">Actions</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.listSaved">This list has been updated.</entry>
+<entry key="yukon.web.modules.adminSetup.list.cannotDeleteUsedEntries">The list could not be
+    updated.  You cannot delete entries which are in use.</entry>
+<entry key="yukon.web.modules.adminSetup.list.confirmRestoreDefault.title">Confirmation</entry>
+<entry key="yukon.web.modules.adminSetup.list.confirmRestoreDefault.message">Are you sure you want
+    to restore the {0} list to the default values?  (This cannot be undone.)</entry>
+<entry key="yukon.web.modules.adminSetup.list.defaultRestored">This list has been restored to the default.</entry>
+
+<entry key="yukon.web.modules.adminSetup.list.noDefinition">None</entry>
+<entry key="yukon.web.modules.adminSetup.list.undoRow.willBeRemoved">This item will be removed.</entry>
+<entry key="yukon.web.modules.adminSetup.list.undoRow.undo">Undo</entry>
+<entry key="yukon.web.modules.adminSetup.list.entry.undoRow.willBeRemoved">This item will be removed.</entry>
+<entry key="yukon.web.modules.adminSetup.list.entry.undoRow.undo">Undo</entry>
 
 <entry key="yukon.web.modules.adminSetup.list.restoreDefault.label">Restore Default</entry>
 
@@ -131,6 +148,8 @@
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_SA_SIMPLE">SA Simple</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_EXPRESSSTAT_HEATPUMP">ExpressStat Heat Pump</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_UTILITYPRO">UtilityPRO</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_ZIGBEE_UTILITYPRO">UtilityPRO Zigbee</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_DIGI_GATEWAY">Digi Gateway</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_3102">LCR-3102</entry>
 
 <entry key="yukon.dr.selectionList.definition.APP_CAT_DEFAULT">(Default)</entry>

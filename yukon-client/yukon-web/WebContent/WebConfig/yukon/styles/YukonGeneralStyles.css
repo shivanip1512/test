@@ -898,12 +898,12 @@ table.compactResultsTable th img.logoImage {
     vertical-align: bottom;
 }
 
-table.compactResultsTable tr.removed {
+table.compactResultsTable tr.undoRow {
     background-color:#EFEFEF;
     border-top: 2px solid #ccc;
 }
 
-table.compactResultsTable tr.removed td {
+table.compactResultsTable tr.undoRow td {
     text-align: center;
     vertical-align: middle;
 }
@@ -912,9 +912,10 @@ table.compactResultsTable td.checkBox {
     vertical-align: middle;
 }
 
-span.undoRemovedRow {
+span.undoRemoveBtn {
     text-decoration: underline;
     color: blue;
+    cursor: pointer;
 }
 
 table.collectionActionAlignment > tbody > tr > td {
@@ -1368,6 +1369,15 @@ button.labeledImage:hover span {
     text-decoration: underline;
 }
 
+th.actions, td.actions {
+    width: 1px;
+    white-space: nowrap;
+}
+
+td.actions {
+    text-align: center;
+}
+
 button.image {
     padding: 0px !important;
     width: 16px;
@@ -1412,4 +1422,4 @@ button.image {
 
 .loading .message {
     padding: 0 0 0 20px;
-}    
+}

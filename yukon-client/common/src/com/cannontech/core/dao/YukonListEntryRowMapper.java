@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.database.SqlUtils;
 
 public class YukonListEntryRowMapper implements ParameterizedRowMapper<YukonListEntry> {
  
@@ -16,7 +17,7 @@ public class YukonListEntryRowMapper implements ParameterizedRowMapper<YukonList
         entry.setEntryID(rs.getInt("EntryID"));
         entry.setListID(rs.getInt("ListID"));
         entry.setEntryOrder(rs.getInt("EntryOrder"));
-        entry.setEntryText(rs.getString("EntryText"));
+        entry.setEntryText(SqlUtils.convertDbValueToString(rs.getString("EntryText")));
         entry.setYukonDefID(rs.getInt("YukonDefinitionID"));
         return entry;
     }

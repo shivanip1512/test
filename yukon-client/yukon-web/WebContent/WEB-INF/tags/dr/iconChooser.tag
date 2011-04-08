@@ -1,6 +1,6 @@
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="path" required="true" %>
-<%@ attribute name="icons" required="true" type="com.cannontech.stars.dr.appliance.model.IconEnum[]" %>
+<%@ attribute name="icons" required="true" type="java.lang.Object" %>
 <%@ attribute name="selectedIcon" required="true" type="com.cannontech.stars.dr.appliance.model.IconEnum" %>
 <%@ attribute name="applianceCategoryIconMode" type="java.lang.Boolean" %>
 <%@ attribute name="value" %>

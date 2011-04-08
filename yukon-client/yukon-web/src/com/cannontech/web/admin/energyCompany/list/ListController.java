@@ -1,28 +1,68 @@
 package com.cannontech.web.admin.energyCompany.list;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
+import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.SortedSetMultimap;
 
 @Controller
 @RequestMapping("/energyCompany/list/*")
 public class ListController {
+    private final static String baseKey = "yukon.web.modules.adminSetup.list.";
+
     private YukonListDao yukonListDao;
+    private SelectionListDao selectionListDao;
     private SelectionListService selectionListService;
     private EnergyCompanyService energyCompanyService;
+    private ObjectFormattingService objectFormattingService;
+
+    private Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
+        @Override
+        protected void doValidation(SelectionListDto list, Errors errors) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "selectionLabel",
+                                                       list.getSelectionLabel(), 30);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "whereIsList",
+                                                       list.getWhereIsList(), 100);
+            int index = 0;
+            for (SelectionListDto.Entry entry : list.getEntries()) {
+                if (!entry.isDeletion()) {
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "entries[" + index + "].text",
+                                                               entry.getText(), 50);
+                }
+                index++;
+            }
+        }
+    };
 
     @RequestMapping
     public String list(ModelMap model, YukonUserContext context, EnergyCompanyInfoFragment ecInfo) {
@@ -52,9 +92,132 @@ public class ListController {
         return "list/view.jsp";
     }
 
+    @RequestMapping
+    public String edit(ModelMap model, int listId, YukonUserContext context,
+                       EnergyCompanyInfoFragment ecInfo) {
+        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
+        YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
+        SelectionListDto listDto = new SelectionListDto(list);
+        model.addAttribute("list", listDto);
+
+        if (list.getEnergyCompanyId() != ecInfo.getEnergyCompanyId()) {
+            throw new NotAuthorizedException("energy company appears to have been tampered with");
+        }
+        return prepareEdit(model, listDto, context);
+    }
+
+    private String prepareEdit(ModelMap model, SelectionListDto list, YukonUserContext context) {
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
+                                                  list.getEnergyCompanyId());
+
+        // Moving items up and down on the page doesn't change their indexes so the entries
+        // are in the order they were originally added to the page...not the order specified.
+        // Sort them so they match again.  (This is only strictly necessary when called from
+        // validation errors but doesn't hurt otherwise.
+        list.sortEntries(null);
+
+        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
+                                                                   list.getType(), context);
+        model.addAttribute("listDefinitions", listDefinitions);
+
+        model.addAttribute("mode", PageEditMode.EDIT);
+        return "list/edit.jsp";
+    }
+
+    @RequestMapping
+    public String addItem(ModelMap model, int itemIndex, int listId, YukonUserContext context) {
+        model.addAttribute("entryIndex", itemIndex);
+
+        YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
+                                                  list.getEnergyCompanyId());
+        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
+                                                                   list.getType(), context);
+        model.addAttribute("listDefinitions", listDefinitions);
+
+        return "list/entry.jsp";
+    }
+
+    private List<YukonDefinition> getListDefinitions(int ecId, YukonSelectionListEnum listType,
+                                                     YukonUserContext context) {
+        List<YukonDefinition> listDefinitions =
+            selectionListService.getValidDefinitions(ecId, listType);
+        return objectFormattingService.sortEnumValues(listDefinitions.toArray(new YukonDefinition[listDefinitions.size()]),
+                                                      null, null, context);
+    }
+
+    @RequestMapping(value="save", params="save", method=RequestMethod.POST)
+    public String save(ModelMap model, @ModelAttribute("list") SelectionListDto list,
+                       BindingResult bindingResult, YukonUserContext context, FlashScope flash) {
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
+                                                  list.getEnergyCompanyId());
+        YukonSelectionList oldList = yukonListDao.getYukonSelectionList(list.getListId());
+        if (oldList.getEnergyCompanyId() != list.getEnergyCompanyId()) {
+            throw new NotAuthorizedException("energy company appears to have been tampered with");
+        }
+        if (!oldList.isUserUpdateAvailable()) {
+            throw new NotAuthorizedException("listId appears to have been tampered with");
+        }
+
+        // Get type from old list since it can't be changed.  (We don't have to pass it and
+        // we don't have to worry about the user tampering with it.)
+        list.setType(oldList.getType());
+
+        validator.validate(list, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flash.setError(messages);
+            return prepareEdit(model, list, context);
+        }
+
+        // Get type from old list since it can't be changed.  (We don't have to pass it and
+        // we don't have to worry about the user tampering with it.)
+        YukonSelectionList newList = list.getYukonSelectionList();
+        try {
+            selectionListDao.saveList(newList, list.getEntryIdsToDelete());
+        } catch (DataIntegrityViolationException dive) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
+            return prepareEdit(model, list, context);
+        }
+
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "listSaved"));
+
+        model.addAttribute("listId", list.getListId());
+        model.addAttribute("ecId", list.getEnergyCompanyId());
+        return "redirect:view";
+    }
+
+    @RequestMapping(value="save", params="restoreDefault", method=RequestMethod.POST)
+    public String restoreDefault(ModelMap model, @ModelAttribute("list") SelectionListDto list,
+                       BindingResult bindingResult, YukonUserContext context, FlashScope flash) {
+        int ecId = list.getEnergyCompanyId();
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
+                                                  list.getEnergyCompanyId());
+
+        YukonSelectionList newList = yukonListDao.getYukonSelectionList(list.getListId());
+        try {
+            selectionListService.restoreToDefault(newList);
+        } catch (DataIntegrityViolationException dive) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
+            return prepareEdit(model, list, context);
+        }
+
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "defaultRestored"));
+
+        model.addAttribute("listId", list.getListId());
+        model.addAttribute("ecId", ecId);
+        return "redirect:view";
+    }
+
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+
+    @Autowired
+    public void setSelectionListDao(SelectionListDao selectionListDao) {
+        this.selectionListDao = selectionListDao;
     }
 
     @Autowired
@@ -65,5 +228,10 @@ public class ListController {
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
+    }
+
+    @Autowired
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 }

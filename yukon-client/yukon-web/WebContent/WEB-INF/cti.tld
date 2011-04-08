@@ -1469,6 +1469,25 @@
                 href specified, unused if no href specified
             </description>
         </attribute>
+        <attribute>
+            <name>isButton</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+            <description>
+                Set this to true if the image should behave like a button (the image changes when
+                you hover over it and you get a "link" pointer type.
+            </description>
+        </attribute>
+        <attribute>
+            <name>hide</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+            <description>
+                Set this to true if the image should be hidden by default.
+            </description>
+        </attribute>
     </tag>
 
     <tag>

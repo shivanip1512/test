@@ -241,6 +241,9 @@
       <sequence name="optOutSurvey">
         <table name="optOutSurvey" identitycolumn="optOutSurveyId"/>
       </sequence>
+      <sequence name="YukonListEntry">
+        <table name="YukonListEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
       <sequence name="AcctThermostatSchedule">
         <table name="AcctThermostatSchedule" identitycolumn="AcctThermostatScheduleId" initsequence="true"/>
       </sequence>

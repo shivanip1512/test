@@ -24,13 +24,20 @@
 
 <tags:boxContainer2 nameKey="entries" id="selectionListEntries">
     <c:if test="${empty list.yukonListEntries}">
-        <i:inline key=".noEntries"/>
+        <i:inline key=".entries.noItems"/>
     </c:if>
     <c:if test="${!empty list.yukonListEntries}">
         <table class="compactResultsTable rowHighlighting">
             <c:forEach var="entry" varStatus="status" items="${list.yukonListEntries}">
                 <tr>
-                    <td><spring:escapeBody htmlEscape="true">${entry.entryText}</spring:escapeBody></td>
+                    <td>
+                        <c:if test="${empty entry.entryText}">
+                            <i:inline key=".noEntryText"/>
+                        </c:if>
+                        <c:if test="${!empty entry.entryText}">
+                            <spring:escapeBody htmlEscape="true">${entry.entryText}</spring:escapeBody>
+                        </c:if>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
