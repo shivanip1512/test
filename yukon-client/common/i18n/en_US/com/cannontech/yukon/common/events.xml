@@ -87,8 +87,8 @@
     <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedThroughAPI">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
 
     <!-- Account Enrollment Service Level -->
-    <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">The device {2} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">The device {2} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">The device {3} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">The device {3} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
 
     <!-- Opt Outs -->
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedThroughAPI">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
