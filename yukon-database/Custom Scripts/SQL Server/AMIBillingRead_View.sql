@@ -178,6 +178,63 @@ INSERT INTO AMIBillingReadLookup VALUES('MCT-470', 'Analog', 18, 'KVAR', 4, 'Cur
 INSERT INTO AMIBillingReadLookup VALUES('MCT-470', 'Analog', 102, 'KW', 1, 'Frozen');
 INSERT INTO AMIBillingReadLookup VALUES('MCT-470', 'Analog', 103, 'KWH', 1, 'Frozen');
 
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fL', 'Analog', 1, 'KWH', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fX', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fX', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 105, 'KW', 0, 'Current');
 --SQLServer
 DROP VIEW AMIBillingRead;
 GO
@@ -234,3 +291,63 @@ JOIN (SELECT Timestamp, Value, PointId
       FROM RawPointHistory
       Where Timestamp > dateadd(d,datediff(d,0,getdate()),-62)) AS RPH ON P.PointId = RPH.PointId;
 
+
+      
+-- FOR UPDATE to add MCT420 and RFN types - 20110410 (Yukon 5.2)
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FL', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420FLD', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CL', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 101, 'KWH', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 121, 'KWH', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 141, 'KWH', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'PulseAccumulator', 161, 'KWH', 4, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 11, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 111, 'KW', 1, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 131, 'KW', 2, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 151, 'KW', 3, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-420CLD', 'DemandAccumulator', 171, 'KW', 4, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fL', 'Analog', 1, 'KWH', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fX', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fX', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 105, 'KW', 0, 'Current');
