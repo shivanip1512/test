@@ -372,7 +372,9 @@ public class OperatorAccountController {
             
             accountGeneralValidator.validate(accountGeneral, bindingResult);
             if(createLogin) {
+                bindingResult.pushNestedPath("loginBackingBean");
                 loginValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                bindingResult.popNestedPath();
             }
             
             if (!bindingResult.hasErrors()) {
