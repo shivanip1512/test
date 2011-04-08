@@ -42,7 +42,7 @@ Event.observe(window, 'load', ${id}.init.bind(${id}));
         <div class="noItemsMessage">${pageScope.noItemsMsg}</div>
     </c:if>
     <div class="actionArea">
-        <cti:button id="addItem" key="add" styleClass="blocker"/>
+        <cti:button id="addItem" key="add" styleClass="f_blocker"/>
     </div>
     <div style="display: none;" class="tempRequest"></div>
 </div>

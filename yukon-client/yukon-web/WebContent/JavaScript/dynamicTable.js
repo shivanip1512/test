@@ -56,7 +56,7 @@ DynamicTable.prototype = {
         if (noItemsMessageDiv) {
             noItemsMessageDiv.parentNode.removeChild(noItemsMessageDiv);
         }
-        Cooper.ui.unblockPage();
+        Yukon.ui.unblockPage();
     },
 
     moveItemUp: function(event) {

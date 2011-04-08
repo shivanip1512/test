@@ -25,8 +25,8 @@ public interface SelectionListService {
         getUserEditableLists(int ecId, YukonUserContext context);
 
     /**
-     * Returns true if the given list is inherited from a parent of energyCompany rather than
-     * being directly associated with it.
+     * Returns true if the given list is inherited from a parent of the given energy company
+     * rather than being directly associated with it.
      */
     public boolean isListInherited(int ecId, YukonSelectionList list);
 

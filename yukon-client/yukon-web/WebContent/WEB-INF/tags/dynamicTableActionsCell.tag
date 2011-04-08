@@ -14,7 +14,6 @@
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 
 <td class="actions">
-<!-- TODO:  these should what Jackson thinks or something like it -->
     <cti:img key="up.disabled" hide="${!isFirst}" styleClass="disabledMoveUpBtn"/>
     <cti:img key="up" hide="${isFirst}" isButton="true" styleClass="moveUpBtn"/>
     <cti:img key="down.disabled" hide="${!isLast}" styleClass="disabledMoveDownBtn"/>

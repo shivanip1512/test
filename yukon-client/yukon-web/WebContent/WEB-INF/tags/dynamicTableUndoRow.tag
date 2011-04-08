@@ -18,8 +18,6 @@
 </cti:msgScope>
 
 <tr class="undoRow" style="display: none;">
-    <!-- TODO:  localize -->
     <td colspan="${columnSpan - 1}">${willBeRemovedMsg}</td>
-    <!-- TODO:  localize; probably use button with image (fix row heights before doing that) -->
     <td class="actions"><span class="undoRemoveBtn">${undoMsg}</span></td>
 </tr>
