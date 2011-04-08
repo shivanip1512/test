@@ -10,5 +10,8 @@ initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="WebClientRol
 </script>
 
 <div id="cannonUpdaterErrorDiv" style="display: none">
-Connection to server has been lost (<span id="cannonUpdaterErrorDivCount"></span>)
+    <span class="icon ex_large_icon alert"></span>
+    <span class="meta">
+        Connection to server has been lost (<span id="cannonUpdaterErrorDivCount"></span>)
+    </span>
 </div>

@@ -2,6 +2,10 @@
 /* This style sheet describes the typical formatting of all HTML 4.0 ([HTML40]) elements based on extensive research into current UA practice. */
 /* Developers are encouraged to use it as a default style sheet in their implementations. */
 
+html, body {margin: 0; padding:0;}
+
+body { top:0; display:inline; }
+
 ADDRESS,
 BLOCKQUOTE, 
 BODY, DD, DIV, 

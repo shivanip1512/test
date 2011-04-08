@@ -25,7 +25,7 @@ public enum JsLibrary {
     RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
     EXT_BASE("/JavaScript/extjs/ext-base.js"),
     EXT_ALL("/JavaScript/extjs/ext-all.js"),
-    COOPER_UI("/JavaScript/cooper/ui/general.js"),
+    YUKON_UI("/JavaScript/yukon/ui/general.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js");

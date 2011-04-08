@@ -158,8 +158,8 @@
                 <tags:formElementContainer nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
                         <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
-                        <tags:inputNameValue nameKey=".mainPhone" path="mainPhoneNumber" inputClass="phone" maxlength="14"/>
-                        <tags:inputNameValue nameKey=".mainFax" path="mainFaxNumber" inputClass="phone" maxlength="14"/>
+                        <tags:inputNameValue nameKey=".mainPhone" path="mainPhoneNumber" inputClass="phone formatPhone" maxlength="14"/>
+                        <tags:inputNameValue nameKey=".mainFax" path="mainFaxNumber" inputClass="phone formatPhone" maxlength="14"/>
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
                         <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>

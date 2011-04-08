@@ -1011,6 +1011,9 @@
             <option name="pickerTest">
               <link>/spring/support/development/pickerTest/main</link>
             </option>
+            <option name="uiToolkitDemo">
+              <link>/spring/support/development/uiToolkitDemo/main</link>
+            </option>
           </options>
         </option>
         <option name="other">
@@ -1065,6 +1068,10 @@
                 </page>
                 <page name="errorCodes" type="BASIC">
                     <menu>information|errorCodes</menu>
+                </page>
+                <page name="uiToolkitDemo" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                    <menu>development|uiToolkitDemo</menu>
                 </page>
             </pages>
             <link>/spring/support/</link>

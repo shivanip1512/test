@@ -9,6 +9,6 @@
 <%@ attribute name="disabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 
-<tags:nameValue2 nameKey="${nameKey}">
+<tags:nameValue2 nameKey="${nameKey}" labelForId="${path}">
 	<tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${pageScope.disabled}" inputClass="${pageScope.inputClass}"/>
 </tags:nameValue2>
