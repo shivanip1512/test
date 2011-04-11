@@ -317,19 +317,19 @@
 
     <target name="build-dist" depends="updatedbscripts">
         <mkdir dir="${temp.dir}" />
-        <copy todir="${temp.dir}/installer">
+        <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
         </copy>
-        <copy todir="${temp.dir}/YukonImages">
+        <copy todir="${temp.dir}/YukonMisc/YukonImages">
             <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
-        <copy todir="${temp.dir}/YukonDatabase/DatabaseCreation">
+        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseCreation">
             <fileset dir="${basedir}/yukon-database/CreationScripts" />
         </copy>
-        <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/Oracle">
+        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle">
             <fileset dir="${basedir}/yukon-database/DBUpdates/oracle" />
         </copy>
-        <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/SqlServer">
+        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer">
             <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         
