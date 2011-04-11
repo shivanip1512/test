@@ -116,8 +116,13 @@
         	</table>
         	<br>
         </form>
+	<div id="browserWarning" style="display:none; font-weight: bold; color: red; font-size: 14px; text-align: center; margin: 12px 0">This page only works with Internet Explorer.</div>
     </div>
-    
+    <script>
+    	if (!Prototype.Browser.IE) {
+	    $('browserWarning').show();
+	}
+	</script>
     <script language="JavaScript">
 		var actionTexts = new Array();
 		var selectionIDs = new Array();

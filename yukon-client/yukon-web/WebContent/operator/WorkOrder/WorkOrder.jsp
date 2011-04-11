@@ -189,6 +189,7 @@ function applyOrdering(form)
 	              			<p>&nbsp; </p>
 	              		</c:if>
 	              		</form>
+					<div id="browserWarning" style="display:none; font-weight: bold; color: red; font-size: 14px; text-align: center; margin: 12px 0">This page only works with Internet Explorer.</div>
 	            	</div>
 	        		<td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 	    		</tr>
@@ -199,3 +200,8 @@ function applyOrdering(form)
 <br>
 </body>
 </html>
+<script>
+if (!Prototype.Browser.IE) {
+	$('browserWarning').show();
+}
+</script>

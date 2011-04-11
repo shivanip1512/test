@@ -27,6 +27,7 @@ public class UpdateFiltersController extends StarsWorkorderActionController {
         WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
         woBean.setStart(start);
         woBean.setStop(stop);
+        woBean.setSearchResults(null);
 
         String[] selectionIDs = request.getParameterValues("SelectionIDs");
         String[] filterTexts = request.getParameterValues("FilterTexts");
