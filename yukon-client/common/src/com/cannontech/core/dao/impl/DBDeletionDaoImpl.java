@@ -8,6 +8,7 @@ import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.season.SeasonSchedule;
+import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -344,9 +345,12 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
-		if( com.cannontech.database.data.state.GroupState.hasPoint( theID ) )
+		if( GroupState.hasPoint( theID ) )
 		{
 			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a point.") );
+			return DBDeletionDao.STATUS_DISALLOW;
+		} else if ( GroupState.hasMonitor(theID)) {
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a monitor.") );
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 	

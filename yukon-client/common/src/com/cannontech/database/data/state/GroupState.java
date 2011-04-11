@@ -1,5 +1,11 @@
 package com.cannontech.database.data.state;
 
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -120,6 +126,27 @@ public final static boolean hasPoint(Integer sGroupID, String databaseAlias) thr
 	{
 		return false;
 	}
+}
+
+
+/**
+ * Helper method to return true if stateGroupId is referenced by a "monitor".
+ *  ("monitor" includes PorterResponseMonitor and StatusPointMonitor).
+ * @param stateGroupId
+ * @return
+ */
+public final static boolean hasMonitor(Integer stateGroupId) 
+{
+	JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate(); 
+	SqlStatementBuilder sql = new SqlStatementBuilder();
+	sql.append("SELECT MonitorId FROM PorterResponseMonitor PRM");
+	sql.append("WHERE PRM.StateGroupId").eq(stateGroupId);
+	sql.append("UNION SELECT StatusPointMonitorId FROM StatusPointMonitor SPM");
+	sql.append("WHERE SPM.StateGroupId").eq(stateGroupId);
+
+    List<Integer> monitorIds = yukonTemplate.queryForList(sql.toString(), sql.getArguments(), Integer.class);
+
+    return !monitorIds.isEmpty();
 }
 /**
  * This method was created in VisualAge.
