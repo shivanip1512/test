@@ -84,8 +84,31 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.memberAddSuccessful">Member Added Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.memberRemoveSuccessful">Member Removed Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.title">Delete Energy Company {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.message">Are you sure you want to delete the energy company {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.message"></entry>
     
+    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.disclaimer"><![CDATA[
+        Are you sure you want to delete the energy company {0}?  Deleting this energy company will result in deleting all of the following associated with that energy company:
+        
+        <br><br>
+        <ul style="font-size:11px;">
+            <li class="disclaimer">&nbsp;&bull; Operator Logins</li>
+            <li>&nbsp;&bull; Customer Accounts</li>
+            <li>&nbsp;&bull; Inventory</li>
+            <li>&nbsp;&bull; Work Orders</li>
+            <li>&nbsp;&bull; Default Thermostat Schedules</li>
+            <li>&nbsp;&bull; Substations</li>
+            <li>&nbsp;&bull; Service Companies</li>
+            <li>&nbsp;&bull; Appliance Categories</li>
+            <li>&nbsp;&bull; Customer Selection Lists</li>
+            <li>&nbsp;&bull; Operator Login Groups</li>
+        </ul>
+
+    ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deleteConfirm">Please enter your password and click delete to delete this energy company.</entry>
+    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg">The energy company {0} was deleted successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.message">Are you sure you want to delete the energy company {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.message">Are you sure you want to delete the energy company {0}?</entry>
+
     <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageName">Appliance Categories</entry>
     <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageDescription">{0}</entry>
 
