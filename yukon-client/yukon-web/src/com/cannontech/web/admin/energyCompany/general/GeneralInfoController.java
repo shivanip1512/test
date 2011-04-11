@@ -2,6 +2,8 @@ package com.cannontech.web.admin.energyCompany.general;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -42,21 +44,23 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/energyCompany/general/*")
 @Controller
 public class GeneralInfoController {
 
-    private StarsDatabaseCache starsDatabaseCache;
-    private GeneralInfoService generalInfoService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private GeneralInfoValidator generalInfoValidator;
+    private CsrfTokenService csrfTokenService;
     private EnergyCompanyService energyCompanyService;
     private ECMappingDao ecMappingDao;
-    private YukonUserDao yukonUserDao;
+    private GeneralInfoService generalInfoService;
+    private GeneralInfoValidator generalInfoValidator;
     private RolePropertyDao rolePropertyDao;
+    private StarsDatabaseCache starsDatabaseCache;
     private YukonGroupService yukonGroupService;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private YukonUserDao yukonUserDao;
     
     /* View Page*/
     @RequestMapping
@@ -90,15 +94,42 @@ public class GeneralInfoController {
     }
     
     /* Delete Energy Company */
-    @RequestMapping(value="update", params="delete", method=RequestMethod.POST)
-    public String delete(ModelMap model, YukonUserContext context, int ecId) {
+    @RequestMapping(value="delete")
+    public String deleteConfirm(ModelMap model, YukonUserContext context, int ecId, EnergyCompanyInfoFragment fragment) {
+        energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
+        setupModelMap(model, context.getYukonUser(), ecId, fragment);
+
         LiteYukonUser user = context.getYukonUser();
         if (!energyCompanyService.canDeleteEnergyCompany(user, ecId)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
         }
         
-        /* TODO */
-        return "TODO";
+        return "energyCompany/deleteEnergyCompanyConfirm.jsp";
+    }
+    
+    /* Delete Energy Company */
+    @RequestMapping(value="delete", params="delete")
+    public String delete(ModelMap model, YukonUserContext context, FlashScope flashScope, HttpServletRequest request,
+                         int ecId, EnergyCompanyInfoFragment fragment) {
+        energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
+
+        LiteYukonUser user = context.getYukonUser();
+        if (!energyCompanyService.canDeleteEnergyCompany(user, ecId)) {
+            throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
+        }
+        
+        // Check the csrf validation
+        String errorCode = csrfTokenService.checkRequest(request);
+        if(org.apache.commons.lang.StringUtils.isNotEmpty(errorCode)) {
+            setupModelMap(model, context.getYukonUser(), ecId, fragment);
+            flashScope.setError(new YukonMessageSourceResolvable(errorCode));
+            return "redirect:delete";
+        }
+
+        energyCompanyService.deleteEnergyCompany(ecId);
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
+        return "redirect:/spring/adminSetup/energyCompany/home";
     }
     
     /* Update General Info */
@@ -248,7 +279,6 @@ public class GeneralInfoController {
     }
     
     /* Model Attributes */
-    
     @ModelAttribute("showParentLogin")
     public boolean getShowParentLogin(int ecId) {
         return starsDatabaseCache.getEnergyCompany(ecId).getParent() != null;
@@ -308,6 +338,10 @@ public class GeneralInfoController {
     }
     
     /* Dependencies */
+    @Autowired
+    public void setCsrfTokenService(CsrfTokenService csrfTokenService) {
+        this.csrfTokenService = csrfTokenService;
+    }
     
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {

@@ -1246,6 +1246,11 @@
                                 <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
+                            <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/deleteEnergyCompanyConfirm?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                            </page>
                             <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>

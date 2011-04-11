@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -56,16 +57,27 @@ public class CsrfTokenService {
     }
     
     public boolean checkRequest(HttpServletRequest request, BindingResult bindingResult) {
-        try {
-            validateRequest(request);
-        } catch (BadAuthenticationException e) {
-            bindingResult.reject("yukon.web.error.csrf.badPassword");
-        } catch (YukonSecurityException e) {
-            bindingResult.reject("yukon.web.error.csrf.badToken");
+        String errorCode = checkRequest(request);
+        
+        if (StringUtils.isNotEmpty(errorCode)) {
+            bindingResult.reject(errorCode);
         }
         
         return true;
     }
+
+    public String checkRequest(HttpServletRequest request) {
+        try {
+            validateRequest(request);
+        } catch (BadAuthenticationException e) {
+            return "yukon.web.error.csrf.badPassword";
+        } catch (YukonSecurityException e) {
+            return "yukon.web.error.csrf.badToken";
+        }
+        
+        return null;
+    }
+
     
     public void validateRequest(HttpServletRequest request) throws BadAuthenticationException, YukonSecurityException {
         CsrfTokenMode mode = getTokenMode(request);

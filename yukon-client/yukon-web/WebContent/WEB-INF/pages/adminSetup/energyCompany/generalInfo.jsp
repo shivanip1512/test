@@ -84,11 +84,12 @@ function addCustomerGroups() {
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button key="save" type="submit" name="save"/>
-                            <%-- TODO: Replace old deleting code, then uncomment this
                             <c:if test="${canDelete}">
-                                <cti:button key="delete" type="button" id="deleteButton"/>
-                                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" arguments="${energyCompanyName}" submitName="delete"/>
-                            </c:if> --%>
+                                <cti:url value="delete" var="deleteUrl" >
+                                    <cti:param name="ecId" value="${ecId}"/>
+                                </cti:url>
+                                <cti:button key="delete" type="button" href="${deleteUrl}" />
+                            </c:if>
                             <cti:button key="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>
                     </div>
