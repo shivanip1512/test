@@ -34,7 +34,7 @@ function executeCapBankResetOpCount(paoId) {
         count = 0;        
     }
     
-    input.value = null;    
+    input.value = '';    
     executeCommandController(paoId, 12, 'Reset Op Count', 'CAPBANK', null, count);
     hideResetOpCountSpan(paoId);
 }

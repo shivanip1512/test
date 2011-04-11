@@ -558,6 +558,7 @@
                     <th>State 
                         <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif"
                             onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V : Auto Volt Control (ovUv) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: CapBank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.');">  
+                        <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span>
                     </th>
                     <th>Date/Time</th>
                     <th>Bank Size</th>
