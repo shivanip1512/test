@@ -514,6 +514,8 @@ bool CtiCCTwoWayPoints::isTimestampNew(LONG pointID, CtiTime timestamp)
 BOOL CtiCCTwoWayPoints::setTwoWayStatusPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = false;
+    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
+        return retVal;
     if ( _pointidPointtypeMap.find(pointID)->second == StatusPointType &&
          (retVal = isTimestampNew(pointID, timestamp)) )
     {    
@@ -524,6 +526,8 @@ BOOL CtiCCTwoWayPoints::setTwoWayStatusPointValue(LONG pointID, LONG value, CtiT
 BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = FALSE;
+    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
+        return retVal;
     if ( _pointidPointtypeMap.find(pointID)->second == AnalogPointType &&
          (retVal = isTimestampNew(pointID, timestamp)) )
     {    
@@ -534,6 +538,8 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value, CtiT
 BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = FALSE;
+    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
+        return retVal;
     if ( _pointidPointtypeMap.find(pointID)->second == PulseAccumulatorPointType &&
          (retVal = isTimestampNew(pointID, timestamp)) )
     {    
