@@ -108,11 +108,12 @@ public static String getTranslationValue( String translation, String label ) {
 	
 	String[] entries = translation.split( ";" );
 	
-	for( int i = 0; i < entries.length; i++ ) {
-
-		//found the label, return the value
-		if( entries[i].startsWith(label) )
-			return entries[i].split(":")[1];
+	for(String entry : entries){
+	    //found the label, return the value
+	    if(entry.startsWith(label)){
+	        int valueBegin = entry.indexOf(":") + 1;
+	        return entry.substring(valueBegin);
+	    }
 	}
 	
 	return null;
