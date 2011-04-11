@@ -100,7 +100,12 @@ public class SurveyResultsDetailModel extends
             if (accountId != null && accountId != 0) {
                 accountIds.add(result.getAccountId());
             }
-            inventoryIds.add(optOutsBySurveyResult.get(result).getInventoryId());
+            
+            // Just in case there is already bad data in the database
+            OptOutEvent event = optOutsBySurveyResult.get(result);
+            if(event != null) {
+                inventoryIds.add(event.getInventoryId());
+            }
         }
 
         Survey survey = surveyDao.getSurveyById(surveyId);
