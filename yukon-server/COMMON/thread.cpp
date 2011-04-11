@@ -49,13 +49,9 @@ void CtiThread::start()
 {
     bool failed = false;
 
-   if( !isRunning() )
+    // set(STARTING, true) is the synchronization method here.
+   if( !isRunning() && set(STARTING, true))
    {
-      // flag is set to avoid a race condition where the newly created
-      // thread doesn't acquire _running_mux before another thread
-      // attempts a join
-      //_starting = true;
-      set(STARTING, true);
 
 #ifdef _WINDOWS
 
@@ -167,10 +163,16 @@ bool CtiThread::isSet(int id)
    }
 }
 
-void CtiThread::set(int id, bool state)
+// Sets the state and returns true if the state was changed
+bool CtiThread::set(int id, bool state)
 {
    CtiLockGuard<CtiMutex> guard(_event_mux);
-   _event_map[id] = state;
+   if(_event_map[id] != state)
+   {
+      _event_map[id] = state;
+      return true;
+   }
+   return false;
 }
 
 bool CtiThread::isRunning()
@@ -203,6 +205,7 @@ DWORD WINAPI CtiThread::ThreadProc(LPVOID lpData )
    // We are using lpData to smuggle in a pointer to a CtiThread
    CtiThread* thr = (CtiThread*) lpData;
 
+   // This order is very important!
    CtiLockGuard<CtiMutex> guard(thr->_running_mux);
    thr->set(STARTING, false );
    thr->run();
@@ -215,6 +218,7 @@ unsigned WINAPI CtiThread::ThreadProc2(LPVOID lpData )
    // We are using lpData to smuggle in a pointer to a CtiThread
    CtiThread* thr = (CtiThread*) lpData;
 
+   // This order is very important!
    CtiLockGuard<CtiMutex> guard(thr->_running_mux);
    thr->set(STARTING, false );
    thr->run();

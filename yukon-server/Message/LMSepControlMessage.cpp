@@ -9,6 +9,7 @@
 
 namespace Cti {
 namespace Messaging {
+namespace LoadManagement {
 
 LMSepControlMessage::LMSepControlMessage(int            groupId,
                                          unsigned int   utcStartTime,
@@ -52,4 +53,4 @@ void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
 
 }
 }
-
+}

@@ -39,6 +39,7 @@ PointDataHandler.obj \
 PointDataRequestFactory.obj \
 PorterResponseMessage.obj \
 LMSepControlMessage.obj \
+LMSepRestoreMessage.obj \
 ControlHistoryAssociationResponse.obj \
 amq_connection.obj \
 connection.obj \
@@ -201,6 +202,14 @@ id_ctimsg.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
 		sorted_vector.h id_ctimsg.h
 lmsepcontrolmessage.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		LMSepControlMessage.h dlldefs.h msg_pcreturn.h msg_multi.h \
+		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		ctitime.h rwutil.h database_connection.h dbaccess.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
+		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h
+lmseprestoremessage.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		LMSepRestoreMessage.h dlldefs.h msg_pcreturn.h msg_multi.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		ctitime.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \

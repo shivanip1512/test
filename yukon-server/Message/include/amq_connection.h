@@ -81,6 +81,7 @@ public:
     {
         Queue_PorterResponses,
         Queue_SmartEnergyProfileControl,
+        Queue_SmartEnergyProfileRestore,
         Queue_HistoryRowAssociationResponse
     };
 };

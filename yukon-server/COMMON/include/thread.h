@@ -62,7 +62,7 @@ protected:
     virtual void run() = 0;
     bool sleep(unsigned long millis);
 
-    void set(int id, bool value = true );
+    bool set(int id, bool value = true );
     bool isSet(int id);
 
 private:

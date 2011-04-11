@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "amq_connection.h"
 #include "lmsepcontrolmessage.h"
+#include "lmseprestoremessage.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -93,6 +94,7 @@ void LMGroupDigiSEP::restore(Cti::RowReader &rdr)
 bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
 {
     using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
 
     // Average cycle count value is added to 100 to get true value, so -10 = 90% cycle.
     long averageCyclePercent = isTrueCycle ? cyclePercent - 100 : SEPAverageCycleUnused;
@@ -126,9 +128,10 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
 bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {
     using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, 0, 0, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, SEPAverageCycleUnused, SEPStandardCycleUnused, 0));
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+    std::auto_ptr<StreamableMessage> msg(new LMSepRestoreMessage(getPAOId(), 0, stopImmediately ? 0 : 1));
+    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileRestore, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

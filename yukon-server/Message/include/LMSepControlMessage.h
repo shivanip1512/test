@@ -6,6 +6,7 @@
 
 namespace Cti {
 namespace Messaging {
+namespace LoadManagement {
 
 class IM_EX_MSG LMSepControlMessage : public StreamableMessage
 {
@@ -23,8 +24,8 @@ class IM_EX_MSG LMSepControlMessage : public StreamableMessage
 
 public:
 
-    LMSepControlMessage(int _groupId,
-                        unsigned int  utcStartTime,
+    LMSepControlMessage(int            groupId,
+                        unsigned int   utcStartTime,
                         unsigned short controlMinutes,
                         unsigned char  criticality,
                         unsigned char  coolTempOffset,
@@ -41,4 +42,4 @@ public:
 
 }
 }
-
+}
