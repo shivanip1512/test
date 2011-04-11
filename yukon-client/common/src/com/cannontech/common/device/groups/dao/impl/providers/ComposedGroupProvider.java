@@ -100,7 +100,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             return new SimpleSqlFragment("0 = 1"); 
         }
         
-        SqlFragmentCollection sql = new SqlFragmentCollection(" " + compositionType.getSqlFragmentCombiner() + " ");
+        SqlFragmentCollection sql = new SqlFragmentCollection(" " + compositionType.getSqlFragmentCombiner() + " ", true);
         
         for (SqlFragmentSource compositionFragment : compositionFragments) {
             sql.add(compositionFragment);

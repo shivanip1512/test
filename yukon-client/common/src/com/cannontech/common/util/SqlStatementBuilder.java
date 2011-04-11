@@ -13,6 +13,8 @@ import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
 
+import com.cannontech.database.SqlParameterBase;
+import com.cannontech.database.SqlParameterSink;
 import com.google.common.collect.Lists;
 
 /**
@@ -46,23 +48,59 @@ import com.google.common.collect.Lists;
  *   sql.append("  and id").in(idList); // appends "in (...)", handles arguments like appendArgumentList
  */
 public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
-    private StringBuilder statement;
-    private List<Object> arguments = new ArrayList<Object>(0); // usually not used
+    private DeferedSqlFragmentHelper base = new DeferedSqlFragmentHelper();
+    
+    private static class SpaceAppendingSqlFragmentSource implements SqlFragmentSource {
+        private SqlFragmentSource delegate;
+        public SpaceAppendingSqlFragmentSource(SqlFragmentSource delegate) {
+            this.delegate = delegate;
+        }
+        
+        @Override
+        public String getSql() {
+            return delegate.getSql().trim() + " ";
+        }
+
+        @Override
+        public List<Object> getArgumentList() {
+            return delegate.getArgumentList();
+        }
+
+        @Override
+        public Object[] getArguments() {
+            return delegate.getArguments();
+        }
+        
+    }
     
     public SqlStatementBuilder() {
         this("");
     }
 
     public SqlStatementBuilder(String initial) {
-        statement = new StringBuilder(initial);
+        addString(initial);
         appendSpace();
     }
 
+    private void addString(String statement) {
+        base.appendStatement(statement);
+    }
+
+    private void addRawArgument(Object arg) {
+        base.appendArgument(arg);
+    }
+    
+    public SqlStatementBuilder appendFragment(SqlFragmentSource fragment) {
+        base.appendFragment(new SpaceAppendingSqlFragmentSource(fragment));
+        return this;
+    }
+    
+    
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendList(java.lang.Object[])
      */
     public SqlStatementBuilder appendList(Object[] array) {
-        statement.append(convertToSqlLikeList(Arrays.asList(array)));
+        addString(convertToSqlLikeList(Arrays.asList(array)));
         appendSpace();
         return this;
     }
@@ -71,7 +109,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      * @see com.cannontech.common.util.SqlBuilder#appendList(java.util.Collection)
      */
     public SqlStatementBuilder appendList(Collection<?> array) {
-        statement.append(convertToSqlLikeList(array));
+        addString(convertToSqlLikeList(array));
         appendSpace();
         return this;
     }
@@ -119,7 +157,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             	appendFragment((SqlFragmentSource) object);
             } else {
                 // Trim off any leading or trailing space and then add a space to the end
-                statement.append(object.toString().trim());
+                addString(object.toString().trim());
                 appendSpace();
             }
         }
@@ -142,9 +180,9 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      */
     @Deprecated
     public SqlStatementBuilder appendQuotedString(Object arg) {
-        statement.append('\'');
-        statement.append(StringEscapeUtils.escapeSql(arg.toString()));
-        statement.append('\'');
+        addString("\'");
+        addString(StringEscapeUtils.escapeSql(arg.toString()));
+        addString("\'");
         return this;
     }
     
@@ -152,119 +190,119 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      * Adds a single space to the output.
      */
     protected void appendSpace() {
-        statement.append(" ");
+        addString(" ");
     }
     
     public SqlStatementBuilder eq(Object argument) {
-        statement.append("= ");
+        addString("= ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder eq_k(int constant) {
-        statement.append("= ");
-        statement.append(Integer.toString(constant));
+        addString("= ");
+        addString(Integer.toString(constant));
         appendSpace();
         return this;
     }
     
     public SqlStatementBuilder eq_k(Enum<?> constant) {
-        statement.append("= '");
+        addString("= '");
         if (constant instanceof DatabaseRepresentationSource) {
-            statement.append(((DatabaseRepresentationSource) constant).getDatabaseRepresentation());
+            addString(((DatabaseRepresentationSource) constant).getDatabaseRepresentation().toString());
         } else {
-            statement.append(((Enum<?>) constant).name());
+            addString(((Enum<?>) constant).name());
         }
-        statement.append("' ");
+        addString("' ");
         return this;
     }
     
     public SqlStatementBuilder neq(Object argument) {
-        statement.append("!= ");
+        addString("!= ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder neq_k(int constant) {
-        statement.append("!= ");
-        statement.append(Integer.toString(constant));
+        addString("!= ");
+        addString(Integer.toString(constant));
         appendSpace();
         return this;
     }
     
     public SqlStatementBuilder neq_k(Enum<?> constant) {
-        statement.append("!= '");
+        addString("!= '");
         if (constant instanceof DatabaseRepresentationSource) {
-            statement.append(((DatabaseRepresentationSource) constant).getDatabaseRepresentation());
+            addString(((DatabaseRepresentationSource) constant).getDatabaseRepresentation().toString());
         } else {
-            statement.append(((Enum<?>) constant).name());
+            addString(((Enum<?>) constant).name());
         }
-        statement.append("' ");
+        addString("' ");
         return this;
     }
     
     public SqlStatementBuilder lt(Object argument) {
-        statement.append("< ");
+        addString("< ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder gt(Object argument) {
-        statement.append("> ");
+        addString("> ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder gte(Object argument) {
-        statement.append(">= ");
+        addString(">= ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder lte(Object argument) {
-        statement.append("<= ");
+        addString("<= ");
         appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder in(Iterable<?> list) {
-        statement.append("in (");
+        addString("in (");
         appendArgumentList(list);
-        statement.append(") ");
+        addString(") ");
         return this;
     }
     
     public SqlStatementBuilder values(Object first, Object... remaining) {
-        statement.append("values (");
+        addString("values (");
         List<Object> list = Lists.newArrayListWithCapacity(1 + remaining.length);
         list.add(first);
         list.addAll(Arrays.asList(remaining));
         appendArgumentList(list);
-        statement.append(") ");
+        addString(") ");
         return this;
     }
     
     public SqlStatementBuilder in(SqlFragmentSource sqlFragmentSource) {
-        statement.append("in (");
+        addString("in (");
         appendFragment(sqlFragmentSource);
-        statement.append(") ");
+        addString(") ");
         return this;
     }
     
     public SqlStatementBuilder startsWith(String argument) {
-        statement.append("like ");
+        addString("like ");
         appendArgument(argument + "%");
         return this;
     }
     
     public SqlStatementBuilder endsWith(String argument) {
-        statement.append("like ");
+        addString("like ");
         appendArgument("%" + argument);
         return this;
     }
     
     public SqlStatementBuilder contains(String argument) {
-        statement.append("like ");
+        addString("like ");
         appendArgument("%" + argument + "%");
         return this;
     }
@@ -273,7 +311,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      * @see com.cannontech.common.util.SqlBuilder#appendArgument(java.lang.Object)
      */
     public SqlStatementBuilder appendArgument(Object argument) {
-    	statement.append("? ");
+        addString("? ");
     	addArgument(argument);
     	return this;
     }
@@ -284,16 +322,16 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public SqlStatementBuilder appendArgumentList(Iterable<?> objects) {
         Iterator<?> iter = objects.iterator();
         if(!iter.hasNext()) {
-            statement.append("null");
+            addString("null");
             return this;
         } 
 
         while(iter.hasNext()) {
             Object argument = iter.next();
             if(iter.hasNext()) {
-                statement.append("?, ");
+                addString("?, ");
             } else {
-                statement.append("? ");
+                addString("? ");
             }
             addArgument(argument);
         }
@@ -301,15 +339,21 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
 
     private void addArgument(Object argument) {
-        arguments.add(convertArgumentToJdbcObject(argument));
+        addRawArgument(convertArgumentToJdbcObject(argument));
     }
     
     /** 
      * This method takes in a java object and tries to convert it over to a database
      * friendly representation of the object.
      * 
+     * Has specific handling for:
+     *   DatabaseRepresentationSource
+     *   Enum
+     *   ReadableInstant
+     *   ReadablePeriod
+     * 
      * @param argument - A java object
-     * @return - A Sql friendly object
+     * @return An SQL friendly object
      */
     public static Object convertArgumentToJdbcObject(Object argument) {
         if (argument instanceof DatabaseRepresentationSource) {
@@ -325,17 +369,74 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             return argument;
         }
     }
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.common.util.SqlBuilder#appendFragment(com.cannontech.common.util.SqlFragmentSource)
-     */
-    public SqlStatementBuilder appendFragment(SqlFragmentSource fragment) {
-    	statement.append(fragment.getSql().trim());
-    	appendSpace();
-    	arguments.addAll(fragment.getArgumentList());
-    	return this;
+
+    public SqlParameterSink insertInto(String tableName) {
+        assertSqlIdentifier(tableName);
+        append("INSERT INTO", tableName);
+        
+        final List<String> columnNames = Lists.newArrayList();
+        final List<Object> columnValues = Lists.newArrayList();
+        
+        SqlParameterSink sink = new SqlParameterBase() {
+            @Override
+            public void addValueRaw(String paramName, Object value) {
+                assertSqlIdentifier(paramName);
+                columnNames.add(paramName);
+                columnValues.add(value);
+            }
+        };
+        
+        SqlFragmentSource fragment = new SqlFragmentSource() {
+            
+            @Override
+            public String getSql() {
+                StringBuilder s = new StringBuilder();
+                s.append("(");
+                s.append(StringUtils.join(columnNames, ","));
+                s.append(") VALUES (");
+                s.append(StringUtils.join(Collections.nCopies(columnValues.size(), "?"), ","));
+                s.append(")");
+                return s.toString();
+            }
+            
+            @Override
+            public Object[] getArguments() {
+                return columnValues.toArray();
+            }
+            
+            @Override
+            public List<Object> getArgumentList() {
+                return columnValues;
+            }
+        };
+        appendFragment(fragment);
+        return sink;
+    }
+
+    public SqlParameterSink update(String tableName) {
+        assertSqlIdentifier(tableName);
+        append("UPDATE", tableName, "SET");
+        
+        final SqlFragmentCollection fragmentCollection = new SqlFragmentCollection(", ", false);
+        
+        SqlParameterSink sink = new SqlParameterBase() {
+            @Override
+            public void addValueRaw(String paramName, Object value) {
+                assertSqlIdentifier(paramName);
+                SqlFragment fragment = new SqlFragment(paramName + " = ? ", value);
+                fragmentCollection.add(fragment);
+            }
+        };
+        
+        appendFragment(fragmentCollection);
+        return sink;
     }
     
+    private void assertSqlIdentifier(String tableName) {
+        // this check could be fancier, but it is good enough to prevent injection
+        if (!StringUtils.isAlphanumeric(tableName)) throw new IllegalArgumentException(tableName + " should be alphanumeric");
+    }
+
     /**
      * Essentially the same as calling StringUtils.join with a comma,
      * but if the list is empty "null" is returned instead of "".
@@ -360,21 +461,21 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      */
     @Override
     public String toString() {
-        return statement.toString();
+        return base.getSql();
     }
     
     @Override
     public String getSql() {
-    	return statement.toString();
+    	return base.getSql();
     }
     
     public List<Object> getArgumentList() {
-    	return Collections.unmodifiableList(arguments);
+    	return Collections.unmodifiableList(base.getArgumentList());
     }
     
     @Override
     public Object[] getArguments() {
-    	return arguments.toArray();
+    	return base.getArguments();
     }
 
 

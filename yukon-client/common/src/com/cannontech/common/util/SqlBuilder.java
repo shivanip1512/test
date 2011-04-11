@@ -51,7 +51,11 @@ public interface SqlBuilder {
 
     /**
      * Appends the SQL from the fragment to the output and the argument list
-     * to the arguments.
+     * to the arguments. Note that the SqlFragmentSource is evaluated when
+     * the next method on this object is invoked. This means that the fragment
+     * can be changed, after it is appended, up until another method is invoked.
+     * This behavior usually will make no difference, but it may enable certain
+     * builder syntaxes to be created more easily.
      * 
      * The passed in fragment is left unchanged.
      * @param fragment

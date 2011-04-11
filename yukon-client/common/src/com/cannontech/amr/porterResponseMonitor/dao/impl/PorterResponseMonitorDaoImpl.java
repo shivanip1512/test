@@ -24,9 +24,9 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.AdvancedFieldMapper;
+import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
-import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -182,7 +182,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	}
 
 	private AdvancedFieldMapper<PorterResponseMonitor> monitorFieldMapper = new AdvancedFieldMapper<PorterResponseMonitor>() {
-		public void extractValues(SqlParameterSink p, PorterResponseMonitor monitor) {
+		public void extractValues(SqlParameterChildSink p, PorterResponseMonitor monitor) {
 			p.addValue("Name", monitor.getName());
 			p.addValue("GroupName", monitor.getGroupName());
 			p.addValue("StateGroupId", monitor.getStateGroup().getStateGroupID());
@@ -202,7 +202,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 
 	private AdvancedFieldMapper<PorterResponseMonitorRule> ruleFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorRule>() {
 	    @Override
-	    public void extractValues(SqlParameterSink p, PorterResponseMonitorRule rule) {
+	    public void extractValues(SqlParameterChildSink p, PorterResponseMonitorRule rule) {
 			p.addValue("RuleOrder", rule.getRuleOrder());
 			p.addValue("Success", YNBoolean.valueOf(rule.isSuccess()));
 			p.addValue("MatchStyle", rule.getMatchStyle());
@@ -220,7 +220,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	};
 
 	private AdvancedFieldMapper<PorterResponseMonitorErrorCode> errorCodeFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorErrorCode>() {
-		public void extractValues(SqlParameterSink p, PorterResponseMonitorErrorCode errorCode) {
+		public void extractValues(SqlParameterChildSink p, PorterResponseMonitorErrorCode errorCode) {
 			p.addValue("ErrorCode", errorCode.getErrorCode());
 		}
 

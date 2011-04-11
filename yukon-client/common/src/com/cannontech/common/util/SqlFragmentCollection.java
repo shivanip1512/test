@@ -11,17 +11,19 @@ public class SqlFragmentCollection implements SqlFragmentSource {
     private String joiner;
     private List<String> sql = Lists.newArrayList();
     private List<Object> arguments = Lists.newArrayList();
+    private final boolean wrap;
     
     public static SqlFragmentCollection newAndCollection() {
-        return new SqlFragmentCollection(" AND ");
+        return new SqlFragmentCollection(" AND ", true);
     }
     
     public static SqlFragmentCollection newOrCollection() {
-        return new SqlFragmentCollection(" OR ");
+        return new SqlFragmentCollection(" OR ", true);
     }
     
-    public SqlFragmentCollection(String joiner) {
+    public SqlFragmentCollection(String joiner, boolean wrap) {
         this.joiner = joiner;
+        this.wrap = wrap;
     }
 
     public List<Object> getArgumentList() {
@@ -36,7 +38,7 @@ public class SqlFragmentCollection implements SqlFragmentSource {
     @Override
     public String getSql() {
         String result = StringUtils.join(sql, joiner);
-        if (sql.size() > 1) {
+        if (wrap && sql.size() > 1) {
             result = "(" + result + ")";
         }
         return result;

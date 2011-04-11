@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.SqlParameterHelper.ChildPair;
+import com.cannontech.database.SqlParameterChildHelper.ChildPair;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
 
@@ -43,7 +43,7 @@ public final class SimpleTableAccessTemplate<T> {
 
     private class HolderOfParameters {
         MapSqlParameterSource parameterSource;
-        SqlParameterHelper helper;
+        SqlParameterChildHelper helper;
     }
 
     public static enum CascadeMode {
@@ -118,7 +118,7 @@ public final class SimpleTableAccessTemplate<T> {
 
     public HolderOfParameters getHolderOfParameters(T object, Number parentKeyFieldId) {
         final MapSqlParameterSource parameterSource;
-        final SqlParameterHelper helper = new SqlParameterHelper();
+        final SqlParameterChildHelper helper = new SqlParameterChildHelper();
         if (advancedFieldMapper != null) {
             advancedFieldMapper.extractValues(helper, object);
             parameterSource = helper.getMapSqlParameterSource();
@@ -165,7 +165,7 @@ public final class SimpleTableAccessTemplate<T> {
     private final void insert(T object, Number parentKeyFieldId) {
         HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
         final MapSqlParameterSource parameterSource = holder.parameterSource;
-        final SqlParameterHelper helper = holder.helper;
+        final SqlParameterChildHelper helper = holder.helper;
 
         // validation to warn if the primary key field has been passed in as a normal field in the fieldmapper.  
         if(parameterSource.getValues().keySet().contains(this.primaryKeyField)) {
@@ -230,7 +230,7 @@ public final class SimpleTableAccessTemplate<T> {
     public final void update(T object, Number parentKeyFieldId) {
         HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
         final MapSqlParameterSource parameterSource = holder.parameterSource;
-        final SqlParameterHelper helper = holder.helper;
+        final SqlParameterChildHelper helper = holder.helper;
 
         // generate SQL
         StringBuilder sql = new StringBuilder();

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.google.common.collect.Lists;
 
-public class SqlParameterHelper implements SqlParameterSink {
+public class SqlParameterChildHelper extends SqlParameterBase implements SqlParameterChildSink {
     private List<ChildPair<?>> pairList = Lists.newArrayList();
     private MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
 
@@ -28,7 +28,7 @@ public class SqlParameterHelper implements SqlParameterSink {
         return pairList;
     }
 
-    public void addValue(String paramName, Object value) {
+    public void addValueRaw(String paramName, Object value) {
         mapSqlParameterSource.addValue(paramName, value);
     }
     
