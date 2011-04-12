@@ -131,6 +131,15 @@ public class GeneralInfoController {
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
         return "redirect:/spring/adminSetup/energyCompany/home";
     }
+
+    /* Cancel Delete Energy Company */
+    @RequestMapping(value="delete", params="cancel")
+    public String cancelDelete(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
+        setupModelMap(model, context.getYukonUser(), ecId, fragment);
+        model.addAttribute("mode", PageEditMode.VIEW);
+        
+        return "redirect:view";
+    }
     
     /* Update General Info */
     @RequestMapping(value="update", params="save", method=RequestMethod.POST)
