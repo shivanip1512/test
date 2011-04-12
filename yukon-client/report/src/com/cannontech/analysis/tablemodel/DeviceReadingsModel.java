@@ -22,7 +22,7 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
 
-public class DeviceReadingsModel extends DeviceReportModelBase<DeviceReadingsModel.ModelRow> 
+public class DeviceReadingsModel extends SimpleDeviceReportModelBase<DeviceReadingsModel.ModelRow> 
                                    implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);

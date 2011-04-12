@@ -1,31 +1,26 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
 public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceRequestDetailModel.ModelRow> {
 
     private Logger log = YukonLogManager.getLogger(DeviceRequestDetailModel.class);
 
     // dependencies
-    private SimpleJdbcOperations simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -61,9 +56,8 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
         return data.size();
     }
     
-    private SqlFragmentSource getSqlSource(Collection<Integer> subList){
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-
+    private SqlFragmentSource getSqlSource(){
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
         if(lifetime){
             sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
         } else {
@@ -74,7 +68,7 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
         sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dps.PAObjectID");
         sql.append("  join DeviceRoutes dr on dr.DEVICEID = dps.PAObjectID");
         sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
-        sql.append("WHERE dps.PAObjectID IN (").appendArgumentList(subList).append(")");
+        sql.append("WHERE").append(getFilterSqlWhereClause());
         
         if(lifetime){
             sql.append("  and dps.StatisticType = 'Lifetime'");
@@ -89,19 +83,10 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
     
     @Override
     public void doLoadData() {
-        Iterable<SimpleDevice> devices = getDeviceList();
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
-        SqlFragmentGenerator<SimpleDevice> gen = new SqlFragmentGenerator<SimpleDevice>() {
+    	SqlFragmentSource sql = getSqlSource();
+        List<ModelRow> rows = yukonJdbcTemplate.query(sql, new YukonRowMapper<ModelRow>() {
             @Override
-            public SqlFragmentSource generate(List<SimpleDevice> subList) {
-                return getSqlSource(PaoUtils.asPaoIdList(subList));
-            }
-        };
-        
-        List<ModelRow> rows = template.query(gen, devices, new ParameterizedRowMapper<ModelRow>() {
-            @Override
-            public ModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public ModelRow mapRow(YukonResultSet rs) throws SQLException {
                 DeviceRequestDetailModel.ModelRow row = new DeviceRequestDetailModel.ModelRow();
                 row.deviceName = rs.getString("deviceName");
                 row.type = rs.getString("type");
@@ -143,7 +128,17 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
+
+	@Override
+	public String getPaoIdIdentifier() {
+		return "ypo.paobjectid";
+	}
+
+	@Override
+	public String getPaoNameIdentifer() {
+		return "ypo.paoname";
+	}
 }

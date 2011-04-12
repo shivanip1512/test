@@ -23,7 +23,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
-public class DeviceReadingsController extends DeviceReportControllerBase {
+public class DeviceReadingsController extends SimpleDeviceReportControllerBase {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     

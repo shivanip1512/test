@@ -1,18 +1,18 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
 public class DisconnectCollarModel extends MeterReportModelBase<DisconnectCollarModel.ModelRow> {
     
@@ -35,9 +35,9 @@ public class DisconnectCollarModel extends MeterReportModelBase<DisconnectCollar
     public void doLoadData() {
         
         SqlFragmentSource sql = buildSQLStatement();
-        List<ModelRow> rows = yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<ModelRow>() {
-            @Override
-            public ModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+        List<ModelRow> rows = yukonJdbcTemplate.query(sql, new YukonRowMapper<ModelRow>() {
+        	@Override
+        	public ModelRow mapRow(YukonResultSet rs) throws SQLException {
                 DisconnectCollarModel.ModelRow row = new DisconnectCollarModel.ModelRow();
 
                 String deviceName = rs.getString("deviceName");
@@ -64,7 +64,7 @@ public class DisconnectCollarModel extends MeterReportModelBase<DisconnectCollar
         sql.append("WHERE PAO.PAOBJECTID = DMCT400.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
-        sql.append(" AND").appendFragment(getFilterSqlWhereClause("PAO.PaobjectId"));
+        sql.append(" AND").appendFragment(getFilterSqlWhereClause());
         return sql;
     }
 
@@ -89,5 +89,20 @@ public class DisconnectCollarModel extends MeterReportModelBase<DisconnectCollar
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
+
+	@Override
+	public String getMeterNumberIdentifier() {
+		return "DMG.MeterNumber";
+	}
+
+	@Override
+	public String getPaoIdIdentifier() {
+		return "PAO.PaobjectId";
+	}
+
+	@Override
+	public String getPaoNameIdentifer() {
+		return "PAO.PaoName";
 	}
 }
