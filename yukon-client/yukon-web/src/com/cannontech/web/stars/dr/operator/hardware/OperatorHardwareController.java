@@ -247,7 +247,6 @@ public class OperatorHardwareController {
     public String hardwareEdit(HttpServletRequest request, ModelMap model, YukonUserContext userContext,  AccountInfoFragment fragment, int inventoryId) {
         /* Page Edit Mode */
         setPageMode(model, userContext);
-        model.addAttribute("mode", PageEditMode.VIEW);
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         
