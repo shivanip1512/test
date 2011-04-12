@@ -151,8 +151,8 @@ public class StatisticModel extends ReportModelBase {
         if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
         	log.info("Ignoring date range settings.");
         } else {
-            log.info("START DATE >= " + getStartDate());
-            log.info("STOP DATE < " + getStopDate());
+            log.info("START DATE : " + getStartDate());
+            log.info("STOP DATE : " + getStopDate());
         }
         
         JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
