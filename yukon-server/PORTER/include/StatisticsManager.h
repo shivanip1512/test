@@ -37,6 +37,9 @@ class StatisticsManager
 
     bool pruneDaily(Database::DatabaseConnection &conn);
 
+    static unsigned daysFromHours (const unsigned hours);
+    static unsigned daysFromMonths(const unsigned months);
+
     CtiCriticalSection _event_queue_lock;
 
     typedef std::vector<statistics_event_t> event_queue_t;
@@ -50,7 +53,7 @@ class StatisticsManager
     void processEvent(const statistics_event_t &evt);
 
     void runWriterThreads(unsigned num_threads, ThreadStatusKeeper &threadKeeper);
-    static void writeRecordRange(unsigned thread_num, unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper);
+    static void writeRecordRange(const unsigned thread_num, const unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper);
 
 public:
 

@@ -242,39 +242,41 @@ void StatisticsManager::writeRecords(ThreadStatusKeeper &threadKeeper)
 }
 
 
-void StatisticsManager::runWriterThreads(unsigned num_threads, ThreadStatusKeeper &threadKeeper)
+void StatisticsManager::runWriterThreads(unsigned max_threads, ThreadStatusKeeper &threadKeeper)
 {
     boost::thread_group writers;
 
     id_statistics_map::const_iterator pos = _pao_statistics.begin();
 
-    const unsigned stat_size = _pao_statistics.size();  //  say, 570
-    const unsigned chunk_size = (stat_size / num_threads) + 1;  //  say, (570 / 5) + 1, or 115
+    const unsigned total_records = _pao_statistics.size();
 
-    //  We may eventually need to randomize the statistics records that each thread receives,
-    //    since system-wide reads can (acidentally?) match the map ordering.
-    //  That would unfairly load one or more of the writer threads.
-    for( unsigned thread_num = 2; thread_num <= num_threads; ++thread_num )
-    {
-        id_statistics_map::const_iterator start = pos;
+    //  Must have 1000 or more stat records per thread
+    const unsigned num_threads = std::min(max_threads, total_records / 1000);
 
-        std::advance(pos, chunk_size);
-
-        writers.create_thread(boost::bind(&StatisticsManager::writeRecordRange, thread_num, chunk_size, start, pos, (ThreadStatusKeeper *)0));
-    }
-
-    const unsigned last_chunk_size = stat_size - chunk_size * (num_threads - 1);
-
-    //  The math is easier this way.
-    writeRecordRange(1, last_chunk_size, pos, _pao_statistics.end(), &threadKeeper);
+    unsigned records_distributed_to_threads = 0;
 
     if( num_threads > 1 )
     {
-        writers.join_all();
+        const unsigned chunk_size = total_records / num_threads;
+
+        for( unsigned thread_num = 2; thread_num <= num_threads; ++thread_num )
+        {
+            id_statistics_map::const_iterator start = pos;
+
+            std::advance(pos, chunk_size);
+
+            writers.create_thread(boost::bind(&StatisticsManager::writeRecordRange, thread_num, chunk_size, start, pos, (ThreadStatusKeeper *)0));
+
+            records_distributed_to_threads += chunk_size;
+        }
     }
+
+    writeRecordRange(1, total_records - records_distributed_to_threads, pos, _pao_statistics.end(), &threadKeeper);
+
+    writers.join_all();
 }
 
-void StatisticsManager::writeRecordRange(unsigned thread_num, unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper)
+void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper)
 {
     if( begin != end )
     {
@@ -325,16 +327,28 @@ void StatisticsManager::writeRecordRange(unsigned thread_num, unsigned chunk_siz
 }
 
 
+static unsigned daysFromHours (const unsigned hours)
+{
+    return (hours + 23) / 24;
+}
+
+static unsigned daysFromMonths(const unsigned months)
+{
+    //  This is an approximate, round-up version.
+    return (months % 12 * 31) + (months / 12 * 366);
+}
+
 bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
 {
-    unsigned numDays = gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10);
+    static const unsigned defaultHours  =  24;
+    static const unsigned defaultDays   = 123;
+    static const unsigned defaultMonths =   2;
 
-    if( numDays == 0 )
-    {
-        numDays = 120;
-    }
+    const unsigned retainedHours  = gConfigParms.getValueAsULong("STATISTICS_NUM_HOURS");
+    const unsigned retainedDays   = gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS");
+    const unsigned retainedMonths = gConfigParms.getValueAsULong("STATISTICS_NUM_MONTHS");
 
-    numDays++;
+    const CtiDate today;
 
     static const std::string sql =
         "DELETE FROM "
@@ -345,16 +359,20 @@ bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
             "(StartDateTime < ? AND StatisticType = 'Monthly')";
 
     Database::DatabaseWriter deleter(conn, sql);
-    CtiDate today;
 
-    //  Hourly
-    deleter << today - 2;
+    deleter << today - daysFromHours (retainedHours  ? retainedHours  : defaultHours);
+    deleter << today -               (retainedDays   ? retainedDays   : defaultDays);
+    deleter << today - daysFromMonths(retainedMonths ? retainedMonths : defaultMonths);
 
-    //  Daily
-    deleter << today - numDays;
+    if( getDebugLevel() & DEBUGLEVEL_STATISTICS )
+    {
+        string sql = deleter.asString();
 
-    //  Monthly
-    deleter << today - 62;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " StatisticsManager::pruneDaily() : " << sql << endl;
+        }
+    }
 
     return deleter.execute();
 }
@@ -403,23 +421,11 @@ void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
             }
         }
 
-        try
+        while( rdr() )
         {
-            while( rdr() )
-            {
-                PaoStatistics *p = new PaoStatistics(reader_time, rdr);
+            PaoStatistics *p = new PaoStatistics(reader_time, rdr);
 
-                _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
-            }
-        }
-        catch(Database::InvalidReaderException &e)
-        {
-            //  assume the reader is toast - we have to bail
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " StatisticsManager::loadPaoStatistics() : bad reader when restoring PaoStatistics object from query \"" << loggedSQLstring << "\"\n";
-            }
+            _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
         }
 
         {

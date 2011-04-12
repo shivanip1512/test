@@ -18,11 +18,6 @@ PaoStatistics::PaoStatistics(long pao_id) :
 
 PaoStatistics::PaoStatistics(const CtiTime reader_time, Database::DatabaseReader &rdr)
 {
-    if( ! rdr.isValid() )
-    {
-        throw Database::InvalidReaderException(rdr);
-    }
-
     rdr[0] >> _pao_id;
 
     _lifetime.reset(makeRecord(reader_time, _pao_id, PaoStatisticsRecord::Lifetime, extractRecordElements(rdr[1])));
