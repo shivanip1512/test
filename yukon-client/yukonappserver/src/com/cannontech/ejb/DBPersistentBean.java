@@ -1,7 +1,6 @@
 package com.cannontech.ejb;
 
 import java.io.ByteArrayInputStream;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -764,7 +763,7 @@ public class DBPersistentBean implements IDBPersistent {
    private static String prepareObjectForSQLStatement( Object o ) 
    {
       if( o == null )
-    	  return new String("NULL").trim();
+    	  return "NULL";
       else
       if( o instanceof Integer ||
           o instanceof Double ||
@@ -777,7 +776,7 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof java.sql.Date )
       {
-         return new String("NULL").trim();
+         return "NULL";
       }
       else
       if( o instanceof GregorianCalendar || o instanceof Date )
