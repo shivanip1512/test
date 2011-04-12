@@ -1,6 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%
@@ -143,7 +142,7 @@ function changeMember(form) {
 	                            <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell">
 	                              <tr> 
 	                                <td align="right" width="88">Type:</td>
-	                                <td width="210"><%= PAOGroups.getPAOTypeString(selectedMCT.getType()) %></td>
+	                                <td width="210"><%= selectedMCT.getPaoType().getDbString() %></td>
 	                              </tr>
 	                              <tr> 
 	                                <td align="right" width="88">Device Name:</td>
