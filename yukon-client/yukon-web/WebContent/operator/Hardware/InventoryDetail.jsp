@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
@@ -33,8 +32,7 @@
             String devTypeStr = yukonListEntry.getEntryText();
             
             if (inventory.getDeviceID() > 0)
-                devTypeStr = PAOGroups.getPAOTypeString(DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID())
-                                                                .getType());
+                devTypeStr = DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID()).getPaoType().getDbString();
 
             boolean isTwoWayLcr = InventoryUtils.isTwoWayLcr(yukonListEntry.getEntryID());
         	String twoWayLcrYukonDeviceName = "";
