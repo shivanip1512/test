@@ -327,12 +327,12 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
 }
 
 
-static unsigned daysFromHours (const unsigned hours)
+unsigned StatisticsManager::daysFromHours (const unsigned hours)
 {
     return (hours + 23) / 24;
 }
 
-static unsigned daysFromMonths(const unsigned months)
+unsigned StatisticsManager::daysFromMonths(const unsigned months)
 {
     //  This is an approximate, round-up version.
     return (months % 12 * 31) + (months / 12 * 366);
