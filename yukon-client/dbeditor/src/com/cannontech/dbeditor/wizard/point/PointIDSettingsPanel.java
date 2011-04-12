@@ -1,7 +1,12 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import java.util.List;
+
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -484,25 +489,25 @@ public void setValueCore(Object val, Integer initialPAOId )
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		java.util.List devices = cache.getAllDevices();
+		List<LiteYukonPAObject> devices = cache.getAllDevices();
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
 		if( getDeviceComboBox().getModel().getSize() > 0 )
 			getDeviceComboBox().removeAllItems();
 
-		for(int i=0;i<devices.size();i++)
-			if( com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass() ) )
+		for (LiteYukonPAObject liteYukonPAObject : devices) {
+			if(DeviceClasses.isCoreDeviceClass(liteYukonPAObject.getPaoType().getPaoClass().getPaoClassId()))
 			{
-				getDeviceComboBox().addItem( devices.get(i) );
+				getDeviceComboBox().addItem(liteYukonPAObject);
 
 				if( initialPAOId != null && initialPAOId.intValue()
-					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() )
+					 == liteYukonPAObject.getYukonID() )
 				{
 					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
 				}
 				
 			}
-
+		}
 		getUsedPointIDLabel().setText("");
 	}
 
@@ -520,20 +525,19 @@ public void setValueLM(Object val, Integer initialPAOId)
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		java.util.List devices = cache.getAllLoadManagement();
+		List<LiteYukonPAObject> devices = cache.getAllLoadManagement();
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
 		if( getDeviceComboBox().getModel().getSize() > 0 )
 			getDeviceComboBox().removeAllItems();
 
-		for(int i=0;i<devices.size();i++)
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.GROUP )
+		for (LiteYukonPAObject liteYukonPAObject : devices) {
+			if( liteYukonPAObject.getPaoType().getPaoClass() == PaoClass.GROUP )
 			{
-				getDeviceComboBox().addItem( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)) );
+				getDeviceComboBox().addItem(liteYukonPAObject);
 
 				if( initialPAOId != null && initialPAOId.intValue()
-					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() )
+					 == liteYukonPAObject.getYukonID() )
 				{
 					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
 				}

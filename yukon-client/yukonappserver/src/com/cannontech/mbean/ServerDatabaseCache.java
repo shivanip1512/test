@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -263,8 +265,8 @@ public synchronized List<LiteYukonPAObject> getAllCapControlFeeders()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
-				 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_FEEDER )
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
+				 && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_FEEDER )
 				allCapControlFeeders.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -284,8 +286,8 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
-				 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_SUBBUS )
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_CAPCONTROL
+				 && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBBUS )
 				allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -303,8 +305,8 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubStations()
 
         for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
         {
-            if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
-                 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_SUBSTATION )
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_CAPCONTROL
+                 && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBSTATION )
                 allCapControlSubStations.add( getAllYukonPAObjects().get(i) );
         }
 
@@ -380,7 +382,7 @@ public synchronized List<LiteYukonPAObject> getAllDevices()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getCategory() 
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() 
 				  == PAOGroups.CAT_DEVICE )
 				allDevices.add( getAllYukonPAObjects().get(i) );
 		}
@@ -400,7 +402,7 @@ public synchronized List<LiteYukonPAObject> getAllMCTs() {
 		
 		for (int i = 0; i < getAllDevices().size(); i++) {
 			if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
-					getAllDevices().get(i).getType() ))
+					getAllDevices().get(i).getPaoType().getDeviceTypeId() ))
 				allMCTs.add( getAllDevices().get(i) );
 		}
 		
@@ -585,7 +587,7 @@ public synchronized List<LiteYukonPAObject> getAllLMScenarios()
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( getAllLoadManagement().get(i).getType() 
+			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() 
 				  == PAOGroups.LM_SCENARIO )
 			allLMScenarios.add( getAllLoadManagement().get(i) );
 		}
@@ -621,10 +623,10 @@ public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( getAllLoadManagement().get(i).getType() == PAOGroups.LM_CURTAIL_PROGRAM
-				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM
-				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_SEP_PROGRAM
-				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
+			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CURTAIL_PROGRAM
+				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM
+				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM
+				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
 				allLMPrograms.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -646,8 +648,8 @@ public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
 
         for( int i = 0; i < getAllLoadManagement().size(); i++ )
         {
-            if(getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM ||
-            		getAllLoadManagement().get(i).getType() == PAOGroups.LM_SEP_PROGRAM)
+            if(getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM ||
+            		getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM)
                 allLMPrograms.add( getAllLoadManagement().get(i) );             
         }
 
@@ -667,7 +669,7 @@ public List<LiteYukonPAObject> getAllLMControlAreas()
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( getAllLoadManagement().get(i).getType() == PAOGroups.LM_CONTROL_AREA )
+			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CONTROL_AREA )
 				allLMControlAreas.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -688,7 +690,7 @@ public List<LiteYukonPAObject> getAllLMGroups()
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( DeviceTypesFuncs.isLmGroup( getAllLoadManagement().get(i).getType()) )
+			if( DeviceTypesFuncs.isLmGroup( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId()) )
 				allLMGroups.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -708,8 +710,8 @@ public synchronized List<LiteYukonPAObject> getAllLoadManagement()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getPaoClass() == DeviceClasses.LOADMANAGEMENT ||
-					getAllYukonPAObjects().get(i).getPaoClass() == DeviceClasses.GROUP )
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.LOADMANAGEMENT ||
+					getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.GROUP )
 				allLoadManagement.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -819,7 +821,7 @@ public synchronized List<LiteYukonPAObject> getAllPorts()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getCategory() 
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() 
 				 == PAOGroups.CAT_PORT )
 				allPorts.add( getAllYukonPAObjects().get(i) );
 		}
@@ -842,7 +844,7 @@ public synchronized List<LiteYukonPAObject> getAllRoutes()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_ROUTE )
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_ROUTE )
 				allRoutes.add( getAllYukonPAObjects().get(i) );
 		}
 

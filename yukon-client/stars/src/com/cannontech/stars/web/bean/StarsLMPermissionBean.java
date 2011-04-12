@@ -15,7 +15,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
@@ -93,16 +92,16 @@ public class StarsLMPermissionBean
         LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
         List<Integer> unconvertedYukonPaoIDs = new ArrayList<Integer>();
         PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
-        if(paoDefinitionDao.isTagSupported(PaoType.getForId(litePao.getType()), PaoTag.LM_PROGRAM)) {
+        if(paoDefinitionDao.isTagSupported(litePao.getPaoType(), PaoTag.LM_PROGRAM)) {
             unconvertedYukonPaoIDs.add(paoID);
         }
-        else if(litePao.getType() == DeviceTypes.LM_CONTROL_AREA) {
+        else if(litePao.getPaoType() == PaoType.LM_CONTROL_AREA) {
             List<Integer> areaProgs = DaoFactory.getLmDao().getProgramsForControlArea(paoID);
             for(Integer progID : areaProgs) {
                 unconvertedYukonPaoIDs.add(progID);
             }
         }
-        else if(litePao.getType() == DeviceTypes.LM_SCENARIO) {
+        else if(litePao.getPaoType() == PaoType.LM_SCENARIO) {
             LiteLMProgScenario[] scenarioProgs = DaoFactory.getLmDao().getLMScenarioProgs(paoID);
             for(LiteLMProgScenario prog : scenarioProgs) {
                 unconvertedYukonPaoIDs.add(prog.getProgramID());

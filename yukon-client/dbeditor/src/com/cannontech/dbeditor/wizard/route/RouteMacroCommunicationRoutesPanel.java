@@ -1,7 +1,10 @@
 package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
+import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -233,11 +236,13 @@ constraintsRoutesAddRemovePanel.gridheight = 2;
 	java.util.Vector availableRoutes = null;
 	synchronized(cache)
 	{
-		java.util.List allRoutes = cache.getAllRoutes();
+		List<LiteYukonPAObject> allRoutes = cache.getAllRoutes();
 		availableRoutes = new java.util.Vector();
-		for(int i=0;i<allRoutes.size();i++)
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allRoutes.get(i)).getType() != com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO )
-				availableRoutes.add(allRoutes.get(i));
+		for (LiteYukonPAObject liteRoute : allRoutes) {
+			if( liteRoute.getPaoType() != PaoType.ROUTE_MACRO) {
+				availableRoutes.add(liteRoute);
+			}
+		}
 	}
 
 

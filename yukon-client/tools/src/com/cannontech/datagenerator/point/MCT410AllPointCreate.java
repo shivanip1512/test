@@ -284,7 +284,7 @@ public class MCT410AllPointCreate extends PointCreate
 	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
 	{
 		//All MCT410s 
-		return DeviceTypesFuncs.isMCT410(litePaobject_.getType());
+		return DeviceTypesFuncs.isMCT410(litePaobject_.getPaoType().getDeviceTypeId());
 	}
 
 	/**

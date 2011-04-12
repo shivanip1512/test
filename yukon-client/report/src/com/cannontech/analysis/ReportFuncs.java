@@ -99,6 +99,8 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -108,7 +110,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
@@ -307,7 +308,7 @@ public class ReportFuncs
             
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
+                    if (lPao.getPaoType().getPaoClass() == PaoClass.TRANSMITTER)
                         trans.add(lPao);
                 }
             }
@@ -319,7 +320,7 @@ public class ReportFuncs
 
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
+                    if(DeviceTypesFuncs.isReceiver(lPao.getPaoType().getDeviceTypeId()) )
                         receivers.add(lPao);
                 }
             }
@@ -331,8 +332,8 @@ public class ReportFuncs
             
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
-                        && !DeviceTypesFuncs.isIon(lPao.getType()) )                        
+                    if((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId())  || lPao.getPaoType().getDeviceTypeId() == PAOGroups.DAVISWEATHER)
+                        && !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()) )                        
                     rtus.add(lPao);
                 }
             }
@@ -350,7 +351,7 @@ public class ReportFuncs
             
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(lPao.getType() == PAOGroups.CAPBANK) {                        
+                    if(lPao.getPaoType() == PaoType.CAPBANK) {                        
                         caps.add(lPao);
                     }
                 }
@@ -363,7 +364,7 @@ public class ReportFuncs
             
             if (allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if (lPao.getType() == PAOGroups.CAP_CONTROL_AREA) {
+                    if (lPao.getPaoType() == PaoType.CAP_CONTROL_AREA) {
                         areas.add(lPao);
                     }
                 }
@@ -376,7 +377,7 @@ public class ReportFuncs
 
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(lPao.getType() == PAOGroups.SCRIPT )                     
+                    if(lPao.getPaoType() == PaoType.SCRIPT )                     
                         schedules.add(lPao);
                 }
             }

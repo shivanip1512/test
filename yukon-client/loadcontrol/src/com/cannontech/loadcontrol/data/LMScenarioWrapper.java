@@ -1,7 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * A wrapper for LMPrograms that are instances of LiteYukonPAObject
@@ -18,13 +17,12 @@ public class LMScenarioWrapper implements ILMData {
 	public LMScenarioWrapper(LiteYukonPAObject liteLMScenario) {
 		super();
 
-		_yukCategory = PAOGroups.getCategory(liteLMScenario.getCategory());
-		_yukClass = PAOGroups.getPAOClass(liteLMScenario.getCategory(),
-				liteLMScenario.getPaoClass());
+		_yukCategory = liteLMScenario.getPaoType().getPaoCategory().toString();
+		_yukClass = liteLMScenario.getPaoType().getPaoClass().getDbString();
 		_yukDescription = liteLMScenario.getPaoDescription();
 		_yukID = new Integer(liteLMScenario.getYukonID());
 		_yukName = liteLMScenario.getPaoName();
-		_yukType = liteLMScenario.getPaoIdentifier().getPaoType().getDbString();
+		_yukType = liteLMScenario.getPaoType().getDbString();
 	}
 
 	public java.lang.String getYukonCategory() {

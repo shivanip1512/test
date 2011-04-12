@@ -65,7 +65,6 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.CommandCategory;
@@ -305,18 +304,14 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 			synchronized(cache)
 			{
-				java.util.List allLM = cache.getAllLoadManagement();
+				List<LiteYukonPAObject> allLM = cache.getAllLoadManagement();
 				java.util.Collections.sort( allLM, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 	
 				Vector lmGroups = new Vector(allLM.size());
-				for (int i = 0; i < allLM.size(); i++)
-				{
-					if( allLM.get(i) instanceof LiteYukonPAObject)
-					{
-						if((( LiteYukonPAObject)allLM.get(i)).getType() == DeviceTypes.LM_GROUP_EXPRESSCOMM ||
-						   (( LiteYukonPAObject)allLM.get(i)).getType() == DeviceTypes.LM_GROUP_VERSACOM	)
-							lmGroups.add(allLM.get(i));
-					}
+				for (LiteYukonPAObject liteYukonPAObject : allLM) {
+					if (liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_EXPRESSCOMM ||
+							liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_VERSACOM	)
+						lmGroups.add(liteYukonPAObject);
 				}
 				selections = lmGroups.toArray();
 			}
@@ -1937,7 +1932,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			if( selectedItem instanceof LiteYukonPAObject)
 			{
 				LiteYukonPAObject lpao = (LiteYukonPAObject)selectedItem;
-				setTitle(displayTitle + " - " + lpao.getPaoName() + " (" + PAOGroups.getPAOTypeString(lpao.getType()) + ")");
+				setTitle(displayTitle + " - " + lpao.getPaoName() + " (" + lpao.getPaoType().getDbString() + ")");
 			}
 			else
 			    setTitle(displayTitle + " - " + getYC().getDeviceType());
@@ -2012,10 +2007,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			}
 			
 			if (lpao != null) {
-			    if (paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.LOCATE_ROUTE)) {
+			    if (paoDefinitionDao.isTagSupported(lpao.getPaoType(), PaoTag.LOCATE_ROUTE)) {
 					getYCCommandMenu().locateRoute.setEnabled(true);
 				}
-			    if (paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.TOU)) {
+			    if (paoDefinitionDao.isTagSupported(lpao.getPaoType(), PaoTag.TOU)) {
                     getYCCommandMenu().downloadSchedule.setEnabled(true);
 			    }
 			}

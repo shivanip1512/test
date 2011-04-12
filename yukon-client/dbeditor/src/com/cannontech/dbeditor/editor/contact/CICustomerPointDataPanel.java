@@ -169,7 +169,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 {
                     LiteYukonPAObject liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 
-                    if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
+                    if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoType().getPaoClass().getPaoClassId()) )
                         paoSet.add( liteDevice );
                 }
             }

@@ -30,7 +30,7 @@ public class ReversePowerFlagPointCreate extends PointCreate
 	 * @return boolean
 	 */
 	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
-		int type = litePaobject_.getType();
+		int type = litePaobject_.getPaoType().getDeviceTypeId();
 		return DeviceTypesFuncs.isMCT410(type);
 	}
 

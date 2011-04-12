@@ -690,7 +690,7 @@ public void getDataNow(java.util.List paobjects)
 	for (int i = 0; i < paobjects.size(); i++)
 	{
 		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
-		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()))
+		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()))
 		{
 			CTILogger.info("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
 			Command messageCommand = new Command();

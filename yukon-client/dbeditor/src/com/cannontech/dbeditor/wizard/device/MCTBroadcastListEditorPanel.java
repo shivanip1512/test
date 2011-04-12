@@ -1,5 +1,9 @@
 package com.cannontech.dbeditor.wizard.device;
 
+import java.util.List;
+
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -537,19 +541,16 @@ public void setValue(Object val)
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List devices = cache.getAllDevices();
-		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
+		List<LiteYukonPAObject> devices = cache.getAllDevices();
 		
 		availableMCTs = new java.util.Vector( devices.size() );
 		usedMCTs = new java.util.Vector( broadcaster.getMCTVector().size() );
 
-		for(int i=0;i<devices.size();i++)
-		{
-			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
+		for (LiteYukonPAObject liteDevice : devices) {
 
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(liteDevice.getType()) )
+			if( DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
-				availableMCTs.add( devices.get(i) );
+				availableMCTs.add(liteDevice);
 				
 				for( int j = 0; j < broadcaster.getMCTVector().size(); j++ )
 				{				
@@ -557,8 +558,8 @@ public void setValue(Object val)
 
 					if( mappedMCT.getMctID().intValue() == liteDevice.getYukonID() )
 					{
-						availableMCTs.remove( devices.get(i) );
-						usedMCTs.add( devices.get(i) );
+						availableMCTs.remove(liteDevice);
+						usedMCTs.add(liteDevice );
 						break;
 					}
 				}

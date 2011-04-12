@@ -6,11 +6,11 @@ package com.cannontech.dbeditor.editor.point;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -944,7 +944,7 @@ public void setValue(Object val)
 		
 		//Only display the Deadband panel for RTU Welco device types.
         LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO(point.getPoint().getPaoID());
-        if (pao.getType() != DeviceTypes.RTUWELCO) {
+        if (pao.getPaoType() != PaoType.RTUWELCO) {
             getDeadbandPanel().setVisible(false);
         }
 	}

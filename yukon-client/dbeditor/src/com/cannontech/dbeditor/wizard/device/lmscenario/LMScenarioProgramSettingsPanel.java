@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.lmscenario;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -16,6 +17,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TreeFindPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteGear;
@@ -822,23 +824,22 @@ public void populateAvailableList()
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List progs = cache.getAllLoadManagement();
+		List<LiteYukonPAObject> progs = cache.getAllLoadManagement();
 		java.util.Collections.sort( progs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		allGears.addAll(cache.getAllGears());
 		Vector programsInAControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
 		try
 		{
-			for( int i = 0; i < progs.size(); i++ )
-			{ 
-				Integer progID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getLiteID());
+			for (LiteYukonPAObject program: progs) {
+				Integer progID = new Integer(program.getLiteID());
 				
 				for( int j = 0; j < programsInAControlArea.size(); j++)
 				{
 					if(progID.compareTo((Integer)programsInAControlArea.elementAt(j)) == 0)
 					{
-						if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgramDirect( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() ))
+						if(DeviceTypesFuncs.isLMProgramDirect(program.getPaoType().getDeviceTypeId() ))
 						{
-							availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
+							availablePrograms.addElement(program);
 							programsInAControlArea.removeElementAt(j);
 						}
 					}

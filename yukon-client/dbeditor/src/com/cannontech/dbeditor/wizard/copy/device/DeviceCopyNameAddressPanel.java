@@ -46,7 +46,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
@@ -511,7 +510,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			synchronized (cache) {
 				List<LiteYukonPAObject> routes = cache.getAllRoutes();
 				DBPersistent oldRoute = null;
-				String type = null;
+				PaoType paoType = null;
 	
 				for (LiteYukonPAObject route: routes) {
 					oldRoute = LiteFactory.createDBPersistent(route);
@@ -524,8 +523,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 					
 					if (oldRoute instanceof RouteBase) {
 						if (((RouteBase) oldRoute).getDeviceID().intValue() == previousDeviceID) {
-							type = PAOGroups.getPAOTypeString( route.getType() );
-							newRoute = RouteFactory.createRoute(type);
+							paoType = route.getPaoType();
+							newRoute = RouteFactory.createRoute(paoType.getDeviceTypeId());
 	
 							hasRoute = true;
 							break;
@@ -535,13 +534,13 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				
 				if (hasRoute)  {
 					newRoute.setRouteID(paoDao.getNextPaoId());
-					newRoute.setRouteType( type );
+					newRoute.setRouteType(paoType.getDbString());
 					newRoute.setRouteName(nameString);
 					newRoute.setDeviceID( ((RouteBase) oldRoute).getDeviceID() );
 					newRoute.setDefaultRoute( ((RouteBase) oldRoute).getDefaultRoute() );
 					newRoute.setDeviceID(deviceBase.getDevice().getDeviceID());
 					
-					if( type.equalsIgnoreCase(RouteTypes.STRING_CCU) ) {
+					if(paoType == PaoType.ROUTE_CCU) {
 						((CCURoute) newRoute).setCarrierRoute(((CCURoute) oldRoute).getCarrierRoute());
 						((CCURoute) newRoute).getCarrierRoute().setRouteID(newRoute.getRouteID());
 					}

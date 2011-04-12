@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import java.util.List;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -350,14 +352,13 @@ public void setValueCore(Object val, Integer initialPAOId)
     	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     	synchronized(cache)
     	{
-    		java.util.List devices = cache.getAllDevices();
-    		for(int i=0;i<devices.size();i++)
-            {
-    			if( DeviceClasses.isCoreDeviceClass( ((LiteYukonPAObject)devices.get(i)).getPaoClass() ) )
+    		List<LiteYukonPAObject> devices = cache.getAllDevices();
+    		for (LiteYukonPAObject liteYukonPAObject : devices) {
+				if( DeviceClasses.isCoreDeviceClass(liteYukonPAObject.getPaoType().getPaoClass().getPaoClassId() ) )
     			{
-    				getDeviceComboBox().addItem( ((LiteYukonPAObject)devices.get(i)) );
+    				getDeviceComboBox().addItem(liteYukonPAObject);
     
-    				if( initialPAOId != null && initialPAOId.intValue() == ((LiteYukonPAObject)devices.get(i)).getYukonID() )
+    				if( initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonID() )
     				{
     					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
     				}

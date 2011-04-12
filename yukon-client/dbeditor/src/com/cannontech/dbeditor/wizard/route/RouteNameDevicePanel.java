@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.route;
 import java.awt.Dimension;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -31,7 +32,7 @@ public boolean allowRebroadcast() {
 	if( getSignalTransmitterComboBox().getSelectedItem() == null )
 		return false;
 	else
-		return DeviceTypesFuncs.allowRebroadcast( ((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getType() );
+		return DeviceTypesFuncs.allowRebroadcast( ((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getPaoType().getDeviceTypeId());
 }
 /**
  * Method to handle events for the CaretListener interface.
@@ -140,15 +141,12 @@ private javax.swing.JComboBox getSignalTransmitterComboBox() {
          synchronized(cache)
          {
             List<LiteYukonPAObject> allDevices = cache.getAllDevices();
-            for(int i=0;i<allDevices.size();i++)
-            {
-               com.cannontech.database.data.lite.LiteYukonPAObject litePAO = 
-                        (com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i);
+            for (LiteYukonPAObject litePAO : allDevices) {
                         
-               if( litePAO.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER
-                   && !DeviceTypesFuncs.isRepeater(litePAO.getType()) )
+               if( litePAO.getPaoType().getPaoClass() == PaoClass.TRANSMITTER
+                   && !DeviceTypesFuncs.isRepeater(litePAO.getPaoType().getDeviceTypeId()) )
                {
-                  getSignalTransmitterComboBox().addItem( allDevices.get(i) );
+                  getSignalTransmitterComboBox().addItem(litePAO);
                }
 
             }
@@ -192,7 +190,7 @@ public Object getValue(Object val) {
 
 	Integer deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
 
-	int type = ((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getType();
+	int type = ((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getPaoType().getDeviceTypeId();
 
 	if( DeviceTypesFuncs.isCCU(type) || DeviceTypesFuncs.isRepeater(type) )
 	{
@@ -367,9 +365,8 @@ public boolean noRepeaters() {
 	synchronized(cache)
 	{
 		List<LiteYukonPAObject> devices = cache.getAllDevices();
-		for(int i=0;i<devices.size();i++)
-		{
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType()) )
+		for (LiteYukonPAObject liteYukonPAObject : devices) {
+			if(DeviceTypesFuncs.isRepeater(liteYukonPAObject.getPaoType().getDeviceTypeId()))
 			{
 				noRepeaters = false;
 				break;

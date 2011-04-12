@@ -287,15 +287,13 @@ public final class PaoDaoImpl implements PaoDao {
     public LiteYukonPAObject[] getRoutesByType(int[] routeTypes) {
         java.util.ArrayList routeList = new java.util.ArrayList(10);
         synchronized (databaseCache) {
-            java.util.List routes = databaseCache.getAllRoutes();
+            List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
             java.util.Collections.sort(routes,
                                        com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 
-            for (int i = 0; i < routes.size(); i++) {
-                LiteYukonPAObject litePao = (LiteYukonPAObject) routes.get(i);
-
+            for (LiteYukonPAObject litePao : routes) {
                 for (int j = 0; j < routeTypes.length; j++)
-                    if (litePao.getType() != routeTypes[j]) {
+                    if (litePao.getPaoType().getDeviceTypeId() != routeTypes[j]) {
                         routeList.add(litePao);
                         break;
                     }

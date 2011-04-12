@@ -1,8 +1,11 @@
 package com.cannontech.dbeditor.editor.device;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -10,7 +13,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -745,17 +747,14 @@ public class PAOExclusionEditorPanel extends
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized ( cache )
 		{
-			java.util.List paos = cache.getAllYukonPAObjects();
+			List<LiteYukonPAObject> paos = cache.getAllYukonPAObjects();
 			Collections.sort( paos, LiteComparators.liteStringComparator );
 
-			LiteYukonPAObject litePAO = null;
 			int paoCat = PAOGroups.getCategory( pao.getPAOCategory() );
 
 			for ( int i = 0; i < currExcluded.size(); i++ )
 			{
-				for ( int j = 0; j < paos.size(); j++ )
-				{
-					litePAO = (LiteYukonPAObject) paos.get( j );
+				for (LiteYukonPAObject litePAO : paos) {
 					if ( litePAO.getYukonID() == ( (PAOExclusion) currExcluded.get( i ) )	.getExcludedPaoID()
 																							.intValue() && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID() )
 					{
@@ -765,37 +764,35 @@ public class PAOExclusionEditorPanel extends
 				}
 			}
 
-			for ( int i = 0; i < paos.size(); i++ )
-			{
-				litePAO = (LiteYukonPAObject) paos.get( i );
+			for (LiteYukonPAObject litePAO : paos) {
 
 				// be sure we have a pao that is similar to ourself by category
 				// AND that it is not our self!
-				if ( DeviceTypesFuncs.isTransmitter( litePAO.getType() ) && litePAO.getYukonID() != pao	.getPAObjectID()
-																															.intValue() && litePAO.getPaoClass() != PAOGroups.getPAOClass(	PAOGroups.STRING_CAT_DEVICE,
-																																															DeviceClasses.STRING_CLASS_GROUP ) )
+				if ( DeviceTypesFuncs.isTransmitter(litePAO.getPaoType().getDeviceTypeId()) && 
+						litePAO.getYukonID() != pao.getPAObjectID().intValue() && 
+						litePAO.getPaoType().getPaoClass() != PaoClass.GROUP)
 				{
 					if ( ! assignedPAOs.contains( litePAO ) && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID() )
 					{
 						
-						if ( DeviceTypesFuncs.isCCU( deviceType ) && DeviceTypesFuncs.isCCU( litePAO.getType() ) )
+						if ( DeviceTypesFuncs.isCCU( deviceType ) && DeviceTypesFuncs.isCCU( litePAO.getPaoType().getDeviceTypeId() ) )
 						{
 							availablePAOs.addElement( litePAO );
 						}
 						else if ( DeviceTypesFuncs.isLCU( deviceType ) 
-								&& ( DeviceTypesFuncs.isLCU( litePAO.getType() ) ) )
+								&& ( DeviceTypesFuncs.isLCU( litePAO.getPaoType().getDeviceTypeId() ) ) )
 						{
 							availablePAOs.addElement( litePAO );
 						}
 						else if ( ( deviceType == DeviceTypes.RTC || deviceType == DeviceTypes.SERIES_5_LMI )
-								&& ( litePAO.getType() == DeviceTypes.RTC || litePAO.getType() == DeviceTypes.SERIES_5_LMI ) )
+								&& ( litePAO.getPaoType() == PaoType.RTC || litePAO.getPaoType() == PaoType.SERIES_5_LMI ) )
 						{
 							availablePAOs.addElement( litePAO );
 						}
 						else if ( ( deviceType == DeviceTypes.TAPTERMINAL || deviceType == DeviceTypes.SNPP_TERMINAL 
 								    			|| DeviceTypesFuncs.isTCU( deviceType ) || deviceType == DeviceTypes.WCTP_TERMINAL )
-								&& ( litePAO.getType() == DeviceTypes.TAPTERMINAL || litePAO.getType() == DeviceTypes.SNPP_TERMINAL 
-												|| DeviceTypesFuncs.isTCU( litePAO.getType() ) || litePAO.getType() == DeviceTypes.WCTP_TERMINAL ) )
+								&& ( litePAO.getPaoType() == PaoType.TAPTERMINAL || litePAO.getPaoType() == PaoType.SNPP_TERMINAL 
+												|| DeviceTypesFuncs.isTCU( litePAO.getPaoType().getDeviceTypeId() ) || litePAO.getPaoType() == PaoType.WCTP_TERMINAL ) )
 						{
 							availablePAOs.addElement( litePAO );
 						}

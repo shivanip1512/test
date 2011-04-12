@@ -3,23 +3,16 @@ package com.cannontech.dbeditor.editor.route;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.ItemSelectable;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -422,7 +415,7 @@ public void setValue(Object val ) {
 	synchronized(cache)
 	{
 		java.util.Vector macroRoutesVector = ((com.cannontech.database.data.route.MacroRoute)val).getMacroRouteVector();
-		java.util.List allRoutes = cache.getAllRoutes();
+		List<LiteYukonPAObject> allRoutes = cache.getAllRoutes();
 
 		assignedRoutes = new java.util.Vector();
 		int singleRouteID;
@@ -440,10 +433,10 @@ public void setValue(Object val ) {
 		}
 
 		availableRoutes = new java.util.Vector();
-		for(int i=0;i<allRoutes.size();i++)
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allRoutes.get(i)).getType() != com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO )
-				availableRoutes.addElement(allRoutes.get(i));
+		for (LiteYukonPAObject liteRoute : allRoutes) {
+			if( liteRoute.getPaoType() != PaoType.ROUTE_MACRO ) {
+				availableRoutes.addElement(liteRoute);
+			}
 		}		
 	}
 

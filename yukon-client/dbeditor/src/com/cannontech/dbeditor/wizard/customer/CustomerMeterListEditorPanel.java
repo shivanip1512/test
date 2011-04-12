@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.customer;
 
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -444,7 +445,7 @@ public void setValue(Object val)
 		{
 			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
 
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isMeter(liteDevice.getType()) )
+			if( DeviceTypesFuncs.isMeter(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
 				availableMeters.add( devices.get(i) );
 				

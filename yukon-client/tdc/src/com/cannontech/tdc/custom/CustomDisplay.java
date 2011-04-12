@@ -6,7 +6,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 
 
@@ -79,7 +78,7 @@ public class CustomDisplay
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_DEVICETYPE) )
 			{
-				retValues[i] = PAOGroups.getPAOTypeString( litePAO.getType() );
+				retValues[i] = litePAO.getPaoType().getDbString();
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_POINTID) )
 			{

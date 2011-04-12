@@ -27,6 +27,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
@@ -428,7 +429,7 @@ public class YC extends Observable implements MessageListener
 		for (int i = 0; i < commandVec.size(); i++)
 		{	
 			String command = getExecuteCmdsVector().get(i);			
-			if ( DeviceTypesFuncs.isCarrier(liteYukonPao.getType())) {
+			if ( DeviceTypesFuncs.isCarrier(liteYukonPao.getPaoType().getDeviceTypeId())) {
 				if( command.indexOf("noqueue") < 0) {
 				    getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);	//replace the old command with this one
 				}
@@ -445,13 +446,13 @@ public class YC extends Observable implements MessageListener
 			if( getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
 			{
 				LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-				while( rt.getType() == PAOGroups.ROUTE_MACRO && sendMore > 0)
+				while( rt.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0)
 				{
 					sendMore--;
 					rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
 				}
 	
-				if( rt.getType() == PAOGroups.ROUTE_MACRO)
+				if( rt.getPaoType() == PaoType.ROUTE_MACRO)
 					return;
 	
 				porterRequest.setRouteID(rt.getYukonID());
@@ -761,7 +762,7 @@ public class YC extends Observable implements MessageListener
 		{
 			int devID = ((DeviceMeterGroupBase)item_).getDeviceMeterGroup().getDeviceID().intValue();
 			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-			deviceType = PAOGroups.getPAOTypeString(litePao.getType());
+			deviceType = litePao.getPaoType().getDbString();
 		}
 		else if (item_ instanceof String)				//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
 		{
@@ -1101,14 +1102,14 @@ public class YC extends Observable implements MessageListener
 								if( getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
 								{
 									LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-									while( rt.getType() == PAOGroups.ROUTE_MACRO
+									while( rt.getPaoType() == PaoType.ROUTE_MACRO
 										&& sendMore > 0)
 									{
 										sendMore--;
 										rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
 									}
 									// Have to check again because last one may be route_ macro
-									if(rt.getType() == PAOGroups.ROUTE_MACRO)
+									if(rt.getPaoType() == PaoType.ROUTE_MACRO)
 										break doneSendMore;
 
 									getPorterRequest().setRouteID(rt.getYukonID());
@@ -1615,17 +1616,17 @@ public class YC extends Observable implements MessageListener
         {
             int pointID = PointTypes.SYS_PID_SYSTEM;
             LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);            
-            logDescr = PAOGroups.getPAOClass(liteYukonPAObject.getCategory(), liteYukonPAObject.getPaoClass()) + ": " +
+            logDescr = liteYukonPAObject.getPaoType().getPaoClass() + ": " +
                         liteYukonPAObject.getPaoName() + 
                         " (ID:" + liteYukonPAObject.getLiteID() + ")";
                         
-            if( DeviceTypesFuncs.isCapBankController(liteYukonPAObject.getType()) )
+            if( DeviceTypesFuncs.isCapBankController(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
 
-            else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getType()) )
+            else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 0); //the Control Status (Pseudo) Point
 
-            else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getType()) )
+            else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
             {
                 if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1)    //the leading space helps find the right string
                     pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Disconnect Status Point
@@ -1698,13 +1699,13 @@ public class YC extends Observable implements MessageListener
     }
 	
 	private boolean isQueueable(LiteYukonPAObject liteYukonPao) {
-	    return DeviceTypesFuncs.isMCT(liteYukonPao.getType())
-	            || DeviceTypesFuncs.isRepeater(liteYukonPao.getType());
+	    return DeviceTypesFuncs.isMCT(liteYukonPao.getPaoType().getDeviceTypeId())
+	            || DeviceTypesFuncs.isRepeater(liteYukonPao.getPaoType().getDeviceTypeId());
 	}
 	
 	private boolean isLocateRouteable(LiteYukonPAObject liteYukonPao) {
-        return DeviceTypesFuncs.isMCT(liteYukonPao.getType())
-                || DeviceTypesFuncs.isRepeater(liteYukonPao.getType());
+        return DeviceTypesFuncs.isMCT(liteYukonPao.getPaoType().getDeviceTypeId())
+                || DeviceTypesFuncs.isRepeater(liteYukonPao.getPaoType().getDeviceTypeId());
     }
 
 }

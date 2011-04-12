@@ -3,12 +3,14 @@ package com.cannontech.dbeditor.wizard.route;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
@@ -562,11 +564,13 @@ public void setValue(Object val) {
    java.util.Vector allRepeaters = null;
    synchronized(cache)
    {
-      java.util.List allDevices = cache.getAllDevices();
+      List<LiteYukonPAObject> allDevices = cache.getAllDevices();
       allRepeaters = new java.util.Vector();
-      for(int i=0;i<allDevices.size();i++)
-         if( com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater( ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i)).getType()) )
-            allRepeaters.add(allDevices.get(i));
+      for (LiteYukonPAObject liteYukonPAObject : allDevices) {
+         if( DeviceTypesFuncs.isRepeater(liteYukonPAObject.getPaoType().getDeviceTypeId())) {
+            allRepeaters.add(liteYukonPAObject);
+         }
+      }
    }
 
    com.cannontech.common.gui.util.AddRemovePanel repeatersPanel = getRepeatersAddRemovePanel();

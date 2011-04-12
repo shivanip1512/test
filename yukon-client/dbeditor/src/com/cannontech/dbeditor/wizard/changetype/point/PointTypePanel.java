@@ -2,8 +2,10 @@ package com.cannontech.dbeditor.wizard.changetype.point;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -904,12 +906,11 @@ public void setButtons(Object val)
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 {
-		java.util.List allDevices = cache.getAllYukonPAObjects();
-		for (int i = 0; i < allDevices.size(); i++)
-		{
-			if (((com.cannontech.database.data.lite.LiteYukonPAObject) allDevices.get(i)).getYukonID() == deviceID)
+		List<LiteYukonPAObject> allDevices = cache.getAllYukonPAObjects();
+		for (LiteYukonPAObject liteYukonPAObject : allDevices) {
+			if (liteYukonPAObject.getYukonID() == deviceID)
 			{
-				if (((com.cannontech.database.data.lite.LiteYukonPAObject) allDevices.get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.GROUP)
+				if (liteYukonPAObject.getPaoType().getPaoClass() == PaoClass.GROUP)
 				{
 					getCalculatedRadioButton().setEnabled(false);
 					getAccumulatorRadioButton().setEnabled(false);

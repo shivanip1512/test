@@ -340,7 +340,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 					{
 						LiteYukonPAObject dev = (LiteYukonPAObject)mcts.get(i);
 						
-						if( DeviceTypesFuncs.isMCT(dev.getType()) )
+						if( DeviceTypesFuncs.isMCT(dev.getPaoType().getDeviceTypeId()) )
 							ivjJComboBoxMCTAddress.addItem( dev );
 					}
 				}

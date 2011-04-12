@@ -228,7 +228,7 @@ public final static boolean isCapBankControllerDNP( int deviceType )
 public final static boolean isCapBankController( com.cannontech.database.data.lite.LiteYukonPAObject lite )
 {
 	return (  com.cannontech.database.data.pao.PAOGroups.isCapControl(lite)
-				 && isCapBankController(lite.getType()) );
+				 && isCapBankController(lite.getPaoType().getDeviceTypeId()) );
 }
 /**
  * Returns all the CBC that require a port for communications.

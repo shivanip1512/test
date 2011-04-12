@@ -49,6 +49,8 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ClientRights;
@@ -70,8 +72,12 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -2162,23 +2168,22 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
 	         }
 	         
-	         if (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+	         if (selectedNode.getUserObject() instanceof LiteYukonPAObject)
 	         {
-	            com.cannontech.database.data.lite.LiteYukonPAObject litYuk =
-	                  (com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject();
+	            LiteYukonPAObject litYuk = (LiteYukonPAObject)selectedNode.getUserObject();
 	            
-	            if( (litYuk.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL 
-	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getType())) 
-	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
-	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_INTEGRATION 
-	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
-	                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
+	            if( (litYuk.getPaoType().getPaoClass() == PaoClass.CAPCONTROL 
+	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getPaoType().getDeviceTypeId())) 
+	                || litYuk.getPaoType() == PaoType.LM_GROUP_RIPPLE
+	                || litYuk.getPaoType() == PaoType.LM_GROUP_INTEGRATION 
+	                || litYuk.getPaoType() == PaoType.MACRO_GROUP
+	                || litYuk.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT )
 	            {
 	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	               editMenu.changeTypeMenuItem.setEnabled(false);
 	            }
-	            else if ( litYuk.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER
-	                       || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
+	            else if ( litYuk.getPaoType().getPaoCategory() == PaoCategory.CUSTOMER
+	                       || litYuk.getPaoType().getPaoClass() == PaoClass.SYSTEM)
 	            {
 	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	               getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
@@ -2188,12 +2193,11 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	
 	         }
 	         else if (
-	            selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
-	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteContactNotification
-	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
-	               || (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
-	                   && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
-	                        == com.cannontech.database.data.pao.CapControlTypes.CAP_CONTROL_SUBBUS) )
+	            selectedNode.getUserObject() instanceof LiteNotificationGroup
+	               || selectedNode.getUserObject() instanceof LiteContactNotification
+	               || selectedNode.getUserObject() instanceof LiteAlarmCategory
+	               || (selectedNode.getUserObject() instanceof LiteYukonPAObject
+	                   && ((LiteYukonPAObject)selectedNode.getUserObject()).getPaoType() == PaoType.CAP_CONTROL_SUBBUS) )
 	         {
 	            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);

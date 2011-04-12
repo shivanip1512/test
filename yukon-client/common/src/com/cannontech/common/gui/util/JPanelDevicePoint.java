@@ -335,9 +335,9 @@ private boolean isPAOValid(com.cannontech.database.data.lite.LiteYukonPAObject p
 	{
 		//Watch out now!!
 		for( int i = 0; i < paoFilter.length; i++ )
-			if( paoFilter[i][0][0] == pao.getCategory() )
-				if( paoFilter[i][0][1] == pao.getPaoClass() )
-					if( paoFilter[i][0][2] == pao.getType() )
+			if( paoFilter[i][0][0] == pao.getPaoType().getPaoCategory().getCategoryId() )
+				if( paoFilter[i][0][1] == pao.getPaoType().getPaoClass().getPaoClassId() )
+					if( paoFilter[i][0][2] == pao.getPaoType().getDeviceTypeId() )
 						return true;
 	}			
 

@@ -197,7 +197,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
                 }
 
                 public String getType() {
-                    return paoGroups.getPAOTypeString(pao.getType());
+                    return pao.getPaoType().getDbString();
                 }
             });
         }

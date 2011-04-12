@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.editor.device;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JCheckBox;
@@ -10,6 +11,7 @@ import javax.swing.event.CaretEvent;
 
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceVerification;
@@ -585,18 +587,15 @@ public Vector populateAvailableList()
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List devices = cache.getAllDevices();
+		List<LiteYukonPAObject> devices = cache.getAllDevices();
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 
 		try
 		{
-			for( int i = 0; i < devices.size(); i++ )
-			{ 
-				LiteYukonPAObject dev = (LiteYukonPAObject)devices.get(i);
-				
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isVerifiable(dev.getType()))
+			for (LiteYukonPAObject dev : devices) {
+				if (DeviceTypesFuncs.isVerifiable(dev.getPaoType().getDeviceTypeId()))
 				{
-					availableDevices.addElement(((LiteYukonPAObject)devices.get(i)));
+					availableDevices.addElement(dev);
 				}
 			}
 			

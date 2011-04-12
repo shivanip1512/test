@@ -30,7 +30,7 @@ public class DisconnectPointCreate extends PointCreate
 	 * @return boolean
 	 */
 	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
-		int type = litePaobject_.getType();
+		int type = litePaobject_.getPaoType().getDeviceTypeId();
 	    if( DeviceTypesFuncs.isMCT4XX(type)) {
 	        MCT400SeriesBase mct = (MCT400SeriesBase)DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePaobject_);
 	        if( mct.getDeviceMCT400Series().getDisconnectAddress().intValue() > -1)

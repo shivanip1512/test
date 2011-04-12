@@ -31,7 +31,7 @@ public class PowerFailPointCreate extends PointCreate
 	 */
 	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
 		// All MCT's are valid (with the exception of LMT2 and DCT501 //
-		return DeviceTypesFuncs.isMCTOnly(litePaobject_.getType());
+		return DeviceTypesFuncs.isMCTOnly(litePaobject_.getPaoType().getDeviceTypeId());
 	}
 
 	/**

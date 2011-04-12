@@ -21,7 +21,8 @@ public class CommChannelTreeModel extends DBTreeModel
 {
 	//a mutable lite point used for comparisons
 	private static final LiteYukonPAObject DUMMY_LITE_PAO = 
-					new LiteYukonPAObject(Integer.MIN_VALUE);
+					new LiteYukonPAObject(Integer.MIN_VALUE, "**DUMMY**", 
+							PaoType.SYSTEM, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
 
 	//a Vector only needed to store temporary things
 	private java.util.List tempList = new java.util.Vector(32);
@@ -102,7 +103,7 @@ public void update()
 			{
 				LiteYukonPAObject liteYuk = (LiteYukonPAObject)devices.get(j);
 				
-				if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
+				if( isDeviceValid(liteYuk.getPaoType().getPaoCategory().getCategoryId(), liteYuk.getPaoType().getPaoClass().getPaoClassId(), liteYuk.getPaoType().getDeviceTypeId() ) )
 				{
 					devicePortID = ((LiteYukonPAObject)devices.get(j)).getPortID();
 					if( devicePortID == portID )
@@ -161,7 +162,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
-		if( PAOGroups.isValidPortType( liteYuk.getType() ) )
+		if( PAOGroups.isValidPortType( liteYuk.getPaoType().getDeviceTypeId() ) )
 		{
 			DBTreeNode node = new DBTreeNode(lb);
 

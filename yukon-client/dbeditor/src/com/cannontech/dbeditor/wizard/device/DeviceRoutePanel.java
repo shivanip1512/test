@@ -453,11 +453,10 @@ public class DeviceRoutePanel
 			if (getRouteComboBox().getModel().getSize() > 0)
 				getRouteComboBox().removeAllItems();
 
-			int routeType = 0;
-			for (int i = 0; i < allRoutes.size(); i++) {
-                routeType = ((LiteYukonPAObject) allRoutes.get(i)).getType();
-                if (routeType == RouteTypes.ROUTE_CCU || routeType == RouteTypes.ROUTE_MACRO) {
-                    getRouteComboBox().addItem(allRoutes.get(i));
+			for (LiteYukonPAObject liteRoute : allRoutes) {
+                if (liteRoute.getPaoType() == PaoType.ROUTE_CCU || 
+                		liteRoute.getPaoType() == PaoType.ROUTE_MACRO) {
+                    getRouteComboBox().addItem(liteRoute);
                 }
 
 			}

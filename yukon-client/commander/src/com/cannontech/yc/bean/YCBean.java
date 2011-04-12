@@ -160,7 +160,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	public void setDeviceType(int devID) {
 		LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-		deviceType = PAOGroups.getPAOTypeString(lPao.getType());
+		deviceType = lPao.getPaoType().getDbString();
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
 		setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
 	}

@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PILCommandCache;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.cttp.schema.cttp_CommandResponseType;
 import com.cannontech.cttp.schema.cttp_CommandType;
 import com.cannontech.cttp.schema.cttp_FailureType;
@@ -22,7 +23,6 @@ import com.cannontech.cttp.schema.cttp_SubmitCommandRequestType;
 import com.cannontech.cttp.schema.cttp_SubmitCommandResponseType;
 import com.cannontech.cttp.schema.cttp_TargetGroupType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.message.porter.message.Request;
 
 /**
@@ -119,7 +119,7 @@ public class SubmitCommandRequestHandler implements CttpMessageHandler {
 				groupIDList.add(new Integer(group.getLiteID()));
 				
 				//find all groups (explode macro groups) and send an offset command
-				if(group.getType() == DeviceTypes.MACRO_GROUP) {
+				if(group.getPaoType() == PaoType.MACRO_GROUP) {
 					List cGrps = Cttp.retrieveLMGroupChildren(group.getLiteID());
 					Iterator cgIter = cGrps.iterator();
 					while(cgIter.hasNext()) {
@@ -143,7 +143,7 @@ public class SubmitCommandRequestHandler implements CttpMessageHandler {
 				groupIDList.add(new Integer(group.getLiteID()));
 
 				//find all groups (explode macro groups) and send an offset command
-				if(group.getType() == DeviceTypes.MACRO_GROUP) {
+				if(group.getPaoType() == PaoType.MACRO_GROUP) {
 					List cGrps = Cttp.retrieveLMGroupChildren(group.getLiteID());
 					Iterator cgIter = cGrps.iterator();
 					while(cgIter.hasNext()) {

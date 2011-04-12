@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -300,18 +301,17 @@ private void initializeAddPanel()
 	synchronized( cache )
 	{
 		
-		java.util.List availableSubs = cache.getAllLMPrograms();
+		List<LiteYukonPAObject> availableSubs = cache.getAllLMPrograms();
 		java.util.List currentlyExcluded = cache.getAllLMPAOExclusions();
 				
 		Vector lmSubordinates = new Vector();
 
-		for( int i = 0; i < availableSubs.size(); i++ )
-		{ 
-			Integer theID = new Integer(((LiteYukonPAObject)availableSubs.get(i)).getLiteID());
+		for (LiteYukonPAObject liteYukonPAObject : availableSubs) {
+			Integer theID = new Integer(liteYukonPAObject.getLiteID());
 			//makes sure it is a direct program and it is not already a master
-			if(DeviceTypesFuncs.isLMProgramDirect(((LiteYukonPAObject)availableSubs.get(i)).getType()) 
+			if(DeviceTypesFuncs.isLMProgramDirect(liteYukonPAObject.getPaoType().getDeviceTypeId()) 
 					&& !(isMasterProgram(theID.intValue(), currentlyExcluded)))
-				lmSubordinates.addElement( availableSubs.get(i) );
+				lmSubordinates.addElement(liteYukonPAObject);
 		}
 
 		getAddRemovePanel().leftListSetListData(lmSubordinates);

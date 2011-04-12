@@ -310,7 +310,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 	LiteYukonPAObject paobject = DaoFactory.getPaoDao().getLiteYukonPAO( getEditorData().getDeviceID() );
 	
 	if( paobject != null
-		 && DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()) )
+		 && DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()) )
 	{
 		long duration = 0;
 		

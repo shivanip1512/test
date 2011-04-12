@@ -49,8 +49,8 @@ public final class LiteComparators
 	{
 		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = o1.getType();
-			int anotherVal = o2.getType();
+			int thisVal = o1.getPaoType().getDeviceTypeId();
+			int anotherVal = o2.getPaoType().getDeviceTypeId();
 			
 			
 			if( thisVal != anotherVal )

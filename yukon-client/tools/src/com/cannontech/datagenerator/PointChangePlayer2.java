@@ -14,12 +14,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.conns.ConnPool;
@@ -168,7 +167,7 @@ public class PointChangePlayer2 {
 			return false;
 		}
 		
-		return  paObj.getPaoClass() == DeviceClasses.METER &&
+		return  paObj.getPaoType().getPaoClass() == PaoClass.METER &&
 				Arrays.binarySearch(loadProfileOffsets, lp.getPointOffset()) != -1;
 	}
 }

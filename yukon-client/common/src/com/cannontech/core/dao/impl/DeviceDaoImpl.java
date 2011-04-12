@@ -119,7 +119,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-        SimpleDevice device = new SimpleDevice(yukonPAObject.getYukonID(),yukonPAObject.getType());
+        SimpleDevice device = new SimpleDevice(yukonPAObject.getYukonID(), yukonPAObject.getPaoType());
         return device;
     }
 
@@ -259,9 +259,9 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
             foundMatch &= lPao.getPaoName().equalsIgnoreCase(deviceName);
-            foundMatch &= lPao.getCategory() == category;
-            foundMatch &= lPao.getPaoClass() == paoClass;
-            foundMatch &= lPao.getType() == type;
+            foundMatch &= lPao.getPaoType().getPaoCategory().getCategoryId() == category;
+            foundMatch &= lPao.getPaoType().getPaoClass().getPaoClassId() == paoClass;
+            foundMatch &= lPao.getPaoType().getDeviceTypeId() == type;
             if (foundMatch) {
                 return lPao;
             }

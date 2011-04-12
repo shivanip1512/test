@@ -21,7 +21,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -372,7 +371,7 @@ public class InventoryBean {
 			}
 			else if (liteInv.getDeviceID() > 0) {
 				LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
-				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
+				deviceType = litePao.getPaoType().getDbString();
 				deviceName = litePao.getPaoName();
 			}
 			else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {

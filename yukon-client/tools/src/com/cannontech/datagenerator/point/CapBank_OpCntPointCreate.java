@@ -42,7 +42,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
 		// All Switched Cap Banks are valid
         CapbankDao dao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
-		if(DeviceTypesFuncs.CAPBANK == litePaobject_.getType())
+		if(DeviceTypesFuncs.CAPBANK == litePaobject_.getPaoType().getDeviceTypeId())
 			return dao.isSwitchedBank(new Integer(litePaobject_.getLiteID()));
 			
 		return false;

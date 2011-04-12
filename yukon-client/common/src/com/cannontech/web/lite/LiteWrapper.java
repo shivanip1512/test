@@ -40,8 +40,7 @@ public class LiteWrapper
 		if( _getLiteBase() instanceof LiteYukonPAObject )
 		{
 			retVal = 
-				PAOGroups.getPAOTypeString(
-					((LiteYukonPAObject)_getLiteBase()).getType() ) +
+					((LiteYukonPAObject)_getLiteBase()).getPaoType().getDbString() +
 					" device";			
 		}
 		else if( _getLiteBase() instanceof LitePoint )
@@ -67,7 +66,7 @@ public class LiteWrapper
 		
 		if( _getLiteBase() instanceof LiteYukonPAObject )
 		{
-			retVal = ((LiteYukonPAObject)_getLiteBase()).getType();
+			retVal = ((LiteYukonPAObject)_getLiteBase()).getPaoType().getDeviceTypeId();
 		}
 		else if( _getLiteBase() instanceof LitePoint )
 		{

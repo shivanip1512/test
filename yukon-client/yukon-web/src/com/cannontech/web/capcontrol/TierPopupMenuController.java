@@ -264,7 +264,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
         boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
-        boolean is702xDevice = CBCUtils.is702xDevice(cbcPaoObject.getType());
+        boolean is702xDevice = CBCUtils.is702xDevice(cbcPaoObject.getPaoType().getDeviceTypeId());
         boolean is701xDevice = CBCUtils.is701xDevice(cbcPaoObject);
         boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
         boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);

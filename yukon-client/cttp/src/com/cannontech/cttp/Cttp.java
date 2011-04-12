@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.cttp.schema.cttp_FailureType;
@@ -30,7 +31,6 @@ import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.pao.PAOowner;
 
@@ -185,9 +185,9 @@ public class Cttp {
 				  LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(childID.intValue());
 				  if(litePao != null) {
 				  	 
-					if(litePao.getType() == DeviceTypes.LM_GROUP_VERSACOM ||
-					   litePao.getType() == DeviceTypes.LM_GROUP_EXPRESSCOMM ||
-					   litePao.getType() == DeviceTypes.MACRO_GROUP ) {
+					if(litePao.getPaoType() == PaoType.LM_GROUP_VERSACOM ||
+					   litePao.getPaoType() == PaoType.LM_GROUP_EXPRESSCOMM ||
+					   litePao.getPaoType() == PaoType.MACRO_GROUP ) {
 						  lmGroups.add(litePao);
 					}
 				  }

@@ -322,11 +322,11 @@ public class StarsDatabaseCache implements DBChangeListener {
     		for (int i = 0; i < companies.size(); i++) {
     			LiteStarsEnergyCompany energyCompany = companies.get(i);
     			
-    			if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
+    			if (litePao.getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_ROUTE) {
     				if (!ECUtils.isSingleEnergyCompany( energyCompany ))
     					handleRouteChange( msg, energyCompany );
     			}
-    			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
+    			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getPaoType().getDeviceTypeId() )) {
     				if (energyCompany.getPrograms() != null) {
 	    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
 	    					if (liteProg.getDeviceID() == msg.getId()) {
@@ -336,7 +336,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    				}
     				}
     			}
-    			else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
+    			else if (DeviceTypesFuncs.isLmGroup( litePao.getPaoType().getDeviceTypeId() )) {
     				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
     				
     				if (energyCompany.getPrograms() != null) {

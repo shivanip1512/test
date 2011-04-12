@@ -123,8 +123,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         deviceDaoAdapter = new DeviceDaoAdapter() {
             @Override
             public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-                return new SimpleDevice(yukonPAObject.getLiteID(),
-                                       yukonPAObject.getType());
+                return new SimpleDevice(yukonPAObject.getLiteID(), yukonPAObject.getPaoType());
             }
 
             @Override

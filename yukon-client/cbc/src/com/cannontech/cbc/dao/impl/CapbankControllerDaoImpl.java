@@ -215,13 +215,12 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		}
 		
 		LiteYukonPAObject pao = paos.get(0);
-		int type = pao.getType();
-		PaoType deviceType = PaoType.getForId(type);
+		PaoType deviceType = pao.getPaoType();
 		
 		controller.setType(deviceType);
 		
 		int templateDeviceId = pao.getLiteID();
-		DeviceBase base = DeviceFactory.createDevice(type);
+		DeviceBase base = DeviceFactory.createDevice(deviceType);
 		base.setDeviceID(templateDeviceId);
 
 		try {
@@ -234,7 +233,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		controller.setId(newId);
 		base.setDeviceID(newId);
 		base.setPAOName(controller.getName());
-		setTypeSpecificCbcFields(PaoType.getForId(type),base,controller);
+		setTypeSpecificCbcFields(deviceType, base, controller);
 		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, base).execute();

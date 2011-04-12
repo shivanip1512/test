@@ -205,7 +205,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
-		if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
+		if( isDeviceValid(liteYuk.getPaoType().getPaoCategory().getCategoryId(), liteYuk.getPaoType().getPaoClass().getPaoClassId(), liteYuk.getPaoType().getDeviceTypeId() ) )
 		{
 			DBTreeNode node = getNewNode(lb);
 			node.setWillHaveChildren(true);
@@ -277,9 +277,9 @@ protected synchronized void runUpdate()
 		for (int i = 0; i < devices.size(); i++)
 		{
 			if( isDeviceValid(
-					((LiteYukonPAObject)devices.get(i)).getCategory(),
-					((LiteYukonPAObject)devices.get(i)).getPaoClass(),
-					((LiteYukonPAObject)devices.get(i)).getType() ) )
+					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoCategory().getCategoryId(),
+					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoClass().getPaoClassId(),
+					((LiteYukonPAObject)devices.get(i)).getPaoType().getDeviceTypeId() ) )
 			{
 				DBTreeNode deviceNode = getNewNode(devices.get(i));
 				rootNode.add(deviceNode);

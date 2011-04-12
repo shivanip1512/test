@@ -3,9 +3,11 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -320,20 +322,15 @@ private void initComboBoxes()
 
 	synchronized(cache)
 	{
-		java.util.List devices = cache.getAllYukonPAObjects();
+		List<LiteYukonPAObject> devices = cache.getAllYukonPAObjects();
 		java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
 
-		int deviceID;
-		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
-		
-		for(int i=0;i<devices.size();i++)
-		{
-			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
+		for (LiteYukonPAObject liteDevice : devices) {
 
 			//only do RTUs, MCTs and CAPBANKCONTROLLERS for now!
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(liteDevice.getType())
-				 || com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(liteDevice)
-				 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(liteDevice.getType()) )
+			if(DeviceTypesFuncs.isRTU(liteDevice.getPaoType().getDeviceTypeId())
+				 || DeviceTypesFuncs.isCapBankController(liteDevice)
+				 || DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
                 List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteDevice.getYukonID());
 				

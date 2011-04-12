@@ -163,7 +163,7 @@ public boolean hasLMGroupPoint()
 					(com.cannontech.database.data.lite.LiteYukonPAObject)getAddRemovePanel().rightListGetModel().getElementAt(i);
 
 		//if our element is a LM_GROUP_POINT object, do not add it to the newList
-		if( lmGroup.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT )
+		if( lmGroup.getPaoType() == PaoType.LM_GROUP_POINT )
 			return true;
 	}
 
@@ -222,8 +222,8 @@ public void initLeftList( boolean hideLMGroupPoints, PaoType programType)
 		Vector<LiteYukonPAObject> newList = new Vector<LiteYukonPAObject>( getAddRemovePanel().leftListGetModel().getSize() );
 		
 		for (LiteYukonPAObject group : groups) {
-			PaoType paoType = PaoType.getForId(group.getType());
-			if( DeviceTypesFuncs.isLmGroup( group.getType() )
+			PaoType paoType = group.getPaoType();
+			if( DeviceTypesFuncs.isLmGroup(paoType.getDeviceTypeId() )
 				 &&
 				 ( hideLMGroupPoints ? paoType != PaoType.LM_GROUP_POINT : true) )
 			{

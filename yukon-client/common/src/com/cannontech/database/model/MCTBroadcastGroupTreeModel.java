@@ -2,13 +2,13 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
-//This models has the following:
-//		1st Level = MCT Broadcast Groupings YukonPAOBjects
-//		2nd Level = MCTs YukonPAOBjects
  
 public class MCTBroadcastGroupTreeModel extends DBTreeModel 
 {
@@ -67,10 +67,9 @@ public void update() {
 	synchronized(cache)
 	{
 		//This is a crappy and inefficient way to do this if there are many devices...
-		java.util.List devicesList = cache.getAllDevices();
+		List<LiteYukonPAObject> devicesList = cache.getAllDevices();
 		java.util.Vector broadcastersList = new java.util.Vector();
 		java.util.Vector mctList = new java.util.Vector();
-		com.cannontech.database.data.lite.LiteYukonPAObject temp = null;
 		//This hopefully helps with the speed issue somewhat
 		com.cannontech.common.util.NativeIntVector mctIDIntList = new com.cannontech.common.util.NativeIntVector(30);
 
@@ -82,13 +81,11 @@ public void update() {
 		
 		//wow, this just keeps getting fouler...Just wait, it gets even worse...keep going
 		
-		for ( int j = 0; j < devicesList.size(); j++ )
-		{
-			temp = (com.cannontech.database.data.lite.LiteYukonPAObject)devicesList.get(j);
-			if(temp.getType() == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST)
-				broadcastersList.add(temp);
-			else if(com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(temp.getType()))
-				mctList.add(temp);
+		for (LiteYukonPAObject liteYukonPAObject : devicesList) {
+			if(liteYukonPAObject.getPaoType() == PaoType.MCTBROADCAST)
+				broadcastersList.add(liteYukonPAObject);
+			else if(DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()))
+				mctList.add(liteYukonPAObject);
 		}
 
 		/*This is a bit slow because the database must be hit to find out what MCTs are owned

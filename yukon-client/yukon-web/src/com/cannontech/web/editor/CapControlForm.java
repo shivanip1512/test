@@ -1185,7 +1185,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         } else {
             try {
     			LiteYukonPAObject parentPAO = paoDao.getLiteYukonPAO(parentID);
-    			return parentPAO.getPaoName() + "   (" + PAOGroups.getPAOTypeString(parentPAO.getType()) + ",  id: " + parentPAO.getLiteID() + ")";
+    			return parentPAO.getPaoName() + "   (" + parentPAO.getPaoType().getDbString() + ",  id: " + parentPAO.getLiteID() + ")";
             }catch (NotFoundException nfe) {
                 return CtiUtilities.STRING_NONE;
             }
@@ -1498,7 +1498,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     		if (litePoint != null) {
     			int paoID = litePoint.getPaobjectID();
     			if (paoID != CtiUtilities.NONE_ZERO_ID) {
-    				return DeviceTypesFuncs.isCapBankController(paoDao.getLiteYukonPAO(paoID).getType());
+    				return DeviceTypesFuncs.isCapBankController(paoDao.getLiteYukonPAO(paoID).getPaoType().getDeviceTypeId());
                 }
     		}
     	} else if (getDbPersistent() instanceof YukonPAObject){

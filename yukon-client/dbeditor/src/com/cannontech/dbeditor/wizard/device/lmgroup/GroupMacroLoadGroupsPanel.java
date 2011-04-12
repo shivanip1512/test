@@ -173,12 +173,13 @@ private MacroGroupAddRemovePanel getLoadGroupsAddRemovePanel() {
 				Collections.sort( allDevices, LiteComparators.liteStringComparator );
 				
 				availableDevices = new Vector<LiteYukonPAObject>();
-				for(int i=0;i<allDevices.size();i++)
-					if( DeviceTypesFuncs.isLmGroup( ((LiteYukonPAObject)allDevices.get(i)).getType())
-						 && ((LiteYukonPAObject)allDevices.get(i)).getType() != PAOGroups.MACRO_GROUP )
-						availableDevices.add(allDevices.get(i));
+				for (LiteYukonPAObject liteYukonPAObject : allDevices) {
+					if( DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId())
+						 && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP ) {
+						availableDevices.add(liteYukonPAObject);
+					}
+				}
 			}
-
 
 			getLoadGroupsAddRemovePanel().leftListSetListData(availableDevices);
 			
@@ -513,13 +514,12 @@ public void setValue(Object val )
 		}
 
 		availableGroups = new Vector<LiteYukonPAObject>();
-		for(int i=0;i<allDevices.size();i++)
-		{
-		    if( DeviceTypesFuncs.isLmGroup(((LiteYukonPAObject)allDevices.get(i)).getType()) 
-		        && ((LiteYukonPAObject)allDevices.get(i)).getLiteID() != 
+		for (LiteYukonPAObject liteYukonPAObject : allDevices) {
+		    if( DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) 
+		        && liteYukonPAObject.getLiteID() != 
 		            ((MacroGroup)val).getPAObjectID().intValue())
 		    {
-				availableGroups.addElement(allDevices.get(i));
+				availableGroups.addElement(liteYukonPAObject);
 			}
 		}		
 	}

@@ -51,7 +51,7 @@ public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderB
     @Override
     protected Set<String> getBinsForDevice(YukonDevice device) {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
-        String type = getPaoGroupsWrapper().getPAOTypeString(devicePao.getType());
+        String type = devicePao.getPaoType().getDbString();
         return Collections.singleton(type);
     }
     

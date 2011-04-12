@@ -20,7 +20,6 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
@@ -30,7 +29,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.JTextFieldComboEditor;
@@ -75,14 +73,13 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
+import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
@@ -266,10 +263,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
     private void updatePortSettings(ActionEvent arg1) {
         fireInputUpdate();
-    	int type = ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getType();
-    	getDialupSettingsPanel().setVisible(PAOGroups.isDialupPort(type) );
+    	PaoType paoType = ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getPaoType();
+    	getDialupSettingsPanel().setVisible(PAOGroups.isDialupPort(paoType.getDeviceTypeId()) );
     	
-    	boolean tcpport = (type == PAOGroups.TCPPORT) && (PAOGroups.isTcpPortEligible(deviceType));
+    	boolean tcpport = (paoType == PaoType.TCPPORT) && (PAOGroups.isTcpPortEligible(deviceType));
     	
     	getTcpIpAddressTextField().setVisible(tcpport);
     	getTcpIpAddressLabel().setVisible(tcpport);
@@ -1573,8 +1570,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         propertyDao.removeAll(deviceBase.getPAObjectID());
 
         if (port2 != null) {
-            int porttype = port2.getType();
-            if (PortTypes.TCPPORT == porttype
+            if (PaoType.TCPPORT == port2.getPaoType()
                 && PAOGroups.isTcpPortEligible(deviceType)) {
                 int id = deviceBase.getPAObjectID();
                 PaoIdentifier identifier = new PaoIdentifier(
@@ -1678,7 +1674,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                                           .toString());
             }
 
-            if (PAOGroups.isDialupPort(port.getType())) {
+            if (PAOGroups.isDialupPort(port.getPaoType().getDeviceTypeId())) {
                 DeviceDialupSettings dDialup = remoteBase.getDeviceDialupSettings();
 
                 getAdvancedPanel().getValue(dDialup);
@@ -2022,7 +2018,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                   
             	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
             	LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-            	if(port != null && (! PAOGroups.isDialupPort(port.getType())) && 
+            	if(port != null && (! PAOGroups.isDialupPort(port.getPaoType().getDeviceTypeId())) && 
             			(DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isRTU(deviceType) )) {
             		if (!checkForDuplicateAddresses(address, deviceBase.getPAObjectID(), port.getLiteID() ) ){
             			return false;
@@ -2183,19 +2179,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		
     		if( base instanceof CarrierBase )
     		{
-    			int routeType = 0;
     			assignedRouteID = ((CarrierBase) base).getDeviceRoutes().getRouteID().intValue();
     			
-    			for( int i = 0 ; i < routes.size(); i++ )
-    			{
-    				routeType = ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getType();
-    				
-    				if( routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_CCU ||
-    						routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO )
+    			for (LiteYukonPAObject liteRoute : routes) {
+    				if (liteRoute.getPaoType() == PaoType.ROUTE_CCU ||
+    						liteRoute.getPaoType() == PaoType.ROUTE_MACRO)
     				{
-    					getRouteComboBox().addItem( routes.get(i) );
-    					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-    						getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+    					getRouteComboBox().addItem(liteRoute);
+    					if (liteRoute.getYukonID() == assignedRouteID )
+    						getRouteComboBox().setSelectedItem(liteRoute);
     				}
     			}
     		}
@@ -2309,7 +2301,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     			{
     				getPortComboBox().setSelectedItem(litePort);
     				
-    				if( com.cannontech.database.data.pao.PAOGroups.isDialupPort(litePort.getType()) )
+    				if( PAOGroups.isDialupPort(litePort.getPaoType().getDeviceTypeId()) )
     					getDialupSettingsPanel().setVisible(true);
     			}
     		}
@@ -2665,8 +2657,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         
         PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
         if (port != null) {
-            int porttype = port.getType();
-            if (PortTypes.TCPPORT == porttype && PAOGroups.isTcpPortEligible(deviceType))
+            if (PaoType.TCPPORT == port.getPaoType() && PAOGroups.isTcpPortEligible(deviceType))
             {      
                 int id = deviceBase.getPAObjectID();
                 String value = null;

@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
@@ -176,8 +178,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			thisVal = PAOGroups.getPAOTypeString(o1.getType());
-			anotherVal = PAOGroups.getPAOTypeString(o2.getType());
+			thisVal = o1.getPaoType().getDbString();
+			anotherVal = o2.getPaoType().getDbString();
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
@@ -554,7 +556,7 @@ public class CommandDeviceBean implements DBChangeListener
                     }*/
 					else
 					{
-						if( ! (getSortBy() == lPao.getPaoClass()) ) isValid = false;
+						if( ! (getSortBy() == lPao.getPaoType().getPaoClass().getPaoClassId()) ) isValid = false;
 					}
                     
 					if( isValid ) //Filter the sortBy objects even more.
@@ -569,7 +571,7 @@ public class CommandDeviceBean implements DBChangeListener
 						}
                         else if( getFilterBy() == CBC_TYPE_FILTER)
                         {
-                            if (!(String.valueOf(PAOGroups.getPAOTypeString(lPao.getType())).equals(getFilterValue()))) isValid = false;
+                            if (!(String.valueOf(lPao.getPaoType().getDbString()).equals(getFilterValue()))) isValid = false;
 						}
 					}
                     
@@ -998,7 +1000,7 @@ public class CommandDeviceBean implements DBChangeListener
 		if( valueString.equalsIgnoreCase(DEVICE_NAME_STRING) ||valueString.equalsIgnoreCase(LOAD_GROUP_STRING)) 
 			return lPao.getPaoName();
 		else if( valueString.equalsIgnoreCase(DEVICE_TYPE_STRING))
-			return PAOGroups.getPAOTypeString(lPao.getType());
+			return lPao.getPaoType().getDbString();
 		else if( valueString.equalsIgnoreCase(ADDRESS_STRING))
 		{
 			if (! (lPao.getAddress() == PAOGroups.INVALID))
@@ -1154,30 +1156,31 @@ public class CommandDeviceBean implements DBChangeListener
 	
 	public static boolean isCarrierSortBy(LiteYukonPAObject lPao)
 	{
-		if( DeviceTypesFuncs.isMCT(lPao.getType()) && lPao.getCategory() == PAOGroups.CAT_DEVICE)
+		if( DeviceTypesFuncs.isMCT(lPao.getPaoType().getDeviceTypeId()) && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE)
 			return true;
 		return false;
 	}
 	
 	public static boolean isIEDSortBy(LiteYukonPAObject lPao)
 	{
-		if( DeviceTypesFuncs.isMeter(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER
-				  && lPao.getCategory() == PAOGroups.CAT_DEVICE )
+		if( DeviceTypesFuncs.isMeter(lPao.getPaoType().getDeviceTypeId())  || lPao.getPaoType() == PaoType.DAVISWEATHER
+				  && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE )
 			return true;
 		return false;
 	}
 	public static boolean isRTUSortBy(LiteYukonPAObject lPao)
 	{
-		if ( (DeviceTypesFuncs.isRTU(lPao.getType()) || lPao.getType() == PAOGroups.DAVISWEATHER)
-			&& lPao.getCategory() == PAOGroups.CAT_DEVICE
-			&& !DeviceTypesFuncs.isIon(lPao.getType()) )
+		if ( (DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId()) || lPao.getPaoType() == PaoType.DAVISWEATHER)
+			&& lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE
+			&& !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()) )
 			return true;
 		return false;
 	}
 	public static boolean isTransmitterSortBy(LiteYukonPAObject lPao)
 	{
-		if ( DeviceTypesFuncs.isTransmitter(lPao.getType()) && DeviceClasses.isMeterClass(lPao.getPaoClass())
-			 && lPao.getCategory() == PAOGroups.CAT_DEVICE )
+		if ( DeviceTypesFuncs.isTransmitter(lPao.getPaoType().getDeviceTypeId()) 
+				&& DeviceClasses.isMeterClass(lPao.getPaoType().getPaoClass().getPaoClassId())
+				&& lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE )
 			return true;
 		return false;
 	}
@@ -1187,11 +1190,12 @@ public class CommandDeviceBean implements DBChangeListener
 	}
 	public static boolean isCapControlSortByGroup(LiteYukonPAObject lPao)
 	{
-		return (PAOGroups.CLASS_CAPCONTROL == lPao.getPaoClass());
+		return (PaoClass.CAPCONTROL == lPao.getPaoType().getPaoClass());
 	}
 	public static boolean isLoadManagementSortByGroup(LiteYukonPAObject lPao)
 	{
-		return (DeviceClasses.LOADMANAGEMENT == lPao.getPaoClass() || DeviceClasses.GROUP == lPao.getPaoClass());
+		return (PaoClass.LOADMANAGEMENT == lPao.getPaoType().getPaoClass() || 
+				PaoClass.GROUP == lPao.getPaoType().getPaoClass());
 	}
 	
 	public HashMap<Integer, YCLiteLoadGroup> getLoadGroupIDToLiteLoadGroupsMap()

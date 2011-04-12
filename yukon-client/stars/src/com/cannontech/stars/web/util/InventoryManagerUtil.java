@@ -307,7 +307,7 @@ public class InventoryManagerUtil {
     	    			throw new WebClientException("The selected Yukon device no longer exists.");
     	    		}
     	    		
-    	    		int yukonDeviceTypeId = liteYukonPAO.getType();
+    	    		int yukonDeviceTypeId = liteYukonPAO.getPaoType().getDeviceTypeId();
     	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
     	    			throw new WebClientException("Selected yukon device must be a Two Way LCR type.");
     	    		}

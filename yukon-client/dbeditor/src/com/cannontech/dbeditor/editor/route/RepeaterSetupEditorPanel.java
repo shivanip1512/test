@@ -2,17 +2,17 @@ package com.cannontech.dbeditor.editor.route;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JLabel;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.dbeditor.editor.regenerate.RouteRole;
@@ -747,17 +747,14 @@ public void setValue(Object val) {
    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
    synchronized(cache)
    {
-      java.util.List devices = cache.getAllDevices();
-      com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
+      List<LiteYukonPAObject> devices = cache.getAllDevices();
       int repeaterRouteDeviceID;
       for(int i=0;i<repeaterRoutes.size();i++)
       {
-         for(int j=0;j<devices.size();j++)
-         {
-            liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j);
-            if( com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(liteDevice.getType()) )
+    	  for (LiteYukonPAObject liteDevice : devices) {
+            if( DeviceTypesFuncs.isRepeater(liteDevice.getPaoType().getDeviceTypeId()) )
             {
-               repeaterRouteDeviceID = ((com.cannontech.database.db.route.RepeaterRoute)repeaterRoutes.get(i)).getDeviceID().intValue();
+               repeaterRouteDeviceID = ((RepeaterRoute)repeaterRoutes.get(i)).getDeviceID().intValue();
                if( repeaterRouteDeviceID == liteDevice.getYukonID() )
                {
                   assignedRepeaters.addElement(liteDevice);
@@ -767,15 +764,13 @@ public void setValue(Object val) {
          }
       }
       boolean alreadyAssigned = false;
-      for(int i=0;i<devices.size();i++)
-      {
+      for (LiteYukonPAObject liteDevice : devices) {
          alreadyAssigned = false;
-         liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
-         if( com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(liteDevice.getType()) )
+         if( DeviceTypesFuncs.isRepeater(liteDevice.getPaoType().getDeviceTypeId()) )
          {
             for(int j=0;j<assignedRepeaters.size();j++)
             {
-               if( ((com.cannontech.database.data.lite.LiteYukonPAObject)assignedRepeaters.get(j)).getYukonID() ==
+               if( ((LiteYukonPAObject)assignedRepeaters.get(j)).getYukonID() ==
                      liteDevice.getYukonID() )
                   alreadyAssigned = true;
             }

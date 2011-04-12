@@ -5,10 +5,11 @@ package com.cannontech.dbeditor.editor.route;
  */
 
 import java.awt.GridBagConstraints;
+import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class CommunicationRouteEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -438,115 +439,112 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
  */
 private void loadSignalTransmitterComboBox(String routeType) {
 
+	PaoType routePaoType = PaoType.getForDbString(routeType);
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		java.util.List devices = cache.getAllDevices();
+		List<LiteYukonPAObject> devices = cache.getAllDevices();
 		if( getSignalTransmitterComboBox().getModel().getSize() > 0 )
 			getSignalTransmitterComboBox().removeAllItems();
 
-		if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
+		if (routePaoType == PaoType.ROUTE_CCU )
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				int type = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType();
-
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(type)  )
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (DeviceTypesFuncs.isCCU(liteDevice.getPaoType().getDeviceTypeId())) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}  	//repeaters are not actually signal transmitters, so they should not be in the ComboBox
 				//|| com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(type)
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_TCU) )
+		else if (routePaoType == PaoType.ROUTE_TCU)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				int type = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType();
-
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isTCU(type) )
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (DeviceTypesFuncs.isTCU(liteDevice.getPaoType().getDeviceTypeId())) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_LCU) )
+		else if (routePaoType == PaoType.ROUTE_LCU)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isLCU( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() ) )
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (DeviceTypesFuncs.isLCU( liteDevice.getPaoType().getDeviceTypeId())) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING) )
+		else if (routePaoType == PaoType.ROUTE_TAP_PAGING)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.TAPTERMINAL )
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.TAPTERMINAL) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE) )
+		else if (routePaoType == PaoType.ROUTE_WCTP_TERMINAL)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.WCTP_TERMINAL)
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.WCTP_TERMINAL) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE) )
+		else if (routePaoType == PaoType.ROUTE_SNPP_TERMINAL)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.SNPP_TERMINAL)
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.SNPP_TERMINAL) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_TNPP_TERMINAL_ROUTE) )
+		else if (routePaoType == PaoType.ROUTE_TNPP_TERMINAL)
         {
-            for(int i=0;i<devices.size();i++)
-            {
-                if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.TNPP_TERMINAL)
-                    getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+                if (liteDevice.getPaoType() == PaoType.TNPP_TERMINAL) {
+                    getSignalTransmitterComboBox().addItem(liteDevice);
+                }
             }
         }
-		else if( routeType.equalsIgnoreCase(RouteTypes.STRING_RDS_TERMINAL_ROUTE))
+		else if (routePaoType == PaoType.ROUTE_RDS_TERMINAL)
 		{
-		    for(int i=0;i<devices.size();i++)
-		    {
-		        if( ((LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.RDS_TERMINAL)
-		            getSignalTransmitterComboBox().addItem(devices.get(i));
+			for (LiteYukonPAObject liteDevice : devices) {
+		        if (liteDevice.getPaoType() == PaoType.RDS_TERMINAL) {
+		            getSignalTransmitterComboBox().addItem(liteDevice);
+		        }
 		    }
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_VERSACOM) )
+		else if (routePaoType == PaoType.ROUTE_VERSACOM)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				int type = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType();
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(type)
-					 || com.cannontech.database.data.device.DeviceTypesFuncs.isTCU(type)
-					 || com.cannontech.database.data.device.DeviceTypesFuncs.isLCU(type) )
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				int type = liteDevice.getPaoType().getDeviceTypeId();
+				if( DeviceTypesFuncs.isCCU(type)
+					 || DeviceTypesFuncs.isTCU(type)
+					 || DeviceTypesFuncs.isLCU(type)) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_SERIES_5_LMI_ROUTE) )
+		else if (routePaoType == PaoType.ROUTE_SERIES_5_LMI)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.SERIES_5_LMI)
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.SERIES_5_LMI) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_RTC_ROUTE) )
+		else if (routePaoType == PaoType.ROUTE_RTC)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.RTC)
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.RTC) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
-		else if(routeType.equalsIgnoreCase(RouteTypes.STRING_INTEGRATION_ROUTE))
+		else if (routePaoType == PaoType.ROUTE_INTEGRATION)
 		{
-			for(int i=0;i<devices.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.INTEGRATION_TRANSMITTER)
-					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			for (LiteYukonPAObject liteDevice : devices) {
+				if (liteDevice.getPaoType() == PaoType.INTEGRATION_TRANSMITTER) {
+					getSignalTransmitterComboBox().addItem(liteDevice);
+				}
 			}
 		}
 	}

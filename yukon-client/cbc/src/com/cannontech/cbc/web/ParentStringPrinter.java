@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -18,13 +17,12 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
+import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
-import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 public class ParentStringPrinter {
@@ -47,9 +45,9 @@ public class ParentStringPrinter {
 
     public String printPAO(final Integer paoId) {
         LiteYukonPAObject lite = paoDao.getLiteYukonPAO(paoId);
-        int type = lite.getType();
+        PaoType paoType = lite.getPaoType();
         
-        if (paoDefinitionDao.isTagSupported(PaoType.getForId(type), PaoTag.VOLTAGE_REGULATOR)) {
+        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.VOLTAGE_REGULATOR)) {
             Zone zone = null;
             
             try {
@@ -71,10 +69,10 @@ public class ParentStringPrinter {
             String result = sb.toString();
             return result;
         }
-        else if (type == CapControlTypes.CAP_CONTROL_AREA || 
-            type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
+        else if (paoType == PaoType.CAP_CONTROL_AREA || 
+            paoType == PaoType.CAP_CONTROL_SPECIAL_AREA) {
             return ORPH_STRING;
-        } else if (type == CapControlTypes.CAP_CONTROL_SUBSTATION) {
+        } else if (paoType == PaoType.CAP_CONTROL_SUBSTATION) {
             Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(paoId);
             List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(paoId);
             if (areaId > -1) {
@@ -86,7 +84,7 @@ public class ParentStringPrinter {
             } else {
                 return ORPH_STRING;
             }
-        } else if (type == CapControlTypes.CAP_CONTROL_SUBBUS) {
+        } else if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
             Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(paoId);
             if (substationId > -1) {
                 Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
@@ -104,7 +102,7 @@ public class ParentStringPrinter {
             } else {
                 return ORPH_STRING;
             }
-        } else if (type == CapControlTypes.CAP_CONTROL_FEEDER) {
+        } else if (paoType == PaoType.CAP_CONTROL_FEEDER) {
             Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(paoId);
             if (subBusId > -1) {
                 Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(subBusId);
@@ -127,7 +125,7 @@ public class ParentStringPrinter {
             } else {
                 return ORPH_STRING;
             }
-        } else if (type == CapControlTypes.CAP_CONTROL_CAPBANK) {
+        } else if (paoType == PaoType.CAPBANK) {
             Integer feederId = CCFeederBankList.getFeederIdForCapBank(paoId);
             if (feederId > -1) {
                 Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(feederId);

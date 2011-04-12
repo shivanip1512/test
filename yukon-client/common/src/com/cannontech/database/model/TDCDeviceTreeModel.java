@@ -66,15 +66,13 @@ protected synchronized void runUpdate()
 			LiteYukonPAObject litPAO = (LiteYukonPAObject)paos.get(i);
 
 			if( isDeviceValid(
-					litPAO.getCategory(),
-					litPAO.getPaoClass(),
-					litPAO.getType() ) )
+					litPAO.getPaoType().getPaoCategory().getCategoryId(),
+					litPAO.getPaoType().getPaoClass().getPaoClassId(),
+					litPAO.getPaoType().getDeviceTypeId() ) )
 			{
-				if( currType != litPAO.getType() )
+				if( currType != litPAO.getPaoType().getDeviceTypeId() )
 				{
-					devTypeNode = new DummyTreeNode(
-						PAOGroups.getPAOTypeString(litPAO.getType()) );
-
+					devTypeNode = new DummyTreeNode(litPAO.getPaoType().getDbString());
 					typeList.add( devTypeNode );
 				}
 
@@ -82,7 +80,7 @@ protected synchronized void runUpdate()
 				devTypeNode.add(deviceNode);					
 				deviceNode.setWillHaveChildren(true);
 
-				currType = litPAO.getType();
+				currType = litPAO.getPaoType().getDeviceTypeId();
 			}
 
 

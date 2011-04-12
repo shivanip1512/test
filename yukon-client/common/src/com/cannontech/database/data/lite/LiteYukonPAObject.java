@@ -15,8 +15,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
 
-/*
- */
+
 public class LiteYukonPAObject extends LiteBase implements YukonPao
 {
 	// a place holder for a LiteYukonPAObject used to show a dummy element
@@ -41,16 +40,14 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
 	);
 
 	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
-	private int category = PAOGroups.INVALID;
 	private String paoName = null;
 	private PaoType paoType = null;
-	private int paoClass = PAOGroups.INVALID;
 	private String paoDescription = null;
 	private String disableFlag = null;
+
 	//portID is only for devices that belong to a port
 	private int portID = PAOGroups.INVALID;
-
-	//routeIDID is only for devices that have a route, (deviceRoutes)
+	//routeID is only for devices that have a route, (deviceRoutes)
 	private int routeID = PAOGroups.INVALID;
 	//address is only for devices that have a physical address (deviceCarrierStatistics)
 	private int address = PAOGroups.INVALID;
@@ -82,8 +79,6 @@ public LiteYukonPAObject(int paoId, String paoName, PaoType paoType, String paoD
 	this(paoId);
 
 	setPaoName(paoName);
-	setCategory(paoType.getPaoCategory().getCategoryId());
-	setPaoClass(paoType.getPaoClass().getPaoClassId());
 	setPaoType(paoType);
 	setPaoDescription(paoDescription);
     setDisableFlag(disableFlag);
@@ -95,58 +90,25 @@ public LiteYukonPAObject(int paoId, String paoName, PaoCategory paoCategory, Pao
 	this(paoId);
 
 	setPaoName(paoName);
-	setCategory(paoCategory.getCategoryId());
-	setPaoClass(paoClass.getPaoClassId());
 	setPaoType(paoType);
+	setCategory(paoCategory);
+	setPaoClass(paoClass);
 	setPaoDescription(paoDescription);
     setDisableFlag(disableFlag);
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @return int
- */
-public int getCategory() {
-	return category;
-}
 
-/**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @return int
- */
-public int getPaoClass() {
-	return paoClass;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/12/2001 11:31:46 AM)
- * @return java.lang.String
- */
 public java.lang.String getPaoName() {
 	return paoName;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/10/2001 10:22:08 AM)
- * @return int
- */
+
 public int getPortID() {
 	return portID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @return int
- */
-public int getType() {
-        return paoType.getDeviceTypeId();
+
+public PaoType getPaoType() {
+	return paoType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/27/2001 12:07:44 PM)
- * @return int
- */
+
 public int getYukonID() {
 	return getLiteID();
 }
@@ -155,11 +117,6 @@ public String getDisableFlag() {
     return disableFlag;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:21:01 PM)
- * @param dbalias java.lang.String
- */
 public void retrieve(String dbalias)
 {
 	try
@@ -176,11 +133,10 @@ public void retrieve(String dbalias)
 				"Unable to find the PAObject with PAOid = " + getLiteID());
 
 		Object[] objs = stat.getRow(0);
-		String category = objs[0].toString();
-		setCategory(PAOGroups.getCategory(category));
+		setCategory(PaoCategory.valueOf(objs[0].toString()));
 		setPaoName(objs[1].toString());
-		setType(PAOGroups.getPAOType(category, objs[2].toString()));
-		setPaoClass(PAOGroups.getPAOClass(category, objs[3].toString()));
+		setPaoType(PaoType.getForDbString(objs[2].toString()));
+		setPaoClass(PaoClass.getForDbString(objs[3].toString()));
 		setPaoDescription(objs[4].toString());
         setDisableFlag(objs[5].toString());
 	}
@@ -235,79 +191,53 @@ public void retrieve(String dbalias)
 }	
 
 /**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @param newCategory int
+ * This setter does not actually set the paoCategory.
+ * paoType.paoCategory will be used for paoCategory. 
+ * @param paoCategory
  */
-public void setCategory(int newCategory) {
-	category = newCategory;
+private void setCategory(PaoCategory paoCategory) {
+	if (getPaoType().getPaoCategory() != paoCategory) {
+		CTILogger.warn("PaoCategory (" + paoCategory + ") does not match PaoType (" + getPaoType()+")");
+	}
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @param newPaoClass int
+ * This setter does not actually set the paoClass.
+ * paoType.paoClass will be used for paoClass.
+ * @param paoClass
  */
-public void setPaoClass(int newPaoClass) {
-	paoClass = newPaoClass;
+private void setPaoClass(PaoClass paoClass) {
+	if (getPaoType().getPaoClass() != paoClass) {
+		CTILogger.warn("PaoClass (" + paoClass + ") does not match PaoType (" + getPaoType()+")");
+	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/12/2001 11:31:46 AM)
- * @param newPaoName java.lang.String
- */
+
 public void setPaoName(java.lang.String newPaoName) {
 	paoName = newPaoName;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/10/2001 10:22:08 AM)
- * @param newPortID int
- */
+
 public void setPortID(int newPortID) {
 	portID = newPortID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/28/2001 4:57:42 PM)
- * @param newType int
- */
-public void setType(int newType) {
-    paoType = newType == PAOGroups.INVALID ? null : PaoType.getForId(newType);
 }
 
 public void setPaoType(PaoType paoType) {
 	this.paoType = paoType;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/27/2001 12:07:44 PM)
- * @param newYukonID int
- */
 public void setYukonID(int newYukonID) 
 {
 	setLiteID( newYukonID );
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
 public String toString() 
 {
 	return getPaoName();
 }
-	/**
-	 * Returns the paoDescription.
-	 * @return String
-	 */
+
 	public String getPaoDescription() {
 		return paoDescription;
 	}
 
-	/**
-	 * Sets the paoDescription.
-	 * @param paoDescription The paoDescription to set
-	 */
 	public void setPaoDescription(String paoDescription) {
 		this.paoDescription = paoDescription;
 	}
@@ -316,33 +246,21 @@ public String toString()
         this.disableFlag = flag_;
     }
 
-	/**
-	 * @return
-	 */
 	public int getAddress()
 	{
 		return address;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getRouteID()
 	{
 		return routeID;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setAddress(int i)
 	{
 		address = i;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setRouteID(int i)
 	{
 		routeID = i;

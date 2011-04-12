@@ -1,6 +1,12 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
+import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.database.data.port.PortFactory;
+import com.cannontech.database.data.route.RouteFactory;
 
 /**
  * Insert the type's description here.
@@ -28,17 +34,16 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	YukonPAObject returnObject = null;
 	
 	//decide what kind of PAObject to create by the category
-	String liteCategory = PAOGroups.getCategory( litePAObject.getCategory() );
-
-	if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE) )
+	PaoCategory paoCategory = litePAObject.getPaoType().getPaoCategory();
+	if (paoCategory == PaoCategory.DEVICE)
 	{
-		returnObject = com.cannontech.database.data.device.DeviceFactory.createDevice( litePAObject.getType() );
+		returnObject = DeviceFactory.createDevice(litePAObject.getPaoType());
 		((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonID() ) );
 		returnObject.setPAOName( litePAObject.getPaoName() );
 	}
-	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
+	else if (paoCategory == PaoCategory.LOADMANAGEMENT)
 	{
-		returnObject = com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( litePAObject.getType() );
+		returnObject = LMFactory.createLoadManagement(litePAObject.getPaoType().getDeviceTypeId());
 		
 		if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
 			((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonID() ) );
@@ -47,21 +52,21 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 		
 		returnObject.setPAOName( litePAObject.getPaoName() );
 	}
-	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
+	else if (paoCategory == PaoCategory.PORT)
 	{
-		returnObject = com.cannontech.database.data.port.PortFactory.createPort( litePAObject.getType() );
+		returnObject = PortFactory.createPort(litePAObject.getPaoType().getDeviceTypeId());
 		((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( litePAObject.getPaoName() );
 	}
-	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE) )
+	else if (paoCategory == PaoCategory.ROUTE)
 	{
-		returnObject = com.cannontech.database.data.route.RouteFactory.createRoute( litePAObject.getType() );
+		returnObject = RouteFactory.createRoute(litePAObject.getPaoType().getDeviceTypeId());
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( litePAObject.getPaoName() );
 	}
-	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
+	else if (paoCategory == PaoCategory.CAPCONTROL)
 	{
-		returnObject = com.cannontech.database.data.capcontrol.CCYukonPAOFactory.createCapControlPAO( litePAObject.getType() );
+		returnObject = CCYukonPAOFactory.createCapControlPAO(litePAObject.getPaoType().getDeviceTypeId());
 		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( litePAObject.getPaoName() );
 	}

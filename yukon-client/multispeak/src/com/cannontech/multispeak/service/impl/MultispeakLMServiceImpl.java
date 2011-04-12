@@ -29,7 +29,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
@@ -133,7 +132,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
 			try {
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(mspLMInterfaceMapping.getPaobjectId());
-				if (paoDefinitionDao.isTagSupported(PaoType.getForId(liteYukonPAObject.getType()), PaoTag.LM_PROGRAM)) {
+				if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
 					String programName = liteYukonPAObject.getPaoName();
 					ProgramStatus programStatus = null;
 			    	if(mspLoadControl.getControlEventType() == ControlEventType.Initiate) {
@@ -142,7 +141,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 			    		programStatus = stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
 			    	}
 			    	CTILogger.info("Control Status: " + programStatus.toString());
-				} else if ( liteYukonPAObject.getType() == DeviceTypes.LM_SCENARIO) {
+				} else if ( liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
 					String scenarioName = liteYukonPAObject.getPaoName();
 					ScenarioStatus scenarioStatus = null;
 			    	if(mspLoadControl.getControlEventType() == ControlEventType.Initiate) {
@@ -304,10 +303,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        	lmProgramBases = new ArrayList<LMProgramBase>();
 	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
-				if (paoDefinitionDao.isTagSupported(PaoType.getForId(liteYukonPAObject.getType()), PaoTag.LM_PROGRAM)) {
+				if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
 					LMProgramBase program = loadControlClientConnection.getProgram(paobjectId);
 					lmProgramBases.add(program);
-	        	} else if ( liteYukonPAObject.getType() == DeviceTypes.LM_SCENARIO) {
+	        	} else if ( liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
 	        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);
 	        		lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
 	        	}

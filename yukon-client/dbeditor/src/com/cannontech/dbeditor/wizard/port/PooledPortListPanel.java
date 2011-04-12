@@ -1,11 +1,12 @@
 package com.cannontech.dbeditor.wizard.port;
 import java.awt.Dimension;
 import java.util.Collections;
+import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.PooledPort;
 import com.cannontech.database.db.pao.PAOowner;
 import com.cannontech.yukon.IDatabaseCache;
@@ -294,19 +295,17 @@ private void initialize() {
 	java.util.Vector availablePorts = null;
 	synchronized(cache)
 	{
-		java.util.List allPorts = cache.getAllPorts();
+		List<LiteYukonPAObject> allPorts = cache.getAllPorts();
 		Collections.sort( allPorts, LiteComparators.liteStringComparator );
 
 		availablePorts = new java.util.Vector( allPorts.size() );
 
 		//do not add other POOLED ports or non-dialup ports
-		for( int i = 0; i < allPorts.size(); i++ )
-		{
-			if( ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.DIALOUT_POOL && 
-			((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.LOCAL_SHARED &&  
-			((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.TSERVER_SHARED)
-			{
-				availablePorts.add( allPorts.get(i) );
+		for (LiteYukonPAObject litePort : allPorts) {
+			if (litePort.getPaoType() != PaoType.DIALOUT_POOL && 
+				litePort.getPaoType() != PaoType.LOCAL_SHARED &&  
+				litePort.getPaoType() != PaoType.TSERVER_SHARED) {
+				availablePorts.add(litePort);
 			}
 		}
 	}
@@ -550,7 +549,7 @@ public void setValue(Object val)
 	synchronized(cache)
 	{
 		java.util.Vector macroPortsVector = ((PooledPort)val).getPortVector();
-		java.util.List allPorts = cache.getAllPorts();
+		List<LiteYukonPAObject> allPorts = cache.getAllPorts();
 
 		assignedPorts = new java.util.Vector();
 		int singlePortID;
@@ -568,16 +567,14 @@ public void setValue(Object val)
 		}
 
 		availablePorts = new java.util.Vector();
-		for(int i=0;i<allPorts.size();i++)
-		{
-			if( ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.DIALOUT_POOL
-				 && !assignedPorts.contains(allPorts.get(i)) && 
-				 ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.LOCAL_SHARED &&  
-				((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.TSERVER_SHARED)
+		for (LiteYukonPAObject litePort : allPorts) {
+			if (litePort.getPaoType() != PaoType.DIALOUT_POOL
+				 && !assignedPorts.contains(litePort) && 
+				 litePort.getPaoType() != PaoType.LOCAL_SHARED &&  
+				 litePort.getPaoType() != PaoType.TSERVER_SHARED)
 			{
-				availablePorts.addElement( allPorts.get(i) );
+				availablePorts.addElement(litePort);
 			}
-
 		}		
 	}
 

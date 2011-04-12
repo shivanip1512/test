@@ -1,5 +1,7 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.macs.message.Schedule;
@@ -941,11 +943,11 @@ public final static int getRouteType(String typeString)
  * @return int
  * @param typeString java.lang.String
  */
-public final static boolean isCapControl( com.cannontech.database.data.lite.LiteYukonPAObject lite )
+public final static boolean isCapControl( LiteYukonPAObject lite )
 {
-	return ( (lite.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL
-				   || lite.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
-				 && lite.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL);
+	return ( (lite.getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
+				   || lite.getPaoType().getPaoCategory() == PaoCategory.DEVICE )
+				 && lite.getPaoType().getPaoClass() == PaoClass.CAPCONTROL);
 }
 
 /**
@@ -1022,8 +1024,8 @@ public static final boolean isTcpPortEligible(PaoType type) {
  */
 public final static boolean isLoadManagement( LiteYukonPAObject lite )
 {
-	return( lite.getPaoClass() == DeviceClasses.GROUP || 
-	        lite.getPaoClass() == DeviceClasses.LOADMANAGEMENT );
+	return( lite.getPaoType().getPaoClass() == PaoClass.GROUP || 
+	        lite.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT );
 }
 /**
  * This method was created in VisualAge.
