@@ -1,5 +1,10 @@
 package com.cannontech.common.constants;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.MessageCodeGenerator;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 /**
  * @author rneuharth
@@ -35,11 +40,20 @@ public class YukonListEntry
 	}
 
 	/**
-	 * Returns the entryText.
-	 * @return String
+	 * Returns the raw entryText.  If you want to display this in the UI, you should use
+	 * getEntryTextMsr() instead.
+	 * @see #getEntryTextMsr()
 	 */
 	public String getEntryText() {
 		return entryText;
+	}
+
+	/**
+	 * Get the entry text as a MessageSourceResolvable for use in the UI.
+	 */
+	public MessageSourceResolvable getEntryTextMsr() {
+        String code = MessageCodeGenerator.generateCode("yukon.common.list.entry", entryText);
+        return YukonMessageSourceResolvable.createDefault(code, entryText);
 	}
 
 	/**

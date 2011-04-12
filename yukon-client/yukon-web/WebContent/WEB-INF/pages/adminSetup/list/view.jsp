@@ -35,7 +35,7 @@
                             <i:inline key=".noEntryText"/>
                         </c:if>
                         <c:if test="${!empty entry.entryText}">
-                            <spring:escapeBody htmlEscape="true">${entry.entryText}</spring:escapeBody>
+                            <i:inline key="${entry.entryTextMsr}"/>
                         </c:if>
                     </td>
                 </tr>
