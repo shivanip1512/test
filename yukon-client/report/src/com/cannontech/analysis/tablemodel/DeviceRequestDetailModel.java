@@ -59,23 +59,24 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
     private SqlFragmentSource getSqlSource(){
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         if(lifetime){
-            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
+            sql.append("SELECT ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
+            sql.append("FROM DynamicPaoStatistics dps");
+            sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = dps.PAObjectID");
+            sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
+            sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
+            sql.append("WHERE").append(getFilterSqlWhereClause());
+            sql.append("  AND dps.StatisticType = 'Lifetime'");
         } else {
-            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, sum(requests) requests, sum(attempts) attempts, sum(completions) completions");
-        }
-        
-        sql.append("from DYNAMICPAOSTATISTICS dps");
-        sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dps.PAObjectID");
-        sql.append("  join DeviceRoutes dr on dr.DEVICEID = dps.PAObjectID");
-        sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
-        sql.append("WHERE").append(getFilterSqlWhereClause());
-        
-        if(lifetime){
-            sql.append("  and dps.StatisticType = 'Lifetime'");
-        } else {
-            sql.append("  and dps.StatisticType = 'Daily'");
-            sql.append("  and StartDateTime").gte(getStartDate()).append("and StartDateTime").lt(getStopDate());
-            sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
+            sql.append("SELECT ypo.paoname deviceName, ypo.type type, route.paoname route, SUM(requests) requests, SUM(attempts) attempts, SUM(completions) completions");
+            sql.append("FROM DynamicPaoStatistics dps");
+            sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = dps.PAObjectID");
+            sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
+            sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
+            sql.append("WHERE").append(getFilterSqlWhereClause());
+            sql.append("  AND dps.StatisticType = 'Daily'");
+            sql.append("  AND StartDateTime").gte(getStartDate());
+            sql.append("  AND StartDateTime").lt(getStopDate());
+            sql.append("GROUP BY ypo.PAOName, ypo.type, route.PAOName");
         }
 
         return sql;

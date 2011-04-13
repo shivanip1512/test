@@ -209,8 +209,8 @@ public class StatisticModel extends ReportModelBase {
         }
 		  
         if(getStatPeriodType() == null || ! getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
-            sql.append(" AND STARTDATETIME >= ").appendArgument(getStartDate());
-            sql.append(" AND STARTDATETIME < ").appendArgument(getStopDate());
+            sql.append(" AND STARTDATETIME").gte(getStartDate());
+            sql.append(" AND STARTDATETIME").lt(getStopDate());
         }
 
         sql.append(" ORDER BY PAO.PAOName");
