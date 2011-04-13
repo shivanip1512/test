@@ -58,15 +58,7 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
     
     private SqlFragmentSource getSqlSource(){
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-        if(lifetime){
-            sql.append("SELECT ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
-            sql.append("FROM DynamicPaoStatistics dps");
-            sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = dps.PAObjectID");
-            sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
-            sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
-            sql.append("WHERE").append(getFilterSqlWhereClause());
-            sql.append("  AND dps.StatisticType = 'Lifetime'");
-        } else {
+        if(!lifetime){
             sql.append("SELECT ypo.paoname deviceName, ypo.type type, route.paoname route, SUM(requests) requests, SUM(attempts) attempts, SUM(completions) completions");
             sql.append("FROM DynamicPaoStatistics dps");
             sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = dps.PAObjectID");
@@ -77,6 +69,15 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
             sql.append("  AND StartDateTime").gte(getStartDate());
             sql.append("  AND StartDateTime").lt(getStopDate());
             sql.append("GROUP BY ypo.PAOName, ypo.type, route.PAOName");
+        } else {
+            sql.append("SELECT ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
+            sql.append("FROM DynamicPaoStatistics dps");
+            sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = dps.PAObjectID");
+            sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
+            sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
+            sql.append("WHERE").append(getFilterSqlWhereClause());
+            sql.append("  AND dps.StatisticType = 'Lifetime'");
+            sql.append("GROUP BY ypo.PAOName, ypo.type, route.PAOName, Requests, Attempts, Completions");
         }
 
         return sql;
