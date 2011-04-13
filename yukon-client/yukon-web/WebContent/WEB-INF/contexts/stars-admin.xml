@@ -31,22 +31,13 @@
           parent="starsAdminActionController">
 		<property name="switchContextService" ref="switchContextService"/>
 	</bean>
-	
-	<bean id="adminUpdateApplianceCategory" class="com.cannontech.web.stars.action.admin.UpdateApplianceCategoryController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminDeleteApplianceCategory" class="com.cannontech.web.stars.action.admin.DeleteApplianceCategoryController" 
-          parent="starsAdminActionController"/>
-	
+
 	<bean id="adminUpdateSubstation" class="com.cannontech.web.stars.action.admin.UpdateSubstationController" 
           parent="starsAdminActionController"/>
 	
 	<bean id="adminDeleteSubstation" class="com.cannontech.web.stars.action.admin.DeleteSubstationController" 
           parent="starsAdminActionController"/>
-	
-	<bean id="adminUpdateSelectionList" class="com.cannontech.web.stars.action.admin.UpdateSelectionListController" 
-          parent="starsAdminActionController"/>
-	
+
 	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController" 
           parent="starsAdminActionController">
           <property name="transactionManager" ref="transactionManager"/>

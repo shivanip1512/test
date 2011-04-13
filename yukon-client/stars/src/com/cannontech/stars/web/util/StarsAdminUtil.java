@@ -1,9 +1,3 @@
-/*
- * Created on Nov 9, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.stars.web.util;
 
 import java.util.ArrayList;
@@ -12,14 +6,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
@@ -49,7 +40,6 @@ import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
-import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.stars.ECToGenericMapping;
@@ -58,70 +48,24 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.roles.operator.InventoryRole;
-import com.cannontech.roles.operator.OddsForControlRole;
-import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.HardwareAction;
-import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class StarsAdminUtil {
 
 	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
-	
-	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-		com.cannontech.database.db.web.YukonWebConfiguration config =
-				new com.cannontech.database.db.web.YukonWebConfiguration();
-		config.setLogoLocation( "yukon/Icons/Load.gif" );
-		config.setAlternateDisplayName( appCatName );
-		config.setDescription( "" );
-		config.setURL( "" );
-		
-		int dftCatID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT).getEntryID();
-		
-		com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
-				new com.cannontech.database.data.stars.appliance.ApplianceCategory();
-		com.cannontech.database.db.stars.appliance.ApplianceCategory appCatDB = appCat.getApplianceCategory();
-		
-		appCatDB.setCategoryID( new Integer(dftCatID) );
-		appCatDB.setDescription( appCatName );
-		appCat.setWebConfiguration( config );
-		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-		
-		appCat = Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
-		
-		LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
-		energyCompany.addApplianceCategory( liteAppCat );
-		LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( appCat.getWebConfiguration() );
-		StarsDatabaseCache.getInstance().addWebConfiguration( liteConfig );
-		
-		StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
-		energyCompany.getStarsEnrollmentPrograms().addStarsApplianceCategory( starsAppCat );
-		
-		return liteAppCat;
-	}
-	
+
 	public static void deleteApplianceCategory(int appCatID, LiteStarsEnergyCompany energyCompany, LiteYukonUser user)
 		throws TransactionException
 	{
@@ -145,16 +89,7 @@ public class StarsAdminUtil {
 		energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
 		StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 	}
-	
-	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany, LiteYukonUser user)
-		throws TransactionException
-	{
-        Iterable<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
-        for (LiteApplianceCategory liteAppCat : appCats) {
-            deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany, user );
-        }
-	}
-	
+
 	public static void deleteLMProgramWebPublishing(int programID, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) 
 	    throws TransactionException {
 	    LiteLMProgramWebPublishing liteProg = energyCompany.getProgram(programID);
@@ -285,104 +220,7 @@ public class StarsAdminUtil {
 			deleteSubstation( liteSub.getSubstationID(), energyCompany );
 		}
 	}
-	
-	/**
-	 * Update entries of a customer selection list. The entryData parameter
-	 * is an array of {entryID(Integer), entryText(String), yukDefID(Integer)}
-	 */
-	public static void updateYukonListEntries(YukonSelectionList cList, Object[][] entryData, LiteStarsEnergyCompany energyCompany)
-		throws WebClientException, java.sql.SQLException
-	{
-		java.sql.Connection conn = null;
-		boolean autoCommit = true;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit( false );
-			
-			// Create a copy of the old entry list, so we won't lose it if something goes wrong
-			List<YukonListEntry> oldEntries = new ArrayList<YukonListEntry>();
-			oldEntries.addAll( cList.getYukonListEntries() );
-			
-			List<YukonListEntry> newEntries = new ArrayList<YukonListEntry>();
-			
-			if (entryData != null) {
-				for (int i = 0; i < entryData.length; i++) {
-					int entryID = ((Integer)entryData[i][0]).intValue();
-					
-					if (entryID == 0) {
-						// This is a new entry, add it to the new entry list
-						com.cannontech.database.db.constants.YukonListEntry entry =
-								new com.cannontech.database.db.constants.YukonListEntry();
-						entry.setListID(cList.getListId());
-						entry.setEntryOrder(i+1);
-						entry.setEntryText( (String)entryData[i][1] );
-						entry.setYukonDefID( (Integer)entryData[i][2] );
-						entry.setDbConnection( conn );
-						entry.add();
-						
-						com.cannontech.common.constants.YukonListEntry cEntry =
-								new com.cannontech.common.constants.YukonListEntry();
-						StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
-						newEntries.add( cEntry );
-					}
-					else {
-						// This is an existing entry, update it
-						for (int j = 0; j < oldEntries.size(); j++) {
-							YukonListEntry cEntry = oldEntries.get(j);
-							
-							if (cEntry.getEntryID() == entryID) {
-								com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry(cEntry);
-								entry.setEntryOrder( new Integer(i+1) );
-								entry.setEntryText( (String)entryData[i][1] );
-								entry.setYukonDefID( (Integer)entryData[i][2] );
-								entry.setDbConnection( conn );
-								entry.update();
-								
-								StarsLiteFactory.setConstantYukonListEntry(cEntry, entry);
-								newEntries.add( oldEntries.remove(j) );
-								break;
-							}
-						}
-					}
-				}
-			}
-			
-			// Delete all the remaining entries
-			for (int i = 0; i < oldEntries.size(); i++) {
-				YukonListEntry cEntry = oldEntries.get(i);
-				
-				try {
-					com.cannontech.database.db.constants.YukonListEntry entry =
-							new com.cannontech.database.db.constants.YukonListEntry();
-					entry.setEntryID( new Integer(cEntry.getEntryID()) );
-					entry.setDbConnection( conn );
-					entry.delete();
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-					conn.rollback();
-					throw new WebClientException("Cannot delete list entry \"" + cEntry.getEntryText() + "\", make sure it is not referenced", e);
-				}
-			}
-			
-			conn.commit();
-			
-			// Sort the entry list by the ordering specified in the selection list
-			if (cList.getOrdering() == YukonSelectionListOrder.ALPHABETICAL)
-				Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
-			
-			cList.setYukonListEntries( newEntries );
-		}
-		finally {
-			if (conn != null) {
-				conn.setAutoCommit( autoCommit );
-				conn.close();
-			}
-		}
-	}
-	
+
 	private static String getReferenceColumn(String listName) {
 		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE))
 			return "VoltageID";
@@ -992,197 +830,5 @@ public class StarsAdminUtil {
 		}
 		
 		ServerUtils.handleDBChange( liteUser, DbChangeType.UPDATE );
-	}
-
-	// TODO:  DELETE WHEN REMOVING LIST BIT FROM ConfigEnergyCompany.jsp
-	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
-	    List<YukonSelectionList> userLists = new ArrayList<YukonSelectionList>();
-		
-        if (StarsUtils.isOperator(user)) {
-			Map<String,YukonSelectionList> listMap = new TreeMap<String,YukonSelectionList>();
-			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
-				energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
-
-			if (DaoFactory.getAuthDao().getRole(user, OddsForControlRole.ROLEID) != null)
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
-			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING))
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
-			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) ||
-				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE))
-			{
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
-				
-                Iterable<LiteApplianceCategory> categories = energyCompany.getAllApplianceCategories();
-				List<Integer> catDefIDs = new ArrayList<Integer>();
-				
-				for (LiteApplianceCategory liteAppCat : categories) {
-					int catDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteAppCat.getCategoryID() ).getYukonDefID();
-					if (catDefIDs.contains( new Integer(catDefID) )) continue;
-					catDefIDs.add( new Integer(catDefID) );
-					
-					if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_WH_LOCATION,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_WH_LOCATION) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE) );
-					}
-					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION) {
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION) );
-						listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE,
-							energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE) );
-					}
-				}
-			}
-			
-			if (DaoFactory.getAuthDao().getRole(user, InventoryRole.ROLEID) != null ||
-				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
-				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE))
-			{
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
-			}
-			
-			if (DaoFactory.getAuthDao().getRole(user, WorkOrderRole.ROLEID) != null ||
-				DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
-			{
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
-			}
-			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE)) {
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
-			}
-			
-			if (DaoFactory.getAuthDao().getRole(user, InventoryRole.ROLEID) != null) {
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY) );
-				if (DaoFactory.getAuthDao().checkRoleProperty(user, InventoryRole.INVENTORY_SHOW_ALL)) {
-					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY,
-						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY) );
-					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY,
-						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY) );
-				}
-			}
-			
-			if (DaoFactory.getAuthDao().getRole(user, WorkOrderRole.ROLEID) != null) {
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY) );
-				if (DaoFactory.getAuthDao().checkRoleProperty(user, WorkOrderRole.WORK_ORDER_SHOW_ALL)) {
-					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY,
-						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY) );
-					listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY,
-						energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY) );
-				}
-			}
-			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user, AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY)) {
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
-			}
-			
-			Iterator<YukonSelectionList> it = listMap.values().iterator();
-			while (it.hasNext())
-				userLists.add( it.next() );
-		}
-		else if (StarsUtils.isResidentialCustomer( user )) {
-			userLists.add( energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
-		}
-		
-		return userLists;
 	}
 }
