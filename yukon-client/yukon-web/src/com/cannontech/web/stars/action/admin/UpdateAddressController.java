@@ -17,7 +17,6 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
-import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
@@ -37,12 +36,6 @@ public class UpdateAddressController extends StarsAdminActionController {
             if (referer.equalsIgnoreCase("EnergyCompany.jsp")) {
                 StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( StarsAdminUtil.ENERGY_COMPANY_TEMP );
                 StarsCustomerAddress starsAddr = ecTemp.getCompanyAddress();
-                processAddress(request, response, starsAddr, newAddress, energyCompany);
-            }
-
-            if (referer.startsWith("ServiceCompany.jsp")) {
-                StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
-                StarsCustomerAddress starsAddr = scTemp.getCompanyAddress();
                 processAddress(request, response, starsAddr, newAddress, energyCompany);
             }
 

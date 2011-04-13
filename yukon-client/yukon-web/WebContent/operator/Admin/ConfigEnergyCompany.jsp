@@ -7,7 +7,6 @@
 <%@ page import="com.cannontech.common.inventory.HardwareType" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
-<jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
 <%	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -75,34 +74,12 @@ function confirmDeleteAllAppCats() {
 	return confirm("Are you sure you want to delete all appliance categories, programs, and appliances under these categories?");
 }
 
-function editServiceCompany(form, compIdx) {
-	form.attributes["action"].value = "ServiceCompany.jsp?CompanyID=" + compIdx;
-	form.action.value = "init";
-	form.submit();
-}
-
-function confirmDeleteCompany() {
-	return confirm("Are you sure you want to delete the service company?");
-}
-
-function confirmDeleteAllCompanies() {
-	return confirm("Are you sure you want to delete all service companies?");
-}
-
 function confirmDeleteSubstation() {
 	return confirm("Are you sure you want to delete the substation?");
 }
 
 function confirmDeleteAllSubstations() {
 	return confirm("Are you sure you want to delete all substations?");
-}
-
-function confirmDeleteOperatorLogin() {
-	return confirm("Are you sure you want to delete the operator login?");
-}
-
-function confirmDeleteAllOperatorLogins() {
-	return confirm("Are you sure you want to delete all operator logins (except the default login)?");
 }
 
 var memberLoginList = new Array(<%= memberCandidates.size() %>);
@@ -169,32 +146,6 @@ function removeAllMembers(form) {
 	form.MemberID.value = -1;
 	form.action.value = "RemoveMemberEnergyCompany";
 	form.submit();
-}
-
-function editWarehouse(form, warehouseID) {
-	form.attributes["action"].value = "Warehouse.jsp?Warehouse=" + warehouseID;
-	form.action.value = "init";
-	form.submit();
-}
-
-function confirmDeleteWarehouse() {
-	return confirm("Are you sure you want to delete the warehouse?");
-}
-
-function confirmDeleteAllWarehouses() {
-	return confirm("Are you sure you want to delete all warehouses?");
-}
-
-function deleteWarehouse(form, warehouseId) {
-    var confirmResult = (warehouseId == -1) ? confirmDeleteAllWarehouses() : confirmDeleteWarehouse();
-    if (confirmResult) {
-        var wareHouseInput = document.createElement('input');
-        wareHouseInput.setAttribute("name", "WarehouseID");
-        wareHouseInput.setAttribute("type", "hidden");
-        wareHouseInput.value = warehouseId;
-        form.appendChild(wareHouseInput);
-        form.submit();    
-    }
 }
 
 </script>
@@ -577,103 +528,7 @@ function deleteWarehouse(form, warehouseId) {
                         <br>
                       </td>
                     </tr>
-                    <%
-	}
-	
-	
-	if(!isMember || (isMember && canMembersChangeLogins)) 
-	{%>
-                    <tr> 
-                      <td> 
-                        <form name="form6" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
-                          <b><font color="#0000FF">Operator Logins:</font></b> 
-                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td> 
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                  <input type="hidden" name="action" value="DeleteOperatorLogin">
-                                  <input type="hidden" name="UserID" value="-1">
-                                  <tr> 
-                                    <td class="HeaderCell" width="5%">&nbsp;</td>
-                                    <td class="HeaderCell" width="30%">Login Name</td>
-                                    <td class="HeaderCell" width="40%">Operator 
-                                      Group(s)</td>
-                                    <td width="10%" class="HeaderCell">&nbsp;</td>
-                                    <td width="15%" class="HeaderCell">&nbsp;</td>
-                                  </tr>
-                                  <%
-	
-	List<LiteYukonGroup> userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(lYukonUser);
-	String groupNames = "";
-	for (LiteYukonGroup liteGroup : userGroups) {
-		if (liteGroup.getGroupID() == -1) continue;
-		if (groupNames.length() > 0) groupNames += ", ";
-		groupNames += liteGroup.getGroupName();
-	}
-%>
-                                  <tr> 
-                                    <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="30%"><%= StringEscapeUtils.escapeHtml(lYukonUser.getUsername()) %></td>
-                                    <td class="TableCell" width="40%"><%= StringEscapeUtils.escapeHtml(groupNames) %></td>
-                                    <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit4" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= lYukonUser.getUserID() %>'">
-                                    </td>
-                                    <td width="15%" class="TableCell">&nbsp;</td>
-                                  </tr>
-                                  <tr> 
-                                    <td class="TableCell" colspan="5"> 
-                                      <hr>
-                                    </td>
-                                  </tr>
-                                  <%
-	List<Integer> operLoginIDs = liteEC.getOperatorLoginIDs();
-	for (int i = 0; i < operLoginIDs.size(); i++) {
-		int userID = ((Integer) operLoginIDs.get(i)).intValue();
-		if (userID == lYukonUser.getUserID()) continue;
-		
-		LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
-		if (liteUser == null) continue;
-		
-		userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
-		groupNames = "";
-		for (LiteYukonGroup liteGroup : userGroups) {
-			if (liteGroup.getGroupID() == -1) continue;
-			if (groupNames.length() > 0) groupNames += ", ";
-			groupNames += liteGroup.getGroupName();
-		}
-%>
-                                  <tr> 
-                                    <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="30%"><%= StringEscapeUtils.escapeHtml(liteUser.getUsername()) %></td>
-                                    <td class="TableCell" width="40%"><%= StringEscapeUtils.escapeHtml(groupNames) %></td>
-                                    <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit5" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= liteUser.getUserID() %>'">
-                                    </td>
-                                    <td width="15%" class="TableCell"> 
-                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.UserID.value=<%= liteUser.getUserID() %>; return confirmDeleteOperatorLogin();">
-                                    </td>
-                                  </tr>
-                                  <%
-	}
-%>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td width="20%"> 
-                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.UserID.value=-1; return confirmDeleteAllOperatorLogins();">
-                              </td>
-                              <td width="80%"> 
-                                <input type="button" name="New" value="New" onclick="location.href='OperatorLogin.jsp'">
-                              </td>
-                            </tr>
-                          </table>
-                        </form>
-                      </td>
-                    </tr>
- <% } %>
+<% } %>                   
                     <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
                     <tr> 
                       <td> 

@@ -13,12 +13,6 @@
 		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP);
 		address = ecTemp.getCompanyAddress();
 	}
-	else if (referer.equalsIgnoreCase("ServiceCompany.jsp")) {
-		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
-		address = scTemp.getCompanyAddress();
-		int compIdx = Integer.parseInt( request.getParameter("CompanyID") );
-		referer += "?CompanyID=" + compIdx;
-	}
 	if (address.getCounty() == null) address.setCounty("");
 %>
 <html>

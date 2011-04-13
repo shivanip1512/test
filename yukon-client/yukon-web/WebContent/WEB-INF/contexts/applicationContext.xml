@@ -1268,16 +1268,13 @@
                 <value>ALLOW|/operator/Admin/Message.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
                 <value>ALLOW|/operator/Admin/NewCodes.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/NewEnergyCompany.jsp|ADMIN_CREATE_DELETE_ENERGY_COMPANY</value>
-                <value>ALLOW|/operator/Admin/OperatorLogin.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/Progress.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
                 <value>ALLOW|/operator/Admin/Routes.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/SelectionList.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
-                <value>ALLOW|/operator/Admin/ServiceCompany.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/SettlementConfig.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/Substation.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/SwitchCommands.jsp|ADMIN_VIEW_BATCH_COMMANDS</value>
                 <value>ALLOW|/operator/Admin/ThermSchedule.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
-                <value>ALLOW|/operator/Admin/Warehouse.jsp|ADMIN_EDIT_ENERGY_COMPANY</value>
                 <value>DENY|/operator/Admin/**|*</value>
                 
                 

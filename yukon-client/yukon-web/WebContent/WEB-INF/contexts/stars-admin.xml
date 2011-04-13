@@ -38,12 +38,6 @@
 	<bean id="adminDeleteApplianceCategory" class="com.cannontech.web.stars.action.admin.DeleteApplianceCategoryController" 
           parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateServiceCompany" class="com.cannontech.web.stars.action.admin.UpdateServiceCompanyController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminDeleteServiceCompany" class="com.cannontech.web.stars.action.admin.DeleteServiceCompanyController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminUpdateSubstation" class="com.cannontech.web.stars.action.admin.UpdateSubstationController" 
           parent="starsAdminActionController"/>
 	
@@ -63,12 +57,6 @@
         <property name="loginService" ref="loginService"/>
     </bean>
 	
-	<bean id="adminUpdateOperatorLogin" class="com.cannontech.web.stars.action.admin.UpdateOperatorLoginController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminDeleteOperatorLogin" class="com.cannontech.web.stars.action.admin.DeleteOperatorLoginController" 
-          parent="starsAdminActionController"/>
-
 	<bean id="adminUpdateRoutes" class="com.cannontech.web.stars.action.admin.UpdateRoutesController" 
           parent="starsAdminActionController"/>
 
@@ -83,17 +71,8 @@
 	
 	<bean id="adminRemoveMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.RemoveMemberEnergyCompanyController" 
           parent="starsAdminActionController"/>
-	
-	<bean id="adminAddContractorCodes" class="com.cannontech.web.stars.action.admin.AddContractorCodesController" 
-          parent="starsAdminActionController"/>
 
-	<bean id="adminUpdateWarehouse" class="com.cannontech.web.stars.action.admin.UpdateWarehouseController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminUpdateSettlementConfig" class="com.cannontech.web.stars.action.admin.UpdateSettlementConfigController" 
-          parent="starsAdminActionController"/>
-          
-    <bean id="adminDeleteWarehouse" class="com.cannontech.web.stars.action.admin.DeleteWarehouseController"
-          parent="starsAdminActionController"/>            
+          parent="starsAdminActionController"/>       
 
 </beans>
