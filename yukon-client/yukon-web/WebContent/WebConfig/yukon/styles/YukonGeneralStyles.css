@@ -1334,8 +1334,20 @@ select:focus {
     padding-top: 16px;
 }
 
+.labeled_icon {
+    padding: 0 0 0 20px;
+    overflow:hidden;
+    float:left;
+    line-height: 16px; /* since the 'icon' will be positioned top left */
+    min-height: 16px; /* don't cut off the 'icon' */
+}
+
 .ENABLED {
-    background: transparent url(../Icons/check.gif) top left no-repeat;
+    background: transparent url(../Icons/enable.gif) top left no-repeat;
+}
+
+.DISABLED {
+    background: transparent url(../Icons/disable.gif) top left no-repeat;
 }
 
 .icon_remove {

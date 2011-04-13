@@ -67,8 +67,8 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.label">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.label">Add Service Company</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.label">Create Service Company</entry>
 
 </properties>

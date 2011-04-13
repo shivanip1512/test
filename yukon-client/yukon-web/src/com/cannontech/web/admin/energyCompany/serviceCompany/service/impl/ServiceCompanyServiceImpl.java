@@ -64,13 +64,13 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         //create the service company (with updated depenedent ids)
         serviceCompanyDao.create(serviceCompany, energyCompanyId);
         
-        //fixup the designation code servicecompanyids
-        for(DesignationCodeDto designationCode : serviceCompany.getDesignationCodes()) {
-            designationCode.setServiceCompanyId(serviceCompany.getCompanyId());
-        }
-        
         //now that we have an id for the service company, assign the designation codes
         if(serviceCompany.getDesignationCodes() != null) {
+            //fixup the designation code servicecompanyids
+            for(DesignationCodeDto designationCode : serviceCompany.getDesignationCodes()) {
+                designationCode.setServiceCompanyId(serviceCompany.getCompanyId());
+            }
+            
             updateDesignationCodes(serviceCompany);
         }
         sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.ADD);

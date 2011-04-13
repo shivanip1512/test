@@ -58,15 +58,15 @@
                         </c:forEach>
                     </table>
                     
+                    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
+                        <div class="actionArea">
+                            <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
+                                <cti:param name="ecId" value="${ecId}"/>
+                            </cti:url>
+                            <cti:button key="add" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
+                        </div>
+                    </cti:checkRolesAndProperties>
                 </tags:boxContainer2>
                 </cti:dataGrid>
-                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
-                    <div class="pageActionArea">
-                        <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
-                            <cti:param name="ecId" value="${ecId}"/>
-                        </cti:url>
-                        <cti:button key="add" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
-                    </div>
-                </cti:checkRolesAndProperties>
     
 </cti:standardPage>
