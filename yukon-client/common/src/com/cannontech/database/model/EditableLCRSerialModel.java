@@ -12,7 +12,7 @@ public class EditableLCRSerialModel extends EditableTextModel
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableLCRSerialModel() {
-		super(ModelFactory.getModelString(ModelFactory.EDITABLE_LCR_SERIAL));
+		super(TreeModelEnum.getForClass(EditableLCRSerialModel.class).getTreeModelName());
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.

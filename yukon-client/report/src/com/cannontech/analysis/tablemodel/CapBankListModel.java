@@ -10,10 +10,16 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.model.CBCOrderByTreeModel;
 
 public class CapBankListModel extends FilterObjectsReportModelBase<Object>
 {
+	public static final String[] ORDER_TYPE_STRINGS = {
+		"Order by Cap Bank",
+		"Order by Feeder",
+		"Order by Substation Bus",
+		"Order by Size"
+	};	
+
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 8;
 	
@@ -152,11 +158,11 @@ public class CapBankListModel extends FilterObjectsReportModelBase<Object>
             }
 		}
         
-		if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )
+		if( ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )
 			sql.append(" order by yfdr.paoname" );	
-		else if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[2].equals(getOrderBy()) )
+		else if( ORDER_TYPE_STRINGS[2].equals(getOrderBy()) )
 			sql.append(" order by ysubbus.paoname" );	
-		else if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[3].equals(getOrderBy()) )
+		else if( ORDER_TYPE_STRINGS[3].equals(getOrderBy()) )
 			sql.append(" order by c.banksize" );	
 		else
 			sql.append(" order by y.paoname" );
@@ -327,10 +333,10 @@ public class CapBankListModel extends FilterObjectsReportModelBase<Object>
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>Order By</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		for( int i = 0; i < CBCOrderByTreeModel.ORDER_TYPE_STRINGS.length; i++)
+		for( int i = 0; i < ORDER_TYPE_STRINGS.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='radio' name='" + ATT_ORDER_BY +"' value='" + CBCOrderByTreeModel.ORDER_TYPE_STRINGS[i] + "'>" + CBCOrderByTreeModel.ORDER_TYPE_STRINGS[i] + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" + ATT_ORDER_BY +"' value='" + ORDER_TYPE_STRINGS[i] + "'>" + ORDER_TYPE_STRINGS[i] + LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;
 			html += "        </tr>" + LINE_SEPARATOR;
 		}

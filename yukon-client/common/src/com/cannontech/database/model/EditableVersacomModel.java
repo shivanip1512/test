@@ -11,7 +11,7 @@ public class EditableVersacomModel extends EditableTextModel
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableVersacomModel() {
-		super(ModelFactory.getModelString(ModelFactory.EDITABLE_VERSACOM_SERIAL));
+		super(TreeModelEnum.getForClass(EditableVersacomModel.class).getTreeModelName());
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.

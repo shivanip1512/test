@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DaoFactory;
@@ -21,7 +23,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 public abstract class AbstractDeviceTreeModel extends DBTreeModel 
@@ -205,7 +206,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
-		if( isDeviceValid(liteYuk.getPaoType().getPaoCategory().getCategoryId(), liteYuk.getPaoType().getPaoClass().getPaoClassId(), liteYuk.getPaoType().getDeviceTypeId() ) )
+		if( isDeviceValid(liteYuk.getPaoType().getPaoCategory(), liteYuk.getPaoType().getPaoClass(), liteYuk.getPaoType()))
 		{
 			DBTreeNode node = getNewNode(lb);
 			node.setWillHaveChildren(true);
@@ -238,17 +239,17 @@ public boolean isTreePrimaryForObject(LiteBase lb) {
         return false;
     }
 
-    return isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
+    return isDeviceValid(paoType.getPaoCategory(), paoType.getPaoClass(), paoType);
 }
 
 /**
  * Other models should override this method to return the condition they want to use
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return DeviceClasses.isCoreDeviceClass(class_)
-				&& category_ == PAOGroups.CAT_DEVICE 
-				&& type_ != PAOGroups.MCTBROADCAST;
+	return DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId())
+				&& paoCategory == PaoCategory.DEVICE 
+				&& paoType != PaoType.MCTBROADCAST;
 }
 
 @Override
@@ -277,9 +278,9 @@ protected synchronized void runUpdate()
 		for (int i = 0; i < devices.size(); i++)
 		{
 			if( isDeviceValid(
-					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoCategory().getCategoryId(),
-					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoClass().getPaoClassId(),
-					((LiteYukonPAObject)devices.get(i)).getPaoType().getDeviceTypeId() ) )
+					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoCategory(),
+					((LiteYukonPAObject)devices.get(i)).getPaoType().getPaoClass(),
+					((LiteYukonPAObject)devices.get(i)).getPaoType()))
 			{
 				DBTreeNode deviceNode = getNewNode(devices.get(i));
 				rootNode.add(deviceNode);

@@ -3,7 +3,9 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 
 public class CapBankModel extends AbstractDeviceTreeModel 
 {
@@ -19,9 +21,9 @@ public CapBankModel() {
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( type_ == PAOGroups.CAPBANK
-			  && category_ == PAOGroups.CAT_DEVICE );
+	return( paoType == PaoType.CAPBANK
+			  && paoCategory == PaoCategory.DEVICE );
 }
 }

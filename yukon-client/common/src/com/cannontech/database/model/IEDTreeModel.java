@@ -3,8 +3,10 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.pao.PAOGroups;
 
 public class IEDTreeModel extends AbstractDeviceTreeModel 
 {
@@ -22,10 +24,10 @@ public IEDTreeModel()
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( DeviceTypesFuncs.isMeter(type_) 
-		 	  || type_ == PAOGroups.DAVISWEATHER
-			  && category_ == PAOGroups.CAT_DEVICE );
+	return( DeviceTypesFuncs.isMeter(paoType.getDeviceTypeId()) 
+		 	  || paoType == PaoType.DAVISWEATHER
+			  && paoCategory == PaoCategory.DEVICE );
 }
 }

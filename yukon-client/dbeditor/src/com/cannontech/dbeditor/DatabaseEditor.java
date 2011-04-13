@@ -91,7 +91,8 @@ import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.model.DbBackgroundTreeModel;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.FrameAware;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
@@ -182,78 +183,80 @@ public class DatabaseEditor
 	//Map of database types and treemodels to use
 	//Keep and add to these in alphabetical order	
 	
-	private static final Integer[] CORE_MODELS =
+	private static final TreeModelEnum[] CORE_MODELS =
 		{
-			new Integer(ModelFactory.PORT),
-			new Integer(ModelFactory.DEVICE),
-			new Integer(ModelFactory.IED),
-			new Integer(ModelFactory.MCT),
-         	new Integer(ModelFactory.MCTBROADCAST),
-			new Integer(ModelFactory.TWOWAYCONFIG),         
-			new Integer(ModelFactory.METER),
-			new Integer(ModelFactory.DEVICE_METERNUMBER),
-			new Integer(ModelFactory.ROUTE),
-			new Integer(ModelFactory.RTU),
-			new Integer(ModelFactory.STATEGROUP),
-			new Integer(ModelFactory.TRANSMITTER),
+			TreeModelEnum.PORT,
+			TreeModelEnum.DEVICE,
+			TreeModelEnum.IED,
+			TreeModelEnum.MCT,
+         	TreeModelEnum.MCTBROADCAST,
+			TreeModelEnum.TWOWAYCONFIG,         
+			TreeModelEnum.METER,
+			TreeModelEnum.DEVICE_METERNUMBER,
+			TreeModelEnum.ROUTE,
+			TreeModelEnum.RTU,
+			TreeModelEnum.STATEGROUP,
+			TreeModelEnum.TRANSMITTER,
 						
 		};
-	private static final Integer[] LM_MODELS =
+	private static final TreeModelEnum[] LM_MODELS =
 		{
-			new Integer(ModelFactory.LMCONSTRAINT),
-			new Integer(ModelFactory.LMCONTROLAREA),
-			new Integer(ModelFactory.LMGROUPEMETCON),
-			new Integer(ModelFactory.LMGROUPEXPRESSCOM),
-			new Integer(ModelFactory.GOLAY),
-			new Integer(ModelFactory.LMGROUPS),
-			new Integer(ModelFactory.LMPROGRAM),
-			new Integer(ModelFactory.LMGROUPMACRO),
-			new Integer(ModelFactory.LMSCENARIO),
-			new Integer(ModelFactory.LMGROUPVERSACOM)
+			TreeModelEnum.LMCONSTRAINT,
+			TreeModelEnum.LMCONTROLAREA,
+			TreeModelEnum.LMGROUPDIGISEP,
+			TreeModelEnum.LMGROUPEMETCON,
+			TreeModelEnum.LMGROUPEXPRESSCOM,
+			TreeModelEnum.GOLAY,
+			TreeModelEnum.LMGROUPS,
+			TreeModelEnum.LMPROGRAM,
+			TreeModelEnum.LMGROUPMACRO,
+			TreeModelEnum.LMSCENARIO,
+			TreeModelEnum.LMGROUPVERSACOM,
 		};	
 		
-	private static final Integer[] LM_MODELS_WITH_SA =
+	private static final TreeModelEnum[] LM_MODELS_WITH_SA =
 	{
-		new Integer(ModelFactory.LMCONSTRAINT),
-		new Integer(ModelFactory.LMCONTROLAREA),
-		new Integer(ModelFactory.LMGROUPEMETCON),
-		new Integer(ModelFactory.LMGROUPEXPRESSCOM),
-		new Integer(ModelFactory.GOLAY),
-		new Integer(ModelFactory.LMGROUPS),
-		new Integer(ModelFactory.LMPROGRAM),
-		new Integer(ModelFactory.LMGROUPMACRO),
-		new Integer(ModelFactory.LMGROUPSA305),
-		new Integer(ModelFactory.LMGROUPSA205),
-		new Integer(ModelFactory.LMGROUPSADIGITAL),
-		new Integer(ModelFactory.LMSCENARIO),
-		new Integer(ModelFactory.LMGROUPVERSACOM)
+		TreeModelEnum.LMCONSTRAINT,
+		TreeModelEnum.LMCONTROLAREA,
+		TreeModelEnum.LMGROUPDIGISEP,
+		TreeModelEnum.LMGROUPEMETCON,
+		TreeModelEnum.LMGROUPEXPRESSCOM,
+		TreeModelEnum.GOLAY,
+		TreeModelEnum.LMGROUPS,
+		TreeModelEnum.LMPROGRAM,
+		TreeModelEnum.LMGROUPMACRO,
+		TreeModelEnum.LMGROUPSA305,
+		TreeModelEnum.LMGROUPSA205,
+		TreeModelEnum.LMGROUPSADIGITAL,
+		TreeModelEnum.LMSCENARIO,
+		TreeModelEnum.LMGROUPVERSACOM,
 	};
-	private static final Integer[] SYSTEM_MODELS =
+	private static final TreeModelEnum[] SYSTEM_MODELS =
 		{
-			new Integer(ModelFactory.ALARM_STATES),
-			new Integer(ModelFactory.BASELINE),
-			new Integer(ModelFactory.CICUSTOMER),
-			new Integer(ModelFactory.CONTACT),
-			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.LOGINS),
-			new Integer(ModelFactory.LOGIN_GROUPS),
-			new Integer(ModelFactory.NOTIFICATION_GROUP),
-			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG),
-			new Integer(ModelFactory.TOUSCHEDULE),
-            new Integer(ModelFactory.SYSTEM_DEVICE)
+			TreeModelEnum.ALARM_STATES,
+			TreeModelEnum.BASELINE,
+			TreeModelEnum.CICUSTOMER,
+			TreeModelEnum.CONTACT,
+			TreeModelEnum.HOLIDAY_SCHEDULE,
+			TreeModelEnum.LOGINS,
+			TreeModelEnum.LOGIN_GROUPS,
+			TreeModelEnum.NOTIFICATION_GROUP,
+			TreeModelEnum.SEASON,
+			TreeModelEnum.TAG,
+			TreeModelEnum.TOUSCHEDULE,
+            TreeModelEnum.SYSTEM_DEVICE,
 		};
-	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
+	private static final TreeModelEnum[] NONLOGIN_SYSTEM_MODELS =
 		{
-			new Integer(ModelFactory.ALARM_STATES),
-			new Integer(ModelFactory.BASELINE),
-			new Integer(ModelFactory.CICUSTOMER),
-			new Integer(ModelFactory.CONTACT),
-			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.NOTIFICATION_GROUP),
-			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG),
-			new Integer(ModelFactory.TOUSCHEDULE)
+			TreeModelEnum.ALARM_STATES,
+			TreeModelEnum.BASELINE,
+			TreeModelEnum.CICUSTOMER,
+			TreeModelEnum.CONTACT,
+			TreeModelEnum.HOLIDAY_SCHEDULE,
+			TreeModelEnum.NOTIFICATION_GROUP,
+			TreeModelEnum.SEASON,
+			TreeModelEnum.TAG,
+			TreeModelEnum.TOUSCHEDULE,
 		};	
 	
 
@@ -2626,7 +2629,7 @@ public void setDatabase(int whichDatabase)
 	exitConfirm();
 
 	
-	Integer[] models = null;
+	TreeModelEnum[] models = null;
 
 	//Get a ref to the rootpane
 	JFrame frame = (JFrame) CtiUtilities.getParentFrame( getContentPane() );
@@ -2675,10 +2678,10 @@ public void setDatabase(int whichDatabase)
     int length = (models == LM_MODELS || models == LM_MODELS_WITH_SA || models == CORE_MODELS || models == SYSTEM_MODELS)
                 ? models.length : models.length - 1;
 
-	DBTreeModel[] newModels = new DBTreeModel[length];
+	LiteBaseTreeModel[] newModels = new DBTreeModel[length];
 	for( int i = 0; i < models.length; i++ )
 	{
-		DBTreeModel treeModel = ModelFactory.create(models[i].intValue());
+		LiteBaseTreeModel treeModel = TreeModelEnum.create(models[i]);
 		if (treeModel instanceof FrameAware) {
 		    ((FrameAware) treeModel).setParentFrame(frame);
 		}
@@ -2689,7 +2692,7 @@ public void setDatabase(int whichDatabase)
 	if( models == CORE_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 1 ); //device is the default
 	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
-		getTreeViewPanel().setSelectedSortByIndex( 5 ); //"load groups" is the default
+		getTreeViewPanel().setSelectedSortByIndex( 6 ); //"load groups" is the default
 	if( models == SYSTEM_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 6 ); //"login groups" is the default
 	

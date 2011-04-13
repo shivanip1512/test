@@ -2,6 +2,9 @@ package com.cannontech.database.model;
 
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -31,13 +34,9 @@ public TDCDeviceTreeModel()
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-    
-    return class_ != PAOGroups.INVALID
-    && type_ != PAOGroups.INVALID
-    && category_ != PAOGroups.INVALID ;
-    
+	return paoType != PaoType.SYSTEM;
 }
 
 protected synchronized java.util.List getCacheList(IDatabaseCache cache ) 
@@ -66,9 +65,9 @@ protected synchronized void runUpdate()
 			LiteYukonPAObject litPAO = (LiteYukonPAObject)paos.get(i);
 
 			if( isDeviceValid(
-					litPAO.getPaoType().getPaoCategory().getCategoryId(),
-					litPAO.getPaoType().getPaoClass().getPaoClassId(),
-					litPAO.getPaoType().getDeviceTypeId() ) )
+					litPAO.getPaoType().getPaoCategory(),
+					litPAO.getPaoType().getPaoClass(),
+					litPAO.getPaoType()))
 			{
 				if( currType != litPAO.getPaoType().getDeviceTypeId() )
 				{

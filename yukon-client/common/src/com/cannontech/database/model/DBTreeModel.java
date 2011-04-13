@@ -194,7 +194,7 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     }
     
     public String toString() {
-        return ModelFactory.getModelString(this.getClass());
+        return TreeModelEnum.getForClass(this.getClass()).getTreeModelName();
     }
 
     /** 

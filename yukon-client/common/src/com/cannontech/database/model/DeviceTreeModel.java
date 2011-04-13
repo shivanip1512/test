@@ -1,7 +1,9 @@
 package com.cannontech.database.model;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * This class replaced DeviceTreeModel (who is now an abstract class called AbstractDeviceTreeModel) as the 
@@ -26,9 +28,9 @@ public class DeviceTreeModel extends AbstractDeviceTreeModel {
         super(rootNode);
     }
 
-    public boolean isDeviceValid(int category_, int class_, int type_) {
-        return DeviceClasses.isCoreDeviceClass(class_)
-               && category_ == PAOGroups.CAT_DEVICE
-               && type_ != PAOGroups.MCTBROADCAST;
+    public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
+        return DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId())
+               && paoCategory == PaoCategory.DEVICE
+               && paoType != PaoType.MCTBROADCAST;
     }
 }

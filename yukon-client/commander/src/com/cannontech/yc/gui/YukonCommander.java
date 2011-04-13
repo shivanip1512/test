@@ -74,7 +74,7 @@ import com.cannontech.database.model.EditableSA305Model;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.EditableVersacomModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -93,7 +93,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private YC yc;
 	private PaoDefinitionDao paoDefinitionDao;
 	
-	private int [] treeModels = null;
+	private TreeModelEnum[] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
 	
@@ -521,7 +521,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	private void deleteSerialNumber()
 	{
-		if(ModelFactory.isEditableSerial(getModelType()))
+		if(TreeModelEnum.isEditableSerial(getModelType()))
 		{
 			if (getTreeViewPanel().getSelectedItem() == null)
 				return;
@@ -937,7 +937,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	}	
 	/**
 	 * Returns ycClass.getModelType().
-	 * @return int com.cannontech.database.model.ModelFactory.
+	 * @return int com.cannontech.database.model.TreeModelEnum.
 	 */
 	private Class<? extends LiteBaseTreeModel> getModelType()
 	{
@@ -1370,19 +1370,19 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		// constructor template (no parameters).
 		List<LiteBaseTreeModel> models = new ArrayList<LiteBaseTreeModel>();
 		
-		int[] modelIds = getTreeModels();
+		TreeModelEnum[] modelIds = getTreeModels();
         for (int i = 0; i < modelIds.length; i++)
 		{
-			if( modelIds[i] == ModelFactory.DEVICE)
+			if( modelIds[i] == TreeModelEnum.DEVICE)
 				models.add(new com.cannontech.database.model.DeviceTreeModel(false));
-			else if ( modelIds[i] == ModelFactory.LMGROUPS)
+			else if ( modelIds[i] == TreeModelEnum.LMGROUPS)
 				models.add(new com.cannontech.database.model.LMGroupsModel(false));
-			else if ( modelIds[i] == ModelFactory.CAPBANKCONTROLLER )
+			else if ( modelIds[i] == TreeModelEnum.CAPBANKCONTROLLER )
 				models.add(new com.cannontech.database.model.CapBankControllerModel(false));
-			else if ( modelIds[i] == ModelFactory.TRANSMITTER )
+			else if ( modelIds[i] == TreeModelEnum.TRANSMITTER )
 				models.add(new com.cannontech.database.model.TransmitterTreeModel(false));
 			else
-				models.add(ModelFactory.create(modelIds[i]));
+				models.add(TreeModelEnum.create(modelIds[i]));
 		}
         
         // add the group model
@@ -1391,7 +1391,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         models.add(liteBaseDeviceGroupModel);
 
 		//serial and route panel visible only when first item in tree is Versacom Serial #
-		if (!ModelFactory.isEditableSerial(models.get(0).getClass())) {
+		if (!TreeModelEnum.isEditableSerial(models.get(0).getClass())) {
             enableSerialAndRoute(false);
         }
 	
@@ -1761,7 +1761,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Sets the ycClass.modelType
-	 * Valid types located in - com.cannontech.database.model.ModelFactory.DEVICE, DEVICE_METERNUMBER, 
+	 * Valid types located in - com.cannontech.database.model.TreeModelEnum.DEVICE, DEVICE_METERNUMBER, 
 	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP, EDITABLE_xxx
 	 * @param typeSelected int
 	 */
@@ -1844,7 +1844,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		setModelType( model.getClass() );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		
-		if (ModelFactory.isEditableSerial(getModelType()))
+		if (TreeModelEnum.isEditableSerial(getModelType()))
 		{
 			if(selectedItem != null && 
 				getTreeViewPanel().getSelectedNode().getParent() != null)
@@ -1907,7 +1907,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		setTitle(displayTitle);
 
 		if (selectedItem == null) {
-		    if( ModelFactory.isEditableSerial(getModelType())) {
+		    if( TreeModelEnum.isEditableSerial(getModelType())) {
 		        getYC().setDeviceType(savedDevType);
 		    } else {
 		        getYC().setDeviceType(null);
@@ -1937,7 +1937,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			else
 			    setTitle(displayTitle + " - " + getYC().getDeviceType());
 		}
-		else if ( ModelFactory.isEditableSerial(getModelType()))
+		else if ( TreeModelEnum.isEditableSerial(getModelType()))
 		{
 			setSerialNumber( (String)selectedItem);
 			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
@@ -1994,7 +1994,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		getYCCommandMenu().installAddressing.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
 
-		if( ModelFactory.isEditableSerial(getModelType())) {
+		if( TreeModelEnum.isEditableSerial(getModelType())) {
 			getYCCommandMenu().installAddressing.setEnabled(true);
 		}
 		else  {
@@ -2157,21 +2157,18 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	/**
 	 * @return
 	 */
-	public int [] getTreeModels()
+	public TreeModelEnum[] getTreeModels()
 	{
 		if( treeModels == null)
 		{
-			//Vector of ints (ModelFactory types), (Changed from array to remove size constraints)
-			NativeIntVector tempModel = new NativeIntVector(15);
-			tempModel.add(	ModelFactory.DEVICE);
-			tempModel.add( ModelFactory.DEVICE_METERNUMBER);
-			tempModel.add( ModelFactory.MCTBROADCAST);
-			tempModel.add( ModelFactory.TRANSMITTER);
-			tempModel.add( ModelFactory.LMGROUPS);
-			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
-			//tempModel.add( ModelFactory.COLLECTIONGROUP);
-			//tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
-			//tempModel.add( ModelFactory.BILLING_GROUP);
+			//Vector of ints (TreeModelEnum types), (Changed from array to remove size constraints)
+			List<TreeModelEnum> tempModel = new ArrayList<TreeModelEnum>();
+			tempModel.add(	TreeModelEnum.DEVICE);
+			tempModel.add( TreeModelEnum.DEVICE_METERNUMBER);
+			tempModel.add( TreeModelEnum.MCTBROADCAST);
+			tempModel.add( TreeModelEnum.TRANSMITTER);
+			tempModel.add( TreeModelEnum.LMGROUPS);
+			tempModel.add( TreeModelEnum.CAPBANKCONTROLLER);
 
 			boolean needDefault = true;
 			ClientSession session = ClientSession.getInstance();
@@ -2181,28 +2178,29 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			
 			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA305_SERIAL_MODEL)).booleanValue())
 			{
-				tempModel.add( ModelFactory.EDITABLE_SA305_SERIAL);
+				tempModel.add( TreeModelEnum.EDITABLE_SA305_SERIAL);
 				needDefault = false;
 			}
 			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA205_SERIAL_MODEL)).booleanValue())
 			{
-				tempModel.add( ModelFactory.EDITABLE_SA205_SERIAL);
+				tempModel.add( TreeModelEnum.EDITABLE_SA205_SERIAL);
 				needDefault = false;
 			}
 			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.EXPRESSCOM_SERIAL_MODEL)).booleanValue())
 			{
-				tempModel.add( ModelFactory.EDITABLE_EXPRESSCOM_SERIAL);
+				tempModel.add( TreeModelEnum.EDITABLE_EXPRESSCOM_SERIAL);
 				needDefault = false;
 			}
 			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.VERSACOM_SERIAL_MODEL)).booleanValue())
 			{
-				tempModel.add( ModelFactory.EDITABLE_VERSACOM_SERIAL);
+				tempModel.add( TreeModelEnum.EDITABLE_VERSACOM_SERIAL);
 				needDefault = false;
 			}
 			if( needDefault )
-				tempModel.add( ModelFactory.EDITABLE_LCR_SERIAL);
+				tempModel.add( TreeModelEnum.EDITABLE_LCR_SERIAL);
 			
-			treeModels = tempModel.toArray();
+			treeModels = new TreeModelEnum[tempModel.size()];
+			treeModels = tempModel.toArray(treeModels);
 		}
 		return treeModels;
 	}

@@ -11,7 +11,7 @@ public class EditableExpresscomModel extends EditableTextModel
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableExpresscomModel() {
-		super(ModelFactory.getModelString(ModelFactory.EDITABLE_EXPRESSCOM_SERIAL));
+		super(TreeModelEnum.getForClass(EditableExpresscomModel.class).getTreeModelName());
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.

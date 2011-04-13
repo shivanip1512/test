@@ -1,8 +1,10 @@
 package com.cannontech.database.model;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 
 public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
 
@@ -16,8 +18,9 @@ public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
         super(showPointNodes, new DBTreeNode("Devices"));
     }
 
-    public boolean isDeviceValid(int category_, int class_, int type_) {
-        return ((DeviceClasses.isCoreDeviceClass(class_) || class_ == PAOGroups.CAT_CAPCONTROL) && category_ == PAOGroups.CAT_DEVICE);
+    public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
+        return ((DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId()) || paoClass == PaoClass.CAPCONTROL) 
+        		&& paoCategory == PaoCategory.DEVICE);
     }
 
     public void setIncludeUOFMType(long pointUOFMMask) {

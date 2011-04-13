@@ -173,7 +173,7 @@ public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements 
             {
                 LiteYukonPAObject currentDevice = (LiteYukonPAObject) deviceIter.next();
                 
-                if( isDeviceValid( currentDevice.getPaoType().getPaoCategory().getCategoryId(), currentDevice.getPaoType().getPaoClass().getPaoClassId(), currentDevice.getPaoType().getDeviceTypeId() ) )
+                if( isDeviceValid(currentDevice.getPaoType().getPaoCategory(), currentDevice.getPaoType().getPaoClass(), currentDevice.getPaoType()) )
                 {
                     DBTreeNode deviceNode = getNewNode(currentDevice);
                     

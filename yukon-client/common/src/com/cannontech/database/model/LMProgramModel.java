@@ -3,6 +3,9 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -29,9 +32,9 @@ public synchronized java.util.List getCacheList(IDatabaseCache cache )
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( DeviceTypesFuncs.isLMProgram(type_)
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_LOADCONTROL );
+	return( DeviceTypesFuncs.isLMProgram(paoType.getDeviceTypeId())
+			  && paoCategory == PaoCategory.LOADMANAGEMENT);
 }
 }

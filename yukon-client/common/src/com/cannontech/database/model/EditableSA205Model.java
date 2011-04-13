@@ -11,7 +11,7 @@ public class EditableSA205Model extends EditableTextModel
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableSA205Model() {
-		super(ModelFactory.getModelString(ModelFactory.EDITABLE_SA205_SERIAL));
+		super(TreeModelEnum.getForClass(EditableSA205Model.class).getTreeModelName());
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.

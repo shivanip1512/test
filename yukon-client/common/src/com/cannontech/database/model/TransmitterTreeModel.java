@@ -1,5 +1,11 @@
 package com.cannontech.database.model;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.DeviceClasses;
+
 /**
  * This type was created in VisualAge.
  */
@@ -33,10 +39,10 @@ public TransmitterTreeModel( boolean showPointNodes, DBTreeNode rootNode_ )
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( com.cannontech.database.data.device.DeviceTypesFuncs.isTransmitter(type_)
-			  && com.cannontech.database.data.pao.DeviceClasses.isMeterClass(class_)
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE );
+	return( DeviceTypesFuncs.isTransmitter(paoType.getDeviceTypeId())
+			  && DeviceClasses.isMeterClass(paoClass.getPaoClassId())
+			  && paoCategory == PaoCategory.DEVICE);
 }
 }

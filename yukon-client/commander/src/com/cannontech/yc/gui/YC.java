@@ -59,7 +59,7 @@ import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.LiteBaseTreeModel;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
@@ -249,7 +249,7 @@ public class YC extends Observable implements MessageListener
                 handleDevice();
             }		
             // Serial Number item in tree selected.
-            else if (ModelFactory.isEditableSerial(getModelType()))
+            else if (TreeModelEnum.isEditableSerial(getModelType()))
             {
                 handleSerialNumber();
             }
@@ -754,17 +754,17 @@ public class YC extends Observable implements MessageListener
      */
 	public void setDeviceType(Object item_)
 	{
-		if( item_ instanceof DeviceBase)					//ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+		if( item_ instanceof DeviceBase)					//TreeModelEnum.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 		{
 			deviceType = ((DeviceBase)item_).getPAOType();
 		}
-		else if(item_ instanceof DeviceMeterGroupBase)	//ModelFactory.DEVICE_METERNUMBER,		
+		else if(item_ instanceof DeviceMeterGroupBase)	//TreeModelEnum.DEVICE_METERNUMBER,		
 		{
 			int devID = ((DeviceMeterGroupBase)item_).getDeviceMeterGroup().getDeviceID().intValue();
 			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
 			deviceType = litePao.getPaoType().getDbString();
 		}
-		else if (item_ instanceof String)				//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
+		else if (item_ instanceof String)				//TreeModelEnum.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
 		{
 			deviceType = (String) item_;
 		}

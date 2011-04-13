@@ -6,7 +6,9 @@
  */
 package com.cannontech.database.model;
 
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author jdayton
@@ -37,10 +39,8 @@ public synchronized java.util.List getCacheList(IDatabaseCache cache )
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int category_, int class_, int type_ )
+public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( type_ == PAOGroups.LM_GROUP_SA305
-			  && class_ == com.cannontech.database.data.pao.DeviceClasses.GROUP
-			  && category_ == PAOGroups.CAT_DEVICE );
+	return( paoType == PaoType.LM_GROUP_SA305);
 }
 }
