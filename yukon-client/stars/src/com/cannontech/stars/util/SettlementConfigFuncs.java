@@ -12,16 +12,16 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.SettlementConfig;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -320,6 +320,8 @@ public final class SettlementConfigFuncs {
 	 */
 	public static void updateSettlementConfigTrx(LiteSettlementConfig lsc, String value)
 	{
+	    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+	    
 		try
 		{
 			SettlementConfig sConf = (SettlementConfig)LiteFactory.convertLiteToDBPers(lsc);
@@ -328,16 +330,8 @@ public final class SettlementConfigFuncs {
 			sConf = (SettlementConfig)t.execute();
 				
 			sConf.setFieldValue(value);
-			Transaction.createTransaction(Transaction.UPDATE, sConf).execute();
-			
-			DBChangeMsg msg = new DBChangeMsg(
-				sConf.getConfigID().intValue(),
-				DBChangeMsg.CHANGE_SETTLEMENT_DB,
-				DBChangeMsg.CAT_SETTLEMENT,
-				DBChangeMsg.CAT_SETTLEMENT,
-				DbChangeType.UPDATE
-				);
-			ServerUtils.handleDBChangeMsg(msg);
+			dbPersistentDao.performDBChange(sConf,TransactionType.UPDATE);
+
 		}
 		catch (TransactionException e)
 		{
