@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.PhaseId;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
@@ -141,7 +143,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer oldSubBus;
     private Boolean enableDualBus = Boolean.FALSE;
 	private boolean isDualSubBusEdited;
-    private SelectItem[] controlMethods;
     private Map<Integer, String> paoNameMap;
     private Map<Integer, String> pointNameMap;
     private Map<Season, Integer> assignedStratMap;
@@ -1736,15 +1737,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	//delegate to this class because generic class doesn't have to know about business rules	
 	public SelectItem[]  getControlMethods () {
-	    ControlAlgorithm algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
-    	if (algorithm == ControlAlgorithm.MULTI_VOLT) {
-    		controlMethods = new SelectItem [2];
-    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER, ControlMethod.INDIVIDUAL_FEEDER.getDisplayName());
-    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS, ControlMethod.SUBSTATION_BUS.getDisplayName());
-    	} else {
-    		controlMethods = new CBCSelectionLists().getCbcControlMethods();
-        }
-    	return controlMethods;
+	    List<SelectItem> controlMethods = Lists.newArrayList();
+	    for(ControlMethod controlMethod : ControlMethod.valuesForDisplay()) {
+	        controlMethods.add(new SelectItem(controlMethod, controlMethod.getDisplayName()));
+	    }
+	    return controlMethods.toArray(new SelectItem[1]);
+	    
 	}
     
     @SuppressWarnings("unchecked")
@@ -1953,17 +1951,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public List<SelectItem> getControlAlgorithims() {
         ControlMethod currentMethod = getStrategy().getControlMethod();
-        if (currentControlMethod == ControlMethod.TIME_OF_DAY) {
-            return Lists.newArrayList(new SelectItem(ControlAlgorithm.TIME_OF_DAY, ControlAlgorithm.TIME_OF_DAY.getDisplayName()));
-        } else {
-        
-            List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
-            if(currentMethod == ControlMethod.SUBSTATION_BUS) {
-                items.add(new SelectItem(ControlAlgorithm.INTEGRATED_VOLT_VAR, ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
-            }
-            
-            return items;
+        Set<ControlAlgorithm> supportedAlgorithms = currentMethod.getSupportedAlgorithms();
+        List<SelectItem> items = Lists.newArrayList();
+        for(ControlAlgorithm algorithm : supportedAlgorithms) {
+            items.add(new SelectItem(algorithm, algorithm.getDisplayName()));
         }
+        return items;
     }
     
     public void setItemId(int itemId) {
@@ -2041,20 +2034,27 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public void controlMethodChanged(ValueChangeEvent e) {
-        ControlMethod newMethod = ControlMethod.valueOf(e.getNewValue().toString());
-        currentControlMethod = newMethod;
-        
-        /* Set new control algorithm */
-        getStrategy().setControlUnits(currentControlMethod.getDefaultAlgorithm());
-        
-        /* Set new target settings */
-        List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
-        getStrategy().setTargetSettings(newTargetSettings);
-        
-        /* Set new control method */
-        getStrategy().setControlMethod(currentControlMethod);
-        
-        FacesContext.getCurrentInstance().renderResponse();
+        PhaseId phaseId = e.getPhaseId();
+        //queue the event to the update phase - after the model is updated, so our changes won't 
+        //be overwritten, but before the view is built, so the UI sees the changes.
+        if(phaseId.equals(PhaseId.ANY_PHASE)) {
+            e.setPhaseId(PhaseId.UPDATE_MODEL_VALUES);
+            e.queue();
+        } else if(phaseId.equals(PhaseId.UPDATE_MODEL_VALUES)) {
+            ControlMethod newMethod = ControlMethod.valueOf(e.getNewValue().toString());
+            currentControlMethod = newMethod;
+            
+            /* Set new control algorithm */
+            currentControlAlgorithm = currentControlMethod.getDefaultAlgorithm();
+            getStrategy().setControlUnits(currentControlAlgorithm);
+            
+            /* Set new target settings */
+            List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
+            getStrategy().setTargetSettings(newTargetSettings);
+            
+            /* Set new control method */
+            getStrategy().setControlMethod(currentControlMethod);
+        }
     }
     
     private static List<PeakTargetSetting> determineCorrectDefaultTargetSettings(ControlMethod method, ControlAlgorithm algorithm) {
