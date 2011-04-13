@@ -133,9 +133,9 @@ public void retrieve(String dbalias)
 				"Unable to find the PAObject with PAOid = " + getLiteID());
 
 		Object[] objs = stat.getRow(0);
+		setPaoType(PaoType.getForDbString(objs[2].toString()));
 		setCategory(PaoCategory.valueOf(objs[0].toString()));
 		setPaoName(objs[1].toString());
-		setPaoType(PaoType.getForDbString(objs[2].toString()));
 		setPaoClass(PaoClass.getForDbString(objs[3].toString()));
 		setPaoDescription(objs[4].toString());
         setDisableFlag(objs[5].toString());
