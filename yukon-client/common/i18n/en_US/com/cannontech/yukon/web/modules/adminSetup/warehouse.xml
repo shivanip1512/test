@@ -28,9 +28,9 @@
     <entry key="yukon.web.modules.adminSetup.warehouse.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.edit.label">Edit</entry>
 
-    <entry key="yukon.web.modules.adminSetup.warehouse.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.adminSetup.warehouse.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.warehouse.add.label">Add Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.add.label">Create Warehouse</entry>
     
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.nameRequired">The warehouse name cannot be empty.</entry>

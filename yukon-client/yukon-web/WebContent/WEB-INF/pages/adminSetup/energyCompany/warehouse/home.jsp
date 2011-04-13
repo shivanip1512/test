@@ -32,15 +32,15 @@
             </tr>
             </c:forEach>
         </table>
+        <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
+            <div class="actionArea">
+                <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
+                    <cti:param name="ecId" value="${ecId}"/>
+                </cti:url>
+                <cti:button key="add" onclick="javascript:window.location='${createWarehouseUrl}'"/>
+            </div>
+        </cti:checkRolesAndProperties>
         
     </tags:boxContainer2>
     
-    <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
-        <div class="pageActionArea">
-            <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
-                <cti:param name="ecId" value="${ecId}"/>
-            </cti:url>
-            <cti:button key="add" onclick="javascript:window.location='${createWarehouseUrl}'"/>
-        </div>
-    </cti:checkRolesAndProperties>
 </cti:standardPage>
