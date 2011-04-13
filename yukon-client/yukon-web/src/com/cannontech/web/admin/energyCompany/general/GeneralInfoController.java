@@ -232,7 +232,7 @@ public class GeneralInfoController {
     public String removeOperatorGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeOperatorGroup,
                                EnergyCompanyInfoFragment fragment) {
         /* Make sure they always have at least one operator group */
-        if (ecMappingDao.getOperatorGroups(ecId).size() > 2) {
+        if (ecMappingDao.getOperatorGroups(ecId).size() < 2) {
             EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup"));
             return "redirect:view";
