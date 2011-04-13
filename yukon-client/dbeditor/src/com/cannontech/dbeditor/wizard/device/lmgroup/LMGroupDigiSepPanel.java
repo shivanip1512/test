@@ -419,9 +419,9 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
             simpleResidentialCheckBox = new javax.swing.JCheckBox();
             simpleResidentialCheckBox.setName("SimpleResidentialCheckBox");
             simpleResidentialCheckBox.setText("Simple Misc, Residential On/Off Loads");
-            hvacCheckBox.setFont(new java.awt.Font("dialog", 0, 10));
+            simpleResidentialCheckBox.setFont(new java.awt.Font("dialog", 0, 10));
         }
-        return hvacCheckBox;
+        return simpleResidentialCheckBox;
     }
 
     private JCheckBox getExteriorLightCheckBox() {
