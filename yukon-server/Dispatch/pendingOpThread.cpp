@@ -1103,8 +1103,15 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
                     {
                         panicCounter++;
-                        pTblEntry->Insert(conn);
-                        writtenEntries.putQueue(pTblEntry);
+                        if( pTblEntry->Insert(conn) )
+                        {
+                            writtenEntries.putQueue(pTblEntry);
+                        }
+                        else
+                        {
+                            // Error is logged by the insert function, do not send bad value to clients.
+                            delete pTblEntry;
+                        }
                     }
                 }
                 catch(...)
