@@ -176,7 +176,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 								<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
 							</td>
 						</tr>
-						<tr style="display: none" id="rule_${key}_undo" class="removed undoRow">
+						<tr style="display: none" id="rule_${key}_undo" class="undoRow">
                             <td colspan="1">
                                 <cti:img key="rulesTable.delete"/>
                             </td>

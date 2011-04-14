@@ -36,7 +36,7 @@
                 <cti:img key="delete" styleClass="removeRow pointer"/>
             </td>
 		</tr>
-        <tr id="rule_${newMapKey}_undo" class="removed undoRow" style="display: none">
+        <tr id="rule_${newMapKey}_undo" class="undoRow" style="display: none">
             <td colspan="1">
                 <cti:img key="delete"/>
             </td>
