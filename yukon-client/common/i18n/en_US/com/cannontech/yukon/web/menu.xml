@@ -223,7 +223,7 @@
 
 <entry key="yukon.web.menu.config.support.other">Other</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>
-<entry key="yukon.web.menu.config.support.other.setup">Setup</entry>
+<entry key="yukon.web.menu.config.support.other.routeUsage">Route Usage</entry>
 
 <!-- Commander Module -->
 <entry key="yukon.web.menu.config.commander.deviceselection">Device Selection</entry>

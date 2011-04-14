@@ -12,10 +12,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteUsageHelper;
+import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
-import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -388,7 +388,7 @@ public Object getValue(Object val) {
 	       	
 	               Vector changingRoutes = new Vector(1);
 	               changingRoutes.add((CCURoute)val);
-	               RegenerateRoute routeBoss = new RegenerateRoute();
+	               RouteUsageHelper routeBoss = new RouteUsageHelper();
 	               routeBoss.removeChanginRoutes(changingRoutes);
 	               
 	               RouteRole role = routeBoss.assignRouteLocation((CCURoute)val,null, null);

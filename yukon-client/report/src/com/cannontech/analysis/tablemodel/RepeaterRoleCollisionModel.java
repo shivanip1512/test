@@ -14,8 +14,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 
 public class RepeaterRoleCollisionModel extends ReportModelBase {
     
@@ -48,7 +48,7 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
     public void collectData() {
         setData(null);
         
-        RegenerateRoute routeMaster = new RegenerateRoute();
+        RouteUsageHelper routeMaster = new RouteUsageHelper();
         for(int i = 0; i < 32; i++) {
             for(int j = 0; j < 7; j++) {
                 Vector dups = routeMaster.findDuplicatesForBits(i,j);

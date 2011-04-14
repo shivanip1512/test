@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.editor.regenerate;
+package com.cannontech.database.data.route;
 
 import java.util.Vector;
 

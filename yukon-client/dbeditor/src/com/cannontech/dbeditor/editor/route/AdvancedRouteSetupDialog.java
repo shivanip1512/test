@@ -18,9 +18,9 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteUsageHelper;
+import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 
 @SuppressWarnings("serial")
 public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements ActionListener,  FocusListener{
@@ -88,7 +88,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     private RouteRole role = null;
     private int unMaskedFixedBit = -1;
     private int varBit = -1;
-    private RegenerateRoute routeMaster = null;
+    private RouteUsageHelper routeMaster = null;
     private Vector blackList = new Vector();
     
     private String choice = "No";
@@ -149,7 +149,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     public AdvancedRouteSetupDialog(java.awt.Frame owner,  CCURoute route_) {      //RouteRole role_, 
         super(owner, true);
         this.owner = owner;
-        routeMaster = new RegenerateRoute();
+        routeMaster = new RouteUsageHelper();
         route = route_;
         myCCUName = DaoFactory.getPaoDao().getYukonPAOName(route.getDeviceID());
         routeName = route.getPAOName();
@@ -245,7 +245,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     
     private void getSuggestion() {
         
-        routeMaster = new RegenerateRoute();
+        routeMaster = new RouteUsageHelper();
         role = routeMaster.assignRouteLocation(route, role, getBlackList());
         if(role.getFixedBit() == -1){
             role.setFixedBit(0);

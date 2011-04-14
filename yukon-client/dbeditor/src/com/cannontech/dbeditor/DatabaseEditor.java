@@ -94,15 +94,12 @@ import com.cannontech.database.model.FrameAware;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.dbeditor.defines.CommonDefines;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.menu.CoreCreateMenu;
 import com.cannontech.dbeditor.menu.EditMenu;
 import com.cannontech.dbeditor.menu.FileMenu;
 import com.cannontech.dbeditor.menu.HelpMenu;
 import com.cannontech.dbeditor.menu.LMCreateMenu;
 import com.cannontech.dbeditor.menu.SystemCreateMenu;
-import com.cannontech.dbeditor.menu.ToolsMenu;
 import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
@@ -170,7 +167,6 @@ public class DatabaseEditor
 	private SystemCreateMenu systemCreateMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
-	private ToolsMenu toolsMenu;
 	private java.awt.Frame owner = null;
 	//File logger
     private LoggerEventListener loggerEventListener;
@@ -361,8 +357,6 @@ public void actionPerformed(ActionEvent event)
 		executeChangeTypeButton_ActionPerformed(event );		
 	} else if( item == editMenu.searchMenuItem ) {
 		executeFindButton_ActionPerformed( event );
-	} else if ( item == toolsMenu.regenerateMenuItem ) {
-		executeRegenerateButton_ActionPerformed( event);
 	} else if( item == viewMenu.refreshMenuItem ) {
 		viewMenuRefreshAction();
 	} else if( item == viewMenu.showMessageLogButton ) {
@@ -1247,42 +1241,6 @@ public void executeFindButton_ActionPerformed(ActionEvent event)
 				javax.swing.JOptionPane.INFORMATION_MESSAGE );
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/31/2002 11:02:30 AM)
- */
-public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
-
-	java.awt.Frame f = getParentFrame();
-	java.awt.Cursor savedCursor = f.getCursor();
-	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-	
-	Vector carrierRoutes = RegenerateRoute.getAllCarrierRoutes();
-	RegenerateDialog r = new RegenerateDialog( f, "Regenerate", true, carrierRoutes);
-	r.setLocationRelativeTo( f );
-	
-	f.setCursor(savedCursor);
-	
-	r.show();
-
-	savedCursor = f.getCursor();
-	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-	
-	if (r.getResponse() == r.PRESSED_OK)
-	{
-		boolean all = r.getRegenerateAll();
-		Vector routesChanged = RegenerateRoute.resetRptSettings(carrierRoutes,all,null,false);
-		RegenerateRoute.updateRouteRoles(routesChanged);
-		for (int i=0; i<routesChanged.size(); i++) {
-			updateDBPersistent((com.cannontech.database.db.DBPersistent) routesChanged.get(i));
-		}
-	} 
-
-	f.setCursor(savedCursor);
-
-return;
-	
-}
 
 /**
 * Insert the method's description here.
@@ -1643,7 +1601,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 		systemCreateMenu = new SystemCreateMenu();
 		viewMenu = new ViewMenu();
 		helpMenu = new HelpMenu();
-      	toolsMenu = new ToolsMenu();
 		
 		JMenuItem item;
 		
@@ -1701,15 +1658,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				helpMenu.getItem(i).addActionListener(this);
 		}
-
-		for( int i = 0; i < toolsMenu.getItemCount() ; i++ )
-		{
-			item = toolsMenu.getItem(i);
-			if( item != null )
-				toolsMenu.getItem(i).addActionListener(this);
-      }
-
-		           
 			
 		this.menuBar.add( fileMenu );
 		this.menuBar.add( editMenu );		

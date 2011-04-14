@@ -17,6 +17,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteUsageHelper;
+import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.route.RepeaterRoute;
 
 public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.event.ActionListener {
@@ -64,7 +66,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
     private JButton cancelButton = null;
     private RouteRole role = null;
     private CCURoute route = null;
-    private RegenerateRoute routeMaster = null;
+    private RouteUsageHelper routeMaster = null;
     private Vector blackList = new Vector();
     
     private String choice = "No";
@@ -100,7 +102,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
      * This method was created in VisualAge.
      * @param contentPanel JPanel
      */
-    public RoleConflictDialog(java.awt.Frame owner, RouteRole role_, CCURoute route_, RegenerateRoute regenerateRoute_) {
+    public RoleConflictDialog(java.awt.Frame owner, RouteRole role_, CCURoute route_, RouteUsageHelper regenerateRoute_) {
         super(owner, true);
         this.owner = owner;
         role = role_;

@@ -42,12 +42,12 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteFactory;
+import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
-import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -327,7 +327,7 @@ public class DeviceRoutePanel
                     route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
                 }
                 
-                RegenerateRoute routeBoss = new RegenerateRoute();
+                RouteUsageHelper routeBoss = new RouteUsageHelper();
                 RouteRole role = routeBoss.assignRouteLocation((CCURoute)route, null, null);
                 if( role.getDuplicates().isEmpty() ) {
                     ((CCURoute)route).getCarrierRoute().setCcuFixBits(new Integer(role.getFixedBit()));
