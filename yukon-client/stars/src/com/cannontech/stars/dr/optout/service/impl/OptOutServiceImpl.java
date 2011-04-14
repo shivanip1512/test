@@ -48,6 +48,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -999,8 +1000,10 @@ public class OptOutServiceImpl implements OptOutService {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 	    
 		// The account we are looking at doesn't have a login, therefore there are no limits
-		if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
-			DateTime dateTime = new DateTime(energyCompanyTimeZone);
+		if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
+           rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
+		    
+		    DateTime dateTime = new DateTime(energyCompanyTimeZone);
 			int currentMonth = dateTime.getMonthOfYear();
 			
 			String optOutLimitString = 
