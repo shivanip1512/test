@@ -21,6 +21,19 @@ public class SqlFragmentCollection implements SqlFragmentSource {
         return new SqlFragmentCollection(" OR ", true);
     }
     
+    /**
+     * Create a SqlFragmentCollection with any joiner string. Normally the newAndCollection
+     * and newOrCollection will be used, but this is available for advanced uses.
+     * 
+     * If one exactly one fragment is added to the collection, it will simply be returned as is.
+     * If two or more fragments are added to the collection, they will be wrapped in parentheses
+     * if the wrap parameter is set. This is useful for boolean logic clauses where the joiner is 
+     * " AND ", but isn't desirable for comma-separated lists (like a UPDATE clause) where
+     * the joiner is ", ".
+     * 
+     * @param joiner the string to place between each fragment, spaces are not added automatically
+     * @param wrap controls whether output may be wrapped in parentheses
+     */
     public SqlFragmentCollection(String joiner, boolean wrap) {
         this.joiner = joiner;
         this.wrap = wrap;
