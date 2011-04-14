@@ -102,6 +102,20 @@ SET PaoType = 'ZigBee Utility Pro'
 WHERE PaoType = 'Zigbee Utility Pro';
 /* End YUK-9702 */
 
+/* Start YUK-9705 */
+/* @error ignore-begin */
+ALTER TABLE OptOutEvent DROP CONSTRAINT FK_OptOutEvent_CustAcct;
+
+ALTER TABLE OptOutEvent
+    MODIFY CustomerAccountId NUMBER NULL;
+
+ALTER TABLE OptOutEvent 
+    ADD CONSTRAINT FK_OptOutEvent_CustAcct FOREIGN KEY(CustomerAccountId) 
+        REFERENCES CustomerAccount (AccountId) 
+            ON DELETE SET NULL;
+/* @error ignore-end */
+/* End YUK-9705 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2011 2:58:10 PM                         */
+/* Created on:     4/14/2011 3:15:23 PM                         */
 /*==============================================================*/
 
 
@@ -5914,7 +5914,7 @@ create table OptOutAdditional  (
 create table OptOutEvent  (
    OptOutEventId        NUMBER                          not null,
    InventoryId          NUMBER                          not null,
-   CustomerAccountId    NUMBER                          not null,
+   CustomerAccountId    NUMBER,
    ScheduledDate        DATE                            not null,
    StartDate            DATE                            not null,
    StopDate             DATE                            not null,
@@ -11465,7 +11465,7 @@ alter table OperatorLoginGraphList
 alter table OptOutEvent
    add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
       references CustomerAccount (AccountID)
-      on delete cascade;
+      on delete set null;
 
 alter table OptOutSurvey
    add constraint FK_OptOutSurv_Surv foreign key (SurveyId)

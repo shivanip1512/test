@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/14/2011 2:33:58 PM                         */
+/* Created on:     4/14/2011 3:27:19 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6264,7 +6264,7 @@ go
 create table OptOutEvent (
    OptOutEventId        numeric              not null,
    InventoryId          numeric              not null,
-   CustomerAccountId    numeric              not null,
+   CustomerAccountId    numeric              null,
    ScheduledDate        datetime             not null,
    StartDate            datetime             not null,
    StopDate             datetime             not null,
@@ -12444,7 +12444,7 @@ go
 alter table OptOutEvent
    add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
       references CustomerAccount (AccountID)
-         on delete cascade
+         on delete set null
 go
 
 alter table OptOutSurvey
