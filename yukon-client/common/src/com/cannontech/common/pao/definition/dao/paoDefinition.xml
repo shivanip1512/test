@@ -4740,7 +4740,17 @@
                 <name>Battery Low</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="101">
+            <point type="Status" offset="4">
+            	<init>true</init>
+                <name>Momentary Toggle</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+			<point type="Status" offset="100">
+            	<init>true</init>
+                <name>Signal Strength</name>
+                <stategroup value="Signal Strength"/>
+            </point>
+            <!-- <point type="Status" offset="101">
             	<init>true</init>
                 <name>Configured to send Current Survey</name>
                 <stategroup value="TrueFalse"/>
@@ -4749,11 +4759,11 @@
             	<init>true</init>
                 <name>Request ACK</name>
 				<stategroup value="TrueFalse"/>
-            </point>
+            </point> -->
             <point type="Analog" offset="1">
             	<init>true</init>
                 <name>Nominal Amps</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
@@ -4766,9 +4776,9 @@
             </point>
             <point type="Analog" offset="3">
             	<init>true</init>
-                <name>Phase</name>
+                <name>Battery Voltage</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
@@ -4778,22 +4788,15 @@
                 <unitofmeasure value="Temp-C"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="5">
-            	<init>true</init>
-                <name>Battery Voltage</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="11">
-            	<init>true</init>
+            	<init>false</init>
                 <name>Latitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>true</init>
+            	<init>false</init>
                 <name>Longitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
@@ -4806,33 +4809,26 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="101">
+            <point type="Analog" offset="100">
             	<init>true</init>
-                <name>UDP repeats</name>
+                <name>RSSI</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="201">
+            <point type="Analog" offset="101">
             	<init>true</init>
-                <name>TGB Id - Max Signal</name>
+                <name>BER</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="202">
-            	<init>true</init>
-                <name>Normal Mode - Max Signal</name>
+            <point type="PulseAccumulator" offset="1">
+        		<init>true</init>
+                <name>Momentary Count</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="203">
-            	<init>true</init>
-                <name>Boost Mode - Max Signal</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="1"/>
             </point>
         </points>    
         <attributes>
@@ -4847,48 +4843,48 @@
 		<points>
             <point type="Status" offset="1">
             	<init>true</init>
-                <name>Fault Status</name>
+                <name>Over Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2">
             	<init>true</init>
-                <name>No 60Hz or Low Current</name>
+                <name>Reset Over Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-            	<init>true</init>
-                <name>Battery Low</name>
+            	<init>false</init>
+                <name>Reed Switch Communication</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="101">
-            	<init>true</init>
-                <name>Configured to send Current Survey</name>
+            <point type="Status" offset="10">
+            	<init>false</init>
+                <name>Calibrated</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="102">
+            <point type="Status" offset="100">
             	<init>true</init>
-                <name>Request ACK</name>
-				<stategroup value="TrueFalse"/>
+                <name>Signal Strength</name>
+				<stategroup value="Signal Strength"/>
             </point>
             <point type="Analog" offset="1">
             	<init>true</init>
-                <name>Nominal Amps</name>
+                <name>Max Current - Report</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
             	<init>true</init>
-                <name>Peak Amps</name>
+                <name>Min Current - Report</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
             	<init>true</init>
-                <name>Phase</name>
+                <name>Battery Voltage</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
@@ -4900,23 +4896,37 @@
             </point>
             <point type="Analog" offset="5">
             	<init>true</init>
-                <name>Battery Voltage</name>
+                <name>Max Current - Period</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="6">
+            	<init>true</init>
+                <name>Min Current - Period</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10">
+            	<init>false</init>
+                <name>Period Rate</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>true</init>
-                <name>Latitude</name>
+            	<init>false</init>
+                <name>High Alert Setpoint</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
+                <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>true</init>
-                <name>Longitude</name>
+            	<init>false</init>
+                <name>Reset Alert Setpoint</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
+                <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="31">
@@ -4926,30 +4936,16 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="101">
+			<point type="Analog" offset="100">
             	<init>true</init>
-                <name>UDP repeats</name>
+                <name>RSSI</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="201">
+            <point type="Analog" offset="101">
             	<init>true</init>
-                <name>TGB Id - Max Signal</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="202">
-            	<init>true</init>
-                <name>Normal Mode - Max Signal</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="203">
-            	<init>true</init>
-                <name>Boost Mode - Max Signal</name>
+                <name>BER</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
