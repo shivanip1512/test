@@ -96,6 +96,10 @@ WHERE StateGroupId = -13
   AND RawState = 1;
 /* End YUK-9669 */
 
+/* Start YUK-9676 */
+INSERT INTO YukonServices VALUES (16, 'SepControlMessageListener', 'classpath:com/cannontech/services/sepControlMessageListener/sepControlMessageListenerContext.xml', 'ServiceManager'); 
+/* End YUK-9676 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
