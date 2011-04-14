@@ -10,14 +10,6 @@ extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( LMGroupDigiSEP, LMGROUPDIGISEP_ID )
 
-static const char  SEPAverageCycleUnused  = 0x80;
-static const char  SEPStandardCycleUnused = 0xFF;
-static const short SEPSetPointUnused      = 0x8000;
-static const char  SEPTempOffsetUnused    = 0xFF;
-// Events are a bitfield.
-static const char  SEPEventRandomizeStart = 0x01;
-static const char  SEPEventRandomizeStop  = 0x02;
-
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -97,11 +89,22 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     using namespace Cti::Messaging::LoadManagement;
 
     // Average cycle count value is added to 100 to get true value, so -10 = 90% cycle.
-    long averageCyclePercent = isTrueCycle ? cyclePercent - 100 : SEPAverageCycleUnused;
-    long standardCyclePercent = isTrueCycle ? SEPStandardCycleUnused : cyclePercent;
+    long averageCyclePercent = isTrueCycle ? cyclePercent - 100 : LMSepControlMessage::SEPAverageCycleUnused;
+    long standardCyclePercent = isTrueCycle ? LMSepControlMessage::SEPStandardCycleUnused : cyclePercent;
     unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 0, controlMinutes, criticality, SEPTempOffsetUnused, SEPTempOffsetUnused, SEPSetPointUnused, SEPSetPointUnused, averageCyclePercent, standardCyclePercent, eventFlags));
+    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 
+                                                                 0, 
+                                                                 controlMinutes, 
+                                                                 criticality, 
+                                                                 LMSepControlMessage::SEPTempOffsetUnused, 
+                                                                 LMSepControlMessage::SEPTempOffsetUnused, 
+                                                                 LMSepControlMessage::SEPSetPointUnused, 
+                                                                 LMSepControlMessage::SEPSetPointUnused, 
+                                                                 averageCyclePercent, 
+                                                                 standardCyclePercent, 
+                                                                 eventFlags));
+
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -124,6 +127,56 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     return true;
 }
 
+bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop)
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+
+    unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
+
+    string heatString = CtiNumStr(heatOffset).hex();
+    string coolString = CtiNumStr(coolOffset).hex();
+
+    if( heatOffset == 0 && coolOffset > 0 )
+    {
+        heatOffset = LMSepControlMessage::SEPTempOffsetUnused;
+        heatString = "unused";
+    }
+    else if( coolOffset == 0 && heatOffset > 0 )
+    {
+        coolOffset = LMSepControlMessage::SEPTempOffsetUnused;
+        coolString = "unused";
+    }
+
+    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 
+                                                                 0, 
+                                                                 controlMinutes, 
+                                                                 heatOffset, 
+                                                                 coolOffset, 
+                                                                 criticality, 
+                                                                 eventFlags));
+
+    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending SEP Thermostat command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", heat: " << heatString << " cool: "  << coolString << endl;
+    }
+
+    setLastControlSent(CtiTime());
+    
+    if( getGroupControlState() != CtiLMGroupBase::ActiveState )
+    {
+        setControlStartTime(CtiTime());
+        incrementDailyOps();
+        setIsRampingOut(false);
+    }
+
+    setIsRampingIn(false);
+    setGroupControlState(CtiLMGroupBase::ActiveState);    // This is updated from dispatch.
+    return true;
+}
 
 bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {

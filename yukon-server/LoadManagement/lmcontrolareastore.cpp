@@ -37,6 +37,7 @@
 #include "lmprogramdirectgear.h"
 #include "lmprogramcontrolwindow.h"
 #include "sepcyclegear.h"
+#include "septempoffsetgear.h"
 #include "resolvers.h"
 #include "desolvers.h"
 #include "devicetypes.h"
@@ -1019,6 +1020,10 @@ void CtiLMControlAreaStore::reset()
                         if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
                         {
                             newDirectGear = CTIDBG_new SEPCycleGear(rdr);
+                        }
+                        else if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
+                        {
+                            newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
                         }
                         else
                         {

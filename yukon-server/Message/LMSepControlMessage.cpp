@@ -36,6 +36,29 @@ _eventFlags(eventFlags)
 {
 }
 
+LMSepControlMessage::LMSepControlMessage(int            groupId,
+                                         unsigned int   utcStartTime,
+                                         unsigned short controlMinutes,
+                                         unsigned char  criticality,
+                                         unsigned char  coolTempOffset,
+                                         unsigned char  heatTempOffset,
+                                         unsigned char  eventFlags) :
+_groupId(groupId),
+_utcStartTime(utcStartTime),
+_controlMinutes(controlMinutes),
+_criticality(criticality),
+_coolTempOffset(coolTempOffset),
+_heatTempOffset(heatTempOffset),
+_eventFlags(eventFlags),
+
+//The below are not needed
+_coolTempSetpoint(SEPSetPointUnused),
+_heatTempSetpoint(SEPSetPointUnused),
+_averageCyclePercent(SEPAverageCycleUnused),
+_standardCyclePercent(SEPStandardCycleUnused)
+{
+}
+
 void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
 {
     message.writeInt  (_groupId);

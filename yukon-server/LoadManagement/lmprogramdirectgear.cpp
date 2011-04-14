@@ -787,6 +787,7 @@ const string CtiLMProgramDirectGear::SimpleThermostatRampingMethod = "SimpleTher
 const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
 const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
 const string CtiLMProgramDirectGear::SEPCycleMethod = "SEPCycle";
+const string CtiLMProgramDirectGear::SEPTempOffsetMethod = "SEPTemperatureOffset";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types

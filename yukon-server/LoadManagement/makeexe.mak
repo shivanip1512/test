@@ -90,6 +90,7 @@ loadmanager.obj \
 lmutility.obj \
 main.obj \
 sepcyclegear.obj \
+septempoffsetgear.obj \
 
 TARGS = loadmanagement.exe
 
@@ -304,12 +305,12 @@ lmcontrolareastore.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmgroupexpresscom.h lmgroupmct.h lmgroupripple.h \
 		lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
 		lmgroupsadigital.h lmgroupgolay.h lmprogramcontrolwindow.h \
-		sepcyclegear.h smartgearbase.h resolvers.h db_entry_defines.h \
-		desolvers.h devicetypes.h ctibase.h ctinexus.h configparms.h \
-		msg_dbchg.h loadmanager.h executor.h ctdpcptrq.h \
-		msg_server_req.h lmmessage.h clientconn.h \
-		ConstraintViolation.h lmfactory.h tbl_paoexclusion.h \
-		database_writer.h row_writer.h
+		sepcyclegear.h smartgearbase.h septempoffsetgear.h \
+		resolvers.h db_entry_defines.h desolvers.h devicetypes.h \
+		ctibase.h ctinexus.h configparms.h msg_dbchg.h loadmanager.h \
+		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
+		clientconn.h ConstraintViolation.h lmfactory.h \
+		tbl_paoexclusion.h database_writer.h row_writer.h
 lmcontrolareatrigger.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -503,7 +504,7 @@ lmgroupdigisep.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		database_reader.h row_reader.h boost_time.h msg_cmd.h lmid.h \
 		logger.h thread.h CtiPCPtrQueue.h amq_connection.h \
 		critical_section.h activemqcpp.h connection.h \
-		lmsepcontrolmessage.h
+		lmsepcontrolmessage.h lmseprestoremessage.h
 lmgroupemetcon.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -941,15 +942,34 @@ main.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		CServiceConfig.h rtdb.h hashkey.h hash_functions.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 sepcyclegear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		sepcyclegear.h smartgearbase.h lmprogramdirectgear.h \
-		observe.h dlldefs.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h sorted_vector.h row_reader.h \
-		lmgroupbase.h boostutil.h dbmemobject.h msg_pcrequest.h \
-		message.h collectable.h rwutil.h database_connection.h \
+		sepcyclegear.h lmprogramdirect.h boostutil.h utility.h \
+		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
+		sorted_vector.h lmprogrambase.h dbmemobject.h observe.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		pointtypes.h message.h rwutil.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
 		netports.h dsm2err.h words.h optional.h sema.h \
-		database_reader.h boost_time.h msg_cmd.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		database_reader.h row_reader.h boost_time.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h ctidate.h \
+		logger.h thread.h CtiPCPtrQueue.h lmprogramdirectgear.h \
+		lmcontrolarea.h connection.h exchange.h string_utility.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h tbl_lmprogramhistory.h smartgearbase.h
+septempoffsetgear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		septempoffsetgear.h lmprogramdirect.h boostutil.h utility.h \
+		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
+		sorted_vector.h lmprogrambase.h dbmemobject.h observe.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		pointtypes.h message.h rwutil.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
+		netports.h dsm2err.h words.h optional.h sema.h \
+		database_reader.h row_reader.h boost_time.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h ctidate.h \
+		logger.h thread.h CtiPCPtrQueue.h lmprogramdirectgear.h \
+		lmcontrolarea.h connection.h exchange.h string_utility.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h tbl_lmprogramhistory.h lmprogramthermostatgear.h \
+		smartgearbase.h ctistring.h
 test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \

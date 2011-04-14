@@ -116,6 +116,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string TargetCycleMethod;
     static const string SimpleThermostatRampingMethod;
     static const string SEPCycleMethod;
+    static const string SEPTempOffsetMethod;
     static const string NoControlMethod;
 
     //Possible method stop types

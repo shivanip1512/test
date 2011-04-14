@@ -10,6 +10,7 @@ namespace LoadManagement {
 
 class IM_EX_MSG LMSepControlMessage : public StreamableMessage
 {
+private:
     int             _groupId;
     unsigned int    _utcStartTime;
     unsigned short  _controlMinutes;
@@ -24,6 +25,7 @@ class IM_EX_MSG LMSepControlMessage : public StreamableMessage
 
 public:
 
+    // Constructor for any control
     LMSepControlMessage(int            groupId,
                         unsigned int   utcStartTime,
                         unsigned short controlMinutes,
@@ -36,7 +38,24 @@ public:
                         unsigned char  standardCyclePercent,
                         unsigned char  eventFlags);
 
+    // Constructor for temp offset control
+    LMSepControlMessage(int            groupId,
+                        unsigned int   utcStartTime,
+                        unsigned short controlMinutes,
+                        unsigned char  criticality,
+                        unsigned char  coolTempOffset,
+                        unsigned char  heatTempOffset,
+                        unsigned char  eventFlags);
+
     void streamInto(cms::StreamMessage &message) const;
+
+    static const char  SEPAverageCycleUnused  = 0x80;
+    static const char  SEPStandardCycleUnused = 0xFF;
+    static const short SEPSetPointUnused      = 0x8000;
+    static const char  SEPTempOffsetUnused    = 0xFF;
+    // Events are a bitfield.
+    static const char  SEPEventRandomizeStart = 0x01;
+    static const char  SEPEventRandomizeStop  = 0x02;
 };
 
 

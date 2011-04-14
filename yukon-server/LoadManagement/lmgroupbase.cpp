@@ -889,6 +889,15 @@ bool CtiLMGroupBase::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     return false;
 }
 
+bool CtiLMGroupBase::sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop)
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not SEP control this group type, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return false;
+}
+
 /*-------------------------------------------------------------------------
     createTargetCycleRequestMsg
 

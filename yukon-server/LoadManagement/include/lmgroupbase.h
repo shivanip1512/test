@@ -125,6 +125,7 @@ public:
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;// CtiLMGroupExpresscom
     virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
+    virtual bool sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop);
     virtual bool sendStopControl(bool stopImmediately);
 
     //pure virtuals

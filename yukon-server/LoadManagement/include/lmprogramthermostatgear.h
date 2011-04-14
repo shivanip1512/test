@@ -59,7 +59,8 @@ public:
     int operator==(const CtiLMProgramThermoStatGear& right) const;
     int operator!=(const CtiLMProgramThermoStatGear& right) const;
 
-    /* Static Members */
+protected:
+    void restore(Cti::RowReader &rdr);
 
 private:
 
@@ -77,8 +78,6 @@ private:
     LONG _valuete;
     LONG _valuetf;
     float _rampRate;
-
-    void restore(Cti::RowReader &rdr);
 };
 #endif
 

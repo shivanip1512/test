@@ -1,30 +1,31 @@
 
 /*---------------------------------------------------------------------------
-        SEPCycleGear class. Smart gear that handles the cycling portion
+        Smart gear that handles the temperature offset portion
         of Smart Energy Profile.
 ---------------------------------------------------------------------------*/
 #pragma once
 
 #include "lmprogramdirect.h"
+#include "lmprogramthermostatgear.h"
 #include "smartgearbase.h"
 
-class SEPCycleGear : public SmartGearBase, public CtiLMProgramDirectGear
+class SEPTemperatureOffsetGear : public SmartGearBase, public CtiLMProgramThermoStatGear
 {
 public:
 
-    typedef CtiLMProgramDirectGear Inherited;
+    typedef CtiLMProgramThermoStatGear Inherited;
 
     //It is believed all classes that inherit from this base must implement the functions below
-    SEPCycleGear(Cti::RowReader &rdr);
-    SEPCycleGear(const SEPCycleGear& gear);
+    SEPTemperatureOffsetGear(Cti::RowReader &rdr);
+    SEPTemperatureOffsetGear(const SEPTemperatureOffsetGear& gear);
 
     virtual CtiLMProgramDirectGear * replicate() const;
 
-    SEPCycleGear& SEPCycleGear::operator=(const SEPCycleGear& right);
-    int SEPCycleGear::operator==(const SEPCycleGear& right) const;
-    int SEPCycleGear::operator!=(const SEPCycleGear& right) const;
+    SEPTemperatureOffsetGear& SEPTemperatureOffsetGear::operator=(const SEPTemperatureOffsetGear& right);
+    int SEPTemperatureOffsetGear::operator==(const SEPTemperatureOffsetGear& right) const;
+    int SEPTemperatureOffsetGear::operator!=(const SEPTemperatureOffsetGear& right) const;
 
-    void SEPCycleGear::restore(Cti::RowReader &rdr);
+    void SEPTemperatureOffsetGear::restore(Cti::RowReader &rdr);
 
     virtual bool attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced);
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
