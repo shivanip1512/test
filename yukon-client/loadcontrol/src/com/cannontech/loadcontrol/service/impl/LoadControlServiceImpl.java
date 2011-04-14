@@ -94,13 +94,13 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
         
         // filter out unauthorized YukonPao
-        List<LMProgramBase> authorizedProgramPaos = paoAuthorizationService.filterAuthorized(user, activeProgramBaseSet, Permission.LM_VISIBLE);
+        List<LMProgramBase> authorizedPrograms = paoAuthorizationService.filterAuthorized(user, activeProgramBaseSet, Permission.LM_VISIBLE);
         
         // build ProgramStatus list
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-        for (LMProgramBase programPao : authorizedProgramPaos) {
+        for (LMProgramBase lmProgramBase: authorizedPrograms) {
         	
-        	ProgramStatus programStatus = new ProgramStatus(programPao);
+        	ProgramStatus programStatus = new ProgramStatus(lmProgramBase);
             if (programStatus.isActive()) {
                 programStatuses.add(programStatus);
             }
