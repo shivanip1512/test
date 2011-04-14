@@ -106,7 +106,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             // The customer type is a commercial type
             } else {
                 inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
-                inventoryIdsFromCustomerTypeSql.append("WHERE CICB.CiCustType").eq(rule.getCustomerTypeId());
+                inventoryIdsFromCustomerTypeSql.append("WHERE CICB.CiCustType").eq(rule.getCiCustomerTypeId());
             }
             
             sql.append("IB.InventoryId").in(inventoryIdsFromCustomerTypeSql);

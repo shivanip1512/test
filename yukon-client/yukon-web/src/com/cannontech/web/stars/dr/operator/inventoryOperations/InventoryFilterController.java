@@ -202,22 +202,18 @@ public class InventoryFilterController {
         return applianceCategories;
     }
 
+    @ModelAttribute(value="residentialModelEntryId")
+    public int getResidentialModelCustomerTypeId(){
+        return RuleModel.RESIDENTIAL_MODEL_ENTRY_ID;
+    }
+    
     @ModelAttribute(value="customerTypes")
     public List<YukonListEntry> getCustomerTypes(YukonUserContext userContext) {
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
-        List<YukonListEntry> customerTypes = Lists.newArrayListWithCapacity(ciCustTypes.getYukonListEntries().size() + 1);
-        
-        // Add residential customer type
-        YukonListEntry residentialCustomerType = createResidentialYukonListEntry(userContext);
-        customerTypes.add(residentialCustomerType);
 
-        // Add commercial customer types 
-        customerTypes.addAll(ciCustTypes.getYukonListEntries());
-        
-        return customerTypes;
+        return energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true).getYukonListEntries();
     }
 
     /**
@@ -273,20 +269,6 @@ public class InventoryFilterController {
         }
     }
 
-    /**
-     * This method creates a residential mock yukonListEntry which can be used with the CICustomerType
-     * selection list to create a drop down that has all possible customer types.
-     */
-    private YukonListEntry createResidentialYukonListEntry(YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String residentialCustomerTypeStr = messageSourceAccessor.getMessage("yukon.web.modules.operator.filterSelection.filterEntry.residential");
-            
-        YukonListEntry residentialCustomerType = new YukonListEntry();
-        residentialCustomerType.setEntryID(RuleModel.RESIDENTIAL_ENTRY_ID);
-        residentialCustomerType.setEntryText(residentialCustomerTypeStr);
-        return residentialCustomerType;
-    }
-    
     /* DI Setters */
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {

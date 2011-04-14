@@ -9,7 +9,7 @@ public class RuleModel {
     /* NOTE: The Residential customer type is not currently a yukonListEntry.  Because of this,
      * we use the RESIDENTIAL_ENTRY_ID constant as a mock id, that allows us to create a yukonListEntry
      * that can be used with the CICustomerType yukonListEntries to create a customer type drop down. */
-    public static final int RESIDENTIAL_ENTRY_ID = -1;
+    public static final int RESIDENTIAL_MODEL_ENTRY_ID = -1;
     
     private FilterRuleType ruleType;
     private String description;
@@ -18,7 +18,7 @@ public class RuleModel {
     private int applianceType;
     
     /* Customer Type */
-    private int customerTypeId;
+    private int modelCustomerType;
     
     /* Device Status */
     private int deviceStatusId;
@@ -88,18 +88,32 @@ public class RuleModel {
     }
     
     /* Customer type */
-    public int getCustomerTypeId() {
-        return customerTypeId;
+    public int getModelCustomerType() {
+        return modelCustomerType;
     }
-    public void setCustomerTypeId(int customerTypeId) {
-        this.customerTypeId = customerTypeId;
+    public void setModelCustomerType(int modelCustomerType) {
+        this.modelCustomerType = modelCustomerType;
     }
 
+    /**
+     * This method returns true if the selected type in the drop down was residential.
+     */
     public boolean isResidentialCustomerType() {
-        if (customerTypeId == RESIDENTIAL_ENTRY_ID) { 
+        if (modelCustomerType == RESIDENTIAL_MODEL_ENTRY_ID) { 
             return true;
         }
         return false;
+    }
+    
+    /**
+     * This method returns the database entry id of for ciCustomerType that was selected.  If
+     * a ciCustomerType was not selected in the drop down it will throw an IllegalArgumentException.
+     */
+    public int getCiCustomerTypeId(){
+        if (isResidentialCustomerType()) {
+            throw new IllegalArgumentException("The selected customer type is not a ci customer type.");
+        }
+        return modelCustomerType;
     }
     
     /* Device Status */

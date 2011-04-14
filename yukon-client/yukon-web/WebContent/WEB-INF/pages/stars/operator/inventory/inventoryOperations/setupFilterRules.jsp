@@ -72,7 +72,9 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'CUSTOMER_TYPE'}">
-                                            <form:select path="filterRules[${row.index}].customerTypeId">
+                                            <form:select path="filterRules[${row.index}].modelCustomerType">
+                                                <cti:msg2 var="residentialLabel" key=".filterEntry.residential"/>
+                                                <form:option label="${residentialLabel}" value="${residentialModelEntryId}"/>
                                                 <form:options items="${customerTypes}" itemLabel="entryText" itemValue="entryID"/>
                                             </form:select>
                                         </c:when>
