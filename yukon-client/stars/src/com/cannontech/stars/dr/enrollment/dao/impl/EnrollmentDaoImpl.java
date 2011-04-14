@@ -40,7 +40,8 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         "FROM LMHardwareControlGroup LMHCG "+
         "INNER JOIN LMHardwareConfiguration LMHC ON LMHC.inventoryId = LMHCG.inventoryId "+
         "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId " + 
-        "                           AND LMHCG.programId = AB.programId ";
+        "                           AND LMHCG.programId = AB.programId " +
+    	"							AND LMHCG.accountId = AB.accountId ";
 
 
     /**
