@@ -1,5 +1,9 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+
 /**
  * @author rneuharth
  *
@@ -8,17 +12,17 @@ package com.cannontech.loadcontrol.data;
  */
 public interface ILMData
 {
-	String getYukonCategory();
-	String getYukonClass();
+	PaoCategory getYukonCategory();
+	PaoClass getYukonClass();
 	String getYukonDescription();
 	Integer getYukonID();
 	String getYukonName();
-	String getYukonType();
+	PaoType getYukonType();
 		
-	void setYukonCategory(String newYukonCategory);
-	void setYukonClass(String newYukonClass);
+	void setYukonCategory(PaoCategory newYukonCategory);
+	void setYukonClass(PaoClass newYukonClass);
 	void setYukonDescription(String newYukonDescription);
 	void setYukonID(Integer newYukonID);
 	void setYukonName(String newYukonName);
-	void setYukonType(String newYukonType);
+	void setYukonType(PaoType newYukonType);
 }

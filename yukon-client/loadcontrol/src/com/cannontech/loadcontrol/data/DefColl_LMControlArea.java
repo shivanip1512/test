@@ -5,6 +5,9 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
@@ -93,10 +96,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     Vector lmProgramVector = CollectionExtracter.extractVector(vstr, polystr);
 
 	lmControlArea.setYukonID(yukonID);
-	lmControlArea.setYukonCategory(yukonCategory);
-	lmControlArea.setYukonClass(yukonClass);
+	lmControlArea.setYukonCategory(PaoCategory.valueOf(yukonCategory));
+	lmControlArea.setYukonClass(PaoClass.getForDbString(yukonClass));
 	lmControlArea.setYukonName(yukonName);
-	lmControlArea.setYukonType(yukonType);
+	lmControlArea.setYukonType(PaoType.getForDbString(yukonType));
 	lmControlArea.setYukonDescription(yukonDescription);
 	lmControlArea.setDisableFlag(new Boolean(disableFlag>0));
 	lmControlArea.setDefOperationalState(defOperationalState);

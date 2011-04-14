@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.data;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -29,10 +31,10 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public static final int STATUS_TIMED_ACTIVE = 9;
 
 	private Integer yukonID = null;
-	private String yukonCategory = null;
-	private String yukonClass = null;
+	private PaoCategory yukonCategory = null;
+	private PaoClass yukonClass = null;
 	private String yukonName = null;
-	private String yukonType = null;
+	private PaoType yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
 	private Integer startPriority = null;
@@ -245,11 +247,11 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 
 	public abstract java.util.GregorianCalendar getStopTime();
 
-	public java.lang.String getYukonCategory() {
+	public PaoCategory getYukonCategory() {
 		return yukonCategory;
 	}
 
-	public java.lang.String getYukonClass() {
+	public PaoClass getYukonClass() {
 		return yukonClass;
 	}
 
@@ -265,7 +267,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		return yukonName;
 	}
 
-	public String getYukonType() {
+	public PaoType getYukonType() {
 		return yukonType;
 	}
 
@@ -356,11 +358,11 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		stoppedControlling = newStoppedControlling;
 	}
 
-	public void setYukonCategory(java.lang.String newYukonCategory) {
+	public void setYukonCategory(PaoCategory newYukonCategory) {
 		yukonCategory = newYukonCategory;
 	}
 
-	public void setYukonClass(java.lang.String newYukonClass) {
+	public void setYukonClass(PaoClass newYukonClass) {
 		yukonClass = newYukonClass;
 	}
 
@@ -376,7 +378,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		yukonName = newYukonName;
 	}
 
-	public void setYukonType(String newYukonType) {
+	public void setYukonType(PaoType newYukonType) {
 		yukonType = newYukonType;
 	}
 
@@ -433,6 +435,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	
 	@Override
 	public PaoIdentifier getPaoIdentifier() {
-		return new PaoIdentifier(yukonID, PaoType.getForDbString(yukonType));
+		return new PaoIdentifier(yukonID, yukonType);
 	}
 }

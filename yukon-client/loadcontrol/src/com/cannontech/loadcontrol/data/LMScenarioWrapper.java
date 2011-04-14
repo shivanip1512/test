@@ -1,5 +1,8 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -7,29 +10,29 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  * LMProgramBase instance.
  */
 public class LMScenarioWrapper implements ILMData {
-	private String _yukCategory;
-	private String _yukClass;
+	private PaoCategory _yukCategory;
+	private PaoClass _yukClass;
 	private String _yukDescription;
 	private Integer _yukID;
 	private String _yukName;
-	private String _yukType;
+	private PaoType _yukType;
 
 	public LMScenarioWrapper(LiteYukonPAObject liteLMScenario) {
 		super();
 
-		_yukCategory = liteLMScenario.getPaoType().getPaoCategory().toString();
-		_yukClass = liteLMScenario.getPaoType().getPaoClass().getDbString();
+		_yukCategory = liteLMScenario.getPaoType().getPaoCategory();
+		_yukClass = liteLMScenario.getPaoType().getPaoClass();
 		_yukDescription = liteLMScenario.getPaoDescription();
 		_yukID = new Integer(liteLMScenario.getYukonID());
 		_yukName = liteLMScenario.getPaoName();
-		_yukType = liteLMScenario.getPaoType().getDbString();
+		_yukType = liteLMScenario.getPaoType();
 	}
 
-	public java.lang.String getYukonCategory() {
+	public PaoCategory getYukonCategory() {
 		return _yukCategory;
 	}
 
-	public java.lang.String getYukonClass() {
+	public PaoClass getYukonClass() {
 		return _yukClass;
 	}
 
@@ -45,17 +48,17 @@ public class LMScenarioWrapper implements ILMData {
 		return _yukName;
 	}
 
-	public String getYukonType() {
+	public PaoType getYukonType() {
 		return _yukType;
 	}
 
 	/**
 	 * We want to keep this object immutable, so have the setters do nothing
 	 */
-	public void setYukonCategory(java.lang.String newYukonCategory) {
+	public void setYukonCategory(PaoCategory newYukonCategory) {
 	}
 
-	public void setYukonClass(java.lang.String newYukonClass) {
+	public void setYukonClass(PaoClass newYukonClass) {
 	}
 
 	public void setYukonDescription(java.lang.String newYukonDescription) {
@@ -67,7 +70,7 @@ public class LMScenarioWrapper implements ILMData {
 	public void setYukonName(java.lang.String newYukonName) {
 	}
 
-	public void setYukonType(String newYukonType) {
+	public void setYukonType(PaoType newYukonType) {
 	}
 
 }

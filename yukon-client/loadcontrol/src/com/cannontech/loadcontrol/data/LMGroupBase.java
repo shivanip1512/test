@@ -1,5 +1,9 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+
 public abstract class LMGroupBase implements ILMData, Cloneable {
 	
 	// Posible states a group may be in
@@ -13,10 +17,10 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 			"Inactive Pending", "Active Pending" };
 
 	private Integer yukonID = null;
-	private String yukonCategory = null;
-	private String yukonClass = null;
+	private PaoCategory yukonCategory = null;
+	private PaoClass yukonClass = null;
 	private String yukonName = null;
-	private String yukonType = null;
+	private PaoType yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
 	private Double kwCapacity = null;
@@ -92,11 +96,11 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 
 	public abstract String getStatistics();
 
-	public java.lang.String getYukonCategory() {
+	public PaoCategory getYukonCategory() {
 		return yukonCategory;
 	}
 
-	public java.lang.String getYukonClass() {
+	public PaoClass getYukonClass() {
 		return yukonClass;
 	}
 
@@ -112,7 +116,7 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 		return yukonName;
 	}
 
-	public String getYukonType() {
+	public PaoType getYukonType() {
 		return yukonType;
 	}
 
@@ -128,11 +132,11 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 		kwCapacity = newKwCapacity;
 	}
 
-	public void setYukonCategory(java.lang.String newYukonCategory) {
+	public void setYukonCategory(PaoCategory newYukonCategory) {
 		yukonCategory = newYukonCategory;
 	}
 
-	public void setYukonClass(java.lang.String newYukonClass) {
+	public void setYukonClass(PaoClass newYukonClass) {
 		yukonClass = newYukonClass;
 	}
 
@@ -148,7 +152,7 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 		yukonName = newYukonName;
 	}
 
-	public void setYukonType(String newYukonType) {
+	public void setYukonType(PaoType newYukonType) {
 		yukonType = newYukonType;
 	}
 

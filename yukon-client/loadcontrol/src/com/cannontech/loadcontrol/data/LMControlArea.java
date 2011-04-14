@@ -2,6 +2,10 @@ package com.cannontech.loadcontrol.data;
 
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+
 public class LMControlArea implements ILMData, Cloneable {
 	
 	public static final int INVALID_INT = -1;
@@ -15,10 +19,10 @@ public class LMControlArea implements ILMData, Cloneable {
 	public static final int STATE_CNTRL_ATTEMPT = 5;
 
 	private Integer yukonID = null;
-	private String yukonCategory = null;
-	private String yukonClass = null;
+	private PaoCategory yukonCategory = null;
+	private PaoClass yukonClass = null;
 	private String yukonName = null;
-	private String yukonType = null;
+	private PaoType yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
 	private String defOperationalState = null;
@@ -231,11 +235,11 @@ public class LMControlArea implements ILMData, Cloneable {
 		return updatedFlag;
 	}
 
-	public java.lang.String getYukonCategory() {
+	public PaoCategory getYukonCategory() {
 		return yukonCategory;
 	}
 
-	public java.lang.String getYukonClass() {
+	public PaoClass getYukonClass() {
 		return yukonClass;
 	}
 
@@ -251,7 +255,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		return yukonName;
 	}
 
-	public String getYukonType() {
+	public PaoType getYukonType() {
 		return yukonType;
 	}
 
@@ -328,11 +332,11 @@ public class LMControlArea implements ILMData, Cloneable {
 		updatedFlag = newUpdatedFlag;
 	}
 
-	public void setYukonCategory(java.lang.String newYukonCategory) {
+	public void setYukonCategory(PaoCategory newYukonCategory) {
 		yukonCategory = newYukonCategory;
 	}
 
-	public void setYukonClass(java.lang.String newYukonClass) {
+	public void setYukonClass(PaoClass newYukonClass) {
 		yukonClass = newYukonClass;
 	}
 
@@ -348,7 +352,7 @@ public class LMControlArea implements ILMData, Cloneable {
 		yukonName = newYukonName;
 	}
 
-	public void setYukonType(String newYukonType) {
+	public void setYukonType(PaoType newYukonType) {
 		yukonType = newYukonType;
 	}
 

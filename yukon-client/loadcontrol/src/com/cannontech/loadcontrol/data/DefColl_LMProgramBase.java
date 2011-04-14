@@ -3,6 +3,9 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
@@ -102,10 +105,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     java.util.Vector controlWindowVector = CollectionExtracter.extractVector(vstr, polystr);
 
 	lmProgramBase.setYukonID(yukonID);
-	lmProgramBase.setYukonCategory(yukonCategory);
-	lmProgramBase.setYukonClass(yukonClass);
+	lmProgramBase.setYukonCategory(PaoCategory.valueOf(yukonCategory));
+	lmProgramBase.setYukonClass(PaoClass.getForDbString(yukonClass));
 	lmProgramBase.setYukonName(yukonName);
-	lmProgramBase.setYukonType(yukonType);
+	lmProgramBase.setYukonType(PaoType.getForDbString(yukonType));
 	lmProgramBase.setYukonDescription(yukonDescription);
 	lmProgramBase.setDisableFlag(new Boolean(disableFlag>0));
 	lmProgramBase.setStartPriority(startPriority);
