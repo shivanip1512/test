@@ -11,7 +11,7 @@ public class YukonMessageCodeResolver extends DefaultMessageCodesResolver {
     protected String postProcessMessageCode(String code) {
         // Messages generated using YukonValidationUtils
         // can't use the prefix.
-        if (code.startsWith("yukon.web.")) {
+        if (code != null && code.startsWith("yukon.web.")) {
             return code;
         }
         return super.postProcessMessageCode(code);

@@ -1,7 +1,5 @@
 package com.cannontech.web.admin.energyCompany.applianceCategory;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -139,15 +137,7 @@ public class ApplianceCategoryController {
         int ecId = ecInfo.getEnergyCompanyId();
         energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
 
-        List<Integer> applianceCategoryIds = applianceCategoryDao.getApplianceCategoryIdsByEC(ecId);
-        Map<Integer, ApplianceCategory> applianceCategoriesById =
-            applianceCategoryDao.getByApplianceCategoryIds(applianceCategoryIds);
-        List<ApplianceCategory> applianceCategories = Lists.newArrayList(applianceCategoriesById.values());
-        Collections.sort(applianceCategories, new Comparator<ApplianceCategory>(){
-            @Override
-            public int compare(ApplianceCategory ac1, ApplianceCategory ac2) {
-                return ac1.getName().compareToIgnoreCase(ac2.getName());
-            }});
+        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByECId(ecId);
         model.addAttribute("applianceCategories", applianceCategories);
 
         return "applianceCategory/list.jsp";

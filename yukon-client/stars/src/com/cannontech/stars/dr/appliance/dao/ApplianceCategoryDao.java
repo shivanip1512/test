@@ -20,6 +20,11 @@ public interface ApplianceCategoryDao {
 
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId);    
 
+    /**
+     * This method returns all the appliance categories for a given energy company
+     */
+    public List<ApplianceCategory> getApplianceCategoriesByECId(int energyCompanyId);
+    
     public int getEnergyCompanyForApplianceCategory(int applianceCategoryId);
 
     public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(

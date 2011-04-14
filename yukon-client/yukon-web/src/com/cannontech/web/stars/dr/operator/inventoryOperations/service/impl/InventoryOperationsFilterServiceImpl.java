@@ -82,6 +82,51 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         
         switch (rule.getRuleType()) {
         
+        case APPLIANCE_TYPE:
+            SqlStatementBuilder inventoryIdsByAppType = new SqlStatementBuilder();
+            inventoryIdsByAppType.append("SELECT IB.InventoryId ");
+            inventoryIdsByAppType.append("FROM LMHardwareConfiguration LMHC");
+            inventoryIdsByAppType.append("  JOIN ApplianceBase AB ON AB.ApplianceId = LMHC.ApplianceId");
+            inventoryIdsByAppType.append("WHERE AB.ApplianceCategoryId").eq(rule.getApplianceType());
+            
+            sql.append("IB.InventoryId").in(inventoryIdsByAppType);
+            break;
+            
+        case CUSTOMER_TYPE:
+            SqlStatementBuilder inventoryIdsFromCustomerTypeSql = new SqlStatementBuilder();
+            inventoryIdsFromCustomerTypeSql.append("SELECT IB.InventoryId");
+            inventoryIdsFromCustomerTypeSql.append("FROM Customer C");
+            inventoryIdsFromCustomerTypeSql.append("  JOIN CustomerAccount CA ON CA.CustomerId = C.CustomerId");
+            inventoryIdsFromCustomerTypeSql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
+            
+            // The customer type is residential
+            if (rule.isResidentialCustomerType()) {
+                inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId != C.CustomerId");
+                
+            // The customer type is a commercial type
+            } else {
+                inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
+                inventoryIdsFromCustomerTypeSql.append("WHERE CICB.CiCustType").eq(rule.getCustomerTypeId());
+            }
+            
+            sql.append("IB.InventoryId").in(inventoryIdsFromCustomerTypeSql);
+            break;
+        
+        case DEVICE_STATUS:
+            sql.append("IB.CurrentStateId").eq(rule.getDeviceStatusId());
+            break;
+            
+        case DEVICE_STATUS_DATE_RANGE:
+            SqlStatementBuilder inventoryIdsFromDeviceStateDateRangeSql = new SqlStatementBuilder();
+            inventoryIdsFromDeviceStateDateRangeSql.append("SELECT DISTINCT InventoryId");
+            inventoryIdsFromDeviceStateDateRangeSql.append("FROM EventBase EB");
+            inventoryIdsFromDeviceStateDateRangeSql.append("  JOIN EventInventory EI ON EI.EventId = EB.EventId");
+            inventoryIdsFromDeviceStateDateRangeSql.append("WHERE EB.EventTimestamp").gte(rule.getDeviceStateDateFrom().toDateMidnight(timeZone));
+            inventoryIdsFromDeviceStateDateRangeSql.append("  AND EB.EventTimestamp").lt(rule.getDeviceStateDateTo().minusDays(1).toDateMidnight(timeZone));
+            
+            sql.append("IB.InventoryId").in(inventoryIdsFromDeviceStateDateRangeSql);
+            break;
+            
         case DEVICE_TYPE:
             sql.append("yle.entryId").eq(rule.getDeviceType());
             break;
@@ -100,6 +145,29 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
             sql.append("AND lmhcg.GroupEnrollStop IS NULL");
             sql.append("AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY).append(")");
+            break;
+            
+        case MEMBER:
+            SqlStatementBuilder inventoryIdsFromECSql = new SqlStatementBuilder();
+            inventoryIdsFromECSql.append("SELECT ECTIM.InventoryId");
+            inventoryIdsFromECSql.append("FROM ECToInventoryMapping ECTIM");
+            inventoryIdsFromECSql.append("WHERE ECTIM.EnergyCompanyId").eq(rule.getMemberOfEnergyCompanyId());
+            
+            sql.append("IB.InventoryId").in(inventoryIdsFromECSql);
+            break;
+            
+        case POSTAL_CODE:
+            SqlStatementBuilder accountIdsForServiceZipCodeSql = new SqlStatementBuilder();
+            accountIdsForServiceZipCodeSql.append("SELECT Distinct CA.AccountId");
+            accountIdsForServiceZipCodeSql.append("FROM CustomerAccount CA");
+            accountIdsForServiceZipCodeSql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
+            accountIdsForServiceZipCodeSql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
+            accountIdsForServiceZipCodeSql.append("  JOIN Address A ON A.AddressId = Cont.AddressId");
+            accountIdsForServiceZipCodeSql.append("  JOIN Address A2 ON CA.BillingAddressId = A2.AddressId");
+            accountIdsForServiceZipCodeSql.append("WHERE A.ZipCode").eq(rule.getPostalCode());
+            accountIdsForServiceZipCodeSql.append("OR A2.ZipCode").eq(rule.getPostalCode());
+            
+            sql.append("IB.AccountId").in(accountIdsForServiceZipCodeSql);
             break;
             
         case PROGRAM:
@@ -131,6 +199,10 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             
             return builder;
             
+        case SERVICE_COMPANY:
+            sql.append("IB.InstallationCompanyId").eq(rule.getServiceCompanyId());
+            break;
+            
         case UNENROLLED:
             sql.append("ib.InventoryId NOT IN (");
             sql.append(  "SELECT InventoryId");
@@ -141,6 +213,15 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append(")");
             break;
 
+        case WAREHOUSE:
+            SqlStatementBuilder inventoryIdsByWarehouseIdSql = new SqlStatementBuilder();
+            inventoryIdsByWarehouseIdSql.append("SELECT ITWM.InventoryId");
+            inventoryIdsByWarehouseIdSql.append("FROM InventoryToWarehouseMapping ITWM");
+            inventoryIdsByWarehouseIdSql.append("WHERE ITWM.WarehouseId").eq(rule.getWarehouseId());
+            
+            sql.append("IB.InventoryId").in(inventoryIdsByWarehouseIdSql);
+            break;
+            
         default:
             break;
         }
@@ -148,6 +229,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         return sql;
     }
 
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
@@ -157,5 +239,4 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
     public void setVendorSpecificSqlBuilderFactory(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
         this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
     }
-    
 }

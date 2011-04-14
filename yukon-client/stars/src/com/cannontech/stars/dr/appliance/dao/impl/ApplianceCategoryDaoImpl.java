@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
@@ -228,7 +230,22 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         }
         
     }
-    
+
+    @Override
+    public List<ApplianceCategory> getApplianceCategoriesByECId(int energyCompanyId) {
+        List<Integer> applianceCategoryIds = getApplianceCategoryIdsByEC(energyCompanyId);
+        Map<Integer, ApplianceCategory> applianceCategoriesById = getByApplianceCategoryIds(applianceCategoryIds);
+        List<ApplianceCategory> applianceCategories = Lists.newArrayList(applianceCategoriesById.values());
+
+        Collections.sort(applianceCategories, new Comparator<ApplianceCategory>(){
+            @Override
+            public int compare(ApplianceCategory ac1, ApplianceCategory ac2) {
+                return ac1.getName().compareToIgnoreCase(ac2.getName());
+            }});
+        
+        return applianceCategories;
+    }
+
     // DI Setters
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
@@ -259,4 +276,5 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 }

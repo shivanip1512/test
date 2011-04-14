@@ -124,7 +124,7 @@ public class AccountServiceImpl implements AccountService {
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
     	/* Add the account to the user's energy company,  we do not have a mechanism to allow 
     	 * an operator user of a parent energy company to add accounts to member energy companies. */
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         
@@ -135,7 +135,7 @@ public class AccountServiceImpl implements AccountService {
         
         // Checks to see if the account number is already being used.
         try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
             if (customerAccount != null){
             	log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
                 throw new AccountNumberUnavailableException("The provided account number already exists.");
@@ -270,7 +270,7 @@ public class AccountServiceImpl implements AccountService {
         	liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        liteCustomer.setTemperatureUnit(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser()));
+        liteCustomer.setTemperatureUnit(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, yukonEnergyCompany.getEnergyCompanyUser()));
         customerDao.addCustomer(liteCustomer);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -301,7 +301,7 @@ public class AccountServiceImpl implements AccountService {
             } else {
             	liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
             }
-            liteCICustomer.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+            liteCICustomer.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
             customerDao.addCICustomer(liteCICustomer);
             dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -372,7 +372,7 @@ public class AccountServiceImpl implements AccountService {
          * Add mapping
          */
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
-        ecToAccountMapping.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        ecToAccountMapping.setEnergyCompanyId(yukonEnergyCompany.getEnergyCompanyId());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         log.info("Account: " + accountNumber + " added successfully.");
@@ -393,13 +393,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
-    	
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
     	try {
-    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
+    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
             deleteAccount(account, user);
 
-    	}catch (NotFoundException e ) {
+    	} catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
@@ -935,13 +934,12 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
-    	
-    	LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompanyByUser(yukonUser);
-    	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+    	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, yukonEnergyCompany);
         
-    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(yukonEnergyCompany.getEnergyCompanyUser());
     	
-    	return getAccountDto(customerAccount, ec, userContext);
+    	return getAccountDto(customerAccount, yukonEnergyCompany, userContext);
     }
     
     @Override
@@ -962,7 +960,7 @@ public class AccountServiceImpl implements AccountService {
         return getAccountDto(customerAccount, energyCompany, userContext);
     }
     
-    private AccountDto getAccountDto(CustomerAccount customerAccount, LiteStarsEnergyCompany ec, YukonUserContext userContext) {
+    private AccountDto getAccountDto(CustomerAccount customerAccount, YukonEnergyCompany yukonEnergyCompany, YukonUserContext userContext) {
         AccountDto retrievedDto = new AccountDto();
         
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
@@ -1059,10 +1057,9 @@ public class AccountServiceImpl implements AccountService {
         
         return retrievedDto;
     }
-    
+
     // HELPER METHODS
-    
-    private CustomerAccount getCustomerAccountForAccountNumberAndEnergyCompany(String accountNumber, LiteStarsEnergyCompany ec) {
+    private CustomerAccount getCustomerAccountForAccountNumberAndEnergyCompany(String accountNumber, YukonEnergyCompany ec) {
     	
     	CustomerAccount customerAccount = null;
         try {
@@ -1122,7 +1119,6 @@ public class AccountServiceImpl implements AccountService {
     }
     
     // INJECTED DEPENDANCIES
-    
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
