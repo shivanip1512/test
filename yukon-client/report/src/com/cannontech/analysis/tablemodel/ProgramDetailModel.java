@@ -1,17 +1,23 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.stars.ProgramDetail;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 {
@@ -37,7 +43,7 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	
 	/** Class fields */
 	private HashMap<String, ProgramDetail> acctProgPairs = null;
-	
+
 	/**
 	 * Constructor class
 	 */
@@ -78,46 +84,49 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		    return;
 		}
 		
-		StringBuffer sql = buildSQLStatement();
+		SqlStatementBuilder sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
-				
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
 
-				boolean dataExists = false;
-				while( rset.next())
-				{
-					addDataRow(rset);
+		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+		yukonJdbcTemplate.query(sql, new ResultSetExtractor() {
+        	@Override
+        	public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+        		boolean dataExists = false;
+        		
+        		while (rs.next()) {
+					try {
+						Integer accountId = rs.getInt("AccountId");
+						Integer assignedProgramId = rs.getInt("ProgramId");
+						String altDisplayName = rs.getString("AlternateDisplayName");
+						Integer customerId = rs.getInt("CustomerId");
+						String accountNumber = rs.getString("AccountNumber");
+						String ecName = rs.getString("Name");
+			            if (altDisplayName.equalsIgnoreCase(",")) {
+			            	// If alt name not provided, default to the LMProgram (PAO) name. 
+			                altDisplayName = rs.getString("PaoName");
+			            }
+			            
+						ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, customerId, accountNumber, accountId, -1 );
+						getData().add(pd);
+
+						//KEY = "ACCTID_PROGID"
+						String key = buildLookupKey(accountId, assignedProgramId);
+						getAcctProgPairs().put(key, pd);
+					}
+					catch(java.sql.SQLException e)
+					{
+						e.printStackTrace();
+					}
+
 					dataExists = true;
 				}
-				if (dataExists)
+				if (dataExists) {
 					buildAcctProgHashMap();
-			}
-		}
-				
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
+				}
+        		return null;
+        	}
+		});
+
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -126,61 +135,77 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	 * Build the SQL statement to retrieve <StatisticDeviceDataBase> data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlStatementBuilder buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT AM.ACCOUNTID, LPWP.PROGRAMID VirtualProgID, LPWP.DEVICEID LMProgID, " +
-		" AC.DESCRIPTION, YWC.ALTERNATEDISPLAYNAME, CA.CUSTOMERID, CA.ACCOUNTNUMBER, EC.NAME, PAO.PAONAME " +
-		" FROM APPLIANCECATEGORY AC, YUKONWEBCONFIGURATION YWC, LMPROGRAMWEBPUBLISHING LPWP, "+
-		" ECTOACCOUNTMAPPING AM, ECTOGENERICMAPPING GM, CUSTOMERACCOUNT CA, ENERGYCOMPANY EC, YUKONPAOBJECT PAO " +
-		" WHERE LPWP.WEBSETTINGSID = YWC.CONFIGURATIONID "+  
-        " AND PAO.PAOBJECTID = LPWP.DEVICEID ");
-        
-		sql.append(" AND PAO.PAOBJECTID = " + getPaoIDs()[0] );
-        
-        sql.append(" AND CA.ACCOUNTID = AM.ACCOUNTID ");
-        sql.append(" AND LPWP.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID ");
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT AM.AccountId, LPWP.ProgramId, LPWP.DeviceId,");
+		sql.append(    "AC.Description, YWC.AlternateDisplayName, CA.CustomerId, CA.AccountNumber, EC.Name, PAO.PaoName");
+		sql.append("FROM LmProgramWebPublishing LPWP JOIN YukonWebConfiguration YWC ON LPWP.WebSettingsId = YWC.ConfigurationId");
+		sql.append(    "JOIN YukonPaobject PAO ON PAO.PaobjectId = LPWP.DeviceId");
+		sql.append(    "JOIN ApplianceCategory AC ON AC.ApplianceCategoryId = LPWP.ApplianceCategoryId");
+		sql.append(    "JOIN EcToGenericMapping GM ON GM.ItemId = AC.ApplianceCategoryId");
+		sql.append(    "JOIN EcToAccountMapping AM ON AM.EnergyCompanyId = GM.EnergyCompanyId");
+		sql.append(    "JOIN CustomerAccount CA ON CA.AccountId = AM.AccountId");
+		sql.append(    "JOIN EnergyCompany EC ON EC.EnergyCompanyId = GM.EnergyCompanyId");
+		sql.append("WHERE PAO.PaobjectId").eq(getPaoIDs()[0]);
+		sql.append(    "AND GM.MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 
-		if( getEnergyCompanyID() != null)
-			sql.append(" AND EC.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
-
-		sql.append(" AND GM.ENERGYCOMPANYID = EC.ENERGYCOMPANYID "+
-		" AND GM.ENERGYCOMPANYID = AM.ENERGYCOMPANYID "+
-		" AND AC.APPLIANCECATEGORYID = GM.ITEMID "+
-		" AND GM.MAPPINGCATEGORY = 'ApplianceCategory' " +
-		" ORDER BY EC.NAME, YWC.ALTERNATEDISPLAYNAME, CA.ACCOUNTNUMBER ");
-		return sql;
+		if( getEnergyCompanyID() != null) {
+			sql.append("AND EC.EnergyCompanyId").eq(getEnergyCompanyID());
+		}
 		
+		sql.append("ORDER BY EC.Name, YWC.AlternateDisplayName, CA.AccountNumber");
+		return sql;
 	}
-	/**
-	 * Add <innerClass> objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 */
-	public void addDataRow(java.sql.ResultSet rset)
+	
+	
+	public void buildAcctProgHashMap()
 	{
-		try
-		{
-			Integer acctID = new Integer(rset.getInt(1));
-			Integer virtualProgID = new Integer(rset.getInt(2));
-			String altDisplayName = rset.getString(5);
-			Integer custID = new Integer(rset.getInt(6));
-			String acctNum = rset.getString(7);
-			String ecName = rset.getString(8);
-            if ( altDisplayName.equalsIgnoreCase(",")){
-                altDisplayName = rset.getString(9);
-            }
-			ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, custID, acctNum, acctID, new Integer(-1) );
-			getData().add(pd);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT LPE.AccountId, LPE.ProgramId, YLE.YukonDefinitionId, YLE.EntryText");
+		sql.append("FROM LmProgramEvent LPE JOIN LmCustomerEventBase CEB ON LPE.EventId = CEB.EventId");
+		sql.append(    "JOIN YukonListEntry YLE ON YLE.EntryId = CEB.ActionId");
+		sql.append(    "JOIN LMProgramWebPublishing LMPWP ON LMPWP.ProgramId = LPE.ProgramId");
+		sql.append("WHERE LMPWP.DeviceId").eq(getPaoIDs()[0]);
+		sql.append(    "AND LPE.EventId IN (");
+		sql.append(        "SELECT MAX(LPE2.EventId)");
+		sql.append(        "FROM LmProgramEvent LPE2 JOIN LmCustomerEventBase CEB2 ON CEB2.EVENTID = LPE2.EVENTID");
+		sql.append(        "WHERE CEB2.EventDateTime").lte(getStopDate());
+		sql.append(        "GROUP BY AccountId, ProgramId)");
+		sql.append("ORDER BY LPE.ACCOUNTID, LPE.PROGRAMID");
 
-			//KEY = "ACCTID_PROGID"
-			String acctProgStr = acctID.toString() + "_" + virtualProgID.toString();
-			getAcctProgPairs().put(acctProgStr, pd);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+		CTILogger.info(sql.toString());
+		
+		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+        yukonJdbcTemplate.query(sql, new ResultSetExtractor() {
+        	@Override
+        	public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+        		while (rs.next()) {
+            		Integer accountId = rs.getInt("AccountId");
+    				Integer assignedProgramId = rs.getInt("ProgramId");
+    				Integer actionID = rs.getInt("YukonDefinitionId");
+    				String entryText = rs.getString("EntryText");
+
+    				//Key = "AcctID_ProgID"
+    				String key = buildLookupKey(accountId, assignedProgramId); 
+    				ProgramDetail pd = getAcctProgPairs().get(key);
+    				if (pd != null) {
+    					pd.setAction(actionID);
+    					pd.setStatus(entryText);
+    				}
+        		}
+        		return null;
+        	}
+		});
+
+        CTILogger.info("Report Records Collected from Database: " + getData().size());
+		return;
+	}	
+
+	private String buildLookupKey(Integer accountId, Integer assignedProgramId) {
+		return accountId.toString() + "_" + assignedProgramId.toString();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
@@ -284,85 +309,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		}
 		return columnProperties;
 	}
-	
-	public void buildAcctProgHashMap()
-	{
-		StringBuffer sql = new StringBuffer("SELECT LPE.ACCOUNTID, LPE.PROGRAMID, YLE.YUKONDEFINITIONID, YLE.ENTRYTEXT "+
-		" FROM LMPROGRAMEVENT LPE, LMCUSTOMEREVENTBASE CEB, YUKONLISTENTRY YLE "+
-		" WHERE LPE.EVENTID = CEB.EVENTID "+
-		" AND YLE.ENTRYID = CEB.ACTIONID " +
-		" AND LPE.EVENTID IN "+
-		" (SELECT MAX(LPE2.EVENTID) FROM LMPROGRAMEVENT LPE2, LMCUSTOMEREVENTBASE CEB2 "+
-		" WHERE CEB2.EVENTID = LPE2.EVENTID AND CEB2.EVENTDATETIME <= ? ");
-		
-		sql.append(" AND LPE.PROGRAMID = " + getPaoIDs()[0] );
-		
-        sql.append(" GROUP BY ACCOUNTID, PROGRAMID )" +
-		" ORDER BY LPE.ACCOUNTID, LPE.PROGRAMID");
-		
-		CTILogger.info(sql.toString());
-				
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStopDate().getTime() ));
-				CTILogger.info("MAX STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					Integer acctID = new Integer(rset.getInt(1));
-					Integer virtualProgID = new Integer(rset.getInt(2));
-					Integer actionID = new Integer(rset.getInt(3));
-					String entryText = rset.getString(4);
-					
-					//Key = "AcctID_ProgID"
-					String acctProgStr = acctID.toString()+ "_" + virtualProgID.toString(); 
-					ProgramDetail pd = (ProgramDetail)getAcctProgPairs().get(acctProgStr);
-					if( pd != null)
-					{
-						pd.setAction(actionID);
-						pd.setStatus(entryText);
-					}
-						
-				}				
-			}
-		}
-				
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-		}
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
-	}	
-	
+
+
 	public String getHTMLOptionsTable() {
         String html = "<span style='font-weight: bold;'> * You must select only one program.</span>";
         return html;
@@ -406,5 +354,4 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	{
 		return false;
 	}
-
 }
