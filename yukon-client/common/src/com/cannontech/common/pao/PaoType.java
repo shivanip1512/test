@@ -173,7 +173,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT420FLD(DeviceTypes.MCT420FLD, "MCT-420FLD", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420CL(DeviceTypes.MCT420CL, "MCT-420CL", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420CLD(DeviceTypes.MCT420CLD, "MCT-420CLD", PaoCategory.DEVICE, PaoClass.CARRIER),
-    ZIGBEEUTILPRO(DeviceTypes.ZIGBEE_UTIL_PRO, "Zigbee Utility Pro", PaoCategory.DEVICE, PaoClass.CARRIER),
+    ZIGBEEUTILPRO(DeviceTypes.ZIGBEE_UTIL_PRO, "ZigBee Utility Pro", PaoCategory.DEVICE, PaoClass.CARRIER),
     DIGIGATEWAY(DeviceTypes.DIGI_GATEWAY, "Digi Gateway", PaoCategory.DEVICE, PaoClass.TRANSMITTER)
     ;
     

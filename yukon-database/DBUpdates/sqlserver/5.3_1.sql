@@ -100,6 +100,12 @@ WHERE StateGroupId = -13
 INSERT INTO YukonServices VALUES (16, 'SepControlMessageListener', 'classpath:com/cannontech/services/sepControlMessageListener/sepControlMessageListenerContext.xml', 'ServiceManager'); 
 /* End YUK-9676 */
 
+/* Start YUK-9702 */
+UPDATE YukonPaobject
+SET PaoType = 'ZigBee Utility Pro'
+WHERE PaoType = 'Zigbee Utility Pro';
+/* End YUK-9702 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
