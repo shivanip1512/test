@@ -16,6 +16,21 @@ DynamicTable.prototype = {
         this.tempRequestDiv = this.wrapper.down('div.tempRequest');
 
         this.everyRow(this.initRow.bind(this));
+        var visibleRows = this.getVisibleRows();
+        var numVisible = visibleRows.length;
+        var that = this;
+        visibleRows.each(function(row, index) {
+            if (index == 0) {
+                that.disableMoveUp(row);
+            } else {
+                that.enableMoveUp(row);
+            }
+            if (index == numVisible - 1) {
+                that.disableMoveDown(row);
+            } else {
+                that.enableMoveDown(row);
+            }
+        });
     },
 
     initRow: function(row, undoRow) {
@@ -91,7 +106,7 @@ DynamicTable.prototype = {
      */
     hideRemovedItem: function(row) {
         var undoRow = row.next();
-        var visibleRows = this.getVisibleRows(row.up('table'));
+        var visibleRows = this.getVisibleRows();
         undoRow.show();
         row.hide();
         if (visibleRows.length < 2) {
@@ -121,7 +136,7 @@ DynamicTable.prototype = {
      * updated turns out to be the first or last row, the adjacent row will also be updated.
      */
     updateMoveButtonVisibility: function(aroundRow) {
-        var visibleRows = this.getVisibleRows(aroundRow.up('table'));
+        var visibleRows = this.getVisibleRows();
         if (visibleRows.length == 1) {
             this.disableMoveUp(aroundRow);
             this.disableMoveDown(aroundRow);
@@ -157,7 +172,7 @@ DynamicTable.prototype = {
         var secondUndoRow = secondRow.next();
         var secondRowOrderInput = secondRow.down('.orderField');
 
-        var visibleRows = this.getVisibleRows(firstRow.up('table'));
+        var visibleRows = this.getVisibleRows();
         if (firstRow == visibleRows.first()) {
             // this is the first row; update "move up" icons
             this.disableMoveUp(secondRow);
@@ -259,3 +274,37 @@ DynamicTable.prototype = {
         tableRow.down('.moveDownBtn').show();
     }
 }
+
+function getDynamicTableInstance(wrapperDiv) {
+    var divId = wrapperDiv.id;
+    return window[divId.substring(0, divId.length - 8)];
+}
+
+Event.observe(window, 'load', function() {
+    var divs = $$('div');
+    var myDivs = $$('div.dynamicTableWrapper');
+    $$('div.dynamicTableWrapper').each(function(wrapperDiv){
+        getDynamicTableInstance(wrapperDiv).init();
+    });
+});
+
+/**
+ * Find the correct instance of DynamicTable for a given element and call the given method on it.
+ */
+function callOnDynamicTable(event, method) {
+    var wrapperDiv = event.target.up('div.dynamicTableWrapper');
+    var dynamicTableInstance = getDynamicTableInstance(wrapperDiv);
+    dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
+}
+
+YEvent.observeSelectorClick('div.dynamicTableWrapper .moveUpBtn',
+        function(event) { callOnDynamicTable(event, 'moveItemUp') });
+YEvent.observeSelectorClick('div.dynamicTableWrapper .moveDownBtn',
+        function(event) { callOnDynamicTable(event, 'moveItemDown') });
+YEvent.observeSelectorClick('div.dynamicTableWrapper .removeBtn',
+        function(event) { callOnDynamicTable(event, 'removeItem') });
+YEvent.observeSelectorClick('div.dynamicTableWrapper .undoRemoveBtn',
+        function(event) { callOnDynamicTable(event, 'undoRemoveItem') });
+
+YEvent.observeSelectorClick('div.dynamicTableWrapper #addItem',
+        function(event) { callOnDynamicTable(event, 'addItem') });

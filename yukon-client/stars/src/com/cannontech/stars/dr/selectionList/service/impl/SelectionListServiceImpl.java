@@ -75,7 +75,7 @@ public class SelectionListServiceImpl implements SelectionListService {
     @Transactional
     public void restoreToDefault(YukonSelectionList list) {
         YukonSelectionList defaultList =
-            StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(list.getListName());
+            starsDatabaseCache.getDefaultEnergyCompany().getYukonSelectionList(list.getListName());
         YukonSelectionList newList = new YukonSelectionList();
         newList.setListId(list.getListId());
         newList.setOrdering(defaultList.getOrdering());

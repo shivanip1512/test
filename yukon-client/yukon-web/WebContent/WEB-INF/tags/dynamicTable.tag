@@ -20,15 +20,6 @@
 
 <script type="text/javascript">
 ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
-
-YEvent.observeSelectorClick('#${id}_wrapper .moveUpBtn', ${id}.moveItemUp.bind(${id}));
-YEvent.observeSelectorClick('#${id}_wrapper .moveDownBtn', ${id}.moveItemDown.bind(${id}));
-YEvent.observeSelectorClick('#${id}_wrapper .removeBtn', ${id}.removeItem.bind(${id}));
-YEvent.observeSelectorClick('#${id}_wrapper .undoRemoveBtn', ${id}.undoRemoveItem.bind(${id}));
-
-YEvent.observeSelectorClick('#${id}_wrapper #addItem', ${id}.addItem.bind(${id}));
-
-Event.observe(window, 'load', ${id}.init.bind(${id}));
 </script>
 
 
@@ -36,7 +27,7 @@ Event.observe(window, 'load', ${id}.init.bind(${id}));
     <cti:msg2 var="noItemsMsg" key=".noItems"/>
 </cti:msgScope>
 
-<div id="${id}_wrapper">
+<div id="${id}_wrapper" class="dynamicTableWrapper">
     <jsp:doBody/>
     <c:if test="${empty items}">
         <div class="noItemsMessage">${pageScope.noItemsMsg}</div>

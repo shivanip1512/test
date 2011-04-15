@@ -5,16 +5,15 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.database.FieldMapper;
+import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -29,8 +28,8 @@ public class SelectionListDaoImpl implements SelectionListDao {
     private DBPersistentDao dbPersistentDao;
 
     private SimpleTableAccessTemplate<YukonSelectionList> listTemplate;
-    private final static FieldMapper<YukonSelectionList> listFieldMapper =
-        new FieldMapper<YukonSelectionList>() {
+    private final static AdvancedFieldMapper<YukonSelectionList> listFieldMapper =
+        new AdvancedFieldMapper<YukonSelectionList>() {
             @Override
             public Number getPrimaryKey(YukonSelectionList list) {
                 return list.getListId();
@@ -42,23 +41,20 @@ public class SelectionListDaoImpl implements SelectionListDao {
             }
 
             @Override
-            public void extractValues(MapSqlParameterSource parameterHolder,
-                                      YukonSelectionList list) {
-                parameterHolder.addValue("Ordering", list.getOrdering());
-                parameterHolder.addValue("SelectionLabel",
-                                         SqlUtils.convertStringToDbValue(list.getSelectionLabel()));
-                parameterHolder.addValue("WhereIsList",
-                                         SqlUtils.convertStringToDbValue(list.getWhereIsList()));
-                parameterHolder.addValue("ListName", list.getType());
-                parameterHolder.addValue("UserUpdateAvailable",
-                                         YNBoolean.valueOf(list.isUserUpdateAvailable()));
-                parameterHolder.addValue("EnergyCompanyId", list.getEnergyCompanyId());
+            public void extractValues(SqlParameterChildSink sink, YukonSelectionList list) {
+                sink.addValue("Ordering", list.getOrdering());
+                sink.addValueSafe("SelectionLabel", list.getSelectionLabel());
+                sink.addValueSafe("WhereIsList", list.getWhereIsList());
+                sink.addValue("ListName", list.getType());
+                sink.addValue("UserUpdateAvailable",
+                              YNBoolean.valueOf(list.isUserUpdateAvailable()));
+                sink.addValue("EnergyCompanyId", list.getEnergyCompanyId());
             }
     };
 
     private SimpleTableAccessTemplate<YukonListEntry> entryTemplate;
-    private final static FieldMapper<YukonListEntry> entryFieldMapper =
-        new FieldMapper<YukonListEntry>() {
+    private final static AdvancedFieldMapper<YukonListEntry> entryFieldMapper =
+        new AdvancedFieldMapper<YukonListEntry>() {
             @Override
             public Number getPrimaryKey(YukonListEntry entry) {
                 return entry.getEntryID();
@@ -70,14 +66,13 @@ public class SelectionListDaoImpl implements SelectionListDao {
             }
 
             @Override
-            public void extractValues(MapSqlParameterSource parameterHolder,
-                                      YukonListEntry entry) {
-                parameterHolder.addValue("ListId", entry.getListID());
-                parameterHolder.addValue("EntryOrder", entry.getEntryOrder());
-                parameterHolder.addValue("EntryText",
-                                         SqlUtils.convertStringToDbValue(entry.getEntryText()));
-                parameterHolder.addValue("YukonDefinitionId", entry.getYukonDefID());
-            }};
+            public void extractValues(SqlParameterChildSink sink, YukonListEntry entry) {
+                sink.addValue("ListId", entry.getListID());
+                sink.addValue("EntryOrder", entry.getEntryOrder());
+                sink.addValueSafe("EntryText", entry.getEntryText());
+                sink.addValue("YukonDefinitionId", entry.getYukonDefID());
+            }
+        };
 
     @Override
     @Transactional
@@ -103,14 +98,14 @@ public class SelectionListDaoImpl implements SelectionListDao {
         listTemplate =
             new SimpleTableAccessTemplate<YukonSelectionList>(yukonJdbcTemplate, nextValueHelper);
         listTemplate.setTableName("YukonSelectionList");
-        listTemplate.setFieldMapper(listFieldMapper);
+        listTemplate.setAdvancedFieldMapper(listFieldMapper);
         listTemplate.setPrimaryKeyField("ListId");
         listTemplate.setPrimaryKeyValidOver(0);
 
         entryTemplate =
             new SimpleTableAccessTemplate<YukonListEntry>(yukonJdbcTemplate, nextValueHelper);
         entryTemplate.setTableName("YukonListEntry");
-        entryTemplate.setFieldMapper(entryFieldMapper);
+        entryTemplate.setAdvancedFieldMapper(entryFieldMapper);
         entryTemplate.setPrimaryKeyField("EntryId");
         entryTemplate.setPrimaryKeyValidOver(0);
     }

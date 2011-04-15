@@ -15,6 +15,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 public class ImageTag extends YukonTagSupport {
+
     protected String id = null;
     protected String name = null;
     protected String key = null;
@@ -22,8 +23,6 @@ public class ImageTag extends YukonTagSupport {
     protected String styleClass = null;
     protected String type = null;
     protected String value = null;
-    protected boolean isButton = false;
-    protected boolean hide = false;
 
     public void setId(String id) {
         this.id = id;
@@ -52,15 +51,7 @@ public class ImageTag extends YukonTagSupport {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public void setIsButton(Boolean isButton) {
-        this.isButton = isButton;
-    }
-
-    public void setHide(Boolean hide) {
-        this.hide = hide;
-    }
-
+    
     @Override
     public void doTag() throws JspException, IOException,
             NoSuchMessageException {
@@ -78,20 +69,13 @@ public class ImageTag extends YukonTagSupport {
             if (StringUtils.isNotBlank(href)) {
                 out.write("<a href=\"");
                 out.write(href);
-                out.write("\" class=\"simpleLink\"");
-                if (hide) {
-                    out.write(" style=\"display: none;\"");
-                }
-                out.write(">");
+                out.write("\" class=\"simpleLink\">");
             }
 
             if (StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input")) {
                 out.write("<input type=\"image\"");
             } else {
                 out.write("<img");
-                if (hide && StringUtils.isBlank(href)) {
-                    out.write(" style=\"display: none;\"");
-                }
             }
             
             if (StringUtils.isNotBlank(id)) {
@@ -101,18 +85,13 @@ public class ImageTag extends YukonTagSupport {
             }
             
             String imgClass = "logoImage";
-
-            if (StringUtils.isNotBlank(href)
-                    || StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input")
-                    || isButton) {
+            
+            if (StringUtils.isNotBlank(href) || (StringUtils.isNotBlank(type) && type.equalsIgnoreCase("input"))) {
                 imgClass += " hoverableImage";
             }
-
-            if (StringUtils.isNotBlank(styleClass)) {
-                imgClass += " " + styleClass;
-            }
-            if (isButton) {
-                imgClass += " simpleLink";
+            
+            if(StringUtils.isNotBlank(styleClass)) {
+                imgClass += (" " + styleClass);
             }
             out.write(" class=\"" + imgClass + "\"");
             out.write(" src=\"");

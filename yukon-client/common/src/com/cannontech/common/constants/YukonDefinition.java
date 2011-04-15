@@ -8,7 +8,6 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableMultimap.Builder;
 
 public enum YukonDefinition implements DisplayableEnum, DatabaseRepresentationSource {
     EMAIL(YUK_DEF_ID_EMAIL, null),
@@ -173,9 +172,9 @@ public enum YukonDefinition implements DisplayableEnum, DatabaseRepresentationSo
     private final static ImmutableMap<Integer, YukonDefinition> byDefinitionId;
     private final static ImmutableMultimap<YukonSelectionListEnum, YukonDefinition> listDefinitions;
     static {
-        com.google.common.collect.ImmutableMap.Builder<Integer, YukonDefinition> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, YukonDefinition> builder = ImmutableMap.builder();
 
-        Builder<YukonSelectionListEnum, YukonDefinition> listBuilder = ImmutableMultimap.builder();
+        ImmutableMultimap.Builder<YukonSelectionListEnum, YukonDefinition> listBuilder = ImmutableMultimap.builder();
         for (YukonDefinition definition : values()) {
             builder.put(definition.definitionId, definition);
             if (definition.relevantList != null) {

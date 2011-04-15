@@ -50,14 +50,10 @@
                     </td>
                     <c:if test="${usesType}">
                         <td>
-                            <form:select path="entries[${status.index}].definitionId">
-                                <form:option value="0"><i:inline key=".noDefinition"/></form:option>
-                                <c:forEach var="definition" items="${listDefinitions}">
-                                    <form:option value="${definition.definitionId}">
-                                        <i:inline key="${definition}"/>
-                                    </form:option>
-                                </c:forEach>
-                            </form:select>
+                            <cti:msg2 var="noDefinitionMsg" key=".noDefinition"/>
+                            <tags:selectWithItems path="entries[${status.index}].definitionId"
+                                items="${listDefinitions}" itemValue="definitionId"
+                                defaultItemLabel="${noDefinitionMsg}" defaultItemValue="0"/>
                         </td>
                     </c:if>
                     <tags:dynamicTableActionsCell tableId="entryTable"
