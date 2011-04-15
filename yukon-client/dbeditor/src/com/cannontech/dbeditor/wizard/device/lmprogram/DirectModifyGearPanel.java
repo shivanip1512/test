@@ -28,6 +28,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private MasterCycleGearPanel ivjMasterGearPanel1 = null;
     private SmartCycleGearPanel ivjSmartGearPanel1 = null;
     private SepCycleGearPanel sepCycleGearPanel = null;
+    private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel = null;
     private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
     private RotationGearPanel ivjRotationGearPanel1= null;
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
@@ -247,13 +248,15 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 
             if(programType == PaoType.LM_SEP_PROGRAM) {
                 ivjJComboBoxGearType.addItem(GearControlMethod.SepCycle);
-                ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);
+                ivjJComboBoxGearType.addItem(GearControlMethod.SepTempOffset);
+                ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);  
             } else {
 	            for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
 	            	ivjJComboBoxGearType.addItem(gearControlMethod);
 	            }
-	            // Remove SepCycle from the combobox.
+	            // Remove SepCycle and SepTempOffset from the combobox for non SEP programs.
 	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
+	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepTempOffset);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
@@ -381,6 +384,9 @@ public Object getValue(Object o)
 	    case SepCycle:
 	        obj = getSepCycleGearPanel().getValue(gear);
 	        break;
+	    case SepTempOffset:
+	        obj = getSepTemperatureOffsetGearPanel().getValue(gear);
+	       break;
 	    case MasterCycle: {
 	    	obj = getIvjMasterGearPanel1().getValue(gear);
 	    	break;
@@ -603,6 +609,9 @@ private void setGearType(GearControlMethod method)
     case SepCycle:
         getJScrollPane1().setViewportView(getSepCycleGearPanel());
         break;
+    case SepTempOffset:
+        getJScrollPane1().setViewportView(getSepTemperatureOffsetGearPanel());
+        break;
     case TimeRefresh:
     	getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
     	break;
@@ -658,6 +667,10 @@ public void setValue(Object o)
     else if( gear instanceof com.cannontech.database.data.device.lm.SepCycleGear)
     {
         getSepCycleGearPanel().setValue(gear);
+    }
+    else if( gear instanceof com.cannontech.database.data.device.lm.SepTemperatureOffsetGear)
+    {
+        getSepTemperatureOffsetGearPanel().setValue(gear);
     }
     else if( gear instanceof com.cannontech.database.data.device.lm.MasterCycleGear )
     {
@@ -757,6 +770,12 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
             sepCycleGearPanel = new SepCycleGearPanel();
         return sepCycleGearPanel;
     }
+    
+    public SepTemperatureOffsetGearPanel getSepTemperatureOffsetGearPanel() {
+        if(sepTemperatureOffsetGearPanel == null)
+            sepTemperatureOffsetGearPanel = new SepTemperatureOffsetGearPanel();
+        return sepTemperatureOffsetGearPanel;
+    }
 
     /**
      * Returns the ivjThermoSetbackGearPanel1.
@@ -828,6 +847,10 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
         this.sepCycleGearPanel = sepCycleGearPanel;
     }
 
+    public void setSepThermostatGearPanel(SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel) {
+        this.sepTemperatureOffsetGearPanel = sepTemperatureOffsetGearPanel;
+    }
+    
     /**
      * Sets the ivjThermoSetbackGearPanel1.
      * @param ivjThermoSetbackGearPanel1 The ivjThermoSetbackGearPanel1 to set

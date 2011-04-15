@@ -7,6 +7,7 @@ import com.cannontech.database.data.device.lm.MasterCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SepCycleGear;
+import com.cannontech.database.data.device.lm.SepTemperatureOffsetGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
@@ -18,6 +19,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
 	SmartCycle(SmartCycleGear.class, "Smart Cycle"),
 	SepCycle(SepCycleGear.class, "SEP Cycle"),
+	SepTempOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
 	MasterCycle(MasterCycleGear.class, "Master Cycle"),
 	Rotation(RotationGear.class, "Rotation"),
 	Latching(LatchingGear.class, "Latching"),
@@ -27,7 +29,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
 	SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
 	NoControl(NoControlGear.class, "No Control");
-	
+
 	private Class<?> gearClass;
 	private String displayName;
 
