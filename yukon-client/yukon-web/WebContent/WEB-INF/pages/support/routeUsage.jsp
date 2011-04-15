@@ -72,7 +72,7 @@ td.used {
 }
 
 td.highlighted {
-    background-color: #CCFFCC !important;
+    background-color: #B8FFB8 !important;
 }
 
 th.fixedColumn {
