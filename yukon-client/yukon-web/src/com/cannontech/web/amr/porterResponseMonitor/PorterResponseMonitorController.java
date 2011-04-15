@@ -39,6 +39,8 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRuleDto;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -80,6 +82,7 @@ public class PorterResponseMonitorController {
 	private OutageEventLogService outageEventLogService;
 	private AttributeService attributeService;
 	private DeviceGroupService deviceGroupService;
+	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private PointService pointService;
 	private StateDao stateDao;
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -388,6 +391,10 @@ public class PorterResponseMonitorController {
         boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
         model.addAttribute("showAddRemovePoints", showAddRemovePoints);
 
+        DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
+        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        model.addAttribute("deviceCollection", deviceCollection);
+
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
         String supportedDevicesHelpText = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesHelpText", monitorDto.getGroupName(), attributeString);
@@ -506,5 +513,10 @@ public class PorterResponseMonitorController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 }

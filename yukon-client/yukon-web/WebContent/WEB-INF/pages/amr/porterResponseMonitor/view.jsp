@@ -98,9 +98,8 @@
             <tags:nameValue2 nameKey=".supportedDevices">
                 <span id="supportedDevicesMsg"></span>
                 <span id="addPointsSpan" style="display: none;">
-                    <cti:url value="/spring/bulk/collectionActions" var="addPointsLink">
-                        <cti:param name="collectionType" value="group"/>
-                        <cti:param name="group.name" value="${monitorDto.groupName}"/>
+                    <cti:url value="/spring/bulk/addPoints/home" var="addPointsLink">
+                        <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                     </cti:url>
                     <span> - </span>
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
