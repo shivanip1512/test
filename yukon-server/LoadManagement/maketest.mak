@@ -88,6 +88,7 @@ $(OBJ)\lmprogramthermostatgear.obj \
 $(OBJ)\lmservice.obj \
 $(OBJ)\lmutility.obj \
 $(OBJ)\sepcyclegear.obj \
+$(OBJ)\septempoffsetgear.obj \
 $(OBJ)\loadmanager.obj
 
 ALL: loadmanagement
