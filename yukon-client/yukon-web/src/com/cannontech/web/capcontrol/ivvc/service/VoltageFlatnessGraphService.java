@@ -22,4 +22,21 @@ public interface VoltageFlatnessGraphService {
      * @param subBusId
      */
     public VfGraph getZoneGraph(YukonUserContext userContext, int zoneId);
+
+    
+    /**
+     * Returns a long representing the largest time value (the number of milliseconds since 
+     * January 1, 1970, 00:00:00 GMT) of all the points in the IVVC SubBus graph
+     * @param subBusId
+     * @return long
+     */
+    public long getLargestPointTimeForSubBusGraph(int subBusId);
+
+    /**
+     * Returns a long representing the largest time value (the number of milliseconds since
+     * January 1, 1970, 00:00:00 GMT) of all the points in the IVVC Zone graph
+     * @param zoneId
+     * @return long
+     */
+    public long getLargestPointTimeForZoneGraph(int zoneId);
 }

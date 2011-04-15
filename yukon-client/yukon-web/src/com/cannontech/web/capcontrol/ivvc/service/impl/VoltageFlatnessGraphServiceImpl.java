@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.ivvc.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,9 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -45,6 +46,7 @@ import com.cannontech.yukon.cbc.SubBus;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphService {
     
@@ -266,7 +268,88 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		
 		return startingPos;
 	}
-	
+
+    private Set<Integer> getAllPointsInSubBusGraph(int subBusId) {
+        Set<Integer> allGraphPoints = Sets.newHashSet();
+        List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
+        for (Zone zone : zones) {
+            //Regulator point
+            int regulatorId = zone.getRegulatorId();
+            YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
+            LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, BuiltInAttribute.VOLTAGE);
+            allGraphPoints.add(regulatorPoint.getPointID());
+
+            // Cap bank points
+            List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
+            for (CapBankToZoneMapping bankToZone : banksToZone) {
+                List<Integer> bankPoints = zoneService.getMonitorPointsForBank(bankToZone.getDeviceId());
+                allGraphPoints.addAll(bankPoints);
+            }
+
+            // Additional voltage points
+            List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
+            for (PointToZoneMapping pointToZone : pointsToZone) {
+                allGraphPoints.add(pointToZone.getPointId());
+            }
+        }
+        return allGraphPoints;
+    }
+
+    @Override
+    public long getLargestPointTimeForSubBusGraph(int subBusId) {
+         long largestTime = 0;
+         Set<Integer> allGraphPoints = getAllPointsInSubBusGraph(subBusId);
+         Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
+
+         for (PointValueQualityHolder point : pointValues) {
+             long pointTime = point.getPointDataTimeStamp().getTime();
+             if (largestTime < pointTime) {
+                 largestTime = pointTime;
+             }
+         }
+         return largestTime;
+     }
+
+    private Set<Integer> getAllPointsInZoneGraph(int zoneId) {
+        Set<Integer> allGraphPoints = Sets.newHashSet();
+
+        //Regulator point
+        Zone zone = zoneService.getZoneById(zoneId);
+        int regulatorId = zone.getRegulatorId();
+        YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
+        LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, BuiltInAttribute.VOLTAGE);
+        allGraphPoints.add(regulatorPoint.getPointID());
+
+        // Cap bank points
+        List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zoneId);
+        for (CapBankToZoneMapping bankToZone : banksToZone) {
+            List<Integer> bankPoints = zoneService.getMonitorPointsForBank(bankToZone.getDeviceId());
+            allGraphPoints.addAll(bankPoints);
+        }
+
+        // Additional voltage points
+        List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zoneId);
+        for (PointToZoneMapping pointToZone : pointsToZone) {
+            allGraphPoints.add(pointToZone.getPointId());
+        }
+        return allGraphPoints;
+    }
+
+    @Override
+    public long getLargestPointTimeForZoneGraph(int zoneId) {
+        long largestTime = 0;
+        Set<Integer> allGraphPoints = getAllPointsInZoneGraph(zoneId);
+        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
+
+        for (PointValueQualityHolder point : pointValues) {
+            long pointTime = point.getPointDataTimeStamp().getTime();
+            if (largestTime < pointTime) {
+                largestTime = pointTime;
+            }
+        }
+        return largestTime;
+    }
+
 	private VfLine buildLineDataForZone(YukonUserContext userContext, CapControlCache cache, Zone zone) {
         VfLine line = new VfLine();
         List<VfPoint> points = Lists.newArrayList();

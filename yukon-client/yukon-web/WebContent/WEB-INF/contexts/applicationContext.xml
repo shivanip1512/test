@@ -907,6 +907,8 @@
     
     <bean id="capControlBackingService" class="com.cannontech.web.updater.capcontrol.CapControlBackingService"/>
     <bean id="capControlSystemEnableCommandHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlSystemEnableCommandHandler"/>
+    <bean id="capControlLargestGraphTimeForSubBusUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForSubBusUpdaterHandler"/>
+    <bean id="capControlLargestGraphTimeForZoneUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlLargestGraphTimeForZoneUpdaterHandler"/>
     
     <bean id="voltageRegulatorBackingService" class="com.cannontech.web.updater.capcontrol.VoltageRegulatorBackingService"/>
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>

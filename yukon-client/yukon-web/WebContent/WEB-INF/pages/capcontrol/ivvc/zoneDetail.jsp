@@ -11,10 +11,13 @@
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-	
+    <cti:includeScript link="/JavaScript/amChart.js" />
+
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 	<cti:includeCss link="/capcontrol/css/ivvc.css"/>
-	
+
+    <c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
+
 	<script type="text/javascript">
 	
 		function editDelta(id) {
@@ -294,10 +297,14 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "350", "8", "#FFFFFF");
-		           so.useExpressInstall('${expressInstallSrc}');
-		           so.write("${uniqueId}");
+                    var so = new SWFObject("${amSrc}", "${chartId}", "${swfWidth}", "300", "8", "#FFFFFF");
+                    so.useExpressInstall('${expressInstallSrc}');
+                    so.addVariable("chart_id", "${chartId}");
+                    so.write("${uniqueId}");
 		        </script>
+                
+                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
+                
 			</tags:boxContainer2>
 			
 			<br>

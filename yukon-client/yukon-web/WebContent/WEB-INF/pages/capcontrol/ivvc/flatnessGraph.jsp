@@ -4,6 +4,7 @@
 	<font>Arial</font>
 	<reload_data_interval>0</reload_data_interval>
 	<decimals_separator>.</decimals_separator>
+    <redraw>true</redraw>
 	
 	<plot_area>
 		<border_color>#e6e6e6</border_color>
@@ -78,7 +79,7 @@
   	
   	<bullets>
   		<hover_brightness>-25</hover_brightness>
-  		<grow_time>1</grow_time>
+  		<grow_time>0</grow_time>
   		<sequenced_grow>true</sequenced_grow>
   	</bullets>
   	

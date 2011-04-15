@@ -12,6 +12,7 @@
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
+    <cti:includeScript link="/JavaScript/amChart.js" />
 	
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/capcontrol/css/ivvc.css"/>
@@ -19,7 +20,9 @@
     <cti:url var="zoneCreatorUrl" value="/spring/capcontrol/ivvc/wizard/zoneCreation">
     	<cti:param name="subBusId" value="${subBusId}"/>
     </cti:url>
-    
+
+    <c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
+
     <script type="text/javascript">
     	function showZoneWizard(url) {
 			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
@@ -234,10 +237,14 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "350", "8", "#FFFFFF");
-		           so.useExpressInstall('${expressInstallSrc}');
-		           so.write("${uniqueId}");
+                   var so = new SWFObject("${amSrc}", "${chartId}", "${swfWidth}", "300", "8", "#FFFFFF");
+                   so.useExpressInstall('${expressInstallSrc}');
+                   so.addVariable("chart_id", "${chartId}");
+                   so.write("${uniqueId}");
 		        </script>
+                
+                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
+
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>
