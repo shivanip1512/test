@@ -39,13 +39,8 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRuleDto;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -81,10 +76,7 @@ public class PorterResponseMonitorController {
 	private PorterResponseMonitorDao porterResponseMonitorDao;
 	private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
 	private RolePropertyDao rolePropertyDao;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private PorterResponseMonitorService porterResponseMonitorService;
-	private TemporaryDeviceGroupService temporaryDeviceGroupService;
-	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	private OutageEventLogService outageEventLogService;
 	private AttributeService attributeService;
 	private DeviceGroupService deviceGroupService;
@@ -396,17 +388,10 @@ public class PorterResponseMonitorController {
         boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
         model.addAttribute("showAddRemovePoints", showAddRemovePoints);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(monitor.getGroupName());
-        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
-        StoredDeviceGroup supportedTempGroup = temporaryDeviceGroupService.createTempGroup(null);
-        deviceGroupMemberEditorDao.addDevices(supportedTempGroup, supportedDevices);
-
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedTempGroup);
-        model.addAttribute("deviceCollection", deviceCollection);
-
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String attributeString = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor." + monitor.getAttribute().getKey());
-        model.addAttribute("attributeString", attributeString);
+        String supportedDevicesHelpText = messageSourceAccessor.getMessage("yukon.web.modules.amr.porterResponseMonitor.supportedDevicesHelpText", monitorDto.getGroupName(), attributeString);
+        model.addAttribute("supportedDevicesHelpText", supportedDevicesHelpText);
 
 		List<LiteState> states = monitorDto.getStateGroup().getStatesList();
 		model.addAttribute("states", states);
@@ -516,21 +501,6 @@ public class PorterResponseMonitorController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
     @Autowired

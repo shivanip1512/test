@@ -49,7 +49,7 @@
     <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view" />
 
     <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup">
-        <cti:msg2 key=".supportedDevicesHelpText"  arguments="${monitorDto.groupName},${attributeString}" argumentSeparator=","/>
+        <spring:escapeBody htmlEscape="true">${supportedDevicesHelpText}</spring:escapeBody>
     </i:simplePopup>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
@@ -98,8 +98,9 @@
             <tags:nameValue2 nameKey=".supportedDevices">
                 <span id="supportedDevicesMsg"></span>
                 <span id="addPointsSpan" style="display: none;">
-                    <cti:url value="/spring/bulk/addPoints/home" var="addPointsLink">
-                        <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                    <cti:url value="/spring/bulk/collectionActions" var="addPointsLink">
+                        <cti:param name="collectionType" value="group"/>
+                        <cti:param name="group.name" value="${monitorDto.groupName}"/>
                     </cti:url>
                     <span> - </span>
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
@@ -112,50 +113,49 @@
 				<i:inline key="${monitorDto.evaluatorStatus}" />
 			</tags:nameValue2>
         </tags:nameValueContainer2>
+    </tags:formElementContainer>
+	<c:choose>
+		<c:when test="${not empty monitorDto.rules}">
+			<tags:boxContainer2 nameKey="rulesTable" id="rulesTable" styleClass="prmFixedViewTable">
+				<table class="compactResultsTable">
+					<tr>
+						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
+						<th><i:inline key=".rulesTable.header.outcome" /></th>
+						<th><i:inline key=".rulesTable.header.errors" />
+                            <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
+                        </th>
+						<th><i:inline key=".rulesTable.header.matchStyle" /></th>
+						<th><i:inline key=".rulesTable.header.state" /></th>
+					</tr>
 
-		<c:choose>
-			<c:when test="${not empty monitorDto.rules}">
-				<tags:boxContainer2 nameKey="rulesTable" id="rulesTable" styleClass="mediumContainer">
-					<table class="compactResultsTable">
-						<tr>
-							<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-							<th><i:inline key=".rulesTable.header.outcome" /></th>
-							<th><i:inline key=".rulesTable.header.errors" />
-                                <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
-                            </th>
-							<th><i:inline key=".rulesTable.header.matchStyle" /></th>
-							<th><i:inline key=".rulesTable.header.state" /></th>
+					<c:forEach items="${monitorDto.rules}" var="rule">
+						<tr class="<tags:alternateRow odd="altTableCell" even="tableCell"/>">
+							<td nowrap="nowrap">${rule.value.ruleOrder}</td>
+							<td nowrap="nowrap">
+                                <c:choose>
+                                    <c:when test="${rule.value.success}">
+                                        <span class="successMessage"><i:inline key=".rule.success"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="errorMessage"><i:inline key=".rule.failure"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+							<td nowrap="nowrap">${rule.value.errorCodes}</td>
+							<td nowrap="nowrap"><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
+							<td nowrap="nowrap">${states[rule.value.state].stateText}</td>
 						</tr>
+					</c:forEach>
+				</table>
+			</tags:boxContainer2>
+		</c:when>
+	</c:choose>
 
-						<c:forEach items="${monitorDto.rules}" var="rule">
-							<tr class="<tags:alternateRow odd="altTableCell" even="tableCell"/>">
-								<td nowrap="nowrap">${rule.value.ruleOrder}</td>
-								<td nowrap="nowrap">
-                                    <c:choose>
-                                        <c:when test="${rule.value.success}">
-                                            <span class="successMessage"><i:inline key=".rule.success"/></span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="errorMessage"><i:inline key=".rule.failure"/></span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-								<td nowrap="nowrap">${rule.value.errorCodes}</td>
-								<td nowrap="nowrap"><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
-								<td nowrap="nowrap">${states[rule.value.state].stateText}</td>
-							</tr>
-						</c:forEach>
-					</table>
-				</tags:boxContainer2>
-			</c:when>
-		</c:choose>
+	<div class="pageActionArea">
+		<form id="editMonitorForm" action="/spring/amr/porterResponseMonitor/editPage" method="get">
+			<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
+			<tags:slowInput2 formId="editMonitorForm" key="edit" />
+		</form>
+	</div>
 
-		<div class="pageActionArea">
-			<form id="editMonitorForm" action="/spring/amr/porterResponseMonitor/editPage" method="get">
-				<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
-				<tags:slowInput2 formId="editMonitorForm" key="edit" />
-			</form>
-		</div>
-
-	</tags:formElementContainer>
 </cti:standardPage>
