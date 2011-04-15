@@ -10,7 +10,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBankController6510;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
+import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -1545,10 +1548,12 @@ public Object getValue(Object device)
 //	java.util.Vector newScanRateVector = new java.util.Vector(3);
 
 
-	if( (val instanceof CCUBase) || (val instanceof TCUBase) 
-			  || (val instanceof RepeaterBase) ||
-			 (val instanceof PagingTapTerminal) ||
-			 (val instanceof RTCBase))
+	if (val instanceof CCUBase ||
+			val instanceof TCUBase ||
+			val instanceof RepeaterBase ||
+			val instanceof PagingTapTerminal ||
+			val instanceof RTCBase ||
+			val instanceof CCU721) 
 	{
 		if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -2105,13 +2110,14 @@ public void setValue(Object val)
 
 	HashMap scanRateMap = ((TwoWayDevice)val).getDeviceScanRateMap();
 
-	if ((val instanceof CCUBase)
-		|| (val instanceof TCUBase)
-		|| (val instanceof RepeaterBase)
-		|| (val instanceof PagingTapTerminal)
-		|| (val instanceof IEDMeter)
-		|| (val instanceof RTCBase)
-		|| (val instanceof RTM))
+	if (val instanceof CCUBase ||
+			val instanceof TCUBase ||
+			val instanceof RepeaterBase ||
+			val instanceof PagingTapTerminal ||
+			val instanceof IEDMeter	||
+			val instanceof RTCBase ||
+			val instanceof RTM ||
+			val instanceof CCU721)
 	{
 		DeviceScanRate scanRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_STATUS);		
 		if( scanRate == null )
