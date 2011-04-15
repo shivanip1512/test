@@ -85,8 +85,10 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
         purgeDynamicPaoInfo();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device address has been updated. Purging dynamic PAObject"
-                              << " info from memory and database." << endl;
+            dout << CtiTime() << " Device address for \"" << getName() << "\" (paoid " << getID() << ") has been updated"
+                              << " from \"" << *oldAddress << "\""
+                              << " to \"" << CarrierSettings.getAddress() << "\"."
+                              << " Purging dynamicPaoInfo from memory and database." << endl;
         }
     }
 

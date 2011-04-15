@@ -415,7 +415,7 @@ bool Mct470Device::isLPDynamicInfoCurrent( void )
 
     retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
-    //  note that we're verifying this against the interval that's in the database - more things will be used this way in the future
+    //  This compares against either the device config, if available, or the database table
     retval &= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile()->getLoadProfileDemandRate());
 
     //  we don't use the second load profile rate yet
@@ -791,12 +791,12 @@ long Mct470Device::getLoadProfileInterval( unsigned channel )
 }
 
 
-Mct470Device::point_info Mct470Device::getDemandData(unsigned char *buf, int len, bool is_frozen_data) const
+Mct470Device::point_info Mct470Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
     return getData(buf, len, ValueType_PulseDemand);
 }
 
-Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int len, ValueType470 vt ) const
+Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -3485,19 +3485,23 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
         CtiTime pointTime;
         DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+        const unsigned char *freeze_counter = 0;
+
         if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
         {
+            freeze_counter = DSt->Message + 3;
+
             string freeze_error;
 
-            point_info pi_freezecount = Mct4xxDevice::getData(DSt->Message + 3, 1, ValueType_Raw);
-
-            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
             {
                 ReturnMsg->setResultString(freeze_error);
             }
-
-            pointTime  = getLastFreezeTimestamp(TimeNow);
-            pointTime -= pointTime.seconds() % 60;
+            else
+            {
+                pointTime  = getLastFreezeTimestamp(TimeNow);
+                pointTime -= pointTime.seconds() % 60;
+            }
         }
         else
         {
@@ -3529,14 +3533,14 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
                         InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                     {
                         //  normal KWH read, nothing too special
-                        pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+                        pi = getAccumulatorData(DSt->Message + offset, 3);
                     }
                     else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                     {
                         //  this is where the action is - frozen decode
                         if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
-                        pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+                        pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
                         if( pi.freeze_bit != getExpectedFreezeParity() )
                         {

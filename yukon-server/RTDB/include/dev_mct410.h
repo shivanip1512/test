@@ -346,9 +346,9 @@ protected:
         ValueType_OutageCount
     };
 
-    virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const;
+    virtual point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
 
-    point_info getData(const unsigned char *buf, int len, ValueType410 vt) const;
+    point_info getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const;
 
     static int makeDynamicDemand(double input);
 
@@ -382,7 +382,7 @@ protected:
     virtual int decodeGetConfigMeterParameters( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigThresholds  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigFreeze      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

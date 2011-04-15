@@ -11,7 +11,7 @@ struct test_Mct4xxDevice : Mct4xxDevice
 {
     //  these placeholder pure-virtual overrides should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
     const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
-    point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const   {  BOOST_CHECK(0);  return point_info();  };
+    point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const   {  BOOST_CHECK(0);  return point_info();  };
     point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
     long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
     INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  BOOST_CHECK(0);  return 0;};

@@ -43,64 +43,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 {
     test_Mct410Device dev;
 
+    const unsigned char *none = 0;
+
+    const unsigned char even = 12;
+    const unsigned char odd  = 13;
+
     struct demand_checks
     {
-        unsigned char raw_value[2];
-        bool frozen;
-        double value;
-        bool freeze_bit;
+        const unsigned char raw_value[2];
+        const unsigned char *freeze_counter;
+        const double value;
+        const bool freeze_bit;
     };
 
-    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.005, true},
-                            {{0x30, 0x05}, true,  0.004, true},
-                            {{0x30, 0x04}, false, 0.004, false},
-                            {{0x30, 0x04}, true,  0.004, false},
-                            {{0x2f, 0x0f}, false, 38.55, true},
-                            {{0x2f, 0x0f}, true,  38.54, true},
-                            {{0x2f, 0x0e}, false, 38.54, false},
-                            {{0x2f, 0x0e}, true,  38.54, false},
-                            {{0x01, 0x11}, false, 273,   true},
-                            {{0x01, 0x11}, true,  272,   true}};
+    demand_checks dc[10] = {
+        {{0x30, 0x05},  none, 0.005, 1},
+        {{0x30, 0x05}, &odd,  0.004, 1},
+        {{0x30, 0x04},  none, 0.004, 0},
+        {{0x30, 0x04}, &even, 0.004, 0},
+        {{0x2f, 0x0f},  none, 38.55, 1},
+        {{0x2f, 0x0f}, &odd,  38.54, 1},
+        {{0x2f, 0x0e},  none, 38.54, 0},
+        {{0x2f, 0x0e}, &even, 38.54, 0},
+        {{0x01, 0x11},  none, 273,   1},
+        {{0x01, 0x11}, &odd,  272,   1}};
 
     test_Mct410Device::point_info pi;
 
-    pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].frozen);
+    pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[0].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
 
-    pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].frozen);
+    pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[1].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[1].freeze_bit);
 
-    pi = dev.getDemandData(dc[2].raw_value, 2, dc[2].frozen);
+    pi = dev.getDemandData(dc[2].raw_value, 2, dc[2].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[2].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[2].freeze_bit);
 
-    pi = dev.getDemandData(dc[3].raw_value, 2, dc[3].frozen);
+    pi = dev.getDemandData(dc[3].raw_value, 2, dc[3].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[3].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
 
-    pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].frozen);
+    pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[4].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
 
-    pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].frozen);
+    pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[5].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[5].freeze_bit);
 
-    pi = dev.getDemandData(dc[6].raw_value, 2, dc[6].frozen);
+    pi = dev.getDemandData(dc[6].raw_value, 2, dc[6].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[6].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[6].freeze_bit);
 
-    pi = dev.getDemandData(dc[7].raw_value, 2, dc[7].frozen);
+    pi = dev.getDemandData(dc[7].raw_value, 2, dc[7].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[7].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
 
-    pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].frozen);
+    pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[8].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
 
-    pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].frozen);
+    pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[9].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[9].freeze_bit);
 }

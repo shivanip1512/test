@@ -184,9 +184,9 @@ protected:
         ValueType_IED,
     };
 
-    virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const;
+    virtual point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
 
-    point_info getData(const unsigned char *buf, int len, ValueType470 vt) const;
+    point_info getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const;
 
     static const error_map _error_info_old_lp;
     static const error_map _error_info_lgs4;

@@ -24,6 +24,9 @@ Mct420Device::read_key_store_t Mct420Device::initReadKeyStore()
     //  inherit the MCT-410's key store...  this is a little awkward, but perhaps the best way to do it
     read_key_store_t readKeyStore = Mct410Device::initReadKeyStore();
 
+    readKeyStore.insert(read_key_info_t(-1, 0, 1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
+    readKeyStore.insert(read_key_info_t(-1, 1, 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec));
+
     const int read1 = Mct420LcdConfigurationCommand::Read_LcdConfiguration1 & 0xff;
 
     readKeyStore.insert(read_key_info_t(read1,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01));
@@ -60,6 +63,12 @@ Mct420Device::read_key_store_t Mct420Device::initReadKeyStore()
 }
 
 
+const Mct420Device::read_key_store_t &Mct420Device::getReadKeyStore(void) const
+{
+    return _readKeyStore;
+}
+
+
 Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 {
     return _config_parts;
@@ -71,7 +80,7 @@ bool Mct420Device::isProfileTablePointerCurrent(const unsigned char table_pointe
     const unsigned long intervals_since_epoch = TimeNow.seconds() / interval_len;
 
     //  truncating on purpose
-    const unsigned char expected_table_pointer = intervals_since_epoch / 6;
+    const unsigned char expected_table_pointer = intervals_since_epoch / 6 - 1;
 
     return table_pointer == expected_table_pointer;
 }
@@ -297,6 +306,77 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
     return NoError;
 }
 
+
+int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    if( int status = decodeCheckErrorReturn(InMessage, retList, outList) )
+    {
+        return status;
+    }
+
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
+
+    const unsigned revision = DSt.Message[0];
+    const unsigned sspec    = DSt.Message[1] << 8 |
+                              DSt.Message[2];
+    string descriptor;
+
+    descriptor += getName() + " / Model information:\n";
+    descriptor += "Software Specification " + CtiNumStr(sspec) + " rev ";
+
+    //  convert 10 to 1.0, 24 to 2.4
+    descriptor += CtiNumStr(((double)revision) / 10.0, 1);
+
+    descriptor += "\n";
+
+    descriptor += getName() + " / Physical meter configuration:\n";
+    descriptor += "Base meter: ";
+
+    switch( sspec % 10 )
+    {
+        case 0x00:  descriptor += "Itron Centron C2SX";  break;
+        default:    descriptor += "(unknown)";
+    }
+
+    descriptor += "\n";
+
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(descriptor);
+
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+
+    return NoError;
+}
+
+
+Mct420Device::point_info Mct420Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+{
+    point_info pi = Mct4xxDevice::getData(buf, len, ValueType_Accumulator);
+
+    if( freeze_counter )
+    {
+        //  The MCT-410's logic assumes that the reading was stored by the previous freeze counter.
+        pi.freeze_bit = ! (*freeze_counter & 0x01);
+    }
+
+    return pi;
+}
+
+
+Mct420Device::point_info Mct420Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+{
+    point_info pi = Mct410Device::getData(buf, len, ValueType_DynamicDemand);
+
+    if( freeze_counter )
+    {
+        //  The MCT-410's logic assumes that the reading was stored by the previous freeze counter.
+        pi.freeze_bit = ! (*freeze_counter & 0x01);
+    }
+
+    return pi;
+}
 
 
 //  I wanted to keep devicetypes.h away from everything else...

@@ -284,15 +284,15 @@ unsigned char Mct4xxDevice::crc8( const unsigned char *buf, unsigned int len )
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const
+Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(const unsigned char *buf, unsigned len, const unsigned char *freeze_counter) const
 {
-    return is_frozen_data ?
+    return freeze_counter ?
         getData(buf, len, ValueType_FrozenAccumulator) :
         getData(buf, len, ValueType_Accumulator);
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int len, ValueType4xx vt )
+Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const unsigned len, const ValueType4xx vt )
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -2979,8 +2979,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
                pointoffset;
     point_info pi_kw,
                pi_kw_time,
-               pi_kwh,
-               pi_freezecount;
+               pi_kwh;
     CtiTime    kw_time,
                kwh_time;
     string     result_string;
@@ -3063,27 +3062,28 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        const bool is_frozen_read = parse.getFlags() & CMD_FLAG_FROZEN;
+        const unsigned char *freeze_counter = 0;
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            freeze_counter = DSt->Message + 9;
+        }
 
         if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
         {
             //  TOU memory layout
-            pi_kwh         = getAccumulatorData(DSt->Message, 3, is_frozen_read);
+            pi_kwh         = getAccumulatorData(DSt->Message, 3, freeze_counter);
 
-            pi_kw          = getDemandData(DSt->Message + 3, 2, is_frozen_read);
+            pi_kw          = getDemandData(DSt->Message + 3, 2, freeze_counter);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
-
-            pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
         }
         else
         {
             //  normal peak memory layout
-            pi_kw          = getDemandData(DSt->Message, 2, is_frozen_read);
+            pi_kw          = getDemandData(DSt->Message, 2, freeze_counter);
             pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
-            pi_kwh         = getAccumulatorData(DSt->Message + 6, 3, is_frozen_read);
-
-            pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
+            pi_kwh         = getAccumulatorData(DSt->Message + 6, 3, freeze_counter);
         }
 
         //  turn raw pulses into a demand reading - TOU reads use LP interval
@@ -3098,12 +3098,12 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
 
         kw_time      = CtiTime(pi_kw_time.value);
 
-        if( is_frozen_read )
+        if( freeze_counter )
         {
             string freeze_error;
 
             //  this check is mainly for the frozen kWh reading
-            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
             {
                 result_string += freeze_error + "\n";
 

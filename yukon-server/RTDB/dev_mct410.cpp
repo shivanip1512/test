@@ -201,14 +201,14 @@ int Mct410Device::makeDynamicDemand(double input)
 }
 
 
-Mct410Device::point_info Mct410Device::getDemandData(unsigned char *buf, int len, bool is_frozen_data) const
+Mct410Device::point_info Mct410Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
-    return is_frozen_data ?
+    return freeze_counter ?
         getData(buf, len, ValueType_FrozenDynamicDemand) :
         getData(buf, len, ValueType_DynamicDemand);
 }
 
-Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, int len, ValueType410 vt) const
+Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -2564,13 +2564,15 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+        unsigned char *freeze_counter = 0;
+
         if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
         {
             string freeze_error;
 
-            pi_freezecount = Mct4xxDevice::getData(DSt->Message + 3, 1, ValueType_Raw);
+            freeze_counter = DSt->Message + 3;
 
-            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
             {
                 ReturnMsg->setResultString(freeze_error);
             }
@@ -2598,7 +2600,7 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
                         //  normal KWH read, nothing too special
                         tags = TAG_POINT_MUST_ARCHIVE;
 
-                        pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+                        pi = getAccumulatorData(DSt->Message + offset, 3);
 
                         pointTime -= pointTime.seconds() % 60;
                     }
@@ -2609,7 +2611,7 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                         if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
-                        pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+                        pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
                         if( pi.freeze_bit != getExpectedFreezeParity() )
                         {
@@ -2689,13 +2691,15 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, list
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+        unsigned char *freeze_counter = 0;
+
         if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
         {
             string freeze_error;
 
-            pi_freezecount = Mct4xxDevice::getData(DSt->Message + 12, 1, ValueType_Raw);
+            freeze_counter = DSt->Message + 12;
 
-            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
             {
                 ReturnMsg->setResultString(freeze_error);
             }
@@ -2712,7 +2716,7 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, list
                     //  normal KWH read, nothing too special
                     tags = TAG_POINT_MUST_ARCHIVE;
 
-                    pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+                    pi = getAccumulatorData(DSt->Message + offset, 3);
 
                     pointTime -= pointTime.seconds() % 60;
                 }
@@ -2721,7 +2725,7 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, list
                     //  but this is where the action is - frozen decode
                     tags = 0;
 
-                    pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+                    pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
                     if( pi.freeze_bit != getExpectedFreezeParity() )
                     {
@@ -3359,7 +3363,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                         && ((*(pos)     & 0x3f) != 0x3f ||
                             (*(pos + 1) & 0xff) != 0xfa) )
                     {
-                        reading = Mct4xxDevice::getData(pos, 3, ValueType_Accumulator);
+                        reading = getAccumulatorData(pos, 3);
 
                         base_reading = reading.value;
                     }
@@ -3544,7 +3548,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                                               outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
                     }
 
-                    point_info reading = Mct4xxDevice::getData(DSt->Message + 0, 3, ValueType_Accumulator);
+                    point_info reading = getAccumulatorData(DSt->Message + 0, 3);
 
                     point_info peak = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 

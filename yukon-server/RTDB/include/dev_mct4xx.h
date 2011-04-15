@@ -216,9 +216,10 @@ protected:
     //  force it pure virtual so it must be overridden by the 410 and 470
     virtual const read_key_store_t &getReadKeyStore(void) const = 0;
 
-    //  overridden by the 410 and 470 so they can use the same peak/TOU decode function
-    virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const = 0;
-    point_info getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const;
+    //  overridden by the 410, 420, and 470 so they can use the same peak/TOU decode function
+    virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter = 0) const = 0;
+    //  overridden by the 420
+    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter = 0) const;
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len) = 0;
@@ -315,7 +316,7 @@ public:
         ValueType_Raw,
     };
 
-    static point_info getData(const unsigned char *buf, int len, ValueType4xx vt);
+    static point_info getData(const unsigned char *buf, const unsigned len, const ValueType4xx vt);
 
     //  will start up any outstanding LLP requests
     void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
