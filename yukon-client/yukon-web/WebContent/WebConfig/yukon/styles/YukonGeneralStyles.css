@@ -1358,6 +1358,8 @@ select:focus {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
 }
 
+.loading { background: transparent url(../Icons/indicator_arrows.gif) top left no-repeat; }
+
 .bn {
     border:none;
 }
