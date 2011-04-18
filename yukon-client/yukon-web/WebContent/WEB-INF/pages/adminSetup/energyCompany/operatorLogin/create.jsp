@@ -83,7 +83,11 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="VIEW">
-                <cti:button key="edit" href="${baseUrl}/edit?operatorLoginId=${operatorLogin.userId}&ecId=${ecId }"/>
+                <cti:url var="operatorLoginEditUrl" value="${baseUrl}/edit">
+                    <cti:param name="ecId" value="${ecId}"/>
+                    <cti:param name="operatorLoginId" value="${operatorLogin.userId}"/>
+                </cti:url>
+                <cti:button key="edit" href="${operatorLoginEditUrl}"/>
             </cti:displayForPageEditModes>
             
             <!-- Cancel -->

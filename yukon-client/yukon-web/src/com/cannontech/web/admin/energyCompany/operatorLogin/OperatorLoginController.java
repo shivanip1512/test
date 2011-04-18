@@ -1,13 +1,15 @@
 package com.cannontech.web.admin.energyCompany.operatorLogin;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -18,9 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.util.LazyList;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -31,12 +31,14 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -68,6 +70,8 @@ public class OperatorLoginController {
                                                ModelMap modelMap,
                                                YukonUserContext userContext) {
         
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
+        
         if(!energyCompanyService.isParentOperator(userContext.getYukonUser().getUserID(), energyCompanyInfoFragment.getEnergyCompanyId())) {
             rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MEMBER_LOGIN_CNTRL, userContext.getYukonUser());
         }
@@ -98,8 +102,7 @@ public class OperatorLoginController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-        List<Integer> energyCompanyIds = LazyList.ofInstance(Integer.class);
-        energyCompanyIds.add(ecId);
+        List<Integer> energyCompanyIds = Collections.singletonList(ecId);
         
         modelMap.addAttribute("operatorLogins", yukonUserDao.getOperatorLoginsByEnergyCompanyIds(energyCompanyIds));
         return "energyCompany/operatorLogin/home.jsp";
@@ -116,6 +119,7 @@ public class OperatorLoginController {
         LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
         
         modelMap.addAttribute("operatorLogin", login);
+        modelMap.addAttribute("username", login.getUsername());
         modelMap.addAttribute("mode", PageEditMode.VIEW);
         
         return "energyCompany/operatorLogin/create.jsp";
@@ -192,6 +196,7 @@ public class OperatorLoginController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
         modelMap.addAttribute("operatorLogin", login);
+        modelMap.addAttribute("username", login.getUsername());
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(yukonUserDao.getLiteYukonUser(login.getUserId()).getAuthType()));
         
@@ -240,6 +245,45 @@ public class OperatorLoginController {
         return "redirect:home";
     }
     
+    @RequestMapping(value="toggleOperatorLoginStatus",
+                    method = {RequestMethod.POST, RequestMethod.HEAD},     
+                    headers = "x-requested-with=XMLHttpRequest")
+    public void toggleOperatorLoginStatus(YukonUserContext userContext,
+                                            ModelMap modelMap,
+                                            int operatorLoginId,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            EnergyCompanyInfoFragment energyCompanyInfoFragment) throws WebClientException, TransactionException, IOException {
+        //check permissions
+        checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
+        
+        JSONObject returnJSON = new JSONObject();
+        
+        LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(operatorLoginId);
+        if(liteUser.getLoginStatus() == LoginStatusEnum.ENABLED) {
+            liteUser.setLoginStatus(LoginStatusEnum.DISABLED);
+            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled").toString());
+        } else {
+            liteUser.setLoginStatus(LoginStatusEnum.ENABLED);
+            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
+        }
+        
+        StarsAdminUtil.updateLogin( liteUser, 
+                                    liteUser.getUsername(),
+                                    "",
+                                    liteUser.getLoginStatus(),
+                                    null,
+                                    null,
+                                    false);
+        
+        returnJSON.put("loginStatus", liteUser.getLoginStatus());
+        
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
+        
+        writer.write(returnJSON.toString());
+    }
+    
     @RequestMapping(method=RequestMethod.POST, value="update", params="delete")
     public String deleteOperatorLogin(YukonUserContext userContext,
                                       ModelMap modelMap,
@@ -263,14 +307,14 @@ public class OperatorLoginController {
     @RequestMapping(value="availableUsername",
                     method = {RequestMethod.GET, RequestMethod.HEAD},     
                     headers = "x-requested-with=XMLHttpRequest")
-    public ModelAndView availableUsername (YukonUserContext userContext,
+    public void availableUsername (YukonUserContext userContext,
                                      ModelMap modelMap,
                                      HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception {
+                                     HttpServletResponse response) throws WebClientException, TransactionException, IOException {
         StringWriter jsonDataWriter = new StringWriter();
         FileCopyUtils.copy(request.getReader(), jsonDataWriter);
         String jsonStr = jsonDataWriter.toString();
-        JSONObject data = JSONObject.fromString(jsonStr);
+        JSONObject data = JSONObject.fromObject(jsonStr);
         String userName = data.getString("userName");
         
         JSONObject jsonUpdates = new JSONObject();
@@ -286,8 +330,6 @@ public class OperatorLoginController {
         
         String responseJsonStr = jsonUpdates.toString();
         writer.write(responseJsonStr);
-        
-        return null;
     }
     
     @ModelAttribute("assignableGroups")

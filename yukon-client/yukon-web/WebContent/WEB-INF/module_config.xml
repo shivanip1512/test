@@ -1258,19 +1258,17 @@
                                 <pages>
                                     <page name="operatorLogin.VIEW" type="DETAIL">
                                         <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLoginId}&amp;ecId=${ecId}</link>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
                                         <labelArgument>${operatorLogin.username}</labelArgument>
                                         <pages>
-                                            <page name="operatorLogin.EDIT" type="DETAIL">
+                                            <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
                                                 <menu>energyCompany|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/operatorLogin/edit?operatorLoginId=${operatorLoginId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${operatorLogin.username}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="operatorLogin.CREATE" type="DETAIL" contributeToMenu="false">
+                                    <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
                                         <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/create?ecId=${id}</link>
                                     </page>
                                 </pages>
                             </page>

@@ -405,6 +405,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append(selectSql);
         sql.append("JOIN EnergyCompanyOperatorLoginList ECOLL ON ECOLL.OperatorLoginId = YU.UserId");
         sql.append("WHERE ECOLL.EnergyCompanyId").in(energyCompanyIds);
+        sql.append("ORDER BY YU.UserName ASC");
         
         List<LiteYukonUser> operators = yukonJdbcTemplate.query(sql, rowMapper);
         
