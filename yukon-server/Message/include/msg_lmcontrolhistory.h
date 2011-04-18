@@ -52,12 +52,7 @@ public:
                           CtiTime     start      = CtiTime(),
                           int        dur        = 0,
                           int        redrat     = 100,
-                          int        ctrlPriority   = 0,
-                          string  type       = string("N/A"),
-                          string  restore    = string("N"),
-                          double     reduce     = 0.0,
-                          int        pri        = 7,
-                          int        assocKey   = 0);
+                          int        ctrlPriority   = 0);
 
    CtiLMControlHistoryMsg(const CtiLMControlHistoryMsg& aRef);
    virtual ~CtiLMControlHistoryMsg();

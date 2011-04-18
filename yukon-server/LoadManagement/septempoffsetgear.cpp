@@ -51,8 +51,8 @@ bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long
 
     bool isCelsius = CtiString(getSettings()).contains("c", CtiString::ignoreCase);
 
-    int heatOffset = 0; //TODO FIX_ME JESS
-    int coolOffset = 0;
+    int heatOffset = getDelayTime();
+    int coolOffset = getPrecoolTime();
 
     long criticality = getMethodPeriod(); // We are using the MethodPeriod in the database to hold the criticality
 

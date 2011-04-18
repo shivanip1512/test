@@ -875,7 +875,16 @@ bool CtiLMGroupBase::sendStopControl(bool stopImmediately)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not sendStopControl this group type, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not sendStopControl this group, " << getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return false;
+}
+
+bool CtiLMGroupBase::sendShedControl(long controlMinutes)
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not sendShedControl this group, " << getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return false;
 }

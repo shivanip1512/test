@@ -23,39 +23,44 @@ private:
     unsigned char   _standardCyclePercent;
     unsigned char   _eventFlags;
 
+    LMSepControlMessage();
+
+    // Helper method to fill out the standard fields.
+    static LMSepControlMessage* createMessage(int groupId,
+                                              unsigned int utcStartTime,
+                                              unsigned short controlMinutes,
+                                              unsigned char criticality,
+                                              bool useRampIn,
+                                              bool useRampOut );
+
 public:
+    // Creates a new LMSepControLMessage properly configured for cycling control.
+    // Ownership of the created message is given to the caller.
+    static LMSepControlMessage* createCycleMessage( int            groupId,
+                                                    unsigned int   utcStartTime,
+                                                    unsigned short controlMinutes,
+                                                    unsigned char  criticality,
+                                                    char           cyclePercent,
+                                                    bool           isTrueCycle,
+                                                    bool           useRampIn,
+                                                    bool           useRampOut );
 
-    // Constructor for any control
-    LMSepControlMessage(int            groupId,
-                        unsigned int   utcStartTime,
-                        unsigned short controlMinutes,
-                        unsigned char  criticality,
-                        unsigned char  coolTempOffset,
-                        unsigned char  heatTempOffset,
-                        short          coolTempSetpoint,
-                        short          heatTempSetpoint,
-                        char           averageCyclePercent,
-                        unsigned char  standardCyclePercent,
-                        unsigned char  eventFlags);
+    // Creates a new LMSepControLMessage properly configured for temp offset control.
+    // Ownership of the created message is given to the caller.
+    static LMSepControlMessage* createTempOffsetMessage( int            groupId,
+                                                         unsigned int   utcStartTime,
+                                                         unsigned short controlMinutes,
+                                                         unsigned char  criticality,
+                                                         unsigned char  tempOffset,
+                                                         bool           isCoolOffset,
+                                                         bool           useRampIn,
+                                                         bool           useRampOut );
 
-    // Constructor for temp offset control
-    LMSepControlMessage(int            groupId,
-                        unsigned int   utcStartTime,
-                        unsigned short controlMinutes,
-                        unsigned char  criticality,
-                        unsigned char  coolTempOffset,
-                        unsigned char  heatTempOffset,
-                        unsigned char  eventFlags);
+    static LMSepControlMessage* createSimpleShedMessage( int            groupId,
+                                                         unsigned int   utcStartTime,
+                                                         unsigned short controlMinutes );
 
     void streamInto(cms::StreamMessage &message) const;
-
-    static const char  SEPAverageCycleUnused  = 0x80;
-    static const char  SEPStandardCycleUnused = 0xFF;
-    static const short SEPSetPointUnused      = 0x8000;
-    static const char  SEPTempOffsetUnused    = 0xFF;
-    // Events are a bitfield.
-    static const char  SEPEventRandomizeStart = 0x01;
-    static const char  SEPEventRandomizeStop  = 0x02;
 };
 
 

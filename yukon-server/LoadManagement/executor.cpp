@@ -643,26 +643,33 @@ void CtiLMCommandExecutor::ShedGroup()
                             }
                         }
 
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
-
-                        if( routeId > 0 )
+                        if( currentLMGroup->isSmartGroup() )
                         {
-                            requestMsg->setRouteId(routeId);
-                        }
-
-                        if( requestMsg != NULL )
-                        {
-                            CtiTime now;
-                            currentLMGroup->setLastControlString(requestMsg->CommandString());
-                            CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
-                            currentLMGroup->setLastControlSent(now);
-                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
-                            ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
+                            currentLMGroup->sendShedControl(shedTime/60);
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cannot create request in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
+    
+                            if( routeId > 0 )
+                            {
+                                requestMsg->setRouteId(routeId);
+                            }
+    
+                            if( requestMsg != NULL )
+                            {
+                                CtiTime now;
+                                currentLMGroup->setLastControlString(requestMsg->CommandString());
+                                CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
+                                currentLMGroup->setLastControlSent(now);
+                                currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                                ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Cannot create request in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
                         }
 
                         found = TRUE;
@@ -800,26 +807,35 @@ void CtiLMCommandExecutor::RestoreGroup()
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
                             }
                         }
-                        int priority = 11;
-                        string controlString = "control restore";
-                        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+
+                        if( currentLMGroup->isSmartGroup() )
+                        {
+                            currentLMGroup->sendStopControl(true);
+                        }
+                        else
+                        {
+                            int priority = 11;
+                            string controlString = "control restore";
+                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+    
+                            if( routeId > 0 )
+                            {
+                                requestMsg->setRouteId(routeId);
+                            }
+    
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
+                            CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
+                        }
+
+                        currentLMGroup->setLastControlSent(CtiTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+                        ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << endl;
                         }
-
-                        if( routeId > 0 )
-                        {
-                            requestMsg->setRouteId(routeId);
-                        }
-
-                        currentLMGroup->setLastControlString(requestMsg->CommandString());
-                        CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
-                        currentLMGroup->setLastControlSent(CtiTime());
-                        currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
-                        ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         found = TRUE;
                         break;
@@ -948,19 +964,26 @@ void CtiLMCommandExecutor::DisableGroup()
                                 }
                             }
 
-                            int priority = 11;
-                            string controlString = "control restore";
-                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
-
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            if( currentLMGroup->isSmartGroup() )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                                currentLMGroup->sendStopControl(true);
                             }
-
-                            currentLMGroup->setLastControlString(requestMsg->CommandString());
-                            CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
-                            currentLMGroup->setLastControlSent(CtiTime());
+                            else
+                            {
+                                int priority = 11;
+                                string controlString = "control restore";
+                                CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+    
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                                }
+    
+                                currentLMGroup->setLastControlString(requestMsg->CommandString());
+                                CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
+                                currentLMGroup->setLastControlSent(CtiTime());
+                            }
                         }
 
                         currentLMGroup->resetInternalState();

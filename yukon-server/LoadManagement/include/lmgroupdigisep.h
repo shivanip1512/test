@@ -31,6 +31,9 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
     virtual bool sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop);
     virtual bool sendStopControl(bool stopImmediately);
+    virtual bool sendShedControl(long controlMinutes);
+
+    virtual bool isSmartGroup() { return true; }
 
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;

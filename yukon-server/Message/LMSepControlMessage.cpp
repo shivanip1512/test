@@ -11,67 +11,113 @@ namespace Cti {
 namespace Messaging {
 namespace LoadManagement {
 
-LMSepControlMessage::LMSepControlMessage(int            groupId,
-                                         unsigned int   utcStartTime,
-                                         unsigned short controlMinutes,
-                                         unsigned char  criticality,
-                                         unsigned char  coolTempOffset,
-                                         unsigned char  heatTempOffset,
-                                         short          coolTempSetpoint,
-                                         short          heatTempSetpoint,
-                                         char           averageCyclePercent,
-                                         unsigned char  standardCyclePercent,
-                                         unsigned char  eventFlags) :
-_groupId(groupId),
-_utcStartTime(utcStartTime),
-_controlMinutes(controlMinutes),
-_criticality(criticality),
-_coolTempOffset(coolTempOffset),
-_heatTempOffset(heatTempOffset),
-_coolTempSetpoint(coolTempSetpoint),
-_heatTempSetpoint(heatTempSetpoint),
-_averageCyclePercent(averageCyclePercent),
-_standardCyclePercent(standardCyclePercent),
-_eventFlags(eventFlags)
-{
-}
 
-LMSepControlMessage::LMSepControlMessage(int            groupId,
-                                         unsigned int   utcStartTime,
-                                         unsigned short controlMinutes,
-                                         unsigned char  criticality,
-                                         unsigned char  coolTempOffset,
-                                         unsigned char  heatTempOffset,
-                                         unsigned char  eventFlags) :
-_groupId(groupId),
-_utcStartTime(utcStartTime),
-_controlMinutes(controlMinutes),
-_criticality(criticality),
-_coolTempOffset(coolTempOffset),
-_heatTempOffset(heatTempOffset),
-_eventFlags(eventFlags),
+static const char  SEPAverageCycleUnused  = 0x80;
+static const char  SEPStandardCycleUnused = 0xFF;
+static const short SEPSetPointUnused      = 0x8000;
+static const char  SEPTempOffsetUnused    = 0xFF;
+// Events are a bitfield.
+static const char  SEPEventRandomizeStart = 0x01;
+static const char  SEPEventRandomizeStop  = 0x02;
 
-//The below are not needed
+LMSepControlMessage::LMSepControlMessage() :
+_groupId(0),
+_utcStartTime(0),
+_controlMinutes(0),
+_criticality(0),
+_coolTempOffset(SEPTempOffsetUnused),
+_heatTempOffset(SEPTempOffsetUnused),
+_eventFlags(0),
 _coolTempSetpoint(SEPSetPointUnused),
 _heatTempSetpoint(SEPSetPointUnused),
 _averageCyclePercent(SEPAverageCycleUnused),
 _standardCyclePercent(SEPStandardCycleUnused)
+{}
+
+LMSepControlMessage *LMSepControlMessage::createMessage(int groupId, unsigned int utcStartTime, unsigned short controlMinutes, unsigned char criticality, bool useRampIn, bool useRampOut)
 {
+    LMSepControlMessage *retVal= new LMSepControlMessage();
+    retVal->_groupId = groupId;
+    retVal->_utcStartTime = utcStartTime;
+    retVal->_controlMinutes = controlMinutes;
+    retVal->_criticality = criticality;
+    retVal->_eventFlags = (useRampIn ? SEPEventRandomizeStart : 0) | (useRampOut ? SEPEventRandomizeStop : 0);
+
+    return retVal;
+}
+
+LMSepControlMessage* LMSepControlMessage::createTempOffsetMessage(int            groupId,
+                                                                  unsigned int   utcStartTime,
+                                                                  unsigned short controlMinutes,
+                                                                  unsigned char  criticality,
+                                                                  unsigned char  tempOffset,
+                                                                  bool           isCoolOffset,
+                                                                  bool           useRampIn,
+                                                                  bool           useRampOut)
+{
+    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
+
+    if(isCoolOffset)
+    {
+        retVal->_coolTempOffset = tempOffset;
+    }
+    else
+    {
+        retVal->_heatTempOffset = tempOffset;
+    }
+
+    return retVal;
+}
+
+LMSepControlMessage* LMSepControlMessage::createSimpleShedMessage(int            groupId,
+                                                                  unsigned int   utcStartTime,
+                                                                  unsigned short controlMinutes)
+{
+    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, 6, true, true);
+
+    retVal->_standardCyclePercent = 100;
+
+    return retVal;
+}
+
+LMSepControlMessage* LMSepControlMessage::createCycleMessage(int            groupId,
+                                                             unsigned int   utcStartTime,
+                                                             unsigned short controlMinutes,
+                                                             unsigned char  criticality,
+                                                             char           cyclePercent,
+                                                             bool           isTrueCycle,
+                                                             bool           useRampIn,
+                                                             bool           useRampOut)
+{
+    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
+
+    if(isTrueCycle)
+    {
+        retVal->_averageCyclePercent = -1*cyclePercent;
+    }
+    else
+    {
+        retVal->_standardCyclePercent = cyclePercent;
+    }
+
+    return retVal;
 }
 
 void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
 {
-    message.writeInt  (_groupId);
-    message.writeInt  (_utcStartTime);
-    message.writeShort(_controlMinutes);
-    message.writeByte (_criticality);
-    message.writeByte (_coolTempOffset);
-    message.writeByte (_heatTempOffset);
-    message.writeShort(_coolTempSetpoint);
-    message.writeShort(_heatTempSetpoint);
-    message.writeByte (_averageCyclePercent);
-    message.writeByte (_standardCyclePercent);
-    message.writeByte (_eventFlags);
+    // To make the java conversion work properly, we are sending all unsigned fields using
+    // a larger element. Bytes are sent as shorts, shorts as ints, etc.
+    message.writeInt   (_groupId);
+    message.writeLong  (_utcStartTime);
+    message.writeInt   (_controlMinutes);
+    message.writeShort (_criticality);
+    message.writeShort (_coolTempOffset);
+    message.writeShort (_heatTempOffset);
+    message.writeShort (_coolTempSetpoint);
+    message.writeShort (_heatTempSetpoint);
+    message.writeByte  (_averageCyclePercent);
+    message.writeShort (_standardCyclePercent);
+    message.writeShort (_eventFlags);
 }
 
 }

@@ -210,11 +210,10 @@ CtiMessage* CtiLMControlHistoryMsg::replicateMessage() const
 
 
 CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(long paoid, long pointid, int raw, CtiTime start,
-                                               int dur, int redrat, int ctrlPriority, string type, string restore,
-                                               double reduce, int pri, int associationKey) :
-Inherited(pri), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime(start),
-_controlDuration(dur), _reductionRatio(redrat), _controlType(type), _activeRestore(restore),
-_reductionValue(reduce), _controlPriority(ctrlPriority), _associationKey(associationKey)
+                                               int dur, int redrat, int ctrlPriority) :
+Inherited(7), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime(start),
+_controlDuration(dur), _reductionRatio(redrat), _controlType("N/A"), _activeRestore("N"),
+_reductionValue(0.0), _controlPriority(ctrlPriority), _associationKey(0)
 {
     _instanceCount++;
 }

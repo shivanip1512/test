@@ -88,22 +88,14 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
 
-    // Average cycle count value is added to 100 to get true value, so -10 = 90% cycle.
-    long averageCyclePercent = isTrueCycle ? cyclePercent - 100 : LMSepControlMessage::SEPAverageCycleUnused;
-    long standardCyclePercent = isTrueCycle ? LMSepControlMessage::SEPStandardCycleUnused : cyclePercent;
-    unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
-
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 
-                                                                 0, 
-                                                                 controlMinutes, 
-                                                                 criticality, 
-                                                                 LMSepControlMessage::SEPTempOffsetUnused, 
-                                                                 LMSepControlMessage::SEPTempOffsetUnused, 
-                                                                 LMSepControlMessage::SEPSetPointUnused, 
-                                                                 LMSepControlMessage::SEPSetPointUnused, 
-                                                                 averageCyclePercent, 
-                                                                 standardCyclePercent, 
-                                                                 eventFlags));
+    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createCycleMessage(getPAOId(),
+                                                                                 0,
+                                                                                 controlMinutes,
+                                                                                 criticality,
+                                                                                 cyclePercent,
+                                                                                 isTrueCycle,
+                                                                                 randomizeStart,
+                                                                                 randomizeStop));
 
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
@@ -134,27 +126,44 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
 
     unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
 
-    string heatString = CtiNumStr(heatOffset).hex();
-    string coolString = CtiNumStr(coolOffset).hex();
+    if( !isCelsius )
+    {
+        // Note we are converting Deltas here.
+        heatOffset = heatOffset * 1.8;
+        coolOffset = coolOffset * 1.8;
+    }
+
+    string heatString = CtiNumStr(heatOffset);
+    string coolString = CtiNumStr(coolOffset);
+
+    unsigned char tempOffset = coolOffset;
+    bool isCoolOffset = true;
 
     if( heatOffset == 0 && coolOffset > 0 )
     {
-        heatOffset = LMSepControlMessage::SEPTempOffsetUnused;
         heatString = "unused";
     }
     else if( coolOffset == 0 && heatOffset > 0 )
     {
-        coolOffset = LMSepControlMessage::SEPTempOffsetUnused;
         coolString = "unused";
+
+        tempOffset = heatOffset;
+        isCoolOffset = false;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Invalid temperature settings, both heat and cool offset have non zero values, defaulting to cool: " << getPAOName() << endl;
     }
 
-    std::auto_ptr<StreamableMessage> msg(new LMSepControlMessage(getPAOId(), 
-                                                                 0, 
-                                                                 controlMinutes, 
-                                                                 heatOffset, 
-                                                                 coolOffset, 
-                                                                 criticality, 
-                                                                 eventFlags));
+    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createTempOffsetMessage(getPAOId(),
+                                                                                      0,
+                                                                                      controlMinutes,
+                                                                                      criticality,
+                                                                                      tempOffset,
+                                                                                      isCoolOffset,
+                                                                                      randomizeStart,
+                                                                                      randomizeStop));
 
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
 
@@ -190,6 +199,24 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediately: " << (stopImmediately ? "TRUE" : "FALSE") << endl;
+    }
+    
+    setLastControlSent(CtiTime::now());
+    return true;
+}
+
+bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+
+    std::auto_ptr<StreamableMessage> msg(LMSepControlMessage::createSimpleShedMessage(getPAOId(), 0, controlMinutes));
+    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_SmartEnergyProfileControl, msg);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending SEP Shed command, LM Group: " << getPAOName() << ", control minutes: " << CtiNumStr(controlMinutes) << endl;
     }
     
     setLastControlSent(CtiTime::now());

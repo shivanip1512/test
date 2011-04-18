@@ -1021,10 +1021,6 @@ void CtiLMControlAreaStore::reset()
                         {
                             newDirectGear = CTIDBG_new SEPCycleGear(rdr);
                         }
-                        else if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
-                        {
-                            newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
-                        }
                         else
                         {
                             newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
@@ -1032,7 +1028,14 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
+                        if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
+                        {
+                            newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
+                        }
+                        else
+                        {
+                            newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
+                        }
                     }
                     if( newDirectGear != NULL )
                     {
