@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.AdvancedFieldMapper;
@@ -18,7 +19,6 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeHelper;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 
@@ -83,14 +83,15 @@ public class SelectionListDaoImpl implements SelectionListDao {
             entryTemplate.save(entry);
         }
 
-        if (entryIdsToDelete != null && !entryIdsToDelete.isEmpty()) {
+        if (!IterableUtils.isEmpty(entryIdsToDelete)) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM YukonListEntry WHERE entryId").in(entryIdsToDelete);
             yukonJdbcTemplate.update(sql);
         }
 
-        dbPersistentDao.processDBChange(DbChangeHelper.newDbChange(DbChangeType.UPDATE,
-            DbChangeCategory.YUKON_SELECTION_LIST, list.getListId()));
+        dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE,
+                                              DbChangeCategory.YUKON_SELECTION_LIST,
+                                              list.getListId());
     }
 
     @PostConstruct

@@ -87,18 +87,4 @@ public class ECUtils {
         }
         return idList;
     }
-	
-	public static boolean hasRight(LiteStarsEnergyCompany energyCompany, int rightCode) {
-		String value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV );
-		if (value == null) return false;
-		
-		try {
-			int bitMask = Integer.parseInt(value, 16);
-			return (bitMask & rightCode) != 0;
-		}
-		catch (NumberFormatException e) {
-			return false;
-		}
-	}
-
 }

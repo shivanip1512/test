@@ -1369,7 +1369,7 @@
                                         <link>/spring/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
                                         <labelArgument>${list.type}</labelArgument>
                                         <pages>
-                                            <page name="list.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="list.EDIT" type="DETAIL_CHILD">
                                                 <menu>energyCompanySetup|home</menu>
                                                 <link>/spring/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                 <labelArgument>${list.type}</labelArgument>

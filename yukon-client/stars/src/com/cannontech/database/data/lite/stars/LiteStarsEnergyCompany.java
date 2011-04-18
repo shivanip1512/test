@@ -23,6 +23,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CommandExecutionException;
@@ -42,7 +43,6 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -506,13 +506,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             com.cannontech.database.data.constants.YukonSelectionList list =
                     new com.cannontech.database.data.constants.YukonSelectionList();
             com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
-            listDB.setOrdering(dftList.getOrdering().getDatabaseRepresentation().toString());
+            listDB.setOrdering(dftList.getOrdering().getDbString());
             listDB.setSelectionLabel( dftList.getSelectionLabel() );
             listDB.setWhereIsList( dftList.getWhereIsList() );
             listDB.setListName( listName );
-            listDB.setUserUpdateAvailable(YNBoolean.valueOf(dftList.isUserUpdateAvailable()).getDatabaseRepresentation().toString());
+            listDB.setUserUpdateAvailable("" + CtiUtilities.getBooleanCharacter(dftList.isUserUpdateAvailable()));
             listDB.setEnergyCompanyId( getEnergyCompanyId() );
-            
+
             dbPersistentDao.performDBChange(list, TransactionType.INSERT);
             listDB = list.getYukonSelectionList();
             
@@ -547,8 +547,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return null;
     }
     
-    public YukonListEntry getYukonListEntry(String listName, int yukonDefID) {
-        YukonSelectionList list = getYukonSelectionList( listName );
+    public YukonListEntry getYukonListEntry(YukonSelectionListEnum listType, int yukonDefID) {
+        YukonSelectionList list = getYukonSelectionList(listType.getListName());
         for (int i = 0; i < list.getYukonListEntries().size(); i++) {
             YukonListEntry entry = list.getYukonListEntries().get(i);
             if (entry.getYukonDefID() == yukonDefID)
@@ -562,7 +562,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         YukonDefinition yukonDefinition = YukonDefinition.getById(yukonDefId);
         if (yukonDefinition == null) return null;
 
-        return getYukonListEntry(yukonDefinition.getRelevantList().getListName(), yukonDefId);
+        return getYukonListEntry(yukonDefinition.getRelevantList(), yukonDefId);
     }
 
     public synchronized List<LiteServiceCompany> getServiceCompanies() {

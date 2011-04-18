@@ -40,4 +40,8 @@ public enum YukonSelectionListOrder implements DisplayableEnum, DatabaseRepresen
     public Object getDatabaseRepresentation() {
         return dbString;
     }
+
+    public String getDbString() {
+        return dbString;
+    }
 }

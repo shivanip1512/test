@@ -12,7 +12,8 @@
 <!-- Edit/View -->
 <entry key="yukon.web.modules.adminSetup.list.VIEW.pageName">List</entry>
 <entry key="yukon.web.modules.adminSetup.list.VIEW.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.adminSetup.list.EDIT.pageName">Edit</entry>
+<entry key="yukon.web.modules.adminSetup.list.EDIT.pageName">Edit List</entry>
+<entry key="yukon.web.modules.adminSetup.list.EDIT.contextualPageName">Edit</entry>
 <entry key="yukon.web.modules.adminSetup.list.EDIT.pageDescription">{0}</entry>
 
 <entry key="yukon.web.modules.adminSetup.list.where">Description</entry>
