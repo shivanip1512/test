@@ -88,15 +88,15 @@ Yukon.ui = {
     },
     
     blockElement: function(args) {
-        args.element = $$(args.selector).each(function(elem){
-            args.elem = elem;
+        $$(args.selector).each(function(elem){
+            args.element = elem;
             Yukon.uiUtils.elementGlass.show(args);            
         });
     },
     
     unblockElement: function(args) {
-        args.element = $$(args.selector).each(function(elem){
-            args.elem = elem;
+        $$(args.selector).each(function(elem){
+            args.element = elem;
             Yukon.uiUtils.elementGlass.hide(args);            
         });
     },
@@ -104,12 +104,21 @@ Yukon.ui = {
     formatPhone: function(input){
         //strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, "");
-        for(var i=0; i<YG.PHONE.FORMATS.length; i++){
-            var regex = YG.PHONE.FORMATS[i].regex;
-            var format = YG.PHONE.FORMATS[i].format;
-            if(regex.test(stripped)){
-                input.value = stripped.replace(regex, format);
+        if(stripped.length > 0) {
+            for(var i=0; i<YG.PHONE.FORMATS.length; i++){
+                var regex = YG.PHONE.FORMATS[i].regex;
+                var format = YG.PHONE.FORMATS[i].format;
+                if(regex.test(stripped)){
+                    input.value = stripped.replace(regex, format);
+                    input.removeClassName('error');
+                    break;
+                }else{
+                    input.addClassName('error');
+                }
             }
+        } else {
+            input.value = "";
+            input.removeClassName('error');
         }
     },
     
@@ -196,7 +205,7 @@ Yukon.uiUtils = {
         redraw: function(elem) {
             
             //resize the glass
-            elem.clonePosition(elem.previous(), {offsetTop: 5}); /*need to figure out the 5px offset issue in all browsers*/
+            elem.clonePosition(elem.previous());
             
             //show the glass
             elem.show();

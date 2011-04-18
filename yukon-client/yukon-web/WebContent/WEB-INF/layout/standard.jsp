@@ -36,7 +36,7 @@
         <script type="text/javascript">
         var YG = {
                 PHONE: {
-                    FORMATS: <i:inline key="yukon.common.phoneNumberFormatting.formats"/>
+                    FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
                 }
         };
         </script>
