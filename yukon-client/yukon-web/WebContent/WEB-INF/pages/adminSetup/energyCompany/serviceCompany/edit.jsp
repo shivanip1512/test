@@ -260,7 +260,7 @@
             <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
         
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="delete" styleClass="delete"/>
+                <cti:button key="delete"/>
                 <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
             </cti:displayForPageEditModes>
         </div>

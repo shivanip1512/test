@@ -28,6 +28,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 
@@ -36,6 +37,7 @@ import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceComp
 public class ServiceCompanyController {
     
     private static final String baseUrl = "/spring/adminSetup/energyCompany/serviceCompany";
+    private EnergyCompanyService energyCompanyService;
     private RolePropertyDao rolePropertyDao;
     private ServiceCompanyService serviceCompanyService;
     private ServiceCompanyDao serviceCompanyDao;
@@ -45,6 +47,7 @@ public class ServiceCompanyController {
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                       ModelMap modelMap,
                       YukonUserContext userContext) {
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, YukonRoleProperty.OPERATOR_CONSUMER_INFO_WORK_ORDERS);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         
@@ -215,6 +218,11 @@ public class ServiceCompanyController {
     @ModelAttribute("baseUrl")
     public String getBaseUrl() {
         return baseUrl;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
     
     @Autowired

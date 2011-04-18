@@ -59,13 +59,8 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageName">Service Company {0}</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.label">Delete</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.infoContainer">Service Companies</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.label">Edit</entry>
+
     <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
