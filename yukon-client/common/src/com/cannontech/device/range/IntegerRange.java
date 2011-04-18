@@ -3,7 +3,7 @@ package com.cannontech.device.range;
 
 public class IntegerRange extends Range<Integer> {
    
-    public IntegerRange(Integer lower, Integer upper) {
+    public IntegerRange(int lower, int upper) {
         super(lower, upper);
     }
     

@@ -52,6 +52,9 @@ public abstract class Range<T extends Comparable<T>> {
     public Range(String range) {
         this();
         
+        if(range == null) {
+            return;
+        }
         String[] intervals = range.split(",");
         
         for(String interval : intervals) {

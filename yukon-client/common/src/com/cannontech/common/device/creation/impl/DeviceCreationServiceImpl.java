@@ -269,7 +269,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Autowired
-    public void setplcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
+    public void setPlcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
         this.plcAddressRangeService = plcAddressRangeService;
     }
     
