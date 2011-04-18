@@ -25,6 +25,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;
 import com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -37,6 +38,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class WarehouseController {
     public StarsDatabaseCache starsDatabaseCache;
     
+    private EnergyCompanyService energyCompanyService;
     private WarehouseServiceImpl warehouseService;
     private final String baseUrl = "/spring/adminSetup/energyCompany/warehouse";
     
@@ -47,6 +49,7 @@ public class WarehouseController {
                        int ecId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         modelMap.addAttribute("warehouses", warehouseService.getWarehousesForEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId()));
         modelMap.addAttribute("energyCompanyName", energyCompanyInfoFragment.getCompanyName());
@@ -61,6 +64,7 @@ public class WarehouseController {
                                 int ecId,
                                 EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         modelMap.addAttribute("mode", PageEditMode.VIEW);
@@ -74,6 +78,7 @@ public class WarehouseController {
                                int ecId, 
                                EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         WarehouseDto warehouseDto = new WarehouseDto(new Warehouse(), new LiteAddress());
         //Populate with the basics
         warehouseDto.getWarehouse().setEnergyCompanyID(ecId);
@@ -117,6 +122,7 @@ public class WarehouseController {
                                 int warehouseId, 
                                 EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
@@ -188,13 +194,19 @@ public class WarehouseController {
         }
     };
     
+    @ModelAttribute("baseUrl")
+    public String getBaseUrl() {
+        return this.baseUrl;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
     @Autowired
     public void setWarehouseService(WarehouseServiceImpl warehouseService) {
         this.warehouseService = warehouseService;
     }
     
-    @ModelAttribute("baseUrl")
-    public String getBaseUrl() {
-        return this.baseUrl;
-    }
 }
