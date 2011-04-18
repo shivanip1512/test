@@ -69,8 +69,7 @@
     <entry key="yukon.web.modules.operator.optOut.inventoryList.noMoreOptOutsAvailable">No more consumer opt outs are available for this device.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyOptedOut">This device is currently opted out.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyScheduledOptOut">This device is currently scheduled for an opt out.</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.save">Opt Out</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.save.label">Opt Out</entry>
 
     <!-- Opt Out Confirmation -->
     <entry key="yukon.web.modules.operator.optOut.confirm.pageName">Opt Out Questions</entry>
