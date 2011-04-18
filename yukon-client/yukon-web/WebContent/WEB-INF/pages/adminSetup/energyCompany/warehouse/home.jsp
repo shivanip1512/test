@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="warehouse.home">
-    <tags:boxContainer2 nameKey="pageName">
+    <tags:boxContainer2 nameKey="pageName" styleClass="fixedMediumWidth">
         <table class="compactResultsTable rowHighlighting">
             <c:forEach items="${warehouses}" var="warehouse">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -32,6 +32,7 @@
             </tr>
             </c:forEach>
         </table>
+        
         <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
             <div class="actionArea">
                 <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
@@ -40,7 +41,6 @@
                 <cti:button key="create" onclick="javascript:window.location='${createWarehouseUrl}'"/>
             </div>
         </cti:checkRolesAndProperties>
-        
     </tags:boxContainer2>
     
 </cti:standardPage>

@@ -53,7 +53,7 @@
 	    			<tr style="vertical-align:top;" class="<tags:alternateRow odd="" even="altRow"/>">
 		    		
 		    			<td>
-		    				<cti:url var="accountEditUrl" value="/spring/stars/operator/account/accountEdit">
+		    				<cti:url var="accountEditUrl" value="/spring/stars/operator/account/view">
 		    					<cti:param name="accountId" value="${accountSearchResult.accountId}"/>
 		    				</cti:url>
 		    				<a href="${accountEditUrl}">

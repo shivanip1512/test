@@ -47,7 +47,7 @@
     				<td class="nameCol">
     				
     					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
-    						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
+    						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/view">
     							<cti:param name="accountId" value="${accountId}"/>
     							<cti:param name="contactId" value="${contact.contactId}"/>
     						</cti:url>
@@ -115,7 +115,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <form id="addContactForm" action="/spring/stars/operator/contacts/contactEdit" method="get">
+                        <form id="addContactForm" action="/spring/stars/operator/contacts/create" method="get">
                             <input type="hidden" name="contactId" value="0"/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
                             <cti:button key="create" type="submit"/>

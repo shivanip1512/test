@@ -29,10 +29,6 @@
 	<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 	<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 	
-	<form id="contactListForm" action="/spring/stars/operator/contacts/contactList" method="get">
-		<input type="hidden" name="accountId" value="${accountId}"/>
-	</form>
-	
 	<form:form id="contactsUpdateForm" commandName="contactDto" action="/spring/stars/operator/contacts/contactUpdate" method="post">
 	
 		<input type="hidden" name="contactId" value="${contactDto.contactId}">
@@ -127,10 +123,31 @@
 		<%-- BUTTONS --%>
 		<br>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
+        
     		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url value="/spring/stars/operator/contacts/view" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                    <cti:param name="contactId" value="${contactId}"/>
+                </cti:url>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:url value="/spring/stars/operator/contacts/contactList" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                </cti:url>
+            </cti:displayForPageEditModes>
+            
+            <cti:button key="cancel" href="${cancelUrl}"/>
+            
         </cti:displayForPageEditModes>
-		<tags:slowInput2 formId="contactListForm" key="cancel"/>
-
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:url value="/spring/stars/operator/contacts/edit" var="editUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+                <cti:param name="contactId" value="${contactId}"/>
+            </cti:url>
+            <cti:button key="edit" href="${editUrl}"/>
+        </cti:displayForPageEditModes>
 	</form:form>
 	
 </cti:standardPage>

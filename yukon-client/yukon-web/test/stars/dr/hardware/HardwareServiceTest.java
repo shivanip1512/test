@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.inventory.LMHardwareClass;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl;
@@ -39,7 +39,6 @@ public class HardwareServiceTest {
                dto.setInventoryId(inventoryId);
                dto.setEnergyCompanyId(energyCompanyId);
                dto.setHardwareType(HardwareType.values()[inventoryId]);
-               dto.setHardwareClass(HardwareType.values()[inventoryId].getLMHardwareClass());
                return dto;
            }
         };
@@ -73,17 +72,17 @@ public class HardwareServiceTest {
     @Test
     public void testGetHardwareMapForAccount() {
         
-        ListMultimap<LMHardwareClass, HardwareDto> map = hardwareUiService.getHardwareMapForAccount(0, 0);
+        ListMultimap<HardwareClass, HardwareDto> map = hardwareUiService.getHardwareMapForAccount(0, 0);
         Assert.assertNotNull(map);
         Assert.assertTrue("Map should not be empty", !map.isEmpty());
         
-        List<HardwareDto> switches = map.get(LMHardwareClass.SWITCH);
-        List<HardwareDto> thermostats = map.get(LMHardwareClass.THERMOSTAT);
-        List<HardwareDto> meters = map.get(LMHardwareClass.METER);
+        List<HardwareDto> switches = map.get(HardwareClass.SWITCH);
+        List<HardwareDto> thermostats = map.get(HardwareClass.THERMOSTAT);
+        List<HardwareDto> meters = map.get(HardwareClass.METER);
         
-        Assert.assertEquals(switches.size(), HardwareType.getForClass(LMHardwareClass.SWITCH).size());
-        Assert.assertEquals(thermostats.size(), HardwareType.getForClass(LMHardwareClass.THERMOSTAT).size());
-        Assert.assertEquals(meters.size(), HardwareType.getForClass(LMHardwareClass.METER).size());
+        Assert.assertEquals(switches.size(), HardwareType.getForClass(HardwareClass.SWITCH).size());
+        Assert.assertEquals(thermostats.size(), HardwareType.getForClass(HardwareClass.THERMOSTAT).size());
+        Assert.assertEquals(meters.size(), HardwareType.getForClass(HardwareClass.METER).size());
         
     }
     

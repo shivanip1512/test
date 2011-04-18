@@ -44,7 +44,7 @@
 				<td>
 					<%-- callNumber with edit link --%>
 					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
-						<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/viewCall">
+						<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/view">
 							<cti:param name="accountId">${accountId}</cti:param>
 							<cti:param name="callId">${callReportWrapper.callReport.callId}</cti:param>
 						</cti:url>
@@ -74,7 +74,7 @@
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
         <div class="actionArea">
-            <form id="createCallForm" action="/spring/stars/operator/callTracking/viewCall" method="get">
+            <form id="createCallForm" action="/spring/stars/operator/callTracking/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button key="create" type="submit"/>
             </form>

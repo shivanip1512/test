@@ -3,39 +3,33 @@
 <properties>
     
     <!-- hardware.jsp -->
-    <entry key="yukon.web.modules.operator.hardware.EDIT.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.EDIT.pageName">Edit Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.operator.hardware.EDIT.pageDescription">{0}</entry>
     
     <entry key="yukon.web.modules.operator.hardware.VIEW.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardware.VIEW.pageDescription">{0}</entry>
     
     <entry key="yukon.web.modules.operator.hardware.CREATE.pageName">Create Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.CREATE.contextualPageName">Create</entry>
 
     <!-- hardwareList.jsp -->
     <entry key="yukon.web.modules.operator.hardware.list.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.hardware.list.add.label">Add...</entry>
     
     <!-- Action Images -->
-    <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.editConfig.hoverUrl">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.editConfig.hoverText">Edit Configuration</entry>
-    
     <entry key="yukon.web.modules.operator.hardware.editSchedule.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.editSchedule.hoverUrl">/WebConfig/yukon/Icons/calendar_edit_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.editSchedule.hoverText">Edit Schedule</entry>
+    <entry key="yukon.web.modules.operator.hardware.editSchedule.label">Edit Schedule</entry>
     
     <entry key="yukon.web.modules.operator.hardware.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.manual.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.manual.hoverText">Manual Adjustment</entry>
+    <entry key="yukon.web.modules.operator.hardware.manual.label">Manual Adjustment</entry>
     
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverUrl">/WebConfig/yukon/Icons/clipboard_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">Saved Schedules</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.label">Saved Schedules</entry>
     
     <entry key="yukon.web.modules.operator.hardware.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.changeOut.label">Change Out Device</entry>
     
     <!-- General Hardware Terms -->
     <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
@@ -55,10 +49,10 @@
     <entry key="yukon.web.modules.operator.hardware.accountNumber">Account #</entry>
     <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.hardware.altTrackingNumber">Alt Tracking Number</entry>
-    <entry key="yukon.web.modules.operator.hardware.checkInventoryButton">Check Inventory</entry>
-    <entry key="yukon.web.modules.operator.hardware.createTwoWay">Create Two-Way LCR</entry>
+    <entry key="yukon.web.modules.operator.hardware.checkInventoryButton.label">Check Inventory</entry>
     <entry key="yukon.web.modules.operator.hardware.defaultRouteNone">Default - (none)</entry>
     <entry key="yukon.web.modules.operator.hardware.defaultRoute">Default - </entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteDevice.label">Delete</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteDevice">Delete Device {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteMessageDeviceName">Device {0} will be removed from the account.  What would you like to do with it?</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteMessageSerialNumber">Device with serial number {0} will be removed from the account.  What would you like to do with it?</entry>
@@ -75,19 +69,22 @@
     <entry key="yukon.web.modules.operator.hardware.hardwareRemoved">Hardware Removed From Account</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareCreated">Hardware Created</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareAdded">Hardware Added</entry>
-    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful{0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.zigbeeDevice.changeOutWarning">. This device will need to be assigned to a gateway and comissioned.</entry>
+    <entry key="yukon.web.modules.operator.hardware.gateway.changeOutWarning">. This gateway will need to be comissioned. Devices will need to be assigned to this gateway and commissioned as well.</entry>
     <entry key="yukon.web.modules.operator.hardware.installCode">Install Code</entry>
     <entry key="yukon.web.modules.operator.hardware.installNotes">Install Notes</entry>
     <entry key="yukon.web.modules.operator.hardware.label">Label</entry>
     <entry key="yukon.web.modules.operator.hardware.name">Name</entry>
     <entry key="yukon.web.modules.operator.hardware.noneSelectOption">(none)</entry>
-    <entry key="yukon.web.modules.operator.hardware.noTwoWayDeviceName">(none chosen)</entry>
     <entry key="yukon.web.modules.operator.hardware.route">Route</entry>
+    <entry key="yukon.web.modules.operator.hardware.gateway">Gateway</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumberShort">Serial #</entry>
     <entry key="yukon.web.modules.operator.hardware.serviceAndStorageSection.title">Service And Storage</entry>
+    <entry key="yukon.web.modules.operator.hardware.actions.title">Device Actions</entry>
     <entry key="yukon.web.modules.operator.hardware.serviceCompany">Service Company</entry>
-    <entry key="yukon.web.modules.operator.hardware.serviceCompanyInfo">Service Company Info</entry>
+    <entry key="yukon.web.modules.operator.hardware.serviceCompanyInfo">Service Company</entry>
     <entry key="yukon.web.modules.operator.hardware.status">Status</entry>
     <entry key="yukon.web.modules.operator.hardware.twoWayDevice">Two Way Device</entry>
     <entry key="yukon.web.modules.operator.hardware.new.label">New</entry>
@@ -152,6 +149,43 @@
     <entry key="yukon.web.modules.operator.hardware.thermostats.add">Add Thermostat</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.selectMultiple">Select Multiple</entry>
     
+    <entry key="yukon.web.modules.operator.hardware.commissionGateway.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionGateway.hoverText">Commission the gateway</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionGateway.label">Commission</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.decommissionGateway.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionGateway.hoverText">Decommission the gateway</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionGateway.label">Decommission</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.textMessage.imageUrl">/WebConfig/yukon/Icons/phone_sound.png</entry>
+    <entry key="yukon.web.modules.operator.hardware.textMessage.hoverText">Send a text message to the gateway</entry>
+    <entry key="yukon.web.modules.operator.hardware.textMessage.label">Send Text Message</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.hoverText">Commission the thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.label">Commission</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.disabled.imageUrl">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.disabled.hoverText">Device must be assigned to a gateway to use the Commission command</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.disabled.label">Commission</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.hoverText">Decommission the thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.label">Decommission</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.disabled.imageUrl">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.disabled.hoverText">Device must be assigned to a gateway to use the Decommission command</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.disabled.label">Decommission</entry>
+    
+    <!--  Flashscope Messages -->
+    <entry key="yukon.web.modules.operator.hardware.gatewayCommissioned">Commission command sent to gateway {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.gatewayDecommissioned">Decommission command sent to gateway {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostatAdded">Thermostat {0} assigned to gateway {1}</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostatRemoved">Thermostat {0} removed from gateway {1}</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostatCommissioned">Commission command sent to thermostat {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostatDecommissioned">Decommission command sent to thermostat {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.messageSent">Text message sent to gateway {0}</entry>
+    
     <!-- Meters -->
     <entry key="yukon.web.modules.operator.hardware.meters.title">Meters</entry>
     <entry key="yukon.web.modules.operator.hardware.meters.displayType">Meter Type</entry>
@@ -173,6 +207,13 @@
 	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverText">Add a gateway to this account.</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add">Add Gateway</entry>
+    
+    <!-- Gateway view page -->
+	<entry key="yukon.web.modules.operator.hardware.sendTextMsg">Send Text Message</entry>
+	<entry key="yukon.web.modules.operator.hardware.assignedDevices.title">Assigned Devices</entry>
+	<entry key="yukon.web.modules.operator.hardware.deviceState">Device State</entry>
+    <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.hardware.noAssignedDevices">No Assigned Devices</entry>
 	
     <!-- meterProfile.jsp -->
     <entry key="yukon.web.modules.operator.meterProfile.EDIT.pageName">Meter Profile</entry>

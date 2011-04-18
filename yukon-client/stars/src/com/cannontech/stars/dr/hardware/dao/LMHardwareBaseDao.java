@@ -65,5 +65,10 @@ public interface LMHardwareBaseDao {
      * Returns the serial number for the inventory with the given device id. 
      */
     public String getSerialNumberForDevice(int deviceId);
+
+    /**
+     * Returns the serial number for the inventory with the given inventory id. 
+     */
+    public String getSerialNumberForInventoryId(int inventoryId);
     
 }

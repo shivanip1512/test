@@ -290,7 +290,7 @@ public class OperatorAccountController {
 			
 			modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
 			
-			return "redirect:accountEdit";
+			return "redirect:view";
 			
 		// account list
 		} else {
@@ -414,7 +414,7 @@ public class OperatorAccountController {
     	        
     	        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
     	        modelMap.addAttribute("accountId", accountId);
-    	        return "redirect:accountEdit";
+    	        return "redirect:view";
             }
             
         } catch (AccountNumberUnavailableException e) {
@@ -435,25 +435,51 @@ public class OperatorAccountController {
         }
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
-        return "redirect:accountEdit";
+        return "redirect:view";
 	}
 	
+	// ACCOUNT VIEW PAGE
+	@RequestMapping
+	public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+	    model.addAttribute("mode", PageEditMode.VIEW);
+	    setupAccountPage(model, context, fragment, accountId);
+	    
+	    
+	    return "operator/account/account.jsp";
+	}
 	// ACCOUNT EDIT PAGE
 	@RequestMapping
-    public String accountEdit(int accountId, ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfo) {
-		
-	    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-	    List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
-	    LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfo.getAccountId());
+    public String edit(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+	    model.addAttribute("mode", PageEditMode.EDIT);
+	    setupAccountPage(model, context, fragment, accountId);
 
-	    /* AccountDto */
-		AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), userContext);
+        return "operator/account/account.jsp";
+	}
+	
+	private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
+	    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(context.getYukonUser());
+        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+        LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountId);
+        
+        buildAccountDto(model, context, accountId, residentialUser, energyCompany);
+        
+        setupAccountModel(fragment, model, context, ecResidentialGroups, residentialUser);
+	}
+	
+	private void buildAccountDto(ModelMap model, 
+	                             YukonUserContext context, 
+	                             int accountId, 
+	                             LiteYukonUser residentialUser,
+	                             LiteStarsEnergyCompany energyCompany) {
+        /* AccountDto */
+        AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), context);
 
-		/* OperatorGeneralUiExtras */
-		OperatorGeneralUiExtras operatorGeneralUiExtras = operatorAccountService.getOperatorGeneralUiExtras(accountId, userContext);
-		
-		/* LoginBackingBean */
-		LoginBackingBean loginBackingBean = new LoginBackingBean();
+        /* OperatorGeneralUiExtras */
+        OperatorGeneralUiExtras operatorGeneralUiExtras = operatorAccountService.getOperatorGeneralUiExtras(accountId, context);
+        
+        /* LoginBackingBean */
+        LoginBackingBean loginBackingBean = new LoginBackingBean();
         LiteYukonGroup userResidentialGroupName = 
             yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
         if (userResidentialGroupName != null) {
@@ -461,12 +487,12 @@ public class OperatorAccountController {
         }
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
-            modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
+            model.addAttribute("loginMode", LoginModeEnum.CREATE);
             loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
         } else {
             loginBackingBean.setUsername(residentialUser.getUsername());
             loginBackingBean.setLoginEnabled(residentialUser.getLoginStatus());
-            modelMap.addAttribute("loginMode", LoginModeEnum.EDIT);
+            model.addAttribute("loginMode", LoginModeEnum.EDIT);
         }
 
         /* AccountGeneral */
@@ -475,11 +501,7 @@ public class OperatorAccountController {
         accountGeneral.setOperatorGeneralUiExtras(operatorGeneralUiExtras);
         accountGeneral.setLoginBackingBean(loginBackingBean);
 
-        modelMap.addAttribute("accountGeneral", accountGeneral);
-
-        setupAccountEditModelMap(accountInfo, modelMap, userContext, ecResidentialGroups, residentialUser);
-
-        return "operator/account/account.jsp";
+        model.addAttribute("accountGeneral", accountGeneral);
 	}
 	
 	// GENERATE PASSWORD
@@ -589,7 +611,7 @@ public class OperatorAccountController {
 			bindingResult.rejectValue("accountDto.accountNumber", "yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable");
 		
 		} finally {
-			setupAccountEditModelMap(accountInfoFragment, modelMap, userContext, ecResidentialGroups, residentialUser);
+			setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialGroups, residentialUser);
 
 			if (bindingResult.hasErrors()) {
 				
@@ -601,7 +623,7 @@ public class OperatorAccountController {
 		}
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountUpdated"));
-		return "redirect:accountEdit";
+		return "redirect:view";
 	}
 	
 	// DELETE LOGIN
@@ -623,7 +645,7 @@ public class OperatorAccountController {
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.loginDeleted"));
         
         modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
-        return "redirect:accountEdit";
+        return "redirect:view";
     }
 	
 	// DELETE ACCOUNT
@@ -717,7 +739,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("mode", PageEditMode.CREATE);
     }
 	
-	private void setupAccountEditModelMap(AccountInfoFragment accountInfoFragment, 
+	private void setupAccountModel(AccountInfoFragment accountInfoFragment, 
 	                                      ModelMap modelMap, 
 	                                      YukonUserContext userContext,
 	                                      List<LiteYukonGroup> ecResidentialGroups,
@@ -728,10 +750,6 @@ public class OperatorAccountController {
         // substations
         List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(accountInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("substations", substations);
-        
-        // pageEditMode
-        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-        modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
         
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         

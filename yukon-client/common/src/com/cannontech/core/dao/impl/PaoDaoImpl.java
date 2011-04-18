@@ -25,7 +25,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -68,7 +70,7 @@ public final class PaoDaoImpl implements PaoDao {
         + "left outer join deviceroutes dr ON y.paobjectid = dr.deviceid ";
     
     private final ParameterizedRowMapper<PaoIdentifier> yukonPaoRowMapper = new YukonPaoRowMapper();
-    private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
+    private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
 
     private JdbcOperations jdbcOps;
     private YukonJdbcOperations yukonJdbcOperations;
@@ -133,22 +135,30 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
+    @Override
+    @Deprecated /* Use findUnique(String paoName, PaoCategory category, PaoClass paoClass) */
     public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass) {
-        
+        return findUnique(paoName, PaoCategory.getForDbString(category), PaoClass.getForDbString(paoClass));
+    }
+    
+    @Override
+    public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass) {
         try {
-            SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
-            sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
-            sqlBuilder.append("AND y.Category = ? ");
-            sqlBuilder.append("AND y.PAOClass = ? ");
-            LiteYukonPAObject pao = 
-                (LiteYukonPAObject) jdbcOps.queryForObject(sqlBuilder.getSql(), 
-                                                           new Object[]{paoName, category, paoClass}, 
-                                                           litePaoRowMapper);
+            SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
+            sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
+            sql.append(  "AND y.Category").eq(category);
+            sql.append(  "AND y.PAOClass").eq(paoClass);
+            LiteYukonPAObject pao = yukonJdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
-        		//no objects returned is good
-        		return null;
+                //no objects returned is good
+                return null;
         }
+    }
+    
+    @Override
+    public boolean isNameAvailable(String paoName, PaoType paoType) {
+        return findUnique(paoName, paoType.getPaoCategory(), paoType.getPaoClass()) == null;
     }
     
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {

@@ -21,10 +21,10 @@
 	<spring:bind path="${path}">
         <c:choose>
             <c:when test="${not empty itemValue}">
-                <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+                <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}" defaultItemLabel="${defaultItemLabel}"/>
             </c:when>
             <c:otherwise>
-                <tags:listItem value="${status.value}" items="${items}"/> 
+                <tags:listItem value="${status.value}" items="${items}"/>
             </c:otherwise>
         </c:choose>
 	</spring:bind>

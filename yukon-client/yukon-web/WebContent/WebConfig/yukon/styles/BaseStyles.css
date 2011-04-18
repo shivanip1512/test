@@ -207,8 +207,6 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .oa{overflow:auto}
 .ov{overflow:visible}
 .self_clear,.box,.db{display:block}
-.dn{display:none}
-.di{display:inline}
 .tal{text-align:left}
 .tac{text-align:center}
 .tar{text-align:right}

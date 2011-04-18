@@ -73,7 +73,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
            
             <tr>
                 <td>
-                    <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/viewWorkOrder">
+                    <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/view">
                         <cti:param name="accountId">${accountId}</cti:param>
                         <cti:param name="workOrderId">${workOrder.workOrderBase.orderId}</cti:param>
                     </cti:url>
@@ -121,7 +121,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
         <div class="actionArea">
-            <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/viewWorkOrder" method="get">
+            <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button key="create" type="submit"/>
             </form>

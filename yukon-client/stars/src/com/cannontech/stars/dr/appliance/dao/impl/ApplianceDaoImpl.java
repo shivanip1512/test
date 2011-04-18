@@ -58,10 +58,10 @@ public class ApplianceDaoImpl implements ApplianceDao {
     public Appliance getById(final int applianceId) {
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
         applianceSQL.append(applianceSQLHeader);
-        applianceSQL.append("WHERE AB.applianceId = ? ");
+        applianceSQL.append("WHERE AB.applianceId").eq(applianceId);
 
         try {
-            return yukonJdbcTemplate.queryForObject(applianceSQL.toString(), rowMapper, applianceId);
+            return yukonJdbcTemplate.queryForObject(applianceSQL, rowMapper);
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The appliance id supplied does not exist.");
         }
@@ -109,8 +109,11 @@ public class ApplianceDaoImpl implements ApplianceDao {
     
     @Override
     public List<Integer> getApplianceIdsForAccountId(int accountId){
-        String sql = "SELECT ApplianceId FROM ApplianceBase WHERE AccountId = ?";
-        List<Integer> applianceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ApplianceId");
+        sql.append("FROM ApplianceBase");
+        sql.append("WHERE AccountId").eq(accountId);
+        List<Integer> applianceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return applianceIds;
     }
     
@@ -131,7 +134,6 @@ public class ApplianceDaoImpl implements ApplianceDao {
         }
     }
     
-    @SuppressWarnings("unchecked")
     public void deleteAppliancesByAccountIdAndInventoryId(int accountId, int inventoryId) {
         
         String applianceIdsSQL = "Select AB.applianceId " + 

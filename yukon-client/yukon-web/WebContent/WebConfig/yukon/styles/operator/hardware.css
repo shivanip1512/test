@@ -1,7 +1,16 @@
+div.hardwareContainer {
+    padding-bottom: 18px;
+    padding-right: 8px;
+}
+
 div.historyContainer {
     max-height: 112px;
     overflow: auto;
     overflow-x: hidden;
+}
+
+tr.notesRow td.value {
+    max-width: 300px;
 }
 
 table.hardwareListTable th.name,
@@ -83,4 +92,8 @@ tr.pointState td.value {
 
 tr.pickerRow td.name {
     vertical-align: middle;
+}
+
+td.lastColumn {
+    padding-right: 20px !important;
 }

@@ -98,7 +98,7 @@
                        onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
             </c:if>
         </cti:checkRolesAndProperties>
-        <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/hardwareList">
+        <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/list">
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>
         <input type="button" value="<cti:msg2 key=".cancel"/>"

@@ -45,11 +45,11 @@
     </i:simplePopup>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <c:set var="action" value="/spring/stars/operator/hardware/updateHardware"/>
+        <c:set var="action" value="/spring/stars/operator/hardware/update"/>
     </cti:displayForPageEditModes>
     
     <cti:displayForPageEditModes modes="CREATE">
-        <c:set var="action" value="/spring/stars/operator/hardware/createHardware"/>
+        <c:set var="action" value="/spring/stars/operator/hardware/create"/>
     </cti:displayForPageEditModes>
     
     <form:form id="updateForm" commandName="hardwareDto" action="${action}">

@@ -1214,6 +1214,7 @@ input.calendarInput {
 }
 
 input.formSubmit,
+button.formSubmit,
 .actionArea input,
 .actionArea button {
     padding-left: 10px;
@@ -1221,7 +1222,6 @@ input.formSubmit,
 }
 
 button.formSubmit img {
-	padding-right: 3px;
 	vertical-align: top;
 }
 
@@ -1374,9 +1374,22 @@ ul.buttonStack li {
     padding-bottom: 2px;
 }
 
+button.naked,
+button.image {
+    padding: 0px !important;
+}
+
 button.naked {
     border: none;
     background: transparent;
+}
+
+button.labeledImage {
+    font-size: 15.2px;
+}
+
+button.labeledImage[disabled]:hover span {
+    text-decoration: none;
 }
 
 button.labeledImage:hover span {
@@ -1389,11 +1402,10 @@ th.actions, td.actions {
 }
 
 td.actions {
-    text-align: center;
+    text-align: left;
 }
 
 button.image {
-    padding: 0px !important;
     width: 16px;
     height: 16px;
 }

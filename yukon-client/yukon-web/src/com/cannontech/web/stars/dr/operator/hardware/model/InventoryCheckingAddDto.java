@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.hardware.model;
 
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
 
 /**
@@ -15,9 +16,9 @@ public class InventoryCheckingAddDto {
     private Address address;
     private String accountNumber;
     private String alternateTrackingNumber;
-    private boolean isSwitch;
     private Integer inventoryId;
-    private boolean isGateway;
+    private int hardwareTypeId;
+    private HardwareType hardwareType;
 
     public InventoryCheckingAddDto(String serialNumber){
         this.serialNumber = serialNumber;
@@ -79,14 +80,6 @@ public class InventoryCheckingAddDto {
         this.alternateTrackingNumber = alternateTrackingNumber;
     }
     
-    public boolean isSwitch() {
-        return isSwitch;
-    }
-
-    public void setIsSwitch(boolean isSwitch) {
-        this.isSwitch = isSwitch;
-    }
-    
     public Integer getInventoryId() {
         return inventoryId;
     }
@@ -95,11 +88,20 @@ public class InventoryCheckingAddDto {
         this.inventoryId = inventoryId;
     }
 
-    public boolean isGateway() {
-        return isGateway;
+    public void setHardwareTypeId(int hardwareTypeId) {
+        this.hardwareTypeId = hardwareTypeId;
     }
 
-    public void setGateway(boolean isGateway) {
-        this.isGateway = isGateway;
+    public int getHardwareTypeId() {
+        return hardwareTypeId;
     }
+
+    public void setHardwareType(HardwareType hardwareType) {
+        this.hardwareType = hardwareType;
+    }
+    
+    public HardwareType getHardwareType() {
+        return hardwareType;
+    }
+
 }

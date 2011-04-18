@@ -1636,6 +1636,15 @@
                 Possible values for renderMode are 'image', 'labeledImage' and 'button' (default)
             </description>
         </attribute>
+        <attribute>
+            <name>dialogButton</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                When 'true' will display the button as a dialog button adding '...' to the end of the button text.
+                Signifies the button will ask for more infomation before doing the action. Default is 'false'.
+            </description>
+        </attribute>
     </tag>
 
     <tag>
@@ -1976,6 +1985,16 @@
     <attribute>
         <name>yukonPao</name>
         <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>scope</name>
+        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

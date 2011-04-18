@@ -21,6 +21,7 @@
 <%@ attribute name="mode" description="mode (inline or dialog; dialog is default)" rtexprvalue="true"%>
 <%@ attribute name="containerDiv" description="causes picker to be inlined; placed in this div" rtexprvalue="true"%>
 <%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="causes picker display the value only; only usable with selection linkType" rtexprvalue="true"%>
+<%@ attribute name="buttonRenderMode" description="passes the render mode to the cti:button tag; only usable with button linkType" rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -110,7 +111,11 @@
         <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
             <c:choose>
         	    <c:when test="${pageScope.linkType == 'button'}">
-                    <cti:button key="${pageScope.nameKey}" onclick="${id}.show()"
+                    <c:set var="renderMode" value="button"/>
+                    <c:if test="${not empty pageScope.buttonRenderMode}">
+                        <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
+                    </c:if>
+                    <cti:button key="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
                         styleClass="${pageScope.buttonStyleClass}"/>
         	    </c:when>
         	    <c:when test="${pageScope.linkType == 'selection'}">

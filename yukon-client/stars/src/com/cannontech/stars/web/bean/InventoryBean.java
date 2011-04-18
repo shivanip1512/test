@@ -432,7 +432,7 @@ public class InventoryBean {
 				String address = ServletUtils.getOneLineAddress( starsAddr );
             	
             	if (!showEnergyCompany || member.equals(energyCompany) || isManagable) {
-            	        htmlBuf.append("<a href='/spring/stars/operator/account/accountEdit?accountId=").append(liteAcctInfo.getAccountID()).append("' class='Link1'>")
+            	        htmlBuf.append("<a href='/spring/stars/operator/account/view?accountId=").append(liteAcctInfo.getAccountID()).append("' class='Link1'>")
                         .append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
             	}
 				else

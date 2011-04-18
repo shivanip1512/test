@@ -208,4 +208,6 @@
   <bean id="serviceCompanyDao" class="com.cannontech.core.dao.impl.ServiceCompanyDaoImpl"/>
   <bean id="designationCodeDao" class="com.cannontech.core.dao.impl.DesignationCodeDaoImpl"/>
   
+  <bean id="inventoryIdentifierMapper" class="com.cannontech.common.inventory.InventoryIdentifierMapper"/>
+  
 </beans>

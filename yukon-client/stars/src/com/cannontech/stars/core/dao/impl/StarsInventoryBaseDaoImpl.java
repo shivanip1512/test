@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.inventory.LMHardwareClass;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -59,7 +60,6 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     private static final String insertMeterHardwareSql;
     private static final String updateLmHardwareSql;
     private static final String updateMeterHardwareSql;
-    private static final String removeInventoryFromAccountSql;
 
     private NextValueHelper nextValueHelper;    
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
@@ -90,7 +90,6 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         
         updateMeterHardwareSql = "UPDATE MeterHardwareBase SET MeterNumber = ?, MeterTypeID = ? WHERE InventoryID = ?";
 
-        removeInventoryFromAccountSql = "UPDATE InventoryBase SET AccountID = 0, DeviceLabel = '', RemoveDate = ?  WHERE InventoryID = ?";
     }
 
     @Override
@@ -131,7 +130,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     }
     
     @Override
-    public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId, LMHardwareClass lmHardwareClass) {
+    public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId, HardwareClass lmHardwareClass) {
         Set<HardwareType> hardwareTypes = HardwareType.getForClass(lmHardwareClass);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -477,17 +476,13 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     }
 
     @Override
-    @Transactional
-    public void removeInventoryFromAccount(LiteInventoryBase liteInv) {
-
-        // Update InventoryBase
-        Object[] removeInvParams = new Object[] {
-                new Timestamp(liteInv.getRemoveDate()),
-                liteInv.getInventoryID() };
-
-        yukonJdbcTemplate.update(removeInventoryFromAccountSql,
-                                  removeInvParams);
-
+    public void removeInventoryFromAccount(int inventoryId, long removeDate) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE InventoryBase");
+        sql.append("SET AccountId = 0, DeviceLabel = '', RemoveDate =").appendArgument(new Instant(removeDate));
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override

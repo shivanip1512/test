@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.inventory.InventoryIdentifierMapper;
+import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -21,6 +21,24 @@ import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
+    public static YukonRowMapper<DigiGateway> digiGatewayRowMapper = new YukonRowMapper<DigiGateway>() {
+        @Override
+        public DigiGateway mapRow(YukonResultSet rs) throws SQLException {
+            DigiGateway digiGateway = new DigiGateway();
+            
+            int deviceId = rs.getInt("DeviceId");
+            String typeStr = rs.getString("Type");
+            PaoType paoType = PaoType.getForDbString(typeStr);
+            
+            digiGateway.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
+            digiGateway.setDigiId(rs.getInt("DigiId"));
+            digiGateway.setMacAddress(rs.getString("MacAddress"));
+            digiGateway.setFirmwareVersion(rs.getString("FirmwareVersion"));
+            digiGateway.setName(rs.getString("ManufacturerSerialNumber"));
+            
+            return digiGateway;
+        }
+    };
     
     public DigiGateway getDigiGateway(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -34,24 +52,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
         sql.append("WHERE DG.DeviceId").eq(deviceId);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<DigiGateway>() {
-                @Override
-                public DigiGateway mapRow(YukonResultSet rs) throws SQLException {
-                    DigiGateway digiGateway = new DigiGateway();
-                    
-                    int deviceId = rs.getInt("DeviceId");
-                    String typeStr = rs.getString("Type");
-                    PaoType paoType = PaoType.getForDbString(typeStr);
-                    
-                    digiGateway.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
-                    digiGateway.setDigiId(rs.getInt("DigiId"));
-                    digiGateway.setMacAddress(rs.getString("MacAddress"));
-                    digiGateway.setFirmwareVersion(rs.getString("FirmwareVersion"));
-                    digiGateway.setName(rs.getString("ManufacturerSerialNumber"));
-                    
-                    return digiGateway;
-                }
-            }
+        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper
         );
 
         return digiGateway;
@@ -122,6 +123,21 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
+    public List<DigiGateway> getGatewaysForAccount(int accountId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT DG.DeviceId, DG.DigiId, ZG.FirmwareVersion, ZG.MacAddress, YPO.Type, HB.ManufacturerSerialNumber");
+        sql.append("FROM DigiGateway DG ");
+        sql.append(  "JOIN ZBGateway ZG ON DG.DeviceId = ZG.DeviceId");
+        sql.append(  "JOIN YukonPAObject YPO ON DG.DeviceId = YPO.PAObjectID");
+        sql.append(  "JOIN InventoryBase IB ON DG.DeviceId = IB.DeviceID");
+        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
+        sql.append("WHERE IB.AccountId").eq(accountId);
+        
+        return yukonJdbcTemplate.query(sql, digiGatewayRowMapper);
+    }
+    
+    @Override
     public List<ZigbeeDeviceAssignment> getZigbeeDevicesForAccount(int accountId, List<Integer> hardwareTypeIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -146,18 +162,27 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
-    public void assignDeviceToGateway(int deviceId, int gatewayId) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    public void updateDeviceToGatewayAssignment(int deviceId, Integer gatewayId) {
+    	unassignDeviceFromGateway(deviceId);
     	
-    	sql.append("INSERT INTO ZBGatewayToDeviceMapping ").values(gatewayId, deviceId);
-    	
-    	yukonJdbcTemplate.update(sql);
+    	if (gatewayId != null) {
+    	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        	sql =  new SqlStatementBuilder("INSERT INTO ZBGatewayToDeviceMapping").values(gatewayId, deviceId);
+        	yukonJdbcTemplate.update(sql);
+    	}
+    }
+    
+    @Override
+    public void removeDevicesFromGateway(int gatewayId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE GatewayId").eq(gatewayId);
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
     public void unassignDeviceFromGateway(int deviceId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
     	sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE DeviceId").eq(deviceId);
 
     	yukonJdbcTemplate.update(sql);
@@ -174,7 +199,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE zb.DeviceId").eq(deviceId);
         
         try {
-            return yukonJdbcTemplate.queryForObject(sql, new InventoryIdentifierMapper());
+            return yukonJdbcTemplate.queryForObject(sql, new LmHardwareInventoryIdentifierMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

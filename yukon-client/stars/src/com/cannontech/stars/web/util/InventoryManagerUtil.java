@@ -9,6 +9,7 @@ package com.cannontech.stars.web.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -32,6 +33,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -412,7 +414,7 @@ public class InventoryManagerUtil {
 	}
 	
 	public static void deleteInventory(LiteInventoryBase liteInv, YukonEnergyCompany yukonEnergyCompany, boolean deleteFromYukon)
-	throws Exception{
+	throws SQLException, PersistenceException, WebClientException {
 	    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class); 
 
 	    

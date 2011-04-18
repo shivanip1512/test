@@ -8,7 +8,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,29 +39,39 @@ public class OperatorResidenceController {
 	private CustomerResidenceValidator customerResidenceValidator;
 	private RolePropertyDao rolePropertyDao;
 	
-	// RESIDENCE
+	// RESIDENCE VIEW PAGE
 	@RequestMapping
-    public String residenceEdit(int accountId,
-    							ModelMap modelMap, 
-    							YukonUserContext userContext,
-    							AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-	    modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+	public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+	    model.addAttribute("mode", PageEditMode.VIEW);
+	    
+	    setupResidenceModel(model, fragment);
+	    
+	    return "operator/residence/residenceEdit.jsp";
+	}
+	
+	// RESIDENCE EDIT PAGE
+	@RequestMapping
+    public String edit(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+	    model.addAttribute("mode", PageEditMode.EDIT);
+	    
+	    setupResidenceModel(model, fragment);
+	    
+		return "operator/residence/residenceEdit.jsp";
+	}
+	
+	private void setupResidenceModel(ModelMap model, AccountInfoFragment fragment) {
+	    model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
         
         // CustomerResidence
-	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
         CustomerResidence customerResidence = customerResidenceDao.findByAccountSiteId(customerAccount.getAccountSiteId());
         if (customerResidence == null) {
-        	customerResidence = new CustomerResidence();
+            customerResidence = new CustomerResidence();
         }
-        modelMap.addAttribute("customerResidence", customerResidence);
+        model.addAttribute("customerResidence", customerResidence);
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        
-        // pageEditMode
-		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
-		
-		return "operator/residence/residenceEdit.jsp";
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 	}
 	
 	// RESIDENCE UPDATE
@@ -76,7 +85,6 @@ public class OperatorResidenceController {
 						    		AccountInfoFragment accountInfoFragment) {
 		
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		// validate/insert/update
 		MessageSourceResolvable okMessage = null;
@@ -101,12 +109,13 @@ public class OperatorResidenceController {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
 			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 			modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+			modelMap.addAttribute("mode", PageEditMode.EDIT);
 			return "operator/residence/residenceEdit.jsp";
 		} 
 		
 		flashScope.setConfirm(Collections.singletonList(okMessage));
 		modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
-		return "redirect:residenceEdit";
+		return "redirect:view";
 	}
 	
 	@Autowired

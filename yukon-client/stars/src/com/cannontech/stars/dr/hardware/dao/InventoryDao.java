@@ -78,4 +78,6 @@ public interface InventoryDao {
 
     public boolean checkdeviceType(int inventoryId, String deviceType);
 
+    public int getDeviceId(int inventoryId);
+
 }

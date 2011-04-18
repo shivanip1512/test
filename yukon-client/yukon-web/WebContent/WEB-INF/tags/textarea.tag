@@ -2,7 +2,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="rows" required="true" type="java.lang.Integer"%>
@@ -10,10 +10,12 @@
 
 <spring:bind path="${path}">
 
-
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
-	<spring:escapeBody htmlEscape="true">${status.value}</spring:escapeBody>
+    <c:set var="note" value="${fn:escapeXml(status.value)}"/>
+    ${fn:replace(note, "
+", "<br>")}
+
 </cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>

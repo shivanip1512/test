@@ -215,7 +215,6 @@ public class OperatorHardwareConfigController {
         return "operator/hardware/config/edit.jsp";
     }
 
-    @SuppressWarnings("unchecked")
     private BindingResult bind(ModelMap model, HttpServletRequest request,
             Object target, String objectName, YukonUserContext userContext) {
         ServletRequestDataBinder binder =
@@ -426,7 +425,7 @@ public class OperatorHardwareConfigController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.meterConfigUpdated"));
-        return "redirect:/spring/stars/operator/hardware/hardwareList";
+        return "redirect:/spring/stars/operator/hardware/list";
     }
 
     @RequestMapping(params="cancel")
@@ -436,7 +435,7 @@ public class OperatorHardwareConfigController {
                           HttpSession session) {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/hardware/hardwareList";
+        return "redirect:/spring/stars/operator/hardware/list";
     }
 
     private void setPageMode(ModelMap modelMap, YukonUserContext userContext) {

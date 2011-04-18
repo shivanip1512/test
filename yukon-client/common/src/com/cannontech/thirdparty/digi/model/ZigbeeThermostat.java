@@ -9,6 +9,7 @@ public class ZigbeeThermostat implements YukonDevice {
     private String installCode;
     private String macAddress;
     private String name;
+    private Integer gatewayId;
     
     public String getInstallCode() {
         return installCode;
@@ -40,5 +41,13 @@ public class ZigbeeThermostat implements YukonDevice {
     
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
+    }
+
+    public void setGatewayId(Integer gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public Integer getGatewayId() {
+        return gatewayId;
     }
 }

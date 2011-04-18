@@ -29,8 +29,12 @@ public class ButtonTag extends YukonTagSupport {
     
     protected String name = null;
     protected String value = null;
-    protected Boolean imageOnRight = false;
-    protected Boolean disabled = false;
+    protected boolean imageOnRight = false;
+    protected boolean disabled = false;
+    
+    /* Will add hint to button that it will ask for more info before doing the action.
+     * Currently adds ellipsis to end of button text. */
+    protected boolean dialogButton = false;
     
     /* renderMode is to describe how the button should look:
      * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
@@ -79,6 +83,10 @@ public class ButtonTag extends YukonTagSupport {
     public void setRenderMode(String renderMode) {
         this.renderMode = renderMode;
     }
+    
+    public void setDialogButton(Boolean dialogButton) {
+        this.dialogButton = dialogButton;
+    }
 
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
@@ -87,10 +95,14 @@ public class ButtonTag extends YukonTagSupport {
             id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
         }
 
-        String classes = "pointer hoverableImageContainer"; 
+        String classes = "pointer";
+        
+        if (!disabled) {
+            classes += " hoverableImageContainer";
+        }
         
         if (!renderMode.equalsIgnoreCase("image")) {
-            classes+= " formSubmit"; // addes padding to left and right inside button tag
+            classes += " formSubmit"; // addes padding to left and right inside button tag
         }
         
         if (renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) {
@@ -102,7 +114,7 @@ public class ButtonTag extends YukonTagSupport {
         }
         
         if (renderMode.equalsIgnoreCase("image")) {
-            classes += " image"; // addes text decoration underline when hovering over button
+            classes += " image";
         }
         
         if (StringUtils.isNotBlank(styleClass)) {
@@ -119,8 +131,19 @@ public class ButtonTag extends YukonTagSupport {
             String imageUrl = getLocalMessage(imgUrlResolvable, false);
 
             /* Button Text */
-            MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label");
-            String labelText = getLocalMessage(labelTextResolvable, false);
+            String labelText = "";
+            boolean override = false;
+            /* Allow localizers to override the complete button text for any specific button.
+             * This means the dialogButton attribut's appending of ellipsis feature will not be respected. */
+            MessageSourceResolvable overrideLabelTextResolvable = messageScope.generateResolvable(".label.override");
+            labelText = getLocalMessage(overrideLabelTextResolvable, false);
+            
+            if (StringUtils.isBlank(labelText)) {
+                MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label");
+                labelText = getLocalMessage(labelTextResolvable, false);
+            } else {
+                override = true;
+            }
 
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
                 throw new RuntimeException("at least one of .imageUrl or .label is required for " + key);
@@ -204,6 +227,10 @@ public class ButtonTag extends YukonTagSupport {
                 }
                 out.write(">");
                 out.write(labelText);
+                if (dialogButton && !override) {
+                    String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
+                    out.write(ellipsis);
+                }
                 out.write("</span>");
             }
 
@@ -219,7 +246,11 @@ public class ButtonTag extends YukonTagSupport {
     }
 
     private void writeImage(JspWriter out, String imageUrl) throws IOException {
-        out.write("<img class=\"logoImage hoverableImage\" src=\"");
+        String imageClass = "logoImage";
+        if (!disabled) {
+            imageClass += " hoverableImage";
+        }
+        out.write("<img class=\"" + imageClass + "\" src=\"");
         out.write(imageUrl);
         out.write("\" alt=\"\">");
     }

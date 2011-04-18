@@ -66,10 +66,6 @@
         </form>
     </i:simplePopup>
     
-    <form id="viewAllForm" action="/spring/stars/operator/workOrder/workOrderList">
-        <input type="hidden" name="accountId" value="${accountId}">
-    </form>
-    
     <form:form id="workOrderUpdateForm" commandName="workOrderDto" action="/spring/stars/operator/workOrder/updateWorkOrder">
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
@@ -185,13 +181,31 @@
         
         <%-- buttons --%>
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-           <tags:slowInput2 formId="workOrderUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+            <tags:slowInput2 formId="workOrderUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:url value="/spring/stars/operator/workOrder/workOrderList" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                </cti:url>
+            </cti:displayForPageEditModes>
+           
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url value="/spring/stars/operator/workOrder/view" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                    <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
+                </cti:url>
+                <cti:button key="delete" id="confirmDelete"/>
+            </cti:displayForPageEditModes>
+           
+           <cti:button key="cancel" href="${cancelUrl}"/>
         </cti:displayForPageEditModes>
-       
-        <tags:slowInput2 formId="viewAllForm" key="cancel"/>
         
-        <cti:displayForPageEditModes modes="EDIT">
-            <cti:button key="delete" id="confirmDelete"/>
+       
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:url value="/spring/stars/operator/workOrder/edit" var="editUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+                <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
+            </cti:url>
+            <cti:button key="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
         
     </form:form>

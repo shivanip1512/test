@@ -13,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.inventory.InventoryIdentifierMapper;
+import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -63,7 +63,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         /* Catch BadSqlGrammarException for oracle and DataIntegrityViolationException for sql server
          * when casting serial numbers as numeric when they have letters in them. */
         try {
-            yukonJdbcTemplate.queryInto(sql, new InventoryIdentifierMapper(), result);
+            yukonJdbcTemplate.queryInto(sql, new LmHardwareInventoryIdentifierMapper(), result);
         } catch (BadSqlGrammarException e) {
             if (e.getCause().getMessage().contains("ORA-01722: invalid number")) {
                 throw new InvalidSerialNumberRangeDataException(e);

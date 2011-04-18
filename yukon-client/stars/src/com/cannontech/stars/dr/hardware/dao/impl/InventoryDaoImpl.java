@@ -13,14 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.InventoryIdentifierMapper;
-import com.cannontech.common.inventory.LMHardwareClass;
+import com.cannontech.common.inventory.HardwareClass;
+import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -62,10 +62,9 @@ public class InventoryDaoImpl implements InventoryDao {
     private LMHardwareEventDao hardwareEventDao;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
-
     private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
-
-    private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(LMHardwareClass.THERMOSTAT);
+    private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
+    private InventoryIdentifierMapper inventoryIdentifierMapper;
     
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
@@ -339,14 +338,13 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public InventoryIdentifier getYukonInventory(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yle.YukonDefinitionId");
-        sql.append("FROM LMHardwareBase lmhb");
-        sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
-        sql.append("WHERE lmhb.InventoryId").eq(inventoryId);
+        sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
+        sql.append("FROM InventoryBase i");
+        sql.append(  "LEFT JOIN LMHardwareBase h on i.InventoryID = h.InventoryID");
+        sql.append(  "LEFT JOIN MeterHardwareBase m on m.InventoryID = i.InventoryID");
+        sql.append("WHERE i.InventoryId").eq(inventoryId);
         
-        int hardwareTypeDefinitionId = yukonJdbcTemplate.queryForInt(sql);
-        
-        return new InventoryIdentifier(inventoryId, HardwareType.valueOf(hardwareTypeDefinitionId));
+        return yukonJdbcTemplate.queryForObject(sql, inventoryIdentifierMapper);
     }
     
     @Override
@@ -359,14 +357,15 @@ public class InventoryDaoImpl implements InventoryDao {
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT lmhb.inventoryId, yle.YukonDefinitionId");
-                sql.append("FROM LMHardwareBase lmhb");
-                sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
-                sql.append("WHERE lmhb.InventoryId").in(subList);
+                sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
+                sql.append("FROM InventoryBase i");
+                sql.append(  "LEFT JOIN LMHardwareBase h on i.InventoryID = h.InventoryID");
+                sql.append(  "LEFT JOIN MeterHardwareBase m on m.InventoryID = i.InventoryID");
+                sql.append("WHERE i.InventoryId").in(subList);
                 return sql;
             }
         };
-        template.queryInto(generator, inventoryIds, new InventoryIdentifierMapper(), result);
+        template.queryInto(generator, inventoryIds, inventoryIdentifierMapper, result);
 
         return result;
     }
@@ -381,7 +380,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("WHERE lmhb.manufacturerSerialNumber").eq(serialNumber);
         sql.append(  "AND ec.EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.queryForObject(sql, new InventoryIdentifierMapper());
+        return yukonJdbcTemplate.queryForObject(sql, new LmHardwareInventoryIdentifierMapper());
     }
     
     @Override
@@ -444,6 +443,16 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return result.equalsIgnoreCase(deviceType);
     }
+    
+    @Override
+    public int getDeviceId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM InventoryBase");
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
 
     // DI Setters
     @Autowired
@@ -469,6 +478,11 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setInventoryIdentifierMapper(InventoryIdentifierMapper inventoryIdentifierMapper) {
+        this.inventoryIdentifierMapper = inventoryIdentifierMapper;
     }
     
 }

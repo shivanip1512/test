@@ -8,7 +8,7 @@
     <entry key="yukon.web.components.controlHistoryEvent.gears">Gear(s)</entry>
     <entry key="yukon.web.components.controlHistoryEvent.controlDuration">Control Duration</entry>
 	<entry key="yukon.web.components.controlHistoryEvent.noControlDuringPeriod">There has been no control during this period.</entry>
-    <entry key="yukon.web.components.controlHistoryEvent.loading">Loading...</entry>
+    <entry key="yukon.web.components.controlHistoryEvent.loading">Loading…</entry>
     <entry key="yukon.web.components.controlHistoryEvent.na">N/A</entry>
 
 	<!-- ControlHistorySummary.tag -->
@@ -135,13 +135,18 @@
 
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
-    <entry key="yukon.web.components.button.create.label">Create...</entry>
+    <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.editConfig.label">Edit Configuration</entry>
+    
+    <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     <entry key="yukon.web.components.button.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     
     <entry key="yukon.web.components.button.save.label">Save</entry>
+    
+    <entry key="yukon.web.components.button.send.label">Send</entry>
     
     <entry key="yukon.web.components.button.submit.label">Submit</entry>
     
@@ -162,6 +167,9 @@
     <entry key="yukon.web.components.button.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.components.button.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
+    
+    <entry key="yukon.web.components.button.meterDetail.imageUrl">/WebConfig/yukon/Icons/meter.gif</entry>
+    <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>
     
     <entry key="yukon.web.components.button.filter.imageUrl">/WebConfig/yukon/Icons/filter.gif</entry>
     <entry key="yukon.web.components.button.filter.label">Filter</entry>

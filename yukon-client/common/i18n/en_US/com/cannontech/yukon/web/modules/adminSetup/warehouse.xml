@@ -14,9 +14,8 @@
     <entry key="yukon.web.modules.adminSetup.warehouse.infoContainer.title">{0}</entry>
 
     <!-- UI Elements -->
-
     <entry key="yukon.web.modules.adminSetup.warehouse.create.label">Create Warehouse</entry>
-    
+   
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.nameRequired">The warehouse name cannot be empty.</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.notes">Please limit the notes to 300 characters.</entry>

@@ -1022,6 +1022,9 @@
             <option name="threadDump">
               <link>/spring/support/threadDump</link>
             </option>
+            <option name="routeUsage">
+              <link>/spring/support/routeUsage</link>
+            </option>
           </options>
         </option>
       </options>
@@ -1453,13 +1456,13 @@
                     </page>
                     <page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                         <menu>account|accounts</menu>
-                        <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
+                        <link>/spring/stars/operator/account/view?accountId=${accountId}</link>
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
                             <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
+                                <link>/spring/stars/operator/account/edit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                             </page>
@@ -1468,21 +1471,23 @@
                                 <link>/spring/stars/operator/contacts/contactList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="contact.EDIT" type="DETAIL">
+                                    <page name="contact.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                        <link>/spring/stars/operator/contacts/view?accountId=${accountId}&amp;contactId=${contactId}</link>
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
+                                        <pages>
+                                            <page name="contact.EDIT" type="DETAIL_CHILD">
+                                                <menu>account|accounts</menu>
+                                                <link>/spring/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                                <labelArgument>${firstName}</labelArgument>
+                                                <labelArgument>${lastName}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                     <page name="contact.CREATE" type="BASIC">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=0</link>
-                                        <labelArgument>${firstName}</labelArgument>
-                                        <labelArgument>${lastName}</labelArgument>
-                                    </page>
-                                    <page name="contact.VIEW" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                        <link>/spring/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
                                     </page>
@@ -1491,7 +1496,7 @@
                             <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/residence/residenceEdit?accountId=${accountId}</link>
+                                <link>/spring/stars/operator/residence/view?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             </page>
                             <page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
@@ -1500,12 +1505,6 @@
                                 <link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="viewCall.EDIT" type="DETAIL">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-                                        <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-                                        <labelArgument>${callNumber}</labelArgument>
-                                    </page>
                                     <page name="viewCall.CREATE" type="BASIC">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                         <menu>account|accounts</menu>
@@ -1515,8 +1514,16 @@
                                     <page name="viewCall.VIEW" type="DETAIL">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <link>/spring/stars/operator/callTracking/view?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
+                                        <pages>
+                                            <page name="viewCall.EDIT" type="DETAIL_CHILD">
+                                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                                <menu>account|accounts</menu>
+                                                <link>/spring/stars/operator/callTracking/edit?accountId=${accountId}</link>
+                                                <labelArgument>${callNumber}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                 </pages>
                             </page>
@@ -1592,35 +1599,37 @@
                             <page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/hardware/hardwareList?accountId=${accountId}</link>
+                                <link>/spring/stars/operator/hardware/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="hardware.CREATE" type="BASIC">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
                                     </page>
-                                    <page name="hardware.EDIT" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
                                     <page name="hardware.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
+                                        <link>/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <pages>
+                                            <page name="hardware.EDIT" type="DETAIL_CHILD">
+                                                <menu>account|accounts</menu>
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                     <page name="meterProfile.CREATE" type="BASIC">
                                         <menu>account|accounts</menu>
                                     </page>
-                                    <page name="meterProfile.EDIT" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
                                     <page name="meterProfile.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="gateway" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
+                                        <link>/spring/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <pages>
+                                            <page name="meterProfile.EDIT" type="DETAIL_CHILD">
+                                                <menu>account|accounts</menu>
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                     <page name="hardwareConfig" type="DETAIL">
                                         <menu>account|accounts</menu>

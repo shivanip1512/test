@@ -54,15 +54,37 @@ function updateServiceCompanyInfo() {
 }
 
 Event.observe(window, 'load', updateServiceCompanyInfo);
+
+function changeOut(oldId, isMeter) {
+    $('oldInventoryId').value = oldId;
+
+    if(isMeter) {
+        $('isMeter').value = 'true';
+    } else {
+        $('isMeter').value = 'false';
+    }
+    
+    var form = $('changeOutForm');
+    form.submit();
+    return true;
+}
 </script>
+    
+    <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="newInventoryId" id="newInventoryId">
+        <input type="hidden" name="oldInventoryId" id="oldInventoryId">
+        <input type="hidden" name="isMeter" id="isMeter">
+        <input type="hidden" name="redirect" value="view">
+    </form>
     
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
-        <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
+        <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <c:choose>
-                <c:when test="${hardwareDto.hardwareClass == 'METER'}">
+                <c:when test="${showDeviceName}">
                     <c:set var="deleteMsgKeySuffix" value="DeviceName"/>
                 </c:when>
                 <c:otherwise>
@@ -93,51 +115,41 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
     <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <cti:url value="/spring/stars/operator/hardware/updateHardware" var="action"/>
+        <cti:url value="/spring/stars/operator/hardware/update" var="action"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
-        <cti:url value="/spring/stars/operator/hardware/createHardware" var="action"/>
+        <cti:url value="/spring/stars/operator/hardware/create" var="action"/>
     </cti:displayForPageEditModes>
     
-    <form:form id="updateForm" commandName="hardwareDto" action="${action}">
+    <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
     
-        <input type="hidden" name="accountId" value="${accountId}">
-        <input type="hidden" name="inventoryId" value="${inventoryId}">
-        <form:hidden path="energyCompanyId"/>
-        <form:hidden path="displayType"/>
-        <form:hidden path="displayName"/>
-        <form:hidden path="hardwareType"/>
-        <form:hidden path="hardwareClass"/>
-        <c:if test="${not showTwoWay}">
-            <form:hidden path="deviceId"/>
-        </c:if>
+        <%-- LEFT SIDE COLUMN --%>
+        <cti:dataGridCell>
         
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
-        
-            <%-- DEVICE INFO --%>
-            <cti:dataGridCell>
+            <form:form id="updateForm" commandName="hardwareDto" action="${action}">
+    
+                <input type="hidden" name="accountId" value="${accountId}">
+                <input type="hidden" name="inventoryId" value="${inventoryId}">
+                <form:hidden path="energyCompanyId"/>
+                <form:hidden path="displayType"/>
+                <form:hidden path="displayName"/>
+                <form:hidden path="hardwareType"/>
+                <form:hidden path="hardwareTypeEntryId"/>
+                <c:if test="${not showTwoWay}">
+                    <form:hidden path="deviceId"/>
+                </c:if>
             
+                <%-- DEVICE INFO --%>
                 <tags:formElementContainer nameKey="deviceInfoSection">
                     
                     <tags:nameValueContainer2>
                     
-                        <cti:displayForPageEditModes modes="EDIT,VIEW">
+                        <tags:nameValue2 nameKey="${displayTypeKey}">
+                            <spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody>
+                        </tags:nameValue2>
                         
-                            <tags:nameValue2 nameKey=".deviceType">
-                                <spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody>
-                            </tags:nameValue2>
-                        
-                        </cti:displayForPageEditModes>
-                        
-                        <cti:displayForPageEditModes modes="CREATE">
-                            
-                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" 
-                             					  itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
-                                                  
-                        </cti:displayForPageEditModes>
-                        
-						<c:if test="${showInstallCode}">
-	                            <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false"/>
+    					<c:if test="${showInstallCode}">
+                                <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false"/>
                         </c:if>
                         
                         <%-- For switchs and tstat's, show serial number, otherwise device name --%>
@@ -164,8 +176,8 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             </c:otherwise>
                             
                         </c:choose>
-						
-						<c:if test="${showMacAddress}">
+    					
+    					<c:if test="${showMacAddress}">
                     		<tags:inputNameValue nameKey=".macAddress" path="macAddress"></tags:inputNameValue>                   
                         </c:if>
                         
@@ -193,61 +205,82 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="fieldRemoveDate" springInput="true"></tags:dateInputCalendar>
                         </tags:nameValue2>
                         
-                        <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="20" />
+                        <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="notesRow"/>
+                        
+                        <c:if test="${showGateway}">
+                            
+                            <tags:nameValue2 nameKey=".gateway">
+                                <c:if test="${mode == 'VIEW' and hardwareDto.gatewayId != null}">
+                                    <cti:url value="/spring/stars/operator/hardware/view" var="viewUrl">
+                                        <cti:param name="inventoryId" value="${gatewayInventoryId}"/>
+                                        <cti:param name="accountId" value="${accountId}"/>
+                                    </cti:url>
+                                    <a href="${viewUrl}">
+                                </c:if>
+                                
+                                <tags:selectWithItems path="gatewayId" items="${gateways}" itemValue="paoId" itemLabel="name" 
+                                        defaultItemValue="" defaultItemLabel="${none}"/>
+                            </tags:nameValue2>
+                            
+                            <c:if test="${mode == 'VIEW' and hardwareDto.gatewayId != null}">
+                                </a>
+                            </c:if>
+                        </c:if>
                         
                         <c:if test="${showRoute}">
                             <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
+                        <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="${none}"/>
+                            
+                        <form:hidden path="originalDeviceStatusEntryId"/>
                         
-                        <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            
-                            <form:hidden path="originalDeviceStatusEntryId"/>
-                            
-                            <c:if test="${showTwoWay}">
-                                <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
-                                <%-- Two Way LCR's Yukon Device --%>
-                                <tags:nameValue2 nameKey=".twoWayDevice" rowClass="pickerRow">
+                        <c:if test="${showTwoWay}">
+                            <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
+                            <%-- Two Way LCR's Yukon Device --%>
+                            <tags:nameValue2 nameKey=".twoWayDevice" rowClass="pickerRow">
 
-                                    <div id="twoWayPickerContainer" <c:if test="${hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
-                                        <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="selection" immediateSelectMode="true"
-                                            destinationFieldName="deviceId" selectionProperty="paoName" initialId="${hardwareDto.deviceId}" viewOnlyMode="${mode == 'VIEW'}"/>
-                                            
-                                        <cti:displayForPageEditModes modes="EDIT">
-                                            <cti:button key="new" id="newButton"/>
-                                        </cti:displayForPageEditModes>
-                                    </div>
-                                    <div id="newTwoWayDeviceContainer" <c:if test="${!hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
-                                        <spring:bind path="twoWayDeviceName">
-                                            <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
-                                            <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
-                                            <cti:button key="choose" id="chooseButton"/>
-                                            <c:if test="${status.error}">
-                                                <br>
-                                                <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
-                                            </c:if>
-                                        </spring:bind>
-                                    </div>
-                                </tags:nameValue2>
-                            
-                            </c:if>
-                            
-                        </cti:displayForPageEditModes>
+                                <div id="twoWayPickerContainer" <c:if test="${hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                                    
+                                    <tags:pickerDialog type="twoWayLcrPicker" 
+                                            id="twoWayLcrPicker" 
+                                            linkType="selection" 
+                                            immediateSelectMode="true"
+                                            destinationFieldName="deviceId" 
+                                            selectionProperty="paoName" 
+                                            initialId="${hardwareDto.deviceId}" 
+                                            viewOnlyMode="${mode == 'VIEW'}"/>
+                                        
+                                    <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                        <cti:button key="new" id="newButton"/>
+                                    </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="errorMessage"/>
+                                    
+                                </div>
+                                
+                                <div id="newTwoWayDeviceContainer" <c:if test="${!hardwareDto.creatingNewTwoWayDevice}">style="display: none;"</c:if>>
+                                    <spring:bind path="twoWayDeviceName">
+                                        <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
+                                        <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
+                                        <cti:button key="choose" id="chooseButton"/>
+                                        <c:if test="${status.error}">
+                                            <br>
+                                            <form:errors path="twoWayDeviceName" cssClass="errorMessage"/>
+                                        </c:if>
+                                    </spring:bind>
+                                </div>
+                            </tags:nameValue2>
                         
+                        </c:if>
+                            
                     </tags:nameValueContainer2>
                 
                 </tags:formElementContainer>
-            
-            </cti:dataGridCell>
-            
-            <%--SERVICE AND STORAGE --%>
-            <cti:dataGridCell>
-            
+                
+                <%--SERVICE AND STORAGE --%>
                 <tags:formElementContainer nameKey="serviceAndStorageSection">
-                    
+                
                     <tags:nameValueContainer2>
-                        
+                            
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <tags:selectNameValue nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
                                 items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
@@ -261,93 +294,354 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                             <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
                         </cti:displayForPageEditModes>
                         
-                        <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="20" />
+                        <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="notesRow"/>
                         
                     </tags:nameValueContainer2>
                     
-                    <br>
+                </tags:formElementContainer>
+                
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <cti:button key="save" type="submit" name="save"/>
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <cti:button key="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <cti:button key="cancel" type="submit" name="cancel"/>
+                        </cti:displayForPageEditModes>
+                    </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
+                
+            </form:form>
+        
+        </cti:dataGridCell>
+        
+        <%-- RIGHT SIDE COLUMN --%>
+        <cti:displayForPageEditModes modes="VIEW">
+        
+            <cti:dataGridCell>
+            
+                <%--DEVICE ACTIONS --%>
+                <tags:formElementContainer nameKey="actions">
                     
-                    <cti:displayForPageEditModes modes="EDIT,VIEW">
-                    
-                        <tags:boxContainer2 nameKey="deviceStatusHistory">
-                            <c:choose>
-                                <c:when test="${empty deviceStatusHistory}">
-                                    <i:inline key=".deviceStatusHistory.none"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="historyContainer">
-                                        <table class="compactResultsTable">
-                                            <tr>
-                                                <th><i:inline key=".deviceStatusHistory.event"/></th>
-                                                <th><i:inline key=".deviceStatusHistory.userName"/></th>
-                                                <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
-                                            </tr>
-                                            <c:forEach var="event" items="${deviceStatusHistory}">
-                                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                                    <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
-                                                    <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
-                                                    <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
-                                                </tr>
-                                            </c:forEach>
-                                        </table>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </tags:boxContainer2>
+                    <ul class="buttonStack">
                         
-                        <br>
-                        <tags:boxContainer2 nameKey="hardwareHistory">
-                            <c:choose>
-                                <c:when test="${empty hardwareHistory}">
-                                    <i:inline key=".hardwareHistory.none"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="historyContainer">
-                                        <tags:alternateRowReset/>
-                                        <table class="compactResultsTable">
-                                            <tr>
-                                                <th><i:inline key=".hardwareHistory.date"/></th>
-                                                <th><i:inline key=".hardwareHistory.action"/></th>
-                                            </tr>
-                                            
-                                            <c:forEach var="event" items="${hardwareHistory}">
-                                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                                    <td><cti:formatDate value="${event.date}" type="BOTH"/></td>
-                                                    <td><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
-                                                </tr>
-                                            </c:forEach>
-                                            
-                                        </table>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </tags:boxContainer2>
-                    
-                    </cti:displayForPageEditModes>
+                        <%-- COMMON ACTIONS --%>
+                        <c:if test="${showSwitchAndTstatConfigAction}">
+                            <cti:url var="configUrl" value="/spring/stars/operator/hardware/config/edit">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="inventoryId" value="${inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button key="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <%-- SWITCH ACTIONS --%>
+                        <c:if test="${showSwitchChangeoutAction}">
+                            <li>
+                                <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                        nameKey="changeOut"
+                                        id="availableSwitchPicker" 
+                                        type="availableSwitchPicker" 
+                                        destinationFieldId="newInventoryId" 
+                                        immediateSelectMode="true"
+                                        endAction="function(items) { return changeOut(${inventoryId}, false); }" 
+                                        linkType="button"
+                                        buttonRenderMode="labeledImage"
+                                        buttonStyleClass="f_blocker"/>
+                            </li>
+                        </c:if>
+                        
+                        <%-- TSTAT ACTIONS --%>
+                        <c:if test="${showCommissionTstatActions}">
+                            <li>
+                                <cti:url var="commissionTstatUrl" value="/spring/stars/operator/hardware/commissionTstat">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                                    <cti:param name="deviceId" value="${hardwareDto.deviceId}"/>
+                                    <cti:param name="gatewayId" value="${hardwareDto.gatewayId}"/>
+                                </cti:url>
+                                <cti:button key="commissionTstat" href="${commissionTstatUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
+                            </li>
+                            <li>
+                                <cti:url var="decommissionTstatUrl" value="/spring/stars/operator/hardware/decommissionTstat">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                                    <cti:param name="deviceId" value="${hardwareDto.deviceId}"/>
+                                    <cti:param name="gatewayId" value="${hardwareDto.gatewayId}"/>
+                                </cti:url>
+                                <cti:button key="decommissionTstat" href="${decommissionTstatUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showDisabledCommissionActions}">
+                            <li>
+                                <cti:button key="commissionTstat.disabled" disabled="true" renderMode="labeledImage"/>
+                            </li>
+                            <li>
+                                <cti:button key="decommissionTstat.disabled" disabled="true" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showTstatChangeoutAction}">
+                            <li>
+                                <tags:pickerDialog extraArgs="${energyCompanyId}"
+                                        nameKey="changeOut" 
+                                        id="availableThermostatPicker" 
+                                        type="availableThermostatPicker" 
+                                        destinationFieldId="newInventoryId" 
+                                        immediateSelectMode="true"
+                                        endAction="function(items) { return changeOut(${inventoryId}, false); }" 
+                                        linkType="button"
+                                        buttonRenderMode="labeledImage"
+                                        buttonStyleClass="f_blocker"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showScheduleActions}">
+                            <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="thermostatIds" value="${inventoryId}"/>
+                            </cti:url>
+                            <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="thermostatId" value="${inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button key="editSchedule" href="${editScheduleUrl}" renderMode="labeledImage"/>
+                            </li>
+                            <li>
+                                <cti:button key="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showManualAction}">
+                            <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="thermostatIds" value="${inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button key="manual" href="${editManualUrl}" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <%-- METER ACTIONS --%>
+                        <c:if test="${showMeterConfigAction}">
+                            <cti:url var="configUrl" value="/spring/stars/operator/hardware/config/meterConfig">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="meterId" value="${hardwareDto.deviceId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button key="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showMeterDetailAction}">
+                            <cti:paoDetailUrl yukonPao="${hardwareDto.yukonPao}" var="meterDetailUrl"/>
+                            <li>
+                                 <cti:button key="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showMeterChangeoutAction}">
+                            <li>
+                                <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                        nameKey="changeOut"
+                                        id="availableMeterPicker" 
+                                        type="availableMctPicker" 
+                                        destinationFieldId="newInventoryId" 
+                                        immediateSelectMode="true" 
+                                        endAction="function(items) { return changeOut(${inventoryId}, true); }" 
+                                        linkType="button"
+                                        buttonRenderMode="labeledImage"
+                                        buttonStyleClass="f_blocker"/>
+                            </li>
+                        </c:if>
+                        
+                        <%-- GATEWAY ACTIONS --%>
+                        <c:if test="${showCommissionGatewayActions}">
+                            <li>
+                                <cti:url var="commissionGatewayUrl" value="/spring/stars/operator/hardware/commissionGateway">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                </cti:url>
+                                <cti:button key="commissionGateway" href="${commissionGatewayUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
+                            </li>
+                            <li>
+                                <cti:url var="decommissionGatewayUrl" value="/spring/stars/operator/hardware/decommissionGateway">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                </cti:url>
+                                <cti:button key="decommissionGateway" href="${decommissionGatewayUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showTextMessageAction}">
+                            <li>
+                                <cti:url var="sendTextMessageUrl" value="/spring/stars/operator/hardware/sendTextMessage">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventoryId}"/>
+                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                </cti:url>
+                                <cti:button key="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true"/>
+                                <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup">
+                                        <textarea rows="6" cols="60" name="message"></textarea>
+                                        <div class="actionArea">
+                                            <cti:button key="send" href="${sendTextMessageUrl}"/>
+                                            <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
+                                        </div>
+                                </i:simplePopup>
+                            </li>
+                        </c:if>
+                        
+                    </ul>
                     
                 </tags:formElementContainer>
+                
+                <c:if test="${showAssignedDevices}">
+                    <tags:boxContainer2 nameKey="assignedDevices">
+                        <div class="historyContainer">
+                            <c:choose>
+                                <c:when test="${not empty assignedDevices}">
+                                    <table class="compactResultsTable">
+                                        <tr>
+                                            <th class="nonwrapping"><i:inline key=".serialNumber"/></th>
+                                            <th class="nonwrapping"><i:inline key=".deviceState"/></th>
+                                            <th class="nonwrapping"><i:inline key=".actions"/></th>
+                                        </tr>
+                                        <c:forEach var="device" items="${assignedDevices}">
+                                            <tr>
+                                                <td>${device.serialNumber}</td>
+                                                <td class="pointStateColumn">
+                                                    <cti:pointStatusColor pointId="${device.commissionId}">
+                                                        <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
+                                                    </cti:pointStatusColor>
+                                                </td>
+                                                <td class="nonwrapping">
+                                                    <cti:url var="commissionTstatUrl" value="/spring/stars/operator/hardware/commissionTstat">
+                                                        <cti:param name="accountId" value="${accountId}"/>
+                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
+                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
+                                                        <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                                    </cti:url>
+                                                    <cti:button key="commissionTstat" href="${commissionTstatUrl}" renderMode="image" styleClass="f_blocker"/>
+                                                    <cti:url var="decommissionTstatUrl" value="/spring/stars/operator/hardware/decommissionTstat">
+                                                        <cti:param name="accountId" value="${accountId}"/>
+                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
+                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
+                                                        <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                                    </cti:url>
+                                                    <cti:button key="decommissionTstat" href="${decommissionTstatUrl}" renderMode="image" styleClass="f_blocker"/>
+                                                    <cti:url value="/spring/stars/operator/hardware/removeDeviceFromGateway" var="removeUrl">
+                                                        <cti:param name="accountId" value="${accountId}"/>
+                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
+                                                        <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
+                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
+                                                    </cti:url>
+                                                    <cti:button key="remove" href="${removeUrl}" renderMode="image" styleClass="f_blocker"/>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </table>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key=".noAssignedDevices"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                            
+                        <c:if test="${not empty availableDevices}">
+                            <div class="actionArea">
+                                <form action="/spring/stars/operator/hardware/addDeviceToGateway" method="post">
+                                    <input type="hidden" name="accountId" value="${accountId}">
+                                    <input type="hidden" name="inventoryId" value="${inventoryId}">
+                                    <input type="hidden" name="gatewayId" value="${hardwareDto.deviceId}">
+                                    <select name="deviceId">
+                                        <c:forEach var="device" items="${availableDevices}">
+                                            <option value="${device.deviceId}">${device.serialNumber}</option>
+                                        </c:forEach>
+                                    </select>
+                                    <cti:button key="add" type="submit" styleClass="f_blocker"/>
+                                </form>
+                            </div>
+                        </c:if>
+                    </tags:boxContainer2>
+                </c:if>
+                
+                <br>
+                    
+                <tags:boxContainer2 nameKey="deviceStatusHistory">
+                    <c:choose>
+                        <c:when test="${empty deviceStatusHistory}">
+                            <i:inline key=".deviceStatusHistory.none"/>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="historyContainer">
+                                <table class="compactResultsTable">
+                                    <tr>
+                                        <th class="nonwrapping"><i:inline key=".deviceStatusHistory.event"/></th>
+                                        <th class="nonwrapping"><i:inline key=".deviceStatusHistory.userName"/></th>
+                                        <th class="nonwrapping"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
+                                    </tr>
+                                    <c:forEach var="event" items="${deviceStatusHistory}">
+                                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                            <td class="nonwrapping lastColumn"><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                        </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </tags:boxContainer2>
+                    
+                <br>
+                
+                <tags:boxContainer2 nameKey="hardwareHistory">
+                    <c:choose>
+                        <c:when test="${empty hardwareHistory}">
+                            <i:inline key=".hardwareHistory.none"/>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="historyContainer">
+                                <tags:alternateRowReset/>
+                                <table class="compactResultsTable">
+                                    <tr>
+                                        <th class="nonwrapping"><i:inline key=".hardwareHistory.date"/></th>
+                                        <th class="nonwrapping"><i:inline key=".hardwareHistory.action"/></th>
+                                    </tr>
+                                    
+                                    <c:forEach var="event" items="${hardwareHistory}">
+                                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                            <td class="nonwrapping"><cti:formatDate value="${event.date}" type="BOTH"/></td>
+                                            <td class="nonwrapping lastColumn"><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
+                                        </tr>
+                                    </c:forEach>
+                                    
+                                </table>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </tags:boxContainer2>
             
             </cti:dataGridCell>
             
-        </cti:dataGrid>
-        
-        <br>
-        <br>
-        
-        <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <tags:slowInput2 formId="updateForm" key="save" />
-            </cti:checkRolesAndProperties>
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:displayForPageEditModes modes="EDIT">
-                    <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                    <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
-                </cti:displayForPageEditModes>
-            </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         
-    </form:form>
+    </cti:dataGrid>
+        
+    <cti:displayForPageEditModes modes="VIEW">
+            <cti:url value="/spring/stars/operator/hardware/edit" var="editUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+                <cti:param name="inventoryId" value="${inventoryId}"/>
+            </cti:url>
+            <cti:button key="edit" href="${editUrl}"/>
+        </cti:displayForPageEditModes>
     
 </cti:standardPage>

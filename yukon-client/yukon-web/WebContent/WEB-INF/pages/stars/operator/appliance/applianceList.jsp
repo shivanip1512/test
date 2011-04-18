@@ -64,7 +64,7 @@
                      <c:forEach var="displayableApplianceListEntry" items="${displayableApplianceListEntries}">
                          <tr class="<ct:alternateRow odd="" even="altRow"/>">
                              <td>
-                                 <cti:url var="editApplianceUrl" value="/spring/stars/operator/appliances/applianceEdit">
+                                 <cti:url var="editApplianceUrl" value="/spring/stars/operator/appliances/view">
                                      <cti:param name="accountId" value="${accountId}"/>
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>

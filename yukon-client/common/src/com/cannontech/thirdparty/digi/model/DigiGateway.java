@@ -41,4 +41,8 @@ public class DigiGateway implements YukonDevice {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public int getPaoId() {
+        return paoIdentifier.getPaoId();
+    }
 }

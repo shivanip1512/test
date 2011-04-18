@@ -2,8 +2,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.create.label">Create</entry>
-    
     <entry key="yukon.web.modules.adminSetup.serviceCompany.name">Name</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.contact">Contact</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.mainPhone">Main Phone</entry>
@@ -60,7 +58,7 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageName">Service Company {0}</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.infoContainer">Service Companies</entry>
-
+    
     <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>

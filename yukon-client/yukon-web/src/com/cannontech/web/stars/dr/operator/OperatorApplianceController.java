@@ -199,51 +199,51 @@ public class OperatorApplianceController {
         return "redirect:applianceList";
     }
 
+    // APPLIANCE VIEW
+    @RequestMapping
+    public String view(int applianceId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        model.addAttribute("mode", PageEditMode.VIEW);
+        
+        setupViewEditModel(applianceId, fragment, model, context);
+        
+        return "operator/appliance/applianceEdit.jsp";
+    }
+    
     // APPLIANCE EDIT
     @RequestMapping
-    public String applianceEdit(int applianceId, ModelMap modelMap,
-                                YukonUserContext userContext,
-                                AccountInfoFragment accountInfoFragment)
-            throws ServletRequestBindingException {
-
-        boolean allowAccountEditing = 
-            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                                    userContext.getYukonUser());
+    public String edit(int applianceId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        model.addAttribute("mode", PageEditMode.EDIT);
         
+        setupViewEditModel(applianceId, fragment, model, context);
+        
+        return "operator/appliance/applianceEdit.jsp";
+    }
+    
+    private void setupViewEditModel(int applianceId, AccountInfoFragment fragment, ModelMap model, YukonUserContext context) {
         // Appliance Information
-        LiteStarsAppliance liteStarsAppliance = 
-            starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId,
-                                                                 accountInfoFragment.getEnergyCompanyId());
-        LiteStarsEnergyCompany energyCompany = 
-            starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-        StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteStarsAppliance,
-                                                                              energyCompany);
-        modelMap.addAttribute("starsAppliance", starsAppliance);
+        int ecId = fragment.getEnergyCompanyId();
+        LiteStarsAppliance liteAppliance = starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId, ecId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteAppliance, energyCompany);
+        model.addAttribute("starsAppliance", starsAppliance);
 
         // Enrollment
-        DisplayableInventoryEnrollment displayableInventoryEnrollment = 
-            displayableInventoryEnrollmentDao.find(accountInfoFragment.getAccountId(),
-                                                   liteStarsAppliance.getInventoryID(),
-                                                   liteStarsAppliance.getProgramID());
-        modelMap.addAttribute("displayableInventoryEnrollment",
-                              displayableInventoryEnrollment);
+        int accountId = fragment.getAccountId();
+        int inventoryId = liteAppliance.getInventoryID();
+        int programId = liteAppliance.getProgramID();
+        DisplayableInventoryEnrollment displayable = displayableInventoryEnrollmentDao.find(accountId, inventoryId, programId);
+        model.addAttribute("displayableInventoryEnrollment", displayable);
 
         // Hardware Summary
-        if (liteStarsAppliance.getInventoryID() > 0) {
-            HardwareDto hardwareDto = 
-                hardwareUiService.getHardwareDto(liteStarsAppliance.getInventoryID(),
-                                               accountInfoFragment.getEnergyCompanyId(), 
-                                               accountInfoFragment.getAccountId());
-            modelMap.addAttribute("hardware", hardwareDto);
+        if (inventoryId > 0) {
+            HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, ecId, accountId);
+            model.addAttribute("hardware", hardwareDto);
         }
 
-        setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, applianceId);
-        modelMap.addAttribute("mode", 
-                              allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
-        modelMap.addAttribute("applianceCategoryName",
-                              liteStarsAppliance.getApplianceCategory().getName());
-
-        return "operator/appliance/applianceEdit.jsp";
+        setupApplianceEditModelMap(fragment, model, context, applianceId);
+        
+        model.addAttribute("applianceCategoryName", liteAppliance.getApplianceCategory().getName());
     }
 
     // APPLIANCE UPDATE
@@ -369,16 +369,6 @@ public class OperatorApplianceController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(
                                       "yukon.web.modules.operator.appliance.applianceDeleted"));
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:applianceList";
-    }
-
-    @RequestMapping(params="cancel")
-    public String cancel(ModelMap modelMap,
-                          AccountInfoFragment accountInfoFragment,
-                          YukonUserContext userContext,
-                          HttpSession session) {
-
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:applianceList";
     }

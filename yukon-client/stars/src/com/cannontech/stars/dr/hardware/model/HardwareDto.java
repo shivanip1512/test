@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.inventory.LMHardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -34,11 +33,12 @@ public class HardwareDto {
     private Integer originalDeviceStatusEntryId;
     private String twoWayDeviceName;
     private List<HardwareHistory> hardwareHistory;
-    private LMHardwareClass hardwareClass;
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
     private String meterNumber;
     private List<SwitchAssignment> switchAssignments = LazyList.ofInstance(SwitchAssignment.class);
+    
+    private Integer gatewayId;
     private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
@@ -228,14 +228,6 @@ public class HardwareDto {
         return energyCompanyId;
     }
 
-    public void setHardwareClass(LMHardwareClass lmHardwareClass) {
-        this.hardwareClass = lmHardwareClass;
-    }
-    
-    public LMHardwareClass getHardwareClass() {
-        return hardwareClass;
-    }
-
     public void setHardwareType(HardwareType hardwareType) {
         this.hardwareType = hardwareType;
     }
@@ -299,6 +291,14 @@ public class HardwareDto {
 
     public boolean isCreatingNewTwoWayDevice() {
         return creatingNewTwoWayDevice;
+    }
+
+    public void setGatewayId(Integer gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public Integer getGatewayId() {
+        return gatewayId;
     }
     
 }

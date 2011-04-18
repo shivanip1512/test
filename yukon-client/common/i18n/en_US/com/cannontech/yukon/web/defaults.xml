@@ -18,4 +18,6 @@
 
 <entry key="yukon.web.defaults.dashes">---</entry>
 
+<entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
+
 </properties>

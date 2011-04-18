@@ -45,249 +45,267 @@ public class OperatorContactsController {
 
     private AccountEventLogService accountEventLogService;
     
-	private OperatorAccountService operatorAccountService;
-	private CustomerAccountDao customerAccountDao;
-	private CustomerDao customerDao;
-	private ContactDao contactDao;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
-	private ContactDtoValidator contactDtoValidator;
-	private RolePropertyDao rolePropertyDao;
-	
-	// CONTACTS LIST
-	@RequestMapping
+    private OperatorAccountService operatorAccountService;
+    private CustomerAccountDao customerAccountDao;
+    private CustomerDao customerDao;
+    private ContactDao contactDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private ContactDtoValidator contactDtoValidator;
+    private RolePropertyDao rolePropertyDao;
+    
+    // CONTACTS LIST
+    @RequestMapping
     public String contactList(int accountId,
-    						  YukonUserContext userContext,
-    						  ModelMap modelMap,
-    						  AccountInfoFragment accountInfoFragment) {
-		
-		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
-		
-		// contacts
-		List<ContactDto> contacts = Lists.newArrayList();
-		
-		// primary contact
-		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-		ContactDto primaryContact = operatorAccountService.getContactDto(customer.getPrimaryContactID(), userContext);
-		contacts.add(primaryContact);
-		
-		// additional contacts
-		List<LiteContact> additionalLiteContacts = contactDao.getAdditionalContactsForAccount(accountId);
-		for (LiteContact additionalLiteContact : additionalLiteContacts) {
-			
-			ContactDto additionalContact = operatorAccountService.getContactDto(additionalLiteContact.getContactID(), userContext);
-			contacts.add(additionalContact);
-		}
-		modelMap.addAttribute("contacts", contacts);
-		
-		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
-		
-		return "operator/contacts/contactList.jsp";
-	}
-	
-	
-	// CONTACT EDIT
-	@RequestMapping
-    public String contactEdit(int contactId,
-    						  ModelMap modelMap, 
-    						  YukonUserContext userContext,
-    						  AccountInfoFragment accountInfoFragment) {
-		
-	    boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		
-		// contactDto
-		ContactDto contactDto = operatorAccountService.getContactDto(contactId, userContext);
-		if (contactDto == null) {
-		    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-			contactDto = operatorAccountService.getBlankContactDto(4);
-			modelMap.addAttribute("mode", PageEditMode.CREATE);
-		} else {
-		    modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
-		}
-		modelMap.addAttribute("contactDto", contactDto);
-		
-		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
-		
-		return "operator/contacts/contactEdit.jsp";
-	}
-	
-	// UPDATE CONTACT
-	@RequestMapping
+                              YukonUserContext userContext,
+                              ModelMap modelMap,
+                              AccountInfoFragment accountInfoFragment) {
+        
+        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
+        
+        // contacts
+        List<ContactDto> contacts = Lists.newArrayList();
+        
+        // primary contact
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        ContactDto primaryContact = operatorAccountService.getContactDto(customer.getPrimaryContactID(), userContext);
+        contacts.add(primaryContact);
+        
+        // additional contacts
+        List<LiteContact> additionalLiteContacts = contactDao.getAdditionalContactsForAccount(accountId);
+        for (LiteContact additionalLiteContact : additionalLiteContacts) {
+            
+            ContactDto additionalContact = operatorAccountService.getContactDto(additionalLiteContact.getContactID(), userContext);
+            contacts.add(additionalContact);
+        }
+        modelMap.addAttribute("contacts", contacts);
+        
+        setupContactBasicModelMap(null, accountInfoFragment, modelMap);
+        
+        return "operator/contacts/contactList.jsp";
+    }
+    
+    
+    // CONTACT VIEW
+    @RequestMapping
+    public String view(int contactId,ModelMap model,YukonUserContext context, AccountInfoFragment fragment) {
+        model.addAttribute("mode", PageEditMode.VIEW);
+        
+        // contactDto
+        ContactDto contactDto = operatorAccountService.getContactDto(contactId, context);
+        model.addAttribute("contactDto", contactDto);
+        
+        setupContactModel(contactDto.getContactId(), fragment, model, context);
+        
+        return "operator/contacts/contactEdit.jsp";
+    }
+    
+    // CONTACT CREATE
+    @RequestMapping
+    public String create(int contactId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        model.addAttribute("mode", PageEditMode.CREATE);
+        
+        ContactDto contactDto = operatorAccountService.getBlankContactDto(4);
+        model.addAttribute("contactDto", contactDto);
+        
+        setupContactModel(contactDto.getContactId(), fragment, model, context);
+        
+        return "operator/contacts/contactEdit.jsp";
+    }
+    
+    // CONTACT EDIT
+    @RequestMapping
+    public String edit(int contactId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        model.addAttribute("mode", PageEditMode.EDIT);
+        
+        // contactDto
+        ContactDto contactDto = operatorAccountService.getContactDto(contactId, context);
+        model.addAttribute("contactDto", contactDto);
+        
+        setupContactModel(contactDto.getContactId(), fragment, model, context);
+        
+        return "operator/contacts/contactEdit.jsp";
+    }
+    
+    // UPDATE CONTACT
+    @RequestMapping
     public String contactUpdate(@ModelAttribute("contactDto") ContactDto contactDto, 
-    							BindingResult bindingResult,
-					    		Integer additionalBlankNotifications,
-					    		ModelMap modelMap, 
-					    		YukonUserContext userContext,
-					    		FlashScope flashScope,
-					    		AccountInfoFragment accountInfoFragment) {
-		
-		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", PageEditMode.EDIT);
-		
-		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
-		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-		
-		// validate/save
-		boolean newContact = contactDto.getContactId() <= 0;
-		contactDtoValidator.validate(contactDto, bindingResult);
-		if (!bindingResult.hasErrors()) {
-			operatorAccountService.saveContactDto(contactDto, customer);
-		}
-		
-		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
-		if (bindingResult.hasErrors()) {
-			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-			return "operator/contacts/contactEdit.jsp";
-		}
-		
-		String newContactName = contactDto.getFirstName()+" "+contactDto.getLastName();
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
-		if (newContact) {
-			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
-			
-			accountEventLogService.contactAdded(userContext.getYukonUser(), 
-			                                    accountInfoFragment.getAccountNumber(), 
-			                                    newContactName);
-		} else {
-		    LiteContact contact = contactDao.getContact(contactDto.getContactId());
-		    String oldContactName = contact.toString();
-		    accountEventLogService.contactUpdated(userContext.getYukonUser(), 
+                                BindingResult bindingResult,
+                                Integer additionalBlankNotifications,
+                                ModelMap modelMap, 
+                                YukonUserContext userContext,
+                                FlashScope flashScope,
+                                AccountInfoFragment accountInfoFragment) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
+        
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        
+        // validate/save
+        boolean newContact = contactDto.getContactId() <= 0;
+        contactDtoValidator.validate(contactDto, bindingResult);
+        if (!bindingResult.hasErrors()) {
+            operatorAccountService.saveContactDto(contactDto, customer);
+        }
+        
+        setupContactModel(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return "operator/contacts/contactEdit.jsp";
+        }
+        
+        String newContactName = contactDto.getFirstName()+" "+contactDto.getLastName();
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
+        if (newContact) {
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
+            
+            accountEventLogService.contactAdded(userContext.getYukonUser(), 
                                                 accountInfoFragment.getAccountNumber(), 
                                                 newContactName);
-		    
-		    // Log contact name change
-		    if (!oldContactName.equalsIgnoreCase(newContactName)) {
-		        accountEventLogService.contactNameChanged(userContext.getYukonUser(), 
-		                                                  accountInfoFragment.getAccountNumber(),
-		                                                  oldContactName,
-		                                                  newContactName);
-		    }
+        } else {
+            LiteContact contact = contactDao.getContact(contactDto.getContactId());
+            String oldContactName = contact.toString();
+            accountEventLogService.contactUpdated(userContext.getYukonUser(), 
+                                                accountInfoFragment.getAccountNumber(), 
+                                                newContactName);
+            
+            // Log contact name change
+            if (!oldContactName.equalsIgnoreCase(newContactName)) {
+                accountEventLogService.contactNameChanged(userContext.getYukonUser(), 
+                                                          accountInfoFragment.getAccountNumber(),
+                                                          oldContactName,
+                                                          newContactName);
+            }
         
-		}
-		
-		return "redirect:contactList";
-	}
-	
-	// ADD NOTIFICATION
-	@RequestMapping(params = "newNotification")
+        }
+        
+        return "redirect:contactList";
+    }
+    
+    // ADD NOTIFICATION
+    @RequestMapping(params = "newNotification")
     public String contactsAddNotification(@ModelAttribute("contactDto") ContactDto contactDto, 
-								    		ModelMap modelMap, 
-								    		YukonUserContext userContext,
-								    		FlashScope flashScope,
-								    		AccountInfoFragment accountInfoFragment) {
-		
-		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", PageEditMode.EDIT);
-		
-		contactDto.getOtherNotifications().get(contactDto.getOtherNotifications().size());
-		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
-		
-		return "operator/contacts/contactEdit.jsp";
-	}
-	
-	// DELETE ADDITIONAL CONTACT
-	@RequestMapping
+                                            ModelMap modelMap, 
+                                            YukonUserContext userContext,
+                                            FlashScope flashScope,
+                                            AccountInfoFragment accountInfoFragment) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
+        
+        contactDto.getOtherNotifications().get(contactDto.getOtherNotifications().size());
+        setupContactModel(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
+        
+        return "operator/contacts/contactEdit.jsp";
+    }
+    
+    // DELETE ADDITIONAL CONTACT
+    @RequestMapping
     public String deleteAdditionalContact(int deleteAdditionalContactId,
-										  ModelMap modelMap, 
-										  YukonUserContext userContext,
-										  FlashScope flashScope,
-										  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+                                          ModelMap modelMap, 
+                                          YukonUserContext userContext,
+                                          FlashScope flashScope,
+                                          AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
-		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		
-		LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
-		contactDao.deleteContact(deleteAdditionalContactId);
-		
-		// Log contact removal
-		String contactName = contact.getContFirstName()+" "+contact.getContLastName();
-		accountEventLogService.contactRemoved(userContext.getYukonUser(),
-		                                      accountInfoFragment.getAccountNumber(),
-		                                      contactName);
-		
-		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
-		return "redirect:contactList";
-	}
-	
-	// MISC MODEL ITEMS FOR CONTACT EDIT
-	public void setupContactEditModelMap(Integer contactId, 
-										 AccountInfoFragment accountInfoFragment,
-										 ModelMap modelMap, 
-										 YukonUserContext userContext) {
-		
-		// basics
-		setupContactBasicModelMap(contactId, accountInfoFragment, modelMap);
-		
-		ContactDto currentContactDto = operatorAccountService.getContactDto(contactId, userContext);
-		if (currentContactDto != null) {
-			modelMap.addAttribute("firstName", currentContactDto.getFirstName());
-			modelMap.addAttribute("lastName", currentContactDto.getLastName());
-		}
-		
-		// notification types
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		List<DisplayableContactNotificationType> notificationTypes = Lists.newArrayListWithCapacity(ContactNotificationType.values().length);
-		for (ContactNotificationType contactNotificationType : ContactNotificationType.values()) {
-			notificationTypes.add(new DisplayableContactNotificationType(contactNotificationType, messageSourceAccessor.getMessage(contactNotificationType.getFormatKey())));
-		}
-		modelMap.addAttribute("notificationTypes", notificationTypes);
-	}
-	
-	private void setupContactBasicModelMap(Integer contactId, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
-		
-		// contact
-		if (contactId != null && contactId > 0) {
-			modelMap.addAttribute("contactId", contactId);
-		
-			LiteYukonUser user = contactDao.getYukonUser(contactId);
-			if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
-			    modelMap.addAttribute("username", user.getUsername());
-			}
-		}
-		
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-	}
-	
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        
+        LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
+        contactDao.deleteContact(deleteAdditionalContactId);
+        
+        // Log contact removal
+        String contactName = contact.getContFirstName()+" "+contact.getContLastName();
+        accountEventLogService.contactRemoved(userContext.getYukonUser(),
+                                              accountInfoFragment.getAccountNumber(),
+                                              contactName);
+        
+        setupContactBasicModelMap(null, accountInfoFragment, modelMap);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
+        return "redirect:contactList";
+    }
+    
+    // MISC MODEL ITEMS FOR CONTACT EDITING/VIEWING
+    public void setupContactModel(Integer contactId, 
+                                         AccountInfoFragment accountInfoFragment,
+                                         ModelMap modelMap, 
+                                         YukonUserContext userContext) {
+        
+        // basics
+        setupContactBasicModelMap(contactId, accountInfoFragment, modelMap);
+        
+        ContactDto currentContactDto = operatorAccountService.getContactDto(contactId, userContext);
+        if (currentContactDto != null) {
+            modelMap.addAttribute("firstName", currentContactDto.getFirstName());
+            modelMap.addAttribute("lastName", currentContactDto.getLastName());
+        }
+        
+        // notification types
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<DisplayableContactNotificationType> notificationTypes = Lists.newArrayListWithCapacity(ContactNotificationType.values().length);
+        for (ContactNotificationType contactNotificationType : ContactNotificationType.values()) {
+            notificationTypes.add(new DisplayableContactNotificationType(contactNotificationType, messageSourceAccessor.getMessage(contactNotificationType.getFormatKey())));
+        }
+        modelMap.addAttribute("notificationTypes", notificationTypes);
+    }
+    
+    private void setupContactBasicModelMap(Integer contactId, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
+        
+        // contact
+        if (contactId != null && contactId > 0) {
+            modelMap.addAttribute("contactId", contactId);
+        
+            LiteYukonUser user = contactDao.getYukonUser(contactId);
+            if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
+                modelMap.addAttribute("username", user.getUsername());
+            }
+        }
+        
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+    }
+    
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
     }
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setCustomerDao(CustomerDao customerDao) {
-		this.customerDao = customerDao;
-	}
-	
-	@Autowired
-	public void setOperatorAccountService(OperatorAccountService operatorAccountService) {
-		this.operatorAccountService = operatorAccountService;
-	}
-	
-	@Autowired
-	public void setContactDao(ContactDao contactDao) {
-		this.contactDao = contactDao;
-	}
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
-	}
-	
-	@Autowired
-	public void setContactDtoValidator(ContactDtoValidator contactDtoValidator) {
-		this.contactDtoValidator = contactDtoValidator;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
+    
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+    
+    @Autowired
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+    
+    @Autowired
+    public void setOperatorAccountService(OperatorAccountService operatorAccountService) {
+        this.operatorAccountService = operatorAccountService;
+    }
+    
+    @Autowired
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setContactDtoValidator(ContactDtoValidator contactDtoValidator) {
+        this.contactDtoValidator = contactDtoValidator;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }

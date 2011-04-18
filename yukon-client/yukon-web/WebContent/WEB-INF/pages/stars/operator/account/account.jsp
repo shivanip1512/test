@@ -14,6 +14,7 @@
     <cti:url var="deleteUrl" value="/spring/stars/operator/account/deleteAccount">
         <cti:param name="accountId" value="${accountId}"/>
     </cti:url>
+    
     <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog" styleClass="mediumSimplePopup">
         <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
@@ -340,6 +341,17 @@
                 <tags:slowInput2 formId="updateForm" key="create" disableOtherButtons="true"/>
                 <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
             </cti:displayForPageEditModes>
+            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+            </cti:url>
+            <cti:button key="cancel" href="${viewUrl}"/>
+        </cti:displayForPageEditModes>
+        
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:url value="/spring/stars/operator/account/edit" var="editUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+            </cti:url>
+            <cti:button key="edit" href="${editUrl}"/>
         </cti:displayForPageEditModes>
 	    
 	</form:form>

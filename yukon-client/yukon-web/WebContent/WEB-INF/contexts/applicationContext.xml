@@ -1599,12 +1599,18 @@
     
     <bean name="availableMctPicker" class="com.cannontech.web.picker.v2.AvailableMctPicker"/>
     
-    <bean name="availableSwitchPicker" class="com.cannontech.web.picker.v2.AvailableSwitchPicker"/>
+    <bean name="availableSwitchPicker" class="com.cannontech.web.picker.v2.AvailableLmHardwarePicker">
+        <property name="hardwareClass" value="SWITCH"/>
+    </bean>
     
-    <bean name="availableThermostatPicker" class="com.cannontech.web.picker.v2.AvailableThermostatPicker"/>
+    <bean name="availableThermostatPicker" class="com.cannontech.web.picker.v2.AvailableLmHardwarePicker">
+        <property name="hardwareClass" value="THERMOSTAT"/>
+    </bean>
     
-    <bean name="availableZigbeeDevicePicker" class="com.cannontech.web.picker.v2.AvailableZigbeeDevicePicker"/>
-
+    <bean name="availableGatewayPicker" class="com.cannontech.web.picker.v2.AvailableLmHardwarePicker">
+        <property name="hardwareClass" value="GATEWAY"/>
+    </bean>
+    
     <bean name="applianceCategoryProgramPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
         <property name="sqlFilters">

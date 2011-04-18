@@ -15,6 +15,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -38,6 +40,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
@@ -53,6 +56,7 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
     private static final Logger log = YukonLogManager.getLogger(StarsInventoryBaseServiceImpl.class);
@@ -70,80 +74,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private LMHardwareBaseDao hardwareBaseDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatService thermostatService;
+    private InventoryDao inventoryDao;
+    private GatewayDeviceDao gatewayDeviceDao;
     
-    @Autowired
-    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
-        this.hardwareEventLogService = hardwareEventLogService;
-    }
-    
-    @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
-    }
-
-    @Autowired
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-
-    @Autowired
-    public void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-
-    @Autowired
-    public void setLmHardwareConfigurationDao(
-            LMHardwareConfigurationDao lmHardwareConfigurationDao) {
-        this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
-    }
-
-    @Autowired    
-    public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
-        this.hardwareEventDao = hardwareEventDao;
-    }
-
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-
-    @Autowired
-    public void setStarsTwoWayLcrYukonDeviceAssignmentService(StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService) {
-		this.starsTwoWayLcrYukonDeviceAssignmentService = starsTwoWayLcrYukonDeviceAssignmentService;
-	}
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-		this.yukonListDao = yukonListDao;
-	}
-    
-    @Autowired
-    public void setEnrollmentService(EnrollmentHelperService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
-        this.hardwareBaseDao = hardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-	}
-    
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService) {
-		this.thermostatService = thermostatService;
-	}
-
     // ADD DEVICE TO ACCOUNT
     @Override
     @Transactional
@@ -249,8 +182,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Override
     public void initStaticLoadGroup(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
         // get the static load group mapping
-        LiteStarsCustAccountInformation liteAcct = starsCustAccountInformationDao.getById(lmHw.getAccountID(),
-                                                                                          energyCompany.getEnergyCompanyId());
+        LiteStarsCustAccountInformation liteAcct = starsCustAccountInformationDao.getByAccountId(lmHw.getAccountID());
         LMHardwareConfiguration lmHwConfig = lmHardwareConfigurationDao.getStaticLoadGroupMapping(liteAcct,
                                                                                                  lmHw,
                                                                                                  energyCompany);
@@ -401,44 +333,56 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     // REMOVE DEVICE FROM ACCOUNT
     @Override
     @Transactional
-    public void removeDeviceFromAccount(LiteInventoryBase liteInv,
-            boolean deleteFromInventory, LiteStarsEnergyCompany energyCompany,
+    public void removeDeviceFromAccount(LiteInventoryBase liteInventory,
+            boolean deleteFromInventory, 
+            LiteStarsEnergyCompany energyCompany,
             LiteYukonUser user) {
         
-        // Unenroll the inventory from all its programs
-        if(InventoryUtils.isLMHardware(liteInv.getCategoryID())){
-            unenrollHardware(liteInv, user, energyCompany);
+        int inventoryId = liteInventory.getInventoryID();
+        InventoryIdentifier identifier = inventoryDao.getYukonInventory(inventoryId);
+        
+        boolean enrollable = identifier.getHardwareType().isEnrollable();
+        if (enrollable) {
+            // Unenroll the inventory from all its programs
+            unenrollHardware(liteInventory, user, energyCompany);
         }
         
         if (deleteFromInventory) {
-            starsInventoryBaseDao.deleteInventoryBase(liteInv.getInventoryID());
-
-            hardwareEventLogService.hardwareDeleted(user, liteInv.getDeviceLabel());
+            
+            starsInventoryBaseDao.deleteInventoryBase(inventoryId);
+            hardwareEventLogService.hardwareDeleted(user, liteInventory.getDeviceLabel());
+            
         } else {
-            long removeDate = liteInv.getRemoveDate();
+            int accountId = liteInventory.getAccountID();
+            long removeDate = liteInventory.getRemoveDate();
+            
             if (removeDate <= 0) {
                 removeDate = new Date().getTime();
             }
-            liteInv.setRemoveDate(removeDate);
+            liteInventory.setRemoveDate(removeDate);
 
             // add UnInstall hardware event
-            addUnInstallHardwareEvent(liteInv, energyCompany, user);
+            addUnInstallHardwareEvent(liteInventory, energyCompany, user);
 
             // Delete appliances for the account/inventory id
-            boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
-            if (lmHardware) {
-                applianceDao.deleteAppliancesByAccountIdAndInventoryId(liteInv.getAccountID(),
-                                                                       liteInv.getInventoryID());
+            if (enrollable) {
+                applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
             }
 
             // update the Inventory to remove it from the account
-            LiteInventoryBase liteInvDB = starsInventoryBaseDao.getByInventoryId(liteInv.getInventoryID());                
-            liteInvDB.setRemoveDate(removeDate);
-            starsInventoryBaseDao.removeInventoryFromAccount(liteInvDB);
+            starsInventoryBaseDao.removeInventoryFromAccount(inventoryId, removeDate);
+            
+            // cleaup gateway assignments for zigbee devices
+            HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
+            if (hardwareClass == HardwareClass.GATEWAY) {
+                gatewayDeviceDao.removeDevicesFromGateway(liteInventory.getDeviceID());
+            } else if (identifier.getHardwareType().isZigbee()) {
+                gatewayDeviceDao.unassignDeviceFromGateway(liteInventory.getDeviceID());
+            }
 
-            CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
-            hardwareEventLogService.hardwareRemoved(user, liteInv.getDeviceLabel(), 
-                                                    customerAccount.getAccountNumber());
+            // log removal
+            CustomerAccount account = customerAccountDao.getById(accountId);
+            hardwareEventLogService.hardwareRemoved(user, liteInventory.getDeviceLabel(), account.getAccountNumber());
         }
     }
 
@@ -474,4 +418,90 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
         hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());
     }
+    
+    /* Depenencies */
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
+    
+    @Autowired
+    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+        this.starsSearchDao = starsSearchDao;
+    }
+
+    @Autowired
+    public void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+
+    @Autowired
+    public void setStarsInventoryBaseDao(
+            StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+
+    @Autowired
+    public void setLmHardwareConfigurationDao(
+            LMHardwareConfigurationDao lmHardwareConfigurationDao) {
+        this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
+    }
+
+    @Autowired    
+    public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
+        this.hardwareEventDao = hardwareEventDao;
+    }
+
+    @Autowired
+    public void setApplianceDao(ApplianceDao applianceDao) {
+        this.applianceDao = applianceDao;
+    }
+
+    @Autowired
+    public void setStarsTwoWayLcrYukonDeviceAssignmentService(StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService) {
+        this.starsTwoWayLcrYukonDeviceAssignmentService = starsTwoWayLcrYukonDeviceAssignmentService;
+    }
+    
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setEnrollmentService(EnrollmentHelperService enrollmentService) {
+        this.enrollmentService = enrollmentService;
+    }
+
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+
+    @Autowired
+    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
+        this.hardwareBaseDao = hardwareBaseDao;
+    }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+    }
+    
+    @Autowired
+    public void setThermostatService(ThermostatService thermostatService) {
+        this.thermostatService = thermostatService;
+    }
+    
+    @Autowired
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
+    }
+    
+    @Autowired
+    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
+        this.gatewayDeviceDao = gatewayDeviceDao;
+    }
+    
 }

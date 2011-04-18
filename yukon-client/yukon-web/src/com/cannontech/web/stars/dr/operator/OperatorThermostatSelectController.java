@@ -18,6 +18,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @CheckRoleProperty({YukonRoleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL, YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT})
 @Controller
@@ -37,7 +40,13 @@ public class OperatorThermostatSelectController {
 		
 		
 		List<Thermostat> thermostats = inventoryDao.getThermostatsByAccountId(accountInfoFragment.getAccountId());
-		modelMap.addAttribute("thermostats", thermostats);
+		Iterable<Thermostat> schedualableThermostats = Iterables.filter(thermostats, new Predicate<Thermostat>() {
+            @Override
+            public boolean apply(Thermostat tstat) {
+                return tstat.getType().isSupportsSchedules();
+            }
+		});
+		modelMap.addAttribute("thermostats", Lists.newArrayList(schedualableThermostats));
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
 		return "operator/operatorThermostat/select.jsp";

@@ -37,6 +37,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private YukonUserDao yukonUserDao;
+    private InventoryIdentifierMapper inventoryIdentifierMapper;
 
     private SimpleTableAccessTemplate<InventoryConfigTask> dbTemplate;
     private final static FieldMapper<InventoryConfigTask> fieldMapper = new FieldMapper<InventoryConfigTask>() {
@@ -234,14 +235,14 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT icti.InventoryId InventoryId, yle.YukonDefinitionId YukonDefinitionId");
-        sql.append("FROM InventoryConfigTaskItem icti");
-        sql.append(  "JOIN LmHardwareBase lmhb ON lmhb.InventoryId = icti.InventoryId");
-        sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
+        sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
+        sql.append(  "JOIN InventoryConfigTaskItem icti on icti.InventoryId = i.InventoryId");
+        sql.append(  "LEFT JOIN LmHardwareBase h ON h.InventoryId = i.InventoryId");
+        sql.append(  "LEFT JOIN MeterHardwareBase m ON m.InventoryId = i.InventoryId");
         sql.append("WHERE icti.InventoryConfigTaskId").eq(taskId);
-        sql.append(  "AND Status").eq(status);
+        sql.append(  "AND icti.Status").eq(status);
         
-        return yukonJdbcTemplate.query(sql, new InventoryIdentifierMapper());
+        return yukonJdbcTemplate.query(sql, inventoryIdentifierMapper);
     }
 
     @Override
@@ -285,4 +286,10 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }
+    
+    @Autowired
+    public void setInventoryIdentifierMapper(InventoryIdentifierMapper inventoryIdentifierMapper) {
+        this.inventoryIdentifierMapper = inventoryIdentifierMapper;
+    }
+    
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.inventory.LMHardwareClass;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -101,7 +101,7 @@ public interface StarsInventoryBaseDao {
     /**
      * Removes a hardware device from the account.
      */
-    public void removeInventoryFromAccount(LiteInventoryBase liteInv);    
+    public void removeInventoryFromAccount(int inventoryId, long removeDate);
     
     /**
      * Deletes a hardware device from the inventory.  Deletes only the LM Hardware for now.
@@ -127,7 +127,7 @@ public interface StarsInventoryBaseDao {
     /**
      * Returns a list of DisplayableLmHardware's of the specified LMHardwareClass on this account.
      */
-    public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,LMHardwareClass lmHardwareClass);
+    public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,HardwareClass lmHardwareClass);
     
     /**
      * Returns the meter id if this switch is assigned to a meter, null if it is not.

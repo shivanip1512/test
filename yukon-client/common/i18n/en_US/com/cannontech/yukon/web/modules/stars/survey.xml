@@ -224,7 +224,7 @@
 <entry key="yukon.web.modules.dr.surveyList.addDialogTitle">Add Opt Out Survey</entry>
 
 <entry key="yukon.web.modules.dr.surveyEdit.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.ellipsis">...</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.ellipsis">…</entry>
 <entry key="yukon.web.modules.dr.surveyEdit.survey">Survey</entry>
 <entry key="yukon.web.modules.dr.surveyEdit.startDate">Start</entry>
 <entry key="yukon.web.modules.dr.surveyEdit.stopDate">End</entry>

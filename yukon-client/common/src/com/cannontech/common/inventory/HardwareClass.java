@@ -1,24 +1,24 @@
 package com.cannontech.common.inventory;
 
-public enum LMHardwareClass {
+public enum HardwareClass {
     SWITCH,
     THERMOSTAT,
     METER,
     GATEWAY;
     
     public boolean isSwitch() {
-        return (this == LMHardwareClass.SWITCH);
+        return (this == HardwareClass.SWITCH);
     }
     
     public boolean isMeter() {
-        return (this == LMHardwareClass.METER);
+        return (this == HardwareClass.METER);
     }
     
     public boolean isThermostat() {
-    	return (this == LMHardwareClass.THERMOSTAT);
+    	return (this == HardwareClass.THERMOSTAT);
     }
     
     public boolean isGateway() {
-    	return (this == LMHardwareClass.GATEWAY);
+    	return (this == HardwareClass.GATEWAY);
     }
 }

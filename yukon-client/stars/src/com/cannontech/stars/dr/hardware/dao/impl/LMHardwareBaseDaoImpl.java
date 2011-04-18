@@ -150,6 +150,18 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         return serialNumber;
     }
     
+    @Override
+    public String getSerialNumberForInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT HB.ManufacturerSerialNumber SerialNumber");
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN LMHardwareBase HB on HB.InventoryId = IB.InventoryId");
+        sql.append("WHERE IB.InventoryId").eq(inventoryId);
+        
+        String serialNumber = yukonJdbcTemplate.queryForString(sql);
+        return serialNumber;
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

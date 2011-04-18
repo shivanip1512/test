@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -41,8 +44,21 @@ public interface PaoDao {
      * @param category
      * @param paoClass
      * @return true when no object is found for paoName, category, paoClass
+     * @deprecated Use findUnique(String paoName, PaoCategory category, PaoClass paoClass)
      */
     public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass);
+    
+    /**
+     * Helper method to return a paobject that exist for the paoName, category, paoClass.
+     * These are the three fields that make up Unique Index Indx_PAO
+     * Returns null if no object exists, otherwise returns the liteYukonPaobject that was found.
+     * @param paoName
+     * @param category
+     * @param paoClass
+     * @return true when no object is found for paoName, category, paoClass
+     */
+    public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass);
+    
     /**
      * Returns a list of lite pao objects by type
      * 
@@ -130,4 +146,12 @@ public interface PaoDao {
     
     public PaoIdentifier getPaoIdentifierForPaoId(int paoId);
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
+
+    /**
+     * Returns true if the name is availabe for the pao type's pao class and pao category
+     * @param paoName
+     * @param paoType
+     * @return
+     */
+    boolean isNameAvailable(String paoName, PaoType paoType);
 }

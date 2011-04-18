@@ -18,10 +18,6 @@
 
 	</script>
 	
-	<form id="viewAllForm" action="/spring/stars/operator/callTracking/callList">
-		<input type="hidden" name="accountId" value="${accountId}">
-	</form>
-	
 	<form:form id="callReportUpdateForm" commandName="callReport" action="/spring/stars/operator/callTracking/updateCall">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
@@ -59,10 +55,34 @@
 		
 		<%-- buttons --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-    		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+    		
+            <tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url value="/spring/stars/operator/callTracking/view" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                    <cti:param name="callId" value="${callReport.callId}"/>
+                </cti:url>
+            </cti:displayForPageEditModes>
+        
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:url value="/spring/stars/operator/callTracking/callList" var="cancelUrl">
+                    <cti:param name="accountId" value="${accountId}"/>
+                </cti:url>
+            </cti:displayForPageEditModes>
+            
+            <cti:button key="cancel" href="${cancelUrl}"/>
+            
         </cti:displayForPageEditModes>
-		<tags:slowInput2 formId="viewAllForm" key="cancel"/>
 		
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:url value="/spring/stars/operator/callTracking/edit" var="editUrl">
+                <cti:param name="accountId" value="${accountId}"/>
+                <cti:param name="callId" value="${callReport.callId}"/>
+            </cti:url>
+            <cti:button key="edit" href="${editUrl}"/>
+        </cti:displayForPageEditModes>
+        
 	</form:form>
     
 </cti:standardPage>
