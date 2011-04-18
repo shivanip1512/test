@@ -7,7 +7,7 @@ import java.util.List;
  * This class implements a basic pattern for appending statements, arguments, 
  * and fragments together to form a larger another object that implements 
  * SqlFragmentSource. What makes this class interesting is that it defers
- * evaluating an appended fragment untilthe next append call is made.
+ * evaluating an appended fragment until the next append call is made.
  * 
  * This means you could create something like:
  * 
