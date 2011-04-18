@@ -335,6 +335,9 @@ public class GeneralInfoController {
         if (superUser) {
             LiteYukonUser ecAdminUser = starsDatabaseCache.getEnergyCompany(ecId).getUser();
             LiteYukonGroup group = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, ecAdminUser.getUserID());
+            if (group == null) {
+                return false;
+            }
             model.addAttribute("groupId", group.getGroupID());
             model.addAttribute("roleId", YukonRole.ENERGY_COMPANY.getRoleId());
         }
