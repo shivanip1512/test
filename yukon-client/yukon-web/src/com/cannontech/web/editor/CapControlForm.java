@@ -1736,12 +1736,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
 
 	//delegate to this class because generic class doesn't have to know about business rules	
-	public SelectItem[]  getControlMethods () {
+	public SelectItem[] getControlMethods () {
 	    List<SelectItem> controlMethods = Lists.newArrayList();
 	    for(ControlMethod controlMethod : ControlMethod.valuesForDisplay()) {
 	        controlMethods.add(new SelectItem(controlMethod, controlMethod.getDisplayName()));
 	    }
-	    return controlMethods.toArray(new SelectItem[1]);
+	    return controlMethods.toArray(new SelectItem[0]);
 	    
 	}
     

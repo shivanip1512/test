@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -44,6 +45,15 @@ public enum ControlMethod {
 	private boolean display;
 	private ControlAlgorithm defaultAlgorithm;
 	private Set<ControlAlgorithm> supportedAlgorithms;
+	private static List<ControlMethod> valuesForDisplay;
+	
+	static {
+	    ArrayList<ControlMethod> controlMethods = Lists.newArrayList();
+        for (ControlMethod controlMethod : values()) {
+            if(controlMethod.display) controlMethods.add(controlMethod);
+        }
+        valuesForDisplay = ImmutableList.copyOf(controlMethods);
+	}
 	
 	private ControlMethod(String displayName, boolean display, ControlAlgorithm defaultAlgorithm, ControlAlgorithm... supportedAlgorithms) {
 		this.displayName = displayName;
@@ -62,11 +72,7 @@ public enum ControlMethod {
 	}
 	
 	public static List<ControlMethod> valuesForDisplay() {
-	    ArrayList<ControlMethod> controlMethods = Lists.newArrayList();
-	    for (ControlMethod controlMethod : values()) {
-	        if(controlMethod.display) controlMethods.add(controlMethod);
-	    }
-	    return controlMethods;
+	    return valuesForDisplay;
 	}
 	
 	public String getDisplayName() {
