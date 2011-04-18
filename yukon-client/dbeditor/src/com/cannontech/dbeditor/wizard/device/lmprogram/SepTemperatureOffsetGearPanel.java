@@ -36,7 +36,7 @@ import com.klg.jclass.util.value.MutableValueModel;
 
 public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
 
-    private static final long serialVersionUID = 42L;
+    private static final long serialVersionUID = -3413404735483505763L;
     
     private JLabel heatingOffsetLabel = null;
     private JLabel coolingOffsetLabel = null;
@@ -46,8 +46,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     private JLabel howToStopLabel = null;
     private JLabel controlPercentLabel = null;
     private JButton temperatureUnitsButton = null;
-    private JCheckBox checkBoxRandomizeStart = null;
-    private JCheckBox checkBoxRandomizeStop = null;
+    private JCheckBox checkBoxRampIn = null;
+    private JCheckBox checkBoxRampOut = null;
     private JCSpinField heatingOffsetSpinField = null;
     private JCSpinField coolingOffsetSpinField = null;
     private JCSpinField criticalitySpinField = null;
@@ -327,24 +327,24 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         
     }
     
-    private JCheckBox getCheckBoxRandomizeStart() {
-        if (checkBoxRandomizeStart == null) {
-            checkBoxRandomizeStart = new JCheckBox();
-            checkBoxRandomizeStart.setText("Randomize Start");
-            checkBoxRandomizeStart.setPreferredSize(new Dimension(165, 23));
-            checkBoxRandomizeStart.setSelected(true);
+    private JCheckBox getCheckBoxRampIn() {
+        if (checkBoxRampIn == null) {
+            checkBoxRampIn = new JCheckBox();
+            checkBoxRampIn.setText("Ramp In");
+            checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampIn.setSelected(true);
         }
-        return checkBoxRandomizeStart;
+        return checkBoxRampIn;
     }
 
-    private JCheckBox getCheckBoxRandomizeStop() {
-        if (checkBoxRandomizeStop == null) {
-            checkBoxRandomizeStop = new JCheckBox();
-            checkBoxRandomizeStop.setText("Randomize Stop");
-            checkBoxRandomizeStop.setPreferredSize(new Dimension(165, 23));
-            checkBoxRandomizeStop.setSelected(true);
+    private JCheckBox getCheckBoxRampOut() {
+        if (checkBoxRampOut == null) {
+            checkBoxRampOut = new JCheckBox();
+            checkBoxRampOut.setText("Ramp Out");
+            checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampOut.setSelected(true);
         }
-        return checkBoxRandomizeStop;
+        return checkBoxRampOut;
     }
     
     private JCSpinField getJCSpinFieldHeatingOffset() 
@@ -359,7 +359,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                 heatingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
                 heatingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, null);
+                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, 0.0);
                 validator.setEditPattern("#0.0");
 
                 heatingOffsetSpinField.setDataProperties(new DataProperties(validator, 
@@ -389,7 +389,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                 coolingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
                 coolingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, null);
+                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, 0.0);
                 validator.setEditPattern("#0.0");
 
                 coolingOffsetSpinField.setDataProperties(new DataProperties(validator, 
@@ -704,10 +704,10 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         gear = (SepTemperatureOffsetGear) o;
 
         gear.getSettings().setCharAt(1, isFahrenheit?'F':'C');
-        
-        gear.setFrontRampEnabled(getCheckBoxRandomizeStart().isSelected());
-        gear.setBackRampEnabled(getCheckBoxRandomizeStop().isSelected());
 
+        gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
+        gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
+       
         gear.setHeatingOffset(toDouble(getJCSpinFieldHeatingOffset().getValue()));
         gear.setCoolingOffset(toDouble(getJCSpinFieldCoolingOffset().getValue()));
         
@@ -756,8 +756,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getJComboBoxWhenChange().addActionListener(this);
         getJComboBoxHowToStop().addActionListener(this);
         getJTextFieldChangeTriggerOffset().addCaretListener(this);
-        getCheckBoxRandomizeStart().addActionListener(this);
-        getCheckBoxRandomizeStop().addActionListener(this);
+        getCheckBoxRampIn().addActionListener(this);
+        getCheckBoxRampOut().addActionListener(this);
         getJButtonTemperatureUnits().addActionListener(this);
         
         heatingOffsetSpinField.addValueListener(new JCValueListener() {
@@ -776,9 +776,9 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             public void valueChanging(JCValueEvent arg0) { }
             @Override
             public void valueChanged(JCValueEvent arg0) {
-                if (((Number)arg0.getNewValue()).doubleValue() != 0.0)
+                if (toDouble(arg0.getNewValue()) != 0.0)
                 {
-                    getJCSpinFieldHeatingOffset().setValue((Double)0.0);
+                    getJCSpinFieldHeatingOffset().setValue(0.0);
                 }
             }
         });
@@ -786,10 +786,10 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
 
     private void initialize() {
         try {
-            setName("SepCycleGearPanel");
+            setName("SepTemperatureOffsetGearPanel");
     
-            GridBagConstraints constraintJCheckBoxRandomizeStart = new GridBagConstraints();
-            GridBagConstraints constraintJCheckBoxRandomizeStop = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxRampIn = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxRampOut = new GridBagConstraints();
             GridBagConstraints constraintJButtonTemperatureUnits = new GridBagConstraints();
             GridBagConstraints constraintJLabelHeatingOffset = new GridBagConstraints();
             GridBagConstraints constraintJCSpinFieldHeatingOffset = new GridBagConstraints();
@@ -805,17 +805,17 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             GridBagConstraints constraintJCSpinFieldPercentReduction = new GridBagConstraints();
             GridBagConstraints constraintJPanelChangeMethod = new GridBagConstraints();
             
-            constraintJCheckBoxRandomizeStart.insets = new Insets(0, 0, 0, 0);
-            constraintJCheckBoxRandomizeStart.gridwidth = 3;
-            constraintJCheckBoxRandomizeStart.anchor = GridBagConstraints.WEST;
-            constraintJCheckBoxRandomizeStart.gridy = 1;
-            constraintJCheckBoxRandomizeStart.gridx = 1;
+            constraintJCheckBoxRampIn.insets = new Insets(0, 0, 0, 0);
+            constraintJCheckBoxRampIn.gridwidth = 3;
+            constraintJCheckBoxRampIn.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxRampIn.gridy = 1;
+            constraintJCheckBoxRampIn.gridx = 1;
     
-            constraintJCheckBoxRandomizeStop.insets = new Insets(0, 0, 15, 0);
-            constraintJCheckBoxRandomizeStop.gridwidth = 3;
-            constraintJCheckBoxRandomizeStop.anchor = GridBagConstraints.WEST;
-            constraintJCheckBoxRandomizeStop.gridy = 2;
-            constraintJCheckBoxRandomizeStop.gridx = 1;
+            constraintJCheckBoxRampOut.insets = new Insets(0, 0, 15, 0);
+            constraintJCheckBoxRampOut.gridwidth = 3;
+            constraintJCheckBoxRampOut.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxRampOut.gridy = 2;
+            constraintJCheckBoxRampOut.gridx = 1;
             
             constraintJButtonTemperatureUnits.insets = new Insets(10, 0, 0, 10);
             constraintJButtonTemperatureUnits.anchor = GridBagConstraints.NORTHEAST;
@@ -891,8 +891,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             constraintJPanelChangeMethod.gridx = 1;
     
             setLayout(new GridBagLayout());
-            this.add(getCheckBoxRandomizeStart(), constraintJCheckBoxRandomizeStart);
-            this.add(getCheckBoxRandomizeStop(), constraintJCheckBoxRandomizeStop);
+            this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
             this.add(getJButtonTemperatureUnits(), constraintJButtonTemperatureUnits);
             this.add(getJButtonTemperatureUnits(), constraintJButtonTemperatureUnits);
             this.add(getJLabelHeatingOffset(), constraintJLabelHeatingOffset);
@@ -1032,8 +1032,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         } else
             gear = (SepTemperatureOffsetGear) o;
 
-        getCheckBoxRandomizeStart().setSelected(gear.isFrontRampEnabled());
-        getCheckBoxRandomizeStop().setSelected(gear.isBackRampEnabled());
+        getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
         
         getJCSpinFieldHeatingOffset().setValue(gear.getHeatingOffset());
         getJCSpinFieldCoolingOffset().setValue(gear.getCoolingOffset());

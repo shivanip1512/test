@@ -12,7 +12,7 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     
     public SepTemperatureOffsetGear() {
         super();
-        setControlMethod(GearControlMethod.SepTempOffset);
+        setControlMethod(GearControlMethod.SepTemperatureOffset);
     }
 
     public boolean isFrontRampEnabled() {

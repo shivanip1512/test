@@ -19,7 +19,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
 	SmartCycle(SmartCycleGear.class, "Smart Cycle"),
 	SepCycle(SepCycleGear.class, "SEP Cycle"),
-	SepTempOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
+	SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
 	MasterCycle(MasterCycleGear.class, "Master Cycle"),
 	Rotation(RotationGear.class, "Rotation"),
 	Latching(LatchingGear.class, "Latching"),

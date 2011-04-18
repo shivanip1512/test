@@ -248,7 +248,7 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 
             if(programType == PaoType.LM_SEP_PROGRAM) {
                 ivjJComboBoxGearType.addItem(GearControlMethod.SepCycle);
-                ivjJComboBoxGearType.addItem(GearControlMethod.SepTempOffset);
+                ivjJComboBoxGearType.addItem(GearControlMethod.SepTemperatureOffset);
                 ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);  
             } else {
 	            for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
@@ -256,7 +256,7 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 	            }
 	            // Remove SepCycle and SepTempOffset from the combobox for non SEP programs.
 	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
-	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepTempOffset);
+	            ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
@@ -384,7 +384,7 @@ public Object getValue(Object o)
 	    case SepCycle:
 	        obj = getSepCycleGearPanel().getValue(gear);
 	        break;
-	    case SepTempOffset:
+	    case SepTemperatureOffset:
 	        obj = getSepTemperatureOffsetGearPanel().getValue(gear);
 	       break;
 	    case MasterCycle: {
@@ -609,7 +609,7 @@ private void setGearType(GearControlMethod method)
     case SepCycle:
         getJScrollPane1().setViewportView(getSepCycleGearPanel());
         break;
-    case SepTempOffset:
+    case SepTemperatureOffset:
         getJScrollPane1().setViewportView(getSepTemperatureOffsetGearPanel());
         break;
     case TimeRefresh:
