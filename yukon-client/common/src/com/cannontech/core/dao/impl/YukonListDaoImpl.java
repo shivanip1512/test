@@ -360,11 +360,10 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      * sorting them.
      */
     private List<YukonListEntry> getAllListEntries(final YukonSelectionList selectionList) {
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectYukonListEntriesSql);
         sql.append("WHERE ListId").eq(selectionList.getListId());
-        
+
         if (selectionList.getOrdering() == YukonSelectionListOrder.ALPHABETICAL) {
             sql.append("ORDER BY EntryText");
         } else if (selectionList.getOrdering() == YukonSelectionListOrder.ENTRY_ORDER) {
@@ -372,9 +371,16 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         } else {
             sql.append("ORDER BY EntryId");
         }
-        
-        List<YukonListEntry> entryList = yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
-        return entryList;
+
+        // We're supporting different orderings anymore so convert them all to entry order.
+        List<YukonListEntry> entries = yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
+        selectionList.setOrdering(YukonSelectionListOrder.ENTRY_ORDER);
+        int index = 1;
+        for (YukonListEntry entry : entries) {
+            entry.setEntryOrder(index++);
+        }
+
+        return entries;
     }
     
     // DI Setters

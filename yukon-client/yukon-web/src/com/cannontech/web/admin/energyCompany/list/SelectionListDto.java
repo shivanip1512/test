@@ -107,19 +107,6 @@ public class SelectionListDto {
             entries.add(new Entry(entry.getEntryID(), entry.getEntryOrder(), entry.getEntryText(),
                                   entry.getYukonDefID()));
         }
-
-        Ordering<Entry> sorter = null;
-        if (selectionList.getOrdering() != YukonSelectionListOrder.ENTRY_ORDER) {
-            // We're not going to support different orderings anymore so convert them all to entry
-            // order.
-            sorter = new Ordering<Entry>() {
-                @Override
-                public int compare(Entry entry1, Entry entry2) {
-                    return entry1.text.compareToIgnoreCase(entry2.text);
-                }
-            }.nullsFirst();
-        }
-        sortEntries(sorter);
     }
 
     public int getListId() {
@@ -166,20 +153,18 @@ public class SelectionListDto {
         return entries;
     }
 
-    public void sortEntries(Ordering<Entry> sorter) {
-        if (sorter == null) {
-            sorter = new Ordering<Entry>() {
-                @Override
-                public int compare(Entry entry1, Entry entry2) {
-                    return entry1.order - entry2.order;
-                }
-            };
-        }
+    /**
+     * Resort entries by their entry order.  (Used in UI when entries come in from user out of
+     * order.
+     */
+    public void sortEntries() {
+        Ordering<Entry> sorter = new Ordering<Entry>() {
+            @Override
+            public int compare(Entry entry1, Entry entry2) {
+                return entry1.order - entry2.order;
+            }
+        };
         Collections.sort(entries, sorter);
-        int index = 1;
-        for (Entry entry : entries) {
-            entry.order = index++;
-        }
     }
 
     /**

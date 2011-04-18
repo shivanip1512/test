@@ -111,7 +111,7 @@ public class ListController {
         // are in the order they were originally added to the page...not the order specified.
         // Sort them so they match again.  (This is only strictly necessary when called from
         // validation errors but doesn't hurt otherwise.
-        list.sortEntries(null);
+        list.sortEntries();
 
         List<YukonDefinition> listDefinitions =
             selectionListService.getValidDefinitions(list.getEnergyCompanyId(), list.getType());
