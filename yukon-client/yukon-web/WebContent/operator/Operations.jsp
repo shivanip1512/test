@@ -313,23 +313,6 @@
             </tags:sectionLink>
         </c:if>
         
-		<cti:checkProperty property="operator.AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY">
-            <tags:sectionLink>
-            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
-            </tags:sectionLink>
-		</cti:checkProperty>
-        
-		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
-        	<tags:sectionLink>
-        		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
-            		<input type="hidden" name="action" value="DeleteEnergyCompany">
-            		<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
-
-          			<a href="javascript:confirmDelete()">Delete Energy Company</a>
-	        	</form>
-            </tags:sectionLink>
-		</cti:checkProperty>
-        
 		<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
             <tags:sectionLink>
             	<a href="Admin/SwitchCommands.jsp">View Batch Commands</a>

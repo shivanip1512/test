@@ -15,9 +15,6 @@ public abstract class StarsAdminActionController extends AbstractBaseActionContr
     public final String getRedirect(final HttpServletRequest request) throws Exception {
         String redirect = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REDIRECT);
         
-        if (redirect == null) {
-            redirect = request.getContextPath() + "/operator/Admin/ConfigEnergyCompany.jsp";
-        }
         redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         return redirect;
     }

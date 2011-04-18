@@ -20,50 +20,10 @@
         <property name="defaultRouteService" ref="defaultRouteService"/>
         <property name="energyCompanyService" ref="energyCompanyService"/>
     </bean>
-
-	<bean id="adminUpdateAddress" class="com.cannontech.web.stars.action.admin.UpdateAddressController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminUpdateEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateEnergyCompanyController" 
-          parent="starsAdminActionController"/>
 	
 	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController" 
           parent="starsAdminActionController">
 		<property name="switchContextService" ref="switchContextService"/>
 	</bean>
-
-	<bean id="adminUpdateSubstation" class="com.cannontech.web.stars.action.admin.UpdateSubstationController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminDeleteSubstation" class="com.cannontech.web.stars.action.admin.DeleteSubstationController" 
-          parent="starsAdminActionController"/>
-
-	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController" 
-          parent="starsAdminActionController">
-          <property name="transactionManager" ref="transactionManager"/>
-    </bean>      
-	
-	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController" 
-          parent="starsAdminActionController">
-        <property name="loginService" ref="loginService"/>
-    </bean>
-	
-	<bean id="adminUpdateRoutes" class="com.cannontech.web.stars.action.admin.UpdateRoutesController" 
-          parent="starsAdminActionController"/>
-
-	<bean id="adminMemberLogin" class="com.cannontech.web.stars.action.admin.MemberLoginController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminAddMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.AddMemberEnergyCompanyController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminUpdateMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateMemberEnergyCompanyController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminRemoveMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.RemoveMemberEnergyCompanyController" 
-          parent="starsAdminActionController"/>
-
-	<bean id="adminUpdateSettlementConfig" class="com.cannontech.web.stars.action.admin.UpdateSettlementConfigController" 
-          parent="starsAdminActionController"/>       
 
 </beans>
