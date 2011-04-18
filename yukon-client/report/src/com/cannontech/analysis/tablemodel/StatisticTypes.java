@@ -6,6 +6,7 @@ public enum StatisticTypes implements DatabaseRepresentationSource
 {
     DAILY("Daily"),
     HOURLY("Hourly"),
+    MONTHLY("Monthly"),
     LIFETIME("Lifetime");
     
     private String type;
