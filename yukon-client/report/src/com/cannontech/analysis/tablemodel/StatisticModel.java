@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.statistic.StatisticData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -179,21 +182,15 @@ public class StatisticModel extends ReportModelBase {
 	    sql.append(" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
 		if(getPaoIDs() != null)
 		{
-			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-	
-			for (int i = 1; i < getPaoIDs().length; i++)
-			{
-				sql.append("," + getPaoIDs()[i]);
-			}
-			sql.append(")");
+			sql.append(" AND PAO.PAOBJECTID").in(Arrays.asList(getPaoIDs()));
 		}
         
 		if( getPaoClass() != null )
-			sql.append(" AND PAOCLASS = '" + getPaoClass() +"' ");
+			sql.append(" AND PAOCLASS").eq(getPaoClass());
 		if (getCategory() != null)
-			sql.append(" AND PAO.CATEGORY = '" + getCategory() + "' "); 
+			sql.append(" AND PAO.CATEGORY").eq(getCategory()); 
 		if (getStatPeriodType() != null )
-			sql.append(" AND DPS.STATISTICTYPE='" + getStatPeriodType() + "' ");
+			sql.append(" AND DPS.STATISTICTYPE").eq(getStatPeriodType());
 		
 		// RESTRICT BY DEVICE/METER PAOID (if any)
         String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
@@ -248,18 +245,18 @@ public class StatisticModel extends ReportModelBase {
 	 * Return the category (YukonPaobject.Category)
 	 * @return String category.
 	 */
-	public String getCategory()
+	public PaoCategory getCategory()
 	{
 		switch (getStatType())
 		{
 			case STAT_CARRIER_COMM_DATA:
-				return PAOGroups.STRING_CAT_DEVICE;
+				return PaoCategory.DEVICE;
 			case STAT_COMM_CHANNEL_DATA:
-				return PAOGroups.STRING_CAT_PORT;
+				return PaoCategory.PORT;
 			case STAT_DEVICE_COMM_DATA:
-				return PAOGroups.STRING_CAT_DEVICE;
+				return PaoCategory.DEVICE;
 			case STAT_TRANS_COMM_DATA:
-				return PAOGroups.STRING_CAT_DEVICE;
+				return PaoCategory.DEVICE;
 			default:
 				return null;	
 		}
@@ -269,18 +266,18 @@ public class StatisticModel extends ReportModelBase {
 	 * Return the paoClass (YukonPaobject.PaoClass)
 	 * @return String paoClass
 	 */
-	public String getPaoClass()
+	public PaoClass getPaoClass()
 	{
 		switch (getStatType())
 		{
 			case STAT_CARRIER_COMM_DATA:
-				return DeviceClasses.STRING_CLASS_CARRIER;
+				return PaoClass.CARRIER;
 			case STAT_COMM_CHANNEL_DATA:
-				return PAOGroups.STRING_CAT_PORT;
+				return PaoClass.PORT;
 			case STAT_DEVICE_COMM_DATA:
 				return null;
 			case STAT_TRANS_COMM_DATA:
-				return DeviceClasses.STRING_CLASS_TRANSMITTER;
+				return PaoClass.TRANSMITTER;
 			default:
 				return null;	
 		}
