@@ -52,8 +52,8 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignPrograms.label">Add</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignProgramsDialogTitle">Add Program(s)</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.hoverText">Create a virtual program for this appliance category.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.label">Create Virtual</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.title">Create Virtual Program</entry>
