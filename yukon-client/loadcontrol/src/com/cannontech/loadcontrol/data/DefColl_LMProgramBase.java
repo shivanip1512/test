@@ -3,8 +3,6 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
@@ -76,8 +74,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	LMProgramBase lmProgramBase = (LMProgramBase) obj;
 	
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
-	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );
-	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );
+	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
+	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
 	String yukonName = (String) vstr.restoreObject( SimpleMappings.CString );
 	String yukonType = (String) vstr.restoreObject( SimpleMappings.CString );
 	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
@@ -105,8 +103,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     java.util.Vector controlWindowVector = CollectionExtracter.extractVector(vstr, polystr);
 
 	lmProgramBase.setYukonID(yukonID);
-	lmProgramBase.setYukonCategory(PaoCategory.valueOf(yukonCategory));
-	lmProgramBase.setYukonClass(PaoClass.getForDbString(yukonClass));
 	lmProgramBase.setYukonName(yukonName);
 	lmProgramBase.setYukonType(PaoType.getForDbString(yukonType));
 	lmProgramBase.setYukonDescription(yukonDescription);

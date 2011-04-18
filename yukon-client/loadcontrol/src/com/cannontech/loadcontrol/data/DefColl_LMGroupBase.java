@@ -3,8 +3,6 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
@@ -75,10 +73,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	LMGroupBase lmGroupBase = (LMGroupBase) obj;
 
 	lmGroupBase.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
-	String yukonCategoryStr = (String) vstr.restoreObject(SimpleMappings.CString);
-	lmGroupBase.setYukonCategory(PaoCategory.valueOf(yukonCategoryStr));
-	String yukonClassStr = (String) vstr.restoreObject(SimpleMappings.CString);
-	lmGroupBase.setYukonClass(PaoClass.getForDbString(yukonClassStr));
+	String yukonCategoryStr = (String) vstr.restoreObject(SimpleMappings.CString);	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
+	String yukonClassStr = (String) vstr.restoreObject(SimpleMappings.CString);	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
 	lmGroupBase.setYukonName( (String) vstr.restoreObject(SimpleMappings.CString) );
 	String yukonTypeStr = (String) vstr.restoreObject( SimpleMappings.CString);
 	lmGroupBase.setYukonType(PaoType.getForDbString(yukonTypeStr));

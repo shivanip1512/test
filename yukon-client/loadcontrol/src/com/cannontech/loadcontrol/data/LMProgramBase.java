@@ -3,8 +3,6 @@ package com.cannontech.loadcontrol.data;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -31,8 +29,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public static final int STATUS_TIMED_ACTIVE = 9;
 
 	private Integer yukonID = null;
-	private PaoCategory yukonCategory = null;
-	private PaoClass yukonClass = null;
 	private String yukonName = null;
 	private PaoType yukonType = null;
 	private String yukonDescription = null;
@@ -247,14 +243,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 
 	public abstract java.util.GregorianCalendar getStopTime();
 
-	public PaoCategory getYukonCategory() {
-		return yukonCategory;
-	}
-
-	public PaoClass getYukonClass() {
-		return yukonClass;
-	}
-
 	public java.lang.String getYukonDescription() {
 		return yukonDescription;
 	}
@@ -356,14 +344,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public void setStoppedControlling(
 			java.util.GregorianCalendar newStoppedControlling) {
 		stoppedControlling = newStoppedControlling;
-	}
-
-	public void setYukonCategory(PaoCategory newYukonCategory) {
-		yukonCategory = newYukonCategory;
-	}
-
-	public void setYukonClass(PaoClass newYukonClass) {
-		yukonClass = newYukonClass;
 	}
 
 	public void setYukonDescription(java.lang.String newYukonDescription) {

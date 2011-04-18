@@ -2,8 +2,6 @@ package com.cannontech.loadcontrol.data;
 
 import java.util.Vector;
 
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 
 public class LMControlArea implements ILMData, Cloneable {
@@ -19,8 +17,6 @@ public class LMControlArea implements ILMData, Cloneable {
 	public static final int STATE_CNTRL_ATTEMPT = 5;
 
 	private Integer yukonID = null;
-	private PaoCategory yukonCategory = null;
-	private PaoClass yukonClass = null;
 	private String yukonName = null;
 	private PaoType yukonType = null;
 	private String yukonDescription = null;
@@ -235,14 +231,6 @@ public class LMControlArea implements ILMData, Cloneable {
 		return updatedFlag;
 	}
 
-	public PaoCategory getYukonCategory() {
-		return yukonCategory;
-	}
-
-	public PaoClass getYukonClass() {
-		return yukonClass;
-	}
-
 	public java.lang.String getYukonDescription() {
 		return yukonDescription;
 	}
@@ -330,14 +318,6 @@ public class LMControlArea implements ILMData, Cloneable {
 
 	public void setUpdatedFlag(java.lang.Boolean newUpdatedFlag) {
 		updatedFlag = newUpdatedFlag;
-	}
-
-	public void setYukonCategory(PaoCategory newYukonCategory) {
-		yukonCategory = newYukonCategory;
-	}
-
-	public void setYukonClass(PaoClass newYukonClass) {
-		yukonClass = newYukonClass;
 	}
 
 	public void setYukonDescription(java.lang.String newYukonDescription) {

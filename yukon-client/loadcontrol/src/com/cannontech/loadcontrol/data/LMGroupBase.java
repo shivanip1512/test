@@ -1,7 +1,5 @@
 package com.cannontech.loadcontrol.data;
 
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 
 public abstract class LMGroupBase implements ILMData, Cloneable {
@@ -17,8 +15,6 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 			"Inactive Pending", "Active Pending" };
 
 	private Integer yukonID = null;
-	private PaoCategory yukonCategory = null;
-	private PaoClass yukonClass = null;
 	private String yukonName = null;
 	private PaoType yukonType = null;
 	private String yukonDescription = null;
@@ -96,14 +92,6 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 
 	public abstract String getStatistics();
 
-	public PaoCategory getYukonCategory() {
-		return yukonCategory;
-	}
-
-	public PaoClass getYukonClass() {
-		return yukonClass;
-	}
-
 	public java.lang.String getYukonDescription() {
 		return yukonDescription;
 	}
@@ -130,14 +118,6 @@ public abstract class LMGroupBase implements ILMData, Cloneable {
 
 	public void setKwCapacity(java.lang.Double newKwCapacity) {
 		kwCapacity = newKwCapacity;
-	}
-
-	public void setYukonCategory(PaoCategory newYukonCategory) {
-		yukonCategory = newYukonCategory;
-	}
-
-	public void setYukonClass(PaoClass newYukonClass) {
-		yukonClass = newYukonClass;
 	}
 
 	public void setYukonDescription(java.lang.String newYukonDescription) {
