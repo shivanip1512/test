@@ -839,7 +839,14 @@ table td .nameValueLogoImage {
     color: white; 
     font-weight: bold;
     text-align: center;
-    padding: 3px;
+}
+
+#cannonUpdaterErrorDiv .alert {
+    padding-top: 64px;
+    width: 64px;
+    position: absolute;
+    bottom: 0;
+    left: 10px;
 }
 
 .okGreen, .successMessage {
@@ -1252,6 +1259,7 @@ button.formSubmit,
 }
 
 button.formSubmit img {
+	padding-right: 3px;
 	vertical-align: top;
 }
 
@@ -1362,6 +1370,9 @@ select:focus {
     width: 16px;
     height: 1px;
     padding-top: 16px;
+    border: none;               /* mainly for inputs */
+    background: transparent;    /* mainly for inputs */
+    cursor: pointer;
 }
 
 .labeled_icon {
@@ -1370,6 +1381,16 @@ select:focus {
     float:left;
     line-height: 16px; /* since the 'icon' will be positioned top left */
     min-height: 16px; /* don't cut off the 'icon' */
+}
+
+.search_button {
+    background: transparent url(../Buttons/GoButtonGray.gif) top left no-repeat;
+    padding-top: 20px;
+    width: 23px;
+}
+
+.search_button:hover, .search_button:active {
+    background: transparent url(../Buttons/GoButton.gif) top left no-repeat;
 }
 
 .ENABLED {
@@ -1386,6 +1407,20 @@ select:focus {
 
 .icon_remove:hover {
     background: transparent url(../Icons/delete_over.png) top left no-repeat;
+}
+
+.icon_remove_disabled {
+    background: transparent url(../Icons/delete_disabled_gray.gif) top left no-repeat;
+    cursor: not-allowed;
+}
+
+.ex_large_icon {
+    padding-top: 64px;
+    width: 64px;
+}
+
+.alert {
+    background: url("http://cdn4.iconfinder.com/data/icons/softwaredemo/PNG/64x64/Warning.png") no-repeat scroll left top transparent;
 }
 
 .loading { background: transparent url(../Icons/indicator_arrows.gif) top left no-repeat; }
@@ -1436,6 +1471,7 @@ td.actions {
 }
 
 button.image {
+    padding: 0px !important;
     width: 16px;
     height: 16px;
 }

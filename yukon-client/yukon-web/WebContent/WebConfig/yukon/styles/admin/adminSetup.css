@@ -223,3 +223,7 @@ div.listContainer {
 #editListForm input[type='text'] {
     width: 300px;
 }
+
+#operatorLoginList {
+    max-height: 300px;
+}

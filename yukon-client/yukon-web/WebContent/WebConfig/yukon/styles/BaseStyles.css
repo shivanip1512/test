@@ -212,3 +212,11 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .tar{text-align:right}
 .fwb{font-weight:bold}
 .fwn{font-weight:normal}
+
+.vat {vertical-align:top;}
+.vam {vertical-align:middle;}
+.vab {vertical-align:bottom;}
+
+.scroll_y {
+    overflow-y: auto;
+}
