@@ -129,7 +129,12 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 /* Exclude non valid program enrollment (SEP hardware cannot be enrolled in DIRECT programs) */
                 PaoTag inventoryEnrollmentTag = inventoryIdentifier.getHardwareType().getHardwareConfigType().getEnrollmentTag();
                 PaoType programPaoType = program.getPaoType();
-                return paoDefinitionDao.isTagSupported(programPaoType, inventoryEnrollmentTag);
+                if (programPaoType == PaoType.SYSTEM && inventoryEnrollmentTag == PaoTag.DIRECT_PROGRAM_ENROLLMENT) {
+                    /* These are virtual programs, let devices with non-SEP enrollment support through */
+                    return true;
+                } else {
+                    return paoDefinitionDao.isTagSupported(programPaoType, inventoryEnrollmentTag);
+                }
             }
         };
         
