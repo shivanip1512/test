@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2011 3:15:23 PM                         */
+/* Created on:     4/15/2011 2:59:29 PM                         */
 /*==============================================================*/
 
 
@@ -2493,21 +2493,6 @@ create table DYNAMICDEVICESCANDATA  (
 );
 
 /*==============================================================*/
-/* Table: DYNAMICPAOSTATISTICSHISTORY                           */
-/*==============================================================*/
-create table DYNAMICPAOSTATISTICSHISTORY  (
-   PAObjectID           NUMBER(18,0)                    not null,
-   DateOffset           NUMBER(18,0)                    not null,
-   Requests             NUMBER(18,0)                    not null,
-   Completions          NUMBER(18,0)                    not null,
-   Attempts             NUMBER(18,0)                    not null,
-   CommErrors           NUMBER(18,0)                    not null,
-   ProtocolErrors       NUMBER(18,0)                    not null,
-   SystemErrors         NUMBER(18,0)                    not null,
-   constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset)
-);
-
-/*==============================================================*/
 /* Table: DYNAMICPOINTDISPATCH                                  */
 /*==============================================================*/
 create table DYNAMICPOINTDISPATCH  (
@@ -3950,17 +3935,26 @@ alter table DynamicPAOInfo
 /* Table: DynamicPAOStatistics                                  */
 /*==============================================================*/
 create table DynamicPAOStatistics  (
-   PAOBjectID           NUMBER                          not null,
+   DynamicPAOStatisticsId NUMBER                          not null,
+   PAOBjectId           NUMBER                          not null,
    StatisticType        VARCHAR2(16)                    not null,
+   StartDateTime        DATE                            not null,
    Requests             NUMBER                          not null,
-   Completions          NUMBER                          not null,
    Attempts             NUMBER                          not null,
+   Completions          NUMBER                          not null,
    CommErrors           NUMBER                          not null,
    ProtocolErrors       NUMBER                          not null,
    SystemErrors         NUMBER                          not null,
-   StartDateTime        DATE                            not null,
-   StopDateTime         DATE                            not null,
-   constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
+   constraint PK_DynPAOStat primary key (DynamicPAOStatisticsId)
+);
+
+/*==============================================================*/
+/* Index: Indx_DynPAOStat_PId_ST_SD_UNQ                         */
+/*==============================================================*/
+create unique index Indx_DynPAOStat_PId_ST_SD_UNQ on DynamicPAOStatistics (
+   PAOBjectId ASC,
+   StatisticType ASC,
+   StartDateTime ASC
 );
 
 /*==============================================================*/
@@ -10472,11 +10466,6 @@ alter table DYNAMICDEVICESCANDATA
    add constraint SYS_C0015139 foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
-alter table DYNAMICPAOSTATISTICSHISTORY
-   add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
-      on delete cascade;
-
 alter table DYNAMICPOINTDISPATCH
    add constraint SYS_C0013331 foreign key (POINTID)
       references POINT (POINTID);
@@ -10658,7 +10647,7 @@ alter table DynamicPAOInfo
       references YukonPAObject (PAObjectID);
 
 alter table DynamicPAOStatistics
-   add constraint FK_PASt_YkPA foreign key (PAOBjectID)
+   add constraint FK_DynPAOStat_PAO foreign key (PAOBjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 

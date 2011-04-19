@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/14/2011 3:27:19 PM                         */
+/* Created on:     4/19/2011 2:08:40 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -2644,22 +2644,6 @@ create table DYNAMICDEVICESCANDATA (
 go
 
 /*==============================================================*/
-/* Table: DYNAMICPAOSTATISTICSHISTORY                           */
-/*==============================================================*/
-create table DYNAMICPAOSTATISTICSHISTORY (
-   PAObjectID           numeric(18,0)        not null,
-   DateOffset           numeric(18,0)        not null,
-   Requests             numeric(18,0)        not null,
-   Completions          numeric(18,0)        not null,
-   Attempts             numeric(18,0)        not null,
-   CommErrors           numeric(18,0)        not null,
-   ProtocolErrors       numeric(18,0)        not null,
-   SystemErrors         numeric(18,0)        not null,
-   constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset)
-)
-go
-
-/*==============================================================*/
 /* Table: DYNAMICPOINTDISPATCH                                  */
 /*==============================================================*/
 create table DYNAMICPOINTDISPATCH (
@@ -4139,17 +4123,27 @@ go
 /* Table: DynamicPAOStatistics                                  */
 /*==============================================================*/
 create table DynamicPAOStatistics (
-   PAOBjectID           numeric              not null,
+   DynamicPAOStatisticsId numeric              not null,
+   PAOBjectId           numeric              not null,
    StatisticType        varchar(16)          not null,
+   StartDateTime        datetime             not null,
    Requests             numeric              not null,
-   Completions          numeric              not null,
    Attempts             numeric              not null,
+   Completions          numeric              not null,
    CommErrors           numeric              not null,
    ProtocolErrors       numeric              not null,
    SystemErrors         numeric              not null,
-   StartDateTime        datetime             not null,
-   StopDateTime         datetime             not null,
-   constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
+   constraint PK_DynPAOStat primary key (DynamicPAOStatisticsId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_DynPAOStat_PId_ST_SD_UNQ                         */
+/*==============================================================*/
+create unique index Indx_DynPAOStat_PId_ST_SD_UNQ on DynamicPAOStatistics (
+PAOBjectId ASC,
+StatisticType ASC,
+StartDateTime ASC
 )
 go
 
@@ -11213,12 +11207,6 @@ alter table DYNAMICDEVICESCANDATA
       references DEVICE (DEVICEID)
 go
 
-alter table DYNAMICPAOSTATISTICSHISTORY
-   add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
-go
-
 alter table DYNAMICPOINTDISPATCH
    add constraint SYS_C0013331 foreign key (POINTID)
       references POINT (POINTID)
@@ -11444,7 +11432,7 @@ alter table DynamicPAOInfo
 go
 
 alter table DynamicPAOStatistics
-   add constraint FK_PASt_YkPA foreign key (PAOBjectID)
+   add constraint FK_DynPAOStat_PAO foreign key (PAOBjectId)
       references YukonPAObject (PAObjectID)
          on delete cascade
 go
