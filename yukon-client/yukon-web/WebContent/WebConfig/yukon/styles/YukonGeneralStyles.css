@@ -1255,11 +1255,11 @@ button.formSubmit img {
 	vertical-align: top;
 }
 
-button.ajaxBusy {
+.ajaxBusy {
     padding-right: 0px;
 }
 
-button.ajaxBusy img {
+.ajaxBusy img {
     padding-left: 5px;
 }
 

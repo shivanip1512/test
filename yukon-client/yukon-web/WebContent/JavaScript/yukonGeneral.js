@@ -306,17 +306,14 @@ Object.extend(YEvent, {
     },
     
     markBusy: function(element) {
-        var spinner = document.createElement("span");
-        spinner.innerHTML = "<img src=\"/WebConfig/yukon/Icons/indicator_arrows.gif\">";
         var disabledElement = element.cloneNode(true);
-        disabledElement.addClassName('ajaxBusy');
+        disabledElement.addClassName('ajaxBusy icon loading');
         try {
             disabledElement.disable();
             element.blur();
         } catch (e) {
             disabledElement.innerHTML = '';
         }
-        disabledElement.appendChild(spinner);
 
         element.insert({before: disabledElement});
         element.hide();

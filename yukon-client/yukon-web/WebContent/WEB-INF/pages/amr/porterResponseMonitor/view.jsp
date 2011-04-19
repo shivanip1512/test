@@ -11,14 +11,15 @@
         Event.observe(window, "load", function() {
             var totalGroupCountSpan = $('totalGroupCount');
             var supportedDevicesMsgSpan = $('supportedDevicesMsg');
-            
-            YEvent.markBusy(totalGroupCountSpan);
-            YEvent.markBusy(supportedDevicesMsgSpan);
+
+            totalGroupCountSpan.addClassName('icon loading');
+            supportedDevicesMsgSpan.addClassName('icon loading');
+            $('supportedDevicesHelpIcon').hide();
     
             new Ajax.Request("getCounts",{
                 parameters: {'monitorId': ${monitorDto.monitorId}},
                 onComplete: function(transport) {
-                    var json = transport.responseText.evalJSON();
+                    var json = transport.responseJSON;
 
                     var totalGroupCount = json.totalGroupCount;
                     var supportedDevicesMsg = json.supportedDevicesMessage;
@@ -35,8 +36,9 @@
                         }
                     }
 
-                    YEvent.unmarkBusy(totalGroupCountSpan);
-                    YEvent.unmarkBusy(supportedDevicesMsgSpan);
+                    totalGroupCountSpan.removeClassName('icon loading');
+                    supportedDevicesMsgSpan.removeClassName('icon loading');
+                    $('supportedDevicesHelpIcon').show();
                 }
             });
         });
@@ -91,7 +93,7 @@
 
             <%-- Device Count --%>
             <tags:nameValue2 nameKey=".deviceCount">
-                <span id="totalGroupCount"></span>
+                <span id="totalGroupCount"></span>&nbsp
             </tags:nameValue2>
 
             <%-- Supported Devices --%>
@@ -104,7 +106,7 @@
                     <span> - </span>
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
                 </span>
-                <cti:img id="supportedDevicesHelpIcon" key="help" styleClass="pointer hoverableImage nameValueLogoImage" />
+                <cti:img id="supportedDevicesHelpIcon" key="help" styleClass="pointer hoverableImage nameValueLogoImage" />&nbsp
             </tags:nameValue2>
 
 			<%-- enable/disable monitoring --%>

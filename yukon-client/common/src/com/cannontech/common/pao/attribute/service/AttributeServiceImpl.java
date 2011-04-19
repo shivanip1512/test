@@ -151,11 +151,11 @@ public class AttributeServiceImpl implements AttributeService {
         Collection<PaoType> collection = dest.get(attribute);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid, ypo.type");
+        sql.append("SELECT YPO.paobjectid, YPO.type");
         sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.type").in(collection);
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.paObjectId");
+        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+        sql.append("WHERE YPO.type").in(collection);
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
 
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
