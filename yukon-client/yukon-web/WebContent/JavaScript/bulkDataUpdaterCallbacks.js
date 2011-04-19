@@ -13,9 +13,12 @@ function updateProgressBar(pbarId, totalCount, completionCallback) {
         }
         
         try {
-            $('progressInner_' + pbarId).style.width = percentDone + 'px';
-            $('completedCount_' + pbarId).innerHTML = completedCount; 
-            $('percentComplete_' + pbarId).innerHTML = percentDone + '%'; 
+            var innerWidth = getBarWidth(pbarId, completedCount, totalCount);
+            
+            var progressContainer = $('progressContainer_' + pbarId);
+            progressContainer.down('.progressBarInner').style.width = innerWidth + 'px';
+            progressContainer.down('.progressBarPercentComplete').innerHTML = percentDone + '%';
+            progressContainer.down('.progressBarCompletedCount span').innerHTML = completedCount;
         } catch(e) {}
         
         // completionCallback
@@ -25,11 +28,57 @@ function updateProgressBar(pbarId, totalCount, completionCallback) {
     };
 }
 
+function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback) {
+    // assumes data is of type Hash
+    return function(data) {
+        var successCompletedCount = data.get('successCompletedCount');
+        var failureCompletedCount = data.get('failureCompletedCount');
+        var totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
+
+        var percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
+        if (totalCount == 0) {
+            percentDone = 100;
+        }
+
+        try {
+            var successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
+            var failureWidth = getBarWidth(pbarId, totalCompletedCount, totalCount);
+            
+            var progressContainer = $('progressContainer_' + pbarId);
+            progressContainer.down('.progressBarInnerSuccess').style.width = successWidth + 'px';
+            progressContainer.down('.progressBarInnerFailure').style.width = failureWidth + 'px';
+            progressContainer.down('.progressBarCompletedCount span').innerHTML = totalCompletedCount;
+            progressContainer.down('.progressBarPercentComplete').innerHTML = percentDone + '%';
+        } catch (e) {}
+
+        // completionCallback
+        if (completionCallback != null && percentDone == 100) {
+            completionCallback();
+        }
+    };
+}
+
+function getBarWidth(pbarId, completed, total) {
+    var progressBorder = $('progressContainer_' + pbarId).down('.progressBarBorder');
+    var width = Math.ceil(progressBorder.measure('width'));
+    var percentDecimal = parseFloat(completed / total);
+    var length = Math.ceil(percentDecimal * width)
+    return length;
+}
+
 function abortProgressBar(pbarId) {
   //assumes data is of type Hash
     return function(data) {
         if (data.get('isAborted') == 'true') {
-            $('progressBorder_' + pbarId).style.backgroundImage = "url('/WebConfig/yukon/Icons/progressbar_red.gif')";
+            var progressContainer = $('progressContainer_' + pbarId);
+
+            // Check if we are a normal progress bar or success / fail progress bar
+            if (progressContainer.down('.progressBarInner') != null) {
+                progressContainer.down('.progressBarInner').addClassName('progressBarInnerFailure');
+                progressContainer.down('.progressBarInner').setStyle({width: '100%'});
+            } else {
+                progressContainer.down('.progressBarInnerFailure').setStyle({width: '100%'});
+            }
         }
     };
 }

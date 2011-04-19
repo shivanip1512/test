@@ -846,6 +846,7 @@
     
     <bean id="scheduledGroupRequestExecutionBackingService" class="com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionBackingService"/>
     <bean id="lastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastRunDateForJobScheduledGroupRequestExecutionUpdaterHandler"/>
+    <bean id="lastTooltipForJobUpdateHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastTooltipForJobUpdateHandler"/>
     <bean id="lastRequestCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastRequestCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>
     <bean id="lastSuccessResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastSuccessResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>
     <bean id="lastFailureResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastFailureResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>

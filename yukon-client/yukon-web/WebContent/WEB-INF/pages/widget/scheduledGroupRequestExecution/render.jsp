@@ -29,20 +29,36 @@
 	        var state = data.get('state');
 	        if (state == 'DISABLED') {
 				trEl.className = 'subtleGray';
-				$('disableTd_' + jobId).hide();
-				$('enableTd_' + jobId).show();
+                $('disableSpan_' + jobId).hide();
+                $('enableSpan_' + jobId).show();
+
+                $('jobRunningSpan_' + jobId).hide();
+                $('jobNotRunningSpan_' + jobId).show();
 	        } else if (state == 'RUNNING') {
 	        	trEl.className = 'okGreen';
-	        	$('disableTd_' + jobId).hide();
-				$('enableTd_' + jobId).hide();
+                $('disableSpan_' + jobId).hide();
+                $('enableSpan_' + jobId).hide();
+
+                $('jobRunningSpan_' + jobId).show();
+                $('jobNotRunningSpan_' + jobId).hide();
 	        } else if (state == 'ENABLED') {
 				trEl.className = '';
-                $('disableTd_' + jobId).show();
-				$('enableTd_' + jobId).hide();
+                $('disableSpan_' + jobId).show();
+                $('enableSpan_' + jobId).hide();
+
+                $('jobRunningSpan_' + jobId).hide();
+                $('jobNotRunningSpan_' + jobId).show();
 	        }
 	    };
 	} 
 
+    function buildTooltipText(elementId) {
+        //assumes data is of type Hash
+        return function(data) {
+            var tooltipText = data.get('tooltip');
+            setTooltipText(elementId, tooltipText);
+        };
+    }
 </script>
     
     
@@ -104,25 +120,37 @@
 			
 			<%-- schedule description --%>
 			<td style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
-			
-			<%-- status --%>
-			<td title="${jobWrapper.job.id}">
-				<cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
-			</td>
-			
-			<%-- delete --%>
+
+            <%-- status --%>
+            <td id="status_${jobWrapper.job.id}">
+                <span id="jobNotRunningSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
+                </span>
+                <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
+                    <tags:updateableProgressBar totalCount="${jobWrapper.latestRequestCount}"
+                        countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
+                        failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
+                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+                </span>
+            </td>
+
+            <%-- delete --%>
 			<c:if test="${canManage}">
-			
-				<td id="disableTd_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if> style="text-align:right;">
-					<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title="${disableText} (${jobWrapper.name})"/>
-				</td>
-				
-				<td id="enableTd_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if> style="text-align:right;">
-					<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
-				</td>
+                <td style="text-align:right;">
+                    <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title="${disableText} (${jobWrapper.name})"/>
+                    </span>
+                    <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
+                    </span>
+                </td>
 			</c:if>
 					
 		</tr>
+
+        <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"
+            tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_TOOLTIP_TEXT_FOR_JOB" />
+
         <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>   
 	</c:forEach>
 

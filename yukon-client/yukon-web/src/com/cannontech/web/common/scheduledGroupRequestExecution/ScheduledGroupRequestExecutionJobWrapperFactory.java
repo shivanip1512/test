@@ -46,8 +46,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		private YukonUserContext userContext;
 		
 		private ScheduledGroupRequestExecutionTask task;
-		private int creCount;
-		
+        private int creCount;
+        private int latestRequestCount;
+
 		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
 			
 			this.job = job;
@@ -55,6 +56,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			
 			this.task = (ScheduledGroupRequestExecutionTask)jobManager.instantiateTask(this.job);
 	        this.creCount = scheduledGroupRequestExecutionDao.getDistinctCreCountByJobId(this.job.getId(), startTime, stopTime);
+            this.latestRequestCount = scheduledGroupRequestExecutionDao.getLatestRequestCountByJobId(this.job.getId());
 		}
 		
 		public ScheduledRepeatingJob getJob() {
@@ -129,7 +131,12 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		public int getCreCount() {
 			return creCount;
 		}
-		
+
+        public int getLatestRequestCount() {
+            this.latestRequestCount = scheduledGroupRequestExecutionDao.getLatestRequestCountByJobId(this.job.getId());
+            return this.latestRequestCount;
+        }
+
 		public String getScheduleDescription() {
 			return cronExpressionTagService.getDescription(this.job.getCronString(), this.userContext);
 		}

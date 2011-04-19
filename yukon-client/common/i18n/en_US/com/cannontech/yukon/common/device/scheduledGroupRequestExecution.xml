@@ -49,6 +49,8 @@
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.infoLink">Scheduled Requests Information</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.title">Scheduled Requests</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
     
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->

@@ -411,6 +411,10 @@ function generateMessageCode(prefix, input) {
     return prefix + input.replace(/\W+/g, '');
 }
 
+function setTooltipText(elementId, text) {
+    $(elementId).title = text;
+}
+
 /**
  * This function takes in an inputElement and an inputType and changes the
  * current node over to the desired type.

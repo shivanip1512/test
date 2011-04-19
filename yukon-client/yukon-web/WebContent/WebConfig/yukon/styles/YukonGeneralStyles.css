@@ -926,18 +926,48 @@ table.collectionActionCellPadding td {
     padding-right: 30px;
 }
 
+/*Default Progress Bar classes - start */
+div.progressBar .box {
+    margin-right: 5px;
+}
 div.progressBarBorder {
-    height:12px; width:102px; border:1px solid black; padding:0px; background-color:#CCCCCC;
+    height: 12px;
+    width: 102px;
+    border: 1px solid black;
+    background-color: #ECECEC;
 }
-div.progressBarInner {
-    height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633; background-image:url('/WebConfig/yukon/Icons/progressbar_green.gif');
+div.progressBarInnerSuccess,
+div.progressBarInnerFailure {
+    position: absolute;
 }
-span.progressBarPercentComplete {
-    padding-left:6px;padding-right:10px;display:inline;font-size:11px;
+div.progressBarInner,
+div.progressBarInnerSuccess,
+div.progressBarInnerFailure {
+    height: 12px;
+    width: 0px;
 }
-span.progressBarCompletedCount {
-    font-size:11px;display:inline;
+div.progressBarInner,
+div.progressBarInnerSuccess {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#529252', endColorstr='#3A7448'); /*for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#3A7448), color-stop(0.1, #529252), color-stop(0.50, #3A7448), color-stop(0.90, #529252), to(#3A7448)); /* for webkit browsers */
+    background: -moz-linear-gradient(top, #3A7448, #3A7448 10%, #529252, #3A7448 50%, #529252 90%, #3A7448); /* for firefox 3.6+ */
 }
+div.progressBarInnerFailure {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#BF0F12', endColorstr='#8C0C10'); /*for IE*/
+    background: -webkit-gradient(linear, left top, left bottom, from(#8C0C10), color-stop(0.1, #BF0F12), color-stop(0.50, #8C0C10), color-stop(0.90, #BF0F12), to(#8C0C10)); /* for webkit browsers */
+    background: -moz-linear-gradient(top, #8C0C10, #8C0C10 10%, #BF0F12, #8C0C10 50%, #BF0F12 90%, #8C0C10); /* for firefox 3.6+ */
+}
+div.progressBarPercentComplete,
+div.progressBarCompletedCount {
+    font-size: 11px;
+}
+/*Default Progress Bar classes - end */
+
+/* Custom Progress Bar classes - start*/
+div.progressBar div.scheduledRequestProgressBarBorder {
+    width: 55px;
+}
+/* Custom Progress Bar classes - end*/
 
 h3.indentedElementHeading {
     margin: 15px 0 0 0;
