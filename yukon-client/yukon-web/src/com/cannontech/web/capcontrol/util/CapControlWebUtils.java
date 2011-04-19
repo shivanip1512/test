@@ -30,16 +30,15 @@ import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 
 public class CapControlWebUtils {
-    
-    private static Builder<ControlAlgorithm> builder = ImmutableSet.builder();
-    private static ImmutableSet<ControlAlgorithm> noToolTipAlgorithms = builder.add(ControlAlgorithm.VOLTS,
-                                                    ControlAlgorithm.MULTI_VOLT,
-                                                    ControlAlgorithm.MULTI_VOLT_VAR,
-                                                    ControlAlgorithm.TIME_OF_DAY).build();
-    
+
+    private final static ImmutableSet<ControlAlgorithm> noToolTipAlgorithms =
+        ImmutableSet.of(ControlAlgorithm.VOLTS,
+                        ControlAlgorithm.MULTI_VOLT,
+                        ControlAlgorithm.MULTI_VOLT_VAR,
+                        ControlAlgorithm.TIME_OF_DAY);
+
     public static List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
         List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
         PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);

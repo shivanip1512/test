@@ -211,7 +211,7 @@
                         <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                         <c:choose>
                             <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
-                                <a <c:if test="${viewableSubBus.showTargetTooltip}">
+                                <span <c:if test="${viewableSubBus.showTargetTooltip}">
                                         onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
                                         onmouseout="nd();"
                                     </c:if>>
@@ -228,7 +228,7 @@
                                             <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
                                         </c:otherwise>
                                     </c:choose>
-                                </a>
+                                </span>
                             </c:when>
                             <c:otherwise>
                                 <span class="updatingSpan">
@@ -434,7 +434,7 @@
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <c:choose>
                             <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
-                                <a <c:if test="${viewfeeder.showTargetTooltip}">
+                                <span <c:if test="${viewfeeder.showTargetTooltip}">
                                         onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
                                         onmouseout="nd();"
                                     </c:if>>
@@ -457,7 +457,7 @@
                                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" />
                                         </c:otherwise>
                                     </c:choose>
-                                </a>
+                                </span>
                             </c:when>
                             <c:otherwise>
                                <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
