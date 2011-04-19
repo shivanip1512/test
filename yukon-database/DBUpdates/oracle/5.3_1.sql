@@ -204,6 +204,13 @@ END;
 /
 /* End YUK-9647 */
 
+/* Start YUK-9723 */ 
+DELETE FROM DeviceTapPagingSettings 
+WHERE DeviceId IN (SELECT PAObjectId 
+                    FROM YukonPAObject 
+                    WHERE type='TNPP TERMINAL'); 
+/* End YUK-9723 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
