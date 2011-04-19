@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.model.ZigbeeGateway;
 
 public interface GatewayDeviceDao {
     
+    public ZigbeeGateway getZigbeeGateway(int gatewayId);
     public DigiGateway getDigiGateway(int deviceId);
     
     public void createDigiGateway(DigiGateway digiGateway);
@@ -35,9 +37,19 @@ public interface GatewayDeviceDao {
 
     /**
      * Returns the gateway id for the given device id or null if the device is not assigned to a gateway
+     * 
+     * @param deviceId
+     * @return
      */
     public Integer findGatewayIdForDeviceId(int deviceId);
 
     public List<DigiGateway> getGatewaysForAccount(int accountId);
     
+    /**
+     * Returns a list of gateways for devices assigned the the LM Group with groupId.
+     * 
+     * @param groupId
+     * @return
+     */
+    public List<ZigbeeGateway> getZigbeeGatewaysForGroupId(int groupId);
 }

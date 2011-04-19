@@ -5,8 +5,8 @@ import org.jdom.Element;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.optout.CancelOptOutHelper;
-import com.cannontech.yukon.api.util.YukonXml;
 
 
 public class CancelOverrideRequestMapper implements ObjectMapper<Element, CancelOptOutHelper> {

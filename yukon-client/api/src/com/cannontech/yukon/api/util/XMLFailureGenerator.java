@@ -13,6 +13,7 @@ import org.jdom.Namespace;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 
 public class XMLFailureGenerator {
 

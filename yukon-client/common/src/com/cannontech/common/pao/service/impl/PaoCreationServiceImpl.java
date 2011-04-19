@@ -1,24 +1,15 @@
 package com.cannontech.common.pao.service.impl;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.service.PaoCreationService;
 import com.cannontech.common.pao.service.PaoTemplate;
 import com.cannontech.common.pao.service.PaoTemplatePart;
 import com.cannontech.common.pao.service.providers.fields.NullFields;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableList;
@@ -28,9 +19,7 @@ import com.google.common.collect.Ordering;
 public class PaoCreationServiceImpl implements PaoCreationService {
 
     private PaoDao paoDao;
-    private PaoDefinitionService paoDefinitionService;
-    private PointDao pointDao;
-    private DBPersistentDao dbPersistentDao;
+    private PaoCreationHelper paoCreationHelper;
     private ImmutableList<PaoCreationTypeProvider<?>> providers;
 
     @Override
@@ -54,11 +43,10 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         }
         
         // Create and Add points
-        List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(paoIdentifier);
-        applyPoints(paoIdentifier, pointsToCreate);
+        paoCreationHelper.addDefaultPointsToPao(paoIdentifier);
         
-        // Send db change message
-        processDbChange(paoIdentifier);
+        // Send DB change message
+        paoCreationHelper.processDbChange(paoIdentifier, DbChangeType.ADD);
         
         return paoIdentifier;
     }
@@ -76,54 +64,14 @@ public class PaoCreationServiceImpl implements PaoCreationService {
         }
     }
     
-    private void applyPoints(PaoIdentifier paoIdentifier, List<PointBase> pointsToCreate) {
-        
-        int paoId = paoIdentifier.getPaoId();
-        
-        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
-        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
-
-        for (PointBase point : pointsToCreate) {
-        
-            int nextPointId = pointDao.getNextPointId();
-            point.setPointID(nextPointId);
-            point.getPoint().setPaoID(paoId);
-            
-            newPoints.add(point);
-        }
-        
-        // Insert into DB
-        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
-    }
-    
-    private void processDbChange(PaoIdentifier paoIdentifier) {
-
-        DBChangeMsg msg = new DBChangeMsg(paoIdentifier.getPaoId(),
-                                          DBChangeMsg.CHANGE_PAO_DB,
-                                          paoIdentifier.getPaoType().getPaoCategory().name(),
-                                          paoIdentifier.getPaoType().getDbString(),
-                                          DbChangeType.ADD );
-        dbPersistentDao.processDBChange(msg);
-    }
-    
     @Autowired
-    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
+    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
     }
     
     @Autowired
     public void setPaoCreationTypeProviders(List<PaoCreationTypeProvider<?>> providers) {
         this.providers = ImmutableList.copyOf(Ordering.natural().sortedCopy(providers));
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
     }
     
     @Autowired

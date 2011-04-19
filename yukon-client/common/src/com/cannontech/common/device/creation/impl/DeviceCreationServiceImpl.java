@@ -3,7 +3,6 @@ package com.cannontech.common.device.creation.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -32,13 +30,9 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.PlcAddressRangeService;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
@@ -47,11 +41,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private PaoDao paoDao = null;
     private PointDao pointDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
-    private DBPersistentDao dbPersistentDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private PaoDefinitionService paoDefinitionService = null;
     private PlcAddressRangeService plcAddressRangeService;
+    private PaoCreationHelper paoCreationHelper;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -74,18 +67,18 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'", newDeviceName, templateName), e);
         }
 
-        // COPY POINTS
-        if (copyPoints) {
-
-            List<PointBase> points = this.getPointsForPao(templateDeviceId);
-            this.applyPoints(newDevice, points);
-        }
-        // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
-        processDeviceDbChange(newDevice);
-
         // MAKE new, template YukonDevice
         newYukonDevice.setDeviceId(newDeviceId);
         newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
+
+        // COPY POINTS
+        if (copyPoints) {
+            List<PointBase> points = this.getPointsForPao(templateDeviceId);
+            paoCreationHelper.applyPoints(newDeviceId, points);
+        }
+        
+        // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
+        paoCreationHelper.processDbChange(newYukonDevice, DbChangeType.ADD);
 
         SimpleDevice templateYukonDevice = new SimpleDevice();
         templateYukonDevice.setDeviceId(templateDeviceId);
@@ -124,17 +117,16 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             Transaction.createTransaction(TransactionType.INSERT, newDevice).execute();
             
-            // db change msg
-            processDeviceDbChange(newDevice);
-            
             // MAKE YukonDevice
             yukonDevice.setDeviceId(newDeviceId);
             yukonDevice.setType(deviceType);
+
+            // db change msg
+            paoCreationHelper.processDbChange(yukonDevice, DbChangeType.ADD);
             
             // CREATE POINTS
             if (createPoints) {
-                List<PointBase> points = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
-                this.applyPoints(newDevice, points);
+                paoCreationHelper.addDefaultPointsToPao(yukonDevice);
             }
             
         }
@@ -176,27 +168,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             deviceGroupMemberEditorDao.addDevices(templateGroup, newDevice);
         }
     }
-    
-    private void applyPoints(DeviceBase device, List<PointBase> points) {
-        
-        int deviceId = device.getPAObjectID();
-        
-        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
-        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
 
-        for (PointBase point : points) {
-        
-            int nextPointId = pointDao.getNextPointId();
-            point.setPointID(nextPointId);
-            point.getPoint().setPaoID(deviceId);
-            
-            newPoints.add(point);
-        }
-        
-        // insert
-        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
-    }
-    
     private List<PointBase> getPointsForPao(int id) {
         
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(id);
@@ -216,16 +188,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
         return points;
-    }
-
-    private void processDeviceDbChange(DeviceBase newDevice) {
-
-        DBChangeMsg msg = new DBChangeMsg(newDevice.getPAObjectID(),
-                                          DBChangeMsg.CHANGE_PAO_DB,
-                                          PAOGroups.STRING_CAT_DEVICE,
-                                          newDevice.getPAOType(),
-                                          DbChangeType.ADD );
-        dbPersistentDao.processDBChange(msg);
     }
 
     @Required
@@ -249,11 +211,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Required
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistentDao = dbPersistantDao;
-    }
-    
-    @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
@@ -263,15 +220,13 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
-    @Required
-    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
-    }
-    
     @Autowired
     public void setPlcAddressRangeService(PlcAddressRangeService plcAddressRangeService) {
         this.plcAddressRangeService = plcAddressRangeService;
     }
     
-    
+    @Autowired
+    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
+        this.paoCreationHelper = paoCreationHelper;
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
@@ -21,7 +22,6 @@ import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollment
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
 public class EnrollmentRequestEndpoint {

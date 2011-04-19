@@ -15,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -24,7 +25,6 @@ import com.cannontech.message.util.TimeoutException;
 import com.cannontech.message.util.ServerRequestHelper.BadServerResponseException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
 public class ScenarioStopRequestEndpoint {

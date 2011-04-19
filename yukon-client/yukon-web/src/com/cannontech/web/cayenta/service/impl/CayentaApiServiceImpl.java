@@ -14,6 +14,7 @@ import org.springframework.xml.xpath.XPathException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
@@ -23,7 +24,6 @@ import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
 import com.cannontech.web.simplePost.SimpleHttpPostService;
 import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class CayentaApiServiceImpl implements CayentaApiService {
 

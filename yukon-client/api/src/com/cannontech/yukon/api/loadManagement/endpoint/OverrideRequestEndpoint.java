@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -24,7 +25,6 @@ import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.Override
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
 public class OverrideRequestEndpoint extends OverrideRequestEndpointBase{

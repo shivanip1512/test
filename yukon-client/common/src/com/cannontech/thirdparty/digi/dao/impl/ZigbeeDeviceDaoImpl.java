@@ -13,13 +13,37 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.GenericZigbeeDevice;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
+import com.cannontech.thirdparty.model.ZigbeeThermostat;
 
 public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
 
+    @Override
+    public ZigbeeDevice getZigbeeDevice(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId,MacAddress");
+        sql.append("FROM ZBEndPoint");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        
+        ZigbeeDevice zigbeeDevice = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<ZigbeeDevice>() {
+            @Override
+            public ZigbeeDevice mapRow(YukonResultSet rs) throws SQLException {
+                GenericZigbeeDevice device = new GenericZigbeeDevice();
+                
+                device.setZigbeeDeviceId(rs.getInt("DeviceId"));
+                device.setZigbeeMacAddress(rs.getString("MacAddress"));
+                
+                return device;
+            }
+        });
+        
+        return zigbeeDevice;
+    }
+    
     @Override
     public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

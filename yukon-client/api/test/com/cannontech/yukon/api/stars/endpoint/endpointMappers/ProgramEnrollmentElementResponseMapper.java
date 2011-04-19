@@ -5,8 +5,8 @@ import org.jdom.Element;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class ProgramEnrollmentElementResponseMapper implements ObjectMapper<Element, EnrollmentResponse> {
 

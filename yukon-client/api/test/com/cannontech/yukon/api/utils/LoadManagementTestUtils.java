@@ -6,7 +6,7 @@ import org.jdom.Namespace;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.common.util.xml.YukonXml;
 
 public class LoadManagementTestUtils {
 

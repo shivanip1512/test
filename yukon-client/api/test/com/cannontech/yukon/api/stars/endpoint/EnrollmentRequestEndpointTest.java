@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class EnrollmentRequestEndpointTest {
 

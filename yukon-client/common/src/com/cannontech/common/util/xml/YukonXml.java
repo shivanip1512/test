@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.util;
+package com.cannontech.common.util.xml;
 
 import java.util.Properties;
 
@@ -9,7 +9,6 @@ import org.jdom.Namespace;
 import org.jdom.transform.JDOMSource;
 import org.w3c.dom.Node;
 
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 
 public class YukonXml {
     private static final Namespace yukonNamespace = Namespace.getNamespace("y", "http://yukon.cannontech.com/api");

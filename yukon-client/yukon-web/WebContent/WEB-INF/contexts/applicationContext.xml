@@ -1752,24 +1752,8 @@
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
     
-    <bean id="zigbeeWebService" class="com.cannontech.stars.dr.thirdparty.digi.service.impl.DigiDummyWebServiceImpl"/>
-
-    
-    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <constructor-arg>
-            <bean class="com.cannontech.web.stars.dr.operator.DigiClientHttpRequestFactory"/>
-        </constructor-arg>
-        <property name="errorHandler" ref="digiErrorHandler"/>
-        <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-            </list>
-        </property>
-    </bean>
-	
-	<bean id="digiErrorHandler" class="com.cannontech.web.stars.dr.operator.DigiErrorHandler">
-    </bean>
+    <bean id="digiPollingService" class="com.cannontech.stars.dr.thirdparty.digi.service.impl.DigiPollingService" init-method="initialize"/>
+   
     
     <bean id="accountImportResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>

@@ -9,6 +9,10 @@ public class YukonPaObjectFields implements PaoTemplatePart {
     private boolean disabled = false;
     private String statistics = CtiUtilities.STRING_DASH_LINE;
     
+    public YukonPaObjectFields(String name) {
+        this.name = name;
+    }
+    
     public String getName() {
         return name;
     }

@@ -2,8 +2,9 @@ package com.cannontech.thirdparty.digi.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.thirdparty.model.ZigbeeGateway;
 
-public class DigiGateway implements YukonDevice {
+public class DigiGateway implements YukonDevice, ZigbeeGateway {
 
     private PaoIdentifier paoIdentifier;
     private String firmwareVersion;
@@ -23,12 +24,6 @@ public class DigiGateway implements YukonDevice {
     public void setFirmwareVersion(String firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
     }
-    public String getMacAddress() {
-        return macAddress;
-    }
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
     public int getDigiId() {
         return digiId;
     }
@@ -40,6 +35,22 @@ public class DigiGateway implements YukonDevice {
     }
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+    public String getMacAddress() {
+        return macAddress;
+    }    
+
+    @Override
+    public String getZigbeeMacAddress() {
+        return macAddress;
+    }
+    @Override
+    public int getZigbeeDeviceId() {
+        return paoIdentifier.getPaoId();
     }
     
     public int getPaoId() {

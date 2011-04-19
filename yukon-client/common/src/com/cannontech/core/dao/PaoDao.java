@@ -144,7 +144,6 @@ public interface PaoDao {
     
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
     
-    public PaoIdentifier getPaoIdentifierForPaoId(int paoId);
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
 
     /**

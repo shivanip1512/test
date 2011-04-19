@@ -7,23 +7,25 @@ public class SepControlMessage {
     //unsigned int on C++ side
     private  long utcStartTime;
     //unsigned short on C++ side
-    private short controlMinutes;
+    private int controlMinutes;
     //unsigned char on C++ side
-    private byte criticality;
+    private int criticality;
     //unsigned char on C++ side
-    private byte coolTempOffset;
+    private int coolTempOffset;
     //unsigned char  on C++ side
-    private byte heatTempOffset;
+    private int heatTempOffset;
     
-    private short coolTempSetpoint;
-    private short heatTempSetpoint;
-    private byte averageCyclePercent;
+    //Short
+    private int coolTempSetpoint;
+    //Short
+    private int heatTempSetpoint;
+    //byte
+    private int averageCyclePercent;
 
     //unsigned char on C++ side
-    private byte standardCyclePercent;
+    private int standardCyclePercent;
     //unsigned char on C++ side
-    private byte eventFlags;
-    
+    private int eventFlags;
     
     public int getGroupId() {
         return groupId;
@@ -31,74 +33,64 @@ public class SepControlMessage {
     public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
-    
     public long getUtcStartTime() {
         return utcStartTime;
     }
     public void setUtcStartTime(long utcStartTime) {
         this.utcStartTime = utcStartTime;
     }
-    
-    public short getControlMinutes() {
+    public int getControlMinutes() {
         return controlMinutes;
     }
-    public void setControlMinutes(short controlMinutes) {
+    public void setControlMinutes(int controlMinutes) {
         this.controlMinutes = controlMinutes;
     }
-    
-    public void setCriticality(byte criticality) {
-        this.criticality = criticality;
-    }
-    public byte getCriticality() {
+    public int getCriticality() {
         return criticality;
     }
-    
-    public byte getCoolTempOffset() {
+    public void setCriticality(int criticality) {
+        this.criticality = criticality;
+    }
+    public int getCoolTempOffset() {
         return coolTempOffset;
     }
-    public void setCoolTempOffset(byte coolTempOffset) {
+    public void setCoolTempOffset(int coolTempOffset) {
         this.coolTempOffset = coolTempOffset;
     }
-    
-    public byte getHeatTempOffset() {
+    public int getHeatTempOffset() {
         return heatTempOffset;
     }
-    public void setHeatTempOffset(byte heatTempOffset) {
+    public void setHeatTempOffset(int heatTempOffset) {
         this.heatTempOffset = heatTempOffset;
     }
-    
-    public short getCoolTempSetpoint() {
+    public int getCoolTempSetpoint() {
         return coolTempSetpoint;
     }
-    public void setCoolTempSetpoint(short coolTempSetpoint) {
+    public void setCoolTempSetpoint(int coolTempSetpoint) {
         this.coolTempSetpoint = coolTempSetpoint;
     }
-    
-    public short getHeatTempSetpoint() {
+    public int getHeatTempSetpoint() {
         return heatTempSetpoint;
     }
-    public void setHeatTempSetpoint(short heatTempSetpoint) {
+    public void setHeatTempSetpoint(int heatTempSetpoint) {
         this.heatTempSetpoint = heatTempSetpoint;
     }
-    
-    public byte getAverageCyclePercent() {
+    public int getAverageCyclePercent() {
         return averageCyclePercent;
     }
-    public void setAverageCyclePercent(byte averageCyclePercent) {
+    public void setAverageCyclePercent(int averageCyclePercent) {
         this.averageCyclePercent = averageCyclePercent;
     }
-    
-    public byte getStandardCyclePercent() {
+    public int getStandardCyclePercent() {
         return standardCyclePercent;
     }
-    public void setStandardCyclePercent(byte standardCyclePercent) {
+    public void setStandardCyclePercent(int standardCyclePercent) {
         this.standardCyclePercent = standardCyclePercent;
     }
-    
-    public byte getEventFlags() {
+    public int getEventFlags() {
         return eventFlags;
     }
-    public void setEventFlags(byte eventFlags) {
+    public void setEventFlags(int eventFlags) {
         this.eventFlags = eventFlags;
     }
 }

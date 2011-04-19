@@ -20,10 +20,10 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class CayentaXmlUtils {
 

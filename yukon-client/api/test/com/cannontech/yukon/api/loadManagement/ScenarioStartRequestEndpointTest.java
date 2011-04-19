@@ -12,13 +12,13 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ScenarioStartRequestEndpoint;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 

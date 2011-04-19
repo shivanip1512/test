@@ -16,7 +16,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.model.GenericZigbeeDevice;
+import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.model.ZigbeeGateway;
 
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
@@ -40,6 +42,29 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         }
     };
     
+    private static YukonRowMapper<ZigbeeGateway> zigbeeGatewayRowMapper = new YukonRowMapper<ZigbeeGateway>() {
+        @Override
+        public ZigbeeGateway mapRow(YukonResultSet rs) throws SQLException {
+            GenericZigbeeDevice gateway = new GenericZigbeeDevice();
+            
+            gateway.setZigbeeDeviceId(rs.getInt("DeviceId"));
+            gateway.setZigbeeMacAddress(rs.getString("MacAddress"));
+            
+            return gateway;
+        }
+    };
+    
+    public ZigbeeGateway getZigbeeGateway(int gatewayId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId,MacAddress");
+        sql.append("FROM ZBGateway");
+        sql.append("WHERE DeviceId").eq(gatewayId);
+        
+        ZigbeeGateway gateway = yukonJdbcTemplate.queryForObject(sql, zigbeeGatewayRowMapper);
+        
+        return gateway;
+    }
+    
     public DigiGateway getDigiGateway(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -52,8 +77,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
         sql.append("WHERE DG.DeviceId").eq(deviceId);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper
-        );
+        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
 
         return digiGateway;
     }
@@ -217,6 +241,21 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+    
+    @Override
+    public List<ZigbeeGateway> getZigbeeGatewaysForGroupId(int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT ZG.DeviceId,ZG.MacAddress");
+        sql.append("FROM LMHardwareControlGroup LMHCG");
+        sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
+        sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");
+        sql.append(  "JOIN ZBGateway ZG on ZG.DeviceId = ZB.GatewayId");
+        sql.append("WHERE LMHCG.LMGroupId").eq(groupId);
+        sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
+        
+        return yukonJdbcTemplate.query(sql,zigbeeGatewayRowMapper); 
     }
     
     @Autowired

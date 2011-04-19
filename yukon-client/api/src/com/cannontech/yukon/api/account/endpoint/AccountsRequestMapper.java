@@ -7,9 +7,9 @@ import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAccount> {
 

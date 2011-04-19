@@ -7,9 +7,9 @@ import org.joda.time.Instant;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.optout.OptOutHelper;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
-import com.cannontech.yukon.api.util.YukonXml;
 
 public class OverrideRequestElementMapper implements ObjectMapper<Element, OptOutHelper> {
 

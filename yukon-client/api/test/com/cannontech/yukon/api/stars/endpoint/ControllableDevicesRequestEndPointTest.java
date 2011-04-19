@@ -17,6 +17,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
@@ -28,7 +29,6 @@ import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ControllableDevicesRequestEndPointTest {

@@ -234,10 +234,8 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="pointDao" ref="pointDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
-        <property name="dbPersistantDao" ref="dbPersistentDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-        <property name="paoDefinitionService" ref="paoDefinitionService" />
     </bean>
     
     <bean id="plcAddressRangeService" class="com.cannontech.device.range.impl.PlcAddressRangeServiceImpl"/>

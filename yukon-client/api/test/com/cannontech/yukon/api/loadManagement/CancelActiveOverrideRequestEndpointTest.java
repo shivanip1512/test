@@ -14,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -29,7 +30,6 @@ import com.cannontech.yukon.api.loadManagement.adapters.YukonEnergyCompanyServic
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelActiveOverrideRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAccountEventLogService;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CancelActiveOverrideRequestEndpointTest {

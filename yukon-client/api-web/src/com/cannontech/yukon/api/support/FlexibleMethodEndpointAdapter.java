@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
@@ -30,7 +31,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.google.common.collect.ImmutableSet;
 
 public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter {

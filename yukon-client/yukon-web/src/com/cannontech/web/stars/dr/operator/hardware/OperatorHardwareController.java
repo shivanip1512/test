@@ -29,9 +29,9 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.util.CtiUtilities;
@@ -75,7 +75,6 @@ import com.cannontech.stars.dr.hardware.model.SwitchAssignment;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
-import com.cannontech.stars.dr.thirdparty.digi.service.ZigbeeWebService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
@@ -84,6 +83,11 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.exception.GatewayCommissionException;
+import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.model.ZigbeeGateway;
+import com.cannontech.thirdparty.model.ZigbeeText;
+import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -743,7 +747,13 @@ public class OperatorHardwareController {
     /* GATEWAY ACTIONS */
     @RequestMapping
     public String commissionGateway(ModelMap model, FlashScope flash, int accountId, int inventoryId, int gatewayId) {
-        zigbeeWebService.installGateway(gatewayId);
+        
+        try {
+            zigbeeWebService.installGateway(gatewayId);
+        } catch (GatewayCommissionException e) {
+            //TODO
+        }
+        
         String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.gatewayCommissioned", gatewaySerialNumber));
         
@@ -762,7 +772,15 @@ public class OperatorHardwareController {
     
     @RequestMapping
     public String sendTextMessage(ModelMap model, FlashScope flash, int accountId, int inventoryId, int gatewayId, String message) {
-        zigbeeWebService.sendTextMessage(gatewayId, message);
+        
+        //TODO
+        ZigbeeText text = null;
+        
+        try {
+            zigbeeWebService.sendTextMessage(gatewayId, text);
+        } catch (ZigbeeClusterLibraryException e) {
+            //TODO
+        }
         
         String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.messageSent", gatewaySerialNumber));
@@ -773,7 +791,7 @@ public class OperatorHardwareController {
     /* TSTAT ACTIONS */
     @RequestMapping
     public String commissionTstat(ModelMap model, FlashScope flash, int accountId, int inventoryId, int deviceId, int gatewayId) {
-        zigbeeWebService.installStat(deviceId, gatewayId);
+        zigbeeWebService.installStat(gatewayId, deviceId);
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatCommissioned", deviceSerialNumber));
         
@@ -782,7 +800,9 @@ public class OperatorHardwareController {
     
     @RequestMapping
     public String decommissionTstat(ModelMap model, FlashScope flash, int accountId, int inventoryId, int deviceId, int gatewayId) {
-        zigbeeWebService.uninstallStat(deviceId, gatewayId);
+        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+        
+        zigbeeWebService.uninstallStat(gatewayId, deviceId);
         
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatDecommissioned", deviceSerialNumber));

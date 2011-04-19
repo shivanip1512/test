@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator;
+package com.cannontech.thirdparty.digi;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;

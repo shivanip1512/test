@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.digi.model;
+package com.cannontech.thirdparty.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;

@@ -13,10 +13,10 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
 import com.cannontech.web.simplePost.SimpleHttpPostService;
-import com.cannontech.yukon.api.util.YukonXml;
 
 class MockSimpleHttpPostService implements SimpleHttpPostService {
     

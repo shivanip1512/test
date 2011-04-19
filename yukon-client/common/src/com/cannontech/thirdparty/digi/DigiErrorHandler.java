@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator;
+package com.cannontech.thirdparty.digi;
 
 import java.io.IOException;
 

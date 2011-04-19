@@ -501,14 +501,6 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public PaoIdentifier getPaoIdentifierForPaoId(int paoId) {
-        List<Integer> ids = Lists.newArrayList();
-        ids.add(paoId);
-        
-        return getPaoIdentifiersForPaoIds(ids).get(0);
-    }
-    
-    @Override
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
     	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcOperations);

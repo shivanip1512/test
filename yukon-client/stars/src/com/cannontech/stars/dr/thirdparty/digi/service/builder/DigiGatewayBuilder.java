@@ -59,9 +59,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void createDevice(HardwareDto hardwareDto) {
         //Build up all the fields for inserting a digiGateway.        
-        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields();
-        yukonPaObjectFields.setName(hardwareDto.getSerialNumber());
-        
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         GatewayFields gatewayFields = buildGatewayFields(hardwareDto);
         
         //Build Template and call Pao Creation Service

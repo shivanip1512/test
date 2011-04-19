@@ -11,7 +11,7 @@ import com.cannontech.thirdparty.digi.model.DigiGateway;
 
 public class GatewayCreationProvider extends BaseCreationProvider<GatewayFields> {
 
-    GatewayDeviceDao gatewayDeviceDao;
+    private GatewayDeviceDao gatewayDeviceDao;
 
     @Override
     public float getOrder() {

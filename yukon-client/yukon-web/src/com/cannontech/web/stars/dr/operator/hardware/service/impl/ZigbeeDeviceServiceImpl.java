@@ -23,8 +23,8 @@ import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.digi.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
+import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
 import com.google.common.collect.Lists;
 

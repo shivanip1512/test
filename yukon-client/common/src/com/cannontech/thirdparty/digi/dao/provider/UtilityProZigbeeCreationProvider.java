@@ -7,7 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.providers.BaseCreationProvider;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
-import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeThermostat;
 
 public class UtilityProZigbeeCreationProvider extends BaseCreationProvider<UtilityProZigbeeFields> {
 

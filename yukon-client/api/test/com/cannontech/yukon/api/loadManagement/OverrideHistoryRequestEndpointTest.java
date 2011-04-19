@@ -18,6 +18,7 @@ import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -28,7 +29,6 @@ import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.OverrideHistoryRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 

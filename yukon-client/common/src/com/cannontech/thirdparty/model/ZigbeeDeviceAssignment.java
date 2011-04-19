@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.digi.model;
+package com.cannontech.thirdparty.model;
 
 public class ZigbeeDeviceAssignment {
 	private Integer gatewayId;

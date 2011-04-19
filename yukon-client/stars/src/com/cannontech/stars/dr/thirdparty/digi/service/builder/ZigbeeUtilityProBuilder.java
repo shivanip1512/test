@@ -20,7 +20,7 @@ import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvid
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
-import com.cannontech.thirdparty.digi.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.google.common.collect.ClassToInstanceMap;
 
 public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
@@ -65,10 +65,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        //Build up all the fields for inserting a Zigbee Util Pro.        
-        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields();
+        //Build up all the fields for inserting a Zigbee Util Pro.
+
         //Serial Number is unique, using that as the PaoName
-        yukonPaObjectFields.setName(hardwareDto.getSerialNumber());
+        YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         
         UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields();
         tStatFields.setInstallCode(hardwareDto.getInstallCode());

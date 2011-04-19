@@ -7,6 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationTypeProvider;
 import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 
@@ -39,17 +40,14 @@ public class YukonPaObjectCreationProvider extends BaseCreationProvider<YukonPaO
         //This would normally call a Dao, but it is a simple one line insert in a very base class..
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("INSERT INTO YukonPaObject");
-        sql.append("(PaObjectId,Category,PaoClass,");
-        sql.append(" PaoName,Type,Description,DisableFlag,PaoStatistics)");
-        sql.values(paoIdentifier.getPaoId(),
-                   paoIdentifier.getPaoType().getPaoCategory(),
-                   paoIdentifier.getPaoType().getPaoClass(),
-                   paoFields.getName(),
-                   paoIdentifier.getPaoType().getPaoTypeName(),
-                   paoFields.getDescription(),
-                   YNBoolean.valueOf(paoFields.isDisabled()),
-                   paoFields.getStatistics());
+        SqlParameterSink p = sql.insertInto("YukonPaObject");
+        p.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
+        p.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
+        p.addValue("Type", paoIdentifier.getPaoType());
+        p.addValue("PaoName", paoFields.getName());
+        p.addValue("Description", paoFields.getDescription());
+        p.addValue("DisableFlag", YNBoolean.valueOf(paoFields.isDisabled()));
+        p.addValue("PaoStatistics", paoFields.getStatistics());
         
         yukonJdbcTemplate.update(sql);
     }
