@@ -40,6 +40,7 @@ import com.cannontech.roles.YukonGroupRoleDefs;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -611,9 +612,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     		YukonRoleProperty... otherProperties) throws NotAuthorizedException {
     	
         if (!checkAnyProperties(user, firstProperty, otherProperties)) {
-        	throw NotAuthorizedException.atLeastOneTrueProperty(user, 
-        			ImmutableList.of(firstProperty, otherProperties).toArray(
-        																new YukonRoleProperty[]{}));
+            List<YukonRoleProperty> allProperties = Lists.newArrayList();
+            allProperties.add(firstProperty);
+            
+            for (YukonRoleProperty yukonRoleProperty : otherProperties) {
+                allProperties.add(yukonRoleProperty);
+            }
+            
+        	throw NotAuthorizedException.atLeastOneTrueProperty(user, allProperties.toArray(new YukonRoleProperty[allProperties.size()]));
         }
     }
     
