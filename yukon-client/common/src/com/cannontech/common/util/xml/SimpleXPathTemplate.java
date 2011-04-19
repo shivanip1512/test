@@ -263,21 +263,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         });
     }
     
-    /*
-     * 
-    public List<Integer> evaluateAsIntegerList(String expression) throws XPathException {
-        return evaluate(expression, new ObjectMapper<Node, Integer>() {
-            @Override
-            public Integer map(Node from) throws ObjectMappingException {
-                String textContent = from.getTextContent();
-                
-                return Integer.valueOf(textContent);
-            }
-        });
-    }
-     * 
-     */
-    
     /**
      * Parse an element for an Instant. If the the element doesn't exist or doesn't 
      * represent a valid date, it returns null. Otherwise it creates a Date object

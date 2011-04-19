@@ -21,7 +21,7 @@ public class DigiControlEventDao {
         p.addValue("DigiEventId", eventId);
         p.addValue("GroupId", groupId);
         p.addValue("StartTime", startTime);
-        // ResponseCount and DeviceCount will be added after the Digi Call
+        // DeviceCount will be added after the Digi Call
         
         // LMControlHistoryId will be set after Dispatch acknowledges us
         
