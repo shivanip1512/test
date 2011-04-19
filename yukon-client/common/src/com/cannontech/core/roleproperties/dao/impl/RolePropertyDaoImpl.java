@@ -612,14 +612,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     		YukonRoleProperty... otherProperties) throws NotAuthorizedException {
     	
         if (!checkAnyProperties(user, firstProperty, otherProperties)) {
-            List<YukonRoleProperty> allProperties = Lists.newArrayList();
-            allProperties.add(firstProperty);
-            
-            for (YukonRoleProperty yukonRoleProperty : otherProperties) {
-                allProperties.add(yukonRoleProperty);
-            }
-            
-        	throw NotAuthorizedException.atLeastOneTrueProperty(user, allProperties.toArray(new YukonRoleProperty[allProperties.size()]));
+        	throw NotAuthorizedException.atLeastOneTrueProperty(user, 
+                                    Lists.asList(firstProperty, otherProperties).toArray(new YukonRoleProperty[]{}));
         }
     }
     
