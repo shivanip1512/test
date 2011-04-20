@@ -127,7 +127,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT AM.AccountId, LPWP.ProgramId, LPWP.DeviceId,");
 		sql.append(    "AC.Description, YWC.AlternateDisplayName, CA.CustomerId, CA.AccountNumber, EC.Name, PAO.PaoName");
-		sql.append("FROM LmProgramWebPublishing LPWP JOIN YukonWebConfiguration YWC ON LPWP.WebSettingsId = YWC.ConfigurationId");
+		sql.append("FROM LmProgramWebPublishing LPWP");
+		sql.append(    "JOIN YukonWebConfiguration YWC ON LPWP.WebSettingsId = YWC.ConfigurationId");
 		sql.append(    "JOIN YukonPaobject PAO ON PAO.PaobjectId = LPWP.DeviceId");
 		sql.append(    "JOIN ApplianceCategory AC ON AC.ApplianceCategoryId = LPWP.ApplianceCategoryId");
 		sql.append(    "JOIN EcToGenericMapping GM ON GM.ItemId = AC.ApplianceCategoryId");
@@ -150,13 +151,15 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	{
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT LPE.AccountId, LPE.ProgramId, YLE.YukonDefinitionId, YLE.EntryText");
-		sql.append("FROM LmProgramEvent LPE JOIN LmCustomerEventBase CEB ON LPE.EventId = CEB.EventId");
+		sql.append("FROM LmProgramEvent LPE");
+		sql.append(    "JOIN LmCustomerEventBase CEB ON LPE.EventId = CEB.EventId");
 		sql.append(    "JOIN YukonListEntry YLE ON YLE.EntryId = CEB.ActionId");
 		sql.append(    "JOIN LMProgramWebPublishing LMPWP ON LMPWP.ProgramId = LPE.ProgramId");
 		sql.append("WHERE LMPWP.DeviceId").eq(getPaoIDs()[0]);
 		sql.append(    "AND LPE.EventId IN (");
 		sql.append(        "SELECT MAX(LPE2.EventId)");
-		sql.append(        "FROM LmProgramEvent LPE2 JOIN LmCustomerEventBase CEB2 ON CEB2.EVENTID = LPE2.EVENTID");
+		sql.append(        "FROM LmProgramEvent LPE2");
+		sql.append(            "JOIN LmCustomerEventBase CEB2 ON CEB2.EVENTID = LPE2.EVENTID");
 		sql.append(        "WHERE CEB2.EventDateTime").lte(getStopDate());
 		sql.append(        "GROUP BY AccountId, ProgramId)");
 		sql.append("ORDER BY LPE.ACCOUNTID, LPE.PROGRAMID");
