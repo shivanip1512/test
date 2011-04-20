@@ -136,37 +136,29 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         	}
 
         	List timeOfWeekList = Lists.newArrayList(timeOfWeekArray.toArray());
-            for (int i = 0; i < timeOfWeekList.size(); i++) {
-            	
-                if(schedulableThermostatType.getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES && i < 2) {
-                   
-                    AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
-                    entry.setAccountThermostatScheduleId(accountThermostatScheduleId);
-                    entry.setTimeOfWeek(timeOfWeek);
-                    atsEntries.add(entry);
-                    continue;
-                    
-                }
-
-                JSONObject jsonObject = (JSONObject) timeOfWeekList.get(i);
-
-                int timeMinutes = jsonObject.getInt("time");
-                int coolTemp = jsonObject.getInt("coolTemp");
-                int heatTemp = jsonObject.getInt("heatTemp");
-
-                // Convert celsius temp to fahrenheit if needed
-                if (!isFahrenheit) {
-                    coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
-                    heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
-                }
+        	for (ThermostatSchedulePeriod period : schedulableThermostatType.getPeriodStyle().getAllPeriods()) {
 
                 AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
                 entry.setAccountThermostatScheduleId(accountThermostatScheduleId);
-                entry.setStartTime(timeMinutes * 60); // stored as seconds in DB
-                entry.setCoolTemp(coolTemp);
-                entry.setHeatTemp(heatTemp);
                 entry.setTimeOfWeek(timeOfWeek);
-                
+                if (!period.isPsuedo()) {
+                    JSONObject jsonObject = timeOfWeekArray.getJSONObject(period.getEntryIndex());
+
+                    int timeMinutes = jsonObject.getInt("time");
+                    int coolTemp = jsonObject.getInt("coolTemp");
+                    int heatTemp = jsonObject.getInt("heatTemp");
+
+                    // Convert celsius temp to fahrenheit if needed
+                    if (!isFahrenheit) {
+                        coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
+                        heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
+                    }
+
+                    entry.setStartTime(timeMinutes * 60); // stored as seconds in DB
+                    entry.setCoolTemp(coolTemp);
+                    entry.setHeatTemp(heatTemp);
+                }
+
                 atsEntries.add(entry);
             }
         }
