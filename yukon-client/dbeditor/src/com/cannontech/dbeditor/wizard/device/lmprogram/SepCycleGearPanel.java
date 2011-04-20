@@ -755,9 +755,7 @@ public class SepCycleGearPanel extends GenericGearPanel {
             handleException(ivjExc);
         }
         getJComboBoxWhenChange().setSelectedItem(LMProgramDirectGear.CHANGE_NONE);
-        getJComboBoxHowToStop().removeItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
-        getJComboBoxHowToStop().addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
-        getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
+        getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
         
         initConnections();
     }

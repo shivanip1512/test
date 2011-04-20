@@ -913,9 +913,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         }
         setTemperatureUnits(isFahrenheit?'F':'C');
         getJComboBoxWhenChange().setSelectedItem(LMProgramDirectGear.CHANGE_NONE);
-        getJComboBoxHowToStop().removeItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
-        getJComboBoxHowToStop().addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
-        getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_STOP_CYCLE));
+        getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
         
         initConnections();
     }
