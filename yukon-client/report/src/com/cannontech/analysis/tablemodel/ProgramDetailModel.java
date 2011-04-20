@@ -1,12 +1,8 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
@@ -15,6 +11,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
@@ -88,45 +86,34 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		CTILogger.info(sql.toString());
 
 		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
-		yukonJdbcTemplate.query(sql, new ResultSetExtractor() {
-        	@Override
-        	public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-        		boolean dataExists = false;
-        		
-        		while (rs.next()) {
-					try {
-						Integer accountId = rs.getInt("AccountId");
-						Integer assignedProgramId = rs.getInt("ProgramId");
-						String altDisplayName = rs.getString("AlternateDisplayName");
-						Integer customerId = rs.getInt("CustomerId");
-						String accountNumber = rs.getString("AccountNumber");
-						String ecName = rs.getString("Name");
-			            if (altDisplayName.equalsIgnoreCase(",")) {
-			            	// If alt name not provided, default to the LMProgram (PAO) name. 
-			                altDisplayName = rs.getString("PaoName");
-			            }
-			            
-						ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, customerId, accountNumber, accountId, -1 );
-						getData().add(pd);
+		yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+			
+			@Override
+			public void processRow(YukonResultSet rs) throws SQLException {
+				Integer accountId = rs.getInt("AccountId");
+				Integer assignedProgramId = rs.getInt("ProgramId");
+				String altDisplayName = rs.getString("AlternateDisplayName");
+				Integer customerId = rs.getInt("CustomerId");
+				String accountNumber = rs.getString("AccountNumber");
+				String ecName = rs.getString("Name");
+	            if (altDisplayName.equalsIgnoreCase(",")) {
+	            	// If alt name not provided, default to the LMProgram (PAO) name. 
+	                altDisplayName = rs.getString("PaoName");
+	            }
+	            
+				ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, customerId, accountNumber, accountId, -1 );
+				getData().add(pd);
 
-						//KEY = "ACCTID_PROGID"
-						String key = buildLookupKey(accountId, assignedProgramId);
-						getAcctProgPairs().put(key, pd);
-					}
-					catch(java.sql.SQLException e)
-					{
-						e.printStackTrace();
-					}
-
-					dataExists = true;
-				}
-				if (dataExists) {
-					buildAcctProgHashMap();
-				}
-        		return null;
+				//KEY = "ACCTID_PROGID"
+				String key = buildLookupKey(accountId, assignedProgramId);
+				getAcctProgPairs().put(key, pd);
         	}
 		});
 
+		if (!getData().isEmpty()) {
+			buildAcctProgHashMap();
+		}
+		
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -177,24 +164,22 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		CTILogger.info(sql.toString());
 		
 		YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
-        yukonJdbcTemplate.query(sql, new ResultSetExtractor() {
-        	@Override
-        	public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-        		while (rs.next()) {
-            		Integer accountId = rs.getInt("AccountId");
-    				Integer assignedProgramId = rs.getInt("ProgramId");
-    				Integer actionID = rs.getInt("YukonDefinitionId");
-    				String entryText = rs.getString("EntryText");
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+			
+			@Override
+			public void processRow(YukonResultSet rs) throws SQLException {
+				Integer accountId = rs.getInt("AccountId");
+				Integer assignedProgramId = rs.getInt("ProgramId");
+				Integer actionID = rs.getInt("YukonDefinitionId");
+				String entryText = rs.getString("EntryText");
 
-    				//Key = "AcctID_ProgID"
-    				String key = buildLookupKey(accountId, assignedProgramId); 
-    				ProgramDetail pd = getAcctProgPairs().get(key);
-    				if (pd != null) {
-    					pd.setAction(actionID);
-    					pd.setStatus(entryText);
-    				}
-        		}
-        		return null;
+				//Key = "AcctID_ProgID"
+				String key = buildLookupKey(accountId, assignedProgramId); 
+				ProgramDetail pd = getAcctProgPairs().get(key);
+				if (pd != null) {
+					pd.setAction(actionID);
+					pd.setStatus(entryText);
+				}
         	}
 		});
 
