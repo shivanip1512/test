@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/20/2011 1:10:30 PM                         */
+/* Created on:     4/20/2011 1:54:36 PM                         */
 /*==============================================================*/
 
 
@@ -30,6 +30,13 @@ INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)',' ','N');
 /*==============================================================*/
 create index CstSrvCstProp_FK on AccountSite (
    SiteInformationID ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_AcctSite_SiteNum                                 */
+/*==============================================================*/
+create index Indx_AcctSite_SiteNum on AccountSite (
+   SiteNumber ASC
 );
 
 /*==============================================================*/
@@ -88,6 +95,13 @@ create table Address  (
 );
 
 insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
+
+/*==============================================================*/
+/* Index: Indx_Add_LocAdd                                       */
+/*==============================================================*/
+create index Indx_Add_LocAdd on Address (
+   LocationAddress1 ASC
+);
 
 /*==============================================================*/
 /* Table: AlarmCategory                                         */
@@ -1090,6 +1104,13 @@ create table CICustomerBase  (
 );
 
 /*==============================================================*/
+/* Index: Indx_CICustBase_CompName                              */
+/*==============================================================*/
+create index Indx_CICustBase_CompName on CICustomerBase (
+   CompanyName ASC
+);
+
+/*==============================================================*/
 /* Table: COLUMNTYPE                                            */
 /*==============================================================*/
 create table COLUMNTYPE  (
@@ -1632,6 +1653,13 @@ create index Indx_CntNotif_CntId on ContactNotification (
 );
 
 /*==============================================================*/
+/* Index: Indx_ContNot_Not                                      */
+/*==============================================================*/
+create index Indx_ContNot_Not on ContactNotification (
+   Notification ASC
+);
+
+/*==============================================================*/
 /* Table: Customer                                              */
 /*==============================================================*/
 create table Customer  (
@@ -1661,6 +1689,13 @@ create index INDX_CUSTID_PCONTID on Customer (
 /*==============================================================*/
 create index Indx_Cstmr_PcId on Customer (
    PrimaryContactID ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_Cust_AltTrackNum                                 */
+/*==============================================================*/
+create index Indx_Cust_AltTrackNum on Customer (
+   AltTrackNum ASC
 );
 
 /*==============================================================*/
@@ -5277,6 +5312,13 @@ create table LMHardwareBase  (
    RouteID              NUMBER                          not null,
    ConfigurationID      NUMBER                          not null,
    constraint PK_LMHARDWAREBASE primary key (InventoryID)
+);
+
+/*==============================================================*/
+/* Index: Indx_LMHardBase_ManSerNum                             */
+/*==============================================================*/
+create index Indx_LMHardBase_ManSerNum on LMHardwareBase (
+   ManufacturerSerialNumber ASC
 );
 
 /*==============================================================*/

@@ -438,6 +438,58 @@ SET ServiceName = 'SepMessageListener',
 WHERE ServiceId = 16;
 /* End YUK-9724 */
 
+/* Start YUK-8711 */
+CREATE INDEX Indx_AcctSite_SiteNum ON AccountSite (
+    SiteNumber ASC
+);
+
+CREATE INDEX Indx_Add_LocAdd ON Address (
+    LocationAddress1 ASC
+);
+
+CREATE INDEX Indx_CICustBase_CompName ON CICustomerBase (
+    CompanyName ASC
+);
+
+CREATE INDEX Indx_ContNot_Not ON ContactNotification (
+    Notification ASC
+);
+
+CREATE INDEX Indx_Cust_AltTrackNum ON Customer (
+    AltTrackNum ASC
+);
+
+CREATE INDEX Indx_LMHardBase_ManSerNum ON LMHardwareBase (
+    ManufacturerSerialNumber ASC
+);
+
+/* Add Functional Based Indexes */
+CREATE INDEX INDX_AcctSite_SiteNum_FB ON AccountSite(
+    UPPER(SiteNumber)
+);
+
+CREATE INDEX INDX_Add_LocAdd_FB ON Address(
+    UPPER(LocationAddress1)
+);
+
+CREATE INDEX INDX_CICustBase_CompName_FB ON CICustomerBase(
+    UPPER(CompanyName)
+);
+
+CREATE INDEX INDX_Cont_CLastName_CFirstN_FB ON Contact(
+    UPPER(ContLastName),
+    UPPER(ContFirstName)
+);
+
+CREATE INDEX INDX_ContNot_Not_FB ON ContactNotification(
+    UPPER(Notification)
+);
+
+CREATE INDEX INDX_Cust_AltTrackNum_FB ON Customer(
+    UPPER(AltTrackNum)
+);
+/* End YUK-8711 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

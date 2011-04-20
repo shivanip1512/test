@@ -428,6 +428,33 @@ SET ServiceName = 'SepMessageListener',
 WHERE ServiceId = 16; 
 /* End YUK-9724 */
 
+/* Start YUK-8711 */
+CREATE INDEX Indx_AcctSite_SiteNum ON AccountSite (
+    SiteNumber ASC
+);
+
+CREATE INDEX Indx_Add_LocAdd ON Address (
+    LocationAddress1 ASC
+);
+
+CREATE INDEX Indx_CICustBase_CompName ON CICustomerBase (
+    CompanyName ASC
+);
+
+CREATE INDEX Indx_ContNot_Not ON ContactNotification (
+    Notification ASC
+);
+
+CREATE INDEX Indx_Cust_AltTrackNum ON Customer (
+    AltTrackNum ASC
+);
+
+CREATE INDEX Indx_LMHardBase_ManSerNum ON LMHardwareBase (
+    ManufacturerSerialNumber ASC
+);
+GO
+/* End YUK-8711 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
