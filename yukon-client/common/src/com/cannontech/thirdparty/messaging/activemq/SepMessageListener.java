@@ -68,6 +68,20 @@ public class SepMessageListener {
         int standardCyclePercent = message.readShort();
         int eventFlags = message.readShort();
         
+        
+        logger.debug("Sep Message: " + "Group Id: " + groupId 
+                    + " utcStartTime: " + utcStartTime 
+                    + " controlMinutes: " + controlMinutes
+                    + " criticality: " + criticality
+                    + " coolTempOffset: " + coolTempOffset
+                    + " heatTempOffset: " +heatTempOffset
+                    + " coolTempSetPoint: " + coolTempSetpoint
+                    + " heatTempSetPoint: " + heatTempSetpoint
+                    + " averageCyclePercent: " + averageCyclePercent
+                    + " standardCyclePercent: " + standardCyclePercent
+                    + " eventFlags: " + eventFlags
+                    );
+        
         sep.setGroupId(groupId);
         sep.setUtcStartTime(utcStartTime);
         sep.setControlMinutes(controlMinutes);
