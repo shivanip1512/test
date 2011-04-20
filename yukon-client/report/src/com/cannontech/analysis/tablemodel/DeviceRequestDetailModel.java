@@ -65,7 +65,7 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
             sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
             sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
             sql.append("WHERE").append(getFilterSqlWhereClause());
-            sql.append("  AND dps.StatisticType").eq_k(StatisticTypes.DAILY);
+            sql.append("  AND dps.StatisticType").eq_k(StatisticPeriodType.DAILY);
             sql.append("  AND StartDateTime").gte(getStartDate());
             sql.append("  AND StartDateTime").lt(getStopDate());
             sql.append("GROUP BY ypo.PAOName, ypo.type, route.PAOName");
@@ -76,7 +76,7 @@ public class DeviceRequestDetailModel extends DeviceReportModelBase<DeviceReques
             sql.append("  JOIN DeviceRoutes dr ON dr.DEVICEID = dps.PAObjectID");
             sql.append("  JOIN YukonPAObject route ON route.PAObjectID = dr.ROUTEID");
             sql.append("WHERE").append(getFilterSqlWhereClause());
-            sql.append("  AND dps.StatisticType").eq_k(StatisticTypes.LIFETIME);
+            sql.append("  AND dps.StatisticType").eq_k(StatisticPeriodType.LIFETIME);
             sql.append("GROUP BY ypo.PAOName, ypo.type, route.PAOName, Requests, Attempts, Completions");
         }
 

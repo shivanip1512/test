@@ -2,7 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum StatisticTypes implements DatabaseRepresentationSource
+public enum StatisticPeriodType implements DatabaseRepresentationSource
 {
     DAILY("Daily"),
     HOURLY("Hourly"),
@@ -11,7 +11,7 @@ public enum StatisticTypes implements DatabaseRepresentationSource
     
     private String type;
     
-    private StatisticTypes(String type) {
+    private StatisticPeriodType(String type) {
         this.type = type;
     }
     
