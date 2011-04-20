@@ -101,9 +101,9 @@ INSERT INTO YukonServices VALUES (16, 'SepControlMessageListener', 'classpath:co
 /* End YUK-9676 */
 
 /* Start YUK-9702 */
-UPDATE YukonPaobject
-SET PaoType = 'ZigBee Utility Pro'
-WHERE PaoType = 'Zigbee Utility Pro';
+UPDATE YukonPAObject
+SET Type = 'ZigBee Utility Pro'
+WHERE Type = 'Zigbee Utility Pro';
 /* End YUK-9702 */
 
 /* Start YUK-9705 */
