@@ -68,9 +68,8 @@ public class RemoteLoggerImpl implements RemoteLogger {
      * @return returns a DatedFileAppender which is a subclass of AppenderSkeleton
      */
     protected AppenderSkeleton getAppender(String applicationName, String clientId) {
-        
-        String fileName = applicationName + "[" + clientId + "]";
-        
+        String fileName = applicationName + "[" + clientId.replace(':', '_') + "]";
+
         //see if the appender for this clientId already exists
         if (appenderIPAddresses.containsKey(fileName)) {
             dailyRollingFileAppender = appenderIPAddresses.get(fileName);
