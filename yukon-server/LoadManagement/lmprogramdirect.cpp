@@ -630,7 +630,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     ResetGroups();
                 }
 
-                if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
+                if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
                 {
                     for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                     {
@@ -1227,7 +1227,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
         {
             currentGearObject = getCurrentGearObject();
 
-            if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
+            if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
             {
                 for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                 {
@@ -2657,7 +2657,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
 
     if( currentGearObject != NULL && previousGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
-        if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
+        if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
         {
             LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
 
@@ -3603,7 +3603,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
     if( currentGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
-        if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
+        if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
         {
             for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
             {
@@ -4421,7 +4421,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
             if( secondsFrom1901 > currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
                 getManualControlReceivedFlag() )
             {
-                if( SmartGearBase *smartGearObject = currentGearObject->getSmartGear() )
+                if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
                 {
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                     if( !(getConstraintOverride() || con_checker.checkRestore()) )
@@ -5606,7 +5606,7 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     string method = cur_gear->getControlMethod();
     long control_time = stop - start;
 
-    SmartGearBase *smartGear = cur_gear->getSmartGear();
+    SmartGearBase *smartGear = dynamic_cast<SmartGearBase *>(cur_gear);
 
     if( smartGear != NULL )
     {

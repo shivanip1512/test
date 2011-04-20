@@ -129,8 +129,8 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
     if( !isCelsius )
     {
         // Note we are converting Deltas here.
-        heatOffset = heatOffset * 1.8;
-        coolOffset = coolOffset * 1.8;
+        heatOffset = heatOffset / 1.8;
+        coolOffset = coolOffset / 1.8;
     }
 
     string heatString = CtiNumStr(heatOffset);

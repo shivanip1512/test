@@ -89,10 +89,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setRampOutPercent(LONG outpercent);
     CtiLMProgramDirectGear& setKWReduction(DOUBLE kw);
 
-    // If this class has smart functionality, this call returns a SmartGearBase pointer.
-    // If not, it will return null.
-    virtual SmartGearBase *getSmartGear() { return NULL; }
-
     virtual CtiLMProgramDirectGear* replicate() const;
 
     //Members inherited from RWCollectable
