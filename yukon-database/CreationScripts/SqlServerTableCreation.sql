@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/19/2011 2:08:40 PM                         */
+/* Created on:     4/20/2011 10:07:44 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8837,7 +8837,7 @@ create table YukonPAObject (
 )
 go
 
-INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
+INSERT into YukonPAObject values (0, 'DEVICE', 'SYSTEM', 'System Device', 'SYSTEM', 'Reserved System Device', 'N', '-----'); 
 
 /*==============================================================*/
 /* Index: Indx_PAO                                              */

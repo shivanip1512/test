@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/15/2011 2:59:29 PM                         */
+/* Created on:     4/20/2011 10:03:13 AM                        */
 /*==============================================================*/
 
 
@@ -8365,7 +8365,7 @@ create table YukonPAObject  (
    constraint PK_YUKONPAOBJECT primary key (PAObjectID)
 );
 
-INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
+INSERT into YukonPAObject values (0, 'DEVICE', 'SYSTEM', 'System Device', 'SYSTEM', 'Reserved System Device', 'N', '-----'); 
 
 /*==============================================================*/
 /* Index: Indx_PAO                                              */
