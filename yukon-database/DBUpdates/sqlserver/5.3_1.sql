@@ -384,6 +384,50 @@ UPDATE YukonPAObject SET Category = 'LOADMANAGEMENT' WHERE LOWER(Category) = LOW
 UPDATE YukonPAObject SET Category = 'Schedule' WHERE LOWER(Category) = LOWER('Schedule');
 /* End YUK-9734 */
 
+/* Start YUK-9724 */
+CREATE TABLE DigiControlEventMapping (
+   EventId              NUMERIC              NOT NULL,
+   StartTime            DATETIME             NOT NULL,
+   GroupId              NUMERIC              NOT NULL,
+   LMControlHistoryId   NUMERIC              NULL,
+   DeviceCount          NUMERIC              NULL,
+   CONSTRAINT PK_DigiContEventMap PRIMARY KEY (EventId)
+);
+
+CREATE TABLE ZBControlEvent (
+   EventId              NUMERIC              NOT NULL,
+   EventTime            DATETIME             NOT NULL,
+   DeviceId             NUMERIC              NOT NULL,
+   Action               VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+);
+GO
+
+ALTER TABLE DigiControlEventMapping
+    ADD CONSTRAINT FK_DigiContEventMap_LMContHist FOREIGN KEY (LMControlHistoryId)
+        REFERENCES LMControlHistory (LMCtrlHistID);
+
+ALTER TABLE DigiControlEventMapping
+    ADD CONSTRAINT FK_DigiContEventMap_LMGroup FOREIGN KEY (GroupId)
+        REFERENCES LMGroup (DeviceId)
+            ON DELETE SET NULL;
+
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_DigiContEventMa FOREIGN KEY (EventId)
+        REFERENCES DigiControlEventMapping (EventId);
+
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_ZBEndPoint FOREIGN KEY (DeviceId)
+        REFERENCES ZBEndPoint (DeviceId);
+            ON DELETE SET NULL;
+GO
+
+UPDATE YukonServices 
+SET ServiceName = 'SepMessageListener', 
+    ServiceClass = 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml' 
+WHERE ServiceId = 16; 
+/* End YUK-9724 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

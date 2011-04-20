@@ -396,6 +396,48 @@ UPDATE YukonPAObject SET Category = 'LOADMANAGEMENT' WHERE LOWER(Category) = LOW
 UPDATE YukonPAObject SET Category = 'Schedule' WHERE LOWER(Category) = LOWER('Schedule');
 /* End YUK-9734 */
 
+/* Start YUK-9724 */
+CREATE TABLE DigiControlEventMapping  (
+   EventId              NUMBER                          NOT NULL,
+   StartTime            DATE                            NOT NULL,
+   GroupId              NUMBER                          NOT NULL,
+   LMControlHistoryId   NUMBER                          NULL,
+   DeviceCount          NUMBER                          NULL,
+   CONSTRAINT PK_DigiContEventMap PRIMARY KEY (EventId)
+);
+
+create table ZBControlEvent  (
+   EventId              NUMBER                          NOT NULL,
+   EventTime            DATE                            NOT NULL,
+   DeviceId             NUMBER                          NOT NULL,
+   Action               VARCHAR2(255)                   NOT NULL,
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+);
+
+ALTER TABLE DigiControlEventMapping
+    ADD CONSTRAINT FK_DigiContEventMap_LMContHist FOREIGN KEY (LMControlHistoryId)
+        REFERENCES LMControlHistory (LMCtrlHistID);
+
+ALTER TABLE DigiControlEventMapping
+    ADD CONSTRAINT FK_DigiContEventMap_LMGroup FOREIGN KEY (GroupId)
+        REFERENCES LMGroup (DeviceId)
+            ON DELETE SET NULL;
+        
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_DigiContEventMa FOREIGN KEY (EventId)
+        REFERENCES DigiControlEventMapping (EventId);
+
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_ZBEndPoint FOREIGN KEY (DeviceId)
+        REFERENCES ZBEndPoint (DeviceId);
+            ON DELETE SET NULL;
+
+UPDATE YukonServices 
+SET ServiceName = 'SepMessageListener', 
+    ServiceClass = 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml' 
+WHERE ServiceId = 16;
+/* End YUK-9724 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

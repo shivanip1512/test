@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/20/2011 10:03:13 AM                        */
+/* Created on:     4/20/2011 1:10:30 PM                         */
 /*==============================================================*/
 
 
@@ -3617,6 +3617,18 @@ create table DeviceWindow  (
    AlternateOpen        NUMBER                          not null,
    AlternateClose       NUMBER                          not null,
    constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
+);
+
+/*==============================================================*/
+/* Table: DigiControlEventMapping                               */
+/*==============================================================*/
+create table DigiControlEventMapping  (
+   EventId              NUMBER                          not null,
+   StartTime            DATE                            not null,
+   GroupId              NUMBER                          not null,
+   LMControlHistoryId   NUMBER,
+   DeviceCount          NUMBER,
+   constraint PK_DigiContEventMap primary key (EventId)
 );
 
 /*==============================================================*/
@@ -9034,7 +9046,7 @@ INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:co
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', 'ServiceManager');
 INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager'); 
 INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
-INSERT INTO YukonServices VALUES (16, 'SepControlMessageListener', 'classpath:com/cannontech/services/sepControlMessageListener/sepControlMessageListenerContext.xml', 'ServiceManager'); 
+INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager'); 
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -9188,6 +9200,17 @@ create table YukonWebConfiguration  (
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
 INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
+
+/*==============================================================*/
+/* Table: ZBControlEvent                                        */
+/*==============================================================*/
+create table ZBControlEvent  (
+   EventId              NUMBER                          not null,
+   EventTime            DATE                            not null,
+   DeviceId             NUMBER,
+   Action               VARCHAR2(255)                   not null,
+   constraint PK_ZBContEvent primary key (EventId)
+);
 
 /*==============================================================*/
 /* Table: ZBEndPoint                                            */
@@ -10576,6 +10599,15 @@ alter table DeviceWindow
    add constraint FK_DevScWin_Dev foreign key (DeviceID)
       references DEVICE (DEVICEID);
 
+alter table DigiControlEventMapping
+   add constraint FK_DigiContEventMap_LMContHist foreign key (LMControlHistoryId)
+      references LMControlHistory (LMCtrlHistID);
+
+alter table DigiControlEventMapping
+   add constraint FK_DigiContEventMap_LMGroup foreign key (GroupId)
+      references LMGroup (DeviceID)
+      on delete set null;
+
 alter table DigiGateway
    add constraint FK_DigiGate_ZBGate foreign key (DeviceId)
       references ZBGateway (DeviceId)
@@ -11904,6 +11936,15 @@ alter table YukonUserRole
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID);
+
+alter table ZBControlEvent
+   add constraint FK_ZBContEvent_DigiContEventMa foreign key (EventId)
+      references DigiControlEventMapping (EventId);
+
+alter table ZBControlEvent
+   add constraint FK_ZBContEvent_ZBEndPoint foreign key (DeviceId)
+      references ZBEndPoint (DeviceId)
+      on delete set null;
 
 alter table ZBEndPoint
    add constraint FK_ZBEndPoint_Device foreign key (DeviceId)
