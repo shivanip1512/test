@@ -10,7 +10,7 @@
         - The stateGroup value is from the stateGroup table, Name column
 -->
 
-<paoDefinitions 
+<paoDefinitions  
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="paoDefinition.xsd">
     
@@ -876,6 +876,10 @@
         </attributes>
         <tags>
             <tag name="DEVICE_CONFIGURATION_470"/>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>510001-594000</value>	<!-- actual -->
+            	<!--  <value>100000-3997695</value>-->	<!-- legacy -->
+            </tag>
         </tags>
     </pao>
     
@@ -921,6 +925,9 @@
         		<pointRef name="Phase C Current"/>
         	</command>
         </commands>
+        <!-- <tags><tag name="PLC_ADDRESS_RANGE"> -->
+            	<!--  <value>100000-3997695</value>-->	<!-- legacy -->
+        <!--     </tag></tags> -->
    </pao>
     <!-- MCT 430 BASE -->
     <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG">
@@ -1269,6 +1276,10 @@
         </attributes>
         <tags>
             <tag name="DEVICE_CONFIGURATION_430"/>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>620000-620199, 620200-700000</value>	<!-- actual -->
+            	<!--  <value>100000-3997695</value>-->	<!-- legacy -->
+            </tag>
         </tags>
    </pao>
    
@@ -1311,7 +1322,7 @@
    </pao>
    
     <!-- MCT 430s -->
-    <pao id="MCT430A" inherits="MCT_430_BASE">
+    <pao id="MCT430A" inherits="MCT_430_BASE">	<!-- Why doesn't MCT430A inherit MCT_4XX_POLYPHASE_BASE? -->
         <displayName>MCT-430A</displayName>
     </pao>
     <pao id="MCT430S4" inherits="MCT_430_S_BASE">
@@ -1798,17 +1809,47 @@
             	<basicLookup point="Zero Usage (24 Hours)" />
             </attribute>
         </attributes>
+        <!-- <tags><tag name="PLC_ADDRESS_RANGE"> -->
+            	<!--  <value>0-3997695</value>-->	<!-- legacy -->
+        <!-- 	</tag></tags> -->
 	</pao>
         
     <!-- MCT 410s -->
     <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410IL</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>700001-700900,
+            			1000001-1398100,            			
+            			1398102-1600000</value>	<!-- actual -->
+            	<!--  <value>0-3997695</value>-->	<!-- legacy -->
+            </tag>
+        </tags>
     </pao>
     <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410CL</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>310000-313555,
+            			313600-314499,
+            			314500-499999,
+            			590001-592000,
+            			592001-594000,
+            			594001-610000,
+            			810001-1000000,
+            			2897700-3597700</value>	<!-- actual -->
+            	<!--  <value>0-3997695</value>-->	<!-- legacy -->
+            </tag>
+        </tags>
     </pao>
     <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
         <displayName>MCT-410FL</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>3797700-3996927</value>	<!-- actual -->
+            	<!--  <value>0-3997695</value>-->	<!-- legacy -->
+            </tag>
+        </tags>
     </pao>
     <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER" enabled="false">
         <displayName>MCT-410GL</displayName>
@@ -3104,6 +3145,11 @@
 	<pao id="MCTBROADCAST">
         <displayName>MCT Broadcast</displayName>
         <displayGroup>MCT</displayGroup>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>1-4096</value>
+            </tag>
+        </tags>
     </pao>
     
     <!-- LMT 2 -->
@@ -3564,12 +3610,27 @@
     <!-- CCUs -->
     <pao id="CCU710A" inherits="TRANSMITTER_BASE">
         <displayName>CCU-710A</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-127</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="CCU711" inherits="TRANSMITTER_BASE">
         <displayName>CCU-711</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-126</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="CCU721" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>CCU-721</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-126</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="INTEGRATION_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>INTEGRATION</displayName>
@@ -3716,27 +3777,66 @@
     </pao>
     <pao id="REPEATER" inherits="REPEATER_BASE">
         <displayName>REPEATER 900</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>464-4302,
+            			4190464-4194302</value> <!-- 4190464-4194302 is the range for RPT901 -->
+            </tag>
+        </tags>
     </pao>
     <pao id="REPEATER_902" inherits="REPEATER_BASE">
         <displayName>REPEATER 902</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>800450-809900</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="REPEATER_800" inherits="REPEATER_BASE">
         <displayName>REPEATER 800</displayName>
     </pao>
     <pao id="REPEATER_850" inherits="REPEATER_BASE">
         <displayName>REPEATER 850</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>560001-590000</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="REPEATER_801" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 801</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>809901-809980,
+            			4181952-4182952,
+            			4182953-4183952
+            	</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="REPEATER_921" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 921</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>464-4302</value>	<!-- legacy, but doesn't show up in address range spreadsheet -->
+            </tag>
+        </tags>
     </pao>
     <pao id="RTC" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>RTC</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-15</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="SERIES_5_LMI" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>RTU-LMI</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-127</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="SNPP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>SNPP TERMINAL</displayName>
@@ -4704,9 +4804,19 @@
     <pao id="RTUWELCO" inherits="RTU_BASE">
         <displayName>RTU-WELCO</displayName>
         <changeGroup>rtu</changeGroup>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-127</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="RTM" inherits="RTU_BASE">
         <displayName>RTM</displayName>
+        <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>0-15</value>
+            </tag>
+        </tags>
     </pao>
     
     <!-- VIRTUAL PAOS -->
@@ -4740,17 +4850,7 @@
                 <name>Battery Low</name>
                 <stategroup value="TrueFalse"/>
             </point>
-            <point type="Status" offset="4">
-            	<init>true</init>
-                <name>Momentary Toggle</name>
-                <stategroup value="TrueFalse"/>
-            </point>
-			<point type="Status" offset="100">
-            	<init>true</init>
-                <name>Signal Strength</name>
-                <stategroup value="Signal Strength"/>
-            </point>
-            <!-- <point type="Status" offset="101">
+            <point type="Status" offset="101">
             	<init>true</init>
                 <name>Configured to send Current Survey</name>
                 <stategroup value="TrueFalse"/>
@@ -4759,11 +4859,11 @@
             	<init>true</init>
                 <name>Request ACK</name>
 				<stategroup value="TrueFalse"/>
-            </point> -->
+            </point>
             <point type="Analog" offset="1">
             	<init>true</init>
                 <name>Nominal Amps</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
@@ -4776,9 +4876,9 @@
             </point>
             <point type="Analog" offset="3">
             	<init>true</init>
-                <name>Battery Voltage</name>
+                <name>Phase</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
+                <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
@@ -4788,15 +4888,22 @@
                 <unitofmeasure value="Temp-C"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="5">
+            	<init>true</init>
+                <name>Battery Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="Analog" offset="11">
-            	<init>false</init>
+            	<init>true</init>
                 <name>Latitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>false</init>
+            	<init>true</init>
                 <name>Longitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
@@ -4809,26 +4916,33 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="100">
+            <point type="Analog" offset="101">
             	<init>true</init>
-                <name>RSSI</name>
+                <name>UDP repeats</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="101">
+            <point type="Analog" offset="201">
             	<init>true</init>
-                <name>BER</name>
+                <name>TGB Id - Max Signal</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="PulseAccumulator" offset="1">
-        		<init>true</init>
-                <name>Momentary Count</name>
+            <point type="Analog" offset="202">
+            	<init>true</init>
+                <name>Normal Mode - Max Signal</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="1"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="203">
+            	<init>true</init>
+                <name>Boost Mode - Max Signal</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
             </point>
         </points>    
         <attributes>
@@ -4843,48 +4957,48 @@
 		<points>
             <point type="Status" offset="1">
             	<init>true</init>
-                <name>Over Current</name>
+                <name>Fault Status</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2">
             	<init>true</init>
-                <name>Reset Over Current</name>
+                <name>No 60Hz or Low Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-            	<init>false</init>
-                <name>Reed Switch Communication</name>
-                <stategroup value="TrueFalse"/>
-            </point>
-            <point type="Status" offset="10">
-            	<init>false</init>
-                <name>Calibrated</name>
-                <stategroup value="TrueFalse"/>
-            </point>
-            <point type="Status" offset="100">
             	<init>true</init>
-                <name>Signal Strength</name>
-				<stategroup value="Signal Strength"/>
+                <name>Battery Low</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="101">
+            	<init>true</init>
+                <name>Configured to send Current Survey</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="102">
+            	<init>true</init>
+                <name>Request ACK</name>
+				<stategroup value="TrueFalse"/>
             </point>
             <point type="Analog" offset="1">
             	<init>true</init>
-                <name>Max Current - Report</name>
+                <name>Nominal Amps</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
             	<init>true</init>
-                <name>Min Current - Report</name>
+                <name>Peak Amps</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
             	<init>true</init>
-                <name>Battery Voltage</name>
+                <name>Phase</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
+                <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
@@ -4896,37 +5010,23 @@
             </point>
             <point type="Analog" offset="5">
             	<init>true</init>
-                <name>Max Current - Period</name>
+                <name>Battery Voltage</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="6">
-            	<init>true</init>
-                <name>Min Current - Period</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="10">
-            	<init>false</init>
-                <name>Period Rate</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
+                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>false</init>
-                <name>High Alert Setpoint</name>
+            	<init>true</init>
+                <name>Latitude</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
+                <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>false</init>
-                <name>Reset Alert Setpoint</name>
+            	<init>true</init>
+                <name>Longitude</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
+                <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="31">
@@ -4936,16 +5036,30 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
-			<point type="Analog" offset="100">
+            <point type="Analog" offset="101">
             	<init>true</init>
-                <name>RSSI</name>
+                <name>UDP repeats</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="101">
+            <point type="Analog" offset="201">
             	<init>true</init>
-                <name>BER</name>
+                <name>TGB Id - Max Signal</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="202">
+            	<init>true</init>
+                <name>Normal Mode - Max Signal</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="203">
+            	<init>true</init>
+                <name>Boost Mode - Max Signal</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
@@ -5053,6 +5167,11 @@
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
         <changeGroup>cap</changeGroup>
+        <!--  <tags>
+            <tag name="PLC_ADDRESS_RANGE">
+            	<value>700000001-701000000</value>
+            </tag>
+        </tags>-->	<!-- legacy has 0-999999999 -->
     </pao>
     
     <pao id="CBC_7010" inherits="CBC_1WAY_BASE">
