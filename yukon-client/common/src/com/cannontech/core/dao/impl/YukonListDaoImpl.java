@@ -324,12 +324,12 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
     @Override
     public YukonListEntry getYukonListEntry(int yukonDefinitionId, YukonEnergyCompany ec) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yle.*");
-        sql.append("FROM YukonListEntry yle"); 
-        sql.append(  "JOIN YukonSelectionList ysl on ysl.ListID = yle.ListID"); 
-        sql.append("WHERE yle.YukonDefinitionID").eq_k(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO); 
-        sql.append(  "AND ysl.energyCompanyId").eq(ec.getEnergyCompanyId()); 
- 
+        sql.append("SELECT YLE.*");
+        sql.append("FROM YukonListEntry YLE"); 
+        sql.append(  "JOIN YukonSelectionList YSL ON YSL.ListID = YLE.ListID"); 
+        sql.append("WHERE YLE.YukonDefinitionID").eq_k(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO); 
+        sql.append(  "AND YSL.EnergyCompanyId").eq(ec.getEnergyCompanyId()); 
+
         return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());
     }
 	

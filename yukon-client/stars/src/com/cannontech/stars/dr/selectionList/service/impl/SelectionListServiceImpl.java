@@ -169,18 +169,17 @@ public class SelectionListServiceImpl implements SelectionListService {
 
         for (SelectionListCategory category : SelectionListCategory.values()) {
             YukonRole role = category.getRole();
-            YukonRoleProperty[] roleProperties = category.getRoleProperties();
-            if (role == null && roleProperties.length == 0) {
+            Set<YukonRoleProperty> roleProperties = category.getRoleProperties();
+            if (role == null && roleProperties.size() == 0) {
                 // This category doesn't have any user editable lists.
                 continue;
             }
             if (role != null && !rolePropertyDao.checkRole(role, user)) {
                 continue;
             }
-            for (YukonRoleProperty roleProperty : roleProperties) {
-                if (!rolePropertyDao.checkProperty(roleProperty, user)) {
-                    continue;
-                }
+            if (roleProperties.size() > 0
+                    && !rolePropertyDao.checkAnyProperties(user, roleProperties)) {
+                continue;
             }
             Integer listEntryType = category.getListEntryType();
             if (listEntryType != null) {

@@ -21,11 +21,21 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 	}
 
 	@Override
+    public boolean checkAllProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
 	public boolean checkAnyProperties(LiteYukonUser user,
 			YukonRoleProperty firstProperty,
 			YukonRoleProperty... otherProperties) {
 		throw new UnsupportedOperationException("not implemented");
 	}
+
+    @Override
+    public boolean checkAnyProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
 	@Override
 	public boolean checkCategory(YukonRoleCategory category, LiteYukonUser user) {

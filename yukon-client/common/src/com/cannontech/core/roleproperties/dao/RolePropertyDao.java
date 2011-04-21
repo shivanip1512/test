@@ -182,7 +182,14 @@ public interface RolePropertyDao {
      * @return  the AND'd value of each of the properties
      */
     public boolean checkAllProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties);
-    
+
+    /**
+     * Returns true if and only if all roles are true.
+     * 
+     * @see #checkAllProperties(LiteYukonUser, YukonRoleProperty, YukonRoleProperty...)
+     */
+    public boolean checkAllProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties);
+
     /**
      * This method returns true if a call to checkProperty for any of the properties
      * would have returned true. This is equivalent to:
@@ -203,7 +210,14 @@ public interface RolePropertyDao {
      * @return  the OR'd value of each of the properties
      */
     public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties);
-    
+
+    /**
+     * Return true if any of the properties is true.
+     * 
+     * @see #checkAnyProperties(LiteYukonUser, YukonRoleProperty, YukonRoleProperty...)
+     */
+    public boolean checkAnyProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties);
+
     /**
      * This method returns the negated value of a boolean property. Unlike getPropertyBooleanValue,
      * this method will never throw a UserNotInRoleException, if the user is not

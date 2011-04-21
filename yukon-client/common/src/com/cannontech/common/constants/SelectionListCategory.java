@@ -1,8 +1,13 @@
 package com.cannontech.common.constants;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 public enum SelectionListCategory implements DisplayableEnum {
     SYSTEM( YukonRole.INVENTORY, YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES,
@@ -32,24 +37,28 @@ public enum SelectionListCategory implements DisplayableEnum {
     private final static String keyPrefix = "yukon.dr.selectionListCategory.";
     private final Integer listEntryType;
     private final YukonRole role;
-    private final YukonRoleProperty[] roleProperties;
+    private final Set<YukonRoleProperty> roleProperties;
 
     private SelectionListCategory() {
         this.listEntryType = null;
         this.role = null;
-        this.roleProperties = new YukonRoleProperty[] {};
+        this.roleProperties = Collections.emptySet();
     }
 
     private SelectionListCategory(YukonRole role, YukonRoleProperty... roleProperties) {
         this.listEntryType = null;
         this.role = role;
-        this.roleProperties = roleProperties;
+        Builder<YukonRoleProperty> builder = ImmutableSet.builder();
+        for (YukonRoleProperty roleProperty : roleProperties) {
+            builder.add(roleProperty);
+        }
+        this.roleProperties = builder.build();
     }
-    
+
     private SelectionListCategory(Integer listEntryType) {
         this.listEntryType = listEntryType;
         this.role = null;
-        this.roleProperties = new YukonRoleProperty[] {};
+        this.roleProperties = Collections.emptySet();
     }
 
     private SelectionListCategory(YukonRoleProperty roleProperty) {
@@ -64,7 +73,7 @@ public enum SelectionListCategory implements DisplayableEnum {
         return listEntryType == null ? role : APPLIANCE.role;
     }
 
-    public YukonRoleProperty[] getRoleProperties() {
+    public Set<YukonRoleProperty> getRoleProperties() {
         return listEntryType == null ? roleProperties : APPLIANCE.roleProperties;
     }
 

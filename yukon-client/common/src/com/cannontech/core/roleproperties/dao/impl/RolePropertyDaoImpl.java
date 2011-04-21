@@ -254,27 +254,42 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public boolean checkAllProperties(LiteYukonUser user,
             YukonRoleProperty firstProperty,
             YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.of(otherProperties));
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
+                                                                  ImmutableList.of(otherProperties));
+        return checkAllProperties(user, properties);
+    }
+
+    @Override
+    public boolean checkAllProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties) {
         boolean allAreCompatible = Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
-        Validate.isTrue(allAreCompatible, "at least one of " + properties + " is not compatible with a check method");
-        
+        Validate.isTrue(allAreCompatible, "at least one of " + properties +
+                        " is not compatible with a check method");
+
         for (YukonRoleProperty property : properties) {
             if (!checkProperty(property, user)) return false;
         }
-        
+
         return true;
     }
-    
+
     @Override
-    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.of(otherProperties));
+    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
+                                      YukonRoleProperty... otherProperties) {
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
+                                                                  ImmutableList.of(otherProperties));
+        return checkAnyProperties(user, properties);
+    }
+
+    @Override
+    public boolean checkAnyProperties(LiteYukonUser user, Iterable<YukonRoleProperty> properties) {
         boolean allAreCompatible = Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
-        Validate.isTrue(allAreCompatible, "at least one of " + properties + " is not compatible with a check method");
-        
+        Validate.isTrue(allAreCompatible, "at least one of " + properties +
+                        " is not compatible with a check method");
+
         for (YukonRoleProperty property : properties) {
             if (checkProperty(property, user)) return true;
         }
-        
+
         return false;
     }
 

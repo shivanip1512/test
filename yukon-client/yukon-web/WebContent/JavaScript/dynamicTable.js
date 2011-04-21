@@ -282,7 +282,6 @@ function getDynamicTableInstance(wrapperDiv) {
 
 Event.observe(window, 'load', function() {
     var divs = $$('div');
-    var myDivs = $$('div.dynamicTableWrapper');
     $$('div.dynamicTableWrapper').each(function(wrapperDiv){
         getDynamicTableInstance(wrapperDiv).init();
     });
