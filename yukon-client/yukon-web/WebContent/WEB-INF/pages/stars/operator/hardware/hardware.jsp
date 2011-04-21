@@ -78,6 +78,41 @@ function changeOut(oldId, isMeter) {
         <input type="hidden" name="redirect" value="view">
     </form>
     
+    <c:if test="${showTextMessageAction}">
+        <!-- Send Text Message Popup -->
+        <tags:setFormEditMode mode="${editMode}"/>
+        <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup">
+            <form:form action="sendTextMessage" commandName="textMessage" method="post">
+                <form:hidden path="accountId"/>
+                <form:hidden path="inventoryId"/>
+                <form:hidden path="gatewayId"/>
+                <tags:textarea rows="6" cols="60" path="message"/>
+                <tags:nameValueContainer2>
+                    <tags:checkboxNameValue nameKey=".confirmationRequired" path="confirmationRequired"/>
+                    <tags:nameValue2 nameKey=".displayDuration">
+                        <form:select path="displayDuration">
+                            <c:forEach var="duration" items="${durations}">
+                                <cti:formatDuration type="DHMS" value="${duration.millis}" var="durationLabel"/>
+                                <form:option value="${duration}" label="${durationLabel}"/>
+                            </c:forEach>
+                        </form:select>
+                    </tags:nameValue2>
+                    
+                    <%--<tags:selectNameValue nameKey=".displayDuration" items="${durations}" path="displayDuration"/> --%>
+                    
+                    <tags:nameValue2 nameKey=".startTime">
+                        <tags:dateTimeInput path="startTime" inline="true" fieldValue="${textMessage.startTime}"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+                <div class="actionArea">
+                    <cti:button key="send" type="submit"/>
+                    <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
+                </div>
+            </form:form>
+        </i:simplePopup>
+        <tags:setFormEditMode mode="${mode}"/>
+    </c:if>
+    
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
@@ -135,6 +170,7 @@ function changeOut(oldId, isMeter) {
                 <form:hidden path="displayName"/>
                 <form:hidden path="hardwareType"/>
                 <form:hidden path="hardwareTypeEntryId"/>
+                <form:hidden path="originalDeviceStatusEntryId"/>
                 <c:if test="${not showTwoWay}">
                     <form:hidden path="deviceId"/>
                 </c:if>
@@ -232,8 +268,21 @@ function changeOut(oldId, isMeter) {
                         </c:if>
                         
                         <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="${none}"/>
-                            
-                        <form:hidden path="originalDeviceStatusEntryId"/>
+                        
+                        <c:if test="${showZigbeeState}">
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <tags:nameValue2 nameKey=".zigbeeStatus" rowClass="pointState">
+                                    <cti:pointStatusColor pointId="${hardwareDto.commissionedId}" >
+                                        <cti:pointValue pointId="${hardwareDto.commissionedId}" format="VALUE"/>
+                                    </cti:pointStatusColor>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".connectionStatus" rowClass="pointState">
+                                    <cti:pointStatusColor pointId="${hardwareDto.connectStatusId}" >
+                                        <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="VALUE"/>
+                                    </cti:pointStatusColor>
+                                </tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        </c:if>
                         
                         <c:if test="${showTwoWay}">
                             <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
@@ -350,8 +399,7 @@ function changeOut(oldId, isMeter) {
                                         immediateSelectMode="true"
                                         endAction="function(items) { return changeOut(${inventoryId}, false); }" 
                                         linkType="button"
-                                        buttonRenderMode="labeledImage"
-                                        buttonStyleClass="f_blocker"/>
+                                        buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -396,8 +444,7 @@ function changeOut(oldId, isMeter) {
                                         immediateSelectMode="true"
                                         endAction="function(items) { return changeOut(${inventoryId}, false); }" 
                                         linkType="button"
-                                        buttonRenderMode="labeledImage"
-                                        buttonStyleClass="f_blocker"/>
+                                        buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -456,8 +503,7 @@ function changeOut(oldId, isMeter) {
                                         immediateSelectMode="true" 
                                         endAction="function(items) { return changeOut(${inventoryId}, true); }" 
                                         linkType="button"
-                                        buttonRenderMode="labeledImage"
-                                        buttonStyleClass="f_blocker"/>
+                                        buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -483,19 +529,21 @@ function changeOut(oldId, isMeter) {
                         
                         <c:if test="${showTextMessageAction}">
                             <li>
-                                <cti:url var="sendTextMessageUrl" value="/spring/stars/operator/hardware/sendTextMessage">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
-                                </cti:url>
                                 <cti:button key="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true"/>
-                                <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup">
-                                        <textarea rows="6" cols="60" name="message"></textarea>
-                                        <div class="actionArea">
-                                            <cti:button key="send" href="${sendTextMessageUrl}"/>
-                                            <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
-                                        </div>
-                                </i:simplePopup>
+                            </li>
+                        </c:if>
+                        
+                        <c:if test="${showGatewayChangeOutAction}">
+                            <li>
+                                <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                        nameKey="changeOut"
+                                        id="availableGatewayPicker" 
+                                        type="availableGatewayPicker" 
+                                        destinationFieldId="newInventoryId" 
+                                        immediateSelectMode="true" 
+                                        endAction="function(items) { return changeOut(${inventoryId}, false); }" 
+                                        linkType="button"
+                                        buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
                         
@@ -511,12 +559,16 @@ function changeOut(oldId, isMeter) {
                                     <table class="compactResultsTable">
                                         <tr>
                                             <th class="nonwrapping"><i:inline key=".serialNumber"/></th>
-                                            <th class="nonwrapping"><i:inline key=".deviceState"/></th>
+                                            <th class="nonwrapping"><i:inline key=".zigbeeStatus"/></th>
                                             <th class="nonwrapping"><i:inline key=".actions"/></th>
                                         </tr>
                                         <c:forEach var="device" items="${assignedDevices}">
                                             <tr>
-                                                <td>${device.serialNumber}</td>
+                                                <cti:url value="/spring/stars/operator/hardware/view" var="viewUrl">
+                                                    <cti:param name="accountId" value="${accountId}"/>
+                                                    <cti:param name="inventoryId" value="${device.inventoryIdentifier.inventoryId}"/>
+                                                </cti:url>
+                                                <td><a href="${viewUrl}">${device.serialNumber}</a></td>
                                                 <td class="pointStateColumn">
                                                     <cti:pointStatusColor pointId="${device.commissionId}">
                                                         <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>

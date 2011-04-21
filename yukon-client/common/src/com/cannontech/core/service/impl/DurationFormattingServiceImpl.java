@@ -127,7 +127,7 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     	
 		// init builder
 		PeriodFormatterBuilder periodFormatterBuilder = new PeriodFormatterBuilder();
-		periodFormatterBuilder.printZeroAlways();
+//		periodFormatterBuilder.printZeroAlways();
 		
 		// parse Format
         String format = messageSourceAccessor.getMessage(type); 

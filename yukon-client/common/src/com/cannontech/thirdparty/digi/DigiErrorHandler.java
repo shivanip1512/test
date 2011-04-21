@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.cannontech.thirdparty.exception.DigiRESTException;
+import com.cannontech.thirdparty.exception.DigiWebServiceException;
 
 public class DigiErrorHandler implements ResponseErrorHandler {
 	
@@ -27,6 +27,7 @@ public class DigiErrorHandler implements ResponseErrorHandler {
 
 	public void handleError(ClientHttpResponse response) throws IOException {
 		logger.error(response.getStatusCode() + " - " + response.getStatusText());
-		throw new DigiRESTException("Error in iDigi Webservices call: " + response.getStatusCode() + " - " + response.getStatusText());
+		throw new DigiWebServiceException(response.getStatusCode() + " - " + response.getStatusText());
 	}
+	
 }

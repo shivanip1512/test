@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZCLStatus;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
@@ -21,7 +23,6 @@ import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeGateway;
-import com.cannontech.thirdparty.model.ZigbeeText;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 
@@ -154,13 +155,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
 
     @Override
-    public void sendTextMessage(int gatewayId, ZigbeeText zigbeeText) throws ZigbeeClusterLibraryException {
-        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+    public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
         
-        String xml = digiXMLBuilder.buildTextMessage(gateway,zigbeeText);
+        String xml = digiXMLBuilder.buildTextMessage(gateway, message);
 
         StreamSource source = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, StreamSource.class);
-        
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
@@ -175,6 +175,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         }
         
         logger.info ("  Sending Text message was successful.");
+            
     }
 
     @Override

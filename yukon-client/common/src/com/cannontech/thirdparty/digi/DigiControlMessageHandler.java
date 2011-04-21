@@ -15,6 +15,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.digi.dao.impl.DigiControlEventDao;
+import com.cannontech.thirdparty.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
@@ -52,26 +53,35 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         digiControlEventDao.createNewEventMapping(eventId,message.getGroupId(),now);
         
         //Do what needs to be done
-        int deviceCount = zigbeeWebService.sendSEPControlMessage(eventId, message);
-        digiControlEventDao.updateDeviceCount(eventId, deviceCount);
-        
-        pendingEvents.add(eventId);
+        try {
+            
+            int deviceCount = zigbeeWebService.sendSEPControlMessage(eventId, message);
+            digiControlEventDao.updateDeviceCount(eventId, deviceCount);
+            
+            pendingEvents.add(eventId);
+    
+            //If success return a control history message to dispatch.
+            ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, paoIdentifier, message, now);
+            
+            dispatchConnection.queue(chMessage);
 
-        //If success return a control history message to dispatch.
-        ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, paoIdentifier, message, now);
-        
-        dispatchConnection.queue(chMessage);
-
+        } catch (DigiWebServiceException e) {
+            //TODO THAIN
+        }
         return;
     }
 
     @Override
     public void handleRestoreMessage(PaoIdentifier paoIdentifier, SepRestoreMessage message) {
         int eventId = digiControlEventDao.findCurrentEventId(message.getGroupId());
-        zigbeeWebService.sendSEPRestoreMessage(eventId, message);
-
-        ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(paoIdentifier,message, new Date());        
-        dispatchConnection.queue(histMsg);
+        try {
+            zigbeeWebService.sendSEPRestoreMessage(eventId, message);
+    
+            ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(paoIdentifier,message, new Date());        
+            dispatchConnection.queue(histMsg);
+        } catch (DigiWebServiceException e) {
+            //TODO THAIN
+        }
     }
     
     private ControlHistoryMessage buildControlHistoryMessageForRestore(PaoIdentifier paoIdentifier, SepRestoreMessage message, Date date) {

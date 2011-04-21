@@ -3,8 +3,10 @@ package com.cannontech.thirdparty.service.impl;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
@@ -13,7 +15,6 @@ import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeGateway;
-import com.cannontech.thirdparty.model.ZigbeeText;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -81,9 +82,15 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildTextMessage(ZigbeeGateway gateway, ZigbeeText zigbeeText) {
+    public String buildTextMessage(ZigbeeGateway gateway, ZigbeeTextMessage message) {
         String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
-        int confirmationValue = zigbeeText.isConfirmation() ? 128:0;
+        int confirmationValue = message.isConfirmationRequired() ? 128:0;
+        
+        int startTime = 0; // Zero means now
+        Instant startInstant = message.getStartTime();
+        if (startInstant.isAfterNow()) {
+            startTime = (int)(startInstant.getMillis() / 1000);
+        }
         
         String xml = 
                "<sci_request version=\"1.0\">"
@@ -95,11 +102,11 @@ public class DigiXMLBuilder {
             + "      <do_command target=\"RPC_request\">"
             + "        <create_message_event synchronous=\"true\">"
             + "          <record type=\"DisplayMessageRecord\">"
-            + "            <message_id>" + zigbeeText.getMessageId() + "</message_id>"
+            + "            <message_id>" + message.getMessageId() + "</message_id>"
             + "            <message_control>" + confirmationValue + "</message_control>"
-            + "            <start_time>" + zigbeeText.getStartTime() + "</start_time>"
-            + "            <duration_in_minutes>" + zigbeeText.getDuration() + "</duration_in_minutes>"
-            + "            <message type=\"string\">" + zigbeeText.getMessage() + "</message>"
+            + "            <start_time>" + startTime + "</start_time>"
+            + "            <duration_in_minutes>" + message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes() + "</duration_in_minutes>"
+            + "            <message type=\"string\">" + message.getMessage() + "</message>"
             + "          </record>"
             + "        </create_message_event>"
             + "      </do_command>"

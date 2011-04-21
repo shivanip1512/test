@@ -69,9 +69,9 @@
     <entry key="yukon.web.modules.operator.hardware.hardwareRemoved">Hardware Removed From Account</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareCreated">Hardware Created</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareAdded">Hardware Added</entry>
-    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful{0}</entry>
-    <entry key="yukon.web.modules.operator.hardware.zigbeeDevice.changeOutWarning">. This device will need to be assigned to a gateway and comissioned.</entry>
-    <entry key="yukon.web.modules.operator.hardware.gateway.changeOutWarning">. This gateway will need to be comissioned. Devices will need to be assigned to this gateway and commissioned as well.</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut.gateway">Hardware Change Out Successful. This gateway will need to be comissioned. Devices will need to be assigned to this gateway and commissioned as well.</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut.zigbeeDevice">Hardware Change Out Successful. This device will need to be assigned to a gateway and comissioned.</entry>
     <entry key="yukon.web.modules.operator.hardware.installCode">Install Code</entry>
     <entry key="yukon.web.modules.operator.hardware.installNotes">Install Notes</entry>
     <entry key="yukon.web.modules.operator.hardware.label">Label</entry>
@@ -93,6 +93,11 @@
     <entry key="yukon.web.modules.operator.hardware.warehouse">Warehouse</entry>
     <entry key="yukon.web.modules.operator.hardware.macAddress">MAC Address</entry>
     <entry key="yukon.web.modules.operator.hardware.firmwareVersion">Firmware Version</entry>
+    <entry key="yukon.web.modules.operator.hardware.zigbeeStatus">ZigBee Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.connectionStatus">Connection Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmationRequired">Confirmation Required</entry>
+    <entry key="yukon.web.modules.operator.hardware.displayDuration">Display Duration</entry>
+    <entry key="yukon.web.modules.operator.hardware.startTime">Scheduled Start Time</entry>
     
     <!-- Errors -->
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.twoWayDeviceName">Yukon device with that name already exists.</entry>
@@ -162,7 +167,7 @@
     <entry key="yukon.web.modules.operator.hardware.textMessage.label">Send Text Message</entry>
 
     <entry key="yukon.web.modules.operator.hardware.commissionTstat.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.commissionTstat.hoverText">Commission the thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardware.commissionTstat.hoverText">Commission this device</entry>
     <entry key="yukon.web.modules.operator.hardware.commissionTstat.label">Commission</entry>
 
     <entry key="yukon.web.modules.operator.hardware.commissionTstat.disabled.imageUrl">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
@@ -170,7 +175,7 @@
     <entry key="yukon.web.modules.operator.hardware.commissionTstat.disabled.label">Commission</entry>
 
     <entry key="yukon.web.modules.operator.hardware.decommissionTstat.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.hoverText">Decommission the thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardware.decommissionTstat.hoverText">Decommission this device</entry>
     <entry key="yukon.web.modules.operator.hardware.decommissionTstat.label">Decommission</entry>
 
     <entry key="yukon.web.modules.operator.hardware.decommissionTstat.disabled.imageUrl">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
@@ -185,6 +190,7 @@
     <entry key="yukon.web.modules.operator.hardware.thermostatCommissioned">Commission command sent to thermostat {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostatDecommissioned">Decommission command sent to thermostat {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.messageSent">Text message sent to gateway {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandFailed">ZigBee command failed: {0}</entry>
     
     <!-- Meters -->
     <entry key="yukon.web.modules.operator.hardware.meters.title">Meters</entry>
@@ -199,7 +205,7 @@
     <!-- Gateways -->
     <entry key="yukon.web.modules.operator.hardware.gateways.title">Gateways</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.displayType">Gateway Type</entry>
-    <entry key="yukon.web.modules.operator.hardware.gateways.commStatus">Digi Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.gateways.commStatus">ZigBee Status</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.connectedDevice">Connected Device</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.none">No Gateways</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.gatewayMac">Gateway Mac</entry>
@@ -211,7 +217,6 @@
     <!-- Gateway view page -->
 	<entry key="yukon.web.modules.operator.hardware.sendTextMsg">Send Text Message</entry>
 	<entry key="yukon.web.modules.operator.hardware.assignedDevices.title">Assigned Devices</entry>
-	<entry key="yukon.web.modules.operator.hardware.deviceState">Device State</entry>
     <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.hardware.noAssignedDevices">No Assigned Devices</entry>
 	

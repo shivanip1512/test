@@ -47,6 +47,9 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
         
+        LitePoint connectStatus = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.CONNECTION_STATUS);
+        hardwareDto.setConnectStatusId(connectStatus.getLiteID());
+        
         hardwareDto.setGatewayId(zigbeeThermostat.getGatewayId());
     }
     
@@ -65,8 +68,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(HardwareDto hardwareDto) {
-        //Build up all the fields for inserting a Zigbee Util Pro.
-
+        //Build up all the fields for inserting a Zigbee Util Pro.        
         //Serial Number is unique, using that as the PaoName
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         

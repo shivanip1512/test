@@ -29,8 +29,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
             DigiGateway digiGateway = new DigiGateway();
             
             int deviceId = rs.getInt("DeviceId");
-            String typeStr = rs.getString("Type");
-            PaoType paoType = PaoType.getForDbString(typeStr);
+            PaoType paoType = rs.getEnum("Type", PaoType.class);
             
             digiGateway.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
             digiGateway.setDigiId(rs.getInt("DigiId"));
@@ -79,10 +78,10 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("SELECT DG.DeviceId,DG.DigiId,ZG.FirmwareVersion,");
         sql.append("           ZG.MacAddress,YPO.Type,HB.ManufacturerSerialNumber");
         sql.append("FROM DigiGateway DG ");
-        sql.append("JOIN ZBGateway ZG ON DG.DeviceId = ZG.DeviceId");
-        sql.append("JOIN YukonPAObject YPO ON DG.DeviceId = YPO.PAObjectID");
-        sql.append("JOIN InventoryBase IB ON DG.DeviceId = IB.DeviceID");
-        sql.append("JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
+        sql.append(  "JOIN ZBGateway ZG ON DG.DeviceId = ZG.DeviceId");
+        sql.append(  "JOIN YukonPAObject YPO ON DG.DeviceId = YPO.PAObjectID");
+        sql.append(  "JOIN InventoryBase IB ON DG.DeviceId = IB.DeviceID");
+        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
         sql.append("WHERE DG.DeviceId").eq(deviceId);
         
         DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);

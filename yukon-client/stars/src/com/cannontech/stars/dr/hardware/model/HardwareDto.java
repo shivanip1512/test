@@ -27,22 +27,28 @@ public class HardwareDto {
     private int routeId = 0;
     private Integer serviceCompanyId;
     private Integer warehouseId;
-    private String installCode;
     private String installNotes;
     private Integer deviceStatusEntryId;
     private Integer originalDeviceStatusEntryId;
-    private String twoWayDeviceName;
     private List<HardwareHistory> hardwareHistory;
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
+    
+    /* Non-ZigBee two way LCR fields */
+    private String twoWayDeviceName;
+    private boolean creatingNewTwoWayDevice;
+    
+    /* Meter fields */
     private String meterNumber;
     private List<SwitchAssignment> switchAssignments = LazyList.ofInstance(SwitchAssignment.class);
     
+    /* ZigBee fields */
+    private String installCode;
     private Integer gatewayId;
     private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
-    private boolean creatingNewTwoWayDevice;
+    private int connectStatusId;
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -299,6 +305,14 @@ public class HardwareDto {
 
     public Integer getGatewayId() {
         return gatewayId;
+    }
+
+    public void setConnectStatusId(int connectStatusId) {
+        this.connectStatusId = connectStatusId;
+    }
+    
+    public int getConnectStatusId() {
+        return connectStatusId;
     }
     
 }

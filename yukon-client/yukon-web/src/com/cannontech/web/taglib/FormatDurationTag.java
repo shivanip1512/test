@@ -21,7 +21,7 @@ public class FormatDurationTag extends YukonTagSupport {
     private String var;
     private boolean isVarSet = false;
     
-    private int value; //milliseconds
+    private long value; //milliseconds
     private boolean isValueSet = false; 
     
     private String type;
@@ -75,7 +75,7 @@ public class FormatDurationTag extends YukonTagSupport {
         getJspContext().getOut().print(formattedDuration);
     }
     
-    public void setValue(int value) {
+    public void setValue(long value) {
         this.value = value;
         this.isValueSet = true;
     }

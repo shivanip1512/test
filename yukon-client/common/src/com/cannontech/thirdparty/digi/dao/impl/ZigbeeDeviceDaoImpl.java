@@ -56,7 +56,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
         sql.append(  "JOIN InventoryBase IB ON ZE.DeviceId = IB.DeviceID");
         sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
-        sql.append(  "LEFT OUTER JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
+        sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
         sql.append("WHERE ZE.DeviceId").eq(deviceId);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<ZigbeeThermostat>() {
