@@ -372,7 +372,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
             sql.append("ORDER BY EntryId");
         }
 
-        // We're supporting different orderings anymore so convert them all to entry order.
+        // We're not supporting different orderings anymore so convert them all to entry order.
         List<YukonListEntry> entries = yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
         selectionList.setOrdering(YukonSelectionListOrder.ENTRY_ORDER);
         int index = 1;
