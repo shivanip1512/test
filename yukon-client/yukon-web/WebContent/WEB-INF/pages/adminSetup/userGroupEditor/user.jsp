@@ -54,7 +54,7 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                 <div class="pageActionArea">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button key="save" name="update" type="submit"/>
-                        <cti:button key="delete" name="delete" type="submit"/>
+                        <%-- TODO implement this later <cti:button key="delete" name="delete" type="submit"/> --%>
                         <cti:button key="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">

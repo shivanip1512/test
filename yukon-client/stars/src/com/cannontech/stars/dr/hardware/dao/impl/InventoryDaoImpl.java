@@ -338,11 +338,11 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public InventoryIdentifier getYukonInventory(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
-        sql.append("FROM InventoryBase i");
-        sql.append(  "LEFT JOIN LMHardwareBase h on i.InventoryID = h.InventoryID");
-        sql.append(  "LEFT JOIN MeterHardwareBase m on m.InventoryID = i.InventoryID");
-        sql.append("WHERE i.InventoryId").eq(inventoryId);
+        sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
+        sql.append("FROM InventoryBase I");
+        sql.append(  "LEFT JOIN LMHardwareBase H on I.InventoryID = H.InventoryID");
+        sql.append(  "LEFT JOIN MeterHardwareBase M on M.InventoryID = I.InventoryID");
+        sql.append("WHERE I.InventoryId").eq(inventoryId);
         
         return yukonJdbcTemplate.queryForObject(sql, inventoryIdentifierMapper);
     }
@@ -357,11 +357,11 @@ public class InventoryDaoImpl implements InventoryDao {
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
-                sql.append("FROM InventoryBase i");
-                sql.append(  "LEFT JOIN LMHardwareBase h on i.InventoryID = h.InventoryID");
-                sql.append(  "LEFT JOIN MeterHardwareBase m on m.InventoryID = i.InventoryID");
-                sql.append("WHERE i.InventoryId").in(subList);
+                sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
+                sql.append("FROM InventoryBase I");
+                sql.append(  "LEFT JOIN LMHardwareBase H on I.InventoryID = H.InventoryID");
+                sql.append(  "LEFT JOIN MeterHardwareBase M on M.InventoryID = I.InventoryID");
+                sql.append("WHERE I.InventoryId").in(subList);
                 return sql;
             }
         };

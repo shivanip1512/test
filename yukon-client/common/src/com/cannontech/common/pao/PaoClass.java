@@ -24,7 +24,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
     CUSTOMER(PAOGroups.CLASS_CUSTOMER, PAOGroups.STRING_CAT_CUSTOMER),
     CAPCONTROL(PAOGroups.CLASS_CAPCONTROL, PAOGroups.STRING_CAT_CAPCONTROL),
     // Schedule doesn't seem have a constant already defined anywhere.
-    SCHEDULE(0, "SCHEDULE"),
+    SCHEDULE(0, "Schedule"),
     RFMESH(DeviceClasses.RFMESH, "RFMESH");
     ;
 

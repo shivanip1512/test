@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
@@ -101,7 +103,7 @@ public interface StarsInventoryBaseDao {
     /**
      * Removes a hardware device from the account.
      */
-    public void removeInventoryFromAccount(int inventoryId, long removeDate);
+    public void removeInventoryFromAccount(int inventoryId, Instant removeDate);
     
     /**
      * Deletes a hardware device from the inventory.  Deletes only the LM Hardware for now.

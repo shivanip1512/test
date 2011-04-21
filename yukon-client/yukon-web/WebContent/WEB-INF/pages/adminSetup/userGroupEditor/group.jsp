@@ -28,8 +28,8 @@
                 <div class="pageActionArea">
                     <cti:displayForPageEditModes modes="EDIT">
                         <cti:button key="save" name="update" type="submit"/>
-                        <cti:button key="delete" id="deleteButton" type="button"/>
-                        <tags:confirmDialog nameKey=".confirmDelete" argument="${groupName}" on="#deleteButton" submitName="delete"/>
+                        <%-- TODO implement this later <cti:button key="delete" id="deleteButton" type="button"/>
+                        <tags:confirmDialog nameKey=".confirmDelete" argument="${groupName}" on="#deleteButton" submitName="delete"/>--%>
                         <cti:button key="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">

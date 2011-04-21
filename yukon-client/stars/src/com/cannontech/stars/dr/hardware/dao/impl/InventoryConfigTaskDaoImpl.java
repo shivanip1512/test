@@ -235,12 +235,12 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT i.InventoryID, h.LMHardwareTypeID, m.MeterTypeID");
-        sql.append(  "JOIN InventoryConfigTaskItem icti on icti.InventoryId = i.InventoryId");
-        sql.append(  "LEFT JOIN LmHardwareBase h ON h.InventoryId = i.InventoryId");
-        sql.append(  "LEFT JOIN MeterHardwareBase m ON m.InventoryId = i.InventoryId");
-        sql.append("WHERE icti.InventoryConfigTaskId").eq(taskId);
-        sql.append(  "AND icti.Status").eq(status);
+        sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
+        sql.append(  "JOIN InventoryConfigTaskItem ICTI on ICTI.InventoryId = I.InventoryId");
+        sql.append(  "LEFT JOIN LmHardwareBase H ON H.InventoryId = I.InventoryId");
+        sql.append(  "LEFT JOIN MeterHardwareBase M ON M.InventoryId = I.InventoryId");
+        sql.append("WHERE ICTI.InventoryConfigTaskId").eq(taskId);
+        sql.append(  "AND ICTI.Status").eq(status);
         
         return yukonJdbcTemplate.query(sql, inventoryIdentifierMapper);
     }

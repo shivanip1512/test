@@ -144,9 +144,14 @@ public class ButtonTag extends YukonTagSupport {
             } else {
                 override = true;
             }
-
+            
             if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
                 throw new RuntimeException("at least one of .imageUrl or .label is required for " + key);
+            }
+            
+            if (dialogButton && !override) {
+                String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
+                labelText += ellipsis;
             }
             
             if ((renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) 
@@ -227,10 +232,6 @@ public class ButtonTag extends YukonTagSupport {
                 }
                 out.write(">");
                 out.write(labelText);
-                if (dialogButton && !override) {
-                    String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
-                    out.write(ellipsis);
-                }
                 out.write("</span>");
             }
 

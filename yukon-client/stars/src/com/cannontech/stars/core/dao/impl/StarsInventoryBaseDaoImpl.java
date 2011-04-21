@@ -19,8 +19,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.HardwareClass;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -476,10 +476,10 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     }
 
     @Override
-    public void removeInventoryFromAccount(int inventoryId, long removeDate) {
+    public void removeInventoryFromAccount(int inventoryId, Instant removeDate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE InventoryBase");
-        sql.append("SET AccountId = 0, DeviceLabel = '', RemoveDate =").appendArgument(new Instant(removeDate));
+        sql.append("SET AccountId = 0, DeviceLabel = '', RemoveDate =").appendArgument(removeDate);
         sql.append("WHERE InventoryId").eq(inventoryId);
         
         yukonJdbcTemplate.update(sql);

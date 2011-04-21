@@ -8,17 +8,19 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PaoCategory implements DatabaseRepresentationSource{
-   	DEVICE(PAOGroups.STRING_CAT_DEVICE, PAOGroups.CAT_DEVICE),
-   	ROUTE(PAOGroups.STRING_CAT_ROUTE, PAOGroups.CAT_ROUTE),
-   	PORT(PAOGroups.STRING_CAT_PORT, PAOGroups.CAT_PORT),
-   	CUSTOMER(PAOGroups.STRING_CAT_CUSTOMER, PAOGroups.CAT_CUSTOMER),
-   	CAPCONTROL(PAOGroups.STRING_CAT_CAPCONTROL, PAOGroups.CAT_CAPCONTROL),
-   	LOADMANAGEMENT(PAOGroups.STRING_CAT_LOADMANAGEMENT, PAOGroups.CAT_LOADCONTROL),
-   	SCHEDULE("Schedule", 6), // not real
+    DEVICE(PAOGroups.STRING_CAT_DEVICE, PAOGroups.CAT_DEVICE),
+    ROUTE(PAOGroups.STRING_CAT_ROUTE, PAOGroups.CAT_ROUTE),
+    PORT(PAOGroups.STRING_CAT_PORT, PAOGroups.CAT_PORT),
+    CUSTOMER(PAOGroups.STRING_CAT_CUSTOMER, PAOGroups.CAT_CUSTOMER),
+    CAPCONTROL(PAOGroups.STRING_CAT_CAPCONTROL, PAOGroups.CAT_CAPCONTROL),
+    LOADMANAGEMENT(PAOGroups.STRING_CAT_LOADMANAGEMENT, PAOGroups.CAT_LOADCONTROL),
+    SCHEDULE("Schedule", 6), // not real
    	;
    	
-   	
-   	private final static ImmutableMap<String, PaoCategory> lookupByDbString;
+    private final int categoryId;
+    private final String dbString;
+    private final static ImmutableMap<String, PaoCategory> lookupByDbString;
+
     static {
         Builder<String, PaoCategory> dbBuilder = ImmutableMap.builder();
         for (PaoCategory paoCategory : values()) {
@@ -26,22 +28,23 @@ public enum PaoCategory implements DatabaseRepresentationSource{
         }
         lookupByDbString = dbBuilder.build();
     }
-   	
-   	private final int categoryId;
-   	private final String dbString;
-    
+
     private PaoCategory(String dbString, int categoryId) {
         this.dbString = dbString;
         this.categoryId = categoryId;
     }
     
+    public String getDbString() {
+        return dbString;
+    }
+    
     public int getCategoryId() {
         return categoryId;
     }
-
+    
     @Override
     public Object getDatabaseRepresentation() {
-        return name();
+        return dbString;
     }
     
     /**
@@ -56,5 +59,5 @@ public enum PaoCategory implements DatabaseRepresentationSource{
         Validate.notNull(paoCategory, dbString);
         return paoCategory;
     }
-    
+
 }

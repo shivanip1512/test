@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -354,12 +355,14 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             
         } else {
             int accountId = liteInventory.getAccountID();
-            long removeDate = liteInventory.getRemoveDate();
-            
-            if (removeDate <= 0) {
-                removeDate = new Date().getTime();
+            long remove = liteInventory.getRemoveDate();
+            Instant removeInstant;
+            if (remove <= 0) {
+                removeInstant = new Instant();
+            } else {
+                removeInstant = new Instant(remove);
             }
-            liteInventory.setRemoveDate(removeDate);
+            liteInventory.setRemoveDate(remove);
 
             // add UnInstall hardware event
             addUnInstallHardwareEvent(liteInventory, energyCompany, user);
@@ -370,7 +373,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
 
             // update the Inventory to remove it from the account
-            starsInventoryBaseDao.removeInventoryFromAccount(inventoryId, removeDate);
+            starsInventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
             
             // cleaup gateway assignments for zigbee devices
             HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();

@@ -122,6 +122,12 @@ public class UserEditorController {
         return "userGroupEditor/user.jsp";
     }
     
+    /* User Editor Edit Page*/
+    @RequestMapping(value="edit", method=RequestMethod.POST, params="cancel")
+    public String cancel(ModelMap model, int userId) {
+        model.addAttribute("userId", userId);
+        return "redirect:view";
+    }
 
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")

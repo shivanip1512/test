@@ -19,7 +19,6 @@
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="configureGatewayUrl" value="/spring/stars/operator/hardware/gateway/view?accountId=${accountId}&amp;inventoryId="/>
 
 <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
     <input type="hidden" name="accountId" value="${accountId}">
@@ -669,7 +668,6 @@
                                             buttonRenderMode="image"/>
                                 </c:if>
                             </cti:checkRolesAndProperties>
-                            <cti:img key="editConfig" href="${configureGatewayUrl}${gateway.inventoryId}"/>
                         </td>
                     </tr>
                 </c:forEach>
@@ -678,7 +676,6 @@
         </c:otherwise>
     </c:choose>
     
-
     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
         <div class="actionArea">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
