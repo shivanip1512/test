@@ -42,68 +42,45 @@ public:
 
     enum FCIPoints
     {
-        FCI_Status_Fault      = 1,
-        FCI_Status_NoPower    = 2,
-        FCI_Status_BatteryLow = 3,      // per YUK-4101
-        FCI_Status_Momentary  = 4,      //
-        FCI_Status_CurrentSurveyEnabled = 101,
-        FCI_Status_UDPAck               = 102,
+        GCVTx_Status_Fault                = 1,
+        GCVTx_Status_NoPower              = 2,
+        GCVTx_Status_Momentary            = 4,
+        GCVTx_Status_RSSI                 = 100,    // 5 state status 0-4 "bars".
 
-        FCI_Analog_NominalAmps    =   1,
-        FCI_Analog_PeakAmps       =   2,
-        FCI_Analog_Phase          =   3,
-        FCI_Analog_Temperature    =   4,
-        FCI_Analog_BatteryVoltage =   5,
-        FCI_Analog_Latitude       =  11,
-        FCI_Analog_Longitude      =  12,
-        FCI_Analog_FaultHistory   =  21,
-        FCI_Analog_CurrentSurvey  =  31,
-        FCI_Analog_UDPRepeats     = 101,
+        GCVTx_Analog_NominalAmps          =   1,
+        GCVTx_Analog_PeakAmps             =   2,
+        GCVTx_Analog_BatteryVoltage       =   3,
+        GCVTx_Analog_Temperature          =   4,
+        GCVTx_Analog_Latitude             =  11,
+        GCVTx_Analog_Longitude            =  12,
+        GCVTx_Analog_CurrentSurvey        =  31,
+        GCVTx_Analog_RSSI                 = 100,
+        GCVTx_Analog_BER                  = 101,
 
-        FCI_Accum_MomentaryCount =   1,
+        GCVTx_Accum_MomentaryCount        =   1,
+
     };
 
     enum GVAR1APoints
     {
-        GVAR1A_Status_OverCurrent      = 1,
-        GVAR1A_Status_ResetOverCurrent = 2,
-        GVAR1A_Status_ReedSwitch       = 3,
-        GVAR1A_Status_Calibrated       = 10,
+        GVARx_Status_OverCurrent       = 1,
+        GVARx_Status_ResetOverCurrent  = 2,
+        GVARx_Status_ReedSwitch        = 3,
+        GVARx_Status_Calibrated        = 10,
+        GVARx_Status_RSSI              = 100,   // 5 state status 0-4 bars.
 
-        GVAR1A_Analog_MaxCurrentReport  =   1,
-        GVAR1A_Analog_MinCurrentReport  =   2,
-        GVAR1A_Analog_Battery           =   3,
-        GVAR1A_Analog_Temperature       =   4,
-        GVAR1A_Analog_MaxCurrentPeriod  =   5,
-        GVAR1A_Analog_MinCurrentPeriod  =   6,
-        GVAR1A_Analog_Period            =   10,
-        GVAR1A_Analog_HighAlertSetpoint =   11,
-        GVAR1A_Analog_ResetAlertSetpoint=   12,
-
-        GVAR1A_Analog_RSSI              =  100,
-        GVAR1A_Analog_BER               =  101,
-    };
-
-    enum CBNMPoints
-    {
-        //CBNM_Status_Fault      = 1,
-        CBNM_Status_NoPower    = 2,
-        CBNM_Status_BatteryLow = 3,      // per YUK-4101
-        CBNM_Status_Momentary  = 4,      //
-        CBNM_Status_CurrentSurveyEnabled = 101,
-        CBNM_Status_UDPAck               = 102,
-
-        CBNM_Analog_NominalAmps    =   1,
-        CBNM_Analog_PeakAmps       =   2,
-        CBNM_Analog_Phase          =   3,
-        CBNM_Analog_Temperature    =   4,
-        CBNM_Analog_BatteryVoltage =   5,
-        CBNM_Analog_Latitude       =  11,
-        CBNM_Analog_Longitude      =  12,
-        CBNM_Analog_CurrentSurvey  =  31,
-        CBNM_Analog_UDPRepeats     = 101,
-
-        CBNM_Accum_MomentaryCount =   1,
+        GVARx_Analog_MaxCurrentReport  =   1,
+        GVARx_Analog_MinCurrentReport  =   2,
+        GVARx_Analog_BatteryVoltage    =   3,
+        GVARx_Analog_Temperature       =   4,
+        GVARx_Analog_MaxCurrentPeriod  =   5,
+        GVARx_Analog_MinCurrentPeriod  =   6,
+        GVARx_Analog_Period            =   10,
+        GVARx_Analog_HighAlertSetpoint =   11,
+        GVARx_Analog_ResetAlertSetpoint=   12,
+        GVARx_Analog_CurrentSurvey     =   31,
+        GVARx_Analog_RSSI              =  100,
+        GVARx_Analog_BER               =  101,
     };
 
     static void describeFrame(unsigned char *p_data, int p_len, int len, bool crc_included, bool ack_required, int devt, int ser);

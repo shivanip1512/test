@@ -20,16 +20,18 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
     crc_included = p_data[2] & 0x80;
     ack_required = p_data[2] & 0x40;
     len  = ((p_data[2] & 0x03) << 8) | p_data[3];
-    cid  = (p_data[4] << 8) | p_data[5];
-    seq  = (p_data[6] << 8) | p_data[7];
-    devt = (p_data[8] << 8) | p_data[9];
-    devt = (p_data[8] << 8) | p_data[9];
-    devr = p_data[10];
+    int pos = 4, usedbytes = 0, fcn;
+    cid  = convertBytes(p_data, pos, 2); // (p_data[4] << 8) | p_data[5];
+    seq  = convertBytes(p_data, pos, 2); // (p_data[6] << 8) | p_data[7];
+    devt = convertBytes(p_data, pos, 2); // (p_data[8] << 8) | p_data[9];
+    devr = convertBytes(p_data, pos, 1); // p_data[10];
+    ser  = convertBytes(p_data, pos, 4); // (p_data[11] << 24) | (p_data[12] << 16) | (p_data[13] <<  8) | p_data[14];
 
 
     if( last_seq != seq )   // Is this a new message for this device?
     {
-        int pos = 15, usedbytes = 0, fcn;
+        int usedbytes = 0, fcn;
+        pos = 15;
 
         CtiPointSPtr     point;
         CtiPointDataMsg *pdm;
@@ -61,8 +63,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             longitude = convertBytes( p_data, pos, 4);
                             longitude /= 10000.0;
 
-                            point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_Latitude, latitude, NormalQuality, AnalogPointType));
-                            point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_Longitude, longitude, NormalQuality, AnalogPointType));
+                            point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_Latitude, latitude, NormalQuality, AnalogPointType));
+                            point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_Longitude, longitude, NormalQuality, AnalogPointType));
 
                             string device_name;
 
@@ -104,7 +106,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
 
                             }
 
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Status_Fault, fault, NormalQuality, StatusPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_Fault, fault, NormalQuality, StatusPointType);
 
                             if( msg_flags & 0x20 )
                             {
@@ -112,16 +114,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             }
 
                             point_list.push_back(pdm);
-                            /*
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint: No Fault status point **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            */
 
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Status_NoPower, noPower, NormalQuality, StatusPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_NoPower, noPower, NormalQuality, StatusPointType);
 
                             if( msg_flags & 0x20 )
                             {
@@ -135,26 +129,26 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                                 battery_voltage = convertBytes( p_data, pos, 2);
                                 battery_voltage /= 1000.0;
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType));
                             }
                             if( msg_flags & 0x08 )
                             {
                                 temperature = convertSignedBytes( p_data, pos, 2);
                                 temperature /= 100.0;
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_Temperature, temperature, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_Temperature, temperature, NormalQuality, AnalogPointType));
                             }
                             if( msg_flags & 0x04 )
                             {
                                 amps_nominal = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
                             }
                             if( msg_flags & 0x02 )
                             {
                                 amps_peak = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
                             }
 
                             break;
@@ -274,7 +268,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             momCount = convertBytes( p_data, pos, 2);
 
 
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Accum_MomentaryCount, momCount, NormalQuality, PulseAccumulatorPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Accum_MomentaryCount, momCount, NormalQuality, PulseAccumulatorPointType);
 
                             if( msg_flags & 0x20 )
                             {
@@ -286,7 +280,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             // Toggle the momentary point true then false to allow an alarm to be recorded.
                             if( momCount > 0 )
                             {
-                                pdm = CTIDBG_new CtiPointDataMsg(FCI_Status_Momentary, true, NormalQuality, StatusPointType);
+                                pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_Momentary, true, NormalQuality, StatusPointType);
 
                                 if( msg_flags & 0x20 )
                                 {
@@ -303,13 +297,13 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             {
                                 amps_nominal = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
                             }
                             if( msg_flags & 0x02 )
                             {
                                 amps_peak = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
                             }
 
                             // TODO: Add duration here (msg_flags & 0x01)
@@ -337,6 +331,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             bool calibrated = msg_status & 0x10;
                             bool charge_enabled = msg_status & 0x08;
                             bool high_current = msg_status & 0x04;
+                            bool reed_triggered = msg_status & 0x02;
+                            bool momentary_triggered = msg_status & 0x01;
 
                             unsigned long time = CtiTime::now().seconds();
                             unsigned int momentary_cnt = 0, th_high, rpt_max, rpt_min, amps;
@@ -352,11 +348,11 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                                 }
                             }
 
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Status_Fault, fault, NormalQuality, StatusPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_Fault, fault, NormalQuality, StatusPointType);
                             pdm->setTime(time);
                             point_list.push_back(pdm);
 
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Status_NoPower, noPower, NormalQuality, StatusPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_NoPower, noPower, NormalQuality, StatusPointType);
                             pdm->setTime(time);
                             point_list.push_back(pdm);
 
@@ -365,7 +361,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                                 battery_voltage = convertBytes( p_data, pos, 2);
                                 battery_voltage /= 1000.0;
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType));
                             }
 
                             if( msg_flags & 0x08 )
@@ -373,27 +369,43 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                                 temperature = convertSignedBytes( p_data, pos, 2);
                                 temperature /= 100.0;
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_Temperature, temperature, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_Temperature, temperature, NormalQuality, AnalogPointType));
                             }
 
                             if( msg_flags & 0x04 )
                             {
                                 amps_nominal = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_NominalAmps, amps_nominal, NormalQuality, AnalogPointType));
                             }
 
                             if( msg_flags & 0x02 )
                             {
                                 amps_peak = convertBytes( p_data, pos, 2);
 
-                                point_list.push_back(CTIDBG_new CtiPointDataMsg(FCI_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
+                                point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_PeakAmps, amps_peak, NormalQuality, AnalogPointType));
                             }
 
                             momentary_cnt = convertBytes( p_data, pos, 2);
-                            pdm = CTIDBG_new CtiPointDataMsg(FCI_Accum_MomentaryCount, momentary_cnt, NormalQuality, PulseAccumulatorPointType);
+                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Accum_MomentaryCount, momentary_cnt, NormalQuality, PulseAccumulatorPointType);
                             pdm->setTime(time);
                             point_list.push_back(pdm);
+
+                            // Toggle the momentary point true then false to allow an alarm to be recorded.
+                            if( momentary_triggered && momentary_cnt > 0 )
+                            {
+                                pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_Momentary, true, NormalQuality, StatusPointType);
+
+                                if( msg_flags & 0x20 )
+                                {
+                                    pdm->setTime(time);
+                                }
+
+                                point_list.push_back((CtiPointDataMsg *)pdm->replicateMessage());
+                                pdm->setMillis(10); // We pulse the false value "at time now + 1ms ".
+                                pdm->setValue(false);
+                                point_list.push_back(pdm);
+                            }
 
 
                             th_high = convertBytes( p_data, pos, 2);
@@ -401,27 +413,45 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             rpt_min = convertBytes( p_data, pos, 2);
 
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint: ADD CODE FOR 0x06 DECODE  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            int time_offset = 3600; // Standard offset is 3600 seconds per record
+                            double dmult = 1.0, dvalue;
+
+                            if(ser == 60000006 ||
+                               ser == 60000007 ||
+                               ser == 11661166 ||
+                               ser == 22772277 ||
+                               ser == 33883388 ||
+                               ser == 60000050 ||
+                               (60000020 <= ser && ser <= 60000045))
+                            {    // dTechs devices - this is horrible - 5 minute offsets.
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint REMOVE dTechs code someday - dirty  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                time_offset = 300;
+                                dmult = 0.01;
                             }
 
-                            time -= rec_num * 3600;
+                            time -= rec_num * time_offset;
 
                             for(int i = 0; i < rec_num; i++)
                             {
-                                time += 3600;
+                                time += time_offset;
                                 amps = convertBytes( p_data, pos, 2);
 
-                                // ACH
+                                pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Analog_CurrentSurvey, amps, NormalQuality, AnalogPointType);
+                                pdm->setTime(time);
+                                point_list.push_back(pdm);
                             }
 
                             if(msg_flags & 0x01)
                             {
                                 // REC[E] included
                                 amps = convertBytes( p_data, pos, 2);
-
-                                // ACH for DECODE
+                                pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Analog_CurrentSurvey, amps, NormalQuality, AnalogPointType);
+                                pdm->setTime(time);
+                                point_list.push_back(pdm);
                             }
 
                             break;
@@ -429,14 +459,191 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                     case 0x08:
                         {
                             // This is a configuration packet!
-                            unsigned char total_len = p_data[pos++];   // This is the total length of the Information elements contained herein.
+                            int total_len = p_data[pos++];    // This is the total length of the Information elements contained herein.
+                            const unsigned char *pConfig = &p_data[pos];    // This is a pointer to the config
+                            int cfg_pos = 0;
 
+                            int url_cnt = 0;
+                            string stg;
+                            string url_name;
+                            string port_name;
+
+                            while( cfg_pos < total_len )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** ACH: Process the configuration packet. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                unsigned char rsvd;    // Reserved byte
+                                unsigned char ie_type = pConfig[cfg_pos++];   // Information Element Type
+                                unsigned char ie_len = pConfig[cfg_pos++];    // Information Element Length
+                                int next_ie_pos = cfg_pos + ie_len;           //
+
+                                switch( ie_type )
+                                {
+                                case 0x01:
+                                    {
+                                        // APN Device to Server Information Element
+                                        int periodic = pConfig[cfg_pos++];    // Nonzero for periodic configuraiton reports.
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+
+                                        string apn = convertBytesToString(pConfig, cfg_pos, ie_len-2 );
+                                        break;
+                                    }
+                                case 0x02:
+                                    {
+                                        // IP Target Information Device to Server
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+
+                                        string port = convertBytesToString(pConfig, cfg_pos, 6);
+                                        string url  = convertBytesToString(pConfig, cfg_pos, ie_len - 8);
+
+                                        url_name = "url" + CtiNumStr(url_cnt);
+                                        port_name = "ip port" + CtiNumStr(url_cnt++);
+
+                                        break;
+                                    }
+                                case 0x03:
+                                    {
+                                        // Serial Number Information Device to Server
+                                        unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+
+                                        unsigned int radio_sn_3 = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int radio_sn_2 = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int radio_sn_1 = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int radio_sn_0 = convertBytes(pConfig, cfg_pos, 4);
+
+                                        break;
+                                    }
+                                case 0x04:
+                                    {
+                                        // Serial Number Information Device to Server
+                                        unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+
+                                        string rsn = convertBytesToString(pConfig, cfg_pos, next_ie_pos - cfg_pos);
+                                        break;
+                                    }
+                                case 0x05:
+                                case 0x85:
+                                case 0x06:
+                                    {
+                                        // Diagnostic GCVT.
+                                        if(ie_type != 0x06)
+                                        {
+                                            for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                            {
+                                                rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                                stg = "eDbg " + CtiNumStr(rsvd);
+                                                rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                                // add_to_csv_summary(keys, values, stg, rsvd);
+                                            }
+
+                                            int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
+                                            int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
+                                        }
+
+                                        int firmware_major   =  convertBytes(pConfig, cfg_pos, 1);
+                                        int firmware_minor   =  convertBytes(pConfig, cfg_pos, 1);
+                                        int reset_count      =  convertBytes(pConfig, cfg_pos, 2);
+                                        int SPI_errors       =  convertBytes(pConfig, cfg_pos, 2);
+                                        int momentary_count  =  convertBytes(pConfig, cfg_pos, 1);
+                                        int fault_count      =  convertBytes(pConfig, cfg_pos, 1);
+                                        int all_clear_count  =  convertBytes(pConfig, cfg_pos, 1);
+                                        int power_loss_count =  convertBytes(pConfig, cfg_pos, 1);
+                                        int reset_momentary  =  convertBytes(pConfig, cfg_pos, 1);
+                                        int revert_cnt       =  convertBytes(pConfig, cfg_pos, 1);
+
+                                        // the following values pertain to devr >= 4
+                                        int abfw_major;
+                                        int abfw_minor;
+                                        int rssi;
+                                        int ber;
+                                        int rs_cnt;
+
+                                        if(devr >= 4 && cfg_pos < next_ie_pos)
+                                        {
+                                            abfw_major = convertBytes(pConfig, cfg_pos, 1);
+                                            abfw_minor = convertBytes(pConfig, cfg_pos, 1);
+                                            rssi       = convertBytes(pConfig, cfg_pos, 1);
+                                            ber        = convertBytes(pConfig, cfg_pos, 1);
+                                            rs_cnt     = convertBytes(pConfig, cfg_pos, 1);
+
+                                            int bars = 0;
+
+                                            if(rssi > 14) bars = 4;
+                                            else if(9 < rssi && rssi <= 14) bars = 3;
+                                            else if(5 < rssi && rssi <= 9) bars = 2;
+                                            else if(0 < rssi && rssi <= 5) bars = 1;
+
+                                            pdm = CTIDBG_new CtiPointDataMsg(GCVTx_Status_RSSI, bars, NormalQuality, StatusPointType);
+                                            point_list.push_back((CtiPointDataMsg*)pdm->replicateMessage());
+                                            pdm->setMillis(10); // Reset the value to allow new alarms.
+                                            pdm->setValue(0.0);
+                                            point_list.push_back(pdm);
+
+                                            point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_RSSI, rssi, NormalQuality, AnalogPointType));
+                                            point_list.push_back(CTIDBG_new CtiPointDataMsg(GCVTx_Analog_BER, ber, NormalQuality, AnalogPointType));
+                                        }
+
+                                        break;
+                                    }
+                                case 0x12:
+                                    {
+                                        // GCVT(x) configuration parameters.
+                                        int report_period_hours = convertBytes(pConfig, cfg_pos, 1);
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                        int high_current_threshold = convertBytes(pConfig, cfg_pos, 2);
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << "  new/unknown ie_type  " << CtiNumStr((int)ie_type).hex().zpad(2) << "  total config len " << (int)total_len << " IE Position " << (int)(cfg_pos-2) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+
+                                        if(cfg_pos + ie_len < total_len)
+                                        {
+                                            // Process through the ie in the for loop - HOP OVER IT.
+                                            string rawBytes = "";
+                                            for( int xx = 0; xx < ie_len; xx++ )
+                                            {
+                                                if( xx == 0 ) rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                                else rawBytes += " " + CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                            }
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": " << rawBytes << endl;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            cfg_pos = total_len;
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                if(cfg_pos < next_ie_pos)
+                                {
+                                    string rawBytes = "";
+                                    while(cfg_pos < next_ie_pos)
+                                    {
+                                        rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString() + " ";
+                                    }
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": had extra bytes: " << rawBytes << endl;
+                                    }
+                                }
                             }
 
                             pos += total_len;   // hop past the config.
+
+
                             break;
                         }
                     default:
@@ -567,11 +774,11 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
 
                             CtiPointDataMsg *pdm;
 
-                            pdm = CTIDBG_new CtiPointDataMsg(CBNM_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
                             pdm->setTime(time);
                             point_list.push_back(pdm);
 
-                            pdm = CTIDBG_new CtiPointDataMsg(CBNM_Analog_CurrentSurvey, 0.0, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_CurrentSurvey, 0.0, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
 
                             //  get the timestamp ready
                             time -= rate * count;
@@ -600,8 +807,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             bool hasTime, over = false, reset = false, calibrated, reed_triggered;
                             unsigned char flags = p_data[pos++];
 
-                            CtiTime arrival_time, last_measurement_time;
-
+                            unsigned long emaxtime, emintime;
+                            CtiTime time;
                             int interval_cnt = 0, sample_rate = 0, rate, ts_max, ts_min;
                             float battery_voltage = 0.0, temperature = 0.0, min_reading, max_reading;
 
@@ -615,11 +822,11 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
 
                                 if( flags & 0x80 )
                                 {
-                                    last_measurement_time -= tmpTime;
+                                    time -= tmpTime;
                                 }
                                 else
                                 {
-                                    last_measurement_time  = tmpTime;
+                                    time  = tmpTime;
                                 }
                             }
 
@@ -663,93 +870,68 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             over = (report_flgs & 0x80) == 0x80;        // Over Threshold
                             reset = (report_flgs & 0x40) == 0x40;       // Reset Threshold
 
-/**************************************************************
-GVAR1A_Analog_MaxCurrentReport  =   1,
-GVAR1A_Analog_MinCurrentReport  =   2,
-GVAR1A_Analog_Battery           =   3,
-GVAR1A_Analog_Temperature       =   4,
-GVAR1A_Analog_MaxCurrentPeriod  =   5,
-GVAR1A_Analog_MinCurrentPeriod  =   6,
-GVAR1A_Analog_Period            =   10,
-GVAR1A_Analog_HighAlertSetpoint =   11,
-GVAR1A_Analog_ResetAlertSetpoint =  12,
-                            *
-**************************************************************/
-
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentReport, report_max, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_Calibrated, calibrated, NormalQuality, StatusPointType);
+                            pdm->setTime(time);
                             point_list.push_back(pdm);
 
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MinCurrentReport, report_min, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_OverCurrent, over, NormalQuality, StatusPointType);
+                            pdm->setTime(time);
                             point_list.push_back(pdm);
 
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Battery, battery_voltage, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_ReedSwitch, reed_triggered, NormalQuality, StatusPointType);
+                            pdm->setTime(time);
                             point_list.push_back(pdm);
 
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Temperature, temperature, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
-                            point_list.push_back(pdm);
-
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Period, rate, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
-                            point_list.push_back(pdm);
-
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_HighAlertSetpoint, threshold_hi, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
-                            point_list.push_back(pdm);
-
-                            pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_ResetAlertSetpoint, threshold_lo, NormalQuality, AnalogPointType);
-                            pdm->setTime(arrival_time);
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_ResetOverCurrent, reset, NormalQuality, StatusPointType);
+                            pdm->setTime(time);
                             point_list.push_back(pdm);
 
 
-/*
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time:          " << CtiTime(time) << endl;
-                                dout << CtiTime() << " battery:       " << battery_voltage << endl;
-                                dout << CtiTime() << " temperature    " << temperature << endl;
-                                dout << CtiTime() << " record rate    " << string(CtiNumStr(rate))     << endl;
-                                dout << CtiTime() << " calibrated     " << calibrated << endl;
-                                dout << CtiTime() << " reed trigger   " << reed_triggered << endl;
-                                dout << CtiTime() << " high threshold " << (float)threshold_hi / 10.0 << endl;
-                                dout << CtiTime() << " low  threshold " << (float)threshold_lo / 10.0 << endl;
-                                dout << CtiTime() << " report max     " << report_max << endl;
-                                dout << CtiTime() << " report min     " << report_min << endl;
-                                dout << CtiTime() << " record count   " << rec_num << endl;
-                                dout << CtiTime() << " report period  " << report_period << endl;
-                                dout << CtiTime() << " over alarm     " << over << endl;
-                                dout << CtiTime() << " reset alarm    " << reset << endl;
-                            }
-*/
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MaxCurrentReport, report_max, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MinCurrentReport, report_min, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_BatteryVoltage, battery_voltage, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_Temperature, temperature, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_Period, rate, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_HighAlertSetpoint, threshold_hi, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
+
+                            pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_ResetAlertSetpoint, threshold_lo, NormalQuality, AnalogPointType);
+                            pdm->setTime(time);
+                            point_list.push_back(pdm);
 
                             // get the timestamp ready
-                            CtiTime measurement_time = last_measurement_time - rate * rec_num;
+                            CtiTime measurement_time = time - rate * rec_num;
 
                             for( int i = 0; i < rec_num; i++ )
                             {
-								measurement_time += rate;
+                                measurement_time += rate;
                                 max_reading = convertBytes( p_data, pos, 2) / 10.0;
                                 min_reading = convertBytes( p_data, pos, 2) / 10.0;
                                 ts_max = convertBytes( p_data, pos, 1) & 0x3f;
                                 ts_min = convertBytes( p_data, pos, 1) & 0x3f;
 
-/*
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " interval time: " << CtiTime(time) <<
-                                        " min time " << measurement_time - ((interval_cnt - ts_max - 1) * sample_rate) << " min amps: " << CtiNumStr(min_reading) <<
-                                        " max time " << measurement_time - ((interval_cnt - ts_min - 1) * sample_rate) << " max amps: " << CtiNumStr(max_reading) <<
-                                        " ts_min/max: " << CtiNumStr(ts_min) << "/" << CtiNumStr(ts_max) << endl;
-                                }
-*/
-                                pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
+                                pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
                                 pdm->setTime(measurement_time - ((interval_cnt - ts_max - 1) * sample_rate));
                                 point_list.push_back(pdm);
 
-                                pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MinCurrentPeriod, min_reading, NormalQuality, AnalogPointType);
+                                pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MinCurrentPeriod, min_reading, NormalQuality, AnalogPointType);
                                 pdm->setTime(measurement_time - ((interval_cnt - ts_min - 1) * sample_rate));
                                 point_list.push_back(pdm);
                             }
@@ -768,7 +950,7 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 
                                 if(reed_triggered)
                                 {
-                                    emaxtime = emintime = arrival_time.seconds(); // Time of arrival!
+                                    emaxtime = emintime = CtiTime::now().seconds(); // Time of arrival!
                                 }
                                 else if(reset)
                                 {
@@ -789,30 +971,18 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 
                                 if( emaxtime )
                                 {
-                                    pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
+                                    pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
                                     pdm->setTime(CtiTime(emaxtime));
                                     point_list.push_back(pdm);
                                 }
 
                                 if( emintime )
                                 {
-                                    pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MinCurrentPeriod, min_reading, NormalQuality, AnalogPointType);
+                                    pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_MinCurrentPeriod, min_reading, NormalQuality, AnalogPointType);
                                     pdm->setTime(CtiTime(emintime));
                                     point_list.push_back(pdm);
                                 }
                             }
-/*
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " event triggered record reed/over/reset: " << reed_triggered << "/" << over << "/" << reset << endl;
-                                dout << CtiTime() <<
-                                    " min time " << CtiTime(emintime) <<
-                                    " min amps: " << string(CtiNumStr(min_reading)) <<
-                                    " max time " << CtiTime(emaxtime) <<
-                                    " max amps: " << string(CtiNumStr(max_reading)) <<
-                                    " ts_min / max: " << string(CtiNumStr(ts_min)) << " / " << string(CtiNumStr(ts_max)) << endl;
-                            }
-*/
 
                             break;
                         }
@@ -845,14 +1015,6 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 
                                         string apn = convertBytesToString(pConfig, cfg_pos, ie_len-2 );
 
-                                        /*
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "APN                            : " << apn << endl;
-                                            dout << "periodic cfg reports           : " << periodic << endl;
-                                        }
-                                        */
-
                                         break;
                                     }
                                 case 0x02:
@@ -867,14 +1029,6 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
                                         url_name = "url" + CtiNumStr(url_cnt);
                                         port_name = "ip port" + CtiNumStr(url_cnt++);
 
-                                        /*
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "URL                            : " << url << endl;
-                                            dout << "IP Port                        : " << port << endl;
-                                        }
-                                        */
-
                                         break;
                                     }
                                 case 0x03:
@@ -882,23 +1036,16 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
                                         // Serial Number Information Device to Server
                                         unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
                                         unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+                                        string radio_sn  = convertBytesToString(pConfig, cfg_pos, 16);
 
-                                        unsigned int radio_sn_3 = convertBytes(pConfig, cfg_pos, 4);
-                                        unsigned int radio_sn_2 = convertBytes(pConfig, cfg_pos, 4);
-                                        unsigned int radio_sn_1 = convertBytes(pConfig, cfg_pos, 4);
-                                        unsigned int radio_sn_0 = convertBytes(pConfig, cfg_pos, 4);
-
-                                        /*
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                            dout << "radio serial number            : " << hex << showbase << uppercase << setfill('0')
-                                                                                        << setw(2) << radio_sn_3 << " / "
-                                                                                        << setw(2) << radio_sn_2 << " / "
-                                                                                        << setw(2) << radio_sn_1 << " / "
-                                                                                        << setw(2) << radio_sn_0 << endl;
-                                        }
-                                        */
+                                        break;
+                                    }
+                                case 0x04:
+                                    {
+                                        // Serial Number Information Device to Server
+                                        unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
+                                        unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+                                        string radio_sn  = convertBytesToString(pConfig, cfg_pos, 24);
 
                                         break;
                                     }
@@ -910,31 +1057,25 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
                                         int over_current_threshold = convertBytes(pConfig, cfg_pos, 2);
                                         int reset_threshold = convertBytes(pConfig, cfg_pos, 2);
 
-                                        /*
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "GVAR report frequency          : " << report_freq_days << endl;
-                                            dout << "over current threshold         : " << over_current_threshold << endl;
-                                            dout << "reset current threshold        : " << reset_threshold << endl;
-                                        }
-                                        */
-
                                         break;
                                     }
                                 case 0x05:
                                 case 0x85:
+                                case 0x06:
                                     {
                                         // Diagnostic.
-
-                                        for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                        if(ie_type != 0x06)
                                         {
-                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
-                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                            {
+                                                rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                                rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            }
+
+                                            int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
+                                            int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                         }
 
-
-                                        int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
-                                        int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                         int firmware_major   =  convertBytes(pConfig, cfg_pos, 1);
                                         int firmware_minor   =  convertBytes(pConfig, cfg_pos, 1);
                                         int reset_count      =  convertBytes(pConfig, cfg_pos, 2);
@@ -946,26 +1087,23 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
                                         int reset_momentary  =  convertBytes(pConfig, cfg_pos, 1);
                                         int revert_cnt       =  convertBytes(pConfig, cfg_pos, 1);
 
-                                        /*
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "firmware major                 : " << firmware_major  << endl;
-                                            dout << "firmware minor                 : " << firmware_minor  << endl;
-                                            dout << "reset_count                    : " << reset_count     << endl;
-                                            dout << "spi_errors                     : " << SPI_errors      << endl;
-                                            dout << "analog firmware major          : " << fw_major << endl;
-                                            dout << "analog firmware minor          : " << fw_minor     << endl;
-                                            dout << "rssi                           : " << rssi << endl;
-                                            dout << "ber                            : " << ber<< endl;
-                                            dout << "reset_momentary                : " << reset_momentary << endl;
-                                            dout << "revert count                   : " << revert_cnt << endl << endl;
-                                        }
-                                        */
-
-                                        pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_RSSI, rssi, NormalQuality, AnalogPointType);
+                                        pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_RSSI, rssi, NormalQuality, AnalogPointType);
                                         point_list.push_back(pdm);
 
-                                        pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_BER, ber, NormalQuality, AnalogPointType);
+                                        int bars = 0;
+
+                                        if(rssi > 14) bars = 4;
+                                        else if(9 < rssi && rssi <= 14) bars = 3;
+                                        else if(5 < rssi && rssi <= 9) bars = 2;
+                                        else if(0 < rssi && rssi <= 5) bars = 1;
+
+                                        pdm = CTIDBG_new CtiPointDataMsg(GVARx_Status_RSSI, bars, NormalQuality, StatusPointType);
+                                        point_list.push_back((CtiPointDataMsg*)pdm->replicateMessage());
+                                        pdm->setMillis(10);
+                                        pdm->setValue(0);
+                                        point_list.push_back(pdm);
+
+                                        pdm = CTIDBG_new CtiPointDataMsg(GVARx_Analog_BER, ber, NormalQuality, AnalogPointType);
                                         point_list.push_back(pdm);
 
 
@@ -1066,17 +1204,18 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
     unsigned cid, seq, devr, crc;
 
-    int pos = 15, usedbytes = 0, fcn;
+    int pos = 4, usedbytes = 0, fcn;
 
     add_to_csv_summary(keys, values, "CRC included", crc_included);
     add_to_csv_summary(keys, values, "ACK required", ack_required);
 
     add_to_csv_summary(keys, values, "length", len);
 
-    cid  = (p_data[4] << 8) | p_data[5];
-    seq  = (p_data[6] << 8) | p_data[7];
-    devr = p_data[10];
-
+    cid  = convertBytes(p_data, pos, 2);
+    seq  = convertBytes(p_data, pos, 2);
+    devt = convertBytes(p_data, pos, 2);
+    devr = convertBytes(p_data, pos, 1);
+    ser  = convertBytes(p_data, pos, 4);
 
     add_to_csv_summary(keys, values, "CID",  cid);
     add_to_csv_summary(keys, values, "SEQ",  seq);
@@ -1098,6 +1237,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
         dout << endl;
     }
+
+    pos = 15;
 
     switch( devt )
     {
@@ -1445,6 +1586,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         bool calibrated = msg_status & 0x10;
                         bool charge_enabled = msg_status & 0x08;
                         bool high_current = msg_status & 0x04;
+                        bool reed_triggered = msg_status & 0x02;
+                        bool momentary_triggered = msg_status & 0x01;
 
                         add_to_csv_summary(keys, values, "fault", fault);
                         add_to_csv_summary(keys, values, "event", event);
@@ -1452,6 +1595,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         add_to_csv_summary(keys, values, "calibrated", calibrated);
                         add_to_csv_summary(keys, values, "charge ckt enabled", charge_enabled);
                         add_to_csv_summary(keys, values, "high current detect", high_current);
+                        add_to_csv_summary(keys, values, "reed triggered", reed_triggered);
+                        add_to_csv_summary(keys, values, "momentary triggered", momentary_triggered);
 
                         unsigned long time = CtiTime::now().seconds();
                         unsigned int momentary_cnt = 0, th_high, rpt_max, rpt_min, amps;
@@ -1466,6 +1611,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             dout << CtiTime() << " calibrated: " << calibrated << endl;
                             dout << CtiTime() << " charge ckt enabled: " << charge_enabled << endl;
                             dout << CtiTime() << " high current detect: " << high_current << endl;
+                            dout << CtiTime() << " reed triggered: " << reed_triggered << endl;
+                            dout << CtiTime() << " momentary triggered: " << momentary_triggered << endl;
                         }
 
                         add_to_csv_summary(keys, values, "includes time", msg_flags & 0x20);
@@ -1569,19 +1716,34 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " threshold high: " << th_high << endl;
-                            dout << CtiTime() << " report max amps: " << rpt_max << endl;
                             dout << CtiTime() << " report min amps: " << rpt_min << endl;
+                            if( msg_flags & 0x04 ) dout << CtiTime() << " report avg amps: " << amps_nominal << endl;
+                            dout << CtiTime() << " report max amps: " << rpt_max << endl;
                         }
 
-                        time -= rec_num * 3600;
+                        int time_offset = 3600; // Standard offset is 3600 seconds per record
+                        double dmult = 1.0, dvalue;
+
+                        if(ser == 60000006 || ser == 60000007 || ser == 11661166 || ser == 22772277 || ser == 33883388 || ser == 60000050 || (60000020 <= ser && ser <= 60000045))
+                        {   // dTechs devices - this is horrible - 5 minute offsets.
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint REMOVE dTechs code someday - dirty **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            time_offset = 300;
+                            dmult = 0.01;
+                        }
+
+                        time -= rec_num * time_offset;
 
                         for(int i = 0; i < rec_num; i++)
                         {
-                            time += 3600;
+                            time += time_offset;
                             amps = convertBytes( p_data, pos, 2);
+                            dvalue = amps * dmult;
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime(time) << " record[" << i << "]: " << amps << endl;
+                                dout << CtiTime(time) << " record[" << i << "]: " << dvalue << endl;
                             }
                         }
 
@@ -1589,9 +1751,49 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             // REC[E] included
                             amps = convertBytes( p_data, pos, 2);
+                            dvalue = amps * dmult;
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " record[E]: " << amps << endl;
+                                dout << CtiTime() << " record[event]: " << dvalue << endl;
+                            }
+                        }
+
+                        if(event)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                if(reed_triggered)
+                                {
+                                    dout << CtiTime() << " *** REED SWITCH TRIGGERED MESSAGE " << endl << endl;
+                                }
+                                else if(fault)
+                                {
+                                    dout << CtiTime() << " *** PERMANENT FAULT MESSAGE " << endl << endl;
+                                }
+                                else if(high_current)
+                                {
+                                    dout << CtiTime() << " *** HIGH CURRENT THRESHOLD EXCEEDED MESSAGE " << endl << endl;
+                                }
+                                else if(momentary_triggered)
+                                {
+                                    dout << CtiTime() << " *** MOMENTARY TRIGGERED EVENT   " << endl << endl;
+                                }
+                                else if(noPower)
+                                {
+                                    dout << CtiTime() << " *** NO POWER(CURRENT BELOW DETECT) MESSAGE " << endl << endl;
+                                }
+                                else
+                                {
+                                    dout << CtiTime() << " *** POWER RESTORE (CURRENT ABOVE DETECT) MESSAGE " << endl << endl;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " *** SUPERVISORY MESSAGE " << endl << endl;
                             }
                         }
 
@@ -1687,30 +1889,55 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
                                         dout << "radio serial number            : " << hex << showbase << uppercase << setfill('0')
-                                                                                    << setw(2) << radio_sn_3 << " / "
-                                                                                    << setw(2) << radio_sn_2 << " / "
-                                                                                    << setw(2) << radio_sn_1 << " / "
-                                                                                    << setw(2) << radio_sn_0 << endl;
+                                        << setw(2) << radio_sn_3 << " / "
+                                        << setw(2) << radio_sn_2 << " / "
+                                        << setw(2) << radio_sn_1 << " / "
+                                        << setw(2) << radio_sn_0 << endl;
                                     }
+                                    break;
+                                }
+                            case 0x04:
+                                {
+                                    // Serial Number Information Device to Server
+                                    unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
+                                    unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+
+                                    string rsn = convertBytesToString(pConfig, cfg_pos, next_ie_pos - cfg_pos);
+
+                                    add_to_csv_summary(keys, values, "cooper serial high", cooper_sn_h);
+                                    add_to_csv_summary(keys, values, "cooper serial low ", cooper_sn_l);
+
+                                    add_to_csv_summary(keys, values, "radio serial", rsn);
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
+                                        dout << "radio serial number            : " << rsn << endl;
+                                    }
+
 
                                     break;
                                 }
                             case 0x05:
                             case 0x85:
+                            case 0x06:
                                 {
                                     // Diagnostic GCVT.
 
-                                    for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                    if(ie_type != 0x06)
                                     {
-                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
-                                        stg = "eDbg " + CtiNumStr(rsvd);
-                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
-                                        // add_to_csv_summary(keys, values, stg, rsvd);
+                                        for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                        {
+                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            stg = "eDbg " + CtiNumStr(rsvd);
+                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            // add_to_csv_summary(keys, values, stg, rsvd);
+                                        }
+
+
+                                        int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
+                                        int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                     }
-
-
-                                    int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
-                                    int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                     int firmware_major   =  convertBytes(pConfig, cfg_pos, 1);
                                     int firmware_minor   =  convertBytes(pConfig, cfg_pos, 1);
                                     int reset_count      =  convertBytes(pConfig, cfg_pos, 2);
@@ -1729,8 +1956,6 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     int ber;
                                     int rs_cnt;
 
-                                    add_to_csv_summary(keys, values, "guardbyte0",              guardbyte0      );
-                                    add_to_csv_summary(keys, values, "guardbyte1",              guardbyte1      );
                                     add_to_csv_summary(keys, values, "firmware major",          firmware_major  );
                                     add_to_csv_summary(keys, values, "firmware minor",          firmware_minor  );
                                     add_to_csv_summary(keys, values, "reset count",             reset_count     );
@@ -1864,7 +2089,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                 }
             }
 
-            if( gConfigParms.getValueAsInt("FCI_CSV_SUMMARY") )
+            if( gConfigParms.getValueAsInt("GCVTx_CSV_SUMMARY") )
             {
                 string rawBytes = "\"";
 
@@ -2274,29 +2499,40 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     // Serial Number Information Device to Server
                                     unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
                                     unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
-
-                                    unsigned int radio_sn_3 = convertBytes(pConfig, cfg_pos, 4);
-                                    unsigned int radio_sn_2 = convertBytes(pConfig, cfg_pos, 4);
-                                    unsigned int radio_sn_1 = convertBytes(pConfig, cfg_pos, 4);
-                                    unsigned int radio_sn_0 = convertBytes(pConfig, cfg_pos, 4);
+                                    string radio_sn  = convertBytesToString(pConfig, cfg_pos, 16);
 
                                     add_to_csv_summary(keys, values, "cooper serial high", cooper_sn_h);
                                     add_to_csv_summary(keys, values, "cooper serial low ", cooper_sn_l);
-
-                                    add_to_csv_summary(keys, values, "radio serial[3]", radio_sn_3);
-                                    add_to_csv_summary(keys, values, "radio serial[2]", radio_sn_2);
-                                    add_to_csv_summary(keys, values, "radio serial[1]", radio_sn_1);
-                                    add_to_csv_summary(keys, values, "radio serial[0]", radio_sn_0);
+                                    add_to_csv_summary(keys, values, "radio serial", radio_sn);
 
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                        dout << "radio serial number            : " << hex << showbase << uppercase << setfill('0')
-                                                                                    << setw(2) << radio_sn_3 << " / "
-                                                                                    << setw(2) << radio_sn_2 << " / "
-                                                                                    << setw(2) << radio_sn_1 << " / "
-                                                                                    << setw(2) << radio_sn_0 << endl;
+                                        dout << "radio serial number            : " << radio_sn << endl;
                                     }
+
+
+                                    break;
+                                }
+                            case 0x04:
+                                {
+                                    // Serial Number Information Device to Server
+                                    unsigned int cooper_sn_h = convertBytes(pConfig, cfg_pos, 4);
+                                    unsigned int cooper_sn_l = convertBytes(pConfig, cfg_pos, 4);
+
+                                    string rsn = convertBytesToString(pConfig, cfg_pos, next_ie_pos - cfg_pos);
+
+                                    add_to_csv_summary(keys, values, "cooper serial high", cooper_sn_h);
+                                    add_to_csv_summary(keys, values, "cooper serial low ", cooper_sn_l);
+
+                                    add_to_csv_summary(keys, values, "radio serial", rsn);
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
+                                        dout << "radio serial number            : " << rsn << endl;
+                                    }
+
 
                                     break;
                                 }
@@ -2323,20 +2559,25 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                 }
                             case 0x05:
                             case 0x85:
+                            case 0x06:
                                 {
                                     // Diagnostic GVAR.
 
-                                    for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                    if(ie_type != 0x06)
                                     {
-                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
-                                        stg = "eDbg " + CtiNumStr(rsvd);
-                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
-                                        // add_to_csv_summary(keys, values, stg, rsvd);
+                                        for( int i = 0; i < 32; i++ )  // Pop off the TraceQ.
+                                        {
+                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            stg = "eDbg " + CtiNumStr(rsvd);
+                                            rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                            // add_to_csv_summary(keys, values, stg, rsvd);
+                                        }
+
+
+                                        int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
+                                        int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                     }
 
-
-                                    int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
-                                    int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
                                     int firmware_major   =  convertBytes(pConfig, cfg_pos, 1);
                                     int firmware_minor   =  convertBytes(pConfig, cfg_pos, 1);
                                     int reset_count      =  convertBytes(pConfig, cfg_pos, 2);
@@ -2348,8 +2589,6 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     rsvd                 =  convertBytes(pConfig, cfg_pos, 1);
                                     int revert_cnt       =  convertBytes(pConfig, cfg_pos, 1);
 
-                                    add_to_csv_summary(keys, values, "guardbyte0",              guardbyte0      );
-                                    add_to_csv_summary(keys, values, "guardbyte1",              guardbyte1      );
                                     add_to_csv_summary(keys, values, "firmware major",          firmware_major  );
                                     add_to_csv_summary(keys, values, "firmware minor",          firmware_minor  );
                                     add_to_csv_summary(keys, values, "reset count",             reset_count     );
