@@ -6,16 +6,16 @@ function amChart_reloadAll(chart_Id) {
     }
 }
 
-var previousLargestPointTime = 0;
+var mostRecentPointTime = 0;
 function checkGraphExpired(chart_Id) {
     //assumes data is of type Hash
     return function(data) {
         var newLargestTime = data.get('largestTime');
         
-        if (previousLargestPointTime > 0 && newLargestTime > previousLargestPointTime) {
+        if (mostRecentPointTime > 0 && newLargestTime > mostRecentPointTime) {
             amChart_reloadAll(chart_Id);
         }
 
-        previousLargestPointTime = newLargestTime;
+        mostRecentPointTime = newLargestTime;
     }
 }

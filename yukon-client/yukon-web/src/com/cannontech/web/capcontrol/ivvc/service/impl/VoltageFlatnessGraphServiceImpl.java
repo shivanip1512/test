@@ -297,9 +297,14 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
     @Override
     public long getLargestPointTimeForSubBusGraph(int subBusId) {
-         long largestTime = 0;
          Set<Integer> allGraphPoints = getAllPointsInSubBusGraph(subBusId);
-         Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
+         long time = getLargestPointTime(allGraphPoints);
+         return time;
+     }
+
+    private long getLargestPointTime(Set<Integer> allGraphPoints) {
+        long largestTime = 0;
+        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
 
          for (PointValueQualityHolder point : pointValues) {
              long pointTime = point.getPointDataTimeStamp().getTime();
@@ -308,7 +313,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
              }
          }
          return largestTime;
-     }
+    }
 
     private Set<Integer> getAllPointsInZoneGraph(int zoneId) {
         Set<Integer> allGraphPoints = Sets.newHashSet();
@@ -337,17 +342,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
     @Override
     public long getLargestPointTimeForZoneGraph(int zoneId) {
-        long largestTime = 0;
         Set<Integer> allGraphPoints = getAllPointsInZoneGraph(zoneId);
-        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(allGraphPoints);
-
-        for (PointValueQualityHolder point : pointValues) {
-            long pointTime = point.getPointDataTimeStamp().getTime();
-            if (largestTime < pointTime) {
-                largestTime = pointTime;
-            }
-        }
-        return largestTime;
+        long time = getLargestPointTime(allGraphPoints);
+        return time;
     }
 
 	private VfLine buildLineDataForZone(YukonUserContext userContext, CapControlCache cache, Zone zone) {
