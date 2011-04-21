@@ -22,11 +22,14 @@ BchBehavior::BchBehavior()
  */
 void BchBehavior::apply(bytes &message)
 {
+    double dist = rand() / double(RAND_MAX+1);
+    double chance = dist * 100;
+    if(chance < _chance)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << "*********  Mutilating Message BCH  **********" << endl;
+        message.back() ^= 0x10;
     }
-    message.back() ^= 0x10;
 }
 
 /**
