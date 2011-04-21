@@ -85,7 +85,8 @@ public class LoginFilter implements Filter {
             "/operator/**",
             "/editor/**",
             "/user/**",
-            "/servlet/SOAPClient/**"
+            "/servlet/SOAPClient/**",
+            "/jws/*"
         };
     }
     
