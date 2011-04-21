@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -60,7 +62,15 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     
     @Override
     protected String getGroupName(LiteYukonPAObject bin) {
-        return bin.getPaoName();
+        String routeName = bin.getPaoName();
+        // what follows is not a perfect solution, it could produce duplicates
+        // but this is unlikely in practice and a better solution would probably
+        // involve generating really ugly group names (8.3 window's file names???)
+        String groupName = routeName;
+        for (char badCharacter : TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) {
+            groupName = groupName.replace(badCharacter, '_');
+        }
+        return bin.getPaoName().replace("/", "_");
     }
 
     @Autowired
