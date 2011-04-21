@@ -18,114 +18,181 @@ import org.springframework.core.io.Resource;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.tools.csv.CSVReader;
 
-public class GpuffConfigurationLookup implements ConfigLookup, InitializingBean {
-    private Logger log = YukonLogManager.getLogger(GpuffConfigurationLookup.class);
-    private Map<Integer, GpuffConfig> configMapping = null;
-    private Resource csvFileResource;
-    private long resetInterval = 3000000;
-    protected boolean resetCSV;
-    
-    private void processInputCSV() {
-        InputStream inputStream = null;
-        Reader configReader = null;
-        try {
-            String row[] = null;
-            inputStream = csvFileResource.getInputStream();
-            configReader = new InputStreamReader(inputStream,"UTF-8");
-            CSVReader csvReader = null;
-            try {
-                csvReader = new CSVReader(configReader);
-            }catch(Exception e){
-                System.out.print(e);
-                log.info(e);
-            }
+public class GpuffConfigurationLookup
+implements ConfigLookup, InitializingBean
+{
+private Logger log = YukonLogManager.getLogger(GpuffConfigurationLookup.class);
+private Map<Integer, GpuffConfig> configMapping = null;
+private Resource csvFileResource;
+private Resource csvGCVTFileResource;
+private Resource csvGVARFileResource;
+private long resetInterval = 900000L;
+protected boolean resetCSV;
 
-            while (csvReader != null && (row = csvReader.readNext()) != null) {
+private void processInputCSV()
+{
+  InputStream inputStream = null;
+  Reader configReader = null;
+  try {
+    String[] row = null;
+    inputStream = this.csvFileResource.getInputStream();
+    configReader = new InputStreamReader(inputStream, "UTF-8");
+    CSVReader csvReader = null;
+    try {
+      csvReader = new CSVReader(configReader);
+    } catch (Exception e) {
+      System.out.print(e);
+      this.log.info(e);
+    }
+
+    while ((csvReader != null) && ((row = csvReader.readNext()) != null)) {
+      if (row.length != 0) {
+        GpuffConfig gpuffConfig = new GpuffConfig();
+        String tempStr = row[0];
+
+        if ((tempStr != null) && (!tempStr.isEmpty()) && (tempStr.charAt(0) != '#') && (tempStr.charAt(0) != ';')) {
+          try {
+            gpuffConfig.decodeRow(row);
+          } catch (NumberFormatException e) {
+            System.out.print(e);
+            this.log.info("Skipping CSV row \"" + row.toString() + "\" " + e);
+            continue;
+          } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.print(e);
+            this.log.info("Skipping CSV row \"" + row.toString() + "\" " + e);
+            continue;
+          }
+          getConfigMapping().put(Integer.valueOf(gpuffConfig.getSerial()), gpuffConfig);
+        }
+      }
+    }
+
+    inputStream = this.csvGCVTFileResource.getInputStream();
+    configReader = new InputStreamReader(inputStream, "UTF-8");
+    csvReader = null;
+    try {
+      csvReader = new CSVReader(configReader);
+    } catch (Exception e) {
+      System.out.print(e);
+      this.log.info(e);
+    }
+
+    while ((csvReader != null) && ((row = csvReader.readNext()) != null)) {
+      if (row.length != 0) {
+        GpuffConfig gpuffConfig = new GpuffConfigGCVT();
+        String tempStr = row[0];
+
+        if ((tempStr != null) && (!tempStr.isEmpty()) && (tempStr.charAt(0) != '#') && (tempStr.charAt(0) != ';')) {
+          try {
+            gpuffConfig.decodeRow(row);
+          } catch (NumberFormatException e) {
+            System.out.print(e);
+            this.log.info("Skipping GCVT CSV row \"" + row.toString() + "\" " + e);
+            continue;
+          }
+
+          getConfigMapping().put(Integer.valueOf(gpuffConfig.getSerial()), gpuffConfig);
+        }
+      }
+    }
+
+    inputStream = this.csvGVARFileResource.getInputStream();
+    configReader = new InputStreamReader(inputStream, "UTF-8");
+    csvReader = null;
+    try {
+      csvReader = new CSVReader(configReader);
+    } catch (Exception e) {
+      System.out.print(e);
+      this.log.info(e);
+    }
+
+    while ((csvReader != null) && ((row = csvReader.readNext()) != null)) {
+        if (row.length != 0) {
+            GpuffConfig gpuffConfig = new GpuffConfigGVAR();
+            String tempStr = row[0];
+
+            if ((tempStr != null) && (!tempStr.isEmpty()) && (tempStr.charAt(0) != '#') && (tempStr.charAt(0) != ';')) {
                 try {
-                    if( row.length != 0) {
-                        GpuffConfig gpuffConfig = new GpuffConfig();
-                        int rowNum = 0;
-                        String tempStr = row[rowNum++];
-                        
-                        if(tempStr != null && !tempStr.isEmpty()) { 
-                            gpuffConfig.setSerial(Integer.parseInt(tempStr));
-                            gpuffConfig.setUser(row[rowNum++]);
-                            gpuffConfig.setPassword(row[rowNum++]);
-                            gpuffConfig.setApn(row[rowNum++]);
-                            gpuffConfig.setIp0(row[rowNum++]);
-                            gpuffConfig.setPort0(row[rowNum++]);
-                            gpuffConfig.setIp1(row[rowNum++]);
-                            gpuffConfig.setPort1(row[rowNum++]);
-                            gpuffConfig.setPeriodic(row[rowNum++].compareToIgnoreCase("Y") == 0);
-                            
-                            getConfigMapping().put(gpuffConfig.getSerial(), gpuffConfig);
-                        }
-                    }
+                    gpuffConfig.decodeRow(row);
                 } catch (NumberFormatException e) {
                     System.out.print(e);
-                    log.info(e);
+                    this.log.info("Skipping GVAR CSV row \"" + row.toString() + "\" " + e);
+                    continue;            
                 }
+
+                getConfigMapping().put(Integer.valueOf(gpuffConfig.getSerial()), gpuffConfig);
             }
-        } catch (UnsupportedEncodingException e) {
-            log.error(e.toString());
-            IOUtils.closeQuietly(configReader);
-            IOUtils.closeQuietly(inputStream);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(configReader);
-            IOUtils.closeQuietly(inputStream);
         }
     }
-    
-    public void setResource(Resource cfRes) {
-        csvFileResource = cfRes;
-        log.info("Resource " + cfRes.toString() + " assigned for configuration.");
-    }
-    
-    Map<Integer, GpuffConfig> getConfigMapping() {
-        if (configMapping == null) {
-            configMapping = new HashMap<Integer, GpuffConfig>();
-    
-            resetCSV = false;
-            processInputCSV();  // Consume the CSV File.          
-        }
-
-        return configMapping;
-    }
-
-    @Override
-    public GpuffConfig getConfigForSerial(int serialNum) {
-        return getConfigMapping().get(serialNum);
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Timer timer = new Timer(true);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                log.info("Configuration CSV will reload on the next message reciept");
-                resetCSV = true;
-            }
-        }, resetInterval, resetInterval);
-        
-    }
-
-    @Override
-    public void reset() {
-        if(resetCSV == true) {
-            resetCSV = false;
-            configMapping = null;       // Drop the map to make it reload the CSV next time through!        
-        }
-    }
-
-    public void setResetInterval(long resetInterval) {
-        this.resetInterval = resetInterval;
-    }
-    
+  }
+  catch (UnsupportedEncodingException e) {
+    this.log.error(e.toString());
+    IOUtils.closeQuietly(configReader);
+    IOUtils.closeQuietly(inputStream);
+  }
+  catch (IOException e) {
+    e.printStackTrace();
+  } finally {
+    IOUtils.closeQuietly(configReader);
+    IOUtils.closeQuietly(inputStream);
+  }
 }
 
+public void setResource(Resource cfRes) {
+  this.csvFileResource = cfRes;
+  this.log.info("Resource " + cfRes.toString() + " assigned for configuration.");
+}
 
+public void setGcvtResource(Resource cfRes) {
+  this.csvGCVTFileResource = cfRes;
+  this.log.info("Resource (GCVT) " + cfRes.toString() + " assigned for configuration.");
+}
 
+public void setGvarResource(Resource cfRes) {
+  this.csvGVARFileResource = cfRes;
+  this.log.info("Resource (GVAR) " + cfRes.toString() + " assigned for configuration.");
+}
+
+Map<Integer, GpuffConfig> getConfigMapping() {
+  if (this.resetCSV) {
+    reset();
+  }
+  if (this.configMapping == null) {
+    this.configMapping = new HashMap<Integer, GpuffConfig>();
+
+    processInputCSV();
+  }
+
+  return this.configMapping;
+}
+
+public GpuffConfig getConfigForSerial(int serialNum)
+{
+  return (GpuffConfig)getConfigMapping().get(Integer.valueOf(serialNum));
+}
+
+public void afterPropertiesSet() throws Exception
+{
+  Timer timer = new Timer(true);
+  timer.schedule(new TimerTask()
+  {
+    public void run() {
+      if (!GpuffConfigurationLookup.this.resetCSV) {
+        GpuffConfigurationLookup.this.log.info("Configuration CSV will reload on the next config lookup");
+        GpuffConfigurationLookup.this.resetCSV = true;
+      }
+    }
+  }
+  , this.resetInterval, this.resetInterval);
+}
+
+public void reset()
+{
+  this.resetCSV = false;
+  this.configMapping = null;
+}
+
+public void setResetInterval(long resetInterval) {
+  this.resetInterval = resetInterval;
+}
+}

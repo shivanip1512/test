@@ -40,7 +40,7 @@ public class GPUFFProtocol {
     private short crc = 0;
     private ByteBuffer bBuf = ByteBuffer.allocate(BUFFER_LEN);
 
-    private GpuffConfig cfg = new GpuffConfig();
+    private GpuffConfig cfg = null;
     // May need a list of more than one buffer to represent the given inbound
 
     // Parameters for the Commissioning Message
@@ -50,7 +50,7 @@ public class GPUFFProtocol {
     private float cmLongitude = 0.0f;
     private String cmName;
     private short cmAmpT = 0; // Amperage Threshold valid only for neutral
-                              // current sensor device type.
+    // current sensor device type.
 
     // Parameters for FCI Device Values Messages.
     // The Sensus FCI has only battery, time, temp, and status.
@@ -61,14 +61,16 @@ public class GPUFFProtocol {
     private float dvBattery = 0.0f;
     private short dvTemp = 0;
     private boolean gpuffMsg;
+    private boolean crcIncluded;
     private boolean ackWithAckReq;
     private boolean needsAck;
+    private boolean ackResponseBit;
     private boolean configDecode;
 
     public GPUFFProtocol() {
         init();
     }
-    
+
     public GPUFFProtocol(byte[] buf, int length) {
         assignData(buf, length);
     }
@@ -76,8 +78,10 @@ public class GPUFFProtocol {
     private void init() {
         len = 0;
         gpuffMsg = false;
+        crcIncluded = false;
         ackWithAckReq = false;
         needsAck = false;
+        ackResponseBit = false;
         configDecode = false;
         bBuf.clear();
     }
@@ -109,17 +113,17 @@ public class GPUFFProtocol {
         bBuf.put(DEVTYPE_OFFSET, (byte) ((0x0000ff00 & deviceType) >> 8));
         bBuf.put(DEVTYPE_OFFSET + 1, (byte) (0x000000ff & deviceType));
         bBuf.put(DEVREV_OFFSET, (byte) (0x000000ff & deviceRevision));
-        bBuf.put(SERIAL_OFFSET, (byte) ((0xff000000 & cfg.getSerial()) >> 24));
-        bBuf.put(SERIAL_OFFSET + 1, (byte) ((0x00ff0000 & cfg.getSerial()) >> 16));
-        bBuf.put(SERIAL_OFFSET + 2, (byte) ((0x0000ff00 & cfg.getSerial()) >> 8));
-        bBuf.put(SERIAL_OFFSET + 3, (byte) (0x000000ff & cfg.getSerial()));
-        
+        bBuf.put(SERIAL_OFFSET, (byte) ((0xff000000 & getGpuffConfig().getSerial()) >> 24));
+        bBuf.put(SERIAL_OFFSET + 1, (byte) ((0x00ff0000 & getGpuffConfig().getSerial()) >> 16));
+        bBuf.put(SERIAL_OFFSET + 2, (byte) ((0x0000ff00 & getGpuffConfig().getSerial()) >> 8));
+        bBuf.put(SERIAL_OFFSET + 3, (byte) (0x000000ff & getGpuffConfig().getSerial()));
+
     }
 
     public void primeResponse(byte[] buf) {
         init();
         for (int i = 0; i < 15; i++) { // Copy the header from the inbound
-                                       // message.
+            // message.
             bBuf.put(len++, buf[i]);
         }
     }
@@ -130,7 +134,7 @@ public class GPUFFProtocol {
         primeHeader();
 
         put((byte) 0x00); // This is the START of the GPUFF - FPLD block. Device
-                          // Config is a 0x00
+        // Config is a 0x00
         put((byte) 0x00); // FLAGS
         put((int) (getCmLatitude() * GEO_SCALING));
         put((int) (getCmLongitude() * GEO_SCALING));
@@ -147,11 +151,11 @@ public class GPUFFProtocol {
     }
 
     public void buildDeviceValuesMessage(boolean fault, boolean event, boolean noAC) {
-        
+
         primeHeader();
 
         put((byte) 0x01); // This is the START of the GPUFF - FPLD block. Device
-                          // Values is a 0x01
+        // Values is a 0x01
         put((byte) 0x38); // FLAGS: Time & Voltage included.
         put((byte) ((fault ? 0x80 : 0x00) | (event ? 0x40 : 0x00) | (noAC ? 0x20 : 0x00)));
         put((int) (dvTime.getTime() / 1000));
@@ -213,11 +217,10 @@ public class GPUFFProtocol {
     }
 
     public void setSerialNumber(int serialNum) {
-        this.cfg.setSerial(serialNum);
+        getGpuffConfig().setSerial(serialNum);
     }
 
-    @SuppressWarnings("unused")
-    private void put(long val) {
+    @SuppressWarnings("unused") private void put(long val) {
         bBuf.put(len++, (byte) ((0xff000000 & val) >> 24));
         bBuf.put(len++, (byte) ((0x00ff0000 & val) >> 16));
         bBuf.put(len++, (byte) ((0x0000ff00 & val) >> 8));
@@ -333,7 +336,7 @@ public class GPUFFProtocol {
     }
 
     public int getSerialNumber() {
-        return cfg.getSerial();
+        return getGpuffConfig().getSerial();
     }
 
     public short getCid() {
@@ -356,7 +359,7 @@ public class GPUFFProtocol {
         init();
         len = 0;
         // Copy the header from the in-bound message.
-        for (int i = 0; i < length && len < BUFFER_LEN; i++) { 
+        for (int i = 0; i < length && len < BUFFER_LEN; i++) {
             bBuf.put(len++, buf[i]);
         }
     }
@@ -366,164 +369,621 @@ public class GPUFFProtocol {
         gpuffMsg = ((bBuf.get(0) & 0x00ff) == 0x00a5 && (bBuf.get(1) & 0x00ff) == 0x0096);
 
         if (isGpuff()) {
-            String tStr;
-            decodeGpuffHeader();
-            
-            if(!isGpuffACKwithACKRequest() ) {
-                
-                log.info("Decoding for device: " + getSerialNumber());
-                boolean fcnDecodeError = false;
-                bBuf.position(FIRST_FCN); // This is the location of the first FCN
-                while (!fcnDecodeError && bBuf.position() < len) {
-                    byte fcn = bBuf.get(); // Gets a byte and increments position
-                    
-                    switch (deviceType) {
-                    case 0x01:
-                    case 0x03:
-                        switch (fcn) {
-                        case 0x01:
-                            long time = 0;
-                            boolean fault = false,
-                            event = false,
-                            power = true;
-                            short battV,
-                            temp,
-                            ampn,
-                            ampp;
-                            dvFlags = bBuf.get();
-                            dvStatus = bBuf.get();
-                            
-                            String report = "FCI Values report: ";
-                            if ((dvFlags & 0x20) == 0x20) {
-                                boolean tso = false;
-                                if ((dvFlags & 0x80) == 0x80)
-                                    tso = true;
-                                // Time included
-                                time = bBuf.getInt();
-                                
-                                Date t;
-                                if (tso) {
-                                    t = new Date();
-                                    t.setTime(t.getTime() - time);
-                                } else {
-                                    t = new Date(time * 1000);
-                                }
-                                
-                                report += t.toString();
-                            }
-                            if ((dvFlags & 0x10) == 0x10) {
-                                battV = bBuf.getShort();
-                                report += " Battery Voltage: " + (float) (battV / 1000.0);
-                            }
-                            if ((dvFlags & 0x08) == 0x08) {
-                                temp = bBuf.getShort();
-                                report += " Temperature: " + (float) (temp / 100.0);
-                            }
-                            if ((dvFlags & 0x04) == 0x04) {
-                                ampn = bBuf.getShort();
-                                report += " Avg Amps: " + ampn;
-                            }
-                            if ((dvFlags & 0x02) == 0x02) {
-                                ampp = bBuf.getShort();
-                                report += " Peak Amps: " + ampp;
-                            }
-                            
-                            if ((dvStatus & 0x80) == 0x80) { // No Fault/Fault
-                                fault = true;
-                            }
-                            if ((dvStatus & 0x40) == 0x40) {
-                                event = true;
-                            }
-                            if ((dvStatus & 0x20) == 0x20) { // Power/No Power
-                                power = false;
-                            }
-                            
-                            report += " Fault = " + fault + " Event = " + event + " Current Good = " + power;
-                            
-                            log.info(report);
+            try {
+                decodeGpuffHeader();
+
+                if (!isGpuffACKwithACKRequest()) {
+
+                    log.info("Decoding for device: " + getSerialNumber());
+                    boolean fcnDecodeError = false;
+                    bBuf.position(FIRST_FCN); // This is the location of the
+                    // first
+                    // FCN
+                    while (!fcnDecodeError) {
+                        if (bBuf.position() >= len - (crcIncluded ? 2 : 0))
                             break;
-                        case 0x08:
-                            configDecode = true;
-                            int cfg_fcn_len = bBuf.get() & 0x00ff;
-                            boolean ieDecodeError = false;
-                            boolean ipDecode0 = false;
-                            while (!ieDecodeError && bBuf.position() < cfg_fcn_len) {
-                                byte ie_type = bBuf.get();
-                                int ie_len = bBuf.get() & 0x00ff;
-                                
-                                switch (ie_type) {
-                                case 0x01:
-                                    int periodic = bBuf.get() & 0x00ff;
-                                    cfg.setPeriodic(periodic != 0);
-                                    bBuf.get();
-                                    tStr = decodeString(64);
-                                    log.info("Periodic             " + cfg.isPeriodic());
-                                    log.info("Configured to APN    " + tStr);
-                                    cfg.setApn(tStr);
-                                    break;
-                                case 0x02:
-                                    bBuf.get();
-                                    bBuf.get();
-                                    String portStr = decodeString(6); // Port
-                                    String IpStr = decodeString(64);
-                                    
-                                    if (!ipDecode0) {
-                                        cfg.setIp0(IpStr);
-                                        cfg.setPort0(portStr);
-                                        ipDecode0 = true; // Decode them in order.
-                                        log.info("Configured to URL[0] " + IpStr + ":" + portStr);
-                                    } else {
-                                        cfg.setIp1(IpStr);
-                                        cfg.setPort1(portStr);
-                                        log.info("Configured to URL[1] " + IpStr + ":" + portStr);
+
+                        byte fcn = bBuf.get(); // Gets a byte and increments
+
+                        switch (deviceType) {
+                        case 0x01:
+                        case 0x03:
+                            switch (fcn) {
+                            case 0x01:
+                                long time = 0;
+                                boolean fault = false,
+                                event = false,
+                                power = true;
+                                short battV,
+                                temp,
+                                ampn,
+                                ampp;
+                                dvFlags = bBuf.get();
+                                dvStatus = bBuf.get();
+
+                                String report = "FCI Values report: ";
+                                if ((dvFlags & 0x20) == 0x20) { // Time included
+                                    boolean tso = false;
+                                    if ((dvFlags & 0x80) == 0x80) {
+                                        tso = true;
                                     }
+                                    time = bBuf.getInt();
+                                    Date t;
+                                    if (tso) {
+                                        t = new Date();
+                                        t.setTime(t.getTime() - time * 1000L);
+                                    } else {
+                                        t = new Date(time * 1000);
+                                    }
+
+                                    report += t.toString();
+                                }
+                                if ((dvFlags & 0x10) == 0x10) {
+                                    battV = bBuf.getShort();
+                                    report += " Battery Voltage: " + (float) (battV / 1000.0);
+                                }
+                                if ((dvFlags & 0x08) == 0x08) {
+                                    temp = bBuf.getShort();
+                                    report += " Temperature: " + (float) (temp / 100.0);
+                                }
+                                if ((dvFlags & 0x04) == 0x04) {
+                                    ampn = bBuf.getShort();
+                                    report += " Avg Amps: " + ampn;
+                                }
+                                if ((dvFlags & 0x02) == 0x02) {
+                                    ampp = bBuf.getShort();
+                                    report += " Peak Amps: " + ampp;
+                                }
+
+                                if ((dvStatus & 0x80) == 0x80) { // No
+                                    // Fault/Fault
+                                    fault = true;
+                                }
+                                if ((dvStatus & 0x40) == 0x40) {
+                                    event = true;
+                                }
+                                if ((dvStatus & 0x20) == 0x20) { // Power/No
+                                    // Power
+                                    power = false;
+                                }
+
+                                report += " Fault = " + fault + " Event = " + event + " Current Good = " + power;
+
+                                log.info(report);
+                                break;
+                            case 0x03:
+                                dvFlags = bBuf.get();
+
+                                report = "FCI Current Survey Report: ";
+                                boolean tso = false;
+                                if ((dvFlags & 0x80) == 0x80) {
+                                    tso = true;
+                                }
+                                time = bBuf.getInt();
+                                Date tDate;
+                                if (tso) {
+                                    tDate = new Date();
+                                    tDate.setTime(tDate.getTime() - time * 1000L);
+                                } else {
+                                    tDate = new Date(time * 1000);
+                                }
+
+                                short rate_cnt = bBuf.getShort();
+                                int rate = (int) (rate_cnt >> 10);
+                                int count = (int) (rate_cnt & 0x03ff);
+                                long time_delta = 60000L; // 1 minute.
+                                switch (rate) {
+                                case 0:
+                                    time_delta *= 60; // 60 minutes.
+                                case 1:
+                                    time_delta *= 30;
+                                case 2:
+                                    time_delta *= 15;
+                                case 3:
+                                    time_delta *= 5;
+                                case 4:
+                                    time_delta *= 120;
+                                case 5:
+                                    time_delta *= 240;
+                                }
+                                log.info(report);
+
+                                for (int i = 0; i < count; i++) {
+                                    if(bBuf.position() >= len - (crcIncluded ? 2 : 0))
+                                    {
+                                        log.warn("**** DECODING BEYOND BUFFER BOUNDARY - This should not occur - please check the decode.");
+                                        break;
+                                    }
+                                    ampn = bBuf.getShort();
+                                    log.info(tDate + " Record[" + i + "] = " + ampn);
+                                    tDate.setTime(tDate.getTime() + time_delta);
+                                }
+
+                                break;
+                            case 0x05:
+                                time = 0;
+
+                                dvFlags = bBuf.get();
+                                short momCount = bBuf.getShort();
+
+                                report = "FCI Momentary Count: " + momCount + " ";
+                                if ((dvFlags & 0x20) == 0x20) { // Time included
+                                    tso = false;
+                                    if ((dvFlags & 0x80) == 0x80)
+                                        tso = true;
+
+                                    time = bBuf.getInt();
+
+                                    if (tso) {
+                                        tDate = new Date();
+                                        tDate.setTime(tDate.getTime() - time * 1000L);
+                                    } else {
+                                        tDate = new Date(time * 1000);
+                                    }
+
+                                    report += tDate.toString();
+                                }
+
+                                if ((dvFlags & 0x04) == 0x04) {
+                                    // Nominal Amps
+                                    ampn = bBuf.getShort();
+                                    report += " Nominal Amps = " + ampn;
+                                }
+
+                                if ((dvFlags & 0x02) == 0x02) {
+                                    // Nominal Amps
+                                    ampp = bBuf.getShort();
+                                    report += " Peak Amps = " + ampp;
+                                }
+
+                                log.info(report);
+                                break;
+                            case 0x06:
+                                Date t = new Date();
+                                fault = false;
+                                event = false;
+                                power = true;
+                                boolean calibrated = false;
+                                boolean chgCktEnabled = false;
+
+                                this.dvFlags = bBuf.get();
+                                this.dvStatus = bBuf.get();
+                                int record_count = bBuf.get() & 0xFF;
+
+                                report = "FCI Status report: ";
+                                if ((this.dvFlags & 0x20) == 32) {
+                                    tso = false;
+                                    if ((this.dvFlags & 0x80) == 0x80) {
+                                        tso = true;
+                                    }
+                                    time = bBuf.getInt();
+
+                                    if (tso) {
+                                        // report += " TSO delta: " + time +
+                                        // " ";
+                                        t.setTime(t.getTime() - time * 1000L);
+                                    } else {
+                                        t = new Date(time * 1000L);
+                                    }
+
+                                    report += t.toString();
+                                }
+
+                                if ((this.dvStatus & 0x80) == 0x80) {
+                                    fault = true;
+                                }
+                                if ((this.dvStatus & 0x40) == 0x40) {
+                                    event = true;
+                                }
+                                if ((this.dvStatus & 0x20) == 0x20) {
+                                    power = false;
+                                }
+                                if ((this.dvStatus & 0x10) == 0x10) {
+                                    calibrated = true;
+                                }
+                                if ((this.dvStatus & 0x08) == 0x08) {
+                                    chgCktEnabled = true;
+                                }
+
+                                report += " Fault = " + fault + " Event = " + event + " Current Good = " + power + " Calibrated = " + calibrated + " Charge Circuit Enabled = " + chgCktEnabled;
+
+                                if ((this.dvFlags & 0x10) == 0x10) {
+                                    battV = bBuf.getShort();
+                                    report += " Battery Voltage: " + ((float) (battV / 1000.0D));
+                                }
+                                if ((this.dvFlags & 0x08) == 0x08) {
+                                    temp = bBuf.getShort();
+                                    report += " Temperature: " + ((float) (temp / 100.0D));
+                                }
+                                if ((this.dvFlags & 0x04) == 0x04) {
+                                    ampn = bBuf.getShort();
+                                    report += " Avg Amps: " + (ampn);
+                                }
+                                if ((this.dvFlags & 0x02) == 0x02) {
+                                    ampp = bBuf.getShort();
+                                    report += " Peak Amps: " + (ampp);
+                                }
+
+                                momCount = bBuf.getShort();
+
+                                short th_high = bBuf.getShort();
+                                short rpt_max = bBuf.getShort();
+                                short rpt_min = bBuf.getShort();
+
+                                report += " Momentary Count: " + momCount + " High Threshold " + th_high + " Report Max/Min " + rpt_max + "/" + rpt_min;
+
+                                log.info(report);
+
+                                t.setTime(t.getTime() - record_count * 3600 * 1000);
+                                for (int i = 0; i < record_count; i++) {
+                                    if(bBuf.position() >= len - (crcIncluded ? 2 : 0))
+                                    {
+                                        log.warn("**** DECODING BEYOND BUFFER BOUNDARY - This should not occur - please check the decode.");
+                                        break;
+                                    }
+
+                                    t.setTime(t.getTime() + 3600000L);
+                                    ampp = bBuf.getShort();
+                                    log.info(t + " Amp Reading = " + ampp);
+                                }
+
+                                if ((dvFlags & 0x1) == 0x01) {
+                                    ampp = bBuf.getShort();
+                                    log.info(t + " Amp Reading rec[e] = " + ampp);
+                                }
+                                break;
+                            case 0x08:
+                                setConfigDecode(true);
+                                int cfg_fcn_len = bBuf.get() & 0x00ff;
+                                boolean ieDecodeError = false;
+                                while (!ieDecodeError && bBuf.position() < cfg_fcn_len) {
+                                    byte ie_type = bBuf.get();
+                                    int ie_len = bBuf.get() & 0x00ff;
+                                    int ie_position = bBuf.position();
+
+                                    switch (ie_type) {
+                                    case 0x01:
+                                        int periodic = bBuf.get() & 0x00ff;
+                                        getGpuffConfig().setPeriodic(periodic);
+                                        bBuf.get();
+                                        String tStr = decodeString(64);
+                                        log.info("Periodic             " + getGpuffConfig().getPeriodic());
+                                        log.info("Configured to APN    " + tStr);
+                                        getGpuffConfig().setApn(tStr);
+                                        break;
+                                    case 0x02:
+                                        byte ipFlag = (byte) (bBuf.get() & 0xFF);
+                                        bBuf.get();
+                                        String portStr = decodeString(6); // Port
+                                        String IpStr = decodeString(64);
+
+                                        if ((ipFlag & 0x01) == 0x01 || getGpuffConfig().getIp0() != null) {
+                                            getGpuffConfig().setIp1(IpStr);
+                                            getGpuffConfig().setPort1(portStr);
+                                            log.info("Configured to URL[1] " + IpStr + ":" + portStr);
+                                        } else {
+                                            getGpuffConfig().setIp0(IpStr);
+                                            getGpuffConfig().setPort0(portStr);
+                                            log.info("Configured to URL[0] " + IpStr + ":" + portStr);
+                                        }
+                                        break;
+                                    case 0x03:
+                                        long cooperSN_hi = decodeUnsignedInt();
+                                        long cooperSN_lo = decodeUnsignedInt();
+                                        String radioSN = decodeString(16);
+                                        log.info(new StringBuilder().append("Cooper Serial Number ").append(cooperSN_hi).append(" / ").append(cooperSN_lo).append(" Radio Serial Number ").append(radioSN).toString());
+                                        bBuf.position(ie_position + ie_len);
+                                        break;
+                                    case 0x04:
+                                        cooperSN_hi = decodeUnsignedInt();
+                                        cooperSN_lo = decodeUnsignedInt();
+                                        radioSN = decodeString(24);
+                                        log.info(new StringBuilder().append("Long Cooper Serial Number ").append(cooperSN_hi).append(" / ").append(cooperSN_lo).append(" Radio Serial Number ").append(radioSN).toString());
+                                        bBuf.position(ie_position + ie_len);
+                                        break;
+                                    case (byte) 0x85:
+                                    case 0x05:
+                                    case 0x06:
+                                        if(ie_type != 0x06) {
+                                            popBytes(64); // Ignore the debug buffer.
+                                            bBuf.get(); // 0xaa
+                                            bBuf.get(); // 0x55
+                                        }
+                                        int fwMajVer = bBuf.get() & 0x00ff;
+                                        int fwMinVer = bBuf.get() & 0x00ff;
+                                        short resetCnt = bBuf.getShort();
+                                        short SPIErrors = bBuf.getShort();
+                                        int momCnt = bBuf.get() & 0x00ff;
+                                        int fltCnt = bBuf.get() & 0x00ff;
+                                        int aClrCnt = bBuf.get() & 0x00ff;
+                                        int pwrLossCnt = bBuf.get() & 0x00ff;
+                                        int resMomCnt = bBuf.get() & 0x00ff;
+                                        int revertCnt = bBuf.get() & 0x00ff;
+                                        // an even number of bytes.
+
+                                        getGpuffConfig().setFwMajor(fwMajVer);
+                                        getGpuffConfig().setFwMinor(fwMinVer);
+                                        getGpuffConfig().setResetCount(resetCnt);
+
+                                        log.info("Diagnostic message received. Length: " + ie_len + ".");
+                                        log.info("Diagnostic - Firmware Version " + fwMajVer + "." + fwMinVer);
+                                        log.info("Diagnostic - Reset Count      " + resetCnt);
+                                        log.info("Diagnostic - SPI Errors       " + SPIErrors);
+                                        log.info("Diagnostic - Fault Count      " + fltCnt);
+                                        log.info("Diagnostic - Momentary Cnt    " + momCnt);
+                                        log.info("Diagnostic - Reset Mmtary Ct  " + resMomCnt);
+                                        log.info("Diagnostic - All Clear Count  " + aClrCnt);
+                                        log.info("Diagnostic - Power Loss Count " + pwrLossCnt);
+                                        log.info("Diagnostic - APN Revert Count " + revertCnt);
+
+                                        if ((deviceRevision >= 4) && (bBuf.position() < ie_position + ie_len)) {
+                                            int abfw_major = bBuf.get() & 0xFF;
+                                            int abfw_minor = bBuf.get() & 0xFF;
+                                            int rssi = bBuf.get() & 0xFF;
+                                            int ber = bBuf.get() & 0xFF;
+                                            int rs_cnt = bBuf.get() & 0xFF;
+                                            log.info("Diagnostic - AB FW Revision   " + abfw_major + "." + abfw_minor);
+                                            log.info("Diagnostic - RSSI             " + rssi);
+                                            log.info("Diagnostic - BER              " + ber);
+                                            log.info("Diagnostic - Reed Switch Cnt  " + rs_cnt);
+                                        }
+
+                                        break;
+                                    case 0x12:
+                                        int report_period_hours = bBuf.get() & 0xFF;
+                                        bBuf.get();
+                                        short high_current_threshold = bBuf.getShort();
+                                        bBuf.getShort();
+                                        log.info("Report Period Hours    " + report_period_hours);
+                                        log.info("High Current Threshold " + high_current_threshold);
+
+                                        break;
+                                    default:
+                                        log.info("Unknown Information Element Type - Update the decode");
+                                        ieDecodeError = true;
+                                        break;
+                                    }
+                                }
+                                break;
+                            default:
+                                log.info("Unknown GCVTx fcn code: " + fcn + " at buffer position " + bBuf.position());
+                                fcnDecodeError = true;
+                                break;
+                            }
+                            break;
+                        case 0x02: // VAR Advisor.
+                            int cfg_fcn_len;
+                            boolean ieDecodeError;
+                            switch (fcn) {
+                            case 0x03:
+                                String report = null;
+                                byte flags = bBuf.get();
+                                boolean hasTime = (flags & 0x10) == 0x10;
+                                boolean calibrated = (flags & 0x02) == 0x02;
+                                boolean reedSwitch = (flags & 0x01) == 0x01;
+                                long time = 0L;
+                                float battery = 0.0F;
+                                float temperature = 0.0F;
+
+                                Date now = new Date();
+                                Date t = new Date();
+                                report = "GVAR(x) value report: ";
+                                if (hasTime) {
+                                    time = bBuf.getInt();
+                                    if ((flags & 0x80) == 0x80) {
+                                        // report += " TSO delta: "+ time + " ";
+                                        t.setTime(t.getTime() - time * 1000L);
+                                    } else {
+                                        t = new Date(time * 1000L);
+                                    }
+                                }
+                                report += t + " GVAR(x) Report ";
+
+                                if ((flags & 0x8) == 8) {
+                                    battery = (float) (bBuf.getShort() / 1000.0D);
+                                    report += " Battery Voltage: " + battery;
+                                }
+                                if ((flags & 0x4) == 4) {
+                                    temperature = (float) (bBuf.getShort() / 100.0D);
+                                    report += " Temperature: " + temperature;
+                                }
+                                report += (calibrated ? " Calibrated " : " UNCALIBRATED ");
+                                report += (reedSwitch ? " Reed Triggered " : " Non Reed Triggered ");
+
+                                int intervalCnt = 24;
+                                int sampleRate = 3600;
+                                int rate = 86400;
+                                switch ((flags & 0x60) >> 5) {
+                                case 0:
+                                    intervalCnt = 24;
+                                    sampleRate = 3600;
+                                    rate = intervalCnt * sampleRate;
                                     break;
-                                case (byte) 0x85:
-                                    popBytes(64); // Ignore the debug buffer.
-                                bBuf.get(); // 0xaa
-                                bBuf.get(); // 0x55
-                                int fwMajVer = bBuf.get() & 0x00ff;
-                                int fwMinVer = bBuf.get() & 0x00ff;
-                                short resetCnt = bBuf.getShort();
-                                short SPIErrors = bBuf.getShort();
-                                int momCnt = bBuf.get() & 0x00ff;
-                                int fltCnt = bBuf.get() & 0x00ff;
-                                int aClrCnt = bBuf.get() & 0x00ff;
-                                int pwrLossCnt = bBuf.get() & 0x00ff;
-                                int resMomCnt = bBuf.get() & 0x00ff;
-                                bBuf.get(); // Pull one more to make the package
-                                // an even number of bytes.
-                                
-                                log.info("Diagnostic message received. Length: " + ie_len + ".");
-                                log.info("Diagnostic - Firmware Version " + fwMajVer + "." + fwMinVer);
-                                log.info("Diagnostic - Reset Count      " + resetCnt);
-                                log.info("Diagnostic - SPI Errors       " + SPIErrors);
-                                log.info("Diagnostic - Fault Count      " + fltCnt);
-                                log.info("Diagnostic - Momentary Cnt    " + momCnt);
-                                log.info("Diagnostic - Reset Mmtary Ct  " + resMomCnt);
-                                log.info("Diagnostic - All Clear Count  " + aClrCnt);
-                                log.info("Diagnostic - Power Loss Count " + pwrLossCnt);
-                                
+                                case 1:
+                                    intervalCnt = 3;
+                                    sampleRate = 300;
+                                    rate = intervalCnt * sampleRate;
+                                }
+
+                                short thresholdHigh = bBuf.getShort();
+                                short thresholdLow = bBuf.getShort();
+                                short reportMax = bBuf.getShort();
+                                short reportMin = bBuf.getShort();
+                                byte recordCount = bBuf.get();
+                                byte rptFlags = bBuf.get();
+                                byte rptPeriod = (byte) (rptFlags & 0x3F);
+                                boolean over = (rptFlags & 0x80) == 0x80;
+                                boolean reset = (rptFlags & 0x40) == 0x40;
+
+                                t.setTime(t.getTime() - rate * recordCount);
+                                long maxtime,
+                                mintime;
+                                for (int i = 0; i < recordCount; i++) {
+                                    t.setTime(t.getTime() + rate);
+                                    short max = bBuf.getShort();
+                                    short min = bBuf.getShort();
+                                    byte tsMax = (byte) (bBuf.get() & 0x3F);
+                                    byte tsMin = (byte) (bBuf.get() & 0x3F);
+                                    mintime = t.getTime() - (intervalCnt - tsMin - 1) * sampleRate;
+                                    maxtime = t.getTime() - (intervalCnt - tsMax - 1) * sampleRate;
+                                }
+
+                                short max = bBuf.getShort();
+                                short min = bBuf.getShort();
+                                byte tsMax = bBuf.get();
+                                boolean valid = (tsMax & 0x40) == 0x40;
+                                tsMax = (byte) (tsMax & 0x3F);
+                                byte tsMin = (byte) (bBuf.get() & 0x3F);
+
+                                if (valid) {
+                                    if (reedSwitch) {
+                                        maxtime = mintime = now.getTime();
+                                    } else {
+                                        if (reset) {
+                                            mintime = t.getTime() + (tsMin + 1) * sampleRate;
+                                            if (hasTime)
+                                                maxtime = t.getTime() + (tsMax + 1) * sampleRate;
+                                            else
+                                                maxtime = 0L;
+                                        } else if (over) {
+                                            maxtime = t.getTime() + (tsMax + 1) * sampleRate;
+                                            if (hasTime)
+                                                mintime = t.getTime() + (tsMin + 1) * sampleRate;
+                                            else {
+                                                mintime = 0L;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                log.info(report);
                                 break;
-                                default:
-                                    log.info("Unknown Information Element Type - Update the decode");
-                                ieDecodeError = true;
-                                break;
+                            case 0x08:
+                                setConfigDecode(true);
+                                cfg_fcn_len = bBuf.get() & 0xFF;
+                                ieDecodeError = false;
+
+                                while ((!ieDecodeError) && (bBuf.position() < cfg_fcn_len)) {
+                                    byte ie_type = bBuf.get();
+                                    int ie_len = bBuf.get() & 0xFF;
+                                    int ie_position = bBuf.position();
+
+                                    switch (ie_type) {
+                                    case 0x01:
+                                        int periodic = bBuf.get() & 0xFF;
+                                        getGpuffConfig().setPeriodic(periodic);
+                                        bBuf.get();
+                                        String tStr = decodeString(64);
+                                        log.info(new StringBuilder().append("Periodic             ").append(getGpuffConfig().getPeriodic()).toString());
+                                        log.info(new StringBuilder().append("Configured to APN    ").append(tStr).toString());
+                                        getGpuffConfig().setApn(tStr);
+                                        break;
+                                    case 0x02:
+                                        byte ipFlag = (byte) (bBuf.get() & 0xFF);
+                                        bBuf.get();
+                                        String portStr = decodeString(6);
+                                        String IpStr = decodeString(64);
+
+                                        if ((ipFlag & 0x01) == 0x01 || getGpuffConfig().getIp0() != null) {
+                                            getGpuffConfig().setIp1(IpStr);
+                                            getGpuffConfig().setPort1(portStr);
+                                            log.info("Configured to URL[1] " + IpStr + ":" + portStr);
+                                        } else {
+                                            getGpuffConfig().setIp0(IpStr);
+                                            getGpuffConfig().setPort0(portStr);
+                                            log.info("Configured to URL[0] " + IpStr + ":" + portStr);
+                                        }
+                                        break;
+                                    case 0x03:
+                                        long cooperSN_hi = decodeUnsignedInt();
+                                        long cooperSN_lo = decodeUnsignedInt();
+                                        String radioSN = decodeString(16);
+                                        log.info(new StringBuilder().append("Cooper Serial Number ").append(cooperSN_hi).append(" / ").append(cooperSN_lo).append(" Radio Serial Number ").append(radioSN).toString());
+                                        bBuf.position(ie_position + ie_len);
+                                        break;
+                                    case 0x04:
+                                        cooperSN_hi = decodeUnsignedInt();
+                                        cooperSN_lo = decodeUnsignedInt();
+                                        radioSN = decodeString(24);
+                                        log.info(new StringBuilder().append("Long Cooper Serial Number ").append(cooperSN_hi).append(" / ").append(cooperSN_lo).append(" Radio Serial Number ").append(radioSN).toString());
+                                        bBuf.position(ie_position + ie_len);
+                                        break;
+                                    case 0x11:
+                                        int reportPeriod = bBuf.get() & 0xFF;
+                                        bBuf.get();
+                                        short overCurrent = bBuf.getShort();
+                                        short resetCurrent = bBuf.getShort();
+                                        if ((getGpuffConfig() instanceof GpuffConfigGVAR)) {
+                                            try {
+                                                ((GpuffConfigGVAR) getGpuffConfig()).setReportPeriod(reportPeriod);
+                                                ((GpuffConfigGVAR) getGpuffConfig()).setOverCurrentLevel(overCurrent);
+                                                ((GpuffConfigGVAR) getGpuffConfig()).setResetLevel(resetCurrent);
+                                            } catch (Exception e) {
+                                                log.info(getGpuffConfig().toString());
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            log.info("Wrong type of configuration - Check your config databases please (duplicates)?");
+                                        }
+
+                                        log.info(new StringBuilder().append("Report Period:           ").append(reportPeriod).toString());
+                                        log.info(new StringBuilder().append("Over Current Threshold:  ").append(overCurrent).toString());
+                                        log.info(new StringBuilder().append("Reset Current Threshold: ").append(resetCurrent).toString());
+                                        bBuf.position(ie_position + ie_len);
+                                        break;
+                                    case (byte) 0x85:
+                                    case 0x05:
+                                    case 0x06:
+                                        if (ie_type != 0x06) {
+                                            popBytes(64);
+                                            bBuf.get();
+                                            bBuf.get();
+                                        }
+                                        int fwMajVer = bBuf.get() & 0xFF;
+                                        int fwMinVer = bBuf.get() & 0xFF;
+                                        short resetCnt = bBuf.getShort();
+                                        short SPIErrors = bBuf.getShort();
+                                        int abFwVerMaj = bBuf.get() & 0xFF;
+                                        int abFwVerMin = bBuf.get() & 0xFF;
+                                        int rssi = bBuf.get() & 0xFF;
+                                        int ber = bBuf.get() & 0xFF;
+                                        int resMomCnt = bBuf.get() & 0xFF;
+                                        int revertCnt = bBuf.get() & 0xFF;
+                                        bBuf.position(ie_position + ie_len);
+
+                                        log.info(new StringBuilder().append("Diagnostic message received. Length: ").append(ie_len).append(".").toString());
+                                        log.info(new StringBuilder().append("Diagnostic - Firmware Version  ").append(fwMajVer).append(".").append(fwMinVer).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - Reset Count       ").append(resetCnt).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - SPI Errors        ").append(SPIErrors).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - Analog FW Version ").append(abFwVerMaj).append(".").append(abFwVerMin).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - RSSI              ").append(rssi).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - BER               ").append(ber).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - Reset Momentary   ").append(resMomCnt).toString());
+                                        log.info(new StringBuilder().append("Diagnostic - APN Revert Count  ").append(revertCnt).toString());
+
+                                        break;
+                                    default:
+                                        log.info(new StringBuilder().append("Unknown Information Element Type ").append(ie_type).append(" - Update the decode").toString());
+                                        ieDecodeError = true;
+                                    }
                                 }
                             }
+
                             break;
                         default:
-                            log.info("Error decoding FCN " + fcn + " at buffer position " + bBuf.position());
-                        fcnDecodeError = true;
-                        break;
+                            log.info("I have not been trained to decode VAR Advisor FCN " + fcn + " at buffer position " + bBuf.position());
+                            fcnDecodeError = true;
+                            break;
+
                         }
-                        break;
-                    case 0x02: // VAR Advisor.
-                        log.info("Error decoding VAR Advisor FCN " + fcn + " at buffer position " + bBuf.position());
-                        fcnDecodeError = true;
-                        break;
                     }
                 }
+                decodeCRC();
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -555,13 +1015,43 @@ public class GPUFFProtocol {
 
         bBuf.put(FLAG_OFFSET, (byte) 0x04); // FLG/LEN ACK/NO CRC.
         int cfg_fnc_pos = len; // Position of the FNC!
-        appendFNCConfigHeader(gpc.getUser(), gpc.getPassword());
-        appendAPNConfig(gpc.getUser(), gpc.getPassword(), gpc.getApn(), gpc.isPeriodic());
-        appendIPConfig(gpc.getIp0(), gpc.getPort0());
-        appendIPConfig(gpc.getIp1(), gpc.getPort1());
+        appendFNCConfigHeader(gpc.getFromUser(), gpc.getFromPassword());
+        appendAPNConfig(gpc.getUser(), gpc.getPassword(), gpc.getApn(), gpc.getPeriodic());
+        appendIPConfig(gpc.getIp0(), gpc.getPort0(), false);
+        appendIPConfig(gpc.getIp1(), gpc.getPort1(), true);
 
-        // Align the Configuration FCN as a whole (should be redundant since
-        // each piece is aligned, but ...
+        if (!(gpc instanceof GpuffConfigGCVT)) {
+            if ((gpc instanceof GpuffConfigGVAR)) {
+                appendGVARConfig((GpuffConfigGVAR) gpc);
+            }
+        }
+
+        // Align the Configuration FCN as a whole (should be redundant since each piece is aligned, but ...
+        twoByteAlign(cfg_fnc_pos + 1);
+        setLength();
+    }
+
+    private void appendGVARConfig(GpuffConfigGVAR gpc) {
+        bBuf.put(len++, (byte) 0x91); // -111);
+        int gvlen_pos = len;
+        bBuf.put(len++, (byte) 0x00);
+        bBuf.put(len++, (byte) gpc.getReportPeriod());
+        bBuf.put(len++, (byte) 0x00);
+        bBuf.putShort(len, (short) gpc.getOverCurrentLevel());
+        len = (short) (len + 2);
+        bBuf.putShort(len, (short) gpc.getResetLevel());
+        len = (short) (len + 2);
+        twoByteAlign(gvlen_pos);
+    }
+
+    public void buildConfigRequestPacket(GpuffConfig gpc, byte[] srcDat) {
+        // generate CONFIG REQUEST + ACK response
+        primeResponse(srcDat);
+
+        bBuf.put(FLAG_OFFSET, (byte) 0x04); // FLG/LEN ACK/NO CRC.
+        int cfg_fnc_pos = len; // Position of the FNC! Used below to two-byte
+        // align message.
+        appendFNCConfigRequestHeader();
         twoByteAlign(cfg_fnc_pos + 1);
         setLength();
     }
@@ -594,14 +1084,14 @@ public class GPUFFProtocol {
         bBuf.put(len++, (byte) 0x88);
         bBuf.put(len++, (byte) 0x00); // This is the CFG LEN Position.
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < GpuffConfig.GPUFF_USER_SIZE; i++) {
             if (user != null && i < user.length()) {
                 bBuf.put(len++, (byte) (0x00ff & user.charAt(i))); // User.
             } else {
                 bBuf.put(len++, (byte) 0x00); // User.
             }
         }
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < GpuffConfig.GPUFF_PW_SIZE; i++) {
             if (pw != null && i < pw.length()) {
                 bBuf.put(len++, (byte) (0x00ff & pw.charAt(i))); // PW.
             } else {
@@ -610,44 +1100,66 @@ public class GPUFFProtocol {
         }
     }
 
-    public void appendAPNConfig(String user, String pw, String apn,
-            boolean periodicReport) {
+    public void appendAPNConfig(String user, String pw, String apn, int periodicReport) {
         bBuf.put(len++, (byte) 0x81); // APN Config
         int apn_pos = len;
         bBuf.put(len++, (byte) 0x00); // This is the CFG LEN Position.
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < GpuffConfig.GPUFF_USER_SIZE; i++) {
             if (user != null && i < user.length()) {
                 bBuf.put(len++, (byte) (0x00ff & user.charAt(i))); // User.
             } else {
                 bBuf.put(len++, (byte) 0x00); // User.
             }
         }
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < GpuffConfig.GPUFF_PW_SIZE; i++) {
             if (pw != null && i < pw.length()) {
                 bBuf.put(len++, (byte) (0x00ff & pw.charAt(i))); // PW.
             } else {
                 bBuf.put(len++, (byte) 0x00); // PW.
             }
         }
-        bBuf.put(len++, (byte) (periodicReport ? 0x01 : 0x00)); // Periodic
-                                                                // reports if
-                                                                // non-zero
+        bBuf.put(len++, (byte) periodicReport); // Periodic report interval
         bBuf.put(len++, (byte) 0x00); // Reserved
         insertConfigString(apn);
         twoByteAlign(apn_pos);
 
     }
 
-    public void appendIPConfig(String ip_str, String ip_port) {
+    public void appendIPConfig(String ip_str, String ip_port, boolean ip_one) {
         bBuf.put(len++, (byte) 0x82); // IP Config Number
         int ip_pos = len;
-        bBuf.put(len++, (byte) 0x00); // This is the LEN Position.
+        bBuf.put(len++, (byte) 0x00); // LEN Slot
+        bBuf.put(len++, (byte) (ip_one ? 0x01: 0x00)); // This is the LEN Position.
         bBuf.put(len++, (byte) 0x00); // Reserved
-        bBuf.put(len++, (byte) 0x00); // Reserved
+
+        ip_port = (ip_port == null ? "00000" : ip_port);
+        for (int i = 0; i < GpuffConfig.GPUFF_PORT_SIZE - ip_port.length() - 1; i++) {
+            log.info(new StringBuilder().append("Padding port number with zeros.  Please fix configuration db for serial ").append(getSerialNumber()).toString());
+            bBuf.put(len++, (byte) '0'); // Probably a formatter for the string but I don't know it.  Needs to be zero padded 5 chars long.
+        }
+
         insertConfigString(ip_port);
         insertConfigString(ip_str);
         twoByteAlign(ip_pos);
+    }
+
+    public void appendRPnThreshold(int report_period, short th_high) {
+        bBuf.put(len++, (byte) 0x92); // IP Config Number
+        int ie_len_pos = len;
+        bBuf.put(len++, (byte) 0x00); // len slot
+        bBuf.put(len++, (byte) report_period); // Reserved
+        bBuf.put(len++, (byte) 0x00); // Reserved
+        bBuf.putShort(len++, th_high);
+        bBuf.put(len++, (byte) 0x00); // Reserved
+        bBuf.put(len++, (byte) 0x00); // Reserved
+        
+        twoByteAlign(ie_len_pos);
+    }
+
+    public void appendFNCConfigRequestHeader() {
+        bBuf.put(len++, (byte) 0x89);
+        bBuf.put(len++, (byte) 0x00); // This is the CFG LEN Position.
     }
 
     public String toHexString() {
@@ -657,6 +1169,14 @@ public class GPUFFProtocol {
             hexFormatter.format(" %02X", (0xff & bBuf.get(i)));
         }
         return hexFormatter.out().toString();
+    }
+
+    private final long decodeUnsignedInt() {
+        long value = bBuf.get() << 24 & 0xFF000000;
+        value |= bBuf.get() << 16 & 0xFF0000;
+        value |= bBuf.get() << 8 & 0xFF00;
+        value |= bBuf.get() & 0xFF;
+        return value;
     }
 
     private String decodeString(int max_len) {
@@ -673,7 +1193,7 @@ public class GPUFFProtocol {
 
         if (i % 2 == 0)
             bBuf.get(); // Pop another byte. An even count here indicates an odd
-                        // number of bytes (0 is the fence post)
+        // number of bytes (0 is the fence post)
 
         return new String(tbuf, 0, i);
     }
@@ -684,11 +1204,13 @@ public class GPUFFProtocol {
     }
 
     public GpuffConfig getConfig() {
-        return cfg;
+        return getGpuffConfig();
     }
 
-    public void setConfig(GpuffConfig cfg) {
-        this.cfg = cfg;
+    // Need to reset the configuration to make sure the next decode does not
+    // have clutter in it.
+    public void resetConfig() {
+        cfg = null;
     }
 
     public int decodeSerial() {
@@ -696,25 +1218,37 @@ public class GPUFFProtocol {
         if (isGpuff()) {
             serialNumber = bBuf.getInt(11);
         }
-        cfg.setSerial(serialNumber);
+        getGpuffConfig().setSerial(serialNumber);
         return serialNumber;
     }
 
     public void decodeGpuffHeader() {
 
-        ackWithAckReq = (0x0044 == ((bBuf.get(FLAG_OFFSET) & 0x00ff) & 0x0044));
+        resetConfig();
+
+        crcIncluded = (0x80 == (bBuf.get(2) & 0xFF & 0x80));
         needsAck = (0x0040 == ((bBuf.get(FLAG_OFFSET) & 0x00ff) & 0x0040));
+        ackResponseBit = (0x04 == (bBuf.get(2) & 0xFF & 0x04));
+        ackWithAckReq = (needsAck && ackResponseBit);
         len = (short) (bBuf.get(LEN_MSB) & 0x03);
         len <<= 8;
         len += (short) (bBuf.get(LEN_LSB) & 0x00ff);
         len += 4;
+
+        deviceType = bBuf.getShort(DEVTYPE_OFFSET);
         decodeSerial();
 
         flag_len = bBuf.getShort(FLAG_OFFSET);
         cid = bBuf.getShort(CID_OFFSET);
         sequence = bBuf.getShort(SEQUENCE_OFFSET);
-        deviceType = bBuf.getShort(DEVTYPE_OFFSET);
         deviceRevision = bBuf.get(DEVREV_OFFSET);
+    }
+
+    public void decodeCRC() {
+        if (this.crcIncluded) {
+            bBuf.get();
+            bBuf.get();
+        }
     }
 
     public void setConfigDecode(boolean configDecode) {
@@ -724,4 +1258,25 @@ public class GPUFFProtocol {
     public boolean isConfigDecode() {
         return configDecode;
     }
+
+    public GpuffConfig getGpuffConfig() {
+        if (cfg == null) {
+            switch (deviceType) {
+            case 0x01:
+            case 0x03:
+            default:
+                cfg = new GpuffConfigGCVT();
+                break;
+            case 0x02:
+                cfg = new GpuffConfigGVAR();
+            }
+        }
+
+        return cfg;
+    }
+
+    public boolean isAckResponseBit() {
+        return this.ackResponseBit;
+    }
+
 }

@@ -9,8 +9,8 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.PointData;
@@ -20,6 +20,7 @@ public class PointDataGenerator implements PointValueUpdater {
     private Logger log = YukonLogManager.getLogger(PointDataGenerator.class);
     private IServerConnection dispatchConnection;
     private PointDao pointDao;
+    private DynamicDataSource dynamicDataSource;
     private int type;
     private int offset;
     private boolean cachePoints = true;
@@ -47,7 +48,10 @@ public class PointDataGenerator implements PointValueUpdater {
 
             pointData.setTime(time);
             log.info("Updating " + lpao.getPaoName() + " point " + holder.point.getPointID() + ": " + holder.point.getPointName() + " with value=" + value);
-            dispatchConnection.write(pointData);
+            // dispatchConnection.write(pointData);
+            dynamicDataSource.putValue(pointData);
+            
+            // PointValueHolder pvh = dynamicDataSource.getPointValue(lpao.getLiteID());
         }
     }
 
@@ -57,7 +61,7 @@ public class PointDataGenerator implements PointValueUpdater {
     
     private synchronized PointHolder getPointForPaoId(LiteYukonPAObject lpao) {
     	if (lpao == null) {
-    		log.info("No device found for pao: " + lpao.getPaoName());
+    		log.info("No device found for pao ");
     		return null;
     	}
         PointHolder holder;
@@ -70,18 +74,19 @@ public class PointDataGenerator implements PointValueUpdater {
         holder = new PointHolder();
         // find status point
         
-        LitePoint litePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(lpao.getLiteID(), offset, type);
-        if (litePoint == null) {
+        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, type);
+        LitePoint point = pointDao.getLitePoint(pointId);
+        if (point == null) {
             log.warn("Unable to find point. DeviceId=" + lpao.getLiteID() 
                      + ", offset=" + offset + ", type=" + type);
             return null;
         }
-        log.debug("Got point " + litePoint.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
+        log.debug("Got point " + point.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
         
-        holder.point = litePoint;
+        holder.point = point;
         try {
-            holder.multiplier = pointDao.getPointMultiplier(litePoint);
-        } catch (NotFoundException e) {
+            holder.multiplier = pointDao.getPointMultiplier(point);
+        } catch (DataAccessException e) {
         }
 
         if (cachePoints) {
@@ -116,6 +121,14 @@ public class PointDataGenerator implements PointValueUpdater {
 
     public void setCachePoints(boolean cachePoints) {
         this.cachePoints = cachePoints;
+    }
+
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
+
+    public DynamicDataSource getDynamicDataSource() {
+        return dynamicDataSource;
     }
 
 

@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,19 +17,30 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
 public class GpuffMessageMux {
     private Thread worker;
     private Logger log = Logger.getLogger(GpuffMessageMux.class);
     private Set<URL> udpTargetAddressSet;
-    private int listenPort = 62626;
-    private ConfigLookup configLookup = null;
+    private HashMap<Integer, Integer> resetCountMap = new HashMap<Integer, Integer>();
 
+    private YukonDeviceLookup yukonDeviceLookup;
+    private DynamicDataSource dynamicDataSource;
+    private PointDao pointDao;
+
+    private int listenPort = 62626;
+    private int defaultConfigSerial = 1;
+    private ConfigLookup configLookup = null;
     
     private byte[] buf = new byte[2048];
     private DatagramSocket mySocket = null;
     private int ackWaitMs = 0;
     private GPUFFProtocol gpProt = new GPUFFProtocol();
-
+    private boolean autoAck = true;
     
     private class UDPGpuffAddress {
         private InetAddress address;
@@ -70,8 +82,7 @@ public class GpuffMessageMux {
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + ((address == null) ? 0
-                    : address.hashCode());
+            result = prime * result + ((address == null) ? 0 : address.hashCode());
             result = prime * result + port;
             result = prime * result + sequence;
             return result;
@@ -128,7 +139,6 @@ public class GpuffMessageMux {
         Runnable runner = new Runnable() {
             public void run() {
                 while (!Thread.currentThread().isInterrupted()) {
-
                     try {
                         try {
                             // this should only block for 2.5 seconds
@@ -146,10 +156,11 @@ public class GpuffMessageMux {
                                     sendPacket(pkt.getData(), pkt.getLength(), targ.getAddress(), targ.getPort());
                                     replyNATMap.clear();
                                 } else {
-                                    
                                     gpProt.decode();  //Decode the UDP packet if it is GPUFF.
                                     
-                                    if (gpProt.isGpuffACKwithACKRequest()) {
+                                    if(gpProt.isAckResponseBit()) {
+                                        log.info("ACK Reply recieved from: " + pkt.getAddress() + ":" + pkt.getPort() + ".  Another responder has already acknowledged the device (replyNAT was cleared).");
+                                    } else if (gpProt.isGpuffACKwithACKRequest()) {
                                         // This packet is an ACK with an ACK Request.  Log it as an error.
                                         log.warn("ERR ACK+ACK req rec: " + pkt.getAddress() + ":" + pkt.getPort() + " [" + pkt.getLength() + "] bytes (IGNORE)." + gpProt.toHexString());
                                     } else {
@@ -159,26 +170,91 @@ public class GpuffMessageMux {
                                         // Do not send messages which ACK with the ACKRequest set.
                                         writePacket(pkt);
                                         
-                                        if(gpProt.isGpuff()) {
+                                        if(gpProt.isGpuff() && configLookup != null) {
                                             
+                                        	GpuffConfig cfg = null;
+                                        	cfg = configLookup.getConfigForSerial(gpProt.getSerialNumber());
+                                        	
                                             if(gpProt.isConfigDecode()) {
-                                                GpuffConfig cfg = null;
-                                                configLookup.reset();                           // This will make the CSV reload periodically. 
-                                                cfg = configLookup.getConfigForSerial(gpProt.getSerialNumber());
+                                                boolean reconfig = false;
                                                 
                                                 if(cfg != null) {
-                                                    log.info("Configuration: " + cfg.toString());
+                                                    long now = java.lang.System.currentTimeMillis();
+
                                                     if(!cfg.equals(gpProt.getConfig())) {
-                                                        log.info("Configurations do not match, the device will be reconfigured");
-                                                        reconfigPacket(cfg, pkt);
-                                                    } else {
-                                                        log.info("Configurations match, the device will NOT be reconfigured");                                                
+                                                        long delta = now - cfg.getLastReconfigDate().getTime();
+                                                        
+                                                        if(delta > cfg.getReconfigTimeout()) {  // 30 minutes default.
+                                                            cfg.setReconfigCount(0);
+                                                            cfg.setLastReconfigDate(new Date(java.lang.System.currentTimeMillis()));
+                                                        }
+
+                                                        if(cfg.getReconfigCount() < cfg.getReconfigLimit()) {
+                                                            cfg.setReconfigCount(cfg.getReconfigCount() + 1);
+                                                            log.info("Configurations do not match, the device will be reconfigured.  Reconfig #" + cfg.getReconfigCount());
+                                                            log.info("device: " + gpProt.getConfig().toString());
+                                                            log.info("config: " + cfg.toString());
+                                                            reconfigPacket(cfg, pkt);
+                                                            reconfig = true;
+                                                        } else {
+                                                            log.info("DEVICE RECONFIG FAILURE: " + cfg.getReconfigLimit() + " ATTEMPTS WITHIN " + cfg.getReconfigTimeout() + " MILLIS");
+                                                        }
+                                                    }
+
+                                                    try {                                                    
+                                                        // This is where we need to do some special stuff for the 1.12 version.
+                                                        if( !reconfig && !cfg.getApn().equals("isp.cingular") ) {
+                                                            if( gpProt.getConfig().getFwMajor() == 1 && gpProt.getConfig().getFwMinor() == 12 && gpProt.getConfig().getResetCount() > 0) {
+                                                                Integer resets = resetCountMap.get(gpProt.getSerialNumber());
+                                                               
+                                                                // Consider this further
+                                                                //if(cfg.isTargetGAO() && resets == null) {
+                                                                //    // We expect to hear from this device, GAO is a target - add the device to the known reset count list. 
+                                                                //    resetCountMap.put(gpProt.getSerialNumber(), gpProt.getConfig().getResetCount());
+                                                                //    resets = gpProt.getConfig().getResetCount();  
+                                                                //}
+                                                                
+                                                                if( (resets == null || resets < gpProt.getConfig().getResetCount()) ) 
+                                                                {
+                                                                    log.info(gpProt.getSerialNumber() + " is version 1.12 and revertCount = " + gpProt.getConfig().getResetCount());
+                                                                    log.info(gpProt.getSerialNumber() + " **** RECONFIGURING TO FACTORY DEFAULT **** ");
+                                                                    GpuffConfig default_cfg = null;
+                                                                    default_cfg = configLookup.getConfigForSerial(getDefaultConfigSerial());
+                                                                    if(default_cfg != null) {
+                                                                        reconfigPacket(default_cfg, pkt);
+                                                                        resetCountMap.put(gpProt.getSerialNumber(), gpProt.getConfig().getResetCount());
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    } catch(NullPointerException e) {
+                                                        log.info("Caught Null Pointer exception ", e);
                                                     }
                                                 }
-                                            }
+                                            } 
                                             
                                             if (gpProt.isGpuffNeedingACK() && !gpProt.isGpuffACKwithACKRequest()) {
-                                                ackPacket(pkt.getData(), pkt.getAddress(), pkt.getPort());
+                                            	boolean requestConfig = false;
+												if( cfg!= null ) {
+                                            		if(cfg.isRequestConfig()) {
+                                            			// This config wants all ACKs to be configuration requests.
+                                            			requestConfig  = true;
+                                            		}
+                                            	}
+												
+                                            	if(!gpProt.isConfigDecode() && requestConfig) {
+                                          			requestConfig(cfg, pkt);
+                                            	} else if(cfg != null && 
+                                            	        cfg.getRequestConfig()!= null &&
+                                            	        cfg.getRequestConfig().compareToIgnoreCase("F") == 0) {
+                                        			log.info("Forcing a reconfiguration packet on serial " + cfg.getSerial());
+                                                    log.info("config: " + cfg.toString());
+                                        			reconfigPacket(cfg, pkt);
+                                            	} else if (isAutoAck()) {                                            		
+                                            		ackPacket(pkt.getData(), pkt.getAddress(), pkt.getPort());
+                                            	} else {
+                                            	    log.info("Application autoAck configured to: " + isAutoAck());
+                                            	}
                                             }
                                         }
                                     }
@@ -268,6 +344,9 @@ public class GpuffMessageMux {
         for (int i = 0; i < writeLen; i++) {
             hexFormatter.format(" %02X", (0x000000ff & writebuf[i]));
         }
+        log.info("UDP packet     data: [" + writeLen + "] bytes." + hexFormatter.out().toString());
+
+        String report = "UDP packet  targets: ";
 
         for (URL itr : udpTargetAddressSet) {
             try {
@@ -282,21 +361,19 @@ public class GpuffMessageMux {
                     UDPGpuffAddress target = new UDPGpuffAddress(pkt.getAddress(), pkt.getPort(), 0);
                     replyNATMap.put(key, target);
 
-                    String report = "UDP packet     send: " + packet.getAddress() + ":" + packet.getPort() + " [" + packet.getLength() + "] bytes." + hexFormatter.out().toString();
-                    log.info(report);
+                    report += " " + packet.getAddress() + ":" + packet.getPort() + ",";
 
                     getSocket().setTrafficClass(0x04);
                     getSocket().send(packet);
-                } else {
-                    String report = "UDP packet     send: " + pkt.getAddress() + ":" + pkt.getPort() + " [MUX LOOP AVOIDANCE]";
-                    log.info(report);
-                }
+                } 
             } catch (IOException e) {
                 System.out.print(e);
                 log.warn("caught IOException in writePacket", e);
                 cleanupSockets();
             }
         }
+        
+        log.info(report);
     }
 
     public void setUdpTargetAddressSet(Set<URL> udpTargetAddressSet) {
@@ -367,8 +444,71 @@ public class GpuffMessageMux {
         }
     }
 
+    public void requestConfig(GpuffConfig fileCfg, DatagramPacket pkt) {
+
+        try {
+            // generate RECONFIG response
+            gpProt.buildConfigRequestPacket(fileCfg, pkt.getData());
+
+            try {
+                Thread.sleep(getAckWaitMs());
+            } catch (InterruptedException e) {
+                log.debug("Sleep failed");
+            }
+            byte[] datagrambuffer = gpProt.getBytes();
+            DatagramPacket packet = new DatagramPacket(datagrambuffer, datagrambuffer.length, pkt.getAddress(), pkt.getPort());
+            String report = "Cfg Request    send: " + packet.getAddress() + ":" + packet.getPort() + " [" + packet.getLength() + "] bytes." + gpProt.toHexString();
+            log.info(report);
+            getSocket().setTrafficClass(0x04);
+            getSocket().send(packet);
+        } catch (IOException e) {
+            System.out.print(e);
+            log.warn("caught IOException in writePacket", e);
+            cleanupSockets();
+        }
+    }
+
     public void setConfigLookup(ConfigLookup configLookup) {
         this.configLookup = configLookup;
     }
 
+    public void setAutoAck(boolean autoAck) {
+        this.autoAck = autoAck;
+    }
+
+    public boolean isAutoAck() {
+        return autoAck;
+    }
+    
+    public void setDefaultConfigSerial(int defaultConfigSerial) {
+        this.defaultConfigSerial = defaultConfigSerial;
+    }
+
+    public int getDefaultConfigSerial() {
+        return defaultConfigSerial;
+    }
+
+    public void setYukonDeviceLookup(YukonDeviceLookup yukonDeviceLookup) {
+        this.yukonDeviceLookup = yukonDeviceLookup;
+    }
+
+    public YukonDeviceLookup getYukonDeviceLookup() {
+        return yukonDeviceLookup;
+    }
+
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
+
+    public DynamicDataSource getDynamicDataSource() {
+        return dynamicDataSource;
+    }
+
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+
+    public PointDao getPointDao() {
+        return pointDao;
+    }
 }
