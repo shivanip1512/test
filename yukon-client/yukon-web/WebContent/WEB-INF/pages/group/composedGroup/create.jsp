@@ -121,7 +121,9 @@
 				</td>
 				
 				<td style="text-align:center;">
-					<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+                    <div class="dib">
+    					<input type="submit"  class="icon icon_remove" name="removeRow${group.order}">
+                    </div>
 				</td>
 			</tr>
 		

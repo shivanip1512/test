@@ -62,7 +62,9 @@
 						<form id="deleteCallForm" action="/spring/stars/operator/callTracking/deleteCall" method="post">
 							<input type="hidden" name="accountId" value="${accountId}">
 							<input type="hidden" name="deleteCallId" value="${callReportWrapper.callReport.callId}">
-							<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+                            <div class="dib">
+    							<input type="submit" class="icon icon_remove">
+                            </div>
 						</form>
 					</td>
 				</cti:displayForPageEditModes>

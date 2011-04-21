@@ -35,8 +35,9 @@ function addGroups() {
                                 <td><a href="${editGroupUrl}">${group.groupName}</a></td>
                                 <td>${group.groupDescription}</td>
                                 <td class="removeColumn">
-                                    <input type="image" name="remove" src="/WebConfig/yukon/Icons/delete.png" value="${group.groupID}" 
-                                        class="pointer hoverableImage">
+                                    <div class="dib">
+                                        <input type="submit" name="remove" value="${group.groupID}" class="pointer icon icon_remove">
+                                    </div>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -44,7 +45,7 @@ function addGroups() {
                 </form>
             </c:when>
             <c:otherwise>
-                <i:inline key=".noMembers"/>
+                <i:inline key=".noGroups"/>
             </c:otherwise>
         </c:choose>
         <div class="actionArea">

@@ -49,8 +49,9 @@ function addUsers() {
                                     <td><cti:formatObject value="${user.authType}"/></td>
                                     <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
                                     <td class="removeColumn">
-                                        <input type="image" name="remove" src="/WebConfig/yukon/Icons/delete.png" value="${user.userID}" 
-                                            class="pointer hoverableImage">
+                                        <div class="dib">
+                                            <input type="submit" name="remove" value="${user.userID}" class="pointer icon icon_remove">
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>

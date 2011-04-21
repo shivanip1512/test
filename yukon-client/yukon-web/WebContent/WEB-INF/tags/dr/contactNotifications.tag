@@ -26,7 +26,10 @@
                     <input name="notificationId_${count}" type="hidden" value="${notification.liteID}"/>
                     
                     <cti:msg var="removeTitle" key="yukon.dr.consumer.contacts.removeNotificationTitle" />
-                    <input type="image" title="${removeTitle}" name="removeNotification_${count}" class="cssicon" src="<cti:theme key="yukon.dr.consumer.contacts.removeImage" default="/WebConfig/yukon/Icons/clearbits/close.gif" url="true"/>" />
+                    
+                    <div class="dib vab">
+                        <input type="image" title="${removeTitle}" name="removeNotification_${count}" class="icon icon_remove fr"/>
+                    </div>
                 </div>
             </c:forEach>
         </c:when>

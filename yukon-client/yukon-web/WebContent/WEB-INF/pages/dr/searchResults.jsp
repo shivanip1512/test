@@ -19,14 +19,16 @@
 		key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg" />
 	<cti:msg var="submitButtonAlt"
 		key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt" />
-	<form accept-charset="ISO-8859-1" method="get"
-		action="/spring/dr/search" enctype="application/x-www-form-urlencoded">
-	<div id="findForm"><cti:msg
-		key="yukon.web.modules.dr.searchResults.searchBoxLabel" /> <input
-		type="text" id="textinput" value="${quickSearchBean.name}" name="name" />
-	<input type="image" style="vertical-align: middle"
-		alt="${submitButtonAlt}" src="${submitButtonSrc}" /></div>
-	</form>
+        
+	<div id="findForm" class="box">
+	   <form accept-charset="ISO-8859-1" method="get" action="/spring/dr/search" enctype="application/x-www-form-urlencoded">
+            <label class="box fl">
+                <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
+                <input type="text" id="textinput" class="search_text" value="${quickSearchBean.name}" name="name" />
+            </label>
+            <input type="submit" class="icon search_button" alt="${submitButtonAlt}" src="${submitButtonSrc}" />
+	   </form>
+    </div>
 	<br />
 
 

@@ -59,11 +59,13 @@
 										<input type="hidden" name="deviceId" value="${device.paoIdentifier.paoId}" />
 										<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 										<input type="hidden" name="showDevices" value="true" />
-										<input type="image" title="Remove device from group" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
+                                        <div class="dib">
+    										<input type="submit" title="Remove device from group" class="icon icon_remove"/>
+                                        </div>
 									</form>
 								</c:when>
 								<c:otherwise>
-									<img class="graycssicon" title="Cannot remove device from group" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
+                                    <span class="icon icon_remove_disabled"></span>
 								</c:otherwise>
 							</c:choose>
 						</td>

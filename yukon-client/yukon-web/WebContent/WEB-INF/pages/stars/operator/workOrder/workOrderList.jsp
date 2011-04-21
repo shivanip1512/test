@@ -13,7 +13,9 @@
 
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('input[id^=deleteButton_]', function(event) {
+YEvent.observeSelectorClick('a[id^=deleteButton_]', function(event) {
+    event.stop();
+    
     var parentElement = Event.findElement(event, 'td');
     var confirmMsg = $F(parentElement.down('input[name=confirmMessage]'));
     var accountId = $F(parentElement.down('input[name=accountId]'));
@@ -93,10 +95,12 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <td class="removeCol">
                         <cti:msg2 var="confirmMessage" key=".deleteWorkOrderConfirmation.message" arguments="${workOrder.workOrderBase.orderNumber}"/>
-                        <input type="hidden" name="confirmMessage" value="${confirmMessage}"/>
-                        <input type="hidden" name="accountId" value="${accountId}">
-                        <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
-                        <input type="image" id="deleteButton_${workOrder.workOrderBase.orderId}" onclick="return false" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+                        <div class="dib">
+                            <input type="hidden" name="confirmMessage" value="${confirmMessage}"/>
+                            <input type="hidden" name="accountId" value="${accountId}">
+                            <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
+                            <a href="#" class="icon icon_remove" id="deleteButton_${workOrder.workOrderBase.orderId}">remove</a>
+                        </div>
                     </td>
                 </cti:displayForPageEditModes>
             

@@ -525,7 +525,9 @@
                                                         <form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/editor/removeGroup" method="post">
                                                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                                            <input type="image" title="Delete Group" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
+                                                            <div class="dib">
+                                                                <a href="#" class="icon icon_remove" onclick="this.event.stop(); removeGroup('${subId}removeSubGroupForm');">remove</a>
+                                                            </div>
                                                         </form>
                                                     </c:when>
                                                     <c:otherwise>

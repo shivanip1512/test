@@ -43,8 +43,9 @@
                                             </c:if>
                                             <c:if test="${route.value.deletable}">
                                             <td class="removeColumn">
-                                                <input type="image" src="/WebConfig/yukon/Icons/delete.png" 
-                                                       class="pointer hoverableImage" name="removeRoute" value="${route.key.yukonID}">
+                                                <div class="dib">
+                                                    <input type="submit" class="pointer icon icon_remove" name="removeRoute" value="${route.key.yukonID}">
+                                                </div>
                                             </td>
                                             </c:if>
                                         </tr>
@@ -104,8 +105,9 @@
                                     <tr>
                                         <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
                                         <td class="removeColumn">
-                                            <input type="image" src="/WebConfig/yukon/Icons/delete.png" 
-                                                   class="pointer hoverableImage" name="removeSubstation" value="${substation.substationID}">
+                                            <div class="dib">
+                                                <input type="submit" class="pointer icon icon_remove" name="removeSubstation" value="${substation.substationID}">
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>
