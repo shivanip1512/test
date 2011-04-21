@@ -24,6 +24,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -66,6 +67,7 @@ public class ApplianceCategoryController {
     private AssignedProgramService assignedProgramService;
     private ApplianceCategoryDao applianceCategoryDao;
     private ApplianceCategoryService applianceCategoryService;
+    private ObjectFormattingService objectFormattingService;
     private StarsDatabaseCache starsDatabaseCache;
     private PaoDao paoDao;
     private EnergyCompanyService energyCompanyService;
@@ -260,10 +262,15 @@ public class ApplianceCategoryController {
         model.addAttribute("isEditable", isEditable);
 
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
-            ApplianceTypeEnum[] applianceTypes = ApplianceTypeEnum.values();
+            List<ApplianceTypeEnum> applianceTypes =
+                objectFormattingService.sortEnumValues(ApplianceTypeEnum.values(),
+                                                       ApplianceTypeEnum.DEFAULT, null, context);
             model.addAttribute("applianceTypes", applianceTypes);
 
-            ApplianceCategoryIcon[] icons = ApplianceCategoryIcon.values();
+            List<ApplianceCategoryIcon> icons =
+                objectFormattingService.sortEnumValues(ApplianceCategoryIcon.values(),
+                                                       ApplianceCategoryIcon.NONE,
+                                                       ApplianceCategoryIcon.OTHER, context);
             model.addAttribute("icons", icons);
         }
 
@@ -573,6 +580,11 @@ public class ApplianceCategoryController {
     public void setApplianceCategoryService(
             ApplianceCategoryService applianceCategoryService) {
         this.applianceCategoryService = applianceCategoryService;
+    }
+
+    @Autowired
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 
     @Autowired

@@ -18,7 +18,9 @@ import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
@@ -42,6 +44,7 @@ public class ListController {
     private SelectionListDao selectionListDao;
     private SelectionListService selectionListService;
     private EnergyCompanyService energyCompanyService;
+    private ObjectFormattingService objectFormattingService;
 
     private Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
         @Override
@@ -113,8 +116,8 @@ public class ListController {
         // validation errors but doesn't hurt otherwise.
         list.sortEntries();
 
-        List<YukonDefinition> listDefinitions =
-            selectionListService.getValidDefinitions(list.getEnergyCompanyId(), list.getType());
+        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
+                                                                   list.getType(), context);
         model.addAttribute("listDefinitions", listDefinitions);
 
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -128,11 +131,19 @@ public class ListController {
         YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   list.getEnergyCompanyId());
-        List<YukonDefinition> listDefinitions =
-            selectionListService.getValidDefinitions(list.getEnergyCompanyId(), list.getType());
+        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
+                                                                   list.getType(), context);
         model.addAttribute("listDefinitions", listDefinitions);
 
         return "list/entry.jsp";
+    }
+
+    private List<YukonDefinition> getListDefinitions(int ecId, YukonSelectionListEnum listType,
+                                                     YukonUserContext context) {
+        List<YukonDefinition> listDefinitions =
+            selectionListService.getValidDefinitions(ecId, listType);
+        return objectFormattingService.sortEnumValues(listDefinitions.toArray(new YukonDefinition[listDefinitions.size()]),
+                                                      null, null, context);
     }
 
     @RequestMapping(value="save", params="save", method=RequestMethod.POST)
@@ -187,6 +198,7 @@ public class ListController {
             selectionListService.restoreToDefault(newList);
         } catch (DataIntegrityViolationException dive) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
+            list.setType(newList.getType());
             return prepareEdit(model, list, context);
         }
 
@@ -215,5 +227,10 @@ public class ListController {
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
+    }
+
+    @Autowired
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 }
