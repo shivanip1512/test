@@ -62,6 +62,13 @@
 		</filter-class>
 	</filter>
 
+    <filter>
+        <filter-name>facesFilter</filter-name>
+        <filter-class>
+            com.cannontech.servlet.filter.FacesFilter
+        </filter-class>
+    </filter>
+
 	<filter>
 		<filter-name>noCacheFilter</filter-name>
 		<filter-class>
@@ -141,6 +148,11 @@
 		<filter-name>timerFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+    <filter-mapping>
+        <filter-name>facesFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>noCacheFilter</filter-name>
