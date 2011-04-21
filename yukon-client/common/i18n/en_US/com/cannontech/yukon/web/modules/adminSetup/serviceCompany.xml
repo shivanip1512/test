@@ -47,7 +47,7 @@
     
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageName">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageDescription">Warehouses</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageDescription">Service Companies</entry>
 
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageName">Service Companies</entry>
@@ -60,8 +60,5 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.infoContainer">Service Companies</entry>
     
     <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.label">Create Service Company</entry>
 
 </properties>
