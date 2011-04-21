@@ -187,4 +187,6 @@
 
     <entry key="yukon.web.components.button.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
     <entry key="yukon.web.components.button.down.disabled.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
+    
+    <entry key="yukon.web.components.pageloading">Loading…</entry>
 </properties>

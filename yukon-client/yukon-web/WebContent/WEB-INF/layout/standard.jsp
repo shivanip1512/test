@@ -51,7 +51,7 @@
     <div class="loading">
         <!-- The lookup for your own custom message would be: $$("#modal_glass .message")[0] -->
         <div class="box message">
-            <cti:msg key="yukon.web.layout.standard.loading"/>
+            <cti:msg key="yukon.web.components.pageloading"/>
         </div>
     </div>
 </div>
