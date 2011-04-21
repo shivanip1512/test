@@ -1,14 +1,17 @@
 package com.cannontech.common.pao.definition.dao;
 
-import java.net.URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +22,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
@@ -33,12 +34,11 @@ import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableSet.Builder;
 
 /**
  * Test class for PaoDefinitionDao
@@ -603,28 +603,6 @@ public class PaoDefinitionDaoImplTest {
         Collections.sort(list);
 
         return list;
-    }
-
-    /**
-     * Mock PaoGroups class for testing purposes. This class is public because
-     * outside classes need access to the constants. The methods in this class
-     * return static value expected for unit testing
-     */
-    public class MockPaoGroups implements PaoGroupsWrapper {
-
-        public static final int constant1 = 1;
-        public static final int constant2 = 2;
-        public static final int constant3 = 3;
-
-        public int getDeviceType(String typeString) {
-
-            throw new UnsupportedOperationException();
-        }
-
-        public String getPAOTypeString(int type) {
-            return Integer.toString(type);
-        }
-
     }
 
     private class MockUnitMeasureDao implements UnitMeasureDao {

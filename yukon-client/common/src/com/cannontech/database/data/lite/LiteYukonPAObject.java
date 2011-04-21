@@ -134,7 +134,7 @@ public void retrieve(String dbalias)
 
 		Object[] objs = stat.getRow(0);
 		setPaoType(PaoType.getForDbString(objs[2].toString()));
-		setCategory(PaoCategory.valueOf(objs[0].toString()));
+		setCategory(PaoCategory.getForDbString(objs[0].toString()));
 		setPaoName(objs[1].toString());
 		setPaoClass(PaoClass.getForDbString(objs[3].toString()));
 		setPaoDescription(objs[4].toString());

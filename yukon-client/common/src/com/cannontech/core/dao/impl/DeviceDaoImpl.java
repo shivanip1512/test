@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -21,6 +20,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -37,7 +37,6 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -68,7 +67,6 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
     private DBPersistentDao dbPersistantDao;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private MeterDao meterDao;
 
     /**
@@ -80,7 +78,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     public void afterPropertiesSet() {
 
-        this.yukonDeviceRowMapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        this.yukonDeviceRowMapper = new YukonDeviceRowMapper();
     }
 
     public void disableDevice(YukonDevice device) {
@@ -304,7 +302,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
                         + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
                         + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId "
                         + "WHERE dr.RouteId = ?";
-        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper(paoGroupsWrapper));
+        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper());
         return devices;
     }
     
@@ -425,8 +423,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         SimpleDevice device = new SimpleDevice();
         device.setDeviceId(oldDevice.getPAObjectID());
         String typeStr = oldDevice.getPAOType();
-        int deviceType = paoGroupsWrapper.getDeviceType(typeStr);
-        device.setType(deviceType);
+        device.setDeviceType(PaoType.getForDbString(typeStr));
         return device;
     }
 
@@ -435,7 +432,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         DBChangeMsg msg = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
                                           DBChangeMsg.CHANGE_PAO_DB,
                                           PAOGroups.STRING_CAT_DEVICE,
-                                          paoGroupsWrapper.getPAOTypeString(device.getPaoIdentifier().getPaoType().getDeviceTypeId()),
+                                          device.getPaoIdentifier().getPaoType().getDbString(),
                                           DbChangeType.UPDATE );
 
         dbPersistantDao.processDBChange(msg);
@@ -458,11 +455,6 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     @Required
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
         this.dbPersistantDao = dbPersistantDao;
-    }
-
-    @Required
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
 
     @Required

@@ -72,7 +72,6 @@
     <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate"/>
     <property name="databaseCache" ref="databaseCache"/>
     <property name="dbPersistantDao" ref="dbPersistentDao" />
-    <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     <property name="meterDao" ref="meterDao"/>
   </bean>
   <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl" >

@@ -17,7 +17,6 @@ import com.cannontech.core.authorization.service.PaoPermissionEditorService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.TextView;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -26,7 +25,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControllerBase {
 
     private PaoDao paoDao = null;
-    private PaoGroupsWrapper paoGroups = null;
     private PaoPermissionEditorService<T> editorService = null;
 
     public PaoDao getPaoDao() {
@@ -35,14 +33,6 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
 
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
-    }
-
-    public PaoGroupsWrapper getPaoGroups() {
-        return paoGroups;
-    }
-
-    public void setPaoGroups(PaoGroupsWrapper paoGroups) {
-        this.paoGroups = paoGroups;
     }
 
     public PaoPermissionEditorService<T> getEditorService() {

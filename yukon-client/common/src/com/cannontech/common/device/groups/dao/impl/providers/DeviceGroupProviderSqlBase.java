@@ -19,12 +19,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.google.common.collect.Sets;
 
 public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase {
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private String countSql;
     private String deviceSql;
     
@@ -92,7 +90,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
         sql.appendFragment(getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         
-        final ParameterizedRowMapper<SimpleDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        final ParameterizedRowMapper<SimpleDevice> mapper = new YukonDeviceRowMapper();
         
         ResultSetExtractor rse = new ResultSetExtractor() {
 
@@ -118,7 +116,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
         sql.appendFragment(getDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         Set<SimpleDevice> result = new HashSet<SimpleDevice>();
-        CollectionRowCallbackHandler<SimpleDevice> rch = new CollectionRowCallbackHandler<SimpleDevice>(new YukonDeviceRowMapper(paoGroupsWrapper), result);
+        CollectionRowCallbackHandler<SimpleDevice> rch = new CollectionRowCallbackHandler<SimpleDevice>(new YukonDeviceRowMapper(), result);
         simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
         return result;
     }
@@ -131,14 +129,4 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     public SimpleJdbcTemplate getSimpleJdbcTemplate() {
         return simpleJdbcTemplate;
     }
-    
-    @Autowired
-    public final void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    
-    public PaoGroupsWrapper getPaoGroupsWrapper() {
-        return paoGroupsWrapper;
-    }
-
 }

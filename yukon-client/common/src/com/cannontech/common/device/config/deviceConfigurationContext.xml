@@ -22,7 +22,6 @@
 				-->
 			</list>
 		</property>
-		<property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
 		<property name="dbPersistentDao" ref="dbPersistentDao" />
 		<property name="paoDefinitionDao" ref="paoDefinitionDao" />
 	</bean>

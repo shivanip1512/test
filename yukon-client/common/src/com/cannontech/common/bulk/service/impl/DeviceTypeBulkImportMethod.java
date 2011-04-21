@@ -1,6 +1,5 @@
 package com.cannontech.common.bulk.service.impl;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -11,23 +10,17 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
     
     private DeviceCreationService deviceCreationService = null;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
     private PaoDao paoDao = null;
     
     @Autowired
     public void setDeviceCreationService(DeviceCreationService deviceCreationService) {
         this.deviceCreationService = deviceCreationService;
-    }
-
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Autowired
@@ -54,7 +47,7 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
         try {
             
             String deviceTypeStr = fields.get(BulkFieldColumnHeader.DEVICE_TYPE);
-            int deviceType = paoGroupsWrapper.getDeviceType(deviceTypeStr);
+            PaoType paoType = PaoType.getForDbString(deviceTypeStr);
             String name = fields.get(BulkFieldColumnHeader.NAME);
             int address = Integer.valueOf(fields.get(BulkFieldColumnHeader.ADDRESS));
             String routeStr = fields.get(BulkFieldColumnHeader.ROUTE);
@@ -64,7 +57,7 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
                 throw new DeviceCreationException("Could not create device by type: Invalid route name.");
             }
     
-            device = deviceCreationService.createCarrierDeviceByDeviceType(deviceType, name, address, routeId, true);
+            device = deviceCreationService.createCarrierDeviceByDeviceType(paoType.getDeviceTypeId(), name, address, routeId, true);
             
         } catch (NumberFormatException e) {
             throw new DeviceCreationException("Could not create device by type: Non-numeric address value.", e);

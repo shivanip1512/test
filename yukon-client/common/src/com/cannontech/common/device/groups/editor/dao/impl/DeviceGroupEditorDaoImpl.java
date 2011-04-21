@@ -39,7 +39,6 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -51,7 +50,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private final Logger log = YukonLogManager.getLogger(DeviceGroupEditorDaoImpl.class);
     
     private YukonJdbcOperations jdbcTemplate;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private NextValueHelper nextValueHelper;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
@@ -101,7 +99,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("join Device d on dgm.yukonpaoid = d.deviceid");
         sql.append("join YukonPaObject ypo on d.deviceid = ypo.paobjectid");
         sql.append("where dgm.devicegroupid = ?");
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
         List<SimpleDevice> devices = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         return devices;
     }
@@ -581,11 +579,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Required
     public void setJdbcTemplate(YukonJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    @Required
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Required

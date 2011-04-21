@@ -56,7 +56,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         sql.append("WHERE ");
         sql.append(getChildWhereForBin(bin, "ypo.paobjectid"));
         
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(getPaoGroupsWrapper());
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
         List<SimpleDevice> devices = jdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         
         return new HashSet<SimpleDevice>(devices);

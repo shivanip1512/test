@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * This type was created in VisualAge.
  */
+@Deprecated /* Use PaoCategory, PaoClass, PaoType enums */
 public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapControlTypes
 {
 	public final static int INVALID = -1;
@@ -385,7 +386,7 @@ public final static int getDeviceType(String typeString)
         return FAULT_CI;
     else {
         try {
-            PaoType paoType = PaoType.getForDbString(compareString);
+            PaoType paoType = PaoType.getForDbString(typeString);
             return paoType.getDeviceTypeId();
         } catch (IllegalArgumentException e) {
         }

@@ -26,7 +26,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.StringRowMapper;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -43,7 +42,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public static final String DB_CHANGE_OBJECT_TYPE = "config";
     private SimpleJdbcTemplate simpleJdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private DBPersistentDao dbPersistentDao = null;
     private List<ConfigurationTemplate> configurationTemplateList = null;
     private PaoDefinitionDao paoDefinitionDao;
@@ -54,10 +52,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
-    }
-
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
 
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
@@ -243,7 +237,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("JOIN YukonPaobject ypo on ypo.paobjectid = dcdm.DeviceId");
         sql.append("WHERE dcdm.DeviceConfigurationId = ?");
         List<SimpleDevice> deviceList = simpleJdbcTemplate.query(sql.toString(),
-                                                                new YukonDeviceRowMapper(paoGroupsWrapper),
+                                                                new YukonDeviceRowMapper(),
                                                                 configuration.getId());
 
         return deviceList;

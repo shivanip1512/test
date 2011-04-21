@@ -507,7 +507,6 @@
 	   	</property>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="paoDao" ref="paoDao"/>
-        <property name="paoGroups" ref="paoGroupsWrapper"/>
         <property name="editorService" ref="userEditorService"/>
     </bean>
     
@@ -530,7 +529,6 @@
 	   	</property>
         <property name="yukonGroupDao" ref="yukonGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
-        <property name="paoGroups" ref="paoGroupsWrapper"/>
         <property name="editorService" ref="groupEditorService"/>
     </bean>
 

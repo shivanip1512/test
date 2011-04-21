@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -39,7 +39,6 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -55,7 +54,6 @@ public class AttributeServiceImpl implements AttributeService {
     private PointService pointService;
     private PointCreationService pointCreationService;
     private DeviceGroupService deviceGroupService;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     private Set<Attribute> readableAttributes;
@@ -158,7 +156,7 @@ public class AttributeServiceImpl implements AttributeService {
         SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
 
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
         List<SimpleDevice> devices = yukonJdbcTemplate.query(sql, mapper);
 
         return devices;
@@ -281,10 +279,6 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
-    }
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

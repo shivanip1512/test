@@ -16,6 +16,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -52,7 +53,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
@@ -69,7 +69,6 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private PaoDefinitionService paoDefinitionService = null;
     private PointService pointService = null;
     private PointCreationService pointCreationService = null;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
     private DBPersistentDao dbPersistentDao = null;
     private PlcAddressRangeService plcAddressRangeService = null;
     
@@ -179,7 +178,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             dbPersistentDao.processDBChange(msg);
         }
         
-        return new SimpleDevice(changedDevice.getDevice().getDeviceID(), paoGroupsWrapper.getDeviceType(changedDevice.getPAOType()));
+        return new SimpleDevice(changedDevice.getDevice().getDeviceID(), PaoType.getForDbString(changedDevice.getPAOType()));
     }
 
     @SuppressWarnings("unchecked")
@@ -418,11 +417,6 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired
     public void setPointCreationService(PointCreationService pointCreationService) {
 		this.pointCreationService = pointCreationService;
-	}
-    
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-		this.paoGroupsWrapper = paoGroupsWrapper;
 	}
     
     @Autowired

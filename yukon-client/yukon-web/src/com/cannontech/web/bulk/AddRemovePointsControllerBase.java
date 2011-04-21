@@ -2,7 +2,6 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -51,7 +50,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
@@ -69,7 +67,6 @@ import com.google.common.collect.Sets;
 public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
 
 	protected BulkProcessor bulkProcessor = null;
-    protected PaoGroupsWrapper paoGroupsWrapper;
     protected PaoDefinitionDao paoDefinitionDao;
     protected PointService pointService;
     protected PointCreationService pointCreationService;
@@ -385,12 +382,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
 		this.bulkProcessor = bulkProcessor;
 	}
     
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-		this.paoGroupsWrapper = paoGroupsWrapper;
-	}
-    
-    @Autowired
+   @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
 		this.paoDefinitionDao = paoDefinitionDao;
 	}

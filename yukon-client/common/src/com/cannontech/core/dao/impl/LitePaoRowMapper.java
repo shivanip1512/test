@@ -30,7 +30,7 @@ public class LitePaoRowMapper implements ParameterizedRowMapper<LiteYukonPAObjec
 
         LiteYukonPAObject pao = new LiteYukonPAObject(paoID,
                                                       paoName,
-                                                      PaoCategory.valueOf(paoCategory),
+                                                      PaoCategory.getForDbString(paoCategory),
                                                       PaoClass.getForDbString(paoClass),
                                                       PaoType.getForDbString(paoType),
                                                       paoDescription,

@@ -30,7 +30,6 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -40,7 +39,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DeviceDao deviceDao = null;
     private PaoDao paoDao = null;
     private PointDao pointDao = null;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private PlcAddressRangeService plcAddressRangeService;
@@ -69,7 +67,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // MAKE new, template YukonDevice
         newYukonDevice.setDeviceId(newDeviceId);
-        newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
+        newYukonDevice.setDeviceType(PaoType.getForDbString(newDevice.getPAOType()));
 
         // COPY POINTS
         if (copyPoints) {
@@ -82,7 +80,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         SimpleDevice templateYukonDevice = new SimpleDevice();
         templateYukonDevice.setDeviceId(templateDeviceId);
-        templateYukonDevice.setType(paoGroupsWrapper.getDeviceType(templateDevice.getPAOType()));
+        templateYukonDevice.setDeviceType(PaoType.getForDbString(templateDevice.getPAOType()));
 
         // add to template's device groups
         addToTemplatesGroups(templateYukonDevice, newYukonDevice);
@@ -203,11 +201,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Required
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
-    }
-    
-    @Required
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Required
