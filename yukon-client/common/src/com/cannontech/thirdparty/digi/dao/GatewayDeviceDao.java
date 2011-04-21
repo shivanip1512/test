@@ -10,6 +10,7 @@ import com.cannontech.thirdparty.model.ZigbeeGateway;
 public interface GatewayDeviceDao {
     
     public ZigbeeGateway getZigbeeGateway(int gatewayId);
+    public List<ZigbeeGateway> getAllGateways();
     public DigiGateway getDigiGateway(int deviceId);
     
     public void createDigiGateway(DigiGateway digiGateway);

@@ -14,7 +14,8 @@
 
     <bean id="zigbeeWebService" class="com.cannontech.thirdparty.service.impl.DigiWebServiceImpl"/>
     <bean id="digiXMLBuilder" class="com.cannontech.thirdparty.service.impl.DigiXMLBuilder"/>
-    
+    <bean id="digiResponseHandler" class="com.cannontech.thirdparty.service.impl.DigiResponseHandler"/>
+        
     <bean id="digiControlMessageHandler" class="com.cannontech.thirdparty.digi.DigiControlMessageHandler"/>
 
     <bean id="gatewayCreationProvider" class="com.cannontech.thirdparty.digi.dao.provider.GatewayCreationProvider"/>
@@ -37,8 +38,6 @@
     </property>
     </bean>
     
-    <bean id="digiErrorHandler" class="com.cannontech.thirdparty.digi.DigiErrorHandler">
-    </bean>
-    
+    <bean id="digiErrorHandler" class="com.cannontech.thirdparty.digi.DigiErrorHandler"/>
 </beans>
 

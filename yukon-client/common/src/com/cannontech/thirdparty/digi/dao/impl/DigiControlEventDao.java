@@ -9,16 +9,17 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.thirdparty.model.ZigbeeEventAction;
 
 public class DigiControlEventDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     
-    public void createNewEvent(int eventId, int groupId, Date startTime) {
+    public void createNewEventMapping(int eventId, int groupId, Date startTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        SqlParameterSink p = sql.insertInto("DigiControlEvent");
-        p.addValue("DigiEventId", eventId);
+        SqlParameterSink p = sql.insertInto("DigiControlEventMapping");
+        p.addValue("EventId", eventId);
         p.addValue("GroupId", groupId);
         p.addValue("StartTime", startTime);
         // DeviceCount will be added after the Digi Call
@@ -31,9 +32,9 @@ public class DigiControlEventDao {
     public void updateDeviceCount(int eventId, int deviceCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE DigiControlEvent");
+        sql.append("UPDATE DigiControlEventMapping");
         sql.append("SET DeviceCount").eq(deviceCount);
-        sql.append("WHERE DigiEventId").eq(eventId);
+        sql.append("WHERE EventId").eq(eventId);
         
         yukonJdbcTemplate.update(sql);        
     }
@@ -41,9 +42,9 @@ public class DigiControlEventDao {
     public void associateControlHistory(int eventId, int controlHistoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE DigiControlEvent");
+        sql.append("UPDATE DigiControlEventMapping");
         sql.append("SET LMControlHistoryId").eq(controlHistoryId);
-        sql.append("WHERE DigiEventId").eq(eventId);
+        sql.append("WHERE EventId").eq(eventId);
         
         yukonJdbcTemplate.update(sql);
     }
@@ -51,12 +52,12 @@ public class DigiControlEventDao {
     public int findCurrentEventId(int groupId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT DigiEventId");
-        sql.append("FROM DigiControlEvent");
+        sql.append("SELECT EventId");
+        sql.append("FROM DigiControlEventMapping");
         sql.append("WHERE GroupId").eq(groupId);
         sql.append("AND StartTime = (");
         sql.append("  SELECT MAX(StartTime)");
-        sql.append("  FROM DigiControlEvent");
+        sql.append("  FROM DigiControlEventMapping");
         sql.append("  WHERE GroupId").eq(groupId);
         sql.append("  )");
         
@@ -65,6 +66,18 @@ public class DigiControlEventDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Digi Event not found for Group with ID: " + groupId);
         }
+    }
+    
+    public void insertControlEvent(int eventId, Date eventTime, int deviceId, ZigbeeEventAction action) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink p = sql.insertInto("ZBControlEvent");
+        p.addValue("EventId", eventId);
+        p.addValue("EventTime", eventTime);
+        p.addValue("DeviceId", deviceId);
+        p.addValue("Action", action);
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Autowired

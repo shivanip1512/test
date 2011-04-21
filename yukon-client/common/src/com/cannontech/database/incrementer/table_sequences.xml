@@ -84,7 +84,7 @@
       	<table name="Zone" identitycolumn="ZoneId" initsequence="true"/>
       </sequence>
       <sequence name="DigiEventId">
-        <table name="DigiControlEvent" identitycolumn="DigiEventId" initsequence="true"/>
+        <table name="DigiControlEventMapping" identitycolumn="EventId" initsequence="true"/>
       </sequence>
       <sequence name="schedAssignemnt">
       	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>

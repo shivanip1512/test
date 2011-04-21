@@ -1,6 +1,7 @@
 package com.cannontech.thirdparty.digi.dao.impl;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -114,8 +116,32 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         sql.append("WHERE DeviceId").eq(zigbeeThermostat.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public int getDeviceIdForMACAddress(String macAddress) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
+        sql.append("SELECT DeviceId");
+        sql.append("FROM ZBEndPoint");
+        sql.append("WHERE MacAddress").eq(macAddress);
         
+        int deviceId = yukonJdbcTemplate.queryForInt(sql);
+        
+        return deviceId;
+    }
+    
+    @Override
+    public List<Integer> getDeviceIdsForMACAddresses(List<String> macAddresses) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT DeviceId");
+        sql.append("FROM ZBEndPoint");
+        sql.append("WHERE MacAddress").in(macAddresses);
+        
+        List<Integer> deviceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        
+        return deviceIds;
     }
     
     @Autowired

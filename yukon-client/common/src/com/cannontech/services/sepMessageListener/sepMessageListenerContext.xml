@@ -22,4 +22,5 @@
         <jms:listener destination="yukon.notif.stream.dr.HistoryRowAssociationResponse" ref="sepMessageListener" method="handleControlHistoryAssociation"/>
     </jms:listener-container>
     
+    <bean id="digiPollingService" class="com.cannontech.thirdparty.service.impl.DigiPollingService"/>
 </beans>

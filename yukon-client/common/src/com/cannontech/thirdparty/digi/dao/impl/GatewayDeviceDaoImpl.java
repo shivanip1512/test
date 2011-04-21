@@ -65,6 +65,14 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         return gateway;
     }
     
+    public List<ZigbeeGateway> getAllGateways() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId,MacAddress");
+        sql.append("FROM ZBGateway");
+        
+        return yukonJdbcTemplate.query(sql, zigbeeGatewayRowMapper);
+    }
+    
     public DigiGateway getDigiGateway(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         

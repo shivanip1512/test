@@ -5732,7 +5732,7 @@
     </pao>
     
     <pao id="ZIGBEEUTILPRO">
-        <displayName>Zigbee Utility Pro</displayName>
+        <displayName>ZigBee Utility Pro</displayName>
         <points>
             <point type="Status" offset="1">
                 <init>true</init>

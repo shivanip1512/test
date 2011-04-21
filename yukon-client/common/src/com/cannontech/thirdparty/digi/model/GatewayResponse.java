@@ -2,16 +2,21 @@ package com.cannontech.thirdparty.digi.model;
 
 import java.util.List;
 
-public class DeviceResponse {
+public class GatewayResponse {
 
     String deviceId;
     
     String errorDescription;
     Integer errorId = null;
     
+    int eventId;
     int status;
     List<String> deviceList;
     
+    public boolean hasError() {
+        return errorId != null;
+    }
+
     public String getDeviceId() {
         return deviceId;
     }
@@ -42,8 +47,10 @@ public class DeviceResponse {
     public void setDeviceList(List<String> deviceList) {
         this.deviceList = deviceList;
     }
-  
-    public boolean hasError() {
-        return errorId != null;
+    public int getEventId() {
+        return eventId;
+    }
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }

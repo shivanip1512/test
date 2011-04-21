@@ -1752,9 +1752,6 @@
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
     
-    <bean id="digiPollingService" class="com.cannontech.stars.dr.thirdparty.digi.service.impl.DigiPollingService" init-method="initialize"/>
-   
-    
     <bean id="accountImportResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>

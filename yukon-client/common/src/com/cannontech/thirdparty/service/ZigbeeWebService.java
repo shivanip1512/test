@@ -4,6 +4,7 @@ import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
+import com.cannontech.thirdparty.model.ZigbeeGateway;
 import com.cannontech.thirdparty.model.ZigbeeText;
 
 public interface ZigbeeWebService {
@@ -33,7 +34,7 @@ public interface ZigbeeWebService {
 	 * @param controlMessage
 	 * @return
 	 */
-	public int sendSEPControlMessage(int eventId, SepControlMessage controlMessage, DeviceResponseHandler responseHandler);
+	public int sendSEPControlMessage(int eventId, SepControlMessage controlMessage);
 	
 	/**
      * Sends SEP Restore message.
@@ -41,5 +42,12 @@ public interface ZigbeeWebService {
      * @param restoreMessage
      * @return
      */
-    public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage, DeviceResponseHandler responseHandler);
+    public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage);
+    
+    /**
+     * Download and process all Device Notifications on the gateway.
+     * 
+     * @param gateway
+     */
+    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway);
 }

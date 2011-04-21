@@ -20,7 +20,6 @@ import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.service.SepMessageHandler;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
-import com.cannontech.thirdparty.service.impl.DigiDeviceResponseHandler;
 import com.cannontech.yukon.IServerConnection;
 
 public class DigiControlMessageHandler implements SepMessageHandler {
@@ -46,18 +45,14 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleControlMessage(PaoIdentifier paoIdentifier, SepControlMessage message) {
-
-        DigiDeviceResponseHandler deviceResponseHandler = new DigiDeviceResponseHandler();
-        
-        int eventId = nextValueHelper.getNextValue("DigiControlEvent");
-        
-        //Analyze message to decide what to do with it.
+        int eventId = nextValueHelper.getNextValue("DigiControlEventMapping");
         Date now = new Date();
-        
-        digiControlEventDao.createNewEvent(eventId,message.getGroupId(),now);        
+
+        //Creating the event prior will leave us with an EventId to attempt to cancel in case of a partial control
+        digiControlEventDao.createNewEventMapping(eventId,message.getGroupId(),now);
         
         //Do what needs to be done
-        int deviceCount = zigbeeWebService.sendSEPControlMessage(eventId, message,deviceResponseHandler);
+        int deviceCount = zigbeeWebService.sendSEPControlMessage(eventId, message);
         digiControlEventDao.updateDeviceCount(eventId, deviceCount);
         
         pendingEvents.add(eventId);
@@ -72,10 +67,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleRestoreMessage(PaoIdentifier paoIdentifier, SepRestoreMessage message) {
-        DigiDeviceResponseHandler deviceResponseHandler = new DigiDeviceResponseHandler();
-
         int eventId = digiControlEventDao.findCurrentEventId(message.getGroupId());
-        zigbeeWebService.sendSEPRestoreMessage(eventId, message,deviceResponseHandler);
+        zigbeeWebService.sendSEPRestoreMessage(eventId, message);
 
         ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(paoIdentifier,message, new Date());        
         dispatchConnection.queue(histMsg);

@@ -263,7 +263,7 @@ public class DigiXMLBuilder {
         return deviceClass;
     }
     
-    private String convertMacAddresstoDigi(String mac) {
+    public static String convertMacAddresstoDigi(String mac) {
         String digiMac = mac.replaceAll(":","");
         
         digiMac = "00000000-00000000-" + digiMac.substring(0,6) + "FF-FF" + digiMac.substring(6);
