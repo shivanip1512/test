@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/20/2011 1:54:36 PM                         */
+/* Created on:     4/21/2011 1:06:42 PM                         */
 /*==============================================================*/
 
 
@@ -9247,11 +9247,12 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /* Table: ZBControlEvent                                        */
 /*==============================================================*/
 create table ZBControlEvent  (
+   ZBControlEventId     NUMBER                          not null,
    EventId              NUMBER                          not null,
    EventTime            DATE                            not null,
-   DeviceId             NUMBER,
+   DeviceId             NUMBER                          not null,
    Action               VARCHAR2(255)                   not null,
-   constraint PK_ZBContEvent primary key (EventId)
+   constraint PK_ZBContEvent primary key (ZBControlEventId)
 );
 
 /*==============================================================*/
@@ -10648,7 +10649,7 @@ alter table DigiControlEventMapping
 alter table DigiControlEventMapping
    add constraint FK_DigiContEventMap_LMGroup foreign key (GroupId)
       references LMGroup (DeviceID)
-      on delete set null;
+      on delete cascade;
 
 alter table DigiGateway
    add constraint FK_DigiGate_ZBGate foreign key (DeviceId)
@@ -11981,12 +11982,13 @@ alter table YukonUserRole
 
 alter table ZBControlEvent
    add constraint FK_ZBContEvent_DigiContEventMa foreign key (EventId)
-      references DigiControlEventMapping (EventId);
+      references DigiControlEventMapping (EventId)
+      on delete cascade;
 
 alter table ZBControlEvent
    add constraint FK_ZBContEvent_ZBEndPoint foreign key (DeviceId)
       references ZBEndPoint (DeviceId)
-      on delete set null;
+      on delete cascade;
 
 alter table ZBEndPoint
    add constraint FK_ZBEndPoint_Device foreign key (DeviceId)

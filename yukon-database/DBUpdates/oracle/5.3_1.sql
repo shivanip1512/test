@@ -406,12 +406,13 @@ CREATE TABLE DigiControlEventMapping  (
    CONSTRAINT PK_DigiContEventMap PRIMARY KEY (EventId)
 );
 
-create table ZBControlEvent  (
+CREATE TABLE ZBControlEvent  (
+   ZBControlEventId     NUMBER                          NOT NULL,
    EventId              NUMBER                          NOT NULL,
    EventTime            DATE                            NOT NULL,
    DeviceId             NUMBER                          NOT NULL,
    Action               VARCHAR2(255)                   NOT NULL,
-   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (ZBControlEventId)
 );
 
 ALTER TABLE DigiControlEventMapping
@@ -421,16 +422,17 @@ ALTER TABLE DigiControlEventMapping
 ALTER TABLE DigiControlEventMapping
     ADD CONSTRAINT FK_DigiContEventMap_LMGroup FOREIGN KEY (GroupId)
         REFERENCES LMGroup (DeviceId)
-            ON DELETE SET NULL;
+            ON DELETE CASCADE;
         
 ALTER TABLE ZBControlEvent
     ADD CONSTRAINT FK_ZBContEvent_DigiContEventMa FOREIGN KEY (EventId)
-        REFERENCES DigiControlEventMapping (EventId);
+        REFERENCES DigiControlEventMapping (EventId)
+            ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEvent
     ADD CONSTRAINT FK_ZBContEvent_ZBEndPoint FOREIGN KEY (DeviceId)
-        REFERENCES ZBEndPoint (DeviceId);
-            ON DELETE SET NULL;
+        REFERENCES ZBEndPoint (DeviceId)
+            ON DELETE CASCADE;
 
 UPDATE YukonServices 
 SET ServiceName = 'SepMessageListener', 

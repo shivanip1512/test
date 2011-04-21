@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/20/2011 1:48:14 PM                         */
+/* Created on:     4/21/2011 1:18:10 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9738,11 +9738,12 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /* Table: ZBControlEvent                                        */
 /*==============================================================*/
 create table ZBControlEvent (
+   ZBControlEventId     numeric              not null,
    EventId              numeric              not null,
    EventTime            datetime             not null,
-   DeviceId             numeric              null,
+   DeviceId             numeric              not null,
    Action               varchar(255)         not null,
-   constraint PK_ZBContEvent primary key (EventId)
+   constraint PK_ZBContEvent primary key (ZBControlEventId)
 )
 go
 
@@ -11425,7 +11426,7 @@ go
 alter table DigiControlEventMapping
    add constraint FK_DigiContEventMap_LMGroup foreign key (GroupId)
       references LMGroup (DeviceID)
-         on delete set null
+         on delete cascade
 go
 
 alter table DigiGateway
@@ -13076,12 +13077,13 @@ go
 alter table ZBControlEvent
    add constraint FK_ZBContEvent_DigiContEventMa foreign key (EventId)
       references DigiControlEventMapping (EventId)
+         on delete cascade
 go
 
 alter table ZBControlEvent
    add constraint FK_ZBContEvent_ZBEndPoint foreign key (DeviceId)
       references ZBEndPoint (DeviceId)
-         on delete set null
+         on delete cascade
 go
 
 alter table ZBEndPoint

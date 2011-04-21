@@ -388,18 +388,19 @@ UPDATE YukonPAObject SET Category = 'Schedule' WHERE LOWER(Category) = LOWER('Sc
 CREATE TABLE DigiControlEventMapping (
    EventId              NUMERIC              NOT NULL,
    StartTime            DATETIME             NOT NULL,
-   GroupId              NUMERIC              NOT NULL,
+   GroupId              NUMERIC              NULL,
    LMControlHistoryId   NUMERIC              NULL,
    DeviceCount          NUMERIC              NULL,
    CONSTRAINT PK_DigiContEventMap PRIMARY KEY (EventId)
 );
 
 CREATE TABLE ZBControlEvent (
+   ZBControlEventId     NUMERIC              NOT NULL,
    EventId              NUMERIC              NOT NULL,
    EventTime            DATETIME             NOT NULL,
    DeviceId             NUMERIC              NOT NULL,
    Action               VARCHAR(255)         NOT NULL,
-   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (ZBControlEventId)
 );
 GO
 
@@ -410,16 +411,17 @@ ALTER TABLE DigiControlEventMapping
 ALTER TABLE DigiControlEventMapping
     ADD CONSTRAINT FK_DigiContEventMap_LMGroup FOREIGN KEY (GroupId)
         REFERENCES LMGroup (DeviceId)
-            ON DELETE SET NULL;
+            ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEvent
     ADD CONSTRAINT FK_ZBContEvent_DigiContEventMa FOREIGN KEY (EventId)
-        REFERENCES DigiControlEventMapping (EventId);
+        REFERENCES DigiControlEventMapping (EventId)
+            ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEvent
     ADD CONSTRAINT FK_ZBContEvent_ZBEndPoint FOREIGN KEY (DeviceId)
-        REFERENCES ZBEndPoint (DeviceId);
-            ON DELETE SET NULL;
+        REFERENCES ZBEndPoint (DeviceId)
+            ON DELETE CASCADE;
 GO
 
 UPDATE YukonServices 
