@@ -40,12 +40,12 @@
                         
                         <tags:nameValue2 nameKey=".additionalOperatorGroups" rowClass="pickerRow">
                             <tags:pickerDialog type="loginGroupPicker" id="additionalOperatorGroupPicker" selectionProperty="groupName"
-                                destinationFieldId="operatorGroupIds" linkType="selection" multiSelectMode="true"/><i:inline key=".optional"/>
+                                destinationFieldId="operatorGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".residentialGroups" rowClass="pickerRow">
                             <tags:pickerDialog type="loginGroupPicker" id="residentialGroupPicker" selectionProperty="groupName"
-                                destinationFieldId="residentialGroupIds" linkType="selection" multiSelectMode="true"/><i:inline key=".optional"/>
+                                destinationFieldId="residentialGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
                         </tags:nameValue2>
                         
                     </tags:nameValueContainer2>
