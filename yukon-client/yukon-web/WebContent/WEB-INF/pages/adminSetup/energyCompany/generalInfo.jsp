@@ -44,21 +44,8 @@ function addCustomerGroups() {
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <tags:nameValue2 nameKey=".phone"><cti:formatPhoneNumber value="${generalInfo.phone}"/></tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                        
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <tags:inputNameValue nameKey=".phone" path="phone"/>
-                        </cti:displayForPageEditModes>
-                        
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <tags:nameValue2 nameKey=".fax"><cti:formatPhoneNumber value="${generalInfo.fax}"/></tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                        
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <tags:inputNameValue nameKey=".fax" path="fax"/>
-                        </cti:displayForPageEditModes>
+                        <tags:inputPhone nameKey=".phone" path="phone"/>
+                        <tags:inputPhone nameKey=".fax" path="fax"/>
 
                         <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
                         <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
