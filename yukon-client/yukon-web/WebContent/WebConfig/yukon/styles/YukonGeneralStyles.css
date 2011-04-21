@@ -839,6 +839,7 @@ table td .nameValueLogoImage {
     color: white; 
     font-weight: bold;
     text-align: center;
+    padding: 3px;
 }
 
 #cannonUpdaterErrorDiv .alert {
