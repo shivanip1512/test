@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ExceptionHelper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -110,20 +111,15 @@ public enum TreeModelEnum
 	 * @return
 	 */
 	public static LiteBaseTreeModel create(TreeModelEnum model) {
-
-		LiteBaseTreeModel returnVal = null;
-		try {
-			returnVal = model.getTreeModelClass().newInstance();
-		}
-		catch (IllegalAccessException iae) {
-			CTILogger.error(iae.getMessage(), iae);
-		}
-		catch (InstantiationException ie) {
-			CTILogger.error(ie.getMessage(), ie);
-		}
-		return returnVal;
+	    try {
+	        LiteBaseTreeModel returnVal = model.getTreeModelClass().newInstance();
+	        return returnVal;
+	    } catch (Exception e) {
+	        CTILogger.error("could not instantiate LiteBaseTreeModel for " + model, e);
+	        throw ExceptionHelper.wrapIfNeeded(e);
+	    }
 	}
-
+	
     private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<Class<? extends LiteBaseTreeModel>>();
 
     static {
