@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -2638,11 +2639,11 @@ public void setDatabase(int whichDatabase)
     
 	getTreeViewPanel().setTreeModels(newModels);
 	if( models == CORE_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex( 1 ); //device is the default
+		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.DEVICE));
 	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
-		getTreeViewPanel().setSelectedSortByIndex( 6 ); //"load groups" is the default
+		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LMGROUPS));
 	if( models == SYSTEM_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex( 6 ); //"login groups" is the default
+		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LOGIN_GROUPS));
 	
 	rPane.setJMenuBar( this.menuBar );
 	rPane.revalidate();
