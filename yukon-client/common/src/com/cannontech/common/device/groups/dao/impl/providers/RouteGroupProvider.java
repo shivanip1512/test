@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -70,7 +69,7 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
         for (char badCharacter : TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) {
             groupName = groupName.replace(badCharacter, '_');
         }
-        return bin.getPaoName().replace("/", "_");
+        return groupName;
     }
 
     @Autowired
