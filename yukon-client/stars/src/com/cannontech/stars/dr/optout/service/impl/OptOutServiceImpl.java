@@ -42,7 +42,6 @@ import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AccountNotFoundException;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
@@ -123,7 +122,6 @@ public class OptOutServiceImpl implements OptOutService {
 	private OptOutAdditionalDao optOutAdditionalDao;
 	private OptOutNotificationService optOutNotificationService;
 	private CustomerAccountDao customerAccountDao;
-	private AuthDao authDao;
 	private RolePropertyDao rolePropertyDao;
 	private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
 	private StarsDatabaseCache starsDatabaseCache;
@@ -670,12 +668,15 @@ public class OptOutServiceImpl implements OptOutService {
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
 		int userId = contact.getLoginID();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 		
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
 		Instant startDate = new Instant(0);
 
-		// The account we are looking at doesn't have a login, therefore there are no limits
-		if(userId != UserUtils.USER_DEFAULT_ID) {
+		// The account either does not have a login or is not apart of the Residential Customer Role.
+		// Use no limits since we can't obtain a limit.
+		if(userId != UserUtils.USER_DEFAULT_ID ||
+		   rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
 			OptOutLimit currentOptOutLimit = getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
 			if(currentOptOutLimit != null) {
 				optOutLimit = currentOptOutLimit.getLimit();
@@ -999,8 +1000,9 @@ public class OptOutServiceImpl implements OptOutService {
         int userId = contact.getLoginID();
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 	    
-		// The account we are looking at doesn't have a login, therefore there are no limits
-		if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
+        // The account either does not have a login or is not apart of the Residential Customer Role.
+        // Use no limits since we can't obtain a limit.
+        if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
            rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
 		    
 		    DateTime dateTime = new DateTime(energyCompanyTimeZone);
@@ -1331,11 +1333,6 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired
 	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
 		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setAuthDao(AuthDao authDao) {
-		this.authDao = authDao;
 	}
 	
 	@Autowired
