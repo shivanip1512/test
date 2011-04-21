@@ -214,8 +214,11 @@ public class ReportsController extends MultiActionController  {
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
         
-        OutputStream outputStream = response.getOutputStream();
+        //force download of PDF
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition","attachment; filename=" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".pdf");
         
+        OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputPdfReport(reportDefinition, reportModel, outputStream, userContext);
         
         return null;
