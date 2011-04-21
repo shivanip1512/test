@@ -6,7 +6,6 @@ Class-Path:
  lib/spring-aop-3.0.5.jar 
  lib/spring-asm-3.0.5.jar 
  lib/spring-aspects-3.0.5.jar 
- lib/spring-aspects.jar 
  lib/spring-beans-3.0.5.jar 
  lib/spring-context-3.0.5.jar 
  lib/spring-context.support-3.0.5.jar 

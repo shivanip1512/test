@@ -22,7 +22,6 @@ Class-Path: ./
  spring-aop-3.0.5.jar 
  spring-asm-3.0.5.jar 
  spring-aspects-3.0.5.jar 
- spring-aspects.jar 
  spring-beans-3.0.5.jar 
  spring-context-3.0.5.jar 
  spring-context.support-3.0.5.jar 

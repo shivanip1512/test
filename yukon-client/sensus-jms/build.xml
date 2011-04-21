@@ -85,7 +85,6 @@
 	      <fileset file="${yukon.lib}/spring-aop-3.0.5.jar"/>
 	      <fileset file="${yukon.lib}/spring-asm-3.0.5.jar"/>
 	      <fileset file="${yukon.lib}/spring-aspects-3.0.5.jar"/>
-	      <fileset file="${yukon.lib}/spring-aspects.jar"/>
 	      <fileset file="${yukon.lib}/spring-beans-3.0.5.jar"/>
 	      <fileset file="${yukon.lib}/spring-context-3.0.5.jar"/>
 	      <fileset file="${yukon.lib}/spring-context.support-3.0.5.jar"/>
