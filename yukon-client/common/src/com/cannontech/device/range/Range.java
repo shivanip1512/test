@@ -37,7 +37,6 @@ public abstract class Range<T extends Comparable<T>> {
     }
     
     private PaoType paoType;
-    private String rangeDescription = "";
     private List<Interval<T>> intervals;
     
     public Range() {
@@ -105,14 +104,6 @@ public abstract class Range<T extends Comparable<T>> {
     
     public PaoType getPaoType() {
         return paoType;
-    }
-
-    public String getRangeDescription() {
-        return rangeDescription;
-    }
-
-    public void setRangeDescription(String rangeDescription) {
-        this.rangeDescription = rangeDescription;
     }
     
     public String toString() {

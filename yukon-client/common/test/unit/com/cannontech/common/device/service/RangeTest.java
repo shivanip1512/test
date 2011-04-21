@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.cannontech.device.range.IntegerRange;
 import com.cannontech.device.range.InvalidRangeException;
 
-public class PlcAddressRangeServiceTest{
+public class RangeTest{
     
     @Test
     public void testInvoke() throws Exception {
@@ -92,7 +92,6 @@ public class PlcAddressRangeServiceTest{
         assertEquals(result, isValid);
     }
     
-    
     private enum TestRangeString {
         SINGLE_ADDRESS("1000"),
         SINGLE_INTERVAL("1000-2000"),
@@ -113,5 +112,4 @@ public class PlcAddressRangeServiceTest{
             return rangeString;
         }
     }
-    
 }
