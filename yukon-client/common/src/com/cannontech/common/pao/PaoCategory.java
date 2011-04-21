@@ -8,13 +8,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PaoCategory implements DatabaseRepresentationSource{
-   	DEVICE(PAOGroups.CAT_DEVICE),
-   	ROUTE(PAOGroups.CAT_ROUTE),
-   	PORT(PAOGroups.CAT_PORT),
-   	CUSTOMER(PAOGroups.CAT_CUSTOMER),
-   	CAPCONTROL(PAOGroups.CAT_CAPCONTROL),
-   	LOADMANAGEMENT(PAOGroups.CAT_LOADCONTROL),
-   	SCHEDULE(6), // not real
+   	DEVICE(PAOGroups.STRING_CAT_DEVICE, PAOGroups.CAT_DEVICE),
+   	ROUTE(PAOGroups.STRING_CAT_ROUTE, PAOGroups.CAT_ROUTE),
+   	PORT(PAOGroups.STRING_CAT_PORT, PAOGroups.CAT_PORT),
+   	CUSTOMER(PAOGroups.STRING_CAT_CUSTOMER, PAOGroups.CAT_CUSTOMER),
+   	CAPCONTROL(PAOGroups.STRING_CAT_CAPCONTROL, PAOGroups.CAT_CAPCONTROL),
+   	LOADMANAGEMENT(PAOGroups.STRING_CAT_LOADMANAGEMENT, PAOGroups.CAT_LOADCONTROL),
+   	SCHEDULE("Schedule", 6), // not real
    	;
    	
    	
@@ -22,14 +22,16 @@ public enum PaoCategory implements DatabaseRepresentationSource{
     static {
         Builder<String, PaoCategory> dbBuilder = ImmutableMap.builder();
         for (PaoCategory paoCategory : values()) {
-            dbBuilder.put(paoCategory.name().toLowerCase(), paoCategory);
+            dbBuilder.put(paoCategory.dbString, paoCategory);
         }
         lookupByDbString = dbBuilder.build();
     }
    	
    	private final int categoryId;
-
-    private PaoCategory(int categoryId) {
+   	private final String dbString;
+    
+    private PaoCategory(String dbString, int categoryId) {
+        this.dbString = dbString;
         this.categoryId = categoryId;
     }
     
@@ -50,7 +52,7 @@ public enum PaoCategory implements DatabaseRepresentationSource{
      * @throws IllegalArgumentException - if no match
      */
     public static PaoCategory getForDbString(String dbString) throws IllegalArgumentException {
-        PaoCategory paoCategory = lookupByDbString.get(dbString.toLowerCase());
+        PaoCategory paoCategory = lookupByDbString.get(dbString);
         Validate.notNull(paoCategory, dbString);
         return paoCategory;
     }

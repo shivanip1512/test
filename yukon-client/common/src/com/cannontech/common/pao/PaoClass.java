@@ -40,7 +40,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
         Builder<String, PaoClass> dbBuilder = ImmutableMap.builder();
         for (PaoClass paoClass : values()) {
             idBuilder.put(paoClass.paoClassId, paoClass);
-            dbBuilder.put(paoClass.dbString.toLowerCase(), paoClass);
+            dbBuilder.put(paoClass.dbString, paoClass);
         }
         lookupById = idBuilder.build();
         lookupByDbString = dbBuilder.build();
@@ -71,7 +71,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
      * @throws IllegalArgumentException - if no match
      */
     public static PaoClass getForDbString(String dbString) throws IllegalArgumentException {
-        PaoClass paoClass = lookupByDbString.get(dbString.toLowerCase());
+        PaoClass paoClass = lookupByDbString.get(dbString);
         Validate.notNull(paoClass, dbString);
         return paoClass;
     }

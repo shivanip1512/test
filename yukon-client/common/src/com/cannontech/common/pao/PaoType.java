@@ -192,7 +192,7 @@ public enum PaoType implements DatabaseRepresentationSource {
             Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
             for (PaoType deviceType : values()) {
                 idBuilder.put(deviceType.deviceTypeId, deviceType);
-                dbBuilder.put(deviceType.dbString.toLowerCase(), deviceType);
+                dbBuilder.put(deviceType.dbString, deviceType);
             }
             lookupById = idBuilder.build();
             lookupByDbString = dbBuilder.build();
@@ -223,7 +223,7 @@ public enum PaoType implements DatabaseRepresentationSource {
      * @throws IllegalArgumentException - if no match
      */
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
-        PaoType deviceType = lookupByDbString.get(dbString.toLowerCase());
+        PaoType deviceType = lookupByDbString.get(dbString);
         Validate.notNull(deviceType, dbString);
         return deviceType;
     }
