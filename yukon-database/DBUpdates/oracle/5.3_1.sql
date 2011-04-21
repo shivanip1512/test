@@ -198,7 +198,7 @@ BEGIN
 
     EXCEPTION
         WHEN E_TAB_NOT_EXISTS THEN
-        DBMS_OUTPUT.PUT_LINE('DON’T RUN SQL AGAIN -> : Table has already been removed');
+        DBMS_OUTPUT.PUT_LINE('YUK-9647 has been run in a previous update script, 5.2_7.sql.  Skipping this update script.');
                             
 END;
 /

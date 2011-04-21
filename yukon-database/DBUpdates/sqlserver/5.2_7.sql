@@ -68,7 +68,7 @@ BEGIN
 
     INSERT INTO DynamicPAOStatistics 
     SELECT @maxId + ROW_NUMBER() OVER (ORDER BY PAObjectId, DateOffset), PAObjectId, 
-            'Daily', DATEADD(Day, DateOffset, '1970-01-01') Requests, Attempts, 
+            'Daily', DATEADD(Day, DateOffset, '1970-01-01'), Requests, Attempts, 
             Completions, CommErrors, ProtocolErrors, SystemErrors 
     FROM DynamicPAOStatisticsHistory; 
 END; 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/21/2011 1:06:42 PM                         */
+/* Created on:     4/21/2011 3:51:13 PM                         */
 /*==============================================================*/
 
 
@@ -3983,7 +3983,7 @@ alter table DynamicPAOInfo
 /*==============================================================*/
 create table DynamicPAOStatistics  (
    DynamicPAOStatisticsId NUMBER                          not null,
-   PAOBjectId           NUMBER                          not null,
+   PAObjectId           NUMBER                          not null,
    StatisticType        VARCHAR2(16)                    not null,
    StartDateTime        DATE                            not null,
    Requests             NUMBER                          not null,
@@ -3999,7 +3999,7 @@ create table DynamicPAOStatistics  (
 /* Index: Indx_DynPAOStat_PId_ST_SD_UNQ                         */
 /*==============================================================*/
 create unique index Indx_DynPAOStat_PId_ST_SD_UNQ on DynamicPAOStatistics (
-   PAOBjectId ASC,
+   PAObjectId ASC,
    StatisticType ASC,
    StartDateTime ASC
 );
@@ -10722,7 +10722,7 @@ alter table DynamicPAOInfo
       references YukonPAObject (PAObjectID);
 
 alter table DynamicPAOStatistics
-   add constraint FK_DynPAOStat_PAO foreign key (PAOBjectId)
+   add constraint FK_DynPAOStat_PAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 

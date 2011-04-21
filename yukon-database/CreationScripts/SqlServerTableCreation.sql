@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/21/2011 1:18:10 PM                         */
+/* Created on:     4/21/2011 3:32:43 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4177,7 +4177,7 @@ go
 /*==============================================================*/
 create table DynamicPAOStatistics (
    DynamicPAOStatisticsId numeric              not null,
-   PAOBjectId           numeric              not null,
+   PAObjectId           numeric              not null,
    StatisticType        varchar(16)          not null,
    StartDateTime        datetime             not null,
    Requests             numeric              not null,
@@ -4194,7 +4194,7 @@ go
 /* Index: Indx_DynPAOStat_PId_ST_SD_UNQ                         */
 /*==============================================================*/
 create unique index Indx_DynPAOStat_PId_ST_SD_UNQ on DynamicPAOStatistics (
-PAOBjectId ASC,
+PAObjectId ASC,
 StatisticType ASC,
 StartDateTime ASC
 )
@@ -11517,7 +11517,7 @@ alter table DynamicPAOInfo
 go
 
 alter table DynamicPAOStatistics
-   add constraint FK_DynPAOStat_PAO foreign key (PAOBjectId)
+   add constraint FK_DynPAOStat_PAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
          on delete cascade
 go
