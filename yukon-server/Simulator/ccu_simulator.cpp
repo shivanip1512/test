@@ -136,6 +136,19 @@ int SimulatorMainFunction(int argc, char **argv)
     WSADATA wsaData;
     WSAStartup(MAKEWORD (1,1), &wsaData);
 
+    // There's only one PlcInfrastructure, so this should be the place to set its BchBehavior to avoid
+    // multiple instances of the behavior being added by each thread.
+    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY") )
+    {   
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " BCH Behavior Enabled - Probability " << CtiNumStr(chance, 2) << "%" << endl;
+        }
+        std::auto_ptr<PlcBehavior> d(new BchBehavior());
+        d->setChance(chance);
+        Grid.setBehavior(d);
+    }
+
     thread_group threadGroup;
 
     if( portList.empty() )
@@ -259,7 +272,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortL
     SocketComms socket_interface(mySocket, 1200);
 
     // Check for behaviors that may be used during the simulator runtime.
-    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_DELAY_CHANCE_PERCENT") )
+    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
     {   
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -268,16 +281,6 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortL
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());
         d->setChance(chance);
         socket_interface.setBehavior(d);
-    }
-    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_FAILED_READING_ERROR_100_CHANCE_PERCENT") )
-    {   
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << "*****  BCH Behavior Enabled With Probability " << chance << "%  **********" << endl;
-        }
-        std::auto_ptr<PlcBehavior> d(new BchBehavior());
-        d->setChance(chance);
-        Grid.setBehavior(d);
     }
 
     //  both the CCU-710 and CCU-711 have their address info in the first two bytes
