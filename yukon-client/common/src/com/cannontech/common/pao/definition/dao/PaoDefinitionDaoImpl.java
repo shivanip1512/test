@@ -264,7 +264,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     // TAGS
     //============================================
-    private ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType) {
+    @Override
+    public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType) {
         return supportedTagsByType.get(paoType);
     }
     

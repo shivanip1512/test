@@ -1,6 +1,7 @@
 package com.cannontech.web.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateDao;
@@ -133,8 +135,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
         		displayDefinitions.add(deviceDefiniton);
         	}
         }
-        Map<DeviceInfo, Map<PaoTag, Object>> tagMap = new HashMap<DeviceInfo, Map<PaoTag, Object>>();
-        // display definitions info
+        
+         // display definitions info
         Map<String, Set<DeviceInfo>> displayDefinitionsMap = new HashMap<String, Set<DeviceInfo>>();
         for (PaoDefinition deviceDefiniton : displayDefinitions) {
         	String displayGroup = deviceDefiniton.getDisplayGroup();
@@ -142,24 +144,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	if (!displayDefinitionsMap.containsKey(displayGroup)) {
         		displayDefinitionsMap.put(displayGroup, new LinkedHashSet<DeviceInfo>());
         	}
-        	
-        	List<PaoTag> tagList = deviceInfo.getTags();
-        	Map<PaoTag, Object> deviceTagMap = new HashMap<PaoTag, Object>();
-        	
-        	for(PaoTag tag: tagList) {
-        	    Object value = null;
-        	    if(tag.getValueType() != null) {
-        	        if(tag.getValueType().getTypeClass() == long.class) {
-        	            value = paoDefinitionDao.getValueForTagLong(deviceDefiniton.getType(), tag);
-        	        } else if(tag.getValueType().getTypeClass() == String.class) {
-        	            value = paoDefinitionDao.getValueForTagString(deviceDefiniton.getType(), tag);
-        	        }
-        	    } 
-        	    deviceTagMap.put(tag, value);
-        	}
-        	tagMap.put(deviceInfo, deviceTagMap);
         	displayDefinitionsMap.get(displayGroup).add(deviceInfo);
         }
+        
         // sort
         allDeviceTypes = sortDeviceTypesByGroupOrder(allDeviceTypes);
         displayDefinitionsMap = sortDisplayDefinitionsByGroupOrder(displayDefinitionsMap);
@@ -177,7 +164,6 @@ public class DeviceDefinitionViewerController extends AbstractController {
         mav.addObject("allAttributes", allAttributes);
         mav.addObject("allTags", allTags);
         
-        mav.addObject("tagMap", tagMap);
         mav.addObject("displayDefinitionsMap", displayDefinitionsMap);
         
         return mav;
@@ -225,7 +211,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		private List<PointTemplateWrapper> points;
 		private List<AttributeWrapper> attributes;
 		private List<CommandDefinitionWrapper> commands;
-		private List<PaoTag> tags;
+		private Collection<PaoTagDefinition> tagDefinitions;
 		
 		public DeviceInfo(PaoDefinition deviceDefiniton) {
 			
@@ -256,7 +242,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			}
 			
 			// tags
-			this.tags = new ArrayList<PaoTag>(paoDefinitionDao.getSupportedTags(deviceDefiniton));
+			Map<PaoTag, PaoTagDefinition> tagMap = 
+			    paoDefinitionDao.getSupportedTagsForPaoType(definition.getType());
+			this.tagDefinitions = tagMap.values();
 		}
 
 		public PaoDefinition getDefinition() {
@@ -271,8 +259,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public List<CommandDefinitionWrapper> getCommands() {
 			return commands;
 		}
-		public List<PaoTag> getTags() {
-			return tags;
+		public Collection<PaoTagDefinition> getTagDefinitions() {
+			return tagDefinitions;
 		}
 	}
 	

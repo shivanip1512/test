@@ -250,7 +250,7 @@
 					</c:if>
 					
 					<%-- TAGS --%>
-					<c:if test="${fn:length(deviceInfo.tags) > 0}">
+					<c:if test="${fn:length(deviceInfo.tagDefinitions) > 0}">
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
@@ -258,14 +258,14 @@
                                 <th>Value Support</th>
                                 <th>Values</th>
 							</tr>
-							<c:forEach var="tag" items="${deviceInfo.tags}">
+							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
-									<td>${tag.description}</td>
-                                    <c:if test="${not empty tagMap[deviceInfo][tag]}">
+									<td>${tagDefinition.tag.description}</td>
+                                    <c:if test="${not empty tagDefinition.value}">
                                     	<td>Yes</td>
-                                    	<td>${tagMap[deviceInfo][tag]}</td>
+                                    	<td>${tagDefinition.value}</td>
                                     </c:if>
-                                    <c:if test="${empty tagMap[deviceInfo][tag]}">
+                                    <c:if test="${empty tagDefinition.value}">
                                    		<td>No</td>
                                         <td></td>
                                     </c:if>

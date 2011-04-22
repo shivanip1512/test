@@ -11,8 +11,10 @@ import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -151,6 +153,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     
     @Override
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap() {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");
     }
 }
