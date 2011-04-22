@@ -10696,7 +10696,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
         {
             static const string sql =  "SELECT DPS.paobjectid, DPS.attempts, DPS.commerrors, DPS.protocolerrors, "
-                                         "DPS.systemerrors, DPS.statistictype, DPS.startdatetime, DPS.stopdatetime, "
+                                         "DPS.systemerrors, DPS.statistictype, DPS.startdatetime, "
                                          "YP.paobjectid, YP.type "
                                        "FROM dynamicpaostatistics DPS, yukonpaobject YP "
                                        "WHERE DPS.paobjectid = YP.paobjectid AND DPS.attempts > 0 AND "
@@ -10725,7 +10725,6 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                 string statisticType;
                 DOUBLE successPercent = 100;
                 CtiTime start;
-                CtiTime stop;
 
                 rdr["paobjectid"] >> paobjectId; //cbc Id.
                 rdr["attempts"]  >> attempts;
@@ -10734,7 +10733,6 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                 rdr["systemerrors"] >> systemErrors;
                 rdr["statistictype"] >> statisticType;
                 rdr["startdatetime"] >> start;
-                rdr["stopdatetime"] >> stop;
 
 
                 errorTotal = commErrors + protocolErrors + systemErrors;
