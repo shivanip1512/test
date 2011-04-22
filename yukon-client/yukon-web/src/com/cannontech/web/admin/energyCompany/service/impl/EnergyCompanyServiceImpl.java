@@ -310,35 +310,31 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
         
-        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyId );
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
         
         String dbAlias = CtiUtilities.getDatabaseAlias();
+    
+        deleteAllOperatorLogins(energyCompany, dbAlias);
         
-        try {
-            deleteAllOperatorLogins(energyCompany, dbAlias);
-            
-            deleteAllCustomerAccounts(energyCompany);
-            
-            deleteAllInventory(energyCompanyId, dbAlias);
-            
-            deleteAllWorkOrders(energyCompanyId, dbAlias);
-            
-            deleteAllDefaultThermostatSchedules(energyCompany);
-            
-            deleteAllSubstations(energyCompany);
-            
-            deleteAllServiceCompanies(energyCompany);
-            
-            deleteAllApplianceCategories(energyCompany);
-            
-            deleteAllCustomerSelectionLists(energyCompany);
-            
-            LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
-            
-            deleteLoginGroupAndLogin(energyCompany, liteGroup);
-        }catch (Exception e) {
-            log.error( e.getMessage(), e );
-        }
+        deleteAllCustomerAccounts(energyCompany);
+        
+        deleteAllInventory(energyCompanyId, dbAlias);
+        
+        deleteAllWorkOrders(energyCompanyId, dbAlias);
+        
+        deleteAllDefaultThermostatSchedules(energyCompany);
+        
+        deleteAllSubstations(energyCompany);
+        
+        deleteAllServiceCompanies(energyCompany);
+        
+        deleteAllApplianceCategories(energyCompany);
+        
+        deleteAllCustomerSelectionLists(energyCompany);
+        
+        LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
+        
+        deleteLoginGroupAndLogin(energyCompany, liteGroup);
     }
 
     /**
@@ -374,17 +370,23 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws CommandExecutionException
      * @throws TransactionException
      */
-    private LiteYukonGroup deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias)
-    throws CommandExecutionException, TransactionException {
+    private LiteYukonGroup deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias) {
         String sql;
         // Delete all other generic mappings
         sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyId();
         SqlStatement stmt = new SqlStatement(sql, dbAlias);
-        stmt.execute();
-        
+        try {
+            stmt.execute();
+        } catch (CommandExecutionException e) {
+            ExceptionHelper.throwOrWrap(e);
+        }        
         // Delete membership from the energy company hierarchy
         if (energyCompany.getParent() != null) {
-            StarsAdminUtil.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
+            try {
+                StarsAdminUtil.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
+            } catch (TransactionException e) {
+                e.printStackTrace();
+            }
         }
         
         // Delete LM groups created for the default route
@@ -514,27 +516,30 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param stmt
      * @throws CommandExecutionException
      */
-    private void deleteAllWorkOrders(int energyCompanyId, String dbAlias)
-            throws CommandExecutionException {
-        String sql;
-        // Delete all work orders that don't belong to any account
-        sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + energyCompanyId;
-        SqlStatement stmt = new SqlStatement(sql, dbAlias);
-        stmt.execute();
-        
-        int[] orderIDs = new int[ stmt.getRowCount() ];
-        for (int i = 0; i < stmt.getRowCount(); i++) {
-            orderIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-        }
+    private void deleteAllWorkOrders(int energyCompanyId, String dbAlias) {
+        try {
+            String sql;
+            // Delete all work orders that don't belong to any account
+            sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + energyCompanyId;
+            SqlStatement stmt = new SqlStatement(sql, dbAlias);
+            stmt.execute();
             
-        for (int i = 0; i < orderIDs.length; i++) {
-            
-            com.cannontech.database.data.stars.report.WorkOrderBase order =
-                    new com.cannontech.database.data.stars.report.WorkOrderBase();
-            order.setOrderID( new Integer(orderIDs[i]) );
-            
-            dbPersistentDao.performDBChange(order, TransactionType.DELETE);
-            
+            int[] orderIDs = new int[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++) {
+                orderIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            }
+                
+            for (int i = 0; i < orderIDs.length; i++) {
+                
+                com.cannontech.database.data.stars.report.WorkOrderBase order =
+                        new com.cannontech.database.data.stars.report.WorkOrderBase();
+                order.setOrderID( new Integer(orderIDs[i]) );
+                
+                dbPersistentDao.performDBChange(order, TransactionType.DELETE);
+                
+            }
+        } catch (CommandExecutionException e) {
+            ExceptionHelper.throwOrWrap(e);
         }
     }
 
@@ -543,25 +548,29 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param stmt
      * @throws CommandExecutionException
      */
-    private void deleteAllInventory(int energyCompanyId, String dbAlias) throws CommandExecutionException {
-        String sql;
-        // Delete all inventory
-        sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID=" + energyCompanyId;
-        SqlStatement stmt = new SqlStatement(sql, dbAlias);
-        stmt.execute();
-        
-        int[] invIDs = new int[ stmt.getRowCount() ];
-        for (int i = 0; i < stmt.getRowCount(); i++) {
-            invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-        }
-        for (int i = 0; i < invIDs.length; i++) {
+    private void deleteAllInventory(int energyCompanyId, String dbAlias) {
+        try {
+            String sql;
+            // Delete all inventory
+            sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID=" + energyCompanyId;
+            SqlStatement stmt = new SqlStatement(sql, dbAlias);
+            stmt.execute();
             
-            com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-                    new com.cannontech.database.data.stars.hardware.InventoryBase();
-            inventory.setInventoryID( new Integer(invIDs[i]) );
-            
-            dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
-            
+            int[] invIDs = new int[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++) {
+                invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            }
+            for (int i = 0; i < invIDs.length; i++) {
+                
+                com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+                        new com.cannontech.database.data.stars.hardware.InventoryBase();
+                inventory.setInventoryID( new Integer(invIDs[i]) );
+                
+                dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
+                
+            }
+        } catch (CommandExecutionException e) {
+            ExceptionHelper.throwOrWrap(e);
         }
     }
 
@@ -570,20 +579,26 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      * @throws WebClientException
      */
-    private void deleteAllCustomerAccounts(LiteStarsEnergyCompany energyCompany)
-            throws TransactionException, WebClientException {
-        // Delete all customer accounts
-        Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyId() );
-        if (accounts != null) {
-            
-            for (int i = 0; i < accounts.length; i++) {
-                int accountID = ((Integer) accounts[i][0]).intValue();
+    private void deleteAllCustomerAccounts(LiteStarsEnergyCompany energyCompany) {
+
+        try {
+            // Delete all customer accounts
+            Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyId() );
+            if (accounts != null) {
                 
-                LiteStarsCustAccountInformation liteAcctInfo = 
-                    energyCompany.getCustAccountInformation( accountID, true );
-                AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
-                
+                for (int i = 0; i < accounts.length; i++) {
+                    int accountID = ((Integer) accounts[i][0]).intValue();
+                    
+                    LiteStarsCustAccountInformation liteAcctInfo = 
+                        energyCompany.getCustAccountInformation( accountID, true );
+                    AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+                    
+                }
             }
+        } catch (CommandExecutionException e) {
+            ExceptionHelper.throwOrWrap(e);
+        } catch (WebClientException e) {
+            ExceptionHelper.throwOrWrap(e);
         }
     }
 
@@ -594,28 +609,31 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @return
      * @throws CommandExecutionException
      */
-    private void deleteAllOperatorLogins(LiteStarsEnergyCompany energyCompany, String dbAlias)
-    throws CommandExecutionException {
+    private void deleteAllOperatorLogins(LiteStarsEnergyCompany energyCompany, String dbAlias) {
 
         // Delete operator logins (except the default login)
         
-        String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + energyCompany.getEnergyCompanyId();
-        SqlStatement stmt = new SqlStatement( sql, dbAlias );
-        stmt.execute();
-        
-        int[] userIDs = new int[ stmt.getRowCount() ];
-        for (int i = 0; i < stmt.getRowCount(); i++)
-            userIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-        
-        for (int i = 0; i < userIDs.length; i++) {
-            if (userIDs[i] == energyCompany.getUser().getUserID()) continue;
+        try {
+            String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + energyCompany.getEnergyCompanyId();
+            SqlStatement stmt = new SqlStatement( sql, dbAlias );
+            stmt.execute();
             
-            try {
-                com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(userIDs[i]);
-                ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DbChangeType.DELETE );
-            } catch (UnsupportedOperationException e) {
-                log.error(e);
+            int[] userIDs = new int[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++)
+                userIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            
+            for (int i = 0; i < userIDs.length; i++) {
+                if (userIDs[i] == energyCompany.getUser().getUserID()) continue;
+                
+                try {
+                    com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(userIDs[i]);
+                    ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DbChangeType.DELETE );
+                } catch (UnsupportedOperationException e) {
+                    log.error(e);
+                }
             }
+        } catch (CommandExecutionException e) {
+            ExceptionHelper.throwOrWrap(e);
         }
     }
 

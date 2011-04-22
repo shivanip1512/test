@@ -70,9 +70,9 @@ public class CsrfTokenService {
         try {
             validateRequest(request);
         } catch (BadAuthenticationException e) {
-            return "yukon.web.error.csrf.badPassword";
+            return e.getMessageKey();
         } catch (YukonSecurityException e) {
-            return "yukon.web.error.csrf.badToken";
+            return e.getMessageKey();
         }
         
         return null;

@@ -111,9 +111,9 @@ public class GeneralInfoController {
     @RequestMapping(value="delete", params="delete")
     public String delete(ModelMap model, YukonUserContext context, FlashScope flashScope, HttpServletRequest request,
                          int ecId, EnergyCompanyInfoFragment fragment) {
-        energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
-
         LiteYukonUser user = context.getYukonUser();
+        energyCompanyService.verifyViewPageAccess(user, ecId);
+
         if (!energyCompanyService.canDeleteEnergyCompany(user, ecId)) {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
         }
