@@ -7,16 +7,17 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum HardwareConfigType {
-    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT),
-    VERSACOM(2, PaoTag.DIRECT_PROGRAM_ENROLLMENT),
-    SA205(3, PaoTag.DIRECT_PROGRAM_ENROLLMENT),
-    SA305(4, PaoTag.DIRECT_PROGRAM_ENROLLMENT),
-    SA_SIMPLE(5, PaoTag.DIRECT_PROGRAM_ENROLLMENT),
-    SEP(6, PaoTag.SEP_PROGRAM_ENROLLMENT),
+    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    VERSACOM(2, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    SA205(3, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    SA305(4, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    SA_SIMPLE(5, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
+    SEP(6, PaoTag.SEP_PROGRAM_ENROLLMENT, false),
     ;
 
     private int hardwareConfigTypeId;
     private PaoTag enrollmentTag;
+    private boolean supportsVirtualEnrollment;
 
     private final static ImmutableMap<Integer, HardwareConfigType> lookupById;
     static {
@@ -33,9 +34,11 @@ public enum HardwareConfigType {
         return deviceType;
     }
 
-    private HardwareConfigType(int hardwareConfigTypeId, PaoTag enrollmentTag) {
+    private HardwareConfigType(int hardwareConfigTypeId, PaoTag enrollmentTag, boolean supportsVirtualEnrollment) {
         this.hardwareConfigTypeId = hardwareConfigTypeId;
         this.enrollmentTag = enrollmentTag;
+        this.supportsVirtualEnrollment = supportsVirtualEnrollment;
+        
     }
 
     public int getHardwareConfigTypeId() {
@@ -44,6 +47,10 @@ public enum HardwareConfigType {
     
     public PaoTag getEnrollmentTag() {
         return enrollmentTag;
+    }
+    
+    public boolean isSupportsVirtualEnrollment() {
+        return supportsVirtualEnrollment;
     }
     
 }

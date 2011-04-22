@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -127,9 +128,10 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 }
                 
                 /* Exclude non valid program enrollment (SEP hardware cannot be enrolled in DIRECT programs) */
-                PaoTag inventoryEnrollmentTag = inventoryIdentifier.getHardwareType().getHardwareConfigType().getEnrollmentTag();
+                HardwareConfigType hardwareConfigType = inventoryIdentifier.getHardwareType().getHardwareConfigType();
+                PaoTag inventoryEnrollmentTag = hardwareConfigType.getEnrollmentTag();
                 PaoType programPaoType = program.getPaoType();
-                if (programPaoType == PaoType.SYSTEM && inventoryEnrollmentTag == PaoTag.DIRECT_PROGRAM_ENROLLMENT) {
+                if (programPaoType == PaoType.SYSTEM && hardwareConfigType.isSupportsVirtualEnrollment()) {
                     /* These are virtual programs, let devices with non-SEP enrollment support through */
                     return true;
                 } else {
