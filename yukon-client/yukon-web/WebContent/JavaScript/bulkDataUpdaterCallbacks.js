@@ -7,9 +7,9 @@ function updateProgressBar(pbarId, totalCount, completionCallback) {
     return function(data) {
         var completedCount = data.get('completedCount');
         
-        var percentDone = Math.floor((completedCount / totalCount) * 100);
-        if (totalCount == 0) {
-            percentDone = 100;
+        var percentDone = 100;
+        if (totalCount > 0) {
+            percentDone = Math.floor((completedCount / totalCount) * 100);
         }
         
         try {
@@ -35,9 +35,9 @@ function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback)
         var failureCompletedCount = data.get('failureCompletedCount');
         var totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
 
-        var percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
-        if (totalCount == 0) {
-            percentDone = 100;
+        var percentDone = 100;
+        if (totalCount > 0) {
+            percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
         }
 
         try {
@@ -59,6 +59,9 @@ function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback)
 }
 
 function getBarWidth(pbarId, completed, total) {
+    if (completed == 0 || total == 0) {
+        return 0;
+    }
     var progressBorder = $('progressContainer_' + pbarId).down('.progressBarBorder');
     var width = Math.ceil(progressBorder.measure('width'));
     var percentDecimal = parseFloat(completed / total);
