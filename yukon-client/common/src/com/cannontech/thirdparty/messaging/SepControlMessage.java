@@ -93,4 +93,15 @@ public class SepControlMessage {
     public void setEventFlags(int eventFlags) {
         this.eventFlags = eventFlags;
     }
+    
+    @Override
+    public String toString() {
+        return "SepControlMessage [groupId=" + groupId + ", utcStartTime=" + utcStartTime
+               + ", controlMinutes=" + controlMinutes + ", criticality=" + criticality
+               + ", coolTempOffset=" + coolTempOffset + ", heatTempOffset=" + heatTempOffset
+               + ", coolTempSetpoint=" + coolTempSetpoint + ", heatTempSetpoint="
+               + heatTempSetpoint + ", averageCyclePercent=" + averageCyclePercent
+               + ", standardCyclePercent=" + standardCyclePercent + ", eventFlags=" + eventFlags
+               + "]";
+    }
 }

@@ -22,7 +22,6 @@ public class SepMessageListener {
     private PaoDao paoDao;
     
     private static final Logger logger = YukonLogManager.getLogger(SepMessageListener.class);
-        //LogFactory.getLog(SepControlMessageListener.class);
     
     private ImmutableList<SepMessageHandler> sepMessageHandlers;
 
@@ -69,18 +68,7 @@ public class SepMessageListener {
         int eventFlags = message.readShort();
         
         
-        logger.debug("Sep Message: " + "Group Id: " + groupId 
-                    + " utcStartTime: " + utcStartTime 
-                    + " controlMinutes: " + controlMinutes
-                    + " criticality: " + criticality
-                    + " coolTempOffset: " + coolTempOffset
-                    + " heatTempOffset: " +heatTempOffset
-                    + " coolTempSetPoint: " + coolTempSetpoint
-                    + " heatTempSetPoint: " + heatTempSetpoint
-                    + " averageCyclePercent: " + averageCyclePercent
-                    + " standardCyclePercent: " + standardCyclePercent
-                    + " eventFlags: " + eventFlags
-                    );
+        logger.debug(sep.toString());
         
         sep.setGroupId(groupId);
         sep.setUtcStartTime(utcStartTime);
