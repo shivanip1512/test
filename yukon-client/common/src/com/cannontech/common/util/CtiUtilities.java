@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -1672,7 +1673,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
 
                 while(ifAddrEnum.hasMoreElements()){
                     InetAddress ifAddr = ifAddrEnum.nextElement();
-                    if( !ifAddr.isLoopbackAddress() ) {
+                    if (!ifAddr.isLoopbackAddress() && ifAddr instanceof Inet4Address) {
                         String ipAddress = ifAddr.getHostAddress();
                         return ipAddress;
                     }    
