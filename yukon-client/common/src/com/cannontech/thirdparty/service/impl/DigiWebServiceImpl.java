@@ -14,7 +14,12 @@ import org.springframework.web.client.RestOperations;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
@@ -39,6 +44,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     private DigiXMLBuilder digiXMLBuilder;
     private DigiResponseHandler digiResponseHandler;
     private ConfigurationSource configurationSource;
+    private SimplePointAccessDao simplePointAccessDao;
+    private AttributeService attributeService;
     
     private static String digiBaseUrl;
     
@@ -55,6 +62,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         try{
             Integer digiId = commissionNewConnectPort(digiGateway.getMacAddress());
+            
+            //Update the Commissioned Point State
+            LitePoint point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+            simplePointAccessDao.setPointValue(point, Commissioned.COMMISSIONED);
             
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
@@ -75,6 +86,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         decommissionConnectPort(digiGateway.getDigiId());
 
+        //Update the Commissioned Point State
+        LitePoint point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        simplePointAccessDao.setPointValue(point, Commissioned.DECOMMISSIONED);
+        
         logger.info("-- Remove Gateway Stop --");
     }
     
@@ -263,5 +278,15 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setSimplePointAccessDao(SimplePointAccessDao simplePointAccessDao) {
+        this.simplePointAccessDao = simplePointAccessDao;
+    }
+    
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
 }
