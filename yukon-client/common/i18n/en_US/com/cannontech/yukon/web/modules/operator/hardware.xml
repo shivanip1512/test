@@ -134,6 +134,8 @@
     <entry key="yukon.web.modules.operator.hardware.error.required.installCode">An Install Code is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.firmwareVersion">A Firmware Version is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.macAddress">A MAC Address is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Illegal Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.format.macAddress">Illegal MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     
     <!-- Swiches -->
     <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>

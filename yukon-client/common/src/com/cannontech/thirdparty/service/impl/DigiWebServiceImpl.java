@@ -1,8 +1,10 @@
 package com.cannontech.thirdparty.service.impl;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
@@ -35,6 +38,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private DigiXMLBuilder digiXMLBuilder;
     private DigiResponseHandler digiResponseHandler;
+    private ConfigurationSource configurationSource;
+    
+    private static String digiBaseUrl;
+    
+    @PostConstruct
+    public void initialize() {
+        digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
+    }
     
     @Override
     public void installGateway(int gatewayId) throws GatewayCommissionException {
@@ -79,7 +90,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         logger.info("-- CommissionNewConnectPort Start --");
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
         
-        StreamSource response = restTemplate.postForObject("http://developer.idigi.com/ws/DeviceCore", xml, StreamSource.class);
+        StreamSource response = restTemplate.postForObject(digiBaseUrl + "ws/DeviceCore", xml, StreamSource.class);
 
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(response);
@@ -108,7 +119,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     private void decommissionConnectPort(int digiId) {
         logger.info("-- DecommissionNewConnectPort Start --");
 
-        restTemplate.delete("http://developer.idigi.com/ws/DeviceCore/" + digiId);
+        restTemplate.delete(digiBaseUrl + "ws/DeviceCore/" + digiId);
 
         logger.info("Deleted " + digiId + " from Digi.");
         
@@ -123,9 +134,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         String xml = digiXMLBuilder.buildInstallStatMessage(gateway,stat);
         
-        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        String response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         
-        logger.info(response);
+        logger.debug(response);
         
         logger.info("-- InstallStat End --");
     }
@@ -136,16 +147,16 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, device);
         
-        String response = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        String response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         
-        logger.info(response);
+        logger.debug(response);
     }
 
     @Override
     public String getAllDevices() {
         logger.info("-- GetAllDevices start --");
 
-        String html = restTemplate.getForObject("http://developer.idigi.com/ws/data/",String.class);
+        String html = restTemplate.getForObject(digiBaseUrl + "ws/data/",String.class);
         
         logger.info(html);
         
@@ -160,7 +171,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         String xml = digiXMLBuilder.buildTextMessage(gateway, message);
 
-        StreamSource source = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, StreamSource.class);
+        StreamSource source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, StreamSource.class);
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
         
@@ -184,7 +195,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         List<ZigbeeGateway> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
         String xmlSEPMessage = digiXMLBuilder.buildSEPControlMessage(eventId, gateways, controlMessage);
         
-        StreamSource source = restTemplate.postForObject("http://developer.idigi.com/ws/sci", xmlSEPMessage, StreamSource.class);
+        StreamSource source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xmlSEPMessage, StreamSource.class);
         
         digiResponseHandler.handleSEPControlResponses(source);
         
@@ -196,16 +207,17 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
 
         String xml = digiXMLBuilder.buildSepRestore(eventId, restoreMessage);
        
-        restTemplate.postForObject("http://developer.idigi.com/ws/sci", xml, String.class);
+        restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
         
         //handleResponses
     }
     
     @Override
-    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway) {
+    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway) throws SocketTimeoutException{
         String zbDeviceId = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
-        String folderUrl = "http://developer.idigi.com/ws/data/~/" + zbDeviceId;
+        String folderUrl = digiBaseUrl + "ws/data/~/" + zbDeviceId;
+        
         StreamSource fileNameSource = restTemplate.getForObject(folderUrl + "?recursive=no", StreamSource.class);
         List<String> files = digiResponseHandler.handleFolderListingResponse(fileNameSource);
         
@@ -246,5 +258,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Autowired
     public void setDigiResponseHandler(DigiResponseHandler digiResponseHandler) {
         this.digiResponseHandler = digiResponseHandler;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

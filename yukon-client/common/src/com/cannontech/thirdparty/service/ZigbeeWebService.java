@@ -1,5 +1,7 @@
 package com.cannontech.thirdparty.service;
 
+import java.net.SocketTimeoutException;
+
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.GatewayCommissionException;
@@ -49,6 +51,7 @@ public interface ZigbeeWebService {
      * Download and process all Device Notifications on the gateway.
      * 
      * @param gateway
+     * @throws SocketTimeoutException 
      */
-    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway);
+    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway) throws SocketTimeoutException;
 }

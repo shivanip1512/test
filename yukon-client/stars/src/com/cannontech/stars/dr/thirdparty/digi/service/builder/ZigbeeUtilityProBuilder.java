@@ -21,6 +21,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 
 public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
@@ -56,13 +57,19 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void validateDevice(HardwareDto hardwareDto, Errors errors) {
         /* Install Code */
-        if (StringUtils.isBlank(hardwareDto.getInstallCode())) {
+        String installCode = hardwareDto.getInstallCode();
+        if (StringUtils.isBlank(installCode)) {
             errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.required");
+        } else if (!Validator.isInstallCode(installCode)){
+            errors.rejectValue("installCode", "yukon.web.modules.operator.hardware.error.format");
         }
         
         /* MAC Address*/
-        if (StringUtils.isBlank(hardwareDto.getMacAddress())) {
+        String macAddress = hardwareDto.getMacAddress();
+        if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
+        } else if (!Validator.isInstallCode(macAddress)/*This is NOT an error..*/) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format");
         }
     }
     

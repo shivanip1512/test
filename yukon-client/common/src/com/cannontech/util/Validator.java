@@ -242,4 +242,21 @@ public class Validator
 		return isNumber(PhoneNumber.strip(phoneNumber));
 	}
 
+	public static boolean isMacAddress(String macAddress) {
+        String  regex = "([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}";
+        String in = macAddress;
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(in);
+        
+        return m.matches();
+	}
+	
+	public static boolean isInstallCode(String installCode) {
+        String  regex = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
+        String in = installCode;
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(in);
+        
+        return m.matches();
+	}
 }

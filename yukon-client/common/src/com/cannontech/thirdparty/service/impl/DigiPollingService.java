@@ -1,5 +1,6 @@
 package com.cannontech.thirdparty.service.impl;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,7 +37,11 @@ public class DigiPollingService {
             
                 for (ZigbeeGateway gateway : gateways) {
                     //Poll the gateway.
-                    zigbeeWebService.processAllDeviceNotificationsOnGateway(gateway);
+                    try {
+                        zigbeeWebService.processAllDeviceNotificationsOnGateway(gateway);
+                    } catch (SocketTimeoutException e) {
+                        logger.error("TimeOut while requesting files from gateway", e);
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Exception while Polling Gateways", e);

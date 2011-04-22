@@ -24,6 +24,24 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
 
+    private static YukonRowMapper<ZigbeeThermostat> zigbeeThermostatRowMapper  = new YukonRowMapper<ZigbeeThermostat>(){
+        @Override
+        public ZigbeeThermostat mapRow(YukonResultSet rs) throws SQLException {
+            ZigbeeThermostat zigbeeThermostat = new ZigbeeThermostat();
+            
+            int deviceId = rs.getInt("DeviceId");
+            PaoType paoType = rs.getEnum("Type", PaoType.class);
+
+            zigbeeThermostat.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
+            zigbeeThermostat.setInstallCode(rs.getString("InstallCode"));
+            zigbeeThermostat.setMacAddress(rs.getString("MacAddress"));
+            zigbeeThermostat.setName(rs.getString("ManufacturerSerialNumber"));
+            zigbeeThermostat.setGatewayId(rs.getNullableInt("GatewayId"));
+            
+            return zigbeeThermostat;
+        }
+    };
+    
     @Override
     public ZigbeeDevice getZigbeeDevice(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -59,26 +77,26 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
         sql.append("WHERE ZE.DeviceId").eq(deviceId);
         
-        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<ZigbeeThermostat>() {
-                @Override
-                public ZigbeeThermostat mapRow(YukonResultSet rs) throws SQLException {
-                    ZigbeeThermostat zigbeeThermostat = new ZigbeeThermostat();
-                    
-                    int deviceId = rs.getInt("DeviceId");
-                    PaoType paoType = rs.getEnum("Type", PaoType.class);
-
-                    zigbeeThermostat.setPaoIdentifier(new PaoIdentifier(deviceId, paoType));
-                    zigbeeThermostat.setInstallCode(rs.getString("InstallCode"));
-                    zigbeeThermostat.setMacAddress(rs.getString("MacAddress"));
-                    zigbeeThermostat.setName(rs.getString("ManufacturerSerialNumber"));
-                    zigbeeThermostat.setGatewayId(rs.getNullableInt("GatewayId"));
-                    
-                    return zigbeeThermostat;
-                }
-            }
-        );
+        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
 
         return tstat;
+    }
+    
+    public ZigbeeThermostat getZigbeeUtilProByMACAddress(String macAddress) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT ZE.DeviceId,ZE.InstallCode,ZE.MacAddress,");
+        sql.append(           "YPO.Type,HB.ManufacturerSerialNumber, DM.GatewayId");
+        sql.append("FROM ZBEndPoint ZE");
+        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
+        sql.append(  "JOIN InventoryBase IB ON ZE.DeviceId = IB.DeviceID");
+        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
+        sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
+        sql.append("WHERE ZE.MacAddress").eq(macAddress);
+        
+        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
+
+        return tstat; 
     }
     
     @Override

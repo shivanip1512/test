@@ -21,6 +21,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.GatewayFields;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
@@ -49,8 +50,11 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     public void validateDevice(HardwareDto hardwareDto, Errors errors) {        
 
         /* MAC Address*/
-        if (StringUtils.isBlank(hardwareDto.getMacAddress())) {
+        String macAddress = hardwareDto.getMacAddress();
+        if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
+        } else if (!Validator.isMacAddress(macAddress)) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.macAddress.format");
         }
         
         /* Firmware Version */

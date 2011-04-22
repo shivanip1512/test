@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -25,6 +27,8 @@ import com.cannontech.yukon.IServerConnection;
 
 public class DigiControlMessageHandler implements SepMessageHandler {
 
+    private static final Logger logger = YukonLogManager.getLogger(DigiControlMessageHandler.class);
+    
     private IServerConnection dispatchConnection;
     private AttributeService attributeService;
     private DynamicDataSource dynamicDataSource;
@@ -52,35 +56,36 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         //Creating the event prior will leave us with an EventId to attempt to cancel in case of a partial control
         digiControlEventDao.createNewEventMapping(eventId,message.getGroupId(),now);
         
-        //Do what needs to be done
-        try {
-            
+        try {            
+            //Do what needs to be done
             int deviceCount = zigbeeWebService.sendSEPControlMessage(eventId, message);
             digiControlEventDao.updateDeviceCount(eventId, deviceCount);
             
+            //Saving the EventId to qualify AssociationMessages from Dispatch
             pendingEvents.add(eventId);
     
             //If success return a control history message to dispatch.
             ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, paoIdentifier, message, now);
-            
             dispatchConnection.queue(chMessage);
 
         } catch (DigiWebServiceException e) {
-            //TODO THAIN
+            logger.error("Error in ZigBeeWebService: " + e.getMessage());
         }
-        return;
     }
 
     @Override
     public void handleRestoreMessage(PaoIdentifier paoIdentifier, SepRestoreMessage message) {
         int eventId = digiControlEventDao.findCurrentEventId(message.getGroupId());
+        
         try {
             zigbeeWebService.sendSEPRestoreMessage(eventId, message);
     
+            //If success return a control history message to dispatch.
             ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(paoIdentifier,message, new Date());        
             dispatchConnection.queue(histMsg);
+            
         } catch (DigiWebServiceException e) {
-            //TODO THAIN
+            logger.error("Error in ZigBeeWebService: " + e.getMessage());
         }
     }
     
