@@ -10,7 +10,9 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.Hours;
+import org.joda.time.Instant;
 
 import com.google.common.collect.Lists;
 
@@ -424,5 +426,11 @@ public static int differenceMinutes(Date from, Date to) {
         }
         
         return resultList;
+    }
+    
+    public static final Instant UTC_2000_EPOC = new DateTime(2000,1,1,0,0,0,0,DateTimeZone.UTC).toInstant(); 
+    
+    public static Instant convertUtc2000ToInstant(long seconds) { 
+        return UTC_2000_EPOC.plus(Duration.standardSeconds(seconds));
     }
 }

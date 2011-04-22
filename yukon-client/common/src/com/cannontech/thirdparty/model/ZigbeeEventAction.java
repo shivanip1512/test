@@ -8,7 +8,8 @@ public enum ZigbeeEventAction implements DatabaseRepresentationSource{
     THERMOSTAT_ACK(1),
     THERMOSTAT_EVENT_START(2),
     THERMOSTAT_EVENT_STOP(3),
-    THERMOSTAT_EVENT_CANCELED(6);
+    THERMOSTAT_EVENT_CANCELED(6),
+    THERMOSTAT_EVENT_SUPERSEDED(7);
     
     private int eventStatus;
     

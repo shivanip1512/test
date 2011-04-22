@@ -1,6 +1,5 @@
 package com.cannontech.thirdparty.service.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -11,6 +10,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.xml.xpath.NodeMapper;
 import org.w3c.dom.DOMException;
@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -103,7 +104,7 @@ public class DigiResponseHandler {
         @SuppressWarnings("unchecked")
         List<GatewayResponse> gatewayResponses = template.evaluate("//device", digiSEPControlResponseNodeMapper);
 
-        Date now = new Date();
+        Instant now = new Instant();
         for (GatewayResponse response : gatewayResponses) {
             if (response.hasError())
                 continue;
@@ -176,6 +177,7 @@ public class DigiResponseHandler {
         String commissionStr = " registered with XBee";
         String decommissionStr = " unregistered from XBee";
         String connectStr = "Received device announce message from known device";
+        String connectStr2 = "detected and marked as active";
         String disconnectStr = "marked as inactive";
         
         String in = message;
@@ -195,7 +197,7 @@ public class DigiResponseHandler {
                 logger.debug("Device: " + macAddress + "was decommissioned.");
                 sendPointStatusUpdate(macAddress,BuiltInAttribute.ZIGBEE_LINK_STATUS,Commissioned.DECOMMISSIONED);
                 return;
-            } else if ( message.contains(connectStr)) {
+            } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
                 logger.debug("Device: " + macAddress + "has connected.");
                 sendPointStatusUpdate(macAddress,BuiltInAttribute.CONNECTION_STATUS,CommStatusState.CONNECTED);
@@ -223,24 +225,27 @@ public class DigiResponseHandler {
     
     private void processReportEventStatus(SimpleXPathTemplate template) {        
         String temp = template.evaluateAsString("//event_status_time");
-        long seconds = Long.parseLong(temp.substring(2),16);
-        Date statusTime = new Date(seconds*1000);
+        long seconds = Long.decode(temp);
+        Instant statusTime = TimeUtil.convertUtc2000ToInstant(seconds);
         
         String macAddress = template.evaluateAsString("//source_address");
         int deviceId = zigbeeDeviceDao.getDeviceIdForMACAddress(macAddress);
+
+        
         
         temp = template.evaluateAsString("//event_status");
-        int eventStatus = Integer.parseInt(temp.substring(2), 16);
+        int eventStatus = Integer.decode(temp);
         ZigbeeEventAction action = ZigbeeEventAction.getForEventStatus(eventStatus);        
         
         temp = template.evaluateAsString("//issuer_event_id");
-        int eventId = Integer.parseInt(temp.substring(2), 16);
+        int eventId = Integer.decode(temp);
         
         digiControlEventDao.insertControlEvent(eventId,
                                                statusTime,
                                                deviceId,
                                                action);    
     }
+
     
     @Autowired
     public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {

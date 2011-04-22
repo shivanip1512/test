@@ -4,14 +4,14 @@ import java.util.List;
 
 public class GatewayResponse {
 
-    String deviceId;
+    private String deviceId;
     
-    String errorDescription;
-    Integer errorId = null;
+    private String errorDescription;
+    private Integer errorId = null;
     
-    int eventId;
-    int status;
-    List<String> deviceList;
+    private int eventId;
+    private int status;
+    private List<String> deviceList;
     
     public boolean hasError() {
         return errorId != null;

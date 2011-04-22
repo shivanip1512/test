@@ -2,6 +2,7 @@ package com.cannontech.thirdparty.digi.dao.impl;
 
 import java.util.Date;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -52,15 +53,14 @@ public class DigiControlEventDao {
     public int findCurrentEventId(int groupId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT EventId");
-        sql.append("FROM DigiControlEventMapping");
-        sql.append("WHERE GroupId").eq(groupId);
-        sql.append("AND StartTime = (");
-        sql.append("  SELECT MAX(StartTime)");
-        sql.append("  FROM DigiControlEventMapping");
-        sql.append("  WHERE GroupId").eq(groupId);
-        sql.append("  )");
-        
+        sql.append("SELECT i.EventId");
+        sql.append("FROM (");
+        sql.append(  "SELECT EventId, ROW_NUMBER() OVER (ORDER BY StartTime desc) rn");
+        sql.append(  "FROM DigiControlEventMapping");
+        sql.append(  "WHERE GroupId").eq(groupId);
+        sql.append(") i");
+        sql.append("WHERE i.rn = 1");
+
         try {
             return yukonJdbcTemplate.queryForInt(sql);           
         } catch (EmptyResultDataAccessException e) {
@@ -68,7 +68,7 @@ public class DigiControlEventDao {
         }
     }
     
-    public void insertControlEvent(int eventId, Date eventTime, int deviceId, ZigbeeEventAction action) {
+    public void insertControlEvent(int eventId, Instant eventTime, int deviceId, ZigbeeEventAction action) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink p = sql.insertInto("ZBControlEvent");

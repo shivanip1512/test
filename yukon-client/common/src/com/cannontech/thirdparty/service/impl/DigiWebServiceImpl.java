@@ -19,6 +19,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
@@ -89,6 +90,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         //Update the Commissioned Point State
         LitePoint point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         simplePointAccessDao.setPointValue(point, Commissioned.DECOMMISSIONED);
+        
+        //Update the Connection Point State
+        point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
+        simplePointAccessDao.setPointValue(point, CommStatusState.DISCONNECTED);
         
         logger.info("-- Remove Gateway Stop --");
     }
@@ -191,8 +196,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         template.setContext(source);
         
         String statusText = template.evaluateAsString("//status");
-        
-        int status = Integer.parseInt(statusText.substring(2), 16);
+        int status = Integer.decode(statusText);
         
         if (status != 0) {
             logger.error(" Sending Text message was unsuccessful.");
