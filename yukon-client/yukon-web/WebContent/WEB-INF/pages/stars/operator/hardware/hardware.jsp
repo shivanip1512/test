@@ -92,7 +92,7 @@ function changeOut(oldId, isMeter) {
                     <tags:nameValue2 nameKey=".displayDuration">
                         <form:select path="displayDuration">
                             <c:forEach var="duration" items="${durations}">
-                                <cti:formatDuration type="DHMS" value="${duration.millis}" var="durationLabel"/>
+                                <cti:formatDuration type="DHMS_REDUCED" value="${duration.millis}" var="durationLabel"/>
                                 <form:option value="${duration}" label="${durationLabel}"/>
                             </c:forEach>
                         </form:select>

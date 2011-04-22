@@ -6,6 +6,7 @@
 	<!-- See the DurationFormatSymbol enum for available period tokens. -->
 	<entry key="yukon.common.durationFormatting.pattern.YMODHMS">%Y_FULL% %MO_FULL% %D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
 	<entry key="yukon.common.durationFormatting.pattern.DHMS">%D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
+	<entry key="yukon.common.durationFormatting.pattern.DHMS_REDUCED">%D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
     <entry key="yukon.common.durationFormatting.pattern.DH">%D_FULL% %H_FULL%</entry>
     <entry key="yukon.common.durationFormatting.pattern.DH_ABBR">%D_ABBR% %H_ABBR%</entry>
     <entry key="yukon.common.durationFormatting.pattern.HMS">%H_FULL% %M_FULL% %S_FULL%</entry>
