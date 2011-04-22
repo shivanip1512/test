@@ -11,12 +11,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
-import org.springframework.web.util.UrlPathHelper;
-
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Filter that keeps track of referrer pages and sets referrer variables in the
@@ -25,54 +22,30 @@ import com.cannontech.web.navigation.CtiNavObject;
  */
 public class ReferrerPageFilter implements Filter {
 
-    private static final String[] excludedPages;
-    private PathMatcher pathMatcher = new AntPathMatcher();
-    private UrlPathHelper urlPathHelper = new UrlPathHelper();
     // Save the filter config for getting at servlet context
     private FilterConfig config;
+
+    // setup ant-style paths
+    // all paths should start with a slash because that's just the way it works
+    private final static ImmutableList<String> excludedPages =
+        ImmutableList.of("/spring/capcontrol/ivvc/zone/chart",
+                         "/spring/capcontrol/ivvc/bus/chart",
+                         "/capcontrol/cbcPointTimestamps.jsp",
+                         "/capcontrol/standardPageWrapper.jsp",
+                         "/spring/capcontrol/move/bankMove",
+                         "/spring/capcontrol/capAddInfo");
     
-    static {
-        // setup ant-style paths
-        // all paths should start with a slash because that's just the way it works
-        excludedPages = new String[] {
-                "/spring/capcontrol/ivvc/zone/chart",
-                "/spring/capcontrol/ivvc/bus/chart",
-                "/capcontrol/cbcPointTimestamps.jsp",
-                "/capcontrol/standardPageWrapper.jsp",
-                "/spring/capcontrol/move/bankMove",
-                "/spring/capcontrol/capAddInfo"};
-    }
-    /**
-     * @see javax.servlet.Filter#init(FilterConfig)
-     */
     public void init(FilterConfig fc) throws ServletException {
         config = fc;
     }
-    private boolean isExcludedRequest( HttpServletRequest req ) {
 
-        String pathWithinApplication = urlPathHelper.getPathWithinApplication(req);
-        
-        for (String pattern : excludedPages) {
-            if (pathMatcher.match(pattern, pathWithinApplication)) {
-                return true;
-            }
-        }
-        
-        if( ServletUtil.isAjaxRequest( req ) )
-            return true;
-
-        return false;
-    }
-    /**
-     * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse,
-     *      FilterChain)
-     */
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) req;
 
-        boolean excludedRequest = isExcludedRequest(request);
-        if (excludedRequest) {
+        boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedPages);
+        boolean isAjaxRequest = ServletUtil.isAjaxRequest( req );
+        if (excludedRequest || isAjaxRequest) {
             chain.doFilter(req, resp);
             return;
         }
@@ -95,11 +68,7 @@ public class ReferrerPageFilter implements Filter {
         chain.doFilter(req, resp);
     }
 
-    /**
-     * @see javax.servlet.Filter#destroy()
-     */
     public void destroy() {
         config = null;
     }
-
 }

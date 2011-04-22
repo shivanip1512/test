@@ -17,8 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -38,12 +36,10 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 import com.cannontech.web.login.impl.SessionInfo;
 import com.cannontech.web.util.YukonUserContextResolver;
+import com.google.common.collect.ImmutableList;
 
 public class LoginFilter implements Filter {
-    private static final String[] excludedFilePaths;
-    private static final String[] excludedRedirectedPaths;
     private final Logger log = YukonLogManager.getLogger(getClass());
-    private final PathMatcher pathMatcher = new AntPathMatcher();
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private WebApplicationContext context;
@@ -52,43 +48,41 @@ public class LoginFilter implements Filter {
     private UrlAccessChecker urlAccessChecker;
     private RolePropertyDao rolePropertyDao;
     private LoginService loginService;
-    
-    static {
-        /* Setup ant-style paths that should be processed even if the user is not logged in.
-         * All paths should start with a slash because that's just the way it works */
-        excludedFilePaths = new String[] {
-            LoginController.LOGIN_URL,
-            "/integrationLogin",
-            "/spring/login/forgotPassword",
-            "/servlet/LoginController",
-            "/servlet/LoggingServlet",
-            "/voice/login.jsp",
-            "/voice/inboundLogin.jsp",
-            "/soap/**",
-            "/servlet/PWordRequest",
-            "/servlet/StarsPWordRequest",
-            "/**/prototype.js",
-            "/**/CtiMenu.js",
-            "/**/*.js",
-            "/**/*.css",
-            "/**/*.png",
-            "/**/*.gif",
-            "/**/*.jpg",
-            "/**/*.html",
-            "/jws/*.jar",
-            "/remote/**",
-            "/favicon.ico"
-        };
-        
-        excludedRedirectedPaths = new String[] {
-            "/capcontrol/**",
-            "/operator/**",
-            "/editor/**",
-            "/user/**",
-            "/servlet/SOAPClient/**",
-            "/jws/*"
-        };
-    }
+
+    /*
+     * Setup ant-style paths that should be processed even if the user is not logged in.
+     * All paths should start with a slash because that's just the way it works
+     */
+    private final static ImmutableList<String> excludedFilePaths =
+        ImmutableList.of(LoginController.LOGIN_URL,
+                         "/integrationLogin",
+                         "/spring/login/forgotPassword",
+                         "/servlet/LoginController",
+                         "/servlet/LoggingServlet",
+                         "/voice/login.jsp",
+                         "/voice/inboundLogin.jsp",
+                         "/soap/**",
+                         "/servlet/PWordRequest",
+                         "/servlet/StarsPWordRequest",
+                         "/**/prototype.js",
+                         "/**/CtiMenu.js",
+                         "/**/*.js",
+                         "/**/*.css",
+                         "/**/*.png",
+                         "/**/*.gif",
+                         "/**/*.jpg",
+                         "/**/*.html",
+                         "/jws/*.jar",
+                         "/remote/**",
+                         "/favicon.ico");
+
+    private final static ImmutableList<String> excludedRedirectedPaths =
+        ImmutableList.of("/capcontrol/**",
+                         "/operator/**",
+                         "/editor/**",
+                         "/user/**",
+                         "/servlet/SOAPClient/**",
+                         "/jws/*");
     
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
@@ -98,7 +92,7 @@ public class LoginFilter implements Filter {
         req.setCharacterEncoding("UTF-8");
 
         boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
-        boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
+        boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
         
         /* For excluded requests, try to attach the userContext, but they may not be logged in. */
         if (excludedRequest) {
@@ -198,20 +192,8 @@ public class LoginFilter implements Filter {
         }
     }
 
-    private boolean isExcludedRequest(HttpServletRequest request, String... patterns) {
-        String pathWithinApplication = urlPathHelper.getPathWithinApplication(request);
-        
-        for (String pattern : patterns) {
-            if (pathMatcher.match(pattern, pathWithinApplication)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private String getRedirectedFrom(HttpServletRequest request) {
-        boolean isExcludedRedirectedFromRequest = isExcludedRequest(request, excludedRedirectedPaths);
+        boolean isExcludedRedirectedFromRequest = ServletUtil.isExcludedRequest(request, excludedRedirectedPaths);
         if (isExcludedRedirectedFromRequest) return "";
         
         String url = request.getRequestURL().toString();

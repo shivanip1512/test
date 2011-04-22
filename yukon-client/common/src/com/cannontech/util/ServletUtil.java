@@ -38,6 +38,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
+import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotLoggedInException;
@@ -54,7 +57,10 @@ import com.google.common.collect.Multimap;
  */
 
 public class ServletUtil {
-	
+
+    private static final PathMatcher pathMatcher = new AntPathMatcher();
+    private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
+
 	//Session attributes.
 	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
 	public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
@@ -1499,7 +1505,18 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         }
         return sw.toString();
     }
-    
+
+    public static boolean isExcludedRequest(HttpServletRequest request, List<String> patterns) {
+        String pathWithinApplication = urlPathHelper.getPathWithinApplication(request);
+
+        for (String pattern : patterns) {
+            if (pathMatcher.match(pattern, pathWithinApplication)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 	public static boolean isAjaxRequest(ServletRequest req) {
 		if (req instanceof HttpServletRequest) {
 			HttpServletRequest httpReq = (HttpServletRequest) req;
