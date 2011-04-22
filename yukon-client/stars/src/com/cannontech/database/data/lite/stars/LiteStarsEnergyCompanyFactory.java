@@ -20,6 +20,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.DefaultRouteService;
 
 public class LiteStarsEnergyCompanyFactory {
@@ -38,6 +39,7 @@ public class LiteStarsEnergyCompanyFactory {
 	private YukonGroupDao yukonGroupDao;
 	private YukonListDao yukonListDao;
 	private PaoDao paoDao;
+	private EnergyCompanyDao energyCompanyDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -66,6 +68,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setYukonGroupDao(yukonGroupDao);
         energyCompany.setYukonListDao(yukonListDao);
         energyCompany.setPaoDao(paoDao);
+        energyCompany.setEnergyCompanyDao(energyCompanyDao);
 
         energyCompany.initialize();
 
@@ -89,13 +92,19 @@ public class LiteStarsEnergyCompanyFactory {
             }
         });
 
-
-
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE,
                                                               new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 energyCompany.resetApplianceCategoryList();
+            }
+        });
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY,
+                                                              new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                energyCompany.resetEnergyCompanyInfo();
             }
         });
     }
@@ -175,4 +184,10 @@ public class LiteStarsEnergyCompanyFactory {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
+    
+    @Autowired
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
+    }
+    
 }

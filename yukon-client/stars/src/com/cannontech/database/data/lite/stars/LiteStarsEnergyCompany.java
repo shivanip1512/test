@@ -70,6 +70,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ECUtils;
@@ -105,6 +106,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private YukonJdbcTemplate yukonJdbcTemplate;
     private YukonListDao yukonListDao;
     private YukonGroupDao yukonGroupDao;
+    private EnergyCompanyDao energyCompanyDao;
     
 	private final static long serialVersionUID = 1L;
 	
@@ -242,6 +244,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * @return String
      */
     public String getName() {
+        if (name == null) {
+            setName(energyCompanyDao.retrieveCompanyName(getEnergyCompanyId()));
+        }
         return name;
     }
 
@@ -1862,6 +1867,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         };
     }
     
+    public void resetEnergyCompanyInfo() {
+        this.name = null;
+    }
     
     // DI Setters    
     public void setAddressDao(AddressDao addressDao) {
@@ -1918,5 +1926,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
 }

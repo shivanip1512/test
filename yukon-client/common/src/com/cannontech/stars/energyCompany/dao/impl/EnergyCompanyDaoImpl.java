@@ -274,6 +274,16 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
     
     @Override
+    public String retrieveCompanyName(int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Name");
+        sql.append("FROM EnergyCompany");
+        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
+        
+        return yukonJdbcTemplate.queryForString(sql);
+    }
+    
+    @Override
     @Transactional
     public void save(EnergyCompany energyCompany) {
         boolean create = !simpleTableTemplate.saveWillUpdate(energyCompany);

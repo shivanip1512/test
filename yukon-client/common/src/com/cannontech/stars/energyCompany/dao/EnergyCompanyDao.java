@@ -94,5 +94,7 @@ public interface EnergyCompanyDao {
      * Creates or updates energy company.
      */
     public void save(EnergyCompany energyCompany);
+
+    public String retrieveCompanyName(int energyCompanyId);
     
 }

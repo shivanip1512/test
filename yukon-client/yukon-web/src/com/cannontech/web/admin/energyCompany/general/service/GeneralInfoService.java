@@ -10,16 +10,18 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 
 public class GeneralInfoService {
@@ -31,6 +33,7 @@ public class GeneralInfoService {
     private EnergyCompanyDao energyCompanyDao;
     private ECMappingDao ecMappingDao;
     private DefaultRouteService defaultRouteService;
+    private DBPersistentDao dbPersistentDao;
     
     public GeneralInfo getGeneralInfo(LiteStarsEnergyCompany energyCompany) {
         GeneralInfo info = new GeneralInfo();
@@ -78,6 +81,13 @@ public class GeneralInfoService {
         /* Name */
         energyCompanyDao.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
         
+        dbPersistentDao.processDBChange(new DBChangeMsg(
+                                                        energyCompany.getEnergyCompanyId(),
+                                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                                        DbChangeType.UPDATE));
+        
         /* Phone */
         updateNotification(generalInfo.getPhone(), ContactNotificationType.PHONE, contactId);
         
@@ -89,6 +99,12 @@ public class GeneralInfoService {
         
         /* Address */
         addressDao.update(generalInfo.getAddress().getLiteAddress(addressId));
+
+        dbPersistentDao.processDBChange(new DBChangeMsg(contactId,
+                                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                        DbChangeType.UPDATE));
         
         /* Route */
         defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);
@@ -109,7 +125,7 @@ public class GeneralInfoService {
     /* Helper Methods */
     
     /**
-     * Updates the notification, either saving or removing it.
+     * Updates the notification, either saving or removing it, does nothing if not supplied and notification doesn't exist.
      */
     private void updateNotification(String notification, ContactNotificationType notifType, int contactId) {
         LiteContactNotification liteNotification = contactNotificationDao.getFirstNotificationForContactByType(contactId, notifType);
@@ -125,6 +141,7 @@ public class GeneralInfoService {
         } else if (liteNotification != null) {
             contactNotificationDao.removeNotification(liteNotification.getContactNotifID());
         }
+        
     }
     
     /* Dependencies */
@@ -162,6 +179,11 @@ public class GeneralInfoService {
     @Autowired
     public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
         this.defaultRouteService = defaultRouteService;
+    }
+    
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
     
 }
