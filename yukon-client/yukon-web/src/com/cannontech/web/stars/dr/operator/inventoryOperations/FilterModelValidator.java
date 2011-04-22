@@ -20,21 +20,22 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
         List<RuleModel> filterRules = target.getFilterRules();
         for (int i = 0; i < filterRules.size(); i++) {
             RuleModel rule = filterRules.get(i); 
-                
+            errors.pushNestedPath("filterRules["+i+"]");    
+            
             switch (rule.getRuleType()) {
             
                 case DEVICE_STATUS_DATE_RANGE:
                     if (rule.getDeviceStateDateFrom().isAfter(rule.getDeviceStateDateTo())) {
                         YukonValidationUtils.rejectValues(errors,
                                                           "yukon.web.modules.operator.filterSelection.error.invalidDeviceStatusDateRange",
-                                                          "filterRules["+i+"].deviceStateDateFrom",
-                                                          "filterRules["+i+"].deviceStateDateTo");
+                                                          "deviceStateDateFrom",
+                                                          "deviceStateDateTo");
                     }
                     break;
             
                 case POSTAL_CODE:
                 
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "filterRules["+i+"].postalCode", rule.getPostalCode(), 12);
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "postalCode", rule.getPostalCode(), 12);
                     break;
                 
                 case SERIAL_NUMBER_RANGE:
@@ -50,7 +51,8 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
                     
                     
             }
+            errors.popNestedPath();
+
         }
     }
-    
 }

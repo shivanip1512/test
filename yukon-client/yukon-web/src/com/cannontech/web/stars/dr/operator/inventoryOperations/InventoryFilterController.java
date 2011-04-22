@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -35,7 +34,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -52,6 +50,7 @@ import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
@@ -198,7 +197,7 @@ public class InventoryFilterController {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
-        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByECId(energyCompany.getEnergyCompanyId());
+        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(energyCompany.getEnergyCompanyId());
         return applianceCategories;
     }
 
@@ -207,8 +206,8 @@ public class InventoryFilterController {
         return RuleModel.RESIDENTIAL_MODEL_ENTRY_ID;
     }
     
-    @ModelAttribute(value="customerTypes")
-    public List<YukonListEntry> getCustomerTypes(YukonUserContext userContext) {
+    @ModelAttribute(value="ciCustomerTypes")
+    public List<YukonListEntry> getCiCustomerTypes(YukonUserContext userContext) {
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
@@ -257,11 +256,7 @@ public class InventoryFilterController {
         binder.registerCustomEditor(Date.class, "filterRules.fieldInstallDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "filterRules.programSignupDate", dateValidationType.getPropertyEditor());
 
-        binder.registerCustomEditor(LocalDate.class, "filterRules.deviceStateDateFrom", 
-                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
-        binder.registerCustomEditor(LocalDate.class, "filterRules.deviceStateDateTo", 
-                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
-
+        datePropertyEditorFactory.setupLocalDatePropertyEditor(binder, userContext, BlankMode.CURRENT);
         
         if (binder.getTarget() != null) {
             MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.filterSelection.");

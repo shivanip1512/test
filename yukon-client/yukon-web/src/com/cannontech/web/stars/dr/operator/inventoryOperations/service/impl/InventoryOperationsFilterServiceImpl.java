@@ -98,14 +98,13 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             inventoryIdsFromCustomerTypeSql.append("FROM Customer C");
             inventoryIdsFromCustomerTypeSql.append("  JOIN CustomerAccount CA ON CA.CustomerId = C.CustomerId");
             inventoryIdsFromCustomerTypeSql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
-            
+            inventoryIdsFromCustomerTypeSql.append("  LEFT JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
+
             // The customer type is residential
             if (rule.isResidentialCustomerType()) {
-                inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId != C.CustomerId");
-                
+                inventoryIdsFromCustomerTypeSql.append("WHERE CICB.CiCustType IS NULL");
             // The customer type is a commercial type
             } else {
-                inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
                 inventoryIdsFromCustomerTypeSql.append("WHERE CICB.CiCustType").eq(rule.getCiCustomerTypeId());
             }
             

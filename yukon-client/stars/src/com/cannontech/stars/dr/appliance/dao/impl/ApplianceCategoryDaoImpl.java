@@ -232,7 +232,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     }
 
     @Override
-    public List<ApplianceCategory> getApplianceCategoriesByECId(int energyCompanyId) {
+    public List<ApplianceCategory> getApplianceCategoriesByEcId(int energyCompanyId) {
         List<Integer> applianceCategoryIds = getApplianceCategoryIdsByEC(energyCompanyId);
         Map<Integer, ApplianceCategory> applianceCategoriesById = getByApplianceCategoryIds(applianceCategoryIds);
         List<ApplianceCategory> applianceCategories = Lists.newArrayList(applianceCategoriesById.values());

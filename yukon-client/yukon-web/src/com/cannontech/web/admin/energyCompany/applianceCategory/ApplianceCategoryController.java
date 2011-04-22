@@ -137,7 +137,7 @@ public class ApplianceCategoryController {
         int ecId = ecInfo.getEnergyCompanyId();
         energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
 
-        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByECId(ecId);
+        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(ecId);
         model.addAttribute("applianceCategories", applianceCategories);
 
         return "applianceCategory/list.jsp";
