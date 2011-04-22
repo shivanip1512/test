@@ -255,10 +255,20 @@
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
 								<th>Tags</th>
+                                <th>Value Support</th>
+                                <th>Values</th>
 							</tr>
 							<c:forEach var="tag" items="${deviceInfo.tags}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${tag.description}</td>
+                                    <c:if test="${not empty tagMap[deviceInfo][tag]}">
+                                    	<td>Yes</td>
+                                    	<td>${tagMap[deviceInfo][tag]}</td>
+                                    </c:if>
+                                    <c:if test="${empty tagMap[deviceInfo][tag]}">
+                                   		<td>No</td>
+                                        <td></td>
+                                    </c:if>
 								</tr>
 							</c:forEach>
 						</table>

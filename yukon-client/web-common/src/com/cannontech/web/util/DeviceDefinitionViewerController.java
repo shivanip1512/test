@@ -133,7 +133,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         		displayDefinitions.add(deviceDefiniton);
         	}
         }
-        
+        Map<DeviceInfo, Map<PaoTag, Object>> tagMap = new HashMap<DeviceInfo, Map<PaoTag, Object>>();
         // display definitions info
         Map<String, Set<DeviceInfo>> displayDefinitionsMap = new HashMap<String, Set<DeviceInfo>>();
         for (PaoDefinition deviceDefiniton : displayDefinitions) {
@@ -142,9 +142,24 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	if (!displayDefinitionsMap.containsKey(displayGroup)) {
         		displayDefinitionsMap.put(displayGroup, new LinkedHashSet<DeviceInfo>());
         	}
+        	
+        	List<PaoTag> tagList = deviceInfo.getTags();
+        	Map<PaoTag, Object> deviceTagMap = new HashMap<PaoTag, Object>();
+        	
+        	for(PaoTag tag: tagList) {
+        	    Object value = null;
+        	    if(tag.getValueType() != null) {
+        	        if(tag.getValueType().getTypeClass() == long.class) {
+        	            value = paoDefinitionDao.getValueForTagLong(deviceDefiniton.getType(), tag);
+        	        } else if(tag.getValueType().getTypeClass() == String.class) {
+        	            value = paoDefinitionDao.getValueForTagString(deviceDefiniton.getType(), tag);
+        	        }
+        	    } 
+        	    deviceTagMap.put(tag, value);
+        	}
+        	tagMap.put(deviceInfo, deviceTagMap);
         	displayDefinitionsMap.get(displayGroup).add(deviceInfo);
         }
-        
         // sort
         allDeviceTypes = sortDeviceTypesByGroupOrder(allDeviceTypes);
         displayDefinitionsMap = sortDisplayDefinitionsByGroupOrder(displayDefinitionsMap);
@@ -162,6 +177,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         mav.addObject("allAttributes", allAttributes);
         mav.addObject("allTags", allTags);
         
+        mav.addObject("tagMap", tagMap);
         mav.addObject("displayDefinitionsMap", displayDefinitionsMap);
         
         return mav;
