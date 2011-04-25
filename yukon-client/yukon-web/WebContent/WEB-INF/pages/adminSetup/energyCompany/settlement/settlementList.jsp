@@ -6,11 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-
-<cti:standardPage module="adminSetup" page="settlement.${mode}">
-
-    <tags:setFormEditMode mode="${mode}"/>
+<cti:standardPage module="adminSetup" page="settlements.list">
 
     <div class="listContainer">
         <tags:boxContainer2 nameKey="settlements" >

@@ -1379,12 +1379,12 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
-                                    <page name="settlement.EDIT" type="DETAIL">
+                                    <page name="settlements.EDIT" type="DETAIL">
                                         <menu>energyCompanySetup|home</menu>
                                         <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}</link>
                                         <labelArgument>${settlementName}</labelArgument>

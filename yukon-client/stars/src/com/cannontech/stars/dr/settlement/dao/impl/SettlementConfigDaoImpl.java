@@ -1,8 +1,9 @@
 package com.cannontech.stars.dr.settlement.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -14,6 +15,7 @@ import com.cannontech.stars.util.SettlementConfigFuncs;
 public class SettlementConfigDaoImpl implements SettlementConfigDao {
 
     private DBPersistentDao dbPersistentDao;
+    private Logger log = YukonLogManager.getLogger(SettlementConfigDaoImpl.class);
     
     @Override
     public void save(LiteSettlementConfig liteSettlementConfig, int settlementYukonDefId, int settlementEntryId, int availRateListEntryId) {
@@ -36,7 +38,7 @@ public class SettlementConfigDaoImpl implements SettlementConfigDao {
     
     @Override
     public void delete(LiteSettlementConfig liteSettlementConfig) {
-        CTILogger.info("DELETEING RATE: " + liteSettlementConfig.getConfigID());
+        log.info("DELETEING RATE: " + liteSettlementConfig.getConfigID());
         SettlementConfig delSC = (SettlementConfig)LiteFactory.createDBPersistent(liteSettlementConfig);
         dbPersistentDao.performDBChange(delSC, TransactionType.DELETE);
     }

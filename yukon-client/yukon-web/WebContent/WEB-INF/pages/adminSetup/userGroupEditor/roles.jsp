@@ -12,54 +12,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="adminSetup" page="roles">
-<script>
-Event.observe(window, 'load', function() {
-    $$('.focusableFieldHolder input').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
-                inputField.addClassName('usingDefaultValue');
-                inputField.value = $F(defaultField);
-            }
-            inputField.up('tr').removeClassName('childHasFocus');
-        };
-        Event.observe(inputField, "focus", function(event) {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.value = "";
-            }
-            inputField.removeClassName('usingDefaultValue');
-            inputField.up('tr').addClassName('childHasFocus');
-        });
-        Event.observe(inputField, "blur", blurAndInitial);
-        blurAndInitial();
-    });
+    <cti:includeScript link="/JavaScript/cooper/ui/general.js"/>
 
-    <%-- handling select elements is similar, but requires slightly different code --%>
-    $$('.focusableFieldHolder select').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.addClassName('usingDefaultValue');
-            } else {
-                inputField.removeClassName('usingDefaultValue');
-            }
-        };
-        Event.observe(inputField, "change", blurAndInitial);
-        Event.observe(inputField, "focus", function(event) {
-            inputField.up('tr').addClassName('childHasFocus');
-            inputField.removeClassName('usingDefaultValue');
-        });
-        Event.observe(inputField, "blur", function(event) {
-            inputField.up('tr').removeClassName('childHasFocus');
-            blurAndInitial();
-        });
-        blurAndInitial();
-    });
-
-});
-
-</script>
     <form:form action="/spring/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="groupId" value="${groupId}">

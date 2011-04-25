@@ -37,7 +37,6 @@ public class SettlementController {
     public String list(YukonUserContext userContext, ModelMap modelMap, int ecId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        modelMap.addAttribute("mode", PageEditMode.VIEW);
         
         YukonSelectionList settlementTypes = 
             yukonListDao.findSelectionListByEnergyCompanyIdAndListName(energyCompanyInfoFragment.getEnergyCompanyId(), 
@@ -70,7 +69,7 @@ public class SettlementController {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         
         settlementService.saveSettlementDto(settlementDto, energyCompanyInfoFragment.getEnergyCompanyId(), settlementYukonDefId);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.settlement.settlementSaved"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.settlements.settlementSaved"));
         
         return "redirect:list";
     }

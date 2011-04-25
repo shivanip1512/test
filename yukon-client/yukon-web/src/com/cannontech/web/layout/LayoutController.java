@@ -68,6 +68,8 @@ public class LayoutController {
         builder.add("/JavaScript/yukonGeneral.js");
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");
+        } else {
+            builder.add("/JavaScript/basicLoggerStub.js");
         }
         builder.add("/JavaScript/CtiMenu.js");
         builder.add("/JavaScript/dataUpdater.js");

@@ -8,57 +8,13 @@
 
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 
-<cti:standardPage module="adminSetup" page="settlement.${mode}">
+<cti:standardPage module="adminSetup" page="settlements.${mode}">
+
     <tags:setFormEditMode mode="${mode}"/>
-
+    <cti:includeScript link="/JavaScript/cooper/ui/general.js"/>
+    
 <script>
-Event.observe(window, 'load', function() {
-    $$('.focusableFieldHolder input').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
-                inputField.addClassName('usingDefaultValue');
-                inputField.value = $F(defaultField);
-            }
-            inputField.up('tr').removeClassName('childHasFocus');
-        };
-        Event.observe(inputField, "focus", function(event) {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.value = "";
-            }
-            inputField.removeClassName('usingDefaultValue');
-            inputField.up('tr').addClassName('childHasFocus');
-        });
-        Event.observe(inputField, "blur", blurAndInitial);
-        blurAndInitial();
-    });
-
-    <%-- handling select elements is similar, but requires slightly different code --%>
-    $$('.focusableFieldHolder select').each(function(inputField) {
-        var blurAndInitial = function() {
-            var defaultField = inputField.up('span').next('input');
-            if ($F(inputField) == $F(defaultField)) {
-                inputField.addClassName('usingDefaultValue');
-            } else {
-                inputField.removeClassName('usingDefaultValue');
-            }
-        };
-        Event.observe(inputField, "change", blurAndInitial);
-        Event.observe(inputField, "focus", function(event) {
-            inputField.up('tr').addClassName('childHasFocus');
-            inputField.removeClassName('usingDefaultValue');
-        });
-        Event.observe(inputField, "blur", function(event) {
-            inputField.up('tr').removeClassName('childHasFocus');
-            blurAndInitial();
-        });
-        blurAndInitial();
-    });
-
-});
-
-function toggleAvailableRatesInputs(availableRatesCheckBox) {
+    function toggleAvailableRatesInputs(availableRatesCheckBox) {
 
     var parentTr = availableRatesCheckBox.up('tr');
     var rateConfigTrs = parentTr.nextSiblings();

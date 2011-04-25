@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.settlement.model.AvailableRate;
 import com.cannontech.stars.dr.settlement.model.SettlementDto;
 import com.cannontech.stars.dr.settlement.service.SettlementService;
 import com.cannontech.stars.util.SettlementConfigFuncs;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class SettlementServiceImpl implements SettlementService {
@@ -23,9 +24,7 @@ public class SettlementServiceImpl implements SettlementService {
     private SettlementConfigDao settlementConfigDao;
     private StarsDatabaseCache starsDatabaseCache;
     
-    
-    private List<String> nonEditableFieldNames = Lists.newArrayList(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
-    
+    private final List<String> nonEditableFieldNames = ImmutableList.of(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
     
     @Override
     public List<LiteSettlementConfig> getEditableConfigs(int yukonDefId) {
