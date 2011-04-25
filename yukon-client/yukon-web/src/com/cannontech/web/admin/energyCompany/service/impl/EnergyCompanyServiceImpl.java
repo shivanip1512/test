@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CommandExecutionException;
@@ -85,6 +86,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private RolePropertyDao rolePropertyDao;
     private SiteInformationDao siteInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private StarsEventLogService starsEventLogService;
     private YukonGroupDao yukonGroupDao;
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
@@ -305,7 +307,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     @Transactional
-    public void deleteEnergyCompany(int energyCompanyId) {
+    public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId) {
         if (energyCompanyId == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
@@ -335,6 +337,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
         
         deleteLoginGroupAndLogin(energyCompany, liteGroup);
+        
+        starsEventLogService.deleteEnergyCompany(user, energyCompany.getName());
     }
 
     /**
@@ -776,6 +780,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
     }
     
     @Autowired

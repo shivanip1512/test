@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CommandExecutionException;
@@ -58,6 +59,7 @@ public class GeneralInfoController {
     private GeneralInfoValidator generalInfoValidator;
     private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private StarsEventLogService starsEventLogService;
     private YukonGroupService yukonGroupService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private YukonUserDao yukonUserDao;
@@ -118,6 +120,8 @@ public class GeneralInfoController {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
         }
         
+        starsEventLogService.deleteEnergyCompanyAttemptedByOperator(user, fragment.getCompanyName());
+        
         // Check the csrf validation
         String errorCode = csrfTokenService.checkRequest(request);
         if(org.apache.commons.lang.StringUtils.isNotEmpty(errorCode)) {
@@ -126,7 +130,7 @@ public class GeneralInfoController {
             return "redirect:delete";
         }
 
-        energyCompanyService.deleteEnergyCompany(ecId);
+        energyCompanyService.deleteEnergyCompany(user, ecId);
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
         return "redirect:/spring/adminSetup/energyCompany/home";
@@ -383,6 +387,11 @@ public class GeneralInfoController {
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
     }
     
     @Autowired

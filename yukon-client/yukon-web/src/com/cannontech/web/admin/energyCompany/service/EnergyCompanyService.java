@@ -24,7 +24,7 @@ public interface EnergyCompanyService {
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId) 
     throws WebClientException, TransactionException, CommandExecutionException;
     
-    public void deleteEnergyCompany(int energyCompanyId);
+    public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId);
 
     /**
      * Takes an energy company id and returns

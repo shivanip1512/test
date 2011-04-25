@@ -7,6 +7,17 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface StarsEventLogService {
 
+/* Energy Company */
+    // Delete Energy Company
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.energyCompany")
+    public void deleteEnergyCompanyAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                       @Arg(ArgEnum.energyCompanyName) String yukonEnergyCompany);
+    
+    // Delete Energy Company service level
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.energyCompany")
+    public void deleteEnergyCompany(@Arg(ArgEnum.username) LiteYukonUser user,
+                                     @Arg(ArgEnum.energyCompanyName) String yukonEnergyCompany);
+    
 /* Energy Company Settings */
     // Default Route Changed service level
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "stars.energyCompanySettings")
