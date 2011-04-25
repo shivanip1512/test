@@ -15,8 +15,7 @@
     
     <cti:url var="clearURL" value="/spring/amr/phaseDetect/clear"/>
     <form action="/spring/amr/phaseDetect/clear" method="post">
-    <cti:msg key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle" var="sectionTitle"/>
-        <tags:sectionContainer title="${sectionTitle}">
+        <tags:sectionContainer2 nameKey="clearData">
 	        <table>
 	            <tr>
 	                <td style="vertical-align: top;">
@@ -42,13 +41,13 @@
 	                <td style="vertical-align: top;">
 	                    <div id="clearDiv">
 						    <c:if test="${not empty param.errorReason}">
-						        <span class="errorMessage"><b><i:inline key=".errorSending" arguments="${param.errorReason}"/></b></span>
+						        <span class="errorMessage"><b><i:inline key=".errorSendingClear" arguments="${param.errorReason}"/></b></span>
 						    </c:if>
 	                    </div>
 	                </td>
 	            </tr>
 	        </table>
-        </tags:sectionContainer>
+        </tags:sectionContainer2>
         <cti:button key="cancelTest" name="cancel" type="submit"/>
     </form>
 </cti:standardPage>

@@ -13,11 +13,12 @@
 	}
     
     function getReport(getReportUrl, redirectUrl) {
-        <cti:msg2 var="retrievingReport" key="yukon.web.modules.amr.highBill.retrievingReport" javaScriptEscape="true"/>
+        var retrievingReport = '<cti:msg2 key=".retrievingReport" javaScriptEscape="true"/>';
+        var getReportEscaped = '<cti:msg2  key=".getReport" javaScriptEscape="true"/>';
         // prettynessifier
         $('getReportProcessImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif';
         $('getReportProcessImg').show();
-        $('getReportButton').value = '${retrievingReport}';
+        $('getReportButton').value = retrievingReport;
         $('getReportButton').disable();
     
         // pluck start and end dates from the page
@@ -50,9 +51,8 @@
                     $('meterReadErrors').show();
                     $('meterReadErrors').update(transport.responseText);
                     
-                    <cti:msg2 var="getReport" key=".getReport" javaScriptEscape="true"/>
                     $('getReportProcessImg').hide();
-                    $('getReportButton').value = '${getReport}';
+                    $('getReportButton').value = getReportEscaped;
                     $('getReportButton').enable();
                 }
             },
@@ -63,7 +63,7 @@
                 $('meterReadErrors').update(transport.responseText);
                 
                 $('getReportProcessImg').hide();
-                $('getReportButton').value = '${getReport}';
+                $('getReportButton').value = getReportEscaped;
                 $('getReportButton').enable();
             }
             
@@ -101,7 +101,8 @@
                 <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
                 <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
-                <input type="button" id="getReportButton" value="${getReport}" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit"> 
+                
+                <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit"> 
                 <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
                     
@@ -246,20 +247,20 @@
                     <cti:param name="chartRange" value="${chartRange}"/>
                 </cti:url>
 
-                <a href="${preHbcArchivedDataReportUrl}"/><i:inline key=".fileFormatHtml"/></a>
+                <a href="${preHbcArchivedDataReportUrl}"/><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/> </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
             </c:if>
             
@@ -303,20 +304,20 @@
                     <cti:param name="chartRange" value="${chartRange}"/>
                 </cti:url>
                 
-                <a href="${postHbcArchivedDataReportUrl}"/><i:inline key=".fileFormatHtml"/></a>
+                <a href="${postHbcArchivedDataReportUrl}"/><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".dailyUsage"/></div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key=".fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 
                 
             </c:if>
@@ -327,14 +328,13 @@
         
         <%-- CREATE LM POINT --%>
         <c:otherwise>
-        
             <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
                 <cti:param name="deviceId" value="${deviceId}" />
                 <cti:param name="createLPPoint" value="true" />
             </cti:url>
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName><i:inline key=".isNotConfigured"/> 
+            <cti:deviceName var="deviceName" deviceId="${deviceId}"/>
+            <i:inline key=".isNotConfigured" arguments="${deviceName}"/> 
             <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="formSubmit">
-            
         </c:otherwise>
         </c:choose>
     

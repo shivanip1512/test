@@ -4,8 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="phaseDetect.results">
-    <cti:msg2 key="yukon.web.modules.amr.phaseDetect.step6.sectionTitle" var="sectionTitle"/>
-    <tags:sectionContainer title="${sectionTitle}">
+    <tags:sectionContainer2 nameKey="detectionResults">
         <table width="100%">
             <c:if test="${not empty cacheKey}">
                 <tr>
@@ -55,7 +54,7 @@
 					        </tags:boxContainer2>
                             <c:if test="${phaseACollection.deviceCount > 0}">
                                 <div id="phaseAActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseA.collectionActionLabel" class="small">
+                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseA.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseACollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseACollection}" />
@@ -98,7 +97,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${phaseBCollection.deviceCount > 0}">
                                 <div id="phaseBActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseB.collectionActionLabel" class="small">
+                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseB.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseBCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseBCollection}" />
@@ -141,7 +140,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${phaseCCollection.deviceCount > 0}">
                                 <div id="phaseCActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseC.collectionActionLabel" class="small">
+                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseC.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseCCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseCCollection}" />
@@ -197,7 +196,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCollection.deviceCount > 0}">
                                     <div id="phaseABActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseAB.collectionActionLabel" class="small">
+                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseAB.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseABCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseABCollection}" />
@@ -251,7 +250,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseACCollection.deviceCount > 0}">
                                     <div id="phaseACActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseAC.collectionActionLabel" class="small">
+                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseAC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseACCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseACCollection}" />
@@ -305,7 +304,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseBCCollection.deviceCount > 0}">
                                     <div id="phaseBCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseBC.collectionActionLabel" class="small">
+                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseBC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseBCCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseBCCollection}" />
@@ -372,7 +371,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCCollection.deviceCount > 0}">
                                     <div id="phaseABCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.phaseABC.collectionActionLabel" class="small">
+                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseABC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseABCCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseABCCollection}" />
@@ -395,7 +394,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${undefinedCollection.deviceCount > 0}">
                                 <div id="undefinedActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.undefined.collectionActionLabel" class="small">
+                                    <cti:link href="/spring/bulk/collectionActions" key=".undefined.collectionActionLabel" class="small">
                                         <cti:mapParam value="${undefinedCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${undefinedCollection}" />
@@ -422,7 +421,7 @@
                             </tags:boxContainer2>
                             <c:if test="${failureCollection.deviceCount > 0}">
                                 <div id="failureActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.phaseDetect.step6.failure.collectionActionLabel" class="small">
+                                    <cti:link href="/spring/bulk/collectionActions" key=".failure.collectionActionLabel" class="small">
                                         <cti:mapParam value="${failureCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
@@ -473,5 +472,5 @@
                 </td>
             </tr>
         </table>
-    </tags:sectionContainer>
+    </tags:sectionContainer2>
 </cti:standardPage>

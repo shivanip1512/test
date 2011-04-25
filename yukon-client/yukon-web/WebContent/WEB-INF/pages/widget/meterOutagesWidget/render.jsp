@@ -1,11 +1,12 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <ct:nameValueContainer>
   <ct:nameValue name="${attribute.description}">
     <c:if test="${not isBlinkConfigured}">
-    	Blink Count Accumulator Point is not configured.
+    	<i:inline key=".blinkCountNotConfigured"/>
 	</c:if>
   	<c:if test="${isBlinkConfigured}">
     	<ct:attributeValue device="${device}" attribute="${attribute}" />
@@ -15,15 +16,17 @@
 </ct:nameValueContainer>
 
 <div style="text-align: right">
-  <ct:widgetActionRefresh hide="${!readable}" method="read" label="Read Now" labelBusy="Reading"/>
+    <cti:msg2 var="readNow" key=".readNow"/>
+    <cti:msg2 var="reading" key=".reading"/>
+  <ct:widgetActionRefresh hide="${!readable}" method="read" label="${readNow}" labelBusy="${reading}"/>
 </div>
 <br>
 
 <c:if test="${isOutageSupported}">
-	<ct:nameValueContainer>
-	  <ct:nameValue name="Outages Last Retrieved">
+	<ct:nameValueContainer2>
+	  <ct:nameValue2 nameKey=".outagesLastRetrieved">
 	    <c:if test="${not isOutageConfigured}">
-	    	Outage Log Analog Point is not configured.
+	    	<i:inline key=".outageLogPointNotConfigured"/>
 	    </c:if>
 	    <c:if test="${isOutageConfigured}">
 	    	<c:if test="${data.readDate != null}">
@@ -31,21 +34,21 @@
 	        	${formattedReadDate}
 	        </c:if>
 	    </c:if>
-	  </ct:nameValue>
-	</ct:nameValueContainer>
+	  </ct:nameValue2>
+	</ct:nameValueContainer2>
 	
 	<div class="widgetInternalSection">
 	<table class="miniResultsTable">
 	  <tr>
-	  	<th>Log</th>
-	    <th>Time</th>
-	    <th>Duration</th>
+	  	<th><i:inline key=".log"/></th>
+	    <th><i:inline key=".time"/></th>
+	    <th><i:inline key=".duration"/></th>
 	  </tr>
 	  <c:if test="${empty data.outageData}">
 	    <c:forEach items="1">
 	      <tr class="<ct:alternateRow odd="" even="altRow"/>">
-	    	<td>n/a</td>
-	    	<td>n/a</td>
+	    	<td><i:inline key=".notApplicable"/></td>
+	    	<td><i:inline key=".notApplicable"/></td>
 	      </tr>
 	    </c:forEach>
 	  </c:if>
@@ -57,7 +60,7 @@
 			<cti:formatDate value="${outage.timestamp.pointDataTimeStamp}" type="BOTH" var="formattedTimestamp" />
 			${formattedTimestamp}
 		</td>
-		<td>${outage.duration }</td>
+		<td>${outage.duration}</td>
 	  </tr>
 	  </c:forEach>
 	  </c:if>

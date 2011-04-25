@@ -5,10 +5,10 @@
 
 <c:choose>
     <c:when test="${not empty errorMsg}">
-        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.results.errorRead"/>${errorMsg}</span>
+        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.errorRead"/>${errorMsg}</span>
     </c:when>
     <c:when test="${readCanceled}">
-        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.results.readCanceled"/></span>
+        <span class="errorMessage" style="font-weight: bold;"><i:inline key="yukon.web.modules.amr.phaseDetect.readCanceled"/></span>
     </c:when>
     <c:otherwise>
         <div style="float: left;padding-right: 10px;">
@@ -16,7 +16,7 @@
                 <table>
                     <tr>
                         <td style="vertical-align: middle;padding-top: 0px;">
-                            <cti:msg key="yukon.web.modules.amr.phaseDetect.step5.progressBarLabel" />:
+                            <cti:msg2 key="yukon.web.modules.amr.phaseDetect.progressBarLabel" />:
                         </td>
                         <td style="padding-top: 0px;">
                             <tags:updateableProgressBar totalCount="${totalCount}" countKey="PHASE_DETECT/${id}/RESULTS_COUNT" />
@@ -28,7 +28,7 @@
         </div>
         <div style="float: left;" id ="cancelReadDiv">
             <form action="/spring/amr/phaseDetect/cancelRead" method="get">
-                <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.results.cancelRead"/>
+                <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.cancelRead"/>
                 <input type="submit" value="${cancelRead}" <c:if test="${readComplete}">disabled</c:if> id="cancelReadButton">
             </form>
         </div>

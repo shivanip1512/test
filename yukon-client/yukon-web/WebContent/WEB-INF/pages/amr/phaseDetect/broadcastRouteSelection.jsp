@@ -26,22 +26,21 @@
 	</script>
     
     <form action="/spring/amr/phaseDetect/saveBroadcastRoutes" method="post">
-        <cti:msg key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle" var="sectionTitle"/>
-        <tags:sectionContainer title="${sectionTitle}">
+        <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
             <table style="padding-bottom: 5px;">
                 <tr>
                     <td valign="top" class="smallBoldLabel">
-                        <i:inline key="yukon.web.modules.amr.phaseDetect.step2.noteLabel"/>
+                        <i:inline key=".noteLabel"/>
                     </td>
                     <td style="font-size:11px;">
-                        <i:inline key="yukon.web.modules.amr.phaseDetect.step2.noteText"/>
+                        <i:inline key=".noteText"/>
                     </td>
                 </tr>
             </table>
             
             <div id="errorDiv" style="display: none;padding-bottom: 5px;">
-		        <span id="errorSpan" class="errorRed">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected"/>
+		        <span id="errorSpan" class="errorMessage">
+                    <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
             
@@ -65,7 +64,7 @@
                 </tbody>
             </table>
                 
-        </tags:sectionContainer>
+        </tags:sectionContainer2>
         <cti:button key="cancelTest" type="submit" name="cancel"/>
         <cti:button key="next" type="submit" id="nextButton"/>
     </form>

@@ -16,7 +16,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -25,11 +24,14 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -45,6 +47,8 @@ public class MoveInMoveOutController extends MultiActionController {
 
     private DateFormattingService dateFormattingService = null;
     private MeterDao meterDao = null;
+    private DeviceDao deviceDao = null;
+    private PaoLoadingService paoLoadingService = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
     private MoveInMoveOutService moveInMoveOutService = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
@@ -59,6 +63,7 @@ public class MoveInMoveOutController extends MultiActionController {
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveIn.jsp");
         Meter meter = getMeter(request);
+        SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
@@ -70,7 +75,7 @@ public class MoveInMoveOutController extends MultiActionController {
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
-        mav.addObject("deviceName", meter.getName());
+        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
         mav.addObject("currentDate", currentDateFormatted);
         
         // readable?
@@ -176,6 +181,7 @@ public class MoveInMoveOutController extends MultiActionController {
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveOut.jsp");
         Meter meter = getMeter(request);
+        SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
@@ -187,7 +193,7 @@ public class MoveInMoveOutController extends MultiActionController {
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
-        mav.addObject("deviceName", meter.getName());
+        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
         mav.addObject("currentDate", currentDateFormatted);
         
         // readable?
@@ -390,5 +396,15 @@ public class MoveInMoveOutController extends MultiActionController {
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
+    }
+
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
 }

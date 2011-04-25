@@ -45,7 +45,6 @@
     				$('noRouteSelectedErrorDiv').hide();
     				$('subWithNoRoutesSelectedErrorDiv').hide();
     				button.enable();
-    				button2.enable();
     			}
 			} else {
 			    /* If they have a sub selected show error msg */
@@ -63,15 +62,14 @@
 	</script>
 
     <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
-        <cti:msg key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle" var="sectionTitle"/>
-        <tags:sectionContainer title="${sectionTitle}">
+        <tags:sectionContainer2 nameKey="selectSubstation">
             <table style="padding-bottom: 5px;">
                 <tr>
                     <td valign="top" class="smallBoldLabel" style="padding-right: 5px;"><span class="errorMessage">
-                        <i:inline key="yukon.web.modules.amr.phaseDetect.step1.noteLabel"/>
+                        <i:inline key=".noteLabel"/>
                     </span></td>
                     <td style="font-size:11px;"><span>
-                        <i:inline key="yukon.web.modules.amr.phaseDetect.step1.noteText"/>
+                        <i:inline key=".noteText"/>
                     </span></td>
                 </tr>
             </table>
@@ -80,12 +78,12 @@
             <%-- Error Divs --%>
             <div id="noRouteSelectedErrorDiv" style="display: none;">
 		        <span id="errorSpan" class="errorMessage">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected"/>
+                    <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
             <div id="subWithNoRoutesSelectedErrorDiv" style="display: none;">
                 <span id="errorSpan" class="errorMessage">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.error.subWithNoRoutesSelected"/>
+                    <i:inline key=".subWithNoRoutesSelected"/>
                 </span>
             </div>
             
@@ -127,7 +125,7 @@
 	                </td>
 		        </tr>
 		    </table>
-        </tags:sectionContainer>
+        </tags:sectionContainer2>
         <cti:button id="nextButton" key="next" name="next" type="submit" disabled="true" />
 	</form>
 </cti:standardPage>

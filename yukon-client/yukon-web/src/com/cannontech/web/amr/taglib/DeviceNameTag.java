@@ -6,19 +6,23 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+//import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("deviceNameTagPrototype")
 public class DeviceNameTag extends YukonTagSupport {
     
 	private String var = null;
-    private DeviceDao deviceDao; 
+    private DeviceDao deviceDao;
+    private PaoLoadingService paoLoadingService = null;
     private int deviceId = 0;
     private boolean deviceIdSet = false;
     private SimpleDevice device = null;
@@ -40,7 +44,7 @@ public class DeviceNameTag extends YukonTagSupport {
                 formattedName = deviceDao.getFormattedName(getDeviceId());
                 
             } else {
-                formattedName = deviceDao.getFormattedName(getDevice());
+                formattedName = paoLoadingService.getDisplayablePao(device).getName();
                 deviceId = device.getDeviceId();
             }
             
@@ -83,5 +87,10 @@ public class DeviceNameTag extends YukonTagSupport {
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
 }

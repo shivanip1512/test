@@ -5,8 +5,7 @@
 <cti:standardPage module="amr" page="phaseDetect.testSettings">
 
     <form action="/spring/amr/phaseDetect/saveTestSettings" method="post">
-    <cti:msg key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle" var="sectionTitle"/>
-        <tags:sectionContainer title="${sectionTitle}">
+        <tags:sectionContainer2 nameKey="testParameters">
             <table style="padding-right: 20px;padding-bottom: 10px;">
                 <tr valign="top">
                     <td>
@@ -49,7 +48,7 @@
                     </td>
                 </tr>
             </table>
-        </tags:sectionContainer>
+        </tags:sectionContainer2>
         <cti:button key="cancel" type="submit" name="cancel"/>
         <cti:button key="next" type="submit" name="next"/>
     </form>

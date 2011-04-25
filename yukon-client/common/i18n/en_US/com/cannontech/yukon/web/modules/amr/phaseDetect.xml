@@ -3,6 +3,27 @@
 <properties>
      <!-- breadcrumb placeholder -->
     <entry key="yukon.web.modules.amr.phaseDetectProcessing.pageName">Phase Detection Processing</entry>
+
+    <!-- general definitions/errors -->
+    <entry key="yukon.web.modules.amr.phaseDetect.cancelTest.label">Cancel Test</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.next.label">Next</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.phaseA">A</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.phaseB">B</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.phaseC">C</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.reset">Reset</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.read">Read</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.send">Send</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.routeName">Route Name</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.progressBarLabel">Read Progress</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.clearSuccess">Clear Command Sent Successfully</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.errorRead">Error Sending Read Command:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.cancelRead">Cancel Read</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readCanceled">Read Canceled:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.errorSending">Error Sending Clear Command: {0}</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.noRouteSelected">You must select at least one route.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.subWithNoRoutesSelected">Select a substation with at least one route or assign routes to this substation using the Substation To Route Mappings feature in the MultiSpeak Setup section.</entry>
+    
     
     <!-- phaseDetect/home.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.home.pageName">Phase Detection Processing</entry>
@@ -12,20 +33,21 @@
     <entry key="yukon.web.modules.amr.phaseDetect.home.readBetweenTitle">Read phase data from meters in between phase detection tests for each phase.</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.home.readMetersBetweenTests">Read Meters Between Phase Detection Tests</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.home.substation">Substation</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle">Step 1: Select A Substation</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step1.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step1.noteText">Clicking next will start the test process.  Other users will not be able to start a test until this one is finished or canceled.  Use of the browser navigation buttons may result in an undesirable state 
+    <entry key="yukon.web.modules.amr.phaseDetect.home.selectSubstation.title">Step 1: Select A Substation</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.noteText">Clicking next will start the test process.  Other users will not be able to start a test until this one is finished or canceled.  Use of the browser navigation buttons may result in an undesirable state 
         of the phase detection process.  Please do not navigate using the browser back or forward buttons.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected">You must select at least one route.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.error.subWithNoRoutesSelected">Select a substation with at least one route or assign routes to this substation using the Substation To Route Mappings feature in the MultiSpeak Setup section.</entry>
-    
+    <!-- routes.jsp -->
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routeName">Route Name</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.pageDescription">Select Routes</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.devicesSelected">Devices Selected</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.deviceCount">Device Count</entry>
+
     <!-- phaseDetect/broadcastRouteSelection.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.pageName">Phase Detection</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.pageDescription">Select Routes</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.routeName">Route Name</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle">Step 2: Select Broadcast Routes</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step2.noteLabel">Instructions:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step2.noteText">Select the routes to broadcast the clear and phase detect commands on.  Some knowledge of your system's
+    <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.selectBroadcastRoutes.title">Step 2: Select Broadcast Routes</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.noteText">Select the routes to broadcast the clear and phase detect commands on.  Some knowledge of your system's
         route layout may be needed to understand which routes to not select to avoid redundant or unnecessary broadcasting commands.</entry>
     
     <!-- phaseDetect/clearPhaseData.jsp -->
@@ -34,8 +56,9 @@
     <entry key="yukon.web.modules.amr.phaseDetect.clearPhaseData.clearPhaseData">Clear Phase Data</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.clearPhaseData.errorSending">Error Sending Clear Command: {0}</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.clearPhaseData.substation">Substation</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle">Step 3: Clear Phase Data</entry>
-    
+    <entry key="yukon.web.modules.amr.phaseDetect.clearPhaseData.clearData.title">Step 3: Clear Phase Data</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.clearPhaseData.clearSuccess">Clear Command Sent Successfully</entry>
+
     <!-- phaseDetect/testSettings.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.testSettings.pageName">Phase Detection</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.testSettings.pageDescription">Test Settings</entry>
@@ -43,13 +66,13 @@
     <entry key="yukon.web.modules.amr.phaseDetect.testSettings.intervalLength">Interval Length</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.testSettings.deltaVoltage">Delta Voltage</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.testSettings.numOfIntervals">Number of Intervals</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle">Step 4 Test Parameters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.testSettings.testParameters.title">Step 4: Test Parameters</entry>
     
     <!-- phaseDetect/phaseTestPage.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.pageName">Phase Detection</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.pageDescription">Phase Detection Test</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.errorDetect">Error Sending Detect Command:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.errorRead">Error Sending Read Command:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.errorDetect">Error Sending Detect Command: {0}</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.errorRead">Error Sending Read Command: {0}</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.substation">Substation</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.intervalLength">Interval Length</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.deltaVoltage">Delta Voltage</entry>
@@ -62,19 +85,19 @@
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.reading">Reading</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.seconds">seconds</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.sendTest.phaseDetectResults.label">Phase Detect Results</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle">Step 5: Phase Detection Test</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.title">Step 5: Phase Detection Test</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.noteLabel">Instructions:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.progressLabel">Reading</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.progressBarLabel">Read Progress</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.phaseDetectionTest.title">Step 5: Phase Detection Test</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.progressLabel">Reading</entry>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
         For best results, step down one step on regulator right now and then up three steps after the timer expires that appears after 'Send' button is pressed.  After 
         voltage regulators are locked out press 'Send' when ready.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
-    
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.sendTest.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
+        
     <!-- phaseDetect/readBetweenPhaseTestPage.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.pageName">Phase Detection Test</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.section.title">Step 5: Phase Detection Test</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.pageDescription">Begin Test</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.resultsButton.label">Phase Detect Results</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.phaseDetectResults">Phase Detect Results</entry>
@@ -94,14 +117,19 @@
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.detectionTimer">Detection Timer</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.nextAction">Next Action</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.clearPhaseData">Clear Phase Data</entry>
-    
+    <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
+        For best results, step down one step on regulator right now and then up three steps after the timer expires that appears after 'Send' button is pressed.  After 
+        voltage regulators are locked out press 'Send' when ready.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.readBetweenPhaseTest.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
+        
         
     <!-- phaseDetect/phaseDetetResults.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.results.pageName">Phase Detection</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.pageDescription">Detection Results</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.results.errorRead">Error Sending Read Command:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.results.readCanceled">Read Canceled:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.results.cancelRead">Cancel Read</entry>
+    
+    
     <entry key="yukon.web.modules.amr.phaseDetect.results.exportCSV">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.metersDetectedA.title">Meters detected on phase A: {0}</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.metersDetectedB.title">Meters detected on phase B: {0}</entry>
@@ -124,29 +152,15 @@
     <entry key="yukon.web.modules.amr.phaseDetect.results.exportCsv">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry> 
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.sectionTitle">Step 6: Phase Detection Results</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseA.collectionActionLabel">Perform A Collection Action On Phase A Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseB.collectionActionLabel">Perform A Collection Action On Phase B Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseC.collectionActionLabel">Perform A Collection Action On Phase C Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseAB.collectionActionLabel">Perform A Collection Action On Phase AB Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseAC.collectionActionLabel">Perform A Collection Action On Phase AC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseBC.collectionActionLabel">Perform A Collection Action On Phase BC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseABC.collectionActionLabel">Perform A Collection Action On Phase ABC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.undefined.collectionActionLabel">Perform A Collection Action On Undefined Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step6.failure.collectionActionLabel">Perform A Collection Action On Failure Meters</entry>
-    
-    <!-- general/re-used key definitions -->
-    <entry key="yukon.web.modules.amr.phaseDetect.cancelTest.label">Cancel Test</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.next.label">Next</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseA">A</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseB">B</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseC">C</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.reset">Reset</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.read">Read</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.send">Send</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.errorSendingClear">Error Sending Clear Command: {0}</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.clearSuccess">Clear Command Sent Successfully</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.routeName">Route Name</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.detectionResults.title">Step 6: Phase Detection Results</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseA.collectionActionLabel">Perform A Collection Action On Phase A Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseB.collectionActionLabel">Perform A Collection Action On Phase B Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseC.collectionActionLabel">Perform A Collection Action On Phase C Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseAB.collectionActionLabel">Perform A Collection Action On Phase AB Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseAC.collectionActionLabel">Perform A Collection Action On Phase AC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseBC.collectionActionLabel">Perform A Collection Action On Phase BC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseABC.collectionActionLabel">Perform A Collection Action On Phase ABC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.undefined.collectionActionLabel">Perform A Collection Action On Undefined Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.failure.collectionActionLabel">Perform A Collection Action On Failure Meters</entry>
     
 </properties>

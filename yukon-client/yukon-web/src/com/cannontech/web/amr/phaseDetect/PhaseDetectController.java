@@ -38,6 +38,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -49,6 +50,8 @@ import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Iterables;
@@ -74,6 +77,7 @@ public class PhaseDetectController {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private CommandRequestExecutionDao commandRequestExecutionDao;
     private PaoDefinitionDao paoDefinitionDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @RequestMapping
     public String home(ModelMap model, String errorMsg) throws ServletException {
@@ -219,20 +223,29 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
-    public String testPage(ModelMap model) {
+    public String testPage(ModelMap model, YukonUserContext userContext) {
         List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectData().getSubstationId());
         if(phaseDetectService.getPhaseDetectState() == null){
             return "redirect:home"; /* Redirect to start page if no test is in progress */
         }
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String errorDetectMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorDetect",
+                                                                     phaseDetectService.getPhaseDetectResult().getErrorMsg());
+        String errorReadMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorRead",
+                                                                   phaseDetectService.getPhaseDetectResult().getErrorMsg());
+        
         model.addAttribute("data", phaseDetectService.getPhaseDetectData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
+        model.addAttribute("phases", Phase.values());
         Boolean readCanceled = phaseDetectService.getPhaseDetectState().isReadCanceled();
         CommandRequestExecutionIdentifier identifier = phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier();
         if(identifier != null){
             model.addAttribute("showReadProgress", Boolean.TRUE);
             model.addAttribute("readComplete", Boolean.valueOf(commandRequestExecutionDao.isComplete(identifier.getCommandRequestExecutionId())).toString());
             model.addAttribute("readCanceled", readCanceled);
-            model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
+            model.addAttribute("errorDetectMsg", errorDetectMessage );
+            model.addAttribute("errorReadMsg", errorReadMessage);
             model.addAttribute("id", phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier().getCommandRequestExecutionId());
             model.addAttribute("totalCount", devicesOnSub.size());
         } else {
@@ -649,4 +662,10 @@ public class PhaseDetectController {
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
     }
+
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+
 }

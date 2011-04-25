@@ -1,35 +1,39 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<tags:nameValueContainer altRowOn="true">
-	<tags:nameValue name="Device Name">${meter.name}</tags:nameValue>
-	<tags:nameValue name="Meter Number">${meter.meterNumber}</tags:nameValue>
-	<tags:nameValue name="Type">${deviceType}</tags:nameValue>
+<tags:nameValueContainer2>
+	<tags:nameValue2 nameKey=".deviceName">${meter.name}</tags:nameValue2>
+	<tags:nameValue2 nameKey=".meterNumber">${meter.meterNumber}</tags:nameValue2>
+	<tags:nameValue2 nameKey=".type">${deviceType}</tags:nameValue2>
     <c:if test="${showCarrierSettings}">
-    	<tags:nameValue name="Physical Address">
+    	<tags:nameValue2 nameKey=".physicalAddress">
         	<c:if test='${meter.address != null}'>${meter.address}</c:if>
-            <c:if test='${meter.address == null}'>n/a</c:if>
-        </tags:nameValue>
-    	<tags:nameValue name="Route">
+            <c:if test='${meter.address == null}'><i:inline key=".notApplicable"/></c:if>
+        </tags:nameValue2>
+    	<tags:nameValue2 nameKey=".route">
         	<c:if test='${meter.route != null}'>${meter.route}</c:if>
-            <c:if test='${meter.route == null}'>n/a</c:if>
-        </tags:nameValue>
+            <c:if test='${meter.route == null}'><i:inline key=".notApplicable"/></c:if>
+        </tags:nameValue2>
     </c:if>
     <c:if test="${showRFMeshSettings}">
-        <tags:nameValue name="Serial Number">${rfnMeter.meterIdentifier.sensorSerialNumber}</tags:nameValue>
-        <tags:nameValue name="Model">${rfnMeter.meterIdentifier.sensorModel}</tags:nameValue>
-        <tags:nameValue name="Manufacturer">${rfnMeter.meterIdentifier.sensorManufacturer}</tags:nameValue>
+        <tags:nameValue2 nameKey=".serialNumber">${rfnMeter.meterIdentifier.sensorSerialNumber}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".model">${rfnMeter.meterIdentifier.sensorModel}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".manufacturer">${rfnMeter.meterIdentifier.sensorManufacturer}</tags:nameValue2>
     </c:if>
-	<tags:nameValue name="Status">
-	<c:if test='${meter.disabled}'><span style="font-weight:bold;color:#CC0000;">Disabled</span></c:if>
-    <c:if test='${!meter.disabled}'><span style="font-weight:bold;color:#006633;">Enabled</span></c:if>
-    </tags:nameValue>
-</tags:nameValueContainer>
+	<tags:nameValue2 nameKey=".status">
+	<c:if test='${meter.disabled}'><span style="font-weight:bold;color:#CC0000;"><i:inline key=".disabled"/></span></c:if>
+    <c:if test='${!meter.disabled}'><span style="font-weight:bold;color:#006633;"><i:inline key=".enabled"/></span></c:if>
+    </tags:nameValue2>
+</tags:nameValueContainer2>
 
 <c:if test="${supportsPing}">
     <br>
     <div id="${widgetParameters.widgetId}_results"></div>
     <div style="text-align: right">
-    	<tags:widgetActionUpdate method="ping" label="Ping" labelBusy="Pinging" container="${widgetParameters.widgetId}_results" />
+    <cti:msg2 var="pingMsg" key=".ping"/>
+    <cti:msg2 var="pingingMsg" key=".pinging"/>
+    	<tags:widgetActionUpdate method="ping"  label="${pingMsg}" labelBusy="${pingingMsg}" container="${widgetParameters.widgetId}_results" />
     </div>
 </c:if>

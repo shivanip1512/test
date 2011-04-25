@@ -41,6 +41,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.CachingPointFormattingService;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -62,6 +63,7 @@ public class MeterController extends MultiActionController {
     private DeviceDao deviceDao = null;
     private PointDao pointDao = null;
     private PointService pointService = null;
+    private PaoLoadingService paoLoadingService = null;
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
@@ -96,6 +98,11 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setPointService(PointService pointService) {
         this.pointService = pointService;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
     
     @Autowired
@@ -260,7 +267,7 @@ public class MeterController extends MultiActionController {
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         mav.addObject("deviceId", deviceId);
-        mav.addObject("deviceName", deviceDao.getFormattedName(device));
+        mav.addObject("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
         
         // do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);

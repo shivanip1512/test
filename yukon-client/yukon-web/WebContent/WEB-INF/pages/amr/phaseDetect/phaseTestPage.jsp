@@ -6,13 +6,11 @@
 <cti:standardPage module="amr" page="phaseDetect.sendTest">
 
     <script type="text/javascript">
-    var errorDetectMsg = '<cti:msg2 key=".errorDetect" javaScriptEscape="true"/>';
-    var errorReadMsg = '<cti:msg2 key=".errorRead" javaScriptEscape="true"/>';
     var readingMsg = '<cti:msg2 key=".reading" javaScriptEscape="true"/>';
     var sendMsg = '<cti:msg2 key=".send" javaScriptEscape="true"/>';
     
     function sendDetect() {
-            $('sendDetectButton').value = 'Sending';
+            $('sendDetectButton').value = sendMsg;
             $('sendDetectButton').disable();
             $('actionResultDiv').hide();
             $('spinner').show();
@@ -24,9 +22,9 @@
                 parameters: params,
                 onSuccess: function(resp, json) {
                     $('complete').value = json.complete;
-                    if(json.errorOccurred){
+                   if(json.errorOccurred){
                     	$('spinner').hide();
-                    	$('actionResultDiv').innerHTML = errorDetectMsg + ' ' + json.errorMsg;
+                    	$('actionResultDiv').innerHTML = errorDetectMsg;
                         $('actionResultDiv').show();
                         $('sendDetectButton').value = sendMsg;
                         $('sendDetectButton').enable();
@@ -39,7 +37,7 @@
                 },
                 onException: function(resp, json) {
                 	$('spinner').hide();
-                    $('actionResultDiv').innerHTML = errorDetectMsg + ' ' + json.errorMsg;
+                	$('actionResultDiv').innerHTML = errorDetectMsg;
                     $('actionResultDiv').show();
                     $('sendDetectButton').value = sendMsg;
                     $('sendDetectButton').enable();
@@ -105,11 +103,11 @@
 		            	$('readButton').value = readingMsg;
                         $('readButton').disable();
 		            } else {
-		            	$('actionResultDiv').innerHTML = errorReadMsg + ' ' + json.errorMsg;
+		            	$('actionResultDiv').innerHTML = errorReadMsg;
 		            }
 	            },
 	            onException: function(resp, json) {
-                    $('actionResultDiv').innerHTML = errorReadMsg + ' ' + json.errorMsg;
+                    $('actionResultDiv').innerHTML = errorReadMsg;
                 }
             });
         }
@@ -123,13 +121,12 @@
     <c:set var="testStep" value="${state.testStep}"/>
     <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
-    <cti:msg key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle" var="sectionTitle"/>
-    <tags:sectionContainer title="${sectionTitle}">
+    <tags:sectionContainer2 nameKey="phaseDetectionTest">
         <table>
             <tr>
-                <td valign="top" class="smallBoldLabel"><i:inline key="yukon.web.modules.amr.phaseDetect.step5.noteLabel"/></td>
+                <td valign="top" class="smallBoldLabel"><i:inline key=".noteLabel"/></td>
                 <td style="font-size:11px;">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.step5.noteText"/>
+                    <i:inline key=".noteText"/>
                 </td>
             </tr>
         </table>
@@ -148,20 +145,20 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phase">
                 <select id="phase" name="phase">
-                    <option value="A"><i:inline key=".phaseA"/></option>
-                    <option value="B"><i:inline key=".phaseB"/></option>
-                    <option value="C"><i:inline key=".phaseC"/></option>
+                    <c:forEach var="phase" items="${phases}">
+                        <option value="${phase}"><cti:msg2 key="${phase}"/></option>
+                    </c:forEach>
                 </select>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phaseDetectSent">
                 <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseA"/></font>
+                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
                 </span>
                 <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseB"/></font>
+                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
                 </span>
                 <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseC"/></font>
+                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalTimer">
@@ -170,7 +167,7 @@
                         <span id="intervalTimerSpan">${data.intervalLength}</span>
                     </font>
                     &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="intervalTimerNote" style="display: none;">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.step5.voltIntervalNote"/></span>
+                    <i:inline key=".voltIntervalNote"/></span>
                 </b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".detectionTimer">
@@ -179,7 +176,7 @@
                         <span id="detectTimerSpan">${data.intervalLength * data.numIntervals}</span>
                     </font>
                     &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="detectTimerNote" style="display: none;">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.step5.voltDetectNote"/></span>
+                    <i:inline key=".voltDetectNote"/></span>
                 </b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".nextAction">
@@ -200,7 +197,7 @@
                 </div>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-    </tags:sectionContainer>
+    </tags:sectionContainer2>
     <br>
     <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
         <cti:button key="cancelTest" name="cancel" type="submit"/>

@@ -21,10 +21,10 @@
 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
 
-    <cti:msg key="yukon.web.deviceGroups.widget.groupTree.title" var="addDeviceTitle"/>
-    <cti:msg key="yukon.web.deviceGroups.widget.groupTree.submitButtonText" var="submitText"/>
-    <cti:msg key="yukon.web.deviceGroups.widget.groupTree.closeButtonText" var="closeText"/>
-    <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+    <cti:msg2 key="yukon.web.deviceGroups.widget.groupTree.title" var="addDeviceTitle"/>
+    <cti:msg2 key="yukon.web.deviceGroups.widget.groupTree.submitButtonText" var="submitText"/>
+    <cti:msg2 key="yukon.web.deviceGroups.widget.groupTree.closeButtonText" var="closeText"/>
+    <cti:msg2 var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
 
     <br>
     <input type="button" id="showPopupButton" value="${addDeviceTitle}" class="formSubmit"/>

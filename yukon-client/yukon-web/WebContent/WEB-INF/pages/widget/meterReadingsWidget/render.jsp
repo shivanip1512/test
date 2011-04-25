@@ -1,6 +1,7 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <cti:url var="previousReadingOptionsUrl"
     value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
@@ -9,12 +10,12 @@
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
 	            <ct:nameValue name="${attribute.description}">
-				    unsupported
+				    <i:inline key=".unsupported"/>
         		</ct:nameValue>
 			</c:when>
 	        <c:when test="${not existingAttributes[attribute]}">
     			<ct:nameValue name="${attribute.description}">
-			    not configured
+			        <i:inline key=".notConfigured"/>
 	    		</ct:nameValue>
     		</c:when>
             <c:otherwise>
@@ -24,7 +25,8 @@
 				</ct:nameValue>
 
                 <c:if test="${attribute == 'USAGE'}">
-                    <ct:nameValue name="Previous Usage Reading">
+                    <cti:msg2 var="previousUsage" key=".previousUsage"/>
+                    <ct:nameValue name="${previousUsage}">
                         <select
                             onChange="${widgetParameters.widgetId}_usageSelection()"
                             id="${widgetParameters.widgetId}_prevSelect">
@@ -32,7 +34,8 @@
                         </select>
                     </ct:nameValue>
 
-                    <ct:nameValue name="Total Consumption">
+                    <cti:msg2 var="totalConsumption" key=".totalConsumption"/>
+                    <ct:nameValue name="${totalConsumption}">
                         <div id="${widgetParameters.widgetId}_totalConsumption"></div>
                     </ct:nameValue>
                 </c:if>
@@ -105,6 +108,8 @@ ${widgetParameters.widgetId}_updateDifference();
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-	<ct:widgetActionUpdate hide="${!readable}" method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
+<cti:msg2 var="readNow" key=".readNow"/>
+<cti:msg2 var="reading" key=".reading"/>
+	<ct:widgetActionUpdate hide="${!readable}" method="read" label="${readNow}" labelBusy="${reading}" container="${widgetParameters.widgetId}_results"/>
 </div>
 

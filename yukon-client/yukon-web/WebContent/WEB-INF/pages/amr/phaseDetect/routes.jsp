@@ -4,20 +4,20 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:if test="${show}">
-    <tags:nameValueContainer>
-        <tags:nameValue name="Devices Selected" nameColumnWidth="150px">${currentSubstation}</tags:nameValue>
-        <tags:nameValueGap gapHeight="3px"/>
-        <tags:nameValue name="Device Count" nameColumnWidth="150px">${deviceCount}</tags:nameValue>
-    </tags:nameValueContainer>
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey="yukon.web.modules.amr.phaseDetect.home.devicesSelected">${currentSubstation}</tags:nameValue2>
+        <tags:nameValueGap2 gapHeight="3px"/>
+        <tags:nameValue2 nameKey="yukon.web.modules.amr.phaseDetect.home.deviceCount">${deviceCount}</tags:nameValue2>
+    </tags:nameValueContainer2>
     <br>
     <table class="resultsTable" style="padding-top: 5px;">
         <thead>
             <tr>
                 <th nowrap="nowrap">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.routeName"/>
+                    <i:inline key="yukon.web.modules.amr.phaseDetect.home.routeName"/>
                 </th>
                 <th>
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.devices"/>
+                    <i:inline key="yukon.web.modules.amr.phaseDetect.home.pageDescription"/>
                 </th>
             </tr>
         </thead>

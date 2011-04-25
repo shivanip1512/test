@@ -9,7 +9,6 @@
         
         <tr>
             <td class="widgetColumnCell" valign="top">
-            
                 <c:if test="${lpSupported}">
                     <ct:widget bean="profileWidget" />
                 </c:if>

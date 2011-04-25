@@ -26,7 +26,7 @@
                 onSuccess: function(resp, json) {
                     if(json.errorOccurred){
                         $('spinner').hide();
-                        $('actionResultDiv').innerHTML = errorDetectMsg + ' ' + json.errorMsg;
+                        $('actionResultDiv').innerHTML = errorDetectMessage;
                         $('actionResultDiv').show();
                         $('sendDetectButton').value = sendMsg;
                         $('sendDetectButton').enable();
@@ -39,7 +39,7 @@
                 },
                 onException: function(resp, json) {
                     $('spinner').hide();
-                    $('actionResultDiv').innerHTML = errorDetectMsg + ' ' + json.errorMsg;
+                    $('actionResultDiv').innerHTML = errorDetectMessage;
                     $('actionResultDiv').show();
                     $('sendDetectButton').value = sendMsg;
                     $('sendDetectButton').enable();
@@ -106,11 +106,11 @@
                         }
                     } else {
                     	$('actionResultDiv').show();
-                    	$('actionResultDiv').innerHTML = errorReadMsg + ' ' + json.errorMsg;
+                    	$('actionResultDiv').innerHTML = errorReadMessage;
                     }
 	            },
 	            onException: function(resp, json) {
-	                $('actionResultDiv').innerHTML = errorReadMsg + ' ' + json.errorMsg;
+	                $('actionResultDiv').innerHTML = errorReadMessage;
 	                $('actionResultDiv').show();
 	            }
             });
@@ -147,12 +147,11 @@
         }
     </script>
     
-    <cti:msg key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle" var="sectionTitle"/>
-    <tags:sectionContainer title="${sectionTitle}">
+    <tags:sectionContainer2 nameKey="section">
         <table>
             <tr>
-                <td valign="top" class="smallBoldLabel"><i:inline key="yukon.web.modules.amr.phaseDetect.step5.noteLabel"/></td>
-                 <td style="font-size:11px;"><i:inline key="yukon.web.modules.amr.phaseDetect.step5.noteText"/></td>
+                <td valign="top" class="smallBoldLabel"><i:inline key=".noteLabel"/></td>
+                 <td style="font-size:11px;"><i:inline key=".noteText"/></td>
             </tr>
         </table>
         <tags:nameValueContainer2>
@@ -170,31 +169,31 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phase">
                 <select id="phase" name="phase">                    
-                    <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A"><i:inline key=".phaseA"/></option>
-                    <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B"><i:inline key=".phaseB"/></option>
-                    <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C"><i:inline key=".phaseC"/></option>
+                    <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A"><cti:msg2 key="${phases[0]}"/></option>
+                    <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B"><cti:msg2 key="${phases[1]}"/></option>
+                    <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C"><cti:msg2 key="${phases[2]}"/></option>
                 </select>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phaseDetectSent">
                 <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseA"/></font>
+                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
                 </span>
                 <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseB"/></font>
+                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
                 </span>
                 <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseC"/></font>
+                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phasesRead">
                 <b><span id="readA" style="padding-right: 3px;<c:if test="${!state.phaseARead}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseA"/></font>
+                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
                 </span>
                 <span id="readB" style="padding-right: 3px;<c:if test="${!state.phaseBRead}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseB"/></font>
+                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
                 </span>
                 <span id="readC" style="padding-right: 3px;<c:if test="${!state.phaseCRead}">display: none;</c:if>">
-                    <font color="green"><i:inline key=".phaseC"/></font>
+                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalTimer">
@@ -203,7 +202,7 @@
                         <span id="intervalTimerSpan">${data.intervalLength}</span>
                     </font>
                     &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="intervalTimerNote" style="display: none;">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.step5.voltIntervalNote"/></span>
+                    <i:inline key=".voltIntervalNote"/></span>
                 </b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".detectionTimer">
@@ -212,12 +211,13 @@
                         <span id="detectTimerSpan">${data.intervalLength * data.numIntervals}</span>
                     </font>
                     &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="detectTimerNote" style="display: none;">
-                    <i:inline key="yukon.web.modules.amr.phaseDetect.step5.voltDetectNote"/></span>
+                    <i:inline key=".voltDetectNote"/></span>
                 </b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".nextAction">
                 <cti:msg2 var="send" key=".send"/>
                 <cti:msg2 var="read" key=".read"/>
+                <cti:msg2 var="reset" key=".reset"/>
                 <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
                 <c:set var="testStep" value="${state.testStep}"/>
             
@@ -226,7 +226,7 @@
                     <input type="button" id="sendDetectButton" <c:if test="${testStep != 'send'}">style="display: none;"</c:if> value="${send}" onclick="sendDetect();">
                     <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="${read}" onclick="sendRead();">
                     <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="${clearPhaseData}" onclick="sendClearCommand();">
-                    <input type="button" id="resetButton" style="display: none;" value="Reset" onclick="reset();">
+                    <input type="button" id="resetButton" style="display: none;" value="${reset}" onclick="reset();">
                     <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
@@ -236,7 +236,7 @@
                 </div>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-    </tags:sectionContainer>
+    </tags:sectionContainer2>
     <br>
     <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
         <cti:button key="cancel" name="cancel" type="submit"/>
