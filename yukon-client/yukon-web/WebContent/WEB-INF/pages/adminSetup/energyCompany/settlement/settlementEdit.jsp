@@ -45,8 +45,6 @@
 Event.observe(window, 'load', function() {
     var availableRateCheckBoxTds = $$(".availableRateCheckBoxTd");
 
-    console.log(availableRateCheckBoxTds);
-
     for (var i = 0; i < availableRateCheckBoxTds.length; i++) {
         var availableRateCheckBoxTd = availableRateCheckBoxTds[i];
 
