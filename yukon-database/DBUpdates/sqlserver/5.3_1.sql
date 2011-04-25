@@ -168,13 +168,27 @@ BEGIN
             commerrors, protocolerrors, systemerrors 
     FROM DynamicPAOStatisticsOld 
     WHERE StatisticType IN ('Lifetime', 'Monthly', 'Daily');
-    
+END
+ELSE
+BEGIN
+    SELECT 'YUK-9647 has been run in a previous update script, 5.2_7.sql.  Skipping this update script.';
+END 
+GO
+/* @end-block */
+
+/* @start-block */
+/* @start-block */
+IF EXISTS (SELECT 1 
+           FROM sysobjects 
+           WHERE xtype='u' AND name='DynamicPAOStatisticsHistory')
+BEGIN
+
     /* @start-block */
     DECLARE 
         @maxId NUMERIC; 
     BEGIN
-        SELECT @maxId = MAX(DynamicPaoStatisticsId)
-        FROM DynamicPaoStatistics; 
+        SELECT @maxId = MAX(DPS.DynamicPAOStatisticsId)
+        FROM DynamicPAOStatistics DPS; 
 
         INSERT INTO DynamicPAOStatistics 
         SELECT @maxId + ROW_NUMBER() OVER (ORDER BY PAObjectId, DateOffset), PAObjectId, 
