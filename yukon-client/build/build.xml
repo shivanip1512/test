@@ -232,13 +232,13 @@
 
     <property name="spring-download" value="${java.io.tmpdir}/spring-download" />
     <property name="version" value="3.0.5" />
-    <target name="spring-download">
+    <target name="spring-download" description="Download the Spring JARs corresponding to the hard-coded version.">
         <copy todir="${spring-download}" flatten="true">
             <url url="http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-${version}.RELEASE.zip" />
         </copy>
     </target>
 
-    <target name="spring-install">
+    <target name="spring-install" description="Rename and install the Spring JARs downloaded by the previous step into the third-party directory.">
         <copy todir="${third-party}">
             <restrict>
                 <archives>
@@ -255,7 +255,7 @@
         </copy>
     </target>
 
-    <target name="update-spring" depends="spring-download, spring-install">
+    <target name="update-spring" depends="spring-download, spring-install" description="Update Spring JARs in third-party for the hard-coded version.">
     </target>
 
 </project>
