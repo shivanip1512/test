@@ -11,14 +11,11 @@ public class AvailableRate {
     private List<LiteSettlementConfig> rateConfigurations;
     
     public AvailableRate(){}
-    public AvailableRate(int entryId, String avaiableRateName, List<LiteSettlementConfig> rateConfigurations) {
+    public AvailableRate(int entryId, String avaiableRateName, List<LiteSettlementConfig> rateConfigurations, boolean enabled) {
         this.entryId = entryId;
         this.availableRateName = avaiableRateName;
         this.rateConfigurations = rateConfigurations;
-        if (rateConfigurations.size() > 0) {
-            this.enabled = rateConfigurations.get(0).getRefEntryID() > 0;
-        }
-
+        this.enabled = enabled;
     }
     
     public int getEntryId() {

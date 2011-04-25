@@ -49,7 +49,12 @@ public class SettlementServiceImpl implements SettlementService {
         for (YukonListEntry yukonListEntry : allAvailRateSchedules) {
             List<LiteSettlementConfig> rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukonDefId, yukonListEntry.getEntryID());
 
-            AvailableRate availableRate = new AvailableRate(yukonListEntry.getEntryID(), yukonListEntry.getEntryText(), rateConfigs);
+            boolean enabled = false;
+            if (rateConfigs.size() > 0) {
+                enabled = rateConfigs.get(0).getRefEntryID() > 0;
+            }
+
+            AvailableRate availableRate = new AvailableRate(yukonListEntry.getEntryID(), yukonListEntry.getEntryText(), rateConfigs, enabled);
             availableRates.add(availableRate);
         }
 
