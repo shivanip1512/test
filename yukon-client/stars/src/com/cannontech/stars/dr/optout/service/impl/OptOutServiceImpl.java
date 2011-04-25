@@ -673,17 +673,17 @@ public class OptOutServiceImpl implements OptOutService {
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
 		Instant startDate = new Instant(0);
 
-		// The account either does not have a login or is not apart of the Residential Customer Role.
-		// Use no limits since we can't obtain a limit.
-		if(userId != UserUtils.USER_DEFAULT_ID ||
-		   rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
-			OptOutLimit currentOptOutLimit = getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
-			if(currentOptOutLimit != null) {
-				optOutLimit = currentOptOutLimit.getLimit();
-				startDate = currentOptOutLimit.getOptOutLimitStartDate(energyCompanyTimeZone);
-			}
-		}
-		
+        // If the account has a login and is a member of the Residential Customer Role, load its limits
+        if(userId != UserUtils.USER_DEFAULT_ID &&
+           rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
+            
+            OptOutLimit currentOptOutLimit = getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
+            if(currentOptOutLimit != null) {
+                optOutLimit = currentOptOutLimit.getLimit();
+                startDate = currentOptOutLimit.getOptOutLimitStartDate(energyCompanyTimeZone);
+            }
+        }
+        
 		// Get the number of opt outs used from the start of the limit (if there is a limit)
 		// till now
 		Integer usedOptOuts = optOutEventDao.getNumberOfOptOutsUsed(inventoryId, customerAccountId, startDate, new Instant());
@@ -1000,8 +1000,7 @@ public class OptOutServiceImpl implements OptOutService {
         int userId = contact.getLoginID();
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 	    
-        // The account either does not have a login or is not apart of the Residential Customer Role.
-        // Use no limits since we can't obtain a limit.
+        // If the account has a login and is a member of the Residential Customer Role, load its limits
         if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
            rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
 		    
