@@ -184,6 +184,7 @@ echo ^| Build version: %build_version%
 echo ^| Build details: %build_version_details%
 echo ^| Build mode   : %build_mode%
 echo ^|
+echo ^| Hudson BUILD_ID: %BUILD_ID%
 
 if not exist %yukonoutput% md %yukonoutput%
 cd %build_directory%
