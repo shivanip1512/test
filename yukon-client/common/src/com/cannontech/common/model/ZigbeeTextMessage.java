@@ -14,8 +14,8 @@ public class ZigbeeTextMessage {
     private int inventoryId;
     private int gatewayId;
     private boolean confirmationRequired;
-    private Duration displayDuration = Duration.standardMinutes(2);
-    private Instant startTime = new Instant();
+    private Duration displayDuration;
+    private Instant startTime;
     
     public String getMessage() {
         return message;

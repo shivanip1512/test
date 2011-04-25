@@ -68,51 +68,54 @@ function changeOut(oldId, isMeter) {
     form.submit();
     return true;
 }
+
+function sendTextMsg() {
+    combineDateAndTimeFields('startTime');
+    return true;
+}
 </script>
-    
-    <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
-        <input type="hidden" name="accountId" value="${accountId}">
-        <input type="hidden" name="newInventoryId" id="newInventoryId">
-        <input type="hidden" name="oldInventoryId" id="oldInventoryId">
-        <input type="hidden" name="isMeter" id="isMeter">
-        <input type="hidden" name="redirect" value="view">
-    </form>
-    
-    <c:if test="${showTextMessageAction}">
-        <!-- Send Text Message Popup -->
-        <tags:setFormEditMode mode="${editMode}"/>
-        <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup">
-            <form:form action="sendTextMessage" commandName="textMessage" method="post">
-                <form:hidden path="accountId"/>
-                <form:hidden path="inventoryId"/>
-                <form:hidden path="gatewayId"/>
-                <tags:textarea rows="6" cols="60" path="message"/>
-                <tags:nameValueContainer2>
-                    <tags:checkboxNameValue nameKey=".confirmationRequired" path="confirmationRequired"/>
-                    <tags:nameValue2 nameKey=".displayDuration">
-                        <form:select path="displayDuration">
-                            <c:forEach var="duration" items="${durations}">
-                                <cti:formatDuration type="DHMS_REDUCED" value="${duration.millis}" var="durationLabel"/>
-                                <form:option value="${duration}" label="${durationLabel}"/>
-                            </c:forEach>
-                        </form:select>
-                    </tags:nameValue2>
-                    
-                    <%--<tags:selectNameValue nameKey=".displayDuration" items="${durations}" path="displayDuration"/> --%>
-                    
-                    <tags:nameValue2 nameKey=".startTime">
-                        <tags:dateTimeInput path="startTime" inline="true" fieldValue="${textMessage.startTime}"/>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-                <div class="actionArea">
-                    <cti:button key="send" type="submit"/>
-                    <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
-                </div>
-            </form:form>
-        </i:simplePopup>
-        <tags:setFormEditMode mode="${mode}"/>
-    </c:if>
-    
+    <cti:displayForPageEditModes modes="VIEW">
+        <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+            <input type="hidden" name="accountId" value="${accountId}">
+            <input type="hidden" name="newInventoryId" id="newInventoryId">
+            <input type="hidden" name="oldInventoryId" id="oldInventoryId">
+            <input type="hidden" name="isMeter" id="isMeter">
+            <input type="hidden" name="redirect" value="view">
+        </form>
+        
+        <c:if test="${showTextMessageAction}">
+            <!-- Send Text Message Popup -->
+            <tags:setFormEditMode mode="${editMode}"/>
+            <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup" showImmediately="${textMessageError}">
+                <form:form action="sendTextMessage" commandName="textMessage" method="post" onsubmit="return sendTextMsg()">
+                    <form:hidden path="accountId"/>
+                    <form:hidden path="inventoryId"/>
+                    <form:hidden path="gatewayId"/>
+                    <tags:nameValueContainer2>
+                        <tags:textareaNameValue nameKey=".message" rows="1" cols="21" path="message" />
+                        <tags:checkboxNameValue nameKey=".confirmationRequired" path="confirmationRequired"/>
+                        <tags:nameValue2 nameKey=".displayDuration">
+                            <form:select path="displayDuration">
+                                <c:forEach var="duration" items="${durations}">
+                                    <cti:formatDuration type="DHMS_REDUCED" value="${duration.millis}" var="durationLabel"/>
+                                    <form:option value="${duration}" label="${durationLabel}"/>
+                                </c:forEach>
+                            </form:select>
+                        </tags:nameValue2>
+                        
+                        <tags:nameValue2 nameKey=".startTime">
+                            <tags:dateTimeInput path="startTime" inline="true" fieldValue="${textMessage.startTime}"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <div class="actionArea">
+                        <cti:button key="send" type="submit" styleClass="f_blocker"/>
+                        <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
+                    </div>
+                </form:form>
+            </i:simplePopup>
+            <tags:setFormEditMode mode="${mode}"/>
+        </c:if>
+    </cti:displayForPageEditModes>
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">

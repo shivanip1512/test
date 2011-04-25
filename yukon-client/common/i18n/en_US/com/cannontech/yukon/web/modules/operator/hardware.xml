@@ -95,6 +95,7 @@
     <entry key="yukon.web.modules.operator.hardware.firmwareVersion">Firmware Version</entry>
     <entry key="yukon.web.modules.operator.hardware.zigbeeStatus">ZigBee Status</entry>
     <entry key="yukon.web.modules.operator.hardware.connectionStatus">Connection Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.message">Message</entry>
     <entry key="yukon.web.modules.operator.hardware.confirmationRequired">Confirmation Required</entry>
     <entry key="yukon.web.modules.operator.hardware.displayDuration">Display Duration</entry>
     <entry key="yukon.web.modules.operator.hardware.startTime">Scheduled Start Time</entry>

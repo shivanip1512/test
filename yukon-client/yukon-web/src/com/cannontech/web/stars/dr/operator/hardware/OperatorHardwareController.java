@@ -51,6 +51,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -95,6 +96,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -139,6 +142,8 @@ public class OperatorHardwareController {
     private ZigbeeWebService zigbeeWebService;
     private ZigbeeDeviceService zigbeeDeviceService;
     private InventoryDao inventoryDao;
+
+    private DatePropertyEditorFactory datePropertyEditorFactory;
         
     /* HARDWARE LIST PAGE */
     @RequestMapping
@@ -295,9 +300,28 @@ public class OperatorHardwareController {
                        AccountInfoFragment fragment, 
                        int inventoryId) {
         
+        hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
+        
+        HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, fragment.getEnergyCompanyId(), fragment.getAccountId());
+        
+        model.addAttribute("hardwareDto", hardwareDto);
+        
+        if (hardwareDto.getHardwareType().isGateway()) {
+            ZigbeeTextMessage textMessage = new ZigbeeTextMessage();
+            textMessage.setAccountId(fragment.getAccountId());
+            textMessage.setInventoryId(inventoryId);
+            textMessage.setGatewayId(hardwareDto.getDeviceId());
+            textMessage.setStartTime(new Instant());
+            textMessage.setDisplayDuration(Duration.standardMinutes(2));
+            model.addAttribute("textMessage", textMessage);
+        }
+        
+        model.addAttribute("displayName", hardwareDto.getDisplayName());
         model.addAttribute("mode", PageEditMode.VIEW);
         
-        return hardwarePage(model, context, fragment, inventoryId);
+        setupHardwareViewEditModel(fragment, hardwareDto, model, context);
+        
+        return "operator/hardware/hardware.jsp";
     }
     
     /* HARDWARE EDIT PAGE*/
@@ -308,27 +332,14 @@ public class OperatorHardwareController {
                        AccountInfoFragment fragment, 
                        int inventoryId) {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
-        model.addAttribute("mode", PageEditMode.EDIT);
-        return hardwarePage(model, context, fragment, inventoryId);
-    }
-    
-    private String hardwarePage(ModelMap model, 
-                                YukonUserContext context, 
-                                AccountInfoFragment fragment, 
-                                int inventoryId) {
-        
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
-        HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, fragment.getEnergyCompanyId(), fragment.getAccountId());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         
-        /* Set two way device name when none has been chosen yet for two way switches */
-        if (hardwareDto.getHardwareType().isSwitch() && hardwareDto.getHardwareType().isTwoWay() &&hardwareDto.getDeviceId() <= 0) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context); 
-            hardwareDto.setTwoWayDeviceName(messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.noTwoWayDeviceName"));
-        }
+        HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, fragment.getEnergyCompanyId(), fragment.getAccountId());
         
         model.addAttribute("hardwareDto", hardwareDto);
         model.addAttribute("displayName", hardwareDto.getDisplayName());
+        model.addAttribute("mode", PageEditMode.EDIT);
         
         setupHardwareViewEditModel(fragment, hardwareDto, model, context);
         
@@ -795,8 +806,28 @@ public class OperatorHardwareController {
     @RequestMapping
     public String sendTextMessage(ModelMap model, FlashScope flash, 
                                   @ModelAttribute("textMessage") ZigbeeTextMessage textMessage,
-                                  BindingResult result) {
+                                  BindingResult result,
+                                  AccountInfoFragment fragment,
+                                  YukonUserContext context) {
         
+        int inventoryId = textMessage.getInventoryId();
+        int energyCompanyId = fragment.getEnergyCompanyId();
+        int accountId = fragment.getAccountId();
+
+        YukonValidationUtils.checkExceedsMaxLength(result, "message", textMessage.getMessage(), 21);
+        if (result.hasErrors()) {
+            model.addAttribute("textMessageError", true);
+            model.addAttribute("accountId", accountId);
+            model.addAttribute("mode", PageEditMode.VIEW);
+            /* Add errors to flash scope */
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            HardwareDto dto = hardwareUiService.getHardwareDto(inventoryId, energyCompanyId, accountId);
+            model.addAttribute("hardwareDto", dto);
+            setupHardwareViewEditModel(fragment, dto, model, context);
+            
+            return "operator/hardware/hardware.jsp";
+        }
         
         boolean messageFailed = false;
         String errorMessage = null;
@@ -817,7 +848,7 @@ public class OperatorHardwareController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.messageSent", gatewaySerialNumber));
         }
         
-        return redirectView(model, textMessage.getAccountId(), textMessage.getInventoryId());
+        return redirectView(model, textMessage.getAccountId(), inventoryId);
     }
 
     /* TSTAT ACTIONS */
@@ -888,12 +919,14 @@ public class OperatorHardwareController {
     
     /* INIT BINDER */
     @InitBinder
-    public void initBinder(WebDataBinder binder) {
+    public void initBinder(WebDataBinder binder, YukonUserContext context) {
         
         DateType dateValidationType = new DateType();
         binder.registerCustomEditor(Date.class, "fieldInstallDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "fieldReceiveDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
+        
+        binder.registerCustomEditor(Instant.class, "startTime", datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, context, BlankMode.CURRENT));
         
         binder.registerCustomEditor(Duration.class, "displayDuration", new PropertyEditorSupport() {
             @Override
@@ -1007,7 +1040,6 @@ public class OperatorHardwareController {
                                     ModelMap model, 
                                     YukonUserContext context) {
         
-        boolean meterAccess = rolePropertyDao.checkRole(YukonRole.METERING, context.getYukonUser());
         boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         boolean tstatAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, context.getYukonUser());
         boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, context.getYukonUser());
@@ -1098,7 +1130,7 @@ public class OperatorHardwareController {
             if (type == HardwareType.YUKON_METER) {
                 model.addAttribute("showMeterConfigAction", true);
             }
-            if (meterAccess) {
+            if (rolePropertyDao.checkRole(YukonRole.METERING, context.getYukonUser())) {
                 model.addAttribute("showMeterDetailAction", true);
             }
             if (allowAccountEditing) {
@@ -1124,13 +1156,6 @@ public class OperatorHardwareController {
             durations.add(Duration.standardDays(7));
             durations.add(Duration.standardDays(14));
             model.addAttribute("durations", durations);
-            
-            ZigbeeTextMessage textMessage = new ZigbeeTextMessage();
-            textMessage.setAccountId(accountId);
-            textMessage.setInventoryId(inventoryId);
-            textMessage.setGatewayId(dto.getDeviceId());
-            textMessage.setStartTime(new Instant());
-            model.addAttribute("textMessage", textMessage);
             
             if (allowAccountEditing) {
                 if (inventoryChecking) {
@@ -1348,6 +1373,11 @@ public class OperatorHardwareController {
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
+    }
+    
+    @Autowired
+    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
+        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
     
 }
