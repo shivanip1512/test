@@ -30,7 +30,7 @@ ALTER TABLE ServiceCompanyDesignationCode
 /* End YUK-9575 */
 
 /* Start YUK-9603 */
-INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.') 
+INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');
 
 DELETE FROM YukonUserRole 
 WHERE RolePropertyId = -20008; 
@@ -117,6 +117,7 @@ ALTER TABLE OptOutEvent
 /* End YUK-9705 */
 
 /* Start YUK-9647 */
+/* @start-block */  
 SET SERVEROUTPUT ON;  
 
 DECLARE 
@@ -191,7 +192,6 @@ BEGIN
             FROM DynamicPAOStatisticsHistory;  
         END;'; 
         /* @end-block */  
-        
 
         EXECUTE IMMEDIATE 'DROP TABLE DynamicPaoStatisticsOld CASCADE CONSTRAINTS';  
         EXECUTE IMMEDIATE 'DROP TABLE DynamicPaoStatisticsHistory CASCADE CONSTRAINTS'; 
@@ -202,6 +202,7 @@ BEGIN
                             
 END;
 /
+/* @end-block */  
 /* End YUK-9647 */
 
 /* Start YUK-9723 */ 
@@ -496,3 +497,4 @@ CREATE INDEX INDX_Cust_AltTrackNum_FB ON Customer(
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '24-APR-2011', 'Latest Update', 1);

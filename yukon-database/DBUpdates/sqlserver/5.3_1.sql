@@ -123,6 +123,7 @@ ALTER TABLE OptOutEvent
 /* End YUK-9705 */
 
 /* Start YUK-9647 */
+/* @start-block */
 IF EXISTS (SELECT 1 
            FROM sysobjects 
            WHERE xtype='u' AND name='DynamicPAOStatisticsHistory')
@@ -190,6 +191,7 @@ ELSE
 BEGIN
     SELECT 'YUK-9647 has been run in a previous update script, 5.2_7.sql.  Skipping this update script.';
 END 
+/* @end-block */
 /* End YUK-9647 */
 
 /* Start YUK-9723 */ 
@@ -461,3 +463,4 @@ GO
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.3', 'Matt K', '24-APR-2011', 'Latest Update', 1);
