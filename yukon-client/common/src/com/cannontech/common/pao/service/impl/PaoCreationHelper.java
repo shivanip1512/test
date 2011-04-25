@@ -24,17 +24,15 @@ public class PaoCreationHelper {
     private PointDao pointDao;
     
     public void addDefaultPointsToPao(YukonPao pao) {
-        PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
-        List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(paoIdentifier);
+        List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
         
-        applyPoints(pao.getPaoIdentifier().getPaoId(),pointsToCreate);
+        applyPoints(pao,pointsToCreate);
     }
 
     public void addAllPointsToPao(YukonPao pao) {
-        PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
-        List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(paoIdentifier);
+        List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(pao);
         
-        applyPoints(pao.getPaoIdentifier().getPaoId(),pointsToCreate);
+        applyPoints(pao,pointsToCreate);
     }
     
     public void processDbChange(YukonPao pao, DbChangeType changeType) {
@@ -42,14 +40,14 @@ public class PaoCreationHelper {
         
         DBChangeMsg msg = new DBChangeMsg(paoIdentifier.getPaoId(),
                                            DBChangeMsg.CHANGE_PAO_DB,
-                                           paoIdentifier.getPaoType().getPaoCategory().name(),
+                                           paoIdentifier.getPaoType().getPaoCategory().getDbString(),
                                            paoIdentifier.getPaoType().getDbString(),
                                            changeType);
         
         dbPersistentDao.processDBChange(msg);
     }
     
-    public void applyPoints(int paoId, List<PointBase> pointsToCreate) {
+    public void applyPoints(YukonPao pao, List<PointBase> pointsToCreate) {
         MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
 
@@ -57,7 +55,7 @@ public class PaoCreationHelper {
         
             int nextPointId = pointDao.getNextPointId();
             point.setPointID(nextPointId);
-            point.getPoint().setPaoID(paoId);
+            point.getPoint().setPaoID(pao.getPaoIdentifier().getPaoId());
             
             newPoints.add(point);
         }

@@ -1,6 +1,8 @@
 package com.cannontech.thirdparty.model;
 
-public interface ZigbeeDevice {
+import com.cannontech.common.pao.YukonDevice;
+
+public interface ZigbeeDevice extends YukonDevice {
     public int getZigbeeDeviceId();
     public String getZigbeeMacAddress();
 }

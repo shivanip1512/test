@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 
 public class DigiPollingService {
@@ -33,9 +33,9 @@ public class DigiPollingService {
             
             try {
                 //Get all gateways to poll
-                List<ZigbeeGateway> gateways = gatewayDeviceDao.getAllGateways();
+                List<ZigbeeDevice> gateways = gatewayDeviceDao.getAllGateways();
             
-                for (ZigbeeGateway gateway : gateways) {
+                for (ZigbeeDevice gateway : gateways) {
                     //Poll the gateway.
                     try {
                         zigbeeWebService.processAllDeviceNotificationsOnGateway(gateway);

@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
 
 public interface GatewayDeviceDao {
     
-    public ZigbeeGateway getZigbeeGateway(int gatewayId);
-    public List<ZigbeeGateway> getAllGateways();
+    public ZigbeeDevice getZigbeeGateway(int gatewayId);
+    public List<ZigbeeDevice> getAllGateways();
     public DigiGateway getDigiGateway(int deviceId);
     
     public void createDigiGateway(DigiGateway digiGateway);
@@ -52,5 +52,5 @@ public interface GatewayDeviceDao {
      * @param groupId
      * @return
      */
-    public List<ZigbeeGateway> getZigbeeGatewaysForGroupId(int groupId);
+    public List<ZigbeeDevice> getZigbeeGatewaysForGroupId(int groupId);
 }

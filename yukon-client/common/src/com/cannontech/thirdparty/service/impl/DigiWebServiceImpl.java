@@ -31,7 +31,6 @@ import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 
@@ -68,6 +67,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             LitePoint point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
             simplePointAccessDao.setPointValue(point, Commissioned.COMMISSIONED);
             
+            //Update the Connection Point State
+            point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
+            simplePointAccessDao.setPointValue(point, CommStatusState.CONNECTED);
+            
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
@@ -91,7 +94,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         LitePoint point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         simplePointAccessDao.setPointValue(point, Commissioned.DECOMMISSIONED);
         
-        //Update the Connection Point State
+        //When decommission a device, change it's connection status to disconnected as well.
         point = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
         simplePointAccessDao.setPointValue(point, CommStatusState.DISCONNECTED);
         
@@ -149,7 +152,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Override
     public void installStat(int gatewayId, int deviceId) {
         logger.info("-- InstallStat Start --");
-        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeThermostat stat= zigbeeDeviceDao.getZigbeeUtilPro(deviceId);
         
         String xml = digiXMLBuilder.buildInstallStatMessage(gateway,stat);
@@ -162,12 +165,17 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
     
     public void uninstallStat(int gatewayId, int deviceId) {
-        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
+        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
         
         String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, device);
         
         String response = restTemplate.postForObject(digiBaseUrl + "ws/sci", xml, String.class);
+                
+        //When decommission a device, change it's connection status to disconnected 
+        //since we will no longer get updates for it, prevent it from appearing connected
+        LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.CONNECTION_STATUS);
+        simplePointAccessDao.setPointValue(point, CommStatusState.DISCONNECTED);
         
         logger.debug(response);
     }
@@ -187,7 +195,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
 
     @Override
     public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        ZigbeeGateway gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
+        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
         
         String xml = digiXMLBuilder.buildTextMessage(gateway, message);
 
@@ -211,7 +219,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Override
     public int sendSEPControlMessage(int eventId, SepControlMessage controlMessage) {
 
-        List<ZigbeeGateway> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
         String xmlSEPMessage = digiXMLBuilder.buildSEPControlMessage(eventId, gateways, controlMessage);
         
         StreamSource source = restTemplate.postForObject(digiBaseUrl + "ws/sci", xmlSEPMessage, StreamSource.class);
@@ -232,7 +240,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
     
     @Override
-    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway) throws SocketTimeoutException{
+    public void processAllDeviceNotificationsOnGateway(ZigbeeDevice gateway) throws SocketTimeoutException{
         String zbDeviceId = DigiXMLBuilder.convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
         String folderUrl = digiBaseUrl + "ws/data/~/" + zbDeviceId;

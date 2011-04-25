@@ -86,6 +86,9 @@
       <sequence name="DigiEventId">
         <table name="DigiControlEventMapping" identitycolumn="EventId" initsequence="true"/>
       </sequence>
+      <sequence name="ZBControlEventId">
+        <table name="ZBControlEvent" identitycolumn="ZBControlEventId" initsequence="true"/>
+      </sequence>
       <sequence name="schedAssignemnt">
       	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
       </sequence>

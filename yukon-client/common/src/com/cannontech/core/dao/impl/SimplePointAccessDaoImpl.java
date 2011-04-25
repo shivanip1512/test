@@ -16,9 +16,6 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     public SimplePointAccessDaoImpl() {
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.SimplePointAccessDao#getPointValue(com.cannontech.database.data.lite.LitePoint)
-     */
     public double getPointValue(LitePoint point) throws PointDataException {
         PointValueHolder pointData = dynamicDataSource.getPointValue(point.getPointID());
         //Validate.notNull(pointData, "No PointData in cache for pointId " + point.getPointID());
@@ -29,21 +26,23 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         throw new PointDataException(point);
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.SimplePointAccessDao#setPointValue(com.cannontech.database.data.lite.LitePoint, double)
-     */
     public void setPointValue(LitePoint point, double value) {
+        setPointValue(point, value, PointTypes.ANALOG_POINT);
+    }
+    
+    public void setPointValue(LitePoint point, PointState pointState) {
+        setPointValue(point,pointState.getRawState(),PointTypes.STATUS_POINT);
+    }
+    
+    public void setPointValue(LitePoint point, double value, int pointType) {
         PointData pointData = new PointData();
         pointData.setId(point.getPointID());
         pointData.setValue(value);
-        pointData.setType(PointTypes.ANALOG_POINT);
+        pointData.setType(pointType);
         pointData.setPointQuality(PointQuality.Normal);
         writePointData(pointData);
     }
     
-    public void setPointValue(LitePoint point, PointState pointState) {
-        setPointValue(point,pointState.getRawState());
-    }
     
     @Override
     public void writePointData(PointData pointData) {

@@ -17,8 +17,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.GenericZigbeeDevice;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
 
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
@@ -41,35 +41,40 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         }
     };
     
-    private static YukonRowMapper<ZigbeeGateway> zigbeeGatewayRowMapper = new YukonRowMapper<ZigbeeGateway>() {
+    public static YukonRowMapper<ZigbeeDevice> zigbeeDeviceRowMapper = new YukonRowMapper<ZigbeeDevice>() {
         @Override
-        public ZigbeeGateway mapRow(YukonResultSet rs) throws SQLException {
+        public ZigbeeDevice mapRow(YukonResultSet rs) throws SQLException {
             GenericZigbeeDevice gateway = new GenericZigbeeDevice();
             
-            gateway.setZigbeeDeviceId(rs.getInt("DeviceId"));
+            int paoId = rs.getInt("DeviceId");
+            PaoType paoType = rs.getEnum("Type", PaoType.class);
+            
+            gateway.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
             gateway.setZigbeeMacAddress(rs.getString("MacAddress"));
             
             return gateway;
         }
     };
     
-    public ZigbeeGateway getZigbeeGateway(int gatewayId) {
+    public ZigbeeDevice getZigbeeGateway(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId,MacAddress");
-        sql.append("FROM ZBGateway");
-        sql.append("WHERE DeviceId").eq(gatewayId);
+        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type");
+        sql.append("FROM ZBGateway ZBG");
+        sql.append(  "JOIN YukonPAObject YPO on ZBG.DeviceId = YPO.PaObjectId");
+        sql.append("WHERE ZBG.DeviceId").eq(gatewayId);
         
-        ZigbeeGateway gateway = yukonJdbcTemplate.queryForObject(sql, zigbeeGatewayRowMapper);
+        ZigbeeDevice gateway = yukonJdbcTemplate.queryForObject(sql, zigbeeDeviceRowMapper);
         
         return gateway;
     }
     
-    public List<ZigbeeGateway> getAllGateways() {
+    public List<ZigbeeDevice> getAllGateways() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId,MacAddress");
-        sql.append("FROM ZBGateway");
+        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type");
+        sql.append("FROM ZBGateway ZBG");
+        sql.append(  "JOIN YukonPAObject YPO on ZBG.DeviceId = YPO.PaObjectId");
         
-        return yukonJdbcTemplate.query(sql, zigbeeGatewayRowMapper);
+        return yukonJdbcTemplate.query(sql, zigbeeDeviceRowMapper);
     }
     
     public DigiGateway getDigiGateway(int deviceId) {
@@ -251,18 +256,19 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
-    public List<ZigbeeGateway> getZigbeeGatewaysForGroupId(int groupId) {
+    public List<ZigbeeDevice> getZigbeeGatewaysForGroupId(int groupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZG.DeviceId,ZG.MacAddress");
+        sql.append("SELECT ZG.DeviceId,ZG.MacAddress,YPO.Type");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
         sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");
         sql.append(  "JOIN ZBGateway ZG on ZG.DeviceId = ZB.GatewayId");
+        sql.append(  "JOIN YukonPaObject YPO on ZG.DeviceId = YPO.PaObjectId");
         sql.append("WHERE LMHCG.LMGroupId").eq(groupId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return yukonJdbcTemplate.query(sql,zigbeeGatewayRowMapper); 
+        return yukonJdbcTemplate.query(sql,zigbeeDeviceRowMapper); 
     }
     
     @Autowired

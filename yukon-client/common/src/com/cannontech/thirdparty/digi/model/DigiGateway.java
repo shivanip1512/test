@@ -1,10 +1,9 @@
 package com.cannontech.thirdparty.digi.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 
-public class DigiGateway implements YukonDevice, ZigbeeGateway {
+public class DigiGateway implements ZigbeeDevice {
 
     private PaoIdentifier paoIdentifier;
     private String firmwareVersion;

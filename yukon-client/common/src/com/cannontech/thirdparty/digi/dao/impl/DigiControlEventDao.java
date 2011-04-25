@@ -10,11 +10,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
 
 public class DigiControlEventDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private NextValueHelper nextValueHelper;
     
     public void createNewEventMapping(int eventId, int groupId, Date startTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -71,7 +73,10 @@ public class DigiControlEventDao {
     public void insertControlEvent(int eventId, Instant eventTime, int deviceId, ZigbeeEventAction action) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
+        int controlEventId = nextValueHelper.getNextValue("ZBControlEvent");
+        
         SqlParameterSink p = sql.insertInto("ZBControlEvent");
+        p.addValue("ZBControlEventId",controlEventId);
         p.addValue("EventId", eventId);
         p.addValue("EventTime", eventTime);
         p.addValue("DeviceId", deviceId);
@@ -83,5 +88,10 @@ public class DigiControlEventDao {
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
     }
 }

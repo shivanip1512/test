@@ -8,7 +8,7 @@ import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 
 public interface ZigbeeWebService {
 
@@ -53,5 +53,5 @@ public interface ZigbeeWebService {
      * @param gateway
      * @throws SocketTimeoutException 
      */
-    public void processAllDeviceNotificationsOnGateway(ZigbeeGateway gateway) throws SocketTimeoutException;
+    public void processAllDeviceNotificationsOnGateway(ZigbeeDevice gateway) throws SocketTimeoutException;
 }

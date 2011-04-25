@@ -54,7 +54,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isMacAddress(macAddress)) {
-            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format");
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui48");
         }
         
         /* Firmware Version */

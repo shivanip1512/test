@@ -67,9 +67,11 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         /* MAC Address*/
         String macAddress = hardwareDto.getMacAddress();
         if (StringUtils.isBlank(macAddress)) {
-            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
-        } else if (!Validator.isInstallCode(macAddress)/*This is NOT an error..*/) {
-            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format");
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required.eui64");
+        } else if (!Validator.isInstallCode(macAddress)) {
+            /*This is NOT an error..*/
+            //Using isInstallCode to Validate the EUI-64 version of the MAC Address since ZigBee uses it instead of the standard MAC-48
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui64");
         }
     }
     

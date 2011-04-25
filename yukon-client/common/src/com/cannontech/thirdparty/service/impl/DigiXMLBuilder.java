@@ -14,7 +14,6 @@ import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
-import com.cannontech.thirdparty.model.ZigbeeGateway;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -25,7 +24,7 @@ public class DigiXMLBuilder {
     private LMGroupDao lmGroupDao;
     private GatewayDeviceDao gatewayDeviceDao;
     
-    public String buildInstallStatMessage(ZigbeeGateway gateway, ZigbeeThermostat thermostat) {
+    public String buildInstallStatMessage(ZigbeeDevice gateway, ZigbeeThermostat thermostat) {
         String gatewayMacAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         String thermostatMac = thermostat.getMacAddress();
         String installCode = thermostat.getInstallCode();
@@ -57,7 +56,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildUninstallStatMessage(ZigbeeGateway gateway, ZigbeeDevice device) {
+    public String buildUninstallStatMessage(ZigbeeDevice gateway, ZigbeeDevice device) {
         String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         
         String thermostatMac = device.getZigbeeMacAddress();
@@ -82,7 +81,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildTextMessage(ZigbeeGateway gateway, ZigbeeTextMessage message) {
+    public String buildTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) {
         String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         int confirmationValue = message.isConfirmationRequired() ? 128:0;
         
@@ -117,7 +116,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildSEPControlMessage(int eventId,  List<ZigbeeGateway> gateways, SepControlMessage controlMessage) {
+    public String buildSEPControlMessage(int eventId,  List<ZigbeeDevice> gateways, SepControlMessage controlMessage) {
         int groupId = controlMessage.getGroupId();
         
         //Get DeviceClass
@@ -129,7 +128,7 @@ public class DigiXMLBuilder {
         
         //Get gateways on the group
         Set<String> macAddresses = Sets.newHashSet();        
-        for (ZigbeeGateway gateway : gateways) {
+        for (ZigbeeDevice gateway : gateways) {
             String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
             macAddresses.add(macAddress);
         }
@@ -204,10 +203,10 @@ public class DigiXMLBuilder {
         byte utilEnrollmentGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(groupId);
         
         //Get gateways on the group
-        List<ZigbeeGateway> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(groupId);
+        List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(groupId);
         List<String> macAddresses = Lists.newArrayList();
 
-        for (ZigbeeGateway gateway : gateways) {
+        for (ZigbeeDevice gateway : gateways) {
             String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
             macAddresses.add(macAddress);
         }
