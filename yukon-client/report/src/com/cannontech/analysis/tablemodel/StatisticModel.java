@@ -180,10 +180,6 @@ public class StatisticModel extends ReportModelBase {
 	    sql.append(" DPS.SYSTEMERRORS, DPS.PROTOCOLERRORS ");
 	    sql.append(" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO ");
 	    sql.append(" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
-		if(getPaoIDs() != null)
-		{
-			sql.append(" AND PAO.PAOBJECTID").in(Arrays.asList(getPaoIDs()));
-		}
         
 		if( getPaoClass() != null )
 			sql.append(" AND PAOCLASS").eq(getPaoClass());
@@ -243,7 +239,7 @@ public class StatisticModel extends ReportModelBase {
 
 	/**
 	 * Return the category (YukonPaobject.Category)
-	 * @return String category.
+	 * @return PaoCategory category.
 	 */
 	public PaoCategory getCategory()
 	{
@@ -264,7 +260,7 @@ public class StatisticModel extends ReportModelBase {
 
 	/**
 	 * Return the paoClass (YukonPaobject.PaoClass)
-	 * @return String paoClass
+	 * @return PaoClass paoClass
 	 */
 	public PaoClass getPaoClass()
 	{
