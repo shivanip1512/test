@@ -32,7 +32,7 @@ GO
 /* End YUK-9575 */
 
 /* Start YUK-9603 */
-INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.') 
+INSERT INTO YukonRoleProperty VALUES (-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');
 
 DELETE FROM YukonUserRole 
 WHERE RolePropertyId = -20008; 
