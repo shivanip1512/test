@@ -1,21 +1,8 @@
 <?xml version="1.0" ?>
-<project name="Yukon Clients" default="targets" basedir=".">
+<project name="Yukon Clients" basedir=".">
 
     <property environment="env" />
     <property file="build.properties" />
-
-    <target name="targets">
-        <echo message="${yukon.client.home}" />
-        <echo message="The following targets are available" />
-        <echo message=" build        - perform incremental build" />
-        <echo message=" runUnitTests - run all unit tests" />
-        <echo message=" clean        - clean the slate" />
-        <echo message=" all          - do a clean then a build" />
-        <echo message=" install      - installs a build to your YUKON_HOME directory" />
-        <echo message=" uninstall    - remove the install at YUKON_HOME" />
-        <echo message=" [jar name]   - builds only the specified jar" />
-        <echo message=" sign jars    - sign all jars" />
-    </target>
 
     <target name="all" depends="init, cleanlib, help">
         <antcall target="callall">
