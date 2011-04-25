@@ -46,7 +46,7 @@ public class SepMessageListener {
                 PaoIdentifier paoIdentifier = paoDao.getYukonPao(sepMessage.getGroupId()).getPaoIdentifier();
                 
                 if(handler.handlePao(paoIdentifier)) {
-                    handler.handleControlMessage(paoIdentifier,sepMessage);
+                    handler.handleControlMessage(sepMessage);
                 }
             }
         }
@@ -106,7 +106,7 @@ public class SepMessageListener {
                 PaoIdentifier paoIdentifier = paoDao.getYukonPao(sepMessage.getGroupId()).getPaoIdentifier();
                 
                 if(handler.handlePao(paoIdentifier)) {
-                    handler.handleRestoreMessage(paoIdentifier,sepMessage);
+                    handler.handleRestoreMessage(sepMessage);
                 }
             }
         }

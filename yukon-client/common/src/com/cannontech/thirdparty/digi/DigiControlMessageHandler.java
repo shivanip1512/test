@@ -12,6 +12,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -35,6 +36,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private ZigbeeWebService zigbeeWebService;
     private NextValueHelper nextValueHelper;
     private DigiControlEventDao digiControlEventDao;
+    private PaoDao paoDao;
     
     private Set<Integer> pendingEvents = new HashSet<Integer>();
     
@@ -49,7 +51,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     }
 
     @Override
-    public void handleControlMessage(PaoIdentifier paoIdentifier, SepControlMessage message) {
+    public void handleControlMessage(SepControlMessage message) {
         int eventId = nextValueHelper.getNextValue("DigiControlEventMapping");
         Date now = new Date();
 
@@ -65,7 +67,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             pendingEvents.add(eventId);
     
             //If success return a control history message to dispatch.
-            ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, paoIdentifier, message, now);
+            ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, message, now);
             dispatchConnection.queue(chMessage);
 
         } catch (DigiWebServiceException e) {
@@ -74,14 +76,14 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     }
 
     @Override
-    public void handleRestoreMessage(PaoIdentifier paoIdentifier, SepRestoreMessage message) {
+    public void handleRestoreMessage(SepRestoreMessage message) {
         int eventId = digiControlEventDao.findCurrentEventId(message.getGroupId());
         
         try {
             zigbeeWebService.sendSEPRestoreMessage(eventId, message);
     
             //If success return a control history message to dispatch.
-            ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(paoIdentifier,message, new Date());        
+            ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(message, new Date());        
             dispatchConnection.queue(histMsg);
             
         } catch (DigiWebServiceException e) {
@@ -89,8 +91,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         }
     }
     
-    private ControlHistoryMessage buildControlHistoryMessageForRestore(PaoIdentifier paoIdentifier, SepRestoreMessage message, Date date) {
-        ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(0,paoIdentifier,message.getGroupId(),date);
+    private ControlHistoryMessage buildControlHistoryMessageForRestore(SepRestoreMessage message, Date date) {
+        ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(0,message.getGroupId(),date);
         
         chMessage.setControlDuration(0);
         chMessage.setReductionRatio(0);
@@ -101,8 +103,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         return chMessage;
     }
     
-    private ControlHistoryMessage buildControlHistoryMessage(int eventId, PaoIdentifier paoIdentifier, SepControlMessage message, Date date) {
-        ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(eventId,paoIdentifier,message.getGroupId(),date);
+    private ControlHistoryMessage buildControlHistoryMessage(int eventId, SepControlMessage message, Date date) {
+        ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(eventId,message.getGroupId(),date);
         
         chMessage.setControlDuration(message.getControlMinutes());
         
@@ -135,7 +137,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
         return chMessage;
     }
     
-    private ControlHistoryMessage buildCommonControlHistoryMessage(int eventId, PaoIdentifier paoIdentifier, int groupId, Date date) {
+    private ControlHistoryMessage buildCommonControlHistoryMessage(int eventId, int groupId, Date date) {
+        PaoIdentifier paoIdentifier = paoDao.getYukonPao(groupId).getPaoIdentifier();
         LitePoint point = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.LM_GROUP_STATUS);
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(point.getLiteID());
         
@@ -189,5 +192,10 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Autowired
     public void setDigiControlEventDao(DigiControlEventDao digiControlEventDao) {
         this.digiControlEventDao = digiControlEventDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

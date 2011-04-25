@@ -20,7 +20,7 @@ public interface SepMessageHandler {
      * @param paoIdentifier
      * @param message
      */
-    public void handleControlMessage(PaoIdentifier paoIdentifier, SepControlMessage message);
+    public void handleControlMessage(SepControlMessage message);
     
     /**
      * Process the Restore Message
@@ -28,7 +28,7 @@ public interface SepMessageHandler {
      * @param paoIdentifier
      * @param message
      */
-    public void handleRestoreMessage(PaoIdentifier paoIdentifier, SepRestoreMessage message);
+    public void handleRestoreMessage(SepRestoreMessage message);
     
     /**
      * Handle the association of the LMControlHistory table and the Integration's Event Table
