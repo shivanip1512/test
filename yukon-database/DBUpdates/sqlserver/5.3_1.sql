@@ -177,13 +177,11 @@ GO
 /* @end-block */
 
 /* @start-block */
-/* @start-block */
 IF EXISTS (SELECT 1 
            FROM sysobjects 
            WHERE xtype='u' AND name='DynamicPAOStatisticsHistory')
 BEGIN
 
-    /* @start-block */
     DECLARE 
         @maxId NUMERIC; 
     BEGIN
@@ -196,7 +194,6 @@ BEGIN
                 Completions, CommErrors, ProtocolErrors, SystemErrors 
         FROM DynamicPAOStatisticsHistory; 
     END
-    /* @end-block */ 
     
     DROP TABLE DynamicPAOStatisticsOld; 
     DROP TABLE DynamicPAOStatisticsHistory;
