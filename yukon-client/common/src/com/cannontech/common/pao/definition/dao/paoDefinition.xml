@@ -182,6 +182,10 @@
         <points>
             <point type="Status" offset="1000">
                <name>Outage Status</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
                <stategroup value="Outage Status"/>
             </point>
         </points>
