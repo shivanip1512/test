@@ -41,6 +41,7 @@ public class YukonPaObjectCreationProvider extends BaseCreationProvider<YukonPaO
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink p = sql.insertInto("YukonPaObject");
+        p.addValue("PAObjectId",paoIdentifier.getPaoId());
         p.addValue("Category", paoIdentifier.getPaoType().getPaoCategory());
         p.addValue("PaoClass", paoIdentifier.getPaoType().getPaoClass());
         p.addValue("Type", paoIdentifier.getPaoType());
