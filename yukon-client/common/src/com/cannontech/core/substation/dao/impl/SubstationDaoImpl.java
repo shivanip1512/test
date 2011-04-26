@@ -102,11 +102,10 @@ public class SubstationDaoImpl implements SubstationDao {
     public List<Substation> getAllSubstationsByEnergyCompanyId(int energyCompanyId) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT ss.*");
-    	sql.append("FROM ECToGenericMapping ectgm");
-    	sql.append("JOIN Substation ss ON (ectgm.ItemId = ss.SubstationId)");
-    	sql.append("WHERE ectgm.EnergyCompanyID").eq(energyCompanyId);
-    	sql.append("AND ectgm.MappingCategory = 'Substation'");
+    	sql.append("SELECT S.*");
+    	sql.append("FROM ECToSubstationMapping ECTSM");
+    	sql.append("  JOIN Substation S ON ECTSM.SubstationId = S.SubstationId");
+    	sql.append("WHERE ECTSM.EnergyCompanyId").eq(energyCompanyId);
     	
     	return yukonJdbcTemplate.query(sql, rowMapper);
     }
