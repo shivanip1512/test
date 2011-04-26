@@ -261,11 +261,11 @@
 							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${tagDefinition.tag.description}</td>
-                                    <c:if test="${not empty tagDefinition.value}">
+                                    <c:if test="${tagDefinition.tag.tagHasValue}">
                                     	<td>Yes</td>
                                     	<td>${tagDefinition.value}</td>
                                     </c:if>
-                                    <c:if test="${empty tagDefinition.value}">
+                                    <c:if test="${not tagDefinition.tag.tagHasValue}">
                                    		<td>No</td>
                                         <td></td>
                                     </c:if>
