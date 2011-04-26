@@ -107,8 +107,8 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("UPDATE ZBEndPoint");
-        sql.append("SET InstallCode").eq(zigbeeThermostat.getInstallCode()).append(",");
-        sql.append("MacAddress").eq(zigbeeThermostat.getMacAddress());
+        sql.append("SET InstallCode").eq(zigbeeThermostat.getInstallCode().toUpperCase()).append(",");
+        sql.append("MacAddress").eq(zigbeeThermostat.getMacAddress().toUpperCase());
         sql.append("WHERE DeviceId").eq(zigbeeThermostat.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);

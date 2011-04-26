@@ -111,7 +111,9 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
         
         sql.append("INSERT INTO ZBGateway ");
-        sql.values(paoIdentifier.getPaoId(),digiGateway.getFirmwareVersion(),digiGateway.getMacAddress().toUpperCase());
+        sql.values(paoIdentifier.getPaoId(),
+                   digiGateway.getFirmwareVersion(),
+                   digiGateway.getMacAddress().toUpperCase());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -152,7 +154,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     	
     	sql.append("UPDATE ZBGateway");
     	sql.append("SET FirmwareVersion").eq(digiGateway.getFirmwareVersion()).append(",");
-        sql.append("    MacAddress").eq(digiGateway.getMacAddress());
+        sql.append("    MacAddress").eq(digiGateway.getMacAddress().toUpperCase());
         sql.append("WHERE DeviceId").eq(digiGateway.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);
