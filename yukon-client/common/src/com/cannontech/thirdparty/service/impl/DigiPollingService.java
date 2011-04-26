@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
-import org.joda.time.DurationFieldType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,10 +52,17 @@ public class DigiPollingService {
     
     @PostConstruct
     public void initialize() {
-        Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600));
-        globalScheduledExecutor = Executors.newScheduledThreadPool(1);
+        boolean runDigi = configurationSource.getString("DIGI_WEBSERVICE_URL ") == null?false:true;
         
-        globalScheduledExecutor.scheduleWithFixedDelay(digiPoller, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
+        if (runDigi) {
+            Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600));
+            globalScheduledExecutor = Executors.newScheduledThreadPool(1);
+            
+            globalScheduledExecutor.scheduleWithFixedDelay(digiPoller, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
+            logger.info("Digi Polling Service has been started.");
+        } else {
+            logger.info("Digi Polling Service not started. No URL configured in master.cfg");
+        }
     }
     
     @Autowired
