@@ -53,7 +53,7 @@ public class DigiPollingService {
     
     @PostConstruct
     public void initialize() {
-        Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600), DurationFieldType.seconds());
+        Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600));
         globalScheduledExecutor = Executors.newScheduledThreadPool(1);
         
         globalScheduledExecutor.scheduleWithFixedDelay(digiPoller, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);

@@ -111,7 +111,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
         
         sql.append("INSERT INTO ZBGateway ");
-        sql.values(paoIdentifier.getPaoId(),digiGateway.getFirmwareVersion(),digiGateway.getMacAddress());
+        sql.values(paoIdentifier.getPaoId(),digiGateway.getFirmwareVersion(),digiGateway.getMacAddress().toUpperCase());
         
         yukonJdbcTemplate.update(sql);
     }

@@ -96,8 +96,8 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         
         sql.append("INSERT INTO ZBEndPoint (DeviceId,InstallCode,MacAddress)");
         sql.values(zigbeeThermostat.getPaoIdentifier().getPaoId(),
-                      zigbeeThermostat.getInstallCode(),
-                      zigbeeThermostat.getMacAddress());
+                      zigbeeThermostat.getInstallCode().toUpperCase(),
+                      zigbeeThermostat.getMacAddress().toUpperCase());
         
         yukonJdbcTemplate.update(sql);
     }

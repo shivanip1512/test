@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
@@ -85,11 +86,13 @@ public class DigiXMLBuilder {
         String macAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
         int confirmationValue = message.isConfirmationRequired() ? 128:0;
         
-        int startTime = 0; // Zero means now
+        long startTimeSeconds = 0; // Zero means now
         Instant startInstant = message.getStartTime();
         if (startInstant.isAfterNow()) {
-            startTime = (int)(startInstant.getMillis() / 1000);
+            startTimeSeconds = TimeUtil.convertInstantToUtc2000Seconds(startInstant)/1000;
         }
+        
+        int displayDuration = message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes();
         
         String xml = 
                "<sci_request version=\"1.0\">"
@@ -103,8 +106,8 @@ public class DigiXMLBuilder {
             + "          <record type=\"DisplayMessageRecord\">"
             + "            <message_id>" + message.getMessageId() + "</message_id>"
             + "            <message_control>" + confirmationValue + "</message_control>"
-            + "            <start_time>" + startTime + "</start_time>"
-            + "            <duration_in_minutes>" + message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes() + "</duration_in_minutes>"
+            + "            <start_time>" + startTimeSeconds + "</start_time>"
+            + "            <duration_in_minutes>" + displayDuration + "</duration_in_minutes>"
             + "            <message type=\"string\">" + message.getMessage() + "</message>"
             + "          </record>"
             + "        </create_message_event>"

@@ -6,6 +6,7 @@ package com.cannontech.thirdparty.exception;
 public enum ZCLStatus {
     SUCCESS(0,"Operation was successful"),
     FAILURE(1,"Operation was not successful"),
+    INVALID_FIELD(133,"At least one field of the command contains an incorrect value"),
     DUPLICATE_EXISTS(138,"An attempt to create an entry in a table failed due to a duplicate entry already being present in the table.");
    
     private int value;
