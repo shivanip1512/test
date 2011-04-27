@@ -107,7 +107,6 @@
     <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deleteConfirm">Please enter your password and click delete to delete this energy company.</entry>
     <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg">The energy company {0} was deleted successfully.</entry>
     <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.message">Are you sure you want to delete the energy company {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.message">Are you sure you want to delete the energy company {0}?</entry>
 
     <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageName">Appliance Categories</entry>
     <entry key="yukon.web.modules.adminSetup.applianceCategory.list.pageDescription">{0}</entry>
@@ -158,16 +157,16 @@
     <entry key="yukon.web.modules.adminSetup.schedules.defaultThermostatSchedules.title">Default Thermostat Schedules</entry>
 
     <!-- Settlement Pages -->
-    <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageName">Settlement</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.EDIT.pageName">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.list.pageName">Settlements</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.list.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.EDIT.pageName">Settlement Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.EDIT.pageDescription">{0}</entry>
 
-    <entry key="yukon.web.modules.adminSetup.settlement.title">Settlement</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.configurations.title">Configurations</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.availableRates.title">Available Rates</entry>
-    <entry key="yukon.web.modules.adminSetup.settlement.settlements.title">Settlements</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.title">Settlement</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.configurations.title">Configurations</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.availableRates.title">Available Rates</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.settlements.title">Settlements</entry>
     
-    <entry key="yukon.web.modules.adminSetup.settlement.settlementSaved">Settlement Saved Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.settlements.settlementSaved">Settlement Saved Successfully</entry>
 
 </properties>
