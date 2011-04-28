@@ -2,6 +2,7 @@ package com.cannontech.amr.phaseDetect.data;
 
 import java.util.Map;
 
+import com.cannontech.enums.Phase;
 import com.google.common.collect.Maps;
 
 public class PhaseDetectState {

@@ -152,13 +152,13 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phaseDetectSent">
                 <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
+                    <font color="green">${phaseA}</font>
                 </span>
                 <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
+                    <font color="green">${phaseB}</font>
                 </span>
                 <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
+                    <font color="green">${phaseC}</font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalTimer">

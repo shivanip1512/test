@@ -169,31 +169,31 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phase">
                 <select id="phase" name="phase">                    
-                    <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A"><cti:msg2 key="${phases[0]}"/></option>
-                    <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B"><cti:msg2 key="${phases[1]}"/></option>
-                    <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C"><cti:msg2 key="${phases[2]}"/></option>
+                    <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A">${phaseA}</option>
+                    <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B">${phaseB}</option>
+                    <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C">${phaseC}</option>
                 </select>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phaseDetectSent">
                 <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
+                    <font color="green">${phaseA}</font>
                 </span>
                 <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
+                    <font color="green">${phaseB}</font>
                 </span>
                 <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
+                    <font color="green">${phaseC}</font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phasesRead">
                 <b><span id="readA" style="padding-right: 3px;<c:if test="${!state.phaseARead}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[0]}"/></font>
+                    <font color="green">${phaseA}</font>
                 </span>
                 <span id="readB" style="padding-right: 3px;<c:if test="${!state.phaseBRead}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[1]}"/></font>
+                    <font color="green">${phaseB}</font>
                 </span>
                 <span id="readC" style="padding-right: 3px;<c:if test="${!state.phaseCRead}">display: none;</c:if>">
-                    <font color="green"><cti:msg2 key="${phases[2]}"/></font>
+                    <font color="green">${phaseC}</font>
                 </span></b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalTimer">

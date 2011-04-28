@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.phaseDetect.data.DetectedPhase;
-import com.cannontech.amr.phaseDetect.data.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
@@ -55,6 +54,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.enums.Phase;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

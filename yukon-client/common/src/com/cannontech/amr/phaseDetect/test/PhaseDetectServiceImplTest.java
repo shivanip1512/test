@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.cannontech.amr.phaseDetect.data.Phase;
+import com.cannontech.enums.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectVoltageReading;
 import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
 import com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl;

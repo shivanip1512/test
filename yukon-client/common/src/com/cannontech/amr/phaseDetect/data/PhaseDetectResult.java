@@ -9,6 +9,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.Completable;
+import com.cannontech.enums.Phase;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

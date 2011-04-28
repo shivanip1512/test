@@ -2,7 +2,7 @@ package com.cannontech.amr.phaseDetect.service;
 
 import java.util.List;
 
-import com.cannontech.amr.phaseDetect.data.Phase;
+import com.cannontech.enums.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;

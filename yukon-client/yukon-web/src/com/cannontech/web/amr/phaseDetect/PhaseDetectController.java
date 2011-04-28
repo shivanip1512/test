@@ -21,7 +21,7 @@ import org.springframework.web.servlet.View;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.phaseDetect.data.Phase;
+import com.cannontech.enums.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
@@ -238,6 +238,9 @@ public class PhaseDetectController {
         model.addAttribute("data", phaseDetectService.getPhaseDetectData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
         model.addAttribute("phases", Phase.values());
+        model.addAttribute("phaseA", Phase.A);
+        model.addAttribute("phaseB", Phase.B);
+        model.addAttribute("phaseC", Phase.C);
         Boolean readCanceled = phaseDetectService.getPhaseDetectState().isReadCanceled();
         CommandRequestExecutionIdentifier identifier = phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier();
         if(identifier != null){

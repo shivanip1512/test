@@ -7,9 +7,6 @@
     <!-- general definitions/errors -->
     <entry key="yukon.web.modules.amr.phaseDetect.cancelTest.label">Cancel Test</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.next.label">Next</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseA">A</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseB">B</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.phaseC">C</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.reset">Reset</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.read">Read</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.send">Send</entry>
@@ -24,7 +21,6 @@
     <entry key="yukon.web.modules.amr.phaseDetect.noRouteSelected">You must select at least one route.</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.subWithNoRoutesSelected">Select a substation with at least one route or assign routes to this substation using the Substation To Route Mappings feature in the MultiSpeak Setup section.</entry>
     
-    
     <!-- phaseDetect/home.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.home.pageName">Phase Detection Processing</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.home.pageDescription">Phase Detection</entry>
@@ -38,10 +34,10 @@
     <entry key="yukon.web.modules.amr.phaseDetect.home.noteText">Clicking next will start the test process.  Other users will not be able to start a test until this one is finished or canceled.  Use of the browser navigation buttons may result in an undesirable state 
         of the phase detection process.  Please do not navigate using the browser back or forward buttons.</entry>
     <!-- routes.jsp -->
-    <entry key="yukon.web.modules.amr.phaseDetect.home.routeName">Route Name</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.home.pageDescription">Select Routes</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.home.devicesSelected">Devices Selected</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.home.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.routeName">Route Name</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.pageDescription">Select Routes</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.devicesSelected">Devices Selected</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.deviceCount">Device Count</entry>
 
     <!-- phaseDetect/broadcastRouteSelection.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.pageName">Phase Detection</entry>

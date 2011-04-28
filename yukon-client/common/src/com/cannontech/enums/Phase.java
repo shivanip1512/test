@@ -1,4 +1,4 @@
-package com.cannontech.amr.phaseDetect.data;
+package com.cannontech.enums;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
@@ -7,7 +7,7 @@ public enum Phase implements DisplayableEnum {
     B,
     C,;
 
-    private final static String baseKey = "yukon.web.modules.amr.phases."; 
+    private final static String baseKey = "yukon.common.phase.phase"; 
     
     @Override
     public String getFormatKey() {

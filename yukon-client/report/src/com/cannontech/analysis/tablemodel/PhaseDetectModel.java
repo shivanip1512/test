@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.phaseDetect.data.DetectedPhase;
-import com.cannontech.amr.phaseDetect.data.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectVoltageReading;
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,6 +17,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.enums.Phase;
 import com.cannontech.user.YukonUserContext;
 
 public class PhaseDetectModel extends BareReportModelBase<PhaseDetectModel.ModelRow> implements ReportModelMetaInfo {

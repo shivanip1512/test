@@ -20,7 +20,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->    
     <entry key="yukon.web.modules.amr.tamperFlagEditor.EDIT.pageName">Tamper Flag Processing</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.EDIT.pageDescription">Edit: {0}</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.CREATE.pageName">Tamper Flag Processing</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.CREATE.pageDescription">New Tamper Flag</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.pageTitle">Tamper Flag Monitoring</entry>

@@ -2,6 +2,7 @@ package com.cannontech.amr.phaseDetect.data;
 
 import java.util.Set;
 
+import com.cannontech.enums.Phase;
 import com.google.common.collect.ImmutableSet;
 
 public enum DetectedPhase {

@@ -17,4 +17,7 @@
 <entry key="yukon.common.authType.AD">Active Directory</entry>
 <entry key="yukon.common.authType.LDAP">LDAP</entry>
 
+<entry key="yukon.common.phase.phaseA">A</entry>
+<entry key="yukon.common.phase.phaseB">B</entry>
+<entry key="yukon.common.phase.phaseC">C</entry>
 </properties>
