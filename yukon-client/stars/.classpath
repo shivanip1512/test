@@ -18,8 +18,8 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/easymock.jar" sourcepath="Z:/java/Third-Party Sources/easymock-2.4-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.6-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.6-sources.jar"/>
+	<classpathentry kind="lib" path="/third-party/easymock.jar" sourcepath="/third-party/linked-sources/easymock-2.4-src.zip"/>
+	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="/third-party/linked-sources/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.6-all.jar" sourcepath="/third-party/linked-sources/spring-ws-1.5.6-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

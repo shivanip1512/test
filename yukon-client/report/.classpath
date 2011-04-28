@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="/third-party/itext.jar"/>
 	<classpathentry kind="lib" path="/third-party/poi.jar"/>
 	<classpathentry kind="lib" path="/third-party/bsh.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="Z:/java/Third-Party Sources/jfreereport-0.8.6-4.zip"/>
+	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
