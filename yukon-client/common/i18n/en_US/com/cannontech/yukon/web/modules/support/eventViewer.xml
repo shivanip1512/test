@@ -16,6 +16,11 @@
     <entry key="yukon.web.modules.support.byCategory.filterValue">Filter Value</entry>
     <entry key="yukon.web.modules.support.byCategory.dateRange">Date Range</entry>
 
+    <entry key="yukon.web.modules.support.byCategory.csvExport.label">CSV</entry>
+    <entry key="yukon.web.modules.support.byCategory.csvExport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
+    <entry key="yukon.web.modules.support.byCategory.csvExport.hoverText">Export results to a CSV formatted file.</entry>
+    <entry key="yukon.web.modules.support.byCategory.csvExport.fileName">eventLogCategoryExport</entry>
+
     <!-- Validation -->    
     <entry key="yukon.web.modules.support.eventViewer.startDateMustBeBeforeStopDate">The start date must be before the end date.</entry>
     <entry key="yukon.web.modules.support.eventViewer.dateMustNotBeBlank">A valid date must be entered.</entry>

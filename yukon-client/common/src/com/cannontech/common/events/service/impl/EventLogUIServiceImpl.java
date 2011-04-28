@@ -16,10 +16,12 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.EventLogUIService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -27,11 +29,11 @@ public class EventLogUIServiceImpl implements EventLogUIService {
 
     private DateFormattingService dateFormattingService;
     private EventLogDao eventLogDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterService filterService;
     
     @Override
-    public List<List<String>> getDataGridRow(SearchResult<EventLog> searchResult, 
-                                             YukonUserContext userContext) {
+    public List<List<String>> getDataGridRowByType(SearchResult<EventLog> searchResult, YukonUserContext userContext) {
         
         List<EventLog> resultList = searchResult.getResultList();
         
@@ -58,6 +60,30 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         return dataGrid;
     }
 
+    @Override
+    public List<List<String>> getDataGridRowByCategory(SearchResult<EventLog> searchResult, YukonUserContext userContext) {
+        final MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        List<EventLog> resultList = searchResult.getResultList();
+
+        List<List<String>> dataGrid = Lists.newArrayListWithExpectedSize(resultList.size());
+        for (EventLog eventLog : resultList) {
+            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
+            
+            List<String> dataRow = Lists.newArrayListWithExpectedSize(resultList.size()*3);
+            
+            dataRow.add(eventLog.getEventType());
+            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
+            
+            String eventLogMessage = messageSourceAccessor.getMessage(eventLog.getMessageSourceResolvable());
+            dataRow.add(eventLogMessage);
+            
+            dataGrid.add(dataRow);
+        }
+        return dataGrid;
+    }
+    
     @Override
     public SearchResult<EventLog> 
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
@@ -162,4 +188,10 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
     }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+
 }

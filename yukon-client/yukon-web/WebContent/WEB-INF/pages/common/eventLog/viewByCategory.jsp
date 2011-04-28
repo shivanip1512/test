@@ -40,7 +40,12 @@
             <input value="Filter" type="submit">
         </form:form>
     </tags:sectionContainer>
-    <br>
+
+    <div style="text-align: right;">
+        <%-- GENERATE REPORTS --%>
+
+        <cti:labeledImg key="csvExport" href="${csvLink}"/>
+    </div>
 
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>

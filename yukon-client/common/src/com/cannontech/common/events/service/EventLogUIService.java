@@ -13,12 +13,20 @@ import com.cannontech.user.YukonUserContext;
 public interface EventLogUIService {
 
     /**
-     * This method converts an event log search result into a data grid (List<List<String>>),
+     * This method converts an event log search result from a byType into a data grid (List<List<String>>),
      * which is used to display the results to the web page and the csv file.
      * 
      */
-    public List<List<String>> getDataGridRow(SearchResult<EventLog> searchResult, 
-                                             YukonUserContext userContext) ;
+    public List<List<String>> getDataGridRowByType(SearchResult<EventLog> searchResult, 
+                                                   YukonUserContext userContext) ;
+
+    /**
+     * This method converts an event log search result from a byCategory page into a data grid (List<List<String>>),
+     * which is used to display the results to the web page and the csv file.
+     * 
+     */
+    public List<List<String>> getDataGridRowByCategory(SearchResult<EventLog> searchResult, 
+                                                       YukonUserContext userContext) ;
     
     /**
      * This method gets all the event logs that contain the filter value between the start and 

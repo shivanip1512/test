@@ -98,11 +98,12 @@ public class EventLogViewerController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
 
-    @RequestMapping
+    @RequestMapping(value="viewByCategory", params="!export")
     public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean, 
                                BindingResult bindingResult,
                                FlashScope flashScope,
-                               YukonUserContext userContext, 
+                               YukonUserContext userContext,
+                               HttpServletRequest request,
                                ModelMap model) throws ServletException, ParseException {
         // Validating the search data
         eventLogCategoryValidator.doValidation(backingBean, bindingResult);
@@ -128,7 +129,53 @@ public class EventLogViewerController {
                                                                        userContext);
         
         model.addAttribute("searchResult", searchResult);
+        
+        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
+        model.addAttribute("csvLink", csvLink);
+
     }
+
+    @RequestMapping(value="viewByCategory", params="export", method=RequestMethod.GET)
+    public void exportByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean,
+                           HttpServletResponse response,
+                           YukonUserContext userContext, 
+                           ModelMap model) throws ServletException, ParseException, IOException {
+
+        List<EventCategory> eventCategories = Lists.newArrayList();
+        eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
+        
+        // Getting the search results
+        SearchResult<EventLog> searchResult = 
+            eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
+                                                                       backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       backingBean.getStartIndex(), 
+                                                                       Integer.MAX_VALUE,
+                                                                       backingBean.getFilterValue(),
+                                                                       userContext);
+        
+        // Get column names
+        List<String> columnNames = Lists.newArrayList();
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.event"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.dateAndTime"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.common.events.columnHeader.message"));
+        
+        // Get data grid
+        List<List<String>> dataGrid = 
+            eventLogUIService.getDataGridRowByCategory(searchResult, userContext);
+        
+        // Build and write csv report
+        String categoryCsvFileName = messageSourceAccessor.getMessage("yukon.web.modules.support.byCategory.csvExport.fileName");
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition",
+                           "filename=\"" + ServletUtil.makeWindowsSafeFileName(categoryCsvFileName)+ ".csv\"");
+        OutputStream outputStream = response.getOutputStream();
+        generateCsvReport(columnNames, dataGrid, outputStream, userContext);
+        
+    }
+
     
     @ModelAttribute("eventLogCategoryBackingBean")
     public EventLogCategoryBackingBean initializeEventLogCategoryBackingBean(YukonUserContext userContext) {
@@ -234,7 +281,7 @@ public class EventLogViewerController {
         
         // Get data grid
         List<List<String>> dataGrid = 
-            eventLogUIService.getDataGridRow(searchResult, userContext);
+            eventLogUIService.getDataGridRowByType(searchResult, userContext);
         
         // Build and write csv report
         response.setContentType("text/csv");
