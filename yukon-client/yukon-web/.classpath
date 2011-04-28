@@ -59,9 +59,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/api"/>
 	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl-1.2.jar" sourcepath="Z:/java/Third-Party Sources/jakarta-taglibs-standard-1.1.2-src.zip"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.18-src.zip"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.18-src.zip"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.18-src.zip"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.29-src.zip"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.29-src.zip"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar" sourcepath="/YUKON_SOURCE_COLLECTION/apache-tomcat-6.0.29-src.zip"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar"/>
