@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1021>
-<meta name=layout-width content=804>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;TNPP;RFMESH">
+<meta name=layout-height content=889>
+<meta name=layout-width content=1204>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;TNPP;RFMESH;PLC">
 
 
 <!--(Links)=========================================================-->
@@ -65,16 +65,16 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Core Database</h1>
 
-<p>The Core Database contains all of the information necessary for the 
- Yukon system to communicate with field devices. This includes information 
- about the comm channels, radio or phone lines, baud rates, device addresses, 
- data collection, point definitions, and information on how to handle data 
- returned as well as alarms and errors.</p>
+<p>The Core Database contains all of the configuration information necessary 
+ for the Yukon system to communicate with field devices. This includes 
+ information about the comm channels, radio or phone lines, baud rates, 
+ device addresses, data collection, point definitions, and information 
+ on how to handle data returned as well as alarms and errors.</p>
 
 <p>&nbsp;</p>
 
-<p>Cooper Power Systems recommends creating a new core database in the 
- following order:</p>
+<p>Cooper Power Systems recommends creating core database items in the 
+ following order for a new Yukon system:</p>
 
 <p>&nbsp;</p>
 
@@ -86,8 +86,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  exchange data with field devices.</p></li>
 	
 	<li class=kadov-p><p>Create the devices that use comm channels to communicate. 
- A device is the physical field hardware used by the Yukon software to 
- gather data. This includes Power Line Carrier (PLC) infrastructure hardware, 
+ A device is the physical field hardware used by the Yukon system to gather 
+ data. This includes Power Line Carrier (PLC) infrastructure hardware, 
  data gathering devices, and control devices.</p></li>
 </ol>
 
@@ -96,7 +96,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 <p style="margin-left: 40px;">The following device types, which use comm 
  channels to communicate, can be created in the Database Editor:</p>
 
-<ol>
+<ul>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -126,11 +126,11 @@ kadovFilePopupInit('a1');
 kadovFilePopupInit('a2');
 //--></script><!--}}end!kadov--></p></li>
 	</ul>
-</ol>
+</ul>
 
-<p style="margin-left: 40px;">Note: Metering Control Transponders (MCT), 
- repeaters, and two-way Load Control Receivers (LCR) cannot be created 
- until communication routes exist.</p>
+<p style="margin-left: 40px;"><span style="font-weight: bold;">Note:</span> 
+ Metering Control Transponders (MCTs), repeaters, and two-way Load Control 
+ Receivers (LCRs) cannot be created until communication routes exist.</p>
 
 <p style="margin-left: 40px;">&nbsp;</p>
 
@@ -139,20 +139,21 @@ kadovFilePopupInit('a2');
 	type=1>
 	
 	<li class=kadov-p><p>Create the <a href="Creating_a_Route.htm">communication 
- routes</a> for the Yukon system. A route is a communication path to a 
- field device. These paths are used by the Yukon system to control the 
- number of communications distributed on the system. <span style="margin-bottom: 9pt;">Macro 
- routes combine multiple individual routes into a combination route and 
- send messages to multiple areas of a system.</span></p></li>
+ routes</a> for the Yukon system. A route is a communication path for messages 
+ to and from field devices. A communication route is used to control how 
+ messages are sent or received by the Yukon system . A m<span style="margin-bottom: 9pt;">acro 
+ route combines multiple individual communication routes into a combination 
+ route, which is used to send messages to multiple areas of a system.</span></p></li>
 </ol>
 
 <p style="margin-left: 40px;">&nbsp;</p>
 
-<p style="margin-left: 40px;">When a signal transmitter is added to the 
- Yukon Editor, the transmitter communication route is automatically added 
- to the database. Examples of signal transmitters include:</p>
+<p style="margin-left: 40px;"><span style="font-weight: bold;">Note:</span> 
+ When a signal transmitter is added using the Yukon Database Editor, a 
+ communication route for the transmitter is automatically added to the 
+ Yukon database. Examples of signal transmitters include:</p>
 
-<ul start=3
+<ol start=3
 	style="list-style: decimal;"
 	type=1>
 	
@@ -177,7 +178,7 @@ kadovFilePopupInit('a2');
 		
 		<li class=kadov-p><p>WCTP Terminal</p></li>
 	</ul>
-</ul>
+</ol>
 
 <p style="margin-left: 40px;">&nbsp;</p>
 
@@ -185,14 +186,14 @@ kadovFilePopupInit('a2');
 	style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Create any <a href="Creating_a_Repeater.htm">repeaters</a> 
- through which the downline communication travels to field devices. A repeater 
- is needed when a CCU is unable to communicate with an entire region. Routes 
- defined using repeaters originate from the transmitter and have their 
- signal rebroadcast by the repeater.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Create the <a href="Creating_a_Repeater.htm">repeaters</a> 
+ for the Yukon system, if repeaters are being used to improve PLC communications. 
+ Repeaters are used if a CCU is unable to communicate with small pockets 
+ of field devices within an area.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Create the <a href="Creating_an_MCT.htm">MCT</a> 
- devices and then assign names, addresses, and routes.</p></li>
+ devices for the Yukon system, if MCTs are being used to collect data from 
+ the field.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Create additional 
  <a href="Creating_a_Core_Database_Point.htm">points</a> on the devices. 
@@ -201,7 +202,7 @@ kadovFilePopupInit('a2');
 
 <p style="margin-left: 40px;">The four types of points are:</p>
 
-<ul start=4
+<ol start=4
 	style="list-style: decimal;"
 	type=1>
 	
@@ -225,7 +226,7 @@ kadovFilePopupInit('a2');
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Calculated</span> 
  – Calculates values from math operations performed on other points.</p></li>
 	</ul>
-</ul>
+</ol>
 
 <ol start=7
 	style="list-style: decimal;"
@@ -250,8 +251,8 @@ kadovFilePopupInit('a2');
 				vertical-align: baseline;"
 		align=bottom>
 <param name="_Version" value="65536" >
-<param name="_ExtentX" value="2413" >
-<param name="_ExtentY" value="593" >
+<param name="_ExtentX" value="2138" >
+<param name="_ExtentY" value="508" >
 <param name="_StockProps" value="13" >
 <param name="ForeColor" value="0" >
 <param name="BackColor" value="13160660" >
@@ -262,7 +263,7 @@ kadovFilePopupInit('a2');
 <param name="Items" value="Creating a Comm Channel;Creating_a_Comm_Channel.htm$$**$$Creating a Core Database Point;Creating_a_Core_Database_Point.htm$$**$$Creating a Repeater;Creating_a_Repeater.htm$$**$$Creating a Route;Creating_a_Route.htm$$**$$Creating a State Group;Creating_a_State_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonSVN\dbeditor\src\Core_Database.htm" >
+<param name="_CURRENTFILEPATH" value="C:\yukon-help\dbeditor\src\Core_Database.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
