@@ -17,7 +17,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -129,8 +128,6 @@ public final class CtiUtilities {
     public final static String tif = "tif";
     public final static String png = "png";
 
-    private static String temp;
-
     static {
         /** Init our beginning of time here */
         gc1990 = new GregorianCalendar();
@@ -152,17 +149,10 @@ public final class CtiUtilities {
         gc2035.set(Calendar.MILLISECOND, 0);
         gc2035.set(Calendar.WEEK_OF_YEAR, 1);
         gc2035.set(Calendar.DAY_OF_YEAR, 1);
-
-        try {
-            temp = java.net.InetAddress.getLocalHost().getHostAddress().toString()
-                        + ":" + Long.toHexString(System.currentTimeMillis());
-        } catch (java.net.UnknownHostException e) {
-            CTILogger.info("*** UnknownHostException occured, using (null) for the source in the base message class.");
-        }
-
     }
 
-    public static final String DEFAULT_MSG_SOURCE = temp;
+    public static final String DEFAULT_MSG_SOURCE = getIPAddress() + ":" +
+        Long.toHexString(System.currentTimeMillis());
 
     public static final String OUTPUT_FILE_NAME = CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
 
@@ -481,8 +471,7 @@ public final class CtiUtilities {
      * @return java.lang.String
      */
     public final static String getAppRegistration() {
-        return getApplicationName() + "-" +
-               getUserIPAddress() + ":" +
+        return getApplicationName() + "-" + getIPAddress() + ":" +
                Integer.toHexString(Thread.currentThread().hashCode()) + "  (" +
                getUserName() + ")";
     }
@@ -884,15 +873,6 @@ public final class CtiUtilities {
         return value ? trueChar : falseChar;
     }
 
-    public final static String getUserIPAddress() {
-        try {
-            return java.net.InetAddress.getLocalHost().getHostAddress();
-        } catch (java.net.UnknownHostException e) {
-            return "(unknown)";
-        }
-
-    }
-
     /**
      * Returns the YukonUser name. This method use to return the
      * windows username.
@@ -1034,8 +1014,6 @@ public final class CtiUtilities {
                                                              double scanRateSecs) {
         String scanRateString = null;
         String scanRateUnitString = null;
-        boolean found = false;
-        boolean unitsFound = false;
 
         // when we divide the scanRateSecs value, we must use a double formatted number
         // so we are returned a double value (Ex: getDecimalFormatter().format(scanRateSecs/60.0)
@@ -1362,9 +1340,7 @@ public final class CtiUtilities {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         out.println("Yukon Version: " + VersionTools.getYUKON_VERSION());
-        try {
-            out.println("Local IP: " + InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException e) {}
+        out.println("Local IP: " + getIPAddress());
         out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
         out.println("USER_COUNTRY: " + SystemUtils.USER_COUNTRY);
