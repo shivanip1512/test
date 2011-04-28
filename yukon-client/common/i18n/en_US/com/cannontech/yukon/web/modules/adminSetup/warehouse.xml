@@ -33,11 +33,12 @@
     <entry key="yukon.web.modules.adminSetup.warehouse.CREATE.pageDescription">New Warehouse</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.CREATE.pageName">New Warehouse</entry>
     
-    <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.pageDescription">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.pageName">Edit Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.EDIT.pageDescription">{0}</entry>
     
-    <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageName">View Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageDescription">{0}</entry>
     
     <entry key="yukon.web.modules.adminSetup.warehouse.message">Are you sure you want to delete this warehouse?</entry>
 </properties>

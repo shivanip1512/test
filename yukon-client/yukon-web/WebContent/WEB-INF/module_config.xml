@@ -1323,7 +1323,7 @@
                                         <link>/spring/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
                                         <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                         <pages>
-                                            <page name="warehouse.EDIT" type="DETAIL">
+                                            <page name="warehouse.EDIT" type="DETAIL_CHILD">
                                                 <menu>energyCompany|home</menu>
                                                 <link>/spring/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
                                                 <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
