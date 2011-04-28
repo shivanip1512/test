@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 
@@ -741,6 +742,10 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         return ((Number)o).doubleValue();
     }
     
+    private BigDecimal toBigDecimal(Object o) throws ClassCastException {
+        return BigDecimal.valueOf((Double)o);
+    }
+    
     private void handleException(Throwable exception) {
         System.out.print(exception.getMessage());
         System.out.println("--------- UNCAUGHT EXCEPTION ---------");
@@ -1033,8 +1038,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
         
-        getJCSpinFieldHeatingOffset().setValue(gear.getHeatingOffset());
-        getJCSpinFieldCoolingOffset().setValue(gear.getCoolingOffset());
+        getJCSpinFieldHeatingOffset().setValue(toBigDecimal(gear.getHeatingOffset()));
+        getJCSpinFieldCoolingOffset().setValue(toBigDecimal(gear.getCoolingOffset()));
         
         if  (gear.getSettings().charAt(1) == 'C' )
             setTemperatureUnits( 'C' );

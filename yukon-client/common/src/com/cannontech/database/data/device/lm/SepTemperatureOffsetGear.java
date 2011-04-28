@@ -57,11 +57,11 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
         setValueTb((int) (offset * 10));
     }
     
-    public BigDecimal getHeatingOffset() {
-        return (new BigDecimal(getValueTa()).divide(new BigDecimal(10)));
+    public Double getHeatingOffset() {
+        return (getValueTa() / 10.0);
     }
     
-    public BigDecimal getCoolingOffset() {
-        return (new BigDecimal(getValueTb()).divide(new BigDecimal(10)));
+    public Double getCoolingOffset() {
+        return ( getValueTb() / 10.0);
     }
 }

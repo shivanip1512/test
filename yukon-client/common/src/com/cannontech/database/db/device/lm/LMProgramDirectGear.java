@@ -201,8 +201,7 @@ public abstract class LMProgramDirectGear
 				gear.setDbConnection(conn);
 				
 				//need to make sure we get the Thermostat specific information from its separate table
-				if (gear instanceof ThermostatSetbackGear || gear instanceof SimpleThermostatRampingGear
-				        || gear instanceof LMThermostatGear ) {
+				if (gear instanceof LMThermostatGear) {
 					gear.retrieve();
 				} else {
 					gear.setGearName(name);
