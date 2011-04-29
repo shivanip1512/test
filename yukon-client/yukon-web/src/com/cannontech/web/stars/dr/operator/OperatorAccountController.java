@@ -401,6 +401,7 @@ public class OperatorAccountController {
     	            public Integer doInTransaction(TransactionStatus status) {
     	                /* Create the account */
             	        int accountId = accountService.addAccount(updatableAccount, user);
+            	        operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
             	        if(createLogin) {
             	            /* Create the login */
             	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
