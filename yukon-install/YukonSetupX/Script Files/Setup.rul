@@ -367,11 +367,18 @@ begin
 	//get out of "hidden" app-launch mode
 	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
 	
-	//Delete the contents of Yukon\Server\web\webapps\ROOT\WEB-INF\lib
+	//Delete the contents of 
+	//  Yukon\Server\web\webapps\ROOT\WEB-INF\lib
+	//  Yukon\Client\bin
 	//(this is to protect from any conflicts that might ensue with upgraded jars,
 	//since installscript projects only update files with the same name as a file being
 	//installed)
 	sDir = TARGETDIR ^ "\\Server\\web\\webapps\\ROOT\\WEB-INF\\lib";
+	nResult = DeleteDir(sDir, ALLCONTENTS);
+	if(nResult < 0) then
+		MessageBox("Unable to delete \"" + sDir + "\".  Old jars may still be present.", WARNING);
+	endif;
+	sDir = TARGETDIR ^ "\\Client\\bin";
 	nResult = DeleteDir(sDir, ALLCONTENTS);
 	if(nResult < 0) then
 		MessageBox("Unable to delete \"" + sDir + "\".  Old jars may still be present.", WARNING);
