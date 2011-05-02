@@ -58,8 +58,8 @@ import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
+import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
@@ -115,9 +115,6 @@ public final class BulkImporter extends Observable implements MessageListener
     //15 min wait for porter safety
     private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
-	
-	private PlcAddressRangeService plcAddressRangeService = 
-        YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
 	
 public BulkImporter() {
 	super();
@@ -247,7 +244,8 @@ public void runImport(List<ImportData> imps) {
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
     RoleDao roleDao = (RoleDao) YukonSpringHook.getBean("roleDao");
-    
+	PlcAddressRangeService plcAddressRangeService = YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
+	
     StoredDeviceGroup alternateGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
     StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
     StoredDeviceGroup collectionGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.COLLECTION);
@@ -344,16 +342,13 @@ public void runImport(List<ImportData> imps) {
         }
         
         /*Address range check for 400 series*/
-        if(template400SeriesBase instanceof MCT400SeriesBase) {
-        	int deviceType = PAOGroups.getDeviceType(template400SeriesBase.getPAOType());
-        	PaoType paoType = PaoType.getForId(deviceType);
-            IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
-        	if (!range.isWithinRange(Integer.valueOf(address))) {
-        		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
-        		log.error(logMsgPrefix + error);
-        		errorMsg.add(error);
-        	}
-		}
+    	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
+        IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
+    	if (!range.isWithinRange(Integer.valueOf(address))) {
+    		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
+    		log.error(logMsgPrefix + error);
+    		errorMsg.add(error);
+    	}
         
         /*New 400 series MCTs will each need a clause added above if address range
          * validation is desired
