@@ -3,7 +3,6 @@ Main-Class: com.cannontech.yc.gui.YukonCommander
 Class-Path: ./ 
  common.jar 
  jradius-client.jar 
- commons-httpclient.jar 
  rwav.jar 
  loadcontrol.jar 
  yukonappserver.jar 
