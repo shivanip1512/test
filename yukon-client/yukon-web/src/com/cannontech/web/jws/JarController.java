@@ -3,14 +3,12 @@ package com.cannontech.web.jws;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.SocketException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -66,7 +64,7 @@ public class JarController extends AbstractController {
             alreadyBad = true;
         } finally {
             try {
-                fis.close();
+                if(fis != null) fis.close();
             }
             catch (IOException ex) {
                 if (!alreadyBad) logger.warn("Could not close InputStream: " + ex);
