@@ -340,3 +340,19 @@ begin
 	    return BACK;
 	endif;
 end;
+
+//---------------------------------------------------------------
+//Helper function that deletes all files in a specified directory
+//with a specified file extension.
+//---------------------------------------------------------------
+export prototype DeleteFilesOfType(string, string);
+function DeleteFilesOfType(sDirectory, sExtension)
+number nResult;
+string sSearchString;
+begin
+	sSearchString = "*." + sExtension;
+	nResult = DeleteFile(sDirectory ^ sSearchString); 
+	if(nResult < 1) then
+		MessageBox("Error deleting files of type \"" + sSearchString + "\" in directory \"" + sDirectory + ". Old files may still be present.", WARNING);
+	endif;
+end;
