@@ -36,7 +36,7 @@
                     <cti:msg2 var="read" key=".read"/>
                     <cti:msg2 var="reading" key=".reading"/>
                         <ct:widgetActionUpdate method="sendConfig" label="${send}" labelBusy="${sending}" container="${widgetParameters.widgetId}_config_results"/>
-                        s<ct:widgetActionUpdate method="readConfig" label="${read}" labelBusy="${reading}" container="${widgetParameters.widgetId}_config_results"/>
+                        <ct:widgetActionUpdate method="readConfig" label="${read}" labelBusy="${reading}" container="${widgetParameters.widgetId}_config_results"/>
                     </cti:checkRolesAndProperties>
                     <cti:msg2 var="verify" key=".verify"/>
                     <cti:msg2 var="verifying" key=".verifying"/>
