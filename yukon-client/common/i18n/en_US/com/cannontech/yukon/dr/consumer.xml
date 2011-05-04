@@ -212,7 +212,7 @@
     <entry key="yukon.dr.consumer.scheduleUpdate.result.OPERATOR_NO_SERIAL_ERROR">The serial # of thermostat {0} cannot be empty. Schedule is not sent.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_NO_SERIAL_ERROR">Cannot send schedule to {0}. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_UPDATE_SCHEDULE_ERROR">Cannot send schedule to {0}. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_UPDATE_SCHEDULE_SUCCESS">The schedule has been sent to {0}.  It may take a few minutes before the thermostat receives it.</entry>
+    <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_UPDATE_SCHEDULE_SUCCESS">The schedule has been saved and sent to {0}.  It may take a few minutes before the thermostat receives it.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_SAVE_SCHEDULE_SUCCESS">The schedule has been saved.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_MULTIPLE_ERROR">There was a problem sending the schedule to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
                 
@@ -274,10 +274,12 @@
     
     <!--  thermostatScheduleConfirm.jsp -->
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.header">Thermostat - Schedule Confirm</entry>
-    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.introText">The following schedule options will be sent to your thermostat:</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.introText.save">The following schedule options will be saved:</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.introText.saveApply">The following schedule options will be saved and sent to your thermostat:</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit">{0} - Cool: {1} °F Heat: {2} °F</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius">{0} - Cool: {1} °C Heat: {2} °C</entry>
-    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText">Do you wish to send this schedule to your thermostat?</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText.save">Do you wish to save this schedule?</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText.saveApply">Do you wish to save this schedule and send this schedule to your thermostat?</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.ok">Continue</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.cancel">Cancel</entry>
     

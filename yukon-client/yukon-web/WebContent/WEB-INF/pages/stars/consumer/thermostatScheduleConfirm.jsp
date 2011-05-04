@@ -23,7 +23,7 @@
     </h3>
     
     
-    <cti:msg key="yukon.dr.consumer.thermostatScheduleConfirm.introText" /><br>
+    <cti:msg2 key="yukon.dr.consumer.thermostatScheduleConfirm.introText.${saveAction}" /><br>
     <br>
     
     <c:forEach var="display" items="${confirmationDisplays}">
@@ -47,7 +47,7 @@
         <input type="hidden" name="saveAction" value="${saveAction}"/>
         
         <div align="center">
-		    <cti:msg key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText" /><br><br>
+		    <cti:msg key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText.${saveAction}" /><br><br>
 		    <cti:msg var="okText" key="yukon.dr.consumer.thermostatScheduleConfirm.ok" />
 		    <cti:msg var="cancelText" key="yukon.dr.consumer.thermostatScheduleConfirm.cancel" />
 		    <input type="submit" value="${okText}"/>
