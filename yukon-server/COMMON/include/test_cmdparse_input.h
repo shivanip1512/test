@@ -96,6 +96,7 @@ std::string inputString[] = {
 "getconfig intervals lp",
 "getconfig model",
 "putvalue analog 1 3.14159",
+"putvalue analog value 2.71828183",
 "putvalue kyz 1 1.234",
 "putstatus reset",
 "putstatus reset alarms",

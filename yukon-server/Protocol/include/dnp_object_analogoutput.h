@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_analogoutput
-*
-* Class:  DNP Analog Output object
-* Date:   7/5/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECT_ANALOGOUTPUT_H__
-#define __DNP_OBJECT_ANALOGOUTPUT_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dnp_objects.h"
 
@@ -25,10 +6,11 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class AnalogOutput : public Object
+class AnalogOutputStatus : public Object
 {
 private:
-    long _value;
+    long   _longValue;
+    double _doubleValue;
 
     union aofu //  analog out flag union, only for Slick's parsing pleasure
     {
@@ -45,20 +27,20 @@ private:
     } _flags;
 
 protected:
-    AnalogOutput(int group, int variation);
+    AnalogOutputStatus(int group, int variation);
 
     int restoreVariation(const unsigned char *buf, int len, int variation);
     int serializeVariation(unsigned char *buf, int variation) const;
 
-    void setValue(long value);
-
 public:
-    AnalogOutput(int variation);
+    AnalogOutputStatus(int variation);
 
     enum Variation
     {
-        AO_32Bit = 1,
-        AO_16Bit = 2
+        AOS_32Bit = 1,
+        AOS_16Bit = 2,
+        AOS_SingleFloat = 3,
+        AOS_DoubleFloat = 4,
     };
 
     enum
@@ -80,10 +62,11 @@ public:
 };
 
 
-class AnalogOutputBlock : public Object
+class AnalogOutput : public Object
 {
 private:
-    long _value;
+    long   _longValue;
+    double _doubleValue;
 
     unsigned char _status;
 
@@ -92,12 +75,14 @@ protected:
     int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
-    AnalogOutputBlock(int variation);
+    AnalogOutput(int variation);
 
     enum Variation
     {
-        AOB_32Bit = 1,
-        AOB_16Bit = 2
+        AO_32Bit = 1,
+        AO_16Bit = 2,
+        AO_SingleFloat = 3,
+        AO_DoubleFloat = 4,
     };
 
     enum group
@@ -109,14 +94,12 @@ public:
     int serialize(unsigned char *buf) const;
     int getSerializedLen(void) const;
     unsigned char getStatus() const;
-    long getValue() const;
+    double getValue() const;
 
-    void setControl(long value);
+    void setControl(double value);
 };
 
 }
 }
 }
-
-#endif  //  #ifndef __DNP_OBJECT_ANALOGOUTPUT_H__
 

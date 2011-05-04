@@ -322,7 +322,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             }
             else
             {
-                controlout.type            = Protocol::DNPInterface::DigitalOutput;
+                controlout.type            = Protocol::DNPInterface::DigitalOutputPointType;
                 controlout.control_offset  = offset;
 
                 controlout.dout.control    = controltype;
@@ -410,7 +410,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         {
             int offset;
 
-            using Cti::Protocol::DNP::AnalogOutput;
+            using Cti::Protocol::DNP::AnalogOutputStatus;
 
             boost::optional<long> control_offset;
 
@@ -428,9 +428,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                     {
                         if( point->getType() == AnalogPointType )
                         {
-                            if( point->getPointOffset() > AnalogOutput::AnalogOutputOffset )
+                            if( point->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
                             {
-                                control_offset = point->getPointOffset() - AnalogOutput::AnalogOutputOffset;
+                                control_offset = point->getPointOffset() - AnalogOutputStatus::AnalogOutputOffset;
                             }
                         }
                     }
@@ -440,9 +440,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 {
                     controlout.control_offset = *control_offset;
 
-                    controlout.type = Protocol::DNPInterface::AnalogOutput;
+                    controlout.type = Protocol::DNPInterface::AnalogOutputPointType;
 
-                    controlout.aout.value     = parse.getiValue("analogvalue");
+                    controlout.aout.value     = parse.getdValue("analogvalue");
 
                     command = Protocol::DNPInterface::Command_SetAnalogOut;
                 }

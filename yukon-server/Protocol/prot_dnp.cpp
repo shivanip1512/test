@@ -162,12 +162,12 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_SetAnalogOut:
             {
-                if( _command_parameters.size() == 1 && _command_parameters[0].type == AnalogOutput )
+                if( _command_parameters.size() == 1 && _command_parameters[0].type == AnalogOutputPointType )
                 {
                     _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
 
-                    ObjectBlock       *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                    AnalogOutputBlock *aout = CTIDBG_new AnalogOutputBlock(AnalogOutputBlock::AOB_16Bit);
+                    ObjectBlock  *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
+                    AnalogOutput *aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_16Bit);
 
                     aout->setControl(_command_parameters[0].aout.value);
 
@@ -192,7 +192,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_SetDigitalOut_SBO_Select:
             case Command_SetDigitalOut_SBO_Operate:
             {
-                if( _command_parameters.size() == 1 && _command_parameters[0].type == DigitalOutput )
+                if( _command_parameters.size() == 1 && _command_parameters[0].type == DigitalOutputPointType )
                 {
                     if( _command == Command_SetDigitalOut_Direct )
                     {
@@ -296,31 +296,31 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 {
                     if( const ObjectBlock *ob = _object_blocks.front() )
                     {
-                        if( ! ob->empty() && ob->getGroup() == AnalogOutputBlock::Group )
+                        if( ! ob->empty() && ob->getGroup() == AnalogOutput::Group )
                         {
                             const ObjectBlock::object_descriptor od = ob->at(0);
 
                             if( od.object )
                             {
-                                const AnalogOutputBlock *aob = reinterpret_cast<const AnalogOutputBlock *>(od.object);
+                                const AnalogOutput *ao = reinterpret_cast<const AnalogOutput *>(od.object);
 
                                 std::ostringstream o;
 
                                 o << "Analog output request ";
 
-                                if( aob->getStatus() )
+                                if( ao->getStatus() )
                                 {
                                     retVal = NOTNORMAL;
 
                                     o << "unsuccessful\n";
 
-                                    o << "(status = " << aob->getStatus() << ", offset = " << od.index << ", value " << aob->getValue() << ")";
+                                    o << "(status = " << ao->getStatus() << ", offset = " << od.index << ", value " << ao->getValue() << ")";
                                 }
                                 else
                                 {
                                     o << "successful\n";
 
-                                    o << "(offset = " << od.index << ", value " << aob->getValue() << ")";
+                                    o << "(offset = " << od.index << ", value " << ao->getValue() << ")";
                                 }
 
                                 _string_results.push_back(new string(o.str()));
@@ -608,7 +608,7 @@ void DNPInterface::recordPoints( int group, const pointlist_t &points )
             break;
         }
 
-        case AnalogOutput::Group:
+        case AnalogOutputStatus::Group:
         {
             for( itr = points.begin(); itr != points.end(); itr++ )
             {
@@ -691,7 +691,7 @@ string DNPInterface::pointSummary(unsigned points)
 }
 
 
-string DNPInterface::pointDataReport(const map<unsigned, double> &pointdata, unsigned points)
+string DNPInterface::pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points)
 {
     string report, item;
 

@@ -730,8 +730,8 @@ int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj 
         case AnalogInputChange::Group:      obj = CTIDBG_new AnalogInputChange(_variation);         break;
         case AnalogInputFrozen::Group:      obj = CTIDBG_new AnalogInputFrozen(_variation);         break;
         case AnalogInputFrozenEvent::Group: obj = CTIDBG_new AnalogInputFrozenEvent(_variation);    break;
-        case AnalogOutput::Group:           obj = CTIDBG_new AnalogOutput(_variation);              break;
-        case AnalogOutputBlock::Group:      obj = CTIDBG_new AnalogOutputBlock(_variation);         break;
+        case AnalogOutputStatus::Group:           obj = CTIDBG_new AnalogOutputStatus(_variation);              break;
+        case AnalogOutput::Group:      obj = CTIDBG_new AnalogOutput(_variation);         break;
         case BinaryInput::Group:            obj = CTIDBG_new BinaryInput(_variation);               break;
         case BinaryInputChange::Group:      obj = CTIDBG_new BinaryInputChange(_variation);         break;
         case BinaryOutput::Group:           obj = CTIDBG_new BinaryOutput(_variation);              break;
@@ -829,7 +829,7 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
         case AnalogInputChange::Group:
         case AnalogInputFrozen::Group:
         case AnalogInputFrozenEvent::Group:
-        case AnalogOutput::Group:
+        case AnalogOutputStatus::Group:
         case BinaryInput::Group:
         case BinaryInputChange::Group:
         case BinaryOutput::Group:
@@ -857,9 +857,9 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
                         {
                             pMsg->setId(pMsg->getId() + BinaryOutput::BinaryOutputStatusOffset);
                         }
-                        else if( (*o_itr)->getGroup() == AnalogOutput::Group )
+                        else if( (*o_itr)->getGroup() == AnalogOutputStatus::Group )
                         {
-                            pMsg->setId(pMsg->getId() + AnalogOutput::AnalogOutputOffset);
+                            pMsg->setId(pMsg->getId() + AnalogOutputStatus::AnalogOutputOffset);
                         }
                         else if( (*o_itr)->getGroup() == CounterFrozen::Group )
                         {

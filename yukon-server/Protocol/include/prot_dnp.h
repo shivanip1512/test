@@ -90,8 +90,8 @@ public:
 
     enum OutputPointType
     {
-        AnalogOutput,
-        DigitalOutput
+        AnalogOutputPointType,
+        DigitalOutputPointType
     };
 
     struct output_point

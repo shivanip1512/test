@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_analoginput
-*
-* Namespace: CtiDNP
-* Class:     AnalogInput variations
-* Date:   7/5/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECT_ANALOGINPUT_H__
-#define __DNP_OBJECT_ANALOGINPUT_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dnp_objects.h"
 #include "dnp_object_time.h"
@@ -31,7 +11,8 @@ namespace DNP       {
 class AnalogInput : public Object
 {
 private:
-    long _value;
+    long   _longValue;
+    double _doubleValue;
 
     union aifu  //  analog in flag union, named for Slick's parsing pleasure
     {
@@ -64,7 +45,9 @@ public:
         AI_32Bit       = 1,
         AI_16Bit       = 2,
         AI_32BitNoFlag = 3,
-        AI_16BitNoFlag = 4
+        AI_16BitNoFlag = 4,
+        AI_SingleFloat  = 5,
+        AI_DoubleFloat  = 6
     };
 
     enum
@@ -126,7 +109,11 @@ public:
         AIC_32BitNoTime   = 1,
         AIC_16BitNoTime   = 2,
         AIC_32BitWithTime = 3,
-        AIC_16BitWithTime = 4
+        AIC_16BitWithTime = 4,
+        AIC_SingleFloatNoTime   = 5,
+        AIC_DoubleFloatNoTime   = 6,
+        AIC_SingleFloatWithTime = 7,
+        AIC_DoubleFloatWithTime = 8
     };
 
     enum
@@ -175,5 +162,3 @@ public:
 }
 }
 
-
-#endif  //  #ifndef __DNP_OBJECT_ANALOGINPUT_H__

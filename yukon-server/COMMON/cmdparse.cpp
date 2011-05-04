@@ -1398,8 +1398,8 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
     static const boost::regex   re_reading(CtiString("reading ") + str_floatnum);
     static const boost::regex   re_kyzoffset(CtiString("kyz *") + str_num);   //  if there's a kyz offset specified
-    static const boost::regex   re_analog_offset(CtiString("analog ") + str_num + CtiString(" -?") + str_num);
-    static const boost::regex   re_analog_no_offset(CtiString("analog value -?") + str_num);
+    static const boost::regex   re_analog_offset(CtiString("analog ") + str_num + CtiString(" -?") + str_floatnum);
+    static const boost::regex   re_analog_no_offset(CtiString("analog value -?") + str_floatnum);
     static const boost::regex   re_asciiraw(CtiString("asciiraw ") + str_quoted_token);
 
 
@@ -1437,7 +1437,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
                 cmdtok();  //  move past "analog"
 
                 _cmd["analogoffset"] = CtiParseValue( atoi(cmdtok().c_str()) );
-                _cmd["analogvalue"]  = CtiParseValue( atoi(cmdtok().c_str()) );
+                _cmd["analogvalue"]  = CtiParseValue( atof(cmdtok().c_str()) );
             }
             if(!(token = CmdStr.match(re_analog_no_offset)).empty())
             {
@@ -1448,7 +1448,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
                 cmdtok();  //  move past "analog"
                 cmdtok();  //  move past "value"
 
-                _cmd["analogvalue"]  = CtiParseValue( atoi(cmdtok().c_str()) );
+                _cmd["analogvalue"]  = CtiParseValue( atof(cmdtok().c_str()) );
             }
         }
         if(CmdStr.contains(" reset"))

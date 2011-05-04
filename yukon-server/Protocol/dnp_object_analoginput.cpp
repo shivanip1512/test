@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_analoginput
-*
-* Date:   7/8/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include "dnp_object_analoginput.h"
 #include "logger.h"
@@ -26,14 +12,16 @@ namespace DNP       {
 
 AnalogInput::AnalogInput(int group, int variation) : Object(group, variation)
 {
-    _value = 0;
+    _doubleValue = 0.0;
+    _longValue = 0;
     _flags.raw = 0;
 }
 
 
 AnalogInput::AnalogInput(int variation) : Object(Group, variation)
 {
-    _value = 0;
+    _doubleValue = 0.0;
+    _longValue = 0;
     _flags.raw = 0;
 }
 
@@ -76,13 +64,13 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         }
         case AI_32BitNoFlag:
         {
-            _value = 0;
+            _longValue = 0;
 
             //  these 32 bits will fill up the long, including the sign bit
-            _value |= buf[pos++] ;
-            _value |= buf[pos++] <<  8;
-            _value |= buf[pos++] << 16;
-            _value |= buf[pos++] << 24;
+            _longValue |= buf[pos++] ;
+            _longValue |= buf[pos++] <<  8;
+            _longValue |= buf[pos++] << 16;
+            _longValue |= buf[pos++] << 24;
 
             break;
         }
@@ -103,7 +91,28 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
             tmpValue |= buf[pos++] << 8;
 
             //  ...  so we can use the compiler's cast to convert it over
-            _value = tmpValue;
+            _longValue = tmpValue;
+
+            break;
+        }
+
+        case AI_SingleFloat:
+        {
+            _flags.raw = buf[pos++];
+
+            _doubleValue = *(reinterpret_cast<const float *>(buf + pos));
+
+            pos += 4;
+
+            break;
+        }
+        case AI_DoubleFloat:
+        {
+            _flags.raw = buf[pos++];
+
+            _doubleValue = *(reinterpret_cast<const double *>(buf + pos));
+
+            pos += 8;
 
             break;
         }
@@ -143,10 +152,10 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         }
         case AI_32BitNoFlag:
         {
-            buf[pos++] =  _value        & 0xff;
-            buf[pos++] = (_value >>  8) & 0xff;
-            buf[pos++] = (_value >> 16) & 0xff;
-            buf[pos++] = (_value >> 24) & 0xff;
+            buf[pos++] =  _longValue        & 0xff;
+            buf[pos++] = (_longValue >>  8) & 0xff;
+            buf[pos++] = (_longValue >> 16) & 0xff;
+            buf[pos++] = (_longValue >> 24) & 0xff;
 
             break;
         }
@@ -158,8 +167,29 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         }
         case AI_16BitNoFlag:
         {
-            buf[pos++] =  _value        & 0xff;
-            buf[pos++] = (_value >>  8) & 0xff;
+            buf[pos++] =  _longValue        & 0xff;
+            buf[pos++] = (_longValue >>  8) & 0xff;
+
+            break;
+        }
+
+        case AI_SingleFloat:
+        {
+            buf[pos++] = _flags.raw;
+
+            *(reinterpret_cast<float *>(buf + pos)) = _doubleValue;
+
+            pos += 4;
+
+            break;
+        }
+        case AI_DoubleFloat:
+        {
+            buf[pos++] = _flags.raw;
+
+            *(reinterpret_cast<double *>(buf + pos)) = _doubleValue;
+
+            pos += 8;
 
             break;
         }
@@ -176,68 +206,43 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
     return pos;
 }
 
-void AnalogInput::setValue(long value) 
+void AnalogInput::setValue(long value)
 {
-    _value = value;
+    _longValue = value;
 }
-void AnalogInput::setOnlineFlag(bool online) 
+void AnalogInput::setOnlineFlag(bool online)
 {
     _flags.online = online;
 }
 
 int AnalogInput::getSerializedLen(void) const
 {
-    int retVal;
-
     switch( getVariation() )
     {
-        case AI_32Bit:
-        {
-            retVal = 5;
-            break;
-        }
+        case AI_32Bit:          return 5;
+        case AI_16Bit:          return 3;
 
-        case AI_16Bit:
-        {
-            retVal = 3;
-            break;
-        }
+        case AI_32BitNoFlag:    return 4;
+        case AI_16BitNoFlag:    return 2;
 
-        case AI_32BitNoFlag:
-        {
-            retVal = 4;
-            break;
-        }
-
-        case AI_16BitNoFlag:
-        {
-            retVal = 2;
-            break;
-        }
+        case AI_SingleFloat:     return 5;
+        case AI_DoubleFloat:     return 9;
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-            break;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
-    return retVal;
+    return 0;
 }
 
 
 CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 {
-    CtiPointDataMsg *tmpMsg;
-
     double val = 0.0;
     int quality = NormalQuality;
-
 
     switch(getVariation())
     {
@@ -245,15 +250,26 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         case AI_16Bit:
         {
             if (!_flags.online && gDNPOfflineNonUpdated)
-            {    
+            {
                 quality = NonUpdatedQuality;
             }
-
         }
         case AI_32BitNoFlag:
         case AI_16BitNoFlag:
         {
-            val = _value;
+            val = _longValue;
+            break;
+        }
+
+        case AI_SingleFloat:
+        case AI_DoubleFloat:
+        {
+            if (!_flags.online && gDNPOfflineNonUpdated)
+            {
+                quality = NonUpdatedQuality;
+            }
+
+            val = _doubleValue;
             break;
         }
 
@@ -267,29 +283,6 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
             break;
         }
     }
-
-/*    UnintializedQuality = 0,
-    InitDefaultQuality,
-    InitLastKnownQuality,
-    NonUpdatedQuality,
-    ManualQuality,
-    NormalQuality,
-    ExceedsLowQuality,
-    ExceedsHighQuality,
-    AbnormalQuality,
-    UnknownQuality,
-    InvalidQuality,
-    PartialIntervalQuality,
-    DeviceFillerQuality,
-    QuestionableQuality,
-    OverflowQuality,
-    PowerfailQuality,
-    UnreasonableQuality
-
-    if( _flags.aiflags.remoteforced )
-    {
-
-    }*/
 
     if( gDNPVerbose )
     {
@@ -301,9 +294,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, quality, AnalogPointType);
-
-    return tmpMsg;
+    return new CtiPointDataMsg(0, val, quality, AnalogPointType);
 }
 
 
@@ -562,6 +553,32 @@ int AnalogInputChange::restore(const unsigned char *buf, int len)
                 break;
             }
 
+            case AIC_SingleFloatNoTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, AI_SingleFloat);
+                break;
+            }
+
+            case AIC_SingleFloatWithTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, AI_SingleFloat);
+                pos += _toc.restore(buf + pos, len - pos);
+                break;
+            }
+
+            case AIC_DoubleFloatNoTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, AI_DoubleFloat);
+                break;
+            }
+
+            case AIC_DoubleFloatWithTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, AI_DoubleFloat);
+                pos += _toc.restore(buf + pos, len - pos);
+                break;
+            }
+
             default:
             {
                 {
@@ -610,6 +627,32 @@ int AnalogInputChange::serialize(unsigned char *buf) const
             break;
         }
 
+        case AIC_SingleFloatNoTime:
+        {
+            pos += serializeVariation(buf + pos, AI_SingleFloat);
+            break;
+        }
+
+        case AIC_SingleFloatWithTime:
+        {
+            pos += serializeVariation(buf + pos, AI_SingleFloat);
+            pos += _toc.serialize(buf + pos);
+            break;
+        }
+
+        case AIC_DoubleFloatNoTime:
+        {
+            pos += serializeVariation(buf + pos, AI_DoubleFloat);
+            break;
+        }
+
+        case AIC_DoubleFloatWithTime:
+        {
+            pos += serializeVariation(buf + pos, AI_DoubleFloat);
+            pos += _toc.serialize(buf + pos);
+            break;
+        }
+
         default:
         {
             {
@@ -627,37 +670,20 @@ int AnalogInputChange::serialize(unsigned char *buf) const
 
 int AnalogInputChange::getSerializedLen(void) const
 {
-    int retVal = 0;
-
     switch(getVariation())
     {
-        case AIC_16BitNoTime:
-        {
-            retVal = 3;
+        case AIC_16BitNoTime:   return 3;
+        case AIC_16BitWithTime: return 9;
+        case AIC_32BitNoTime:   return 5;
+        case AIC_32BitWithTime: return 11;
 
-            break;
-        }
-        case AIC_16BitWithTime:
-        {
-            retVal = 9;
-
-            break;
-        }
-        case AIC_32BitNoTime:
-        {
-            retVal = 5;
-
-            break;
-        }
-        case AIC_32BitWithTime:
-        {
-            retVal = 11;
-
-            break;
-        }
+        case AIC_SingleFloatNoTime:     return 5;
+        case AIC_SingleFloatWithTime:   return 11;
+        case AIC_DoubleFloatNoTime:     return 9;
+        case AIC_DoubleFloatWithTime:   return 15;
     }
 
-    return retVal;
+    return 0;
 }
 
 
@@ -688,7 +714,7 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
     return tmpMsg;
 }
 
-void AnalogInputChange::setTime(CtiTime timestamp) 
+void AnalogInputChange::setTime(CtiTime timestamp)
 {
     _toc.setSeconds(timestamp.seconds());
 }
