@@ -352,7 +352,7 @@ string sSearchString;
 begin
 	sSearchString = "*." + sExtension;
 	nResult = DeleteFile(sDirectory ^ sSearchString); 
-	if(nResult < 1) then
+	if(nResult < 0) then
 		MessageBox("Error deleting files of type \"" + sSearchString + "\" in directory \"" + sDirectory + ". Old files may still be present.", WARNING);
 	endif;
 end;
