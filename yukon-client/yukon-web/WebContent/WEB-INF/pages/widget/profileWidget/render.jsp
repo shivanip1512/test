@@ -85,10 +85,13 @@
 	           <tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>
             </td>
 		</tr>
-		
-        </tr>
 	</table>
-	<br/>
+
+    <c:if test="${not empty errorMsgRequest}">
+    <div class="errorMessage" style="none">Error Retrieving Past Profile:</div>
+        <tags:hideReveal title="${errorMsgRequest}" showInitially="false"/>
+    </c:if>
+    <br>
 </cti:checkProperty>
 </cti:checkRole>
 
