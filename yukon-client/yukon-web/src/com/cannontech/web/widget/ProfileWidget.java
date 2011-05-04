@@ -315,7 +315,6 @@ public class ProfileWidget extends WidgetControllerBase {
         LiteDeviceMeterNumber meterNum = deviceDao.getLiteDeviceMeterNumber(deviceId);
         
         try {
-
             mav.addObject("startDateStr", startDateStr);
             mav.addObject("stopDateStr", stopDateStr);
 
@@ -326,19 +325,14 @@ public class ProfileWidget extends WidgetControllerBase {
             Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr,
                                                                      DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                                      userContext);
-            stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
-            stopDate = DateUtils.addDays(stopDate, 1);
-
-            boolean datesOk = false;
 
             if (startDate == null) {
-                datesOk = false;
                 errorMsg = "Start Date Required";
             } else if (stopDate == null) {
-                datesOk = false;
                 errorMsg = "Stop Date Required";
             } else {
-
+                stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                
                 //TEM DateUtils.round() should do this for you
                 String todayStr = dateFormattingService.format(new Date(),
                                                                    DateFormattingService.DateFormatEnum.DATE,
@@ -348,84 +342,74 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                       userContext);
 
                 if (startDate.after(stopDate)) {
-                    datesOk = false;
                     errorMsg = "Start Date Must Be Before Stop Date";
                 } else if (stopDate.after(today)) {
-                    datesOk = false;
                     errorMsg = "Stop Date Must Be On Or Before Today";
+                } else if (email == null || email.trim() == "" ) {
+                    errorMsg = "Destination E-Mail Address Required";
                 } else {
-                    datesOk = true;
+                    // map of email elements
+                    Map<String, Object> msgData = new HashMap<String, Object>();
+                    msgData.put("email", email);
+                    msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
+                    msgData.put("deviceName", device.getPaoName());
+                    msgData.put("meterNumber", meterNum.getMeterNumber());
+                    msgData.put("physAddress", device.getAddress());
+                    msgData.put("startDate", startDate);
+                    msgData.put("stopDate", stopDate);
+                    long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
+                    msgData.put("totalDays", Long.toString(numDays));
+                    
+                    // determine pointId in order to build report URL
+                    Attribute attribute = null;
+                    String channelName = "";
+                    
+                    ProfileAttributeChannelEnum profileAttributeChannel = ProfileAttributeChannelEnum.getForChannel(channel);
+                    attribute = profileAttributeChannel.getAttribute();
+                    channelName = profileAttributeChannel.getAttribute().getDescription();
+    
+                    LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
+                    msgData.put("channelName", channelName);
+                    
+                    Map<String, Object> inputValues = new HashMap<String, Object>();
+                    inputValues.put("startDate", startDate.getTime());
+                    inputValues.put("stopDate", stopDate.getTime());
+                    inputValues.put("pointId", litePoint.getPointID());
+                    
+                    Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
+                    optionalAttributeDefaults.put("module", "amr");
+                    optionalAttributeDefaults.put("showMenu", "true");
+                    optionalAttributeDefaults.put("menuSelection", "meters");
+                    optionalAttributeDefaults.put("viewJsp", "MENU");
+                    
+                    String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "extView", true);
+                    String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
+                    String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
+                    msgData.put("reportHtmlUrl", reportHtmlUrl);
+                    msgData.put("reportCsvUrl", reportCsvUrl);
+                    msgData.put("reportPdfUrl", reportPdfUrl);
+    
+                    //completion callbacks
+                    LoadProfileServiceEmailCompletionCallbackImpl callback = 
+                        new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, templateProcessorFactory, deviceErrorTranslatorDao);
+                    
+                    callback.setUserContext(userContext);
+                    callback.setEmail(email);
+                    callback.setMessageData(msgData);
+                    
+                    // will throw InitiateLoadProfileRequestException if connection problem
+                    loadProfileService.initiateLoadProfile(device,
+                                                               channel,
+                                                               startDate,
+                                                               stopDate,
+                                                               callback,
+                                                               userContext);
+    
+                    errorMsg = "";
+                    mav.addObject("channel", channel);
+                
                 }
-
             }
-
-            if (datesOk) {
-
-                
-
-                // map of email elements
-                Map<String, Object> msgData = new HashMap<String, Object>();
-                msgData.put("email", email);
-                msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
-                msgData.put("deviceName", device.getPaoName());
-                msgData.put("meterNumber", meterNum.getMeterNumber());
-                msgData.put("physAddress", device.getAddress());
-                msgData.put("startDate", startDate);
-                msgData.put("stopDate", stopDate);
-                long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
-                msgData.put("totalDays", Long.toString(numDays));
-                
-                // determine pointId in order to build report URL
-                Attribute attribute = null;
-                String channelName = "";
-                
-                ProfileAttributeChannelEnum profileAttributeChannel = ProfileAttributeChannelEnum.getForChannel(channel);
-                attribute = profileAttributeChannel.getAttribute();
-                channelName = profileAttributeChannel.getAttribute().getDescription();
-
-                LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
-                msgData.put("channelName", channelName);
-                
-                Map<String, Object> inputValues = new HashMap<String, Object>();
-                inputValues.put("startDate", startDate.getTime());
-                inputValues.put("stopDate", stopDate.getTime());
-                inputValues.put("pointId", litePoint.getPointID());
-                
-                Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
-                optionalAttributeDefaults.put("module", "amr");
-                optionalAttributeDefaults.put("showMenu", "true");
-                optionalAttributeDefaults.put("menuSelection", "meters");
-                optionalAttributeDefaults.put("viewJsp", "MENU");
-                
-                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "extView", true);
-                String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
-                String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
-                msgData.put("reportHtmlUrl", reportHtmlUrl);
-                msgData.put("reportCsvUrl", reportCsvUrl);
-                msgData.put("reportPdfUrl", reportPdfUrl);
-
-                // completion callbacks
-                LoadProfileServiceEmailCompletionCallbackImpl callback = 
-                    new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, templateProcessorFactory, deviceErrorTranslatorDao);
-                
-                callback.setUserContext(userContext);
-                callback.setEmail(email);
-                callback.setMessageData(msgData);
-                
-                // will throw InitiateLoadProfileRequestException if connection problem
-                loadProfileService.initiateLoadProfile(device,
-                                                           channel,
-                                                           startDate,
-                                                           stopDate,
-                                                           callback,
-                                                           userContext);
-
-                errorMsg = "";
-                mav.addObject("channel", channel);
-                
-                
-            }
-
         } catch (ParseException e) {
             errorMsg = "Invalid Date: " + e.getMessage();
         }
@@ -437,11 +421,11 @@ public class ProfileWidget extends WidgetControllerBase {
         
         // ERRORS
         //-----------------------------------------------------------------------------
-        mav.addObject("errorMsg", errorMsg);
+        mav.addObject("errorMsgRequest", errorMsg);
         
         return mav;
     }
-
+    
     public ModelAndView toggleProfiling(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -620,7 +604,7 @@ public class ProfileWidget extends WidgetControllerBase {
         
         return mav;
     }
-    
+
     public ModelAndView viewDailyUsageReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -641,9 +625,8 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                  DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                                  userContext);
         stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
-        stopDate = DateUtils.addDays(stopDate, 1);
         reportStopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-        
+       
         // build query
         Map<String, String> propertiesMap = new HashMap<String, String>();
         propertiesMap.put("def", "dailyUsageDefinition");
