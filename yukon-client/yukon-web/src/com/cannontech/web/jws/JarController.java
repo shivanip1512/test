@@ -70,7 +70,7 @@ public class JarController extends AbstractController {
                 if (!alreadyBad) logger.warn("Could not close InputStream: " + ex);
             }
             try {
-                sos.close();
+                if(sos != null) sos.close();
             }
             catch (IOException ex) {
                 if (!alreadyBad) logger.warn("Could not close OutputStream: " + ex);
