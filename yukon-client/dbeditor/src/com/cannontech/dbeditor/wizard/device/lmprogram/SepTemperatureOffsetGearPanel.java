@@ -9,7 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 
@@ -709,19 +708,16 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
        
-        gear.setHeatingOffset(toDouble(getJCSpinFieldHeatingOffset().getValue()));
-        gear.setCoolingOffset(toDouble(getJCSpinFieldCoolingOffset().getValue()));
+        gear.setHeatingOffset((Double)getJCSpinFieldHeatingOffset().getValue());
+        gear.setCoolingOffset((Double)getJCSpinFieldCoolingOffset().getValue());
         
         gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
-        
         if (getJComboBoxHowToStop().getSelectedItem() != null) {
             gear.setMethodStopType(removeChars(' ', getJComboBoxHowToStop().getSelectedItem().toString()));
         }
-        
         gear.setPercentReduction(toInteger(getJCSpinFieldPercentReduction().getValue()));
 
         gear.setChangeCondition(getChangeCondition(getJComboBoxWhenChange().getSelectedItem().toString()));
-
         gear.setChangeDuration(toInteger(getJCSpinFieldChangeDuration().getValue()) * 60);
         gear.setChangePriority(toInteger(getJCSpinFieldChangePriority().getValue()));
         gear.setChangeTriggerNumber(toInteger(getJCSpinFieldChangeTriggerNumber().getValue()));
@@ -740,10 +736,6 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     
     private Double toDouble(Object o) throws ClassCastException {
         return ((Number)o).doubleValue();
-    }
-    
-    private BigDecimal toBigDecimal(Object o) throws ClassCastException {
-        return BigDecimal.valueOf((Double)o);
     }
     
     private void handleException(Throwable exception) {
@@ -1024,7 +1016,6 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         } else if (change.equalsIgnoreCase(LMProgramDirectGear.CHANGE_TRIGGER_OFFSET)) {
             getJComboBoxWhenChange().setSelectedItem("Above Trigger");
         }
-
     }
 
     public void setValue(Object o) {
@@ -1038,21 +1029,19 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
         
-        getJCSpinFieldHeatingOffset().setValue(toBigDecimal(gear.getHeatingOffset()));
-        getJCSpinFieldCoolingOffset().setValue(toBigDecimal(gear.getCoolingOffset()));
+        getJCSpinFieldHeatingOffset().setValue((Double) gear.getHeatingOffset());
+        getJCSpinFieldCoolingOffset().setValue((Double) gear.getCoolingOffset());
         
         if  (gear.getSettings().charAt(1) == 'C' )
             setTemperatureUnits( 'C' );
         else
             setTemperatureUnits( 'F' );
             
-        
         getJCSpinFieldCriticality().setValue(gear.getCriticality());
         getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', gear.getMethodStopType()));
         getJCSpinFieldPercentReduction().setValue(gear.getPercentReduction());
 
         setChangeCondition(gear.getChangeCondition());
-
         getJCSpinFieldChangeDuration().setValue(new Integer(gear.getChangeDuration().intValue() / 60));
         getJCSpinFieldChangePriority().setValue(gear.getChangePriority());
         getJCSpinFieldChangeTriggerNumber().setValue(gear.getChangeTriggerNumber());

@@ -1,14 +1,12 @@
 package com.cannontech.database.data.device.lm;
 
-import java.math.BigDecimal;
-
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.lm.LMThermostatGear {
     private static final long serialVersionUID = 5579206107124081082L;
 
-    public static final Double  MAX_FAHRENHEIT = 77.7;
-    public static final Double  MAX_CELSIUS = 25.4;
+    public static final Double MAX_FAHRENHEIT = 77.7;
+    public static final Double MAX_CELSIUS = 25.4;
     
     public SepTemperatureOffsetGear() {
         super();
@@ -50,11 +48,11 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     //Store heating & cooling offset values as integers that represent tenths of a degree.
     //Motivated by need to store a single decimal point floating value in an int database field.
     public void setHeatingOffset(Double offset) {
-        setValueTa((int) (offset * 10));
+        setValueTa(((Double)(offset * 10.0)).intValue());
     }
     
     public void setCoolingOffset(Double offset) {
-        setValueTb((int) (offset * 10));
+        setValueTb(((Double)(offset * 10.0)).intValue());
     }
     
     public Double getHeatingOffset() {
@@ -62,6 +60,6 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     }
     
     public Double getCoolingOffset() {
-        return ( getValueTb() / 10.0);
+        return (getValueTb() / 10.0);
     }
 }
