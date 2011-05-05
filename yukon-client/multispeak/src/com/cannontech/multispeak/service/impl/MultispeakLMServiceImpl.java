@@ -38,6 +38,7 @@ import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
@@ -164,32 +165,36 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        	errorObject = mspObjectDao.getErrorObject(null, 
 	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
 	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
-	        }
+	        } catch (BadServerResponseException e) {
+	            errorObject = mspObjectDao.getErrorObject(null, 
+                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+            }
         }
         return errorObject;
 	}
 
 	@Override
 	public ProgramStatus startControlByProgramName(String programName, Date startTime,
-			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException  {
+			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
    		return loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ProgramStatus stopControlByProgramName(String programName, Date stopTime,
-			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException{
+			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException{
        	return loadControlService.stopControlByProgramName(programName, stopTime, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime,
-			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException {
+			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
    		return loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ScenarioStatus stopControlByControlScenario(String scenarioName, Date stopTime,
-			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException{
+			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException{
        	return loadControlService.stopControlByScenarioName(scenarioName, stopTime, false, true, liteYukonUser);
 	}
 

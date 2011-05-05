@@ -364,10 +364,6 @@ public class ProgramServiceImpl implements ProgramService {
         ServerResponseMsg serverResponse =
             serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
 
-        if (serverResponse.getStatus() == ServerResponseMsg.STATUS_OK) {
-            return null;
-        }
-
         List<ConstraintContainer> violations = Lists.newArrayList();
         LMManualControlResponse lmResp = (LMManualControlResponse) serverResponse.getPayload();
         

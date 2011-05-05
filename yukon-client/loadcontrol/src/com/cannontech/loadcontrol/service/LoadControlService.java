@@ -12,6 +12,7 @@ import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.TimeoutException;
 
 public interface LoadControlService {
@@ -60,10 +61,11 @@ public interface LoadControlService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
      * the control areas the program belongs to) made visible to them.
      * to them
+     * @throws BadServerResponseException 
      */
     public ProgramStatus startControlByProgramName(String programName,
             Date startTime, Date stopTime, String gearName, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException;
+            throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     /**
      * Starts control of program of given programName. Returns a ProgramStatus
@@ -87,10 +89,11 @@ public interface LoadControlService {
      * @throws TimeoutException if server fails to send an update response for the control start
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
      * the control areas the program belongs to) made visible to them.
+     * @throws BadServerResponseException 
      */
     public ProgramStatus startControlByProgramName(String programName,
             Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException;
+            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
 
     /**
      * Stops control of program of given programName. Returns a ProgramStatus
@@ -112,10 +115,11 @@ public interface LoadControlService {
      * @throws TimeoutException if server fails to send an update response for the control stop
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
      * the control areas the program belongs to) made visible to them.
+     * @throws BadServerResponseException 
      */
     public ProgramStatus stopControlByProgramName(String programName,
             Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException;
+            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     /**
      * Starts control for all programs belonging to a given scenario. Returns a
@@ -137,10 +141,11 @@ public interface LoadControlService {
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
+     * @throws BadServerResponseException 
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
             Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException;
+            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     /**
      * Starts control for all programs belonging to a given scenario. 
@@ -183,10 +188,11 @@ public interface LoadControlService {
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
+     * @throws BadServerResponseException 
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
             Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException;
+            TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     /**
      * Stop control for all programs belonging to a given scenario.

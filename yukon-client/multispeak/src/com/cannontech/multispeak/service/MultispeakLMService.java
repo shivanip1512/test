@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
@@ -56,9 +57,10 @@ public interface MultispeakLMService {
 	 * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
 	 * @throws NotFoundException when the programName is not found in Yukon
 	 * @throws TimeoutException when the control operation times out.
+	 * @throws BadServerResponseException 
 	 */
 	public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser liteYukonUser)
-			throws NotAuthorizedException, NotFoundException, TimeoutException;
+			throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
 	/**
 	 * Stop control for the programName and date range provided.
@@ -70,9 +72,10 @@ public interface MultispeakLMService {
 	 * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
 	 * @throws NotFoundException when the programName is not found in Yukon
 	 * @throws TimeoutException when the control operation times out.
+	 * @throws BadServerResponseException 
 	 */
 	public ProgramStatus stopControlByProgramName(String programName, Date stopTime, LiteYukonUser liteYukonUser)
-			throws NotAuthorizedException, NotFoundException, TimeoutException;
+			throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
 	/**
 	 * Start control for the scenarioName and date range provided.
@@ -86,9 +89,10 @@ public interface MultispeakLMService {
 	 * @throws NotAuthorizedException when the liteYukonUser does not have access to one of the programs for the scenario
 	 * @throws NotFoundException when the scenarioName is not found in Yukon
 	 * @throws TimeoutException when the control operation times out.
+	 * @throws BadServerResponseException 
 	 */
 	public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime, Date stopTime, LiteYukonUser liteYukonUser)
-			throws NotAuthorizedException, NotFoundException, TimeoutException;
+			throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
 	/**
 	 * Stop control for the scenarioName and date range provided.
@@ -100,9 +104,10 @@ public interface MultispeakLMService {
 	 * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
 	 * @throws NotFoundException when the programName is not found in Yukon
 	 * @throws TimeoutException when the control operation times out.
+	 * @throws BadServerResponseException 
 	 */
 	public ScenarioStatus stopControlByControlScenario(String scenarioName, Date stopTime, LiteYukonUser liteYukonUser)
-			throws NotAuthorizedException, NotFoundException, TimeoutException;
+			throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
 	/**
 	 * Helper method to return the FDR MultiSpeak LM Translation string value.

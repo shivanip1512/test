@@ -29,6 +29,7 @@ import com.cannontech.message.notif.ProgramActionMsg;
 import com.cannontech.message.notif.VoiceDataRequestMsg;
 import com.cannontech.message.notif.VoiceDataResponseMsg;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.CollectableBoolean;
 import com.cannontech.message.util.ServerRequest;
@@ -188,7 +189,12 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         deleteMsg.curtailmentEventId = curtailmentEventId;
         deleteMsg.deleteStart = includeStart;
         deleteMsg.deleteStop = true;
-        CollectableBoolean wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, deleteMsg);
+        CollectableBoolean wasCancelled;
+        try {
+            wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, deleteMsg);
+        } catch (BadServerResponseException e) {
+            return false;
+        }
         return wasCancelled.getValue();
     }
     
@@ -205,7 +211,12 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         msg.economicEventId = eventId;
         msg.deleteStart = includeStart;
         msg.deleteStop = true;
-        CollectableBoolean wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, msg);
+        CollectableBoolean wasCancelled;
+        try {
+            wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, msg);
+        } catch (BadServerResponseException e) {
+            return false;
+        }
         return wasCancelled.getValue();
     }
     

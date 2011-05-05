@@ -755,17 +755,13 @@ public class LCUtils
 			//fill in our responses
 			for( int i = 0; i < responseMsgs.length; i++ )
 			{
-				// some type of error occured
+				// some type of error occurred
 				programResp[i].setStatus( responseMsgs[i].getStatus() );
                 
-                success &= (programResp[i].getStatus() == ServerResponseMsg.STATUS_OK);
- 
-                if( !success )
-                {
-    				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
-					programResp[i].setViolations(convertViolationsToContainers(lmResp.getConstraintViolations()));
-                }
+				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
+				programResp[i].setViolations(convertViolationsToContainers(lmResp.getConstraintViolations()));
                 
+				success &= programResp[i].getViolations().isEmpty();
 			}
 
 		}

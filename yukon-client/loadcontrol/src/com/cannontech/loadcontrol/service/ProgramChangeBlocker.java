@@ -12,6 +12,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.message.util.TimeoutException;
@@ -48,7 +49,7 @@ public class ProgramChangeBlocker implements MessageListener {
         this.receivedUpdate = false;
     }
     
-    public void updateProgramStatus() throws TimeoutException {
+    public void updateProgramStatus() throws TimeoutException, BadServerResponseException {
         
         log.debug("Adding message listener.");
         loadControlClientConnection.addMessageListener(this);

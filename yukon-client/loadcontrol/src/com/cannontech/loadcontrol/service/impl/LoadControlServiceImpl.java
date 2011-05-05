@@ -43,6 +43,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.TimeoutException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -114,7 +115,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	public ProgramStatus startControlByProgramName(String programName,
 			Date startTime, Date stopTime, String gearName, boolean forceStart,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException {
+			throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
         
 		int programId;
 		int gearNumber;
@@ -146,7 +147,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     public ProgramStatus startControlByProgramName(String programName,
 			Date startTime, Date stopTime, boolean forceStart,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException {
+			throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         validateProgramIsVisibleToUser(programName, programId, user);
@@ -167,7 +168,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	public ProgramStatus stopControlByProgramName(String programName,
 			Date stopTime, boolean forceStop,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException {
+			throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
 
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         validateProgramIsVisibleToUser(programName, programId, user);
@@ -189,7 +190,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 													boolean forceStart,
 													boolean observeConstraintsAndExecute, 
 													LiteYukonUser user)
-													throws NotFoundException, TimeoutException, NotAuthorizedException {
+													throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
 
 		int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
@@ -225,7 +226,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 		});
 	}
 	
-	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =
@@ -252,7 +253,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 													boolean forceStop,
 													boolean observeConstraintsAndExecute, 
 													LiteYukonUser user)
-													throws NotFoundException, TimeoutException, NotAuthorizedException {
+													throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
@@ -285,7 +286,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     	});
     }
 	
-	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
 
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
@@ -377,8 +378,10 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @param stopTime
      * @return
      * @throws TimeoutException
+     * @throws BadServerResponseException 
+     * @throws NotAuthorizedException 
      */
-    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
@@ -400,8 +403,10 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @param stopTime
      * @return
      * @throws TimeoutException
+     * @throws BadServerResponseException 
+     * @throws NotAuthorizedException 
      */
-    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
@@ -434,7 +439,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     private void executeProgramChangeAndUpdateProgramStatus(
             final LMManualControlRequest controlRequest,
             ProgramStatus programStatus,
-            boolean force, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException {
+            boolean force, boolean observeConstraintsAndExecute, LiteYukonUser user) throws BadServerResponseException, TimeoutException, NotAuthorizedException {
 
         // execute check. if has violations return without executing for real
         if (!force) {

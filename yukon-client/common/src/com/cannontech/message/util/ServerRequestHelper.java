@@ -12,11 +12,11 @@ public class ServerRequestHelper {
      * @param msg the message to embed in the ServerRequestMsg
      * @param timeoutMilliSeconds
      * @return payload object from response
-     * @throws ServerRequestHelper.BadServerResponseException
+     * @throws BadServerResponseException 
      */
     public static Object makeServerRequest(ClientConnection conn, 
                                            Message msg, 
-                                           int timeoutMilliSeconds) {
+                                           int timeoutMilliSeconds) throws BadServerResponseException {
         Object result = null;
         
         ServerRequest req = new ServerRequestImpl();
@@ -47,15 +47,13 @@ public class ServerRequestHelper {
      * @param conn
      * @param msg
      * @return
+     * @throws BadServerResponseException 
      */
     public static Object makeServerRequest(ClientConnection conn, 
-                                           Message msg) {
+                                           Message msg) throws BadServerResponseException {
         return makeServerRequest(conn, msg, 10000);
     }
 
-    
-    public static class BadServerResponseException extends RuntimeException {
-    }
     
     public static boolean isPayloadInstanceOf(Message msg, Class clazz) {
         if (msg instanceof ServerRequestMsg) {
