@@ -35,14 +35,14 @@ overrideConstraintsChecked = function() {
     </c:if>
     </p>
 
-    <c:if test="${empty violations.violations}">
+    <c:if test="${empty violations.constraintContainers}">
         <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.noConstraintsViolated"/></p>
     </c:if>
-    <c:if test="${!empty violations.violations}">
+    <c:if test="${!empty violations.constraintContainers}">
         <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.constraintsViolated"/></p>
         <ul>
-            <c:forEach var="violation" items="${violations.violations}">
-                <li>${violation}</li>
+            <c:forEach var="violation" items="${violations.constraintContainers}">
+                <li><cti:msg2 key="${violation.constraintTemplate}"/></li>
             </c:forEach>
         </ul>
         <br>
@@ -61,9 +61,9 @@ overrideConstraintsChecked = function() {
         <cti:url var="backUrl" value="/spring/dr/program/stop/details"/>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
-        <c:if test="${empty violations.violations || overrideAllowed}">
+        <c:if test="${empty violations.constraintContainers || overrideAllowed}">
             <input type="submit" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.okButton"/>"/>
-            <c:if test="${!empty violations.violations}">
+            <c:if test="${!empty violations.constraintContainers}">
                 <script type="text/javascript">$('okButton').disabled = true</script>
                 <!-- TODO:  need to disable submit via text field too -->
             </c:if>
