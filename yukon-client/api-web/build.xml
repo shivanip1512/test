@@ -20,6 +20,7 @@
 	<fileset dir="${yukon.lib}" id="yukon.lib.files">
 		<include name="activation.jar"/>
 		<include name="activemq-all-5.4.2.jar"/>
+		<include name="aopalliance.jar"/>
 		<include name="api.jar"/>
 		<include name="asm-attrs.jar"/>
 		<include name="asm.jar"/>
