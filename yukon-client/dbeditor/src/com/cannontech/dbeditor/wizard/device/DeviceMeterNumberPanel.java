@@ -3,10 +3,7 @@ package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import com.cannontech.common.wizard.CancelInsertException;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
