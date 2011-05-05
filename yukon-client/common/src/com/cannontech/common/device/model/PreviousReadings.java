@@ -13,9 +13,7 @@ public class PreviousReadings {
     private List<PointValueHolder> previous3Months;
     
     public PreviousReadings() {}
-    public PreviousReadings(Attribute attribute,
-                            Date cutoffDate, 
-                            List<PointValueHolder> previous36,
+    public PreviousReadings(Attribute attribute, Date cutoffDate, List<PointValueHolder> previous36,
                             List<PointValueHolder> previous3Months) {
         this.attribute = attribute;
         this.cutoffDate = cutoffDate;
