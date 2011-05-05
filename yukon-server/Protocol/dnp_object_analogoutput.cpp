@@ -1,21 +1,13 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_analogoutput
-*
-* Date:   7/8/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
 #include "dnp_object_analogoutput.h"
 #include "logger.h"
+
+#include <boost/cstdint.hpp>
+
+using boost::int16_t;
+using boost::int32_t;
 
 namespace Cti       {
 namespace Protocol  {
@@ -72,31 +64,20 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _longValue = 0;
+            _longValue = restoreValue<int32_t>(buf + pos);
 
-            //  these 32 bits will fill up the long, including the sign bit
-            _longValue |= buf[pos++];
-            _longValue |= buf[pos++] <<  8;
-            _longValue |= buf[pos++] << 16;
-            _longValue |= buf[pos++] << 24;
+            pos += 4;
 
             break;
         }
 
         case AOS_16Bit:
         {
-            short tmpValue;
-
             _flags.raw = buf[pos++];
 
-            tmpValue = 0;
+            _longValue = restoreValue<int16_t>(buf + pos);
 
-            //  these 16 bits will fill up the short, including the sign bit...
-            tmpValue |= buf[pos++];
-            tmpValue |= buf[pos++] << 8;
-
-            //  ...  so we can use the compiler's cast to convert it over
-            _longValue = tmpValue;
+            pos += 2;
 
             break;
         }
@@ -105,7 +86,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = *(reinterpret_cast<const float *>(buf + pos));
+            _doubleValue = restoreValue<float>(buf + pos);
 
             pos += 4;
 
@@ -116,7 +97,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = *(reinterpret_cast<const double *>(buf + pos));
+            _doubleValue = restoreValue<double>(buf + pos);
 
             pos += 8;
 
@@ -155,10 +136,9 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
-            buf[pos++] = (_longValue >> 16) & 0xff;
-            buf[pos++] = (_longValue >> 24) & 0xff;
+            serializeValue<int32_t>(buf + pos, _longValue);
+
+            pos += 4;
 
             break;
         }
@@ -167,8 +147,9 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
+            serializeValue<int16_t>(buf + pos, _longValue);
+
+            pos += 2;
 
             break;
         }
@@ -177,7 +158,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            *(reinterpret_cast<float *>(buf + pos)) = _doubleValue;
+            serializeValue<float>(buf + pos, _doubleValue);
 
             pos += 4;
 
@@ -188,7 +169,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            *(reinterpret_cast<double *>(buf + pos)) = _doubleValue;
+            serializeValue<double>(buf + pos, _doubleValue);
 
             pos += 8;
 
@@ -319,13 +300,9 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
     {
         case AO_32Bit:
         {
-            _longValue = 0;
+            _longValue = restoreValue<int32_t>(buf + pos);
 
-            //  these 32 bits will fill up the long, including the sign bit
-            _longValue |= buf[pos++];
-            _longValue |= buf[pos++] <<  8;
-            _longValue |= buf[pos++] << 16;
-            _longValue |= buf[pos++] << 24;
+            pos += 4;
 
             _status = buf[pos++];
 
@@ -334,14 +311,9 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_16Bit:
         {
-            short tmpValue = 0;
+            _longValue = restoreValue<int16_t>(buf + pos);
 
-            //  these 16 bits bytes will fill up the short, including the sign bit...
-            tmpValue |= buf[pos++];
-            tmpValue |= buf[pos++] << 8;
-
-            //  ...  so we can use the compiler's cast to convert it over
-            _longValue = tmpValue;
+            pos += 2;
 
             _status = buf[pos++];
 
@@ -350,7 +322,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_SingleFloat:
         {
-            _doubleValue = *(reinterpret_cast<const float *>(buf + pos));
+            _doubleValue = restoreValue<float>(buf + pos);
 
             pos += 4;
 
@@ -361,7 +333,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_DoubleFloat:
         {
-            _doubleValue = *(reinterpret_cast<const double *>(buf + pos));
+            _doubleValue = restoreValue<double>(buf + pos);
 
             pos += 8;
 
@@ -400,10 +372,9 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
     {
         case AO_32Bit:
         {
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
-            buf[pos++] = (_longValue >> 16) & 0xff;
-            buf[pos++] = (_longValue >> 24) & 0xff;
+            serializeValue<int32_t>(buf + pos, _longValue);
+
+            pos += 4;
 
             buf[pos++] = _status;
 
@@ -412,8 +383,9 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_16Bit:
         {
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
+            serializeValue<int16_t>(buf + pos, _longValue);
+
+            pos += 2;
 
             buf[pos++] = _status;
 
@@ -422,7 +394,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_SingleFloat:
         {
-            *(reinterpret_cast<float *>(buf + pos)) = _doubleValue;
+            serializeValue<float>(buf + pos, _doubleValue);
 
             pos += 4;
 
@@ -433,7 +405,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_DoubleFloat:
         {
-            *(reinterpret_cast<double *>(buf + pos)) = _doubleValue;
+            serializeValue<double>(buf + pos, _doubleValue);
 
             pos += 8;
 

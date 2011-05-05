@@ -61,7 +61,7 @@ public:
 
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 
-    void setValue(long value);
+    void setValue(double value);
     void setOnlineFlag(bool online);
 };
 

@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_objects
-*
-* Namespace: CtiDNP
-* Class:     Object, ObjectBlock
-* Date:   5/21/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/11/12 16:47:15 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_OBJECTS_H__
-#define __DNP_OBJECTS_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <vector>
 #include <queue>
@@ -48,6 +28,18 @@ protected:
     bool _valid;
 
     Object( int group, int variation );
+
+    template<typename T>
+    static T restoreValue(const void *buf)
+    {
+        return *reinterpret_cast<const T *>(buf);
+    }
+
+    template<typename T>
+    static void serializeValue(void *buf, T value)
+    {
+        *reinterpret_cast<T *>(buf) = value;
+    }
 
 public:
 
@@ -148,4 +140,3 @@ public:
 }
 }
 
-#endif // #ifndef __DNP_OBJECTS_H__

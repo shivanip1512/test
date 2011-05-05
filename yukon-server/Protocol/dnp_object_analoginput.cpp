@@ -3,6 +3,10 @@
 #include "dnp_object_analoginput.h"
 #include "logger.h"
 
+#include <boost/cstdint.hpp>
+
+using boost::int16_t;
+using boost::int32_t;
 
 namespace Cti       {
 namespace Protocol  {
@@ -64,13 +68,9 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         }
         case AI_32BitNoFlag:
         {
-            _longValue = 0;
+            _longValue = restoreValue<int32_t>(buf + pos);
 
-            //  these 32 bits will fill up the long, including the sign bit
-            _longValue |= buf[pos++] ;
-            _longValue |= buf[pos++] <<  8;
-            _longValue |= buf[pos++] << 16;
-            _longValue |= buf[pos++] << 24;
+            pos += 4;
 
             break;
         }
@@ -82,16 +82,9 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         }
         case AI_16BitNoFlag:
         {
-            short tmpValue;
+            _longValue = restoreValue<int16_t>(buf + pos);
 
-            tmpValue = 0;
-
-            //  these 16 bits bytes will fill up the short, including the sign bit...
-            tmpValue |= buf[pos++];
-            tmpValue |= buf[pos++] << 8;
-
-            //  ...  so we can use the compiler's cast to convert it over
-            _longValue = tmpValue;
+            pos += 2;
 
             break;
         }
@@ -100,7 +93,7 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = *(reinterpret_cast<const float *>(buf + pos));
+            _doubleValue = restoreValue<float>(buf + pos);
 
             pos += 4;
 
@@ -110,7 +103,7 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = *(reinterpret_cast<const double *>(buf + pos));
+            _doubleValue = restoreValue<double>(buf + pos);
 
             pos += 8;
 
@@ -152,10 +145,9 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         }
         case AI_32BitNoFlag:
         {
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
-            buf[pos++] = (_longValue >> 16) & 0xff;
-            buf[pos++] = (_longValue >> 24) & 0xff;
+            serializeValue<int32_t>(buf + pos, _longValue);
+
+            pos += 4;
 
             break;
         }
@@ -167,8 +159,9 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         }
         case AI_16BitNoFlag:
         {
-            buf[pos++] =  _longValue        & 0xff;
-            buf[pos++] = (_longValue >>  8) & 0xff;
+            serializeValue<int16_t>(buf + pos, _longValue);
+
+            pos += 4;
 
             break;
         }
@@ -177,7 +170,7 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         {
             buf[pos++] = _flags.raw;
 
-            *(reinterpret_cast<float *>(buf + pos)) = _doubleValue;
+            serializeValue<float>(buf + pos, _doubleValue);
 
             pos += 4;
 
@@ -187,7 +180,7 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         {
             buf[pos++] = _flags.raw;
 
-            *(reinterpret_cast<double *>(buf + pos)) = _doubleValue;
+            serializeValue<double>(buf + pos, _doubleValue);
 
             pos += 8;
 
@@ -206,9 +199,10 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
     return pos;
 }
 
-void AnalogInput::setValue(long value)
+void AnalogInput::setValue(double value)
 {
-    _longValue = value;
+    _longValue   = value;
+    _doubleValue = value;
 }
 void AnalogInput::setOnlineFlag(bool online)
 {
