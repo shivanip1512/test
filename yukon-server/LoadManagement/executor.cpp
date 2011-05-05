@@ -1238,14 +1238,14 @@ void CtiLMManualControlRequestExecutor::Execute()
 
             if( response != NULL )
             {
+                response->setStatus(CtiServerResponseMsg::OK);
+
                 if( passed_check )
                 {
-                    response->setStatus(CtiServerResponseMsg::OK);
                     response->setMessage("Manual Control Request Constraint Check OK");
                 }
                 else
                 {
-                    response->setStatus(CtiServerResponseMsg::ERR);
                     response->setMessage("Manual Control Request Constraint Check Violations");
                 }
             }
@@ -1286,7 +1286,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             }
             else if( response != NULL )
             {
-                response->setStatus(CtiServerResponseMsg::ERR);
+                response->setStatus(CtiServerResponseMsg::OK);
                 response->setMessage("Manual Control Request Violates Constraints, Abandoning");
             }
             break;
@@ -1366,14 +1366,14 @@ void CtiLMManualControlRequestExecutor::Execute()
 
                 if( response != NULL )
                 {
+                    response->setStatus(CtiServerResponseMsg::OK);
+
                     if( passed_check )
                     {
-                        response->setStatus(CtiServerResponseMsg::OK);
                         response->setMessage("Manual Gear Change Request Constraint Check OK");
                     }
                     else
                     {
-                        response->setStatus(CtiServerResponseMsg::ERR);
                         response->setMessage("Manual Gear Change Request Constraint Check Violations");
                     }
                 }
@@ -1406,7 +1406,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                 }
                 else if( response != NULL )
                 {
-                    response->setStatus(CtiServerResponseMsg::ERR);
+                    response->setStatus(CtiServerResponseMsg::OK);
                     response->setMessage("Manual Gear Change Request Violates Constraints, Abandoning");
                 }
                 break;
