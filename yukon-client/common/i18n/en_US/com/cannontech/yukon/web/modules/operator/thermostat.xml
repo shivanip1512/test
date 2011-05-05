@@ -164,14 +164,14 @@
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmUiContainerHeader.title">Thermostat Schedule Confirm</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText.save">The following schedule options will be saved:</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText.saveApply">The following schedule options will be saved and sent to your thermostat:</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText.saveApply">The following schedule options will be saved and sent to the thermostat:</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.save">Operation canceled. The schedule options were not saved.</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.saveApply">Operation canceled. The schedule options were not saved and were not sent to your thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.saveApply">Operation canceled. The schedule options were not saved and were not sent to the thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.emptyName">The thermostat schedule name cannot be blank.</entry>
     <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit">{0} - Cool: {1} °F Heat: {2} °F</entry>
     <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius">{0} - Cool: {1} °C Heat: {2} °C</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.save">Do you wish to save the changes to this schedule?</entry>
-	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.saveApply">Do you wish to save and send this schedule to your thermostat?</entry>
+	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.saveApply">Do you wish to save and send this schedule to the thermostat?</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.ok.label">Continue</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancel.label">Cancel</entry>
     
