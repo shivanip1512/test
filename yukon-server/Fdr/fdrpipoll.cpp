@@ -1,17 +1,5 @@
 #include "yukon.h"
 
-/**
- * File:   fdrpipoll
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Author: Tom Mack
- *
- * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.7.2.1 $
- * DATE         :  $Date: 2008/11/13 17:23:47 $
- */
-
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
@@ -315,6 +303,13 @@ void CtiFDRPiPoll::doUpdates()
     }
   }
 
+  // Check to see if we're connected to the right database? 
+  // This function call happens very frequently. Seems like a good
+  // place to attempt to connect to the right database if we aren't already.
+  if(_currentNodeIndex != 0 && _serverNodeNames.size() > 0 )
+  {
+    attemptPrimaryReconnection();
+  }
 }
 
 /**

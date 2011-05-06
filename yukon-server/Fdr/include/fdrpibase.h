@@ -1,26 +1,6 @@
-
 #pragma warning( disable : 4786)
 #ifndef __FDRPIBASE_H__
 #define __FDRPIBASE_H__
-
-/**
- *
- * File:   fdrpibase
- *
- * Class:
- * Date:   1/11/2005
- *
- * Author: Tom Mack
- *
- * PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.8.2.2 $
- *    DATE         :  $Date: 2008/11/18 20:11:30 $
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *    History:
- */
-
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -43,9 +23,20 @@
 
 class IM_EX_FDRPIBASEAPI CtiFDRPiBase : public CtiFDRSimple
 {
-  typedef CtiFDRInterface Inherited;
+public:
+
+  CtiFDRPiBase();
+  virtual ~CtiFDRPiBase();
+
+  static CtiFDRPiBase* createInstance();
+
+  class PiException : public exception {
+  public:
+    PiException(int err) : exception("PiException") {}
+  };
 
 protected:
+
   typedef long PiPointId;
 
   typedef struct PiPointInfoStruct {
@@ -59,33 +50,39 @@ protected:
 
   } PiPointInfo;
 
+  /**
+   * The amount of connection failures that can occur before the 
+   * <code>connect()</code> function attempts to switch and 
+   * connect to a different node in the node list. 
+   */
+  static const int FailureThreshold = 2;
 
+  // The main loop in FDRSimpleBase occurs every 1.25 seconds, so
+  // this will give us 30 seconds per primary node connection retry.
+  static const int UpdatesPerRetry = 24;
 
-public:
+  std::vector<string> _serverNodeNames;
+  string _serverUsername;
+  string _serverPassword;
 
-  // constructors and destructors
-  CtiFDRPiBase();
-  virtual ~CtiFDRPiBase();
-
-  static CtiFDRPiBase* createInstance();
-
-
-  //long getLinkStatusID( void ) const;
-  //void setLinkStatusID( const long aPointID );
-
-protected:
-
-  string    _serverNodeName;
-  string    _serverUsername;
-  string    _serverPassword;
+  int _currentNodeIndex;
+  int _connectionFailureCount;
+  int _collectiveConnectionRetries;
 
   bool connect();
-  void testConnection();
+  bool testConnection();
 
   virtual void processNewPoint(CtiFDRPointSPtr ctiPoint);
   virtual void processNewPiPoint(PiPointInfoStruct &info) = 0;
   virtual void removeAllPoints() {};
   virtual void handleNewPoints() {};
+
+  std::string getCurrentNodeName();
+  void switchCurrentNode();
+
+  bool isCollectiveConnection();
+  bool isCollectivePrimaryNodeOnline();
+  void attemptPrimaryReconnection();
 
   int getPiPointIdFromTag(const string& tagName, PiPointId& piId);
 
@@ -95,20 +92,13 @@ protected:
                     const time_t timestamp_utc,
                     const int32 errorcode);
 
-  //ULONG getScanRateSeconds() const;
-  //void  setScanRateSeconds( const ULONG mySeconds );
-
   std::string getPiErrorDescription(int errCode, char* functionName = "");
 
   virtual void readThisConfig();
 
-public:
-  class PiException : public exception {
-  public:
-    PiException(int err) : exception("PiException") {}
-  };
-
 private:
+
+  typedef CtiFDRInterface Inherited;
 
   bool        _connected;
   bool        _inited;

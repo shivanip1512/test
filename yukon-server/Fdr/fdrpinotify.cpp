@@ -1,21 +1,7 @@
 #include "yukon.h"
 
-/**
- *
- * File:   fdrpinotify
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Author: Tom Mack
- *
- * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.7.2.1 $
- * DATE         :  $Date: 2008/11/13 17:23:47 $
- */
-
 #include <math.h>
 #include <stdlib.h>
-//#include <iostream>
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -330,6 +316,14 @@ void CtiFDRPiNotify::doUpdates()
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "No check made, no points registered." << endl;
     }
+  }
+
+  // Check to see if we're connected to the right database? 
+  // This function call happens very frequently. Seems like a good
+  // place to attempt to connect to the right database if we aren't already.
+  if(_currentNodeIndex != 0 && _serverNodeNames.size() > 0 )
+  {
+    attemptPrimaryReconnection();
   }
 }
 

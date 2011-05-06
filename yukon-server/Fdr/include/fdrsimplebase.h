@@ -1,25 +1,6 @@
-
 #pragma warning( disable : 4786)
 #ifndef __FDRSIMPLE_H__
 #define __FDRSIMPLE_H__
-
-/**
- *
- * File:   fdrsimple
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Class:
- * Date:   1/11/2005
- *
- * Author: Tom Mack
- *
- * PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.9.2.2 $
- *    DATE         :  $Date: 2008/11/18 20:11:30 $
- */
-
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -29,20 +10,15 @@
 #include <vector>
 #include <map>
 
-//osi header
-#include "piapi.h"
-
 #include "dlldefs.h"
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
 #include "fdrdebuglevel.h"
 #include "fdrasciiimportbase.h"
 
-
 class IM_EX_FDRBASE CtiFDRSimple : public CtiFDRInterface
 {
   typedef CtiFDRInterface Inherited;
-
 
 public:
 
@@ -58,10 +34,6 @@ public:
 
   bool loadTranslationLists();
 
-
-  //long getLinkStatusID( void ) const;
-  //void setLinkStatusID( const long aPointID );
-
 protected:
 
   virtual BOOL init();
@@ -70,7 +42,7 @@ protected:
   virtual bool connect() = 0;
   virtual void setConnected( bool conn );
   virtual bool isConnected() {return _connected;};
-  virtual void testConnection() = 0;
+  virtual bool testConnection() = 0;
   virtual void shutdown() {};
 
   virtual void removeAllPoints() {};

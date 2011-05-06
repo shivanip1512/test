@@ -1,20 +1,5 @@
 #include "yukon.h"
 
-/**
- *
- * File:   fdrlivedata
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Date:   1/11/2005
- *
- * Author: Tom Mack
- *
- * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.6.2.1 $
- * DATE         :  $Date: 2008/11/13 17:23:47 $
- */
-
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
@@ -136,9 +121,10 @@ bool CtiFDRLiveData::connect()
 /**
  * Open a connection to the remote system.
  */
-void CtiFDRLiveData::testConnection()
+bool CtiFDRLiveData::testConnection()
 {
   setConnected( _liveDataConnection->isConnected() );
+  return true;
 }
 
 

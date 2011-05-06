@@ -1,21 +1,4 @@
-#ifndef __FDRLIVEDATA_H__
-#define __FDRLIVEDATA_H__
-
-/**
- *
- * File:   fdrlivedata
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Author: Tom Mack
- *
- * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.7.2.2 $
- *    DATE         :  $Date: 2008/11/18 20:11:30 $
- *    History:
- *      $History:$
- */
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -34,8 +17,6 @@
 #include "fdrasciiimportbase.h"
 
 #include "livedata_rtp_api.h"
-//#include "iccp_types.h"
-
 
 class IM_EX_FDRLIVEDATAAPI CtiFDRLiveData : public CtiFDRSimple
 {
@@ -97,7 +78,7 @@ protected:
 
   void startup();
   bool connect();
-  void testConnection();
+  bool testConnection();
   void shutdown();
 
   virtual void doUpdates();
@@ -131,6 +112,3 @@ private:
 
 
 };
-
-
-#endif // #ifndef __FDRLIVEDATA_H__

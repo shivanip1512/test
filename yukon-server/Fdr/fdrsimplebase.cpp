@@ -117,7 +117,7 @@ void CtiFDRSimple::threadFunctionGetData()
   RWRunnableSelf    pSelf = rwRunnable();
 
   const int loopPeriod = 1250;
-  const int secondsBeforeReconnect = 60;
+  const int secondsBeforeReconnect = gConfigParms.getValueAsInt("FDR_" + getInterfaceName() + "_RECONNECT_RATE", 60);
   const int loopsBeforeReconnect = (secondsBeforeReconnect * 1000) / loopPeriod;
   int reconnectLoopCount = loopsBeforeReconnect;
   bool loadLists = true;
@@ -133,8 +133,6 @@ void CtiFDRSimple::threadFunctionGetData()
 
       CtiFDRPointList &aList = getReceiveFromList();
       CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
-
-      //testConnection();
 
       if (isConnected())
       {
