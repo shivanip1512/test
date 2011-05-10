@@ -71,7 +71,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         for (EventLog eventLog : resultList) {
             DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
             
-            List<String> dataRow = Lists.newArrayListWithExpectedSize(resultList.size()*3);
+            List<String> dataRow = Lists.newArrayListWithExpectedSize(3);
             
             dataRow.add(eventLog.getEventType());
             dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
