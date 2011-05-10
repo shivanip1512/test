@@ -1,7 +1,9 @@
 package com.cannontech.database.db.pao;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
@@ -24,7 +26,12 @@ public class PAOExclusion extends NestedDBPersistent
 	private Integer funcRequeue = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String funcParams = CtiUtilities.STRING_NONE;
 
-
+	// -------------- PAO Exclusions -----------------------------
+	// Default value of "Optimal" should always be used. YUK-9749
+	public static final int REQUEUE_OPTIMAL = 0;
+	public static final int REQUEUE_MAINTAIN = 1;
+	public static final int REQUEUE_PRIORITY = 2;
+		
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"PaoID", "ExcludedPaoID", "PointID",
@@ -159,32 +166,22 @@ public class PAOExclusion extends NestedDBPersistent
 	}
 	
 
-	/**
-	 * This method was created in VisualAge.
-	 * @return PAOExclusion[]
-	 * @param Integer, Connection
-	 */
-	public static final Vector getAllPAOExclusions(int paoID, java.sql.Connection conn) throws java.sql.SQLException
+	public static final Vector<PAOExclusion> getAllPAOExclusions(int paoID, java.sql.Connection conn)
 	{
-		Vector tmpList = new Vector();
+		Vector<PAOExclusion> tmpList = new Vector<PAOExclusion>();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
-		try
-		{		
-			if( conn == null )
-			{
+		try {		
+			if (conn == null) {
 				throw new IllegalStateException("Database connection should not be null.");
-			}
-			else
-			{
+			} else {
 				pstmt = conn.prepareStatement( ALL_EXCL_SQL );
 				pstmt.setInt( 1, paoID );
 				
 				rset = pstmt.executeQuery();							
 		
-				while( rset.next() )
-				{
+				while (rset.next()) {
 					PAOExclusion item = new PAOExclusion();
 	
 					item.setExclusionID( new Integer(rset.getInt(1)) );
@@ -199,50 +196,32 @@ public class PAOExclusion extends NestedDBPersistent
 
 					tmpList.add( item );
 				}
-						
 			}		
 		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		catch (SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		} finally {
+			SqlUtils.close(pstmt, rset);
 		}
-		finally
-		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( rset != null ) rset.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
-		}
-	
 	
 		return tmpList;
 	}
 	
-	public static final Vector getAdditionalExcludedPAOs(int paoID, java.sql.Connection conn, Vector exclusionVector) throws java.sql.SQLException
+	public static final Vector<PAOExclusion> getAdditionalExcludedPAOs(int paoID, java.sql.Connection conn, Vector<PAOExclusion> exclusionVector)
 		{
 			java.sql.PreparedStatement pstmt = null;
 			java.sql.ResultSet rset = null;
 	
-			try
-			{		
-				if( conn == null )
-				{
+			try {		
+				if (conn == null) {
 					throw new IllegalStateException("Database connection should not be null.");
-				}
-				else
-				{
+				} else {
 					pstmt = conn.prepareStatement( ALL_EXCL_REF_OTHER_PAOS_SQL );
 					pstmt.setInt( 1, paoID );
 				
 					rset = pstmt.executeQuery();							
 		
-					while( rset.next() )
-					{
+					while (rset.next()) {
 						PAOExclusion item = new PAOExclusion();
 	
 						item.setExclusionID( new Integer(rset.getInt(1)) );
@@ -257,26 +236,13 @@ public class PAOExclusion extends NestedDBPersistent
 
 						exclusionVector.add( item );
 					}
-						
 				}		
 			}
-			catch( java.sql.SQLException e )
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			catch (SQLException e) {
+				CTILogger.error( e.getMessage(), e );
+			} finally {
+				SqlUtils.close(pstmt, rset);
 			}
-			finally
-			{
-				try
-				{
-					if( pstmt != null ) pstmt.close();
-					if( rset != null ) rset.close();
-				} 
-				catch( java.sql.SQLException e2 )
-				{
-					com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-				}	
-			}
-	
 	
 			return exclusionVector;
 		}

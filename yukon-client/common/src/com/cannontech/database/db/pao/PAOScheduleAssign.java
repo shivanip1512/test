@@ -148,7 +148,7 @@ public class PAOScheduleAssign extends DBPersistent
 	 * @return boolean
 	 * @param deviceID java.lang.Integer
 	 */
-	public static synchronized boolean deleteAllPAOExclusions(int paoID, java.sql.Connection conn )
+	public static synchronized boolean deleteAllPAOScheduleAssignments(int paoID, java.sql.Connection conn )
 	{
 		java.sql.Statement stat = null;
 		try

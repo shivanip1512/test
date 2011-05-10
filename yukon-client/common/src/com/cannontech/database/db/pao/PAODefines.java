@@ -19,11 +19,4 @@ public interface PAODefines
 	public static final char STAT_DAILY   = 'D';
 	public static final char STAT_MONTHLY = 'M';
 
-
-
-	// -------------- PAO Exclusions -----------------------------
-	public static final String EXCL_REQ_OPTIMAL		= "Optimal";  //id 0 in C++
-	public static final String EXCL_REQ_MAINTAIN		= "Maintain Order"; //id 1 in C++
-	public static final String EXCL_REQ_PRIORITY		= "Priority"; //id 2 in C++
-
 }
