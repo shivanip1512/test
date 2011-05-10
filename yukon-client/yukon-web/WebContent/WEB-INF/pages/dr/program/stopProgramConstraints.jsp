@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <script type="text/javascript">
 overrideConstraintsChecked = function() {
@@ -42,7 +43,7 @@ overrideConstraintsChecked = function() {
         <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.constraintsViolated"/></p>
         <ul>
             <c:forEach var="violation" items="${violations.constraintContainers}">
-                <li><cti:msg2 key="${violation.constraintTemplate}"/></li>
+                <li><i:inline key="${violation.constraintTemplate}"/></li>
             </c:forEach>
         </ul>
         <br>
