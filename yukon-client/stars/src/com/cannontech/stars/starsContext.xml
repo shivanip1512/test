@@ -191,7 +191,13 @@
     <bean id="accountThermostatScheduleEntryDao" class="com.cannontech.stars.dr.thermostat.dao.impl.AccountThermostatScheduleEntryDaoImpl" />
 
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
-
+    
+    <bean id="commandServiceFactory" class="com.cannontech.stars.dr.thermostat.service.impl.CommandServiceFactory" />
+    
+    <bean id="zigbeeCommandService" class="com.cannontech.stars.dr.thermostat.service.impl.ZigbeeCommandService" />
+    
+    <bean id="expressComCommandService" class="com.cannontech.stars.dr.thermostat.service.impl.ExpressComCommandService" />
+    
     <bean id="enrollmentDao" class="com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl"/>
     
     <bean id="optOutService" class="com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl"/>
@@ -299,4 +305,5 @@
     
     <bean id="defaultRouteService" class="com.cannontech.stars.service.impl.DefaultRouteServiceImpl"/>
     
+    <bean id="energyCompanyService" class="com.cannontech.stars.service.impl.EnergyCompanyServiceImpl"/>
 </beans>

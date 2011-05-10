@@ -27,8 +27,8 @@ import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 

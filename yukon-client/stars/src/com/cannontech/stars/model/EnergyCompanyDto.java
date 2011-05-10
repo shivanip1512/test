@@ -1,4 +1,4 @@
-package com.cannontech.web.admin.energyCompany.model;
+package com.cannontech.stars.model;
 
 public class EnergyCompanyDto {
     

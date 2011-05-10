@@ -30,12 +30,15 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -62,7 +65,6 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -73,6 +75,7 @@ import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -107,6 +110,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private YukonListDao yukonListDao;
     private YukonGroupDao yukonGroupDao;
     private EnergyCompanyDao energyCompanyDao;
+    private EnergyCompanyService energyCompanyService;
+    private RoleDao roleDao;
     
 	private final static long serialVersionUID = 1L;
 	
@@ -397,7 +402,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(user);
             for (int i = 0; i < groups.size(); i++) {
                 LiteYukonGroup group = groups.get(i);
-                if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY, null) != null) {
+                if (roleDao.getRolesForGroup(group.getGroupID()).contains(YukonRole.OPERATOR_ADMINISTRATOR)) {
                     operDftGroupID = group.getGroupID();
                     return group;
                 }
@@ -725,8 +730,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
     
     public List<Integer> getOperatorLoginIDs() {
-        String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
-        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OperatorLoginID");
+        sql.append("FROM EnergyCompanyOperatorLoginList");
+        sql.append("WHERE EnergyCompanyID").eq(getEnergyCompanyId());
+        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper);
         return list;
     }
     
@@ -1417,7 +1425,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     /* The following methods are only used when SOAPClient exists locally */
     
     public StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
-        if (StarsUtils.isOperator(user.getYukonUser())) {
+        if (energyCompanyService.isOperator(user.getYukonUser())) {
             StarsEnergyCompanySettings starsOperECSettings = new StarsEnergyCompanySettings();
             starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
             starsOperECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
@@ -1426,7 +1434,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             starsOperECSettings.setStarsServiceCompanies( getStarsServiceCompanies() );
             starsOperECSettings.setStarsSubstations( getStarsSubstations() );
             return starsOperECSettings;
-        } else if (StarsUtils.isResidentialCustomer(user.getYukonUser())) { 
+        } else if (energyCompanyService.isResidentialUser(user.getYukonUser())) { 
             StarsEnergyCompanySettings starsCustECSettings = new StarsEnergyCompanySettings();
             starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
             starsCustECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
@@ -1455,7 +1463,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public StarsCustomerSelectionLists getStarsCustomerSelectionLists(LiteYukonUser yukonUser) {
     	
-    	if (StarsUtils.isOperator(yukonUser)) {
+    	if (energyCompanyService.isOperator(yukonUser)) {
             StarsCustomerSelectionLists starsOperSelLists = new StarsCustomerSelectionLists();
             
             for (int i = 0; i < OPERATOR_SELECTION_LISTS.length; i++) {
@@ -1465,7 +1473,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             
             return starsOperSelLists;
         }
-        else if (StarsUtils.isResidentialCustomer(yukonUser)) {
+        else if (energyCompanyService.isResidentialUser(yukonUser)) {
             StarsCustomerSelectionLists starsCustSelLists = new StarsCustomerSelectionLists();
             // Currently the consumer side only need chance of control and opt out period list
             StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
@@ -1534,8 +1542,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             return starsAcctInfo;
     }
     
-    public StarsCustAccountInformation getStarsCustAccountInformation(int accountID, boolean autoLoad) {
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
+    public StarsCustAccountInformation getStarsCustAccountInformation(int accountId, boolean autoLoad) {
+        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(accountId);
         if (liteAcctInfo != null) return getStarsCustAccountInformation( liteAcctInfo );
         return null;
     }
@@ -1931,4 +1939,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
+    
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
+    
 }

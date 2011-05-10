@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -150,6 +151,21 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         List<Integer> deviceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return deviceIds;
+    }
+    
+    @Override
+    public Integer findGatewayIdForInventory(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GatewayId");
+        sql.append("FROM ZBGatewayToDeviceMapping DM");
+        sql.append(  "JOIN InventoryBase I on I.DeviceID = DM.DeviceId");
+        sql.append("WHERE I.InventoryID").eq(inventoryId);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     @Autowired

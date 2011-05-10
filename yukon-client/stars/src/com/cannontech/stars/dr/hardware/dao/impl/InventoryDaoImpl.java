@@ -453,6 +453,16 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return yukonJdbcTemplate.queryForInt(sql);
     }
+    
+    @Override
+    public int getAccountIdForInventory(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AccountId");
+        sql.append("FROM InventoryBase");
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
 
     // DI Setters
     @Autowired

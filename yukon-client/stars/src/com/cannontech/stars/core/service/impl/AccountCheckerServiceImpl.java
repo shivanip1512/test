@@ -24,7 +24,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
@@ -36,6 +36,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private ProgramDao programDao;
     private GraphDao graphDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private EnergyCompanyService energyCompanyService;
     
     @Override
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -219,7 +220,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private boolean isOperator(LiteYukonUser user) {
-        boolean isOperator = StarsUtils.isOperator(user);
+        boolean isOperator = energyCompanyService.isOperator(user);
         return isOperator;
     }
     
@@ -257,4 +258,10 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
 }

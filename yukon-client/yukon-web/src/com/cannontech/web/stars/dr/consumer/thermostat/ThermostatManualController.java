@@ -168,7 +168,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         //button was not pressed
         boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
-        ThermostatManualEventResult message = null;
+        ThermostatManualEventResult result = null;
         int temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
@@ -176,17 +176,25 @@ public class ThermostatManualController extends AbstractThermostatController {
             ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIds, temperatureInF, thermostatMode);
             
             if(limitMessage != null) {
-                map.addAttribute("message", limitMessage.toString());
+                map.addAttribute("message", "yukon.dr.consumer.manualevent.result.CONSUMER_" + limitMessage.name());
                 isValid = false;
             }
         }
 
         if(isValid) {
             boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
-
-            message = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperatureInF, temperatureUnit, mode, fan, account, userContext);
-
-            map.addAttribute("message", message.toString());   
+            String key = "yukon.dr.consumer.manualevent.result.CONSUMER_";
+            result = thermostatService.setupAndExecuteManualEvent(thermostatIds, hold, runProgram, temperatureInF, temperatureUnit, mode, fan, account, userContext);
+            if (result.isFailed()) {
+                if (thermostatIds.size() > 1) {
+                    key += "MULTIPLE_ERROR";
+                } else {
+                    key += "ERROR";
+                }
+            } else {
+                key += result.name();
+            }
+            map.addAttribute("message", key);
     	}
         
         // Manually put thermsotatIds into model for redirect
@@ -220,9 +228,6 @@ public class ThermostatManualController extends AbstractThermostatController {
 		accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
-        ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
-        String key = resultMessage.getDisplayKey();
-
         List<String> thermostatLabels = new ArrayList<String>();
         for(Integer thermostatId : thermostatIds) {
         	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -230,7 +235,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         }
         
         String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
+        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(message, thermostatLabelString);
 
         map.addAttribute("message", resolvable);
         map.addAttribute("thermostatIds", thermostatIds);

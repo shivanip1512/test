@@ -6,6 +6,7 @@ import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.util.Validator;
 
 public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto> {

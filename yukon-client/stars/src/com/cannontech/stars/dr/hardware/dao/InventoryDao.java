@@ -80,4 +80,6 @@ public interface InventoryDao {
 
     public int getDeviceId(int inventoryId);
 
+    public int getAccountIdForInventory(int inventoryId);
+
 }

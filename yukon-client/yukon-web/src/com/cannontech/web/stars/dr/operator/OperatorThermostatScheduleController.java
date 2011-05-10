@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -32,14 +30,12 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -62,7 +58,6 @@ public class OperatorThermostatScheduleController {
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
 	private RolePropertyDao rolePropertyDao;
-	private ThermostatEventHistoryDao thermostatEventHistoryDao;
 	
 	// VIEW
 	@RequestMapping
@@ -70,14 +65,14 @@ public class OperatorThermostatScheduleController {
 					            Integer scheduleId, 
 					            String canceledAction,
 					            Boolean createAsNew,
-					            YukonUserContext yukonUserContext, 
-					            ModelMap modelMap, 
-					            AccountInfoFragment accountInfoFragment,
-					            FlashScope flashScope) {
+					            YukonUserContext context, 
+					            ModelMap model, 
+					            AccountInfoFragment fragment,
+					            FlashScope flash) {
 
 		// thermostatIdsList
-		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
-		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+		CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
 
 		int thermostatId = thermostatIdsList.get(0);
 		Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -118,55 +113,55 @@ public class OperatorThermostatScheduleController {
         //make sure the schedule has entries for each time of week associated with its current mode
         thermostatService.addMissingScheduleEntries(schedule);
         
-        String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(schedule, thermostatIdsList.size() == 1 ? thermostat.getLabel() : null, yukonUserContext);
+        String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(schedule, thermostatIdsList.size() == 1 ? thermostat.getLabel() : null, context);
         schedule.setScheduleName(useScheduleName);
         
         defaultSchedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByAccountAndType(accountId, schedulableThermostatType);
-        String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, yukonUserContext);
+        String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, context);
         defaultSchedule.setScheduleName(useDefaultScheduleName);
         
         // numberOfThermostatsUsingSchedule
         List<Integer> thermostatIdsUsingSchedule = accountThermostatScheduleDao.getThermostatIdsUsingSchedule(schedule.getAccountThermostatScheduleId());
-        modelMap.addAttribute("totalNumberOfThermostatsUsingSchedule", thermostatIdsUsingSchedule.size());
+        model.addAttribute("totalNumberOfThermostatsUsingSchedule", thermostatIdsUsingSchedule.size());
         int selectedNumberOfThermostatsUsingSchedule = 0;
         for (int id : thermostatIdsList) {
         	if (thermostatIdsUsingSchedule.contains(id)) {
         		selectedNumberOfThermostatsUsingSchedule++;
         	}
         }
-        modelMap.addAttribute("selectedNumberOfThermostatsUsingSchedule", selectedNumberOfThermostatsUsingSchedule);
+        model.addAttribute("selectedNumberOfThermostatsUsingSchedule", selectedNumberOfThermostatsUsingSchedule);
         
         // schedule52Enabled
-    	boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, yukonUserContext.getYukonUser());
-    	modelMap.addAttribute("schedule52Enabled", schedule52Enabled);
+    	boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, context.getYukonUser());
+    	model.addAttribute("schedule52Enabled", schedule52Enabled);
     	
     	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, yukonUserContext.getYukonUser());
-    	modelMap.addAttribute("scheduleMode", scheduleMode);
+    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, context.getYukonUser());
+    	model.addAttribute("scheduleMode", scheduleMode);
     	
         // temperatureUnit
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         String temperatureUnit = customer.getTemperatureUnit();
-        modelMap.addAttribute("temperatureUnit", temperatureUnit);
+        model.addAttribute("temperatureUnit", temperatureUnit);
 
         // scheduleJSON
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
         JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
-        modelMap.addAttribute("scheduleJSONString", scheduleJSON.toString());
-        modelMap.addAttribute("schedule", schedule);
+        model.addAttribute("scheduleJSONString", scheduleJSON.toString());
+        model.addAttribute("schedule", schedule);
 
         JSONObject defaultFahrenheitScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, true);
-        modelMap.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
+        model.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
         JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
-        modelMap.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
+        model.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
         
-        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, yukonUserContext.getYukonUser());
-        modelMap.addAttribute("defaultScheduleMode", defaultScheduleMode);
+        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, context.getYukonUser());
+        model.addAttribute("defaultScheduleMode", defaultScheduleMode);
         
         // if arriving at the view page due to a canceled send/save operation
         if (StringUtils.isNotBlank(canceledAction)) {
         	MessageSourceResolvable cancelMessage = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatScheduleConfirm.cancelText." + canceledAction);
-        	flashScope.setWarning(cancelMessage);
+        	flash.setWarning(cancelMessage);
         }
 
         return "operator/operatorThermostat/schedule/view.jsp";
@@ -175,38 +170,49 @@ public class OperatorThermostatScheduleController {
 	// CONFIRM OR SAVE 
 	@RequestMapping
     public String confirmOrSave(String thermostatIds,
-					    		String type, String scheduleMode, String temperatureUnit, Integer scheduleId,
-					    		String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
+					    		String type, 
+					    		String scheduleMode, 
+					    		String temperatureUnit, 
+					    		Integer scheduleId,
+					    		String scheduleName, 
+					    		String saveAction, 
 					    		String schedules,
-					    		HttpServletRequest request, ModelMap modelMap,
-					    		AccountInfoFragment accountInfoFragment) {
+					    		ModelMap model,
+					    		AccountInfoFragment fragment) {
 	    
-		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
 		
 		if(StringUtils.isBlank(scheduleName)){
-            modelMap.addAttribute("canceledAction", "emptyName");
+            model.addAttribute("canceledAction", "emptyName");
             return "redirect:view";
         }
 		
-    	modelMap.addAttribute("saveAction", saveAction);
-    	modelMap.addAttribute("scheduleId", scheduleId);
-    	modelMap.addAttribute("type", type);
-    	modelMap.addAttribute("schedules", schedules);
-    	modelMap.addAttribute("scheduleMode", scheduleMode);
-    	modelMap.addAttribute("temperatureUnit", temperatureUnit);
-    	modelMap.addAttribute("scheduleId", scheduleId);
-    	modelMap.addAttribute("scheduleName", scheduleName);
+    	model.addAttribute("saveAction", saveAction);
+    	model.addAttribute("scheduleId", scheduleId);
+    	model.addAttribute("type", type);
+    	model.addAttribute("schedules", schedules);
+    	model.addAttribute("scheduleMode", scheduleMode);
+    	model.addAttribute("temperatureUnit", temperatureUnit);
+    	model.addAttribute("scheduleId", scheduleId);
+    	model.addAttribute("scheduleName", scheduleName);
     	
     	return "redirect:confirm";
     }
 	
 	// CONFIRM
 	@RequestMapping
-    public String confirm(String thermostatIds, String type, String scheduleMode, String temperatureUnit, 
-                          Integer scheduleId, String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
-					      String schedules, HttpServletRequest request, ModelMap modelMap, AccountInfoFragment accountInfoFragment) {
+    public String confirm(String thermostatIds, 
+                          String type, 
+                          String scheduleMode, 
+                          String temperatureUnit, 
+                          Integer scheduleId, 
+                          String scheduleName, 
+                          String saveAction, 
+                          YukonUserContext context, 
+					      String schedules, ModelMap model, 
+					      AccountInfoFragment fragment) {
 		
-		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
         
     	// Create the confirm schedule text
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
@@ -226,66 +232,75 @@ public class OperatorThermostatScheduleController {
         // Build up confirmation display object, containing printable representations of the thermostat schedule entries
         String i18nKey = (isFahrenheit) ? "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit" : 
         								  "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius";
-        List<ThermostatScheduleDisplay> scheduleDisplays = operatorThermostatHelper.getScheduleDisplays(yukonUserContext, type, thermostatScheduleMode, ats, isFahrenheit, i18nKey);
+        List<ThermostatScheduleDisplay> scheduleDisplays = operatorThermostatHelper.getScheduleDisplays(context, type, thermostatScheduleMode, ats, isFahrenheit, i18nKey);
 
     	// Pass all of the parameters through to confirm page
-        modelMap.addAttribute("confirmationDisplays", scheduleDisplays);
-        modelMap.addAttribute("schedules", schedules);
-    	modelMap.addAttribute("type", type);
-    	modelMap.addAttribute("scheduleMode", scheduleMode);
-    	modelMap.addAttribute("temperatureUnit", temperatureUnit);
-    	modelMap.addAttribute("scheduleId", scheduleId);
-    	modelMap.addAttribute("scheduleName", scheduleName);
-    	modelMap.addAttribute("saveAction", saveAction);
+        model.addAttribute("confirmationDisplays", scheduleDisplays);
+        model.addAttribute("schedules", schedules);
+    	model.addAttribute("type", type);
+    	model.addAttribute("scheduleMode", scheduleMode);
+    	model.addAttribute("temperatureUnit", temperatureUnit);
+    	model.addAttribute("scheduleId", scheduleId);
+    	model.addAttribute("scheduleName", scheduleName);
+    	model.addAttribute("saveAction", saveAction);
     	
     	return "operator/operatorThermostat/schedule/confirm.jsp";
     }
 	
 	// SAVE
 	@RequestMapping
-    public String save(String thermostatIds, String type, String scheduleMode, String temperatureUnit, 
-                       Integer scheduleId,String scheduleName, String saveAction, YukonUserContext userContext,
-					   String schedules, HttpServletRequest request, ModelMap modelMap, FlashScope flashScope,
-					   AccountInfoFragment accountInfoFragment) {
+    public String save(String thermostatIds, 
+                       String type, 
+                       String scheduleMode, 
+                       String temperatureUnit, 
+                       Integer scheduleId, 
+                       String scheduleName, 
+                       String saveAction, 
+                       YukonUserContext userContext,
+					   String schedules, 
+					   ModelMap model, 
+					   FlashScope flash, 
+					   AccountInfoFragment fragment) {
 
-	    List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
-	    CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+	    LiteYukonUser user = userContext.getYukonUser();
+	    List<Integer> ids = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+	    CustomerAccount account = customerAccountDao.getById(fragment.getAccountId());
+	    ThermostatScheduleMode mode = ThermostatScheduleMode.valueOf(scheduleMode);
+        boolean sendAndSave = "saveApply".equals(saveAction);
+        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
+        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
 
 	    String oldScheduleName = "";
-	    if(scheduleId >= 0) {
+	    if (scheduleId >= 0) {
 	        AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
 	        oldScheduleName = oldAts.getScheduleName();
 	    }
 	    
 	    // Log thermostat schedule save attempt
-	    for (int thermostatId : thermostatIdsList) {
+        for (int thermostatId : ids) {
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 	        
-            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(userContext.getYukonUser(),
-                                                                               accountInfoFragment.getAccountNumber(),
+            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user,
+                                                                               fragment.getAccountNumber(),
                                                                                thermostat.getSerialNumber(),
                                                                                oldScheduleName);
         }
-	    
-		ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-		
-        boolean sendAndSave = "saveApply".equals(saveAction);
-
-        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(customerAccount.getCustomerId(), escapedTempUnit);
+        
+        if (StringUtils.isNotBlank(escapedTempUnit) 
+                && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+            
+            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
         }
         
         if (scheduleName.length() > 60) {
-        	flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong"));
+        	flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong"));
         	return "redirect:view";
         }
         
         // id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
-        ats.setAccountId(customerAccount.getAccountId());
+        ats.setAccountId(account.getAccountId());
         
         // schedulableThermostatType
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
@@ -293,11 +308,11 @@ public class OperatorThermostatScheduleController {
         
         // Create schedule from submitted JSON string
         List<AccountThermostatScheduleEntry> atsEntries = 
-            operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
+            operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, schedulableThermostatType, mode, isFahrenheit);
         ats.setScheduleEntries(atsEntries);
         
         // thermostatScheduleMode
-        ats.setThermostatScheduleMode(thermostatScheduleMode);
+        ats.setThermostatScheduleMode(mode);
         
         // COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
         if (schedulableThermostatType.getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES) {
@@ -309,137 +324,100 @@ public class OperatorThermostatScheduleController {
 
         // SAVE
         accountThermostatScheduleDao.save(ats);
-        accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIdsList, ats.getAccountThermostatScheduleId());
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
+        accountThermostatScheduleDao.mapThermostatsToSchedule(ids, ats.getAccountThermostatScheduleId());
 
         // Log schedule name change
         if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
-            accountEventLogService.thermostatScheduleNameChanged(userContext.getYukonUser(),
-                                                                 oldScheduleName,
-                                                                 ats.getScheduleName());
+            accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
         }
+        
+        List<String> thermostatLabels = new ArrayList<String>();
+        for (Integer thermostatId : ids) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            thermostatLabels.add(thermostat.getLabel());
+        }
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
         
         // SEND
         if (sendAndSave) {
-        	
-        	boolean failed = false;
-        	for (int thermostatId : thermostatIdsList) {
-        		
-        		for (TimeOfWeek timeOfWeek : thermostatScheduleMode.getAssociatedTimeOfWeeks()) {
-        			
-        			message = thermostatService.sendSchedule(customerAccount, ats, thermostatId, timeOfWeek, thermostatScheduleMode, userContext);
-                	
-            		if (message.isFailed()) {
-                        failed = true;
-                    }
-        		}
-        		
-        		if(!failed) {
-        		    //Log schedule send to thermostat history
-        		    thermostatEventHistoryDao.logScheduleEvent(userContext.getYukonUser(), thermostatId, ats.getAccountThermostatScheduleId(), thermostatScheduleMode);
-        		}
-        	}
-        	
-        	if (failed && thermostatIdsList.size() > 1) {
-                message = ThermostatScheduleUpdateResult.CONSUMER_MULTIPLE_ERROR;
-            }
+            ThermostatScheduleUpdateResult result = thermostatService.sendSchedule(account, ats, ids, mode, user);
+            String key = "yukon.dr.consumer.scheduleUpdate.result.OPERATOR_" + result.name();
+            MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
+            flash.setMessage(messageResolvable, result.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+        } else {
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.saveSuccessful", thermostatLabelString));
         }
-        
-        // message
-        List<String> thermostatLabels = new ArrayList<String>();
-        for(Integer thermostatId : thermostatIdsList) {
-        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        	thermostatLabels.add(thermostat.getLabel());
-        }
-        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-        MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
-        flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
 
         return "redirect:view";
     }
 	
 	// HINTS
 	@RequestMapping
-    public String hints(String thermostatIds, 
-    						   AccountInfoFragment accountInfoFragment,
-    						   ModelMap modelMap) {
+    public String hints(String thermostatIds, AccountInfoFragment fragment, ModelMap model) {
 		
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-		modelMap.addAttribute("thermostatIds", thermostatIds);
+		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+		model.addAttribute("thermostatIds", thermostatIds);
 		
 		return "operator/operatorThermostat/schedule/hints.jsp";
 	}
 	
 	// SAVED SCHEDULES
 	@RequestMapping
-    public String savedSchedules(int thermostatId,
-					            LiteYukonUser user, 
-					            ModelMap modelMap,
-					            AccountInfoFragment accountInfoFragment,
-					            YukonUserContext yukonUserContext) {
+    public String savedSchedules(int thermostatId, LiteYukonUser user, ModelMap model, AccountInfoFragment fragment) {
 
         accountCheckerService.checkInventory(user, thermostatId);
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 
 		Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 		SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
-		modelMap.addAttribute("thermostatId", thermostatId);
+		model.addAttribute("thermostatId", thermostatId);
 		
 		AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostatId);
 		if (thermostatCurrentSchedule != null) {
-			modelMap.addAttribute("currentScheduleId", thermostatCurrentSchedule.getAccountThermostatScheduleId());
+			model.addAttribute("currentScheduleId", thermostatCurrentSchedule.getAccountThermostatScheduleId());
 		}
 		
-		List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountInfoFragment.getAccountId(), type);
-        modelMap.addAttribute("schedules", schedules);
+		List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllSchedulesForAccountByType(fragment.getAccountId(), type);
+        model.addAttribute("schedules", schedules);
 
         return "operator/operatorThermostat/schedule/savedSchedules.jsp";
     }
 	
 	// VIEW SAVED SCHEDULED
 	@RequestMapping(params="view", value="viewSavedSchedule")
-	public String viewSavedSchedule(int thermostatId, Integer scheduleId, ModelMap modelMap, AccountInfoFragment accountInfoFragment) {
+	public String viewSavedSchedule(int thermostatId, Integer scheduleId, ModelMap model, AccountInfoFragment fragemtn) {
 		
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+		AccountInfoFragmentHelper.setupModelMapBasics(fragemtn, model);
 		
-		modelMap.addAttribute("scheduleId", scheduleId);
-		modelMap.addAttribute("thermostatIds", thermostatId);
+		model.addAttribute("scheduleId", scheduleId);
+		model.addAttribute("thermostatIds", thermostatId);
 		return "redirect:view";
 	}
 	
 	// CREATE NEW SAVED SCHEDULE
 	@RequestMapping(params="createNew", value="viewSavedSchedule")
-    public String createNewSchedule(int thermostatId, 
-    								LiteYukonUser user, 
-    								ModelMap modelMap, 
-    								AccountInfoFragment accountInfoFragment,
-    								FlashScope flashScope) {
+    public String createNewSchedule(int thermostatId, ModelMap model, AccountInfoFragment fragment) {
     	
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 		
-		modelMap.addAttribute("createAsNew", true);
-		modelMap.addAttribute("thermostatIds", thermostatId);
+		model.addAttribute("createAsNew", true);
+		model.addAttribute("thermostatIds", thermostatId);
 		return "redirect:view";
     }
 
 	// DELETE SAVED SCHEDULE
 	@RequestMapping(params="delete", value="viewSavedSchedule")
-    public String viewSavedSchedule(int thermostatId, 
-    								int scheduleId, 
-    								LiteYukonUser user, 
-    								ModelMap modelMap, 
-    								AccountInfoFragment accountInfoFragment,
-    								FlashScope flashScope) {
+    public String viewSavedSchedule(int thermostatId, int scheduleId, LiteYukonUser user, ModelMap model, AccountInfoFragment fragment, FlashScope flash) {
     	
 		accountCheckerService.checkInventory(user, thermostatId);
-		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-		modelMap.addAttribute("thermostatId", thermostatId);
+		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+		model.addAttribute("thermostatId", thermostatId);
 		
 		AccountThermostatSchedule schedule = accountThermostatScheduleDao.getById(scheduleId);
 		accountThermostatScheduleDao.deleteById(scheduleId);
 		
 		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted", schedule.getScheduleName());
-		flashScope.setConfirm(Collections.singletonList(message));
+		flash.setConfirm(Collections.singletonList(message));
     	
     	return "redirect:savedSchedules";
     }
@@ -489,8 +467,4 @@ public class OperatorThermostatScheduleController {
 		this.rolePropertyDao = rolePropertyDao;
 	}
 	
-	@Autowired
-	public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
-	    this.thermostatEventHistoryDao = thermostatEventHistoryDao;
-	}
 }

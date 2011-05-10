@@ -1,4 +1,4 @@
-package com.cannontech.web.admin.energyCompany.service;
+package com.cannontech.stars.service;
 
 import java.util.Set;
 
@@ -6,9 +6,9 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.checker.UserChecker;
-import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 
 public interface EnergyCompanyService {
 
@@ -75,6 +75,11 @@ public interface EnergyCompanyService {
      * Returns true is the user is an operator of any energy company
      */
     public boolean isOperator(LiteYukonUser user);
+    
+    /**
+     * Returns true if the user has the Residential Consumer role
+     */
+    public boolean isResidentialUser(LiteYukonUser user);
 
     public UserChecker createEcOperatorChecker();
     
@@ -98,5 +103,6 @@ public interface EnergyCompanyService {
      * setting all the relevant siteInfo substations to 0, and also sends out a db change message.
      * @return returns 1 if a substation was deleted.
      */
-    public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);    
+    public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);
+
 }

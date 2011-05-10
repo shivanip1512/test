@@ -1,4 +1,4 @@
-package com.cannontech.web.admin.energyCompany.service.impl;
+package com.cannontech.stars.service.impl;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +30,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.SqlStatement;
@@ -55,10 +56,13 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.DefaultRouteService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -66,8 +70,6 @@ import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
-import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
@@ -90,6 +92,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private YukonGroupDao yukonGroupDao;
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     @Override
     @Transactional
@@ -258,13 +261,18 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Override
-    public boolean isOperator(LiteYukonUser user){
+    public boolean isOperator(LiteYukonUser user) {
         for (LiteStarsEnergyCompany ec : starsDatabaseCache.getAllEnergyCompanies()) {
             if (ec.getOperatorLoginIDs().contains(user.getUserID())) {
                 return true;
             }
         }
         return false;
+    }
+    
+    @Override
+    public boolean isResidentialUser(LiteYukonUser user) {
+        return rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user);
     }
     
     @Override
@@ -591,10 +599,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             if (accounts != null) {
                 
                 for (int i = 0; i < accounts.length; i++) {
-                    int accountID = ((Integer) accounts[i][0]).intValue();
+                    int accountId = ((Integer) accounts[i][0]).intValue();
                     
-                    LiteStarsCustAccountInformation liteAcctInfo = 
-                        energyCompany.getCustAccountInformation( accountID, true );
+                    LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(accountId);
                     AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
                     
                 }
@@ -806,4 +813,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
         this.defaultRouteService = defaultRouteService;
     }
+    
+    @Autowired
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+    
 }

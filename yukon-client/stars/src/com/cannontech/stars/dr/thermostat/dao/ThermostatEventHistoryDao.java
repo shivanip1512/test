@@ -4,8 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
-import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
-import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 
 public interface ThermostatEventHistoryDao {
@@ -13,12 +12,7 @@ public interface ThermostatEventHistoryDao {
     /**
      * Logs a manual setting being sent.
      */
-    public void logManualEvent(LiteYukonUser user, 
-                                  int thermostatId, 
-                                  int temperatureInF, 
-                                  ThermostatMode thermostatMode, 
-                                  ThermostatFanState fan, 
-                                  boolean hold);
+    public void logManualEvent(LiteYukonUser user, int thermostatId, ThermostatManualEvent event);
     
     /**
      * Logs a schedule being sent.

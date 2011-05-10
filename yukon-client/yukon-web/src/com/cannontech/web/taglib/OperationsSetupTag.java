@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 
 
 @Configurable(value = "operationsSetupTagPrototype", autowire = Autowire.BY_NAME)

@@ -55,6 +55,11 @@ public class ActivityLogger {
 		logEvent(userID, -1, -1, -1, -1, action, description);
 	}
 	
+	public static void logEvent(ActivityLog event) {
+	    logEvent(event.getUserID(), event.getAccountID(), event.getEnergyCompanyID(), event.getCustomerID(), 
+	             event.getPaoID(), event.getAction(), event.getDescription());
+	}
+	
 	/**
 	 * logEvent with all possible parameters.
 	 * Set any parameters that aren't relevant to -1 and attempts will be made to

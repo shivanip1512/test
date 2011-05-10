@@ -27,11 +27,11 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.SortedSetMultimap;
 

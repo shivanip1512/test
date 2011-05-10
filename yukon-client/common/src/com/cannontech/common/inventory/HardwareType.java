@@ -37,7 +37,7 @@ public enum HardwareType implements DatabaseRepresentationSource{
     COMMERCIAL_EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM, true, true, true),
     EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM, true, true, true),
     UTILITY_PRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO, InventoryCategory.ONE_WAY_RECEIVER, HardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM, true, true, true),
-    UTILITY_PRO_ZIGBEE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, InventoryCategory.TWO_WAY_RECEIVER, HardwareClass.THERMOSTAT, HardwareConfigType.SEP, false, false, false),
+    UTILITY_PRO_ZIGBEE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, InventoryCategory.TWO_WAY_RECEIVER, HardwareClass.THERMOSTAT, HardwareConfigType.SEP, true, false, true),
 
     /* Gateways*/
     DIGI_GATEWAY(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, InventoryCategory.TWO_WAY_RECEIVER, HardwareClass.GATEWAY, HardwareConfigType.EXPRESSCOM, true, false, false);

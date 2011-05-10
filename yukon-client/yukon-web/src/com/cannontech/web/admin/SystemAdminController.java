@@ -9,8 +9,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 
 @Controller
 public class SystemAdminController {

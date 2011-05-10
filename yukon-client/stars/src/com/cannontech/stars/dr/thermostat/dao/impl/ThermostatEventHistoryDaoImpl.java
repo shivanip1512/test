@@ -27,6 +27,7 @@ import com.cannontech.stars.dr.thermostat.model.ScheduleThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEventType;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
@@ -91,22 +92,17 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     }
     
     @Override
-    public void logManualEvent(LiteYukonUser user, 
-                                  int thermostatId, 
-                                  int temperatureInF, 
-                                  ThermostatMode thermostatMode, 
-                                  ThermostatFanState fan, 
-                                  boolean hold) {
+    public void logManualEvent(LiteYukonUser user, int thermostatId, ThermostatManualEvent event) {
         
-        ManualThermostatEvent event = new ManualThermostatEvent();
-        event.setUserName(user.getUsername());
-        event.setThermostatId(thermostatId);
-        event.setEventTime(new Instant());
-        event.setManualFan(fan);
-        event.setManualHold(hold);
-        event.setManualMode(thermostatMode);
-        event.setManualTemp(temperatureInF);
-        logEvent(event);
+        ManualThermostatEvent mte = new ManualThermostatEvent();
+        mte.setUserName(user.getUsername());
+        mte.setThermostatId(thermostatId);
+        mte.setEventTime(new Instant());
+        mte.setManualFan(event.getFanState());
+        mte.setManualHold(event.isHoldTemperature());
+        mte.setManualMode(event.getMode());
+        mte.setManualTemp(event.getPreviousTemperature());
+        logEvent(mte);
     }
     
     private void insertThermostatAndScheduleNames(List<ThermostatEvent> events) {

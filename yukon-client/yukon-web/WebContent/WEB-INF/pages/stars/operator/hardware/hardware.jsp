@@ -187,10 +187,6 @@ function sendTextMsg() {
                             <spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody>
                         </tags:nameValue2>
                         
-    					<c:if test="${showInstallCode}">
-                                <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false"/>
-                        </c:if>
-                        
                         <%-- For switchs and tstat's, show serial number, otherwise device name --%>
                         <c:choose>
                             <c:when test="${showSerialNumber}">
@@ -215,9 +211,13 @@ function sendTextMsg() {
                             </c:otherwise>
                             
                         </c:choose>
+                        
+                        <c:if test="${showInstallCode}">
+                            <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false" maxlength="23" size="25"/>
+                        </c:if>
     					
     					<c:if test="${showMacAddress}">
-                    		<tags:inputNameValue nameKey=".macAddress" path="macAddress"></tags:inputNameValue>                   
+                    		<tags:inputNameValue nameKey=".macAddress" path="macAddress" maxlength="23" size="25"/>
                         </c:if>
                         
                         <c:if test="${showFirmwareVersion}">

@@ -21,6 +21,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -28,7 +29,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 

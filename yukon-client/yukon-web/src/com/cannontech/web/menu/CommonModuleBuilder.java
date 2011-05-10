@@ -18,10 +18,10 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.checker.AggregateAndUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.UserChecker;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionAction;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;

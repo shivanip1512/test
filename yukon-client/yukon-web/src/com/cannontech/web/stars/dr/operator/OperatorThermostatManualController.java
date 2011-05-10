@@ -166,7 +166,8 @@ public class OperatorThermostatManualController {
             ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperatureInF, thermostatMode);
             
             if(limitMessage != null) {
-                MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(limitMessage.getDisplayKey());
+                String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + limitMessage.name();
+                MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key);
                 flashScope.setError(messageResolvable);
                 isValid = false;
             }
@@ -184,7 +185,8 @@ public class OperatorThermostatManualController {
             	thermostatLabels.add(thermostat.getLabel());
             }
             String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-            MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
+            String key = "yukon.dr.consumer.manualevent.result.OPERATOR_" + message.name();
+            MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
             
         	flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
         }

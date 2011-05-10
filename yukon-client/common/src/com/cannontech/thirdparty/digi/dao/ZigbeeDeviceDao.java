@@ -18,4 +18,5 @@ public interface ZigbeeDeviceDao {
     public void createZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat);
     public void updateZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat);
     public void deleteZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat);
+    public Integer findGatewayIdForInventory(int inventoryId);
 }

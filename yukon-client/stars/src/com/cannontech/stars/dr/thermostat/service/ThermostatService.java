@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.service;
 
 import java.util.List;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -10,7 +11,6 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -25,16 +25,9 @@ public interface ThermostatService {
      * @param userContext - User context for manual event
      * @return Status of manual event execution
      */
-    public ThermostatManualEventResult executeManualEvent(
+    public ThermostatManualEventResult executeManual(
             CustomerAccount account, ThermostatManualEvent event,
             YukonUserContext userContext);
-
-    /**
-     * Sends commands to thermostat for given thermostat schedule information.
-     */
-    public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            AccountThermostatSchedule schedule, int thermostatId, TimeOfWeek timeOfWeek,
-            ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
 
     /**
      * Gets an AccountThermostatSchedule based off the energy company default schedule for the given type.
@@ -109,4 +102,10 @@ public interface ThermostatService {
      * Given a thermostat id, returns the name of that thermostat.
      */
     public String getThermostatNameFromId(int thermostatId);
+
+    public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
+                                                       AccountThermostatSchedule ats,
+                                                       Iterable<Integer> thermostatIds,
+                                                       ThermostatScheduleMode mode,
+                                                       LiteYukonUser user);
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -22,6 +23,7 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.DefaultRouteService;
+import com.cannontech.stars.service.EnergyCompanyService;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
@@ -40,6 +42,8 @@ public class LiteStarsEnergyCompanyFactory {
 	private YukonListDao yukonListDao;
 	private PaoDao paoDao;
 	private EnergyCompanyDao energyCompanyDao;
+	private EnergyCompanyService energyCompanyService;
+	private RoleDao roleDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -69,6 +73,8 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setYukonListDao(yukonListDao);
         energyCompany.setPaoDao(paoDao);
         energyCompany.setEnergyCompanyDao(energyCompanyDao);
+        energyCompany.setEnergyCompanyService(energyCompanyService);
+        energyCompany.setRoleDao(roleDao);
 
         energyCompany.initialize();
 
@@ -188,6 +194,16 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
     
 }

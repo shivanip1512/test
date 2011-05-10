@@ -25,9 +25,9 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.service.DefaultRouteService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.login.LoginService;
 
 public abstract class AbstractBaseActionController implements Controller {
