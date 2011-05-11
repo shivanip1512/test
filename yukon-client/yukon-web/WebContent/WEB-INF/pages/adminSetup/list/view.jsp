@@ -6,11 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<c:set var="useType" value="${!empty listDefinitions}"/>
-<c:if test="${!empty param.useType}">
-    <c:set var="useType" value="true"/>
-</c:if>
-
 <cti:standardPage module="adminSetup" page="list.VIEW">
 
 <tags:nameValueContainer2>
@@ -28,6 +23,12 @@
     </c:if>
     <c:if test="${!empty list.yukonListEntries}">
         <table class="compactResultsTable rowHighlighting">
+            <c:if test="${usesType}">
+                <tr>
+                    <th><i:inline key=".entryText"/></th>
+                    <th><i:inline key=".definition"/></th>
+                </tr>
+            </c:if>
             <c:forEach var="entry" varStatus="status" items="${list.yukonListEntries}">
                 <tr>
                     <td>
@@ -38,6 +39,11 @@
                             <i:inline key="${entry.entryTextMsr}"/>
                         </c:if>
                     </td>
+                    <c:if test="${usesType}">
+                        <td>
+                            <i:inline key="${entry.definition}"/>
+                        </td>
+                    </c:if>
                 </tr>
             </c:forEach>
         </table>

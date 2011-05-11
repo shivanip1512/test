@@ -89,17 +89,17 @@
                 </cti:url>
                 <cti:button key="edit" href="${operatorLoginEditUrl}"/>
             </cti:displayForPageEditModes>
-            
+
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button key="delete" name="delete" styleClass="delete"/>
+                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+            </cti:displayForPageEditModes>
+
             <!-- Cancel -->
             <cti:url var="operatorLoginHomeUrl" value="${baseUrl}/home">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
             <cti:button key="cancel" href="${operatorLoginHomeUrl}"/>
-            
-            <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="delete" name="delete" styleClass="delete"/>
-                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
-            </cti:displayForPageEditModes>
         </div>
      </form:form>
   

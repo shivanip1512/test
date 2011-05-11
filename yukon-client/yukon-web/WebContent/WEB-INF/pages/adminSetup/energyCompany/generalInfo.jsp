@@ -12,9 +12,15 @@
 function addOperatorGroups() {
     $('operatorGroupsForm').submit();
 }
+
 function addCustomerGroups() {
     $('customerGroupsForm').submit();
 }
+
+Event.observe(window, "load", function() {
+    operatorGroupPicker.excludeIds = ${cti:jsonString(operatorGroupIds)};
+    customerGroupPicker.excludeIds = ${cti:jsonString(customerGroupIds)};
+});
 </script>
 
     <tags:setFormEditMode mode="${mode}"/>
@@ -62,9 +68,8 @@ function addCustomerGroups() {
                                 <cti:button key="edit" type="submit" name="edit"/>
                             </c:if>
                             <c:if test="${canEditRoles}">
-                                <cti:url value="/spring/adminSetup/roleEditor/view" var="editRolesUrl">
+                                <cti:url var="editRolesUrl" value="/spring/adminSetup/groupEditor/view">
                                     <cti:param name="groupId" value="${groupId}"/>
-                                    <cti:param name="roleId" value="${roleId}"/>
                                 </cti:url>
                                 <cti:button key="editRoles" type="button" href="${editRolesUrl}"/>
                             </c:if>

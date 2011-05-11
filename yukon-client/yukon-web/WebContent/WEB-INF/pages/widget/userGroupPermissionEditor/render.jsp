@@ -29,7 +29,7 @@ ${pageScope.addPao} = function() {
             </c:when>
             <c:otherwise>
                 <div class="permissionsContainer">
-                    <table class="compactResultsTable">
+                    <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th>Name</th>
                             <th>Type</th>

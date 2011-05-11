@@ -52,7 +52,8 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     	Permission permission = getPermission(request);
     	
     	mav.addObject("permission", permission);
-    	
+    	mav.addObject("permissionDescription", permission);
+
     	return mav;
     }
 

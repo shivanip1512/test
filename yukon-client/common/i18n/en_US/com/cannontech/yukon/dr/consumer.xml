@@ -326,11 +326,11 @@
     <entry key="yukon.dr.consumer.thermostat.schedule.SUNDAY">Sunday</entry>
 
     <!-- Hardware Types -->
-    <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT">Expressstat</entry>
-    <entry key="yukon.dr.consumer.hardware.type.MCT">Mct</entry>
-    <entry key="yukon.dr.consumer.hardware.type.COMMERCIAL_EXPRESSSTAT">Commercial Expressstat</entry>
-    <entry key="yukon.dr.consumer.hardware.type.LCR_5000_EXPRESSCOM">LCR 5000 expresscom</entry>
-    <entry key="yukon.dr.consumer.hardware.type.LCR_5000_VERSACOM">LCR 5000 versacom</entry>
+    <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT">ExpressStat</entry>
+    <entry key="yukon.dr.consumer.hardware.type.MCT">MCT</entry>
+    <entry key="yukon.dr.consumer.hardware.type.COMMERCIAL_EXPRESSSTAT">Commercial ExpressStat</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_5000_EXPRESSCOM">LCR 5000 ExpressCom</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_5000_VERSACOM">LCR 5000 VERSACOM</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_4000">LCR 4000</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_3000">LCR 3000</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_2000">LCR 2000</entry>
@@ -341,7 +341,7 @@
     <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT_HEAT_PUMP">Heat Pump</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO">UtilityPRO</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_ZIGBEE">UtilityPRO Zigbee</entry>
-    
+
     <!-- changeLogin.jsp -->
     <entry key="yukon.dr.consumer.changelogin.header">Administration - Change Login</entry>
     <entry key="yukon.dr.consumer.changelogin.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>

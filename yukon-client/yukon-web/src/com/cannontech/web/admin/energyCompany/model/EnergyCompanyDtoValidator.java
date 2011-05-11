@@ -26,7 +26,8 @@ public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto>
         if (StringUtils.isNotBlank(energyCompanyDto.getEmail()) && !Validator.isEmailAddress(energyCompanyDto.getEmail())) {
             errors.rejectValue("email", "yukon.web.modules.adminSetup.createEnergyCompany.email.invalid");
         }
-        
+        YukonValidationUtils.checkExceedsMaxLength(errors, "email", energyCompanyDto.getEmail(), 130);
+
         /* Primary Operator Group */
         if (energyCompanyDto.getPrimaryOperatorGroupId() == null) {
             errors.rejectValue("primaryOperatorGroupId", "yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.required");
@@ -41,29 +42,5 @@ public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto>
             errors.rejectValue("adminPassword1", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch");
             errors.rejectValue("adminPassword2", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch");
         }
-        
-        /* Secondary Operator Login, if any fields are not blank, all fields must be filled in. */
-        if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username())
-                || StringUtils.isNotBlank(energyCompanyDto.getAdmin2Password1())
-                || StringUtils.isNotBlank(energyCompanyDto.getAdmin2Password2())) {
-            /* Verify not blank */
-            if (StringUtils.isBlank(energyCompanyDto.getAdmin2Username())) {
-                errors.rejectValue("admin2Username", "yukon.web.modules.adminSetup.createEnergyCompany.adminUsername.required");
-            }
-            if (StringUtils.isBlank(energyCompanyDto.getAdmin2Password1())) {
-                errors.rejectValue("admin2Password1", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword1.required");
-            }
-            if (StringUtils.isBlank(energyCompanyDto.getAdmin2Password2())) {
-                errors.rejectValue("admin2Password2", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword2.required");
-            }
-            /* Verify matching passwords */
-            if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Password1()) && StringUtils.isNotBlank(energyCompanyDto.getAdmin2Password2())
-                    && !energyCompanyDto.getAdmin2Password1().equals(energyCompanyDto.getAdmin2Password2())) {
-                errors.rejectValue("admin2Password1", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch");
-                errors.rejectValue("admin2Password2", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch");
-            }
-        }
-        
     }
-    
 }

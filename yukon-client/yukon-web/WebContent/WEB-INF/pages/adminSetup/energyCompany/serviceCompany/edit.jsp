@@ -252,17 +252,17 @@
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button key="save" name="update" type="submit"/>
             </cti:displayForPageEditModes>
-            
+
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button key="delete"/>
+                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+            </cti:displayForPageEditModes>
+
             <!-- Cancel -->
             <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
             <cti:button key="cancel" href="${serviceCompanyIndexUrl}"/>
-        
-            <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="delete"/>
-                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
-            </cti:displayForPageEditModes>
         </div>
      </form:form>
   

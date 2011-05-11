@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.core.dao.InUseException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -193,12 +194,12 @@ public interface ECMappingDao {
     /**
      * Removes a login group from the operator login group list for an energy company
      */
-    public void deleteECToOperatorGroupMapping(int ecId, int groupId);
+    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException ;
     
     /**
      * Removes a login group from the customer login group list for an energy company
      */
-    public void deleteECToResidentialGroupMapping(int ecId, int groupId);
+    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException ;
 
     /**
      * Returns the operator login of an energy company it's parent energy company uses to login to it.

@@ -23,7 +23,8 @@
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes">Use this permission for Cap Control.  Select the items to DENY access to for the group.</span>
                 </div>
-        		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker" permission="PAO_VISIBLE" allow="false"/>
+        		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"
+                    permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility"/>
             </cti:dataGridCell>
             
         </cti:dataGrid>

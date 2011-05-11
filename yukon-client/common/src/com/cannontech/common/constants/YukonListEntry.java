@@ -80,6 +80,10 @@ public class YukonListEntry
 		return yukonDefID;
 	}
 
+	public YukonDefinition getDefinition() {
+	    return YukonDefinition.getById(yukonDefID);
+	}
+
 	/**
 	 * Sets the entryID.
 	 * @param entryID The entryID to set

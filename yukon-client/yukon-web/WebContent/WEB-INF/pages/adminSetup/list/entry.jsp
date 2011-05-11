@@ -6,7 +6,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<c:set var="usesType" value="${!empty listDefinitions}"/>
 <c:set var="numEntryColumns" value="2"/>
 <c:if test="${usesType}">
     <c:set var="numEntryColumns" value="3"/>

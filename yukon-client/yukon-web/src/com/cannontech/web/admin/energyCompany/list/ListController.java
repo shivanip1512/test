@@ -87,6 +87,7 @@ public class ListController {
         YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
         model.addAttribute("list", list);
         model.addAttribute("isInherited", selectionListService.isListInherited(ecId, list));
+        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
 
         model.addAttribute("mode", PageEditMode.VIEW);
         return "list/view.jsp";
@@ -116,9 +117,7 @@ public class ListController {
         // validation errors but doesn't hurt otherwise.
         list.sortEntries();
 
-        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
-                                                                   list.getType(), context);
-        model.addAttribute("listDefinitions", listDefinitions);
+        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
 
         model.addAttribute("mode", PageEditMode.EDIT);
         return "list/edit.jsp";
@@ -131,19 +130,20 @@ public class ListController {
         YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   list.getEnergyCompanyId());
-        List<YukonDefinition> listDefinitions = getListDefinitions(list.getEnergyCompanyId(),
-                                                                   list.getType(), context);
-        model.addAttribute("listDefinitions", listDefinitions);
+        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
 
         return "list/entry.jsp";
     }
 
-    private List<YukonDefinition> getListDefinitions(int ecId, YukonSelectionListEnum listType,
-                                                     YukonUserContext context) {
+    private void addListDefinitionsToModel(ModelMap model, int ecId, YukonSelectionListEnum type,
+                                           YukonUserContext context) {
         List<YukonDefinition> listDefinitions =
-            selectionListService.getValidDefinitions(ecId, listType);
-        return objectFormattingService.sortEnumValues(listDefinitions.toArray(new YukonDefinition[listDefinitions.size()]),
-                                                      null, null, context);
+            selectionListService.getValidDefinitions(ecId, type);
+        listDefinitions =
+            objectFormattingService.sortEnumValues(listDefinitions.toArray(new YukonDefinition[listDefinitions.size()]),
+                                                   null, null, context);
+        model.addAttribute("listDefinitions", listDefinitions);
+        model.addAttribute("usesType", !listDefinitions.isEmpty());
     }
 
     @RequestMapping(value="save", params="save", method=RequestMethod.POST)

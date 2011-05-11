@@ -22,8 +22,8 @@
                     
                 <tags:formElementContainer nameKey="generalInfo">
                     <tags:nameValueContainer2>
-                        <tags:inputNameValue nameKey=".name" path="name" maxlength="60"/>
-                        <tags:inputNameValue nameKey=".email" path="email"/>
+                        <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
+                        <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
                         <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID"
                             nameKey=".defaultRoute" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                     </tags:nameValueContainer2>
@@ -66,19 +66,6 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".confirmPassword">
                             <tags:password path="adminPassword2"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </tags:formElementContainer>
-                
-                <tags:formElementContainer nameKey="secondaryOperatorLogin">
-                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".secondaryOperatorLogin.note"/></span></div>
-                    <tags:nameValueContainer2>
-                        <tags:inputNameValue nameKey=".username" path="admin2Username"/>
-                        <tags:nameValue2 nameKey=".password">
-                            <tags:password path="admin2Password1"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".confirmPassword">
-                            <tags:password path="admin2Password2"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>

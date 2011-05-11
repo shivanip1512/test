@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -71,6 +73,7 @@ public class ApplianceCategoryController {
     private StarsDatabaseCache starsDatabaseCache;
     private PaoDao paoDao;
     private EnergyCompanyService energyCompanyService;
+    private ConfigurationSource configurationSource;
 
     private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -274,6 +277,8 @@ public class ApplianceCategoryController {
             model.addAttribute("icons", icons);
         }
 
+        model.addAttribute("canAddVirtual",
+                           configurationSource.getBoolean(MasterConfigBooleanKeysEnum.VIRTUAL_PROGRAMS));
         return "applianceCategory/edit.jsp";
     }
 
@@ -600,5 +605,10 @@ public class ApplianceCategoryController {
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
+    }
+
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

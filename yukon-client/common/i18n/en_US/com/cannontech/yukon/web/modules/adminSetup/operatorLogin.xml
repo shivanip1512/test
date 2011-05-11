@@ -15,13 +15,13 @@
     <entry key="yukon.web.modules.adminSetup.operatorLogin.generatePassword">Generate Password</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.showPassword">Show Password</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.authType">Auth Type</entry>
-    
-    
+
+
     <!-- UI Elements -->
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create Operator Login</entry>
-    
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create</entry>
+
     <!--  Validation -->
-    
+
     <!--  Generic success/fail messages -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated">Successfully created the login.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated">Successfully updated the login.</entry>
@@ -31,17 +31,16 @@
     
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageName">Operator Logins</entry>
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageDescription">Operator Logins</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageDescription">{0}</entry>
 
     <!-- edit.jsp -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.CREATE.pageName">Create Operator Login</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.CREATE.pageDescription">Create Operator Login</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.CREATE.contextualPageName">Create</entry>
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.pageName">Edit Operator Login</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.VIEW.pageName">Operator Login</entry>
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.VIEW.contextualPageName">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.VIEW.pageDescription">{0}</entry>
 
 </properties>

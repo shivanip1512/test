@@ -29,75 +29,78 @@
 
 
 <!-- Appliance Category Configuration -->
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.pageName">Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.VIEW.pageName">Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.VIEW.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.pageName">Edit Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.contextualPageName">Edit</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.pageDescription">{0}</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.info.title">Info</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.noActionsInViewOnlyMode">There are no actions in view mode.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.name">Category Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.displayName">Display Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.sameAsName">Same as Category Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.type">Type</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.icon">Icon</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.info.title">Info</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.noActionsInViewOnlyMode">There are no actions in view mode.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.name">Category Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.displayName">Display Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.sameAsName">Same as Category Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.type">Type</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.icon">Icon</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.edit.hoverText">Edit detailed information for this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.edit.label">Edit</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.edit.title">Appliance Category Details</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.edit.hoverText">Edit detailed information for this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.edit.label">Edit</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.edit.title">Appliance Category Details</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignPrograms.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignPrograms.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignPrograms.hoverText">Add one or more programs to this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignPrograms.label">Add</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignProgramsDialogTitle">Add Program(s)</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignPrograms.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignPrograms.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignPrograms.hoverText">Add one or more programs to this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignPrograms.label">Add</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignProgramsDialogTitle">Add Program(s)</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.hoverText">Create a virtual program for this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.label">Create Virtual</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.createVirtualProgram.title">Create Virtual Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.createVirtualProgram.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.createVirtualProgram.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.createVirtualProgram.hoverText">Create a virtual program for this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.createVirtualProgram.label">Create Virtual</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.createVirtualProgram.title">Create Virtual Program</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.delete.hoverText">Delete this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.delete.label">Delete</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.delete.title">Delete Appliance Category</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.deleteConfirmation.title">Confirmation</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.delete.hoverText">Delete this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.delete.label">Delete</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.delete.title">Delete Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.deleteConfirmation.title">Confirmation</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.description">Description</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.noDescription">N/A</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.consumerSelectable">Consumer Selectable</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.isConsumerSelectable">This appliance category is consumer selectable.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.isNotConsumerSelectable">This appliance category is not consumer selectable.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.consumerSelectableDescription">
+<entry key="yukon.web.modules.adminSetup.applianceCategory.description">Description</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.noDescription">N/A</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.consumerSelectable">Consumer Selectable</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.isConsumerSelectable">This appliance category is consumer selectable.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.isNotConsumerSelectable">This appliance category is not consumer selectable.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.consumerSelectableDescription">
     This option allows the appliance category to be selectable by the consumer.
     Unchecking this will remove the appliance category from the consumer enrollment page.
 </entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.filters">Filters</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.filterButton.label">Filter</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.showAllButton.label">Show All</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.filters">Filters</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.filterButton.label">Filter</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.showAllButton.label">Show All</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.assignedPrograms">Assigned Programs</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.programName">Program Name</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.virtualProgramName">Virtual Program {0}</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.actions">Actions</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.displayOrder">Display Order</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.assignedPrograms">Assigned Programs</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.programName">Program Name</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.virtualProgramName">Virtual Program {0}</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.actions">Actions</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.displayOrder">Display Order</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.editAssignedProgram.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.editAssignedProgram.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.editAssignedProgram.hoverText">Edit Assigned Program</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.editAssignedProgram.title">Edit Assigned Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.hoverText">Edit Assigned Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.title">Edit Assigned Program</entry>
 
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.unassignProgram.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.unassignProgram.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.unassignProgram.hoverText">Remove Program from Appliance Category</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.unassignProgram.title">Remove Program</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.hoverText">Remove Program from Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.title">Remove Program</entry>
 
 <!-- validation errors -->
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.empty.name">Name cannot be empty.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.empty.displayName">Display name cannot be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.empty.name">Name cannot be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.empty.displayName">Display name cannot be empty.</entry>
 
 <!-- Appliance Category Assigned Programs -->
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.title">{0}</entry>

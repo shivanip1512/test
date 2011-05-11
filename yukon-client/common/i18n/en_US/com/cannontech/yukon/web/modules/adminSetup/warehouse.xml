@@ -4,6 +4,7 @@
     
     <!--  Model -->
     <entry key="yukon.web.modules.adminSetup.warehouse.title">Warehouse</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.none">There are currently no warehouses.</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.name">Name</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.locationAddress1">Street Address</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.locationAddress2">Street Address 2</entry>

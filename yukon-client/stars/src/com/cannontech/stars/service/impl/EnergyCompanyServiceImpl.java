@@ -111,11 +111,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         if (yukonUserDao.findUserByUsername(energyCompanyDto.getAdminUsername()) != null) {
             throw new UserNameUnavailableException("adminUsername");
         }
-        if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username()) 
-            && yukonUserDao.findUserByUsername(energyCompanyDto.getAdmin2Username()) != null) {
-            throw new UserNameUnavailableException("admin2Username");
-        }
-        
+
         /* Create a privilege group with EnergyCompany and Administrator role */
         LiteYukonGroup primaryOperatorGroup = yukonGroupDao.getLiteYukonGroup(energyCompanyDto.getPrimaryOperatorGroupId());
         String adminGroupName = energyCompanyDto.getName() + " Admin Grp";
@@ -151,13 +147,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                             DBChangeMsg.CAT_ENERGY_COMPANY,
                             null,
                             DbChangeType.ADD));
-        
-        /* Add Secondary Operator */
-        if (StringUtils.isNotBlank(energyCompanyDto.getAdmin2Username())) {
-            StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdmin2Username(), energyCompanyDto.getAdmin2Password1(),
-                LoginStatusEnum.ENABLED, new LiteYukonGroup[] {primaryOperatorGroup}, liteEnergyCompany);
-        }
-        
+
         /* Set Default Route */
         defaultRouteService.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
         
@@ -239,6 +229,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
+        if (ecId == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+            return false;
+        }
+
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean isOperator = starsDatabaseCache.getEnergyCompany(ecId).getOperatorLoginIDs().contains(user.getUserID()); 
         

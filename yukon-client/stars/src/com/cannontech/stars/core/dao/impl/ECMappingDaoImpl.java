@@ -11,8 +11,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.impl.YukonGroupDaoImpl;
 import com.cannontech.core.dao.impl.YukonUserDaoImpl;
 import com.cannontech.database.IntegerRowMapper;
@@ -366,10 +368,20 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
             yukonJdbcTemplate.update(sql);
         }
     }
-    
+
     @Override
-    public void deleteECToOperatorGroupMapping(int ecId, int groupId) {
+    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM YukonUserGroup WHERE UserId IN (");
+        sql.append(  "SELECT OperatorLoginId FROM EnergyCompanyOperatorLoginList");
+        sql.append(    "WHERE EnergyCompanyId").eq(ecId);
+        sql.append(") AND GroupId").eq(groupId);
+        int numUses = yukonJdbcTemplate.queryForInt(sql);
+        if (numUses > 0) {
+            throw new InUseException();
+        }
+
+        sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToOperatorGroupMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
         sql.append(  "AND GroupId").eq(groupId);
@@ -377,8 +389,40 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
-    public void deleteECToResidentialGroupMapping(int ecId, int groupId) {
+    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException {
+        SqlStatementBuilder customerIdQuery = new SqlStatementBuilder();
+        customerIdQuery.append("SELECT CustomerId FROM CustomerAccount");
+        customerIdQuery.append("WHERE AccountId IN (");
+        customerIdQuery.append(    "SELECT AccountId FROM EcToAccountMapping");
+        customerIdQuery.append(    "WHERE EnergyCompanyId").eq(ecId);
+        customerIdQuery.append(")");
+
+        SqlFragmentCollection contactsClause = SqlFragmentCollection.newOrCollection();
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("ContactId IN (");
+        sql.append(    "SELECT PrimaryContactId FROM Customer");
+        sql.append(    "WHERE CustomerId IN (").append(customerIdQuery).append(")");
+        sql.append(")");
+        contactsClause.add(sql);
+
+        sql = new SqlStatementBuilder();
+        sql.append("ContactId IN (");
+        sql.append(    "SELECT ContactId FROM CustomerAdditionalContact");
+        sql.append(    "WHERE CustomerId IN (").append(customerIdQuery).append(")");
+        sql.append(")");
+        contactsClause.add(sql);
+
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM YukonUserGroup WHERE UserId IN (");
+        sql.append(    "SELECT LogInId FROM Contact");
+        sql.append(    "WHERE").append(contactsClause);
+        sql.append(") AND GroupId").eq(groupId);
+        int numUses = yukonJdbcTemplate.queryForInt(sql);
+        if (numUses > 0) {
+            throw new InUseException();
+        }
+
+        sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToResidentialGroupMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
         sql.append(  "AND GroupId").eq(groupId);

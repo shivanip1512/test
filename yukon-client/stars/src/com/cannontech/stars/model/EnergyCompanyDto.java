@@ -10,9 +10,6 @@ public class EnergyCompanyDto {
     private String adminUsername;
     private String adminPassword1;
     private String adminPassword2;
-    private String admin2Username;
-    private String admin2Password1;
-    private String admin2Password2;
     private int defaultRouteId;
     
     public String getName() {
@@ -70,31 +67,7 @@ public class EnergyCompanyDto {
     public void setAdminPassword2(String adminPassword2) {
         this.adminPassword2 = adminPassword2;
     }
-    
-    public String getAdmin2Username() {
-        return admin2Username;
-    }
-    
-    public void setAdmin2Username(String admin2Username) {
-        this.admin2Username = admin2Username;
-    }
-    
-    public String getAdmin2Password1() {
-        return admin2Password1;
-    }
-    
-    public void setAdmin2Password1(String admin2Password1) {
-        this.admin2Password1 = admin2Password1;
-    }
-    
-    public String getAdmin2Password2() {
-        return admin2Password2;
-    }
-    
-    public void setAdmin2Password2(String admin2Password2) {
-        this.admin2Password2 = admin2Password2;
-    }
-    
+
     public int getDefaultRouteId() {
         return defaultRouteId;
     }
@@ -110,5 +83,4 @@ public class EnergyCompanyDto {
     public void setPrimaryOperatorGroupId(Integer primaryOperatorGroupId) {
         this.primaryOperatorGroupId = primaryOperatorGroupId;
     }
-    
 }

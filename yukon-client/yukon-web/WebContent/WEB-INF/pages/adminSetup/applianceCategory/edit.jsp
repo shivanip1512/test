@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:standardPage module="adminSetup" page="applianceCategory.EDIT">
+<cti:standardPage module="adminSetup" page="applianceCategory.${mode}">
 
 <cti:includeScript link="/JavaScript/iconChooser.js"/>
 <tags:setFormEditMode mode="${mode}"/>
@@ -299,12 +299,14 @@
             <div class="actionArea">
                 <cti:button key="assignPrograms" onclick="programPicker.show()"/>
 
-                <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
-                    <cti:param name="ecId" value="${param.ecId}"/>
-                    <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                </cti:url>
-                <tags:dialogButton dialogId="acDialog" nameKey="createVirtualProgram"
-                    actionUrl="${createVirtualProgramUrl}"/>
+                <c:if test="${canAddVirtual}">
+                    <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
+                        <cti:param name="ecId" value="${param.ecId}"/>
+                        <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+                    </cti:url>
+                    <tags:dialogButton dialogId="acDialog" nameKey="createVirtualProgram"
+                        actionUrl="${createVirtualProgramUrl}"/>
+                </c:if>
             </div>
         </c:if>
     </tags:pagedBox>
@@ -329,17 +331,17 @@
             </cti:url>
         </c:if>
         <c:if test="${!empty applianceCategoryId}">
+            <cti:button id="deleteButton" key="delete"/>
+            <tags:confirmDialog nameKey=".deleteConfirmation" argument="${applianceCategory.name}"
+                on="#deleteButton" submitName="delete"/>
+        </c:if>
+        <c:if test="${!empty applianceCategoryId}">
             <cti:url var="backUrl" value="view">
                 <cti:param name="ecId" value="${param.ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
         </c:if>
         <cti:button key="cancel" href="${backUrl}"/>
-        <c:if test="${!empty applianceCategoryId}">
-            <cti:button id="deleteButton" key="delete"/>
-            <tags:confirmDialog nameKey=".deleteConfirmation" argument="${applianceCategory.name}"
-                on="#deleteButton" submitName="delete"/>
-        </c:if>
     </cti:displayForPageEditModes>
 </div>
 

@@ -15,7 +15,8 @@
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes">Use this permission for Load Management.  Select the items to ALLOW access to for the user.</span>
                 </div>
-                <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
+                <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker"
+                    permission="LM_VISIBLE" allow="true"/>
             </cti:dataGridCell>
             
             <cti:dataGridCell>
@@ -23,7 +24,8 @@
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes">Use this permission for Cap Control.  Select the items to DENY access to for the user.</span>
                 </div>
-                <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker" permission="PAO_VISIBLE" allow="false"/>
+                <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker"
+                    permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility"/>
             </cti:dataGridCell>
             
         </cti:dataGrid>

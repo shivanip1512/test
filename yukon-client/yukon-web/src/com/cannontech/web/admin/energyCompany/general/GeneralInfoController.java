@@ -19,6 +19,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -46,11 +47,14 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.csrf.CsrfTokenService;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/energyCompany/general/*")
 @Controller
 public class GeneralInfoController {
+    private final static String baseKey = "yukon.web.modules.adminSetup.generalInfo.";
 
     private CsrfTokenService csrfTokenService;
     private EnergyCompanyService energyCompanyService;
@@ -88,11 +92,10 @@ public class GeneralInfoController {
     
     /* Cancel Edit */
     @RequestMapping(value="update", params="cancel", method=RequestMethod.POST)
-    public String cancel(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
-        setupModelMap(model, context.getYukonUser(), ecId, fragment);
-        model.addAttribute("mode", PageEditMode.VIEW);
-        
-        return "energyCompany/generalInfo.jsp";
+    public String cancel(ModelMap model, int ecId) {
+        model.clear();
+        model.addAttribute("ecId", ecId);
+        return "redirect:view";
     }
     
     /* Delete Energy Company */
@@ -167,7 +170,7 @@ public class GeneralInfoController {
         
         /* General Info Update Successfully */
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "updateSuccessful"));
         return "redirect:view";
     }
     
@@ -184,7 +187,7 @@ public class GeneralInfoController {
         StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(ecId), starsDatabaseCache.getEnergyCompany(newMemberId), -1);
         /* Member Added Successfully */
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.memberAddSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "memberAddSuccessful"));
         return "redirect:view";
     }
     
@@ -202,7 +205,7 @@ public class GeneralInfoController {
         
         /* Member Removed Successfully */
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.memberRemoveSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "memberRemoveSuccessful"));
         return "redirect:view";
     }
     
@@ -225,9 +228,10 @@ public class GeneralInfoController {
                                EnergyCompanyInfoFragment fragment) {
         
         ecMappingDao.addECToOperatorGroupMapping(ecId, StringUtils.parseIntStringForList(operatorGroupIds));
-        
-        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "operatorGroupsUpdatedSuccessful"));
+
+        model.clear();
+        model.addAttribute("ecId", ecId);
         return "redirect:view";
     }
 
@@ -238,14 +242,19 @@ public class GeneralInfoController {
         /* Make sure they always have at least one operator group */
         if (ecMappingDao.getOperatorGroups(ecId).size() < 2) {
             EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "requireAtLeastOneOpGroup"));
             return "redirect:view";
         }
-        
-        ecMappingDao.deleteECToOperatorGroupMapping(ecId, removeOperatorGroup);
-        
-        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful"));
+
+        try {
+            ecMappingDao.deleteECToOperatorGroupMapping(ecId, removeOperatorGroup);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "operatorGroupsUpdatedSuccessful"));
+        } catch (InUseException e) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "operatorGroupsInUse"));
+        }
+
+        model.clear();
+        model.addAttribute("ecId", ecId);
         return "redirect:view";
     }
     
@@ -255,9 +264,10 @@ public class GeneralInfoController {
                                EnergyCompanyInfoFragment fragment) {
         
         ecMappingDao.addECToResidentialGroupMapping(ecId, StringUtils.parseIntStringForList(customerGroupIds));
-        
-        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "customerGroupsUpdatedSuccessful"));
+
+        model.clear();
+        model.addAttribute("ecId", ecId);
         return "redirect:view";
     }
     
@@ -265,11 +275,15 @@ public class GeneralInfoController {
     @RequestMapping(value="updateCustomerGroups", params="removeCustomerGroup", method=RequestMethod.POST)
     public String removeCustomerGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeCustomerGroup,
                                EnergyCompanyInfoFragment fragment) {
-        
-        ecMappingDao.deleteECToResidentialGroupMapping(ecId, removeCustomerGroup);
-        
-        EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful"));
+        try {
+            ecMappingDao.deleteECToResidentialGroupMapping(ecId, removeCustomerGroup);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "customerGroupsUpdatedSuccessful"));
+        } catch (InUseException e) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "customerGroupsInUse"));
+        }
+
+        model.clear();
+        model.addAttribute("ecId", ecId);
         return "redirect:view";
     }
     
@@ -284,13 +298,24 @@ public class GeneralInfoController {
             model.addAttribute("members", starsDatabaseCache.getEnergyCompany(ecId).getChildren());
             model.addAttribute("memberCandidates", energyCompanyService.getMemberCandidates(ecId));
         }
-        
+
+        Function<LiteYukonGroup, Integer> idFromGroup = new Function<LiteYukonGroup, Integer>() {
+            @Override
+            public Integer apply(LiteYukonGroup from) {
+                return from.getGroupID();
+            }};
+
         List<LiteYukonGroup> operatorGroups = ecMappingDao.getOperatorGroups(ecId);
         model.addAttribute("operatorGroups", operatorGroups);
+        List<Integer> operatorGroupIds = Lists.newArrayList(Iterables.transform(operatorGroups, idFromGroup));
+        model.addAttribute("operatorGroupIds", operatorGroupIds);
+
         List<LiteYukonGroup> customerGroups = ecMappingDao.getResidentialGroups(ecId);
         model.addAttribute("customerGroups", customerGroups);
+        List<Integer> customerGroupIds = Lists.newArrayList(Iterables.transform(customerGroups, idFromGroup));
+        model.addAttribute("customerGroupIds", customerGroupIds);
     }
-    
+
     /* Model Attributes */
     @ModelAttribute("showParentLogin")
     public boolean getShowParentLogin(int ecId) {

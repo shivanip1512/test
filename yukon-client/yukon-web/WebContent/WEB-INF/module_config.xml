@@ -1273,15 +1273,17 @@
                                         <menu>energyCompanySetup|home</menu>
                                         <link>/spring/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                         <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                        <pages>
+                                            <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                     <page name="applianceCategory.CREATE" type="BASIC">
                                         <menu>energyCompanySetup|home</menu>
                                         <link>/spring/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
-                                    </page>
-                                    <page name="applianceCategory.EDIT" type="DETAIL">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
@@ -1314,6 +1316,7 @@
                                 </pages>
                             </page>
                             <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>

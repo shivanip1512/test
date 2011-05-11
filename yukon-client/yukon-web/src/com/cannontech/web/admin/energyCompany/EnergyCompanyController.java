@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -57,7 +60,8 @@ public class EnergyCompanyController {
     private ECMappingDao ecMappingDao;
     private YukonUserDao yukonUserDao;
     private LoginService loginService;
-    
+    private ConfigurationSource configurationSource;
+
     /* Energy Company Setup Home Page*/
     @RequestMapping("/energyCompany/home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
@@ -68,6 +72,16 @@ public class EnergyCompanyController {
         if (superUser) {
             /* For super users show all energy companies. */
             companies = yukonEnergyCompanyService.getAllEnergyCompanies();
+            if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
+                Iterator<YukonEnergyCompany> iter = companies.iterator();
+                while (iter.hasNext()) {
+                    YukonEnergyCompany ec = iter.next();
+                    if (ec.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+                        iter.remove();
+                        break;
+                    }
+                }
+            }
             setupHomeModelMap(modelMap, user, companies);
             return "energyCompany/home.jsp";
         }
@@ -76,7 +90,7 @@ public class EnergyCompanyController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         
         if (energyCompany != null && energyCompany.getOperatorLoginIDs().contains(user.getUserID())) {
-            /* If they belong to an energy company and are an operator, show energy company and all decendants. */
+            /* If they belong to an energy company and are an operator, show energy company and all descendants. */
             companies.addAll(ecMappingDao.getChildEnergyCompanies(energyCompany.getEnergyCompanyId()));
         }
         
@@ -255,5 +269,9 @@ public class EnergyCompanyController {
     public void setLoginService(LoginService loginService) {
         this.loginService = loginService;
     }
-    
+
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
 }

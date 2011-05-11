@@ -8,39 +8,41 @@
 
 <cti:standardPage module="adminSetup" page="warehouse.home">
     <tags:boxContainer2 nameKey="pageName" styleClass="fixedMediumWidth">
-        <table class="compactResultsTable rowHighlighting">
-            <c:forEach items="${warehouses}" var="warehouse">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <td style="width:30%">
-                    <cti:url var="warehouseViewUrl" value="${baseUrl}/view">
-                        <cti:param name="ecId" value="${ecId}"/>
-                        <cti:param name="warehouseId" value="${warehouse.warehouse.warehouseID}"/>
-                    </cti:url>
-                    <b>
-                        <a href="${warehouseViewUrl}">
-                            <spring:escapeBody htmlEscape="true">${warehouse.warehouse.warehouseName}</spring:escapeBody>
-                        </a>
-                    </b>
-                    <br/>
-                    <span class="meta">
-                        <tags:liteAddress address="${warehouse.address}"></tags:liteAddress>
-                    </span>
-                </td>
-                <td>
-                    <spring:escapeBody htmlEscape="true">${warehouse.warehouse.notes}</spring:escapeBody>
-                </td>
-            </tr>
-            </c:forEach>
-        </table>
-        
-        <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
-            <div class="actionArea">
-                <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
-                    <cti:param name="ecId" value="${ecId}"/>
-                </cti:url>
-                <cti:button key="create" onclick="javascript:window.location='${createWarehouseUrl}'"/>
-            </div>
-        </cti:checkRolesAndProperties>
+        <c:if test="${empty warehouses}">
+            <i:inline key=".none"/>
+        </c:if>
+        <c:if test="${!empty warehouses}">
+            <table class="compactResultsTable rowHighlighting">
+                <c:forEach items="${warehouses}" var="warehouse">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <td style="width:30%">
+                        <cti:url var="warehouseViewUrl" value="${baseUrl}/view">
+                            <cti:param name="ecId" value="${ecId}"/>
+                            <cti:param name="warehouseId" value="${warehouse.warehouse.warehouseID}"/>
+                        </cti:url>
+                        <b>
+                            <a href="${warehouseViewUrl}">
+                                <spring:escapeBody htmlEscape="true">${warehouse.warehouse.warehouseName}</spring:escapeBody>
+                            </a>
+                        </b>
+                        <br>
+                        <span class="meta">
+                            <tags:liteAddress address="${warehouse.address}"></tags:liteAddress>
+                        </span>
+                    </td>
+                    <td>
+                        <spring:escapeBody htmlEscape="true">${warehouse.warehouse.notes}</spring:escapeBody>
+                    </td>
+                </tr>
+                </c:forEach>
+            </table>
+        </c:if>
+
+        <div class="actionArea">
+            <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
+                <cti:param name="ecId" value="${ecId}"/>
+            </cti:url>
+            <cti:button key="create" onclick="javascript:window.location='${createWarehouseUrl}'"/>
+        </div>
     </tags:boxContainer2>
-    
 </cti:standardPage>

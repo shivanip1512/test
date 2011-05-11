@@ -119,7 +119,7 @@ document.observe("dom:loaded", function() {
         <br/>
         <br/>
         <pre>
-&lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard%lt;/button&gt;
+&lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard&lt;/button&gt;
         </pre>
         <br/>
         <br/>

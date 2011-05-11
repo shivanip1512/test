@@ -17,11 +17,9 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.generalInfo.title">General Information</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email">Email</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Primary Operator Login</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The primary operator login belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Admin Operator Login</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The admin operator login belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.title">Secondary Operator Login (Optional)</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.note">The secondary login belongs to the primary operator group selected.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.password">Password</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.confirmPassword">Confirm Password</entry>
@@ -56,8 +54,10 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful">Operator Groups Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsInUse">Operator Logins in Selected Group Are Assigned to This Energy Company</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup">At least one operator group is required.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful">Residential Customer Groups Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsInUse">Residential Customer(s) in Selected Group Are Assigned to This Energy Company</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.label">Edit Roles</entry>
@@ -122,7 +122,7 @@
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.title">Substation and Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.VIEW.pageName">Substations And Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substations.title">Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substations.title">Assigned Substations</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substation">Substation</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.noSubstations">No Substations</entry>    
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationAdded">Substation Added Successfully</entry>    
@@ -131,7 +131,7 @@
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmSubstationRemove.message">Are you sure you want to remove the substation {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationToRouteMapping">Substations</entry>
 
-    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routes.title">Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routes.title">Assigned Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.route">Route</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.noRoutes">No Routes</entry>    
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.remove">Remove</entry>
