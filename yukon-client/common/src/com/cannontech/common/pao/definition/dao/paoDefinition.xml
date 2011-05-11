@@ -3625,9 +3625,6 @@
             </tag>
         </tags>
     </pao>
-    <pao id="INTEGRATION_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
-        <displayName>INTEGRATION</displayName>
-    </pao>
     <pao id="LCU415" inherits="TRANSMITTER_BASE" creatable="false">
         <displayName>LCU-415</displayName>
         <points>
@@ -5110,9 +5107,6 @@
     </pao>
     <pao id="LM_GROUP_GOLAY" inherits="LM_GROUP">
         <displayName>Golay Group</displayName>
-    </pao>
-    <pao id="LM_GROUP_INTEGRATION" inherits="LM_GROUP">
-        <displayName>INTEGRATION GROUP</displayName>
     </pao>
     <pao id="LM_GROUP_DIGI_SEP" inherits="LM_GROUP">
         <displayName>DIGI SEP GROUP</displayName>

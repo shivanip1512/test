@@ -349,10 +349,6 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             temp.setFirstFocus();
 			return temp;
 		}
-		else if (DeviceTypes.INTEGRATION_TRANSMITTER == devType)
-		{
-		    return getDeviceCommChannelPanel();
-		}
 		else if (devType == DeviceTypes.RDS_TERMINAL)
 		{
 		    return getRDSTerminalPanel();

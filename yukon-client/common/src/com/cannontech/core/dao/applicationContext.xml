@@ -170,7 +170,6 @@
        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean> 
    
-  <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmGroupXmlParameterDaoImpl"/> 
   <bean id="sepLMGroupDeviceClassDao" class="com.cannontech.core.dao.impl.SepDeviceClassDaoImpl"/>
   <bean id="lmGroupDao" class="com.cannontech.core.dao.impl.LMGroupDaoImpl"/>
   

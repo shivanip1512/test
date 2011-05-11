@@ -45,9 +45,6 @@ public final class DeviceFactory {
         case SERIES_5_LMI:
             returnDevice = new Series5LMI();
             break;
-        case INTEGRATION_TRANSMITTER:
-            returnDevice = new XmlTransmitter();
-            break;
         case RTC:
             returnDevice = new RTC();
             break;
@@ -296,11 +293,6 @@ public final class DeviceFactory {
         case LM_GROUP_MCT:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupMCT();
             returnDevice.setDeviceType( PAOGroups.STRING_MCT_GROUP[0] );
-            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
-            break;
-        case LM_GROUP_INTEGRATION:
-            returnDevice = new com.cannontech.database.data.device.lm.LMGroupXML();
-            returnDevice.setDeviceType( PAOGroups.STRING_INTEGRATION_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
         case LM_GROUP_SA305:

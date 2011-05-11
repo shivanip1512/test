@@ -539,14 +539,6 @@ private void loadSignalTransmitterComboBox(String routeType) {
 				}
 			}
 		}
-		else if (routePaoType == PaoType.ROUTE_INTEGRATION)
-		{
-			for (LiteYukonPAObject liteDevice : devices) {
-				if (liteDevice.getPaoType() == PaoType.INTEGRATION_TRANSMITTER) {
-					getSignalTransmitterComboBox().addItem(liteDevice);
-				}
-			}
-		}
 	}
 
 

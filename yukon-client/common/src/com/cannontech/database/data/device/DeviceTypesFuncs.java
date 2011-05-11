@@ -435,7 +435,6 @@ public final static boolean isLmGroup(int deviceType)
 		case LM_GROUP_SA205:
 		case LM_GROUP_SADIGITAL:
 		case LM_GROUP_GOLAY:
-		case LM_GROUP_INTEGRATION:
 		case LM_GROUP_DIGI_SEP:
 			return true;
 	
@@ -994,7 +993,6 @@ public final static boolean isTransmitter(int deviceType)
 		case SNPP_TERMINAL:
 		case SERIES_5_LMI:
 		case RTC:
-		case INTEGRATION_TRANSMITTER:
 		case RDS_TERMINAL:
 			return true;
 	

@@ -1459,14 +1459,13 @@ public class YC extends Observable implements MessageListener
 		if( CommandCategory.isCommandCategory(devType))
 		{
 	//		The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
-			ArrayList devTypes = CommandCategory.getAllTypesForCategory(devType);
+			ArrayList<PaoType> paoTypes = CommandCategory.getAllTypesForCategory(devType);
 			DeviceTypeCommand dbP = null;
-			for (int i = 0; i < devTypes.size(); i++)
-			{
+			for (PaoType paoType : paoTypes) {
 				//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
 				dbP = new DeviceTypeCommand();
 				dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-				dbP.getDeviceTypeCommand().setDeviceType((String)devTypes.get(i));
+				dbP.getDeviceTypeCommand().setDeviceType(paoType.getDbString());
 				dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 				dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
 				dbP.setCommand(cmd);

@@ -123,8 +123,6 @@ public enum PaoType implements DatabaseRepresentationSource {
     FAULT_CI(DeviceTypes.FAULT_CI, "Faulted Circuit Indicator", PaoCategory.DEVICE, PaoClass.GRID),
     NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR, "Capacitor Bank Neutral Monitor", PaoCategory.DEVICE, PaoClass.GRID),
     CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
-    LM_GROUP_INTEGRATION(DeviceTypes.LM_GROUP_INTEGRATION, "INTEGRATION GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
-    INTEGRATION_TRANSMITTER(DeviceTypes.INTEGRATION_TRANSMITTER, "INTEGRATION", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     MCT430A3(DeviceTypes.MCT430A3, "MCT-430A3", PaoCategory.DEVICE, PaoClass.CARRIER),
     LCR3102(DeviceTypes.LCR3102, "LCR-3102", PaoCategory.DEVICE, PaoClass.CARRIER),
     RDS_TERMINAL(DeviceTypes.RDS_TERMINAL, "RDS TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -139,7 +137,6 @@ public enum PaoType implements DatabaseRepresentationSource {
     ROUTE_SERIES_5_LMI(RouteTypes.ROUTE_SERIES_5_LMI, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_RTC(RouteTypes.ROUTE_RTC, "RTC Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_INTEGRATION(RouteTypes.ROUTE_INTEGRATION, "Integration Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_RDS_TERMINAL(RouteTypes.ROUTE_RDS_TERMINAL, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
 

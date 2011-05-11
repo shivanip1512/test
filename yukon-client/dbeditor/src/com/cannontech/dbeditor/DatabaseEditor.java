@@ -2127,7 +2127,6 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            if( (litYuk.getPaoType().getPaoClass() == PaoClass.CAPCONTROL 
 	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getPaoType().getDeviceTypeId())) 
 	                || litYuk.getPaoType() == PaoType.LM_GROUP_RIPPLE
-	                || litYuk.getPaoType() == PaoType.LM_GROUP_INTEGRATION 
 	                || litYuk.getPaoType() == PaoType.MACRO_GROUP
 	                || litYuk.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT )
 	            {

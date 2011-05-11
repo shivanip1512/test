@@ -136,9 +136,7 @@ public interface DeviceTypes extends TypeBase
     public final static int FAULT_CI          = DEVICE_OFFSET + 102;
     public final static int NEUTRAL_MONITOR   = DEVICE_OFFSET + 103;
     public final static int CBC_DNP           = DEVICE_OFFSET + 104;
-    public final static int LM_GROUP_INTEGRATION  = DEVICE_OFFSET + 105;
-    public final static int INTEGRATION_TRANSMITTER  = DEVICE_OFFSET + 106;
-    
+
     public final static int MCT430A3                  = DEVICE_OFFSET + 107;
     
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
@@ -166,9 +164,6 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
     public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;
     
-    //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 128;
-	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
@@ -244,7 +239,6 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
-	public static final String[] STRING_INTEGRATION_GROUP = {"INTEGRATION GROUP"};
 	public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
 	public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
 	public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
@@ -279,7 +273,6 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SADIGITAL_GROUP = {"SA-Digital Group"};
 	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
-	public static final String[] STRING_INTEGRATION_TRANSMITTER = {"INTEGRATION"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
 	public static final String[] STRING_SENTINEL = {"SENTINEL"};	

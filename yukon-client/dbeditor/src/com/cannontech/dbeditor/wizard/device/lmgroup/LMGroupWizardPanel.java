@@ -21,7 +21,6 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private RippleMessageShedPanel rippleMessageShedPanel = null;
 	private SpecialRippleMessagePanel specialRippleMessagePanel = null;
 	private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
-	private LMGroupXMLEditorPanel lmGroupXMLEditorPanel = null;
 	private LMGroupDigiSepPanel lmGroupDigiSepEditorPanel = null;
 	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
 	
@@ -78,14 +77,6 @@ public SA305EditorPanel getSA305EditorPanel()
 		aSA305EditorPanel = new SA305EditorPanel();
 	
 	return aSA305EditorPanel;
-}
-
-public LMGroupXMLEditorPanel getLMGroupXMLEditorPanel() 
-{
-	if( lmGroupXMLEditorPanel == null )
-		lmGroupXMLEditorPanel = new LMGroupXMLEditorPanel();
-	
-	return lmGroupXMLEditorPanel;
 }
 
 public LMGroupDigiSepPanel getlmGroupDigiSepEditorPanel()
@@ -303,8 +294,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	//Start Expresscom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
-			    && (getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_EXPRESSCOMM || 
-			        getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_INTEGRATION) )
+			    && (getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_EXPRESSCOMM) )
 	{
 		getLMGroupExpressComEditorPanel().setFirstFocus();
         return getLMGroupExpressComEditorPanel();

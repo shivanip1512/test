@@ -9,6 +9,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -95,14 +96,13 @@ public DeviceTypeCommandSetupPanel() {
 					if( CommandCategory.isCommandCategory(getDeviceType()))
 					{
 //						The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
-						ArrayList devTypes = CommandCategory.getAllTypesForCategory(getDeviceType());
+						ArrayList<PaoType> paoTypes = CommandCategory.getAllTypesForCategory(getDeviceType());
 						DeviceTypeCommand dbP = null;
-						for (int i = 0; i < devTypes.size(); i++)
-						{
+						for (PaoType paoType : paoTypes) {
 							//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
 							dbP = new DeviceTypeCommand();
 							dbP.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-							dbP.setDeviceType((String)devTypes.get(i));
+							dbP.setDeviceType(paoType.getDbString());
 							dbP.setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 							dbP.setVisibleFlag(new Character('Y'));
 							dbP.setCommand(cmd);
