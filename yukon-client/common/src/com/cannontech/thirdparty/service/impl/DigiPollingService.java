@@ -52,7 +52,7 @@ public class DigiPollingService {
     
     @PostConstruct
     public void initialize() {
-        boolean runDigi = configurationSource.getString("DIGI_WEBSERVICE_URL ") == null?false:true;
+        boolean runDigi = configurationSource.getString("DIGI_WEBSERVICE_URL") == null?false:true;
         
         if (runDigi) {
             Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600));

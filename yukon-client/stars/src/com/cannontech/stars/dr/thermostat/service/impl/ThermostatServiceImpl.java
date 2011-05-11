@@ -83,7 +83,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             if (energyCompanyService.isOperator(user)) {
                 return ThermostatManualEventResult.NO_SERIAL_ERROR;
             } else {
-                return ThermostatManualEventResult.NO_SERIAL_ERROR;
+                return ThermostatManualEventResult.MANUAL_ERROR;
             }
         }
 
