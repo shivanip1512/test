@@ -188,8 +188,9 @@ Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
     readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
     readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    // These must be set manually, since they come back in units of minutes and we store in seconds.
+    //readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    //readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
     readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
     readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
     readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
@@ -228,8 +229,9 @@ Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      1, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      2, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
     readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      3, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    // These must be set manually, since they come back in units of minutes and we store in seconds.
+    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    //readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
 
     readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
     readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
@@ -421,9 +423,10 @@ bool Mct470Device::isLPDynamicInfoCurrent( void )
     //  we don't use the second load profile rate yet
     //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
 
-    if( retval && ((sspec == Sspec && sspec_rev >= SspecRev_Min && sspec_rev <= SspecRev_Max)
-                   || sspec == MCT430A_Sspec
-                   || sspec == MCT430S_Sspec) )
+    if( retval && ((sspec == Sspec_MCT470_128k && sspec_rev >= SspecRev_Min && sspec_rev <= SspecRev_Max)
+                   || sspec == Sspec_MCT430A
+                   || sspec == Sspec_MCT430S
+                   || sspec == Sspec_MCT470_256k) )
     {
         //  we only care about these if we're the correct rev...  otherwise, we ignore everything
         //    we would've done with it.  everything pre-rev E is development only, and needs to be treated with kid gloves
@@ -468,11 +471,12 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
     else
     {
         //  the ideal case - the correct, non-development sspec
-        if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec       &&
+        if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec_MCT470_128k &&
              getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Min &&
              getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_Max)
-            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
-            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
+            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430A
+            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430S
+            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT470_256k )
         {
             switch( key )
             {
@@ -704,22 +708,22 @@ boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getLoadProfile()
 
 boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getDeviceConfigLp(Cti::Config::DeviceConfigSPtr deviceConfig)
 {
-    if (!deviceConfigLp)
+    if (!_deviceConfigLp)
     {
         DeviceConfigurationLoadProfileData* loadProfileData = new DeviceConfigurationLoadProfileData();
         loadProfileData->setDeviceConfig(deviceConfig);
         loadProfileData->setLpTable(Inherited::getLoadProfile());
 
-        deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
+        _deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
     }
 
-    return deviceConfigLp;
+    return _deviceConfigLp;
 }
 
 void Mct470Device::changeDeviceConfig(Cti::Config::DeviceConfigSPtr config)
 {
     //clear it out to be reloaded on the next getter call.
-    deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>();
+    _deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>();
     setDeviceConfig(config);
 }
 
@@ -1111,11 +1115,12 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* >
                 requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, OutMessage, outList);
             }
             //  check if we're the IED sspec
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)   == Sspec
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)   == Sspec_MCT470_128k
                         && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Min
                         && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_Max)
-                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
-                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
+                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430A
+                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT430S
+                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == Sspec_MCT470_256k )
             {
                 if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile()->getLoadProfileDemandRate() )
                 {

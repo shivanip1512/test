@@ -25,7 +25,7 @@ private:
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 
-    boost::shared_ptr<Cti::DataAccessLoadProfile> deviceConfigLp;
+    boost::shared_ptr<Cti::DataAccessLoadProfile> _deviceConfigLp;
     boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Config::DeviceConfigSPtr deviceConfig);
 
     enum ChannelConfiguration
@@ -112,10 +112,10 @@ private:
 
         MaxIEDReadAge = 600,  //  in seconds
 
-        MCT430A_Sspec       = 1037,
-        MCT430S_Sspec       = 1046,
-
-        Sspec          = 1030,
+        Sspec_MCT470_128k = 1030,
+        Sspec_MCT430A     = 1037,
+        Sspec_MCT430S     = 1046,
+        Sspec_MCT470_256k = 1061,
         SspecRev_Min    =    5,  //  rev  0.5
         SspecRev_Max    =  255,  //  rev 25.5
         SspecRev_BetaLo =    9,  //  rev  0.9
