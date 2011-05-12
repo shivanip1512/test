@@ -323,7 +323,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                       userContext);
 
             Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr,
-                                                                     DateFormattingService.DateOnlyMode.START_OF_DAY,
+                                                                     DateFormattingService.DateOnlyMode.END_OF_DAY,
                                                                      userContext);
 
             if (startDate == null) {
@@ -341,12 +341,10 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                       DateFormattingService.DateOnlyMode.END_OF_DAY,
                                                                       userContext);
 
-                if (startDate.after(stopDate)) {
+                if (!startDate.before(stopDate)) {
                     errorMsg = "Start Date Must Be Before Stop Date";
                 } else if (stopDate.after(today)) {
                     errorMsg = "Stop Date Must Be On Or Before Today";
-                } else if (email == null || email.trim() == "" ) {
-                    errorMsg = "Destination E-Mail Address Required";
                 } else {
                     // map of email elements
                     Map<String, Object> msgData = new HashMap<String, Object>();
