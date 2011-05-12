@@ -92,19 +92,20 @@
 <entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.peakReset">Peak reset.</entry>
 
 <!-- getChangeTimeWindowValues.jsp -->
-<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title">Send Time Window Change</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions">Please enter the new start and stop times for control area {0} in the format HH:mm where HH is the hours from 00 to 23 and mm is minutes from 00 to 59.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title">Send Temporary Time Window Change</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions">Please enter the new start and stop times for control area: {0}, using the format HH:mm where HH is hours from 00 to 23 and mm is minutes from 00 to 59.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.invalidStartTime">Invalid start time.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.invalidStopTime">Invalid stop time.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTimeAfterStopTime">Start time must be earlier than stop time.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime">New Start Time:</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime">New Stop Time:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.noteText">Note: This time change will only stay in effect until midnight tonight.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton">Cancel</entry>
 
 <!-- sendChangeTimeWindowConfirm.jsp -->
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.title">Send Reset Peak</entry>
-<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.confirmQuestion">Are you sure you want to change the time window to {0} - {1} the control area {2}?</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.confirmQuestion">Are you sure you want to change the time window to {0} - {1} for the control area: {2}?</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged">Time window changed.</entry>

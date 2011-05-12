@@ -1065,12 +1065,12 @@ table.rowHighlighting tr:hover td {
 	white-space: nowrap;
 }
 
-h1.dialogQuestion {
-	padding-bottom: 10px;
+.dialogQuestion {
+    padding-bottom: 10px;
 }
 
-h3.dialogQuestion {
-    padding-bottom: 10px;
+.dialogFootnote {
+    padding-top: 10px;
 }
 
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE,

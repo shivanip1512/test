@@ -4,18 +4,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 	<cti:flashScopeMessages/>
-
-    <h1 class="dialogQuestion">
+   
+    <p class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions" argument="${controlArea.name}" />
-    </h1>
+    </p>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/sendChangeTimeWindowConfirm"/>
     
-        
+   
     <form:form id="getChangeTimeWindowValues" commandName="controlAreaTimeWindowDto" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');">
     
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-
         <table>
             <tr>
                 <td><cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime"/></td>
@@ -26,7 +25,11 @@
                 <td><tags:input path="stopTime" maxlength="5" size="5"/></td>
             </tr>
         </table>
-
+        
+        <p class="dialogFootnote">
+            <cti:msg2 key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.noteText"/>
+        </p>
+        
         <div class="actionArea">
             <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton"/>"
