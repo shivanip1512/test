@@ -335,16 +335,16 @@
                 <cti:displayForPageEditModes modes="EDIT">
                     <tags:slowInput2 formId="updateForm" key="save" disableOtherButtons="true"/>
                     <button type="button" onclick="$('confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
+ 		            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
+			            <cti:param name="accountId" value="${accountId}"/>
+			        </cti:url>
+            		<cti:button key="cancel" href="${viewUrl}"/>
                 </cti:displayForPageEditModes>
             </cti:checkRolesAndProperties>
             <cti:displayForPageEditModes modes="CREATE">
                 <tags:slowInput2 formId="updateForm" key="create" disableOtherButtons="true"/>
                 <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
             </cti:displayForPageEditModes>
-            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
-                <cti:param name="accountId" value="${accountId}"/>
-            </cti:url>
-            <cti:button key="cancel" href="${viewUrl}"/>
         </cti:displayForPageEditModes>
         
         <cti:displayForPageEditModes modes="VIEW">
