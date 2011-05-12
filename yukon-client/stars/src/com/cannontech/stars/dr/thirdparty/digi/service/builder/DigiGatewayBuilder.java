@@ -2,9 +2,12 @@ package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -84,12 +87,10 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     }
 
     @Override
-    public void deleteDevice(HardwareDto hardwareDto) {
-        DigiGateway digiGateway = buildDigiGateway(hardwareDto);
-        
-        gatewayDeviceDao.deleteDigiGateway(digiGateway);
-        
-        deviceDao.removeDevice(digiGateway);
+    @Transactional
+    public void deleteDevice(int deviceId, InventoryIdentifier id) {
+        gatewayDeviceDao.deleteDigiGateway(deviceId);
+        deviceDao.removeDevice(new SimpleDevice(deviceId, PaoType.DIGIGATEWAY));
     }
 
     @Override

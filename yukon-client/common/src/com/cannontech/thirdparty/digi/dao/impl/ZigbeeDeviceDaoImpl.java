@@ -118,11 +118,11 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
 
     @Override
-    public void deleteZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat) {
+    public void deleteZigbeeUtilPro(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("DELETE FROM ZBEndPoint");
-        sql.append("WHERE DeviceId").eq(zigbeeThermostat.getPaoIdentifier().getPaoId());
+        sql.append("WHERE DeviceId").eq(deviceId);
         
         yukonJdbcTemplate.update(sql);
     }

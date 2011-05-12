@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
@@ -30,8 +31,8 @@ import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
@@ -59,20 +60,7 @@ public class HardwareServiceImpl implements HardwareService {
     private OptOutService optOutService;
     private OptOutEventDao optOutEventDao;
     private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
-    
-    @Override
-    @Transactional
-    public void deleteHardware(YukonUserContext userContext, 
-                               boolean delete, 
-                               int inventoryId, 
-                               int accountId, 
-                               HardwareDto hardwareToDelete) 
-    throws NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException {
-        
-        deleteHardware(userContext, delete, inventoryId, accountId);
-        //Give the Extension service a chance to clean up its tables
-        hardwareTypeExtensionService.deleteDevice(hardwareToDelete);
-    }
+    private InventoryDao inventoryDao;
     
     @Override
     @Transactional
@@ -112,10 +100,15 @@ public class HardwareServiceImpl implements HardwareService {
         }
         
         if (delete) {
+            InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
+            
             /* Delete this hardware from the database */
             /*TODO handle this with new code, not with this util. */
             InventoryManagerUtil.deleteInventory( liteInventoryBase, yukonEnergyCompany, deleteMCT);
-
+            
+            // Give the Extension service a chance to clean up its tables
+            hardwareTypeExtensionService.deleteDevice(liteInventoryBase.getDeviceID(), id);
+            
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
         } else {
@@ -219,4 +212,10 @@ public class HardwareServiceImpl implements HardwareService {
     public void setHardwareTypeExtensionService(HardwareTypeExtensionServiceImpl hardwareTypeExtensionService) {
         this.hardwareTypeExtensionService = hardwareTypeExtensionService;
     }
+    
+    @Autowired
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
+    }
+    
 }

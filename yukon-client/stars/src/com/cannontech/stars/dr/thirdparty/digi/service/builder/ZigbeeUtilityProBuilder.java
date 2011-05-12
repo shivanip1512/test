@@ -2,9 +2,12 @@ package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -116,14 +119,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     }
     
     @Override
-    public void deleteDevice(HardwareDto hardwareDto) {
-        ZigbeeThermostat thermostat = new ZigbeeThermostat();
-        
-        thermostat.setInstallCode(hardwareDto.getInstallCode());
-        thermostat.setPaoIdentifier(new PaoIdentifier(hardwareDto.getDeviceId(), PaoType.ZIGBEEUTILPRO));
-        
-        zigbeeDeviceDao.deleteZigbeeUtilPro(thermostat);
-        deviceDao.removeDevice(thermostat);
+    @Transactional
+    public void deleteDevice(int deviceId, InventoryIdentifier id) {
+        zigbeeDeviceDao.deleteZigbeeUtilPro(deviceId);
+        deviceDao.removeDevice(new SimpleDevice(deviceId, PaoType.ZIGBEEUTILPRO));
     }
 
     @Autowired

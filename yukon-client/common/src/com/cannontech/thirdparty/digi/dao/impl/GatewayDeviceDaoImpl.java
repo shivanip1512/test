@@ -119,14 +119,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
-    public void deleteDigiGateway(DigiGateway digiGateway) {
-        int paoId = digiGateway.getPaoIdentifier().getPaoId();
-        
-        deleteZBGateway(paoId);
-
-    }
-
-    private void deleteZBGateway(int deviceId) {
+    public void deleteDigiGateway(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("DELETE FROM ZBGateway");
@@ -134,7 +127,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         
         yukonJdbcTemplate.update(sql);
     }
-    
+
     @Override
     public void updateDigiGateway(DigiGateway digiGateway) {
         

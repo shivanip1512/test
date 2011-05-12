@@ -556,7 +556,7 @@ public class OperatorHardwareController {
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        hardwareService.deleteHardware(context, delete, inventoryId, fragment.getAccountId(), hardwareToDelete);
+        hardwareService.deleteHardware(context, delete, inventoryId, fragment.getAccountId());
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         if (delete) {

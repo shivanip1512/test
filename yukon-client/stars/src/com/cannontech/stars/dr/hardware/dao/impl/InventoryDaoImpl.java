@@ -348,6 +348,18 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public InventoryIdentifier getYukonInventoryForDeviceId(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
+        sql.append("FROM InventoryBase I");
+        sql.append(  "LEFT JOIN LMHardwareBase H on I.InventoryID = H.InventoryID");
+        sql.append(  "LEFT JOIN MeterHardwareBase M on M.InventoryID = I.InventoryID");
+        sql.append("WHERE I.DeviceId").eq(deviceId);
+        
+        return yukonJdbcTemplate.queryForObject(sql, inventoryIdentifierMapper);
+    }
+    
+    @Override
     public Set<InventoryIdentifier> getYukonInventory(Collection<Integer> inventoryIds) {
         
         Set<InventoryIdentifier> result = new HashSet<InventoryIdentifier>();
@@ -463,7 +475,7 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return yukonJdbcTemplate.queryForInt(sql);
     }
-
+    
     // DI Setters
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
@@ -494,5 +506,5 @@ public class InventoryDaoImpl implements InventoryDao {
     public void setInventoryIdentifierMapper(InventoryIdentifierMapper inventoryIdentifierMapper) {
         this.inventoryIdentifierMapper = inventoryIdentifierMapper;
     }
-    
+
 }

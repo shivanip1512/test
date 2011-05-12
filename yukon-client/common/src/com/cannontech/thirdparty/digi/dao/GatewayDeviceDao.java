@@ -10,12 +10,16 @@ import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
 public interface GatewayDeviceDao {
     
     public ZigbeeDevice getZigbeeGateway(int gatewayId);
+    
     public List<ZigbeeDevice> getAllGateways();
+    
     public DigiGateway getDigiGateway(int deviceId);
     
     public void createDigiGateway(DigiGateway digiGateway);
+    
     public void updateDigiGateway(DigiGateway digiGateway);
-    public void deleteDigiGateway(DigiGateway digiGateway);
+    
+    public void deleteDigiGateway(int deviceId);
     
     /**
      * Updates the device to gateway assignment. If gatewayId is null, any device to gateway mapping

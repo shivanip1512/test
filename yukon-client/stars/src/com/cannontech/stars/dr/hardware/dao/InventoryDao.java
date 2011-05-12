@@ -82,4 +82,6 @@ public interface InventoryDao {
 
     public int getAccountIdForInventory(int inventoryId);
 
+    public InventoryIdentifier getYukonInventoryForDeviceId(int deviceId);
+
 }
