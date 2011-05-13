@@ -387,7 +387,7 @@ public class OperatorHardwareController {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
             switch (e.getType()) {
-            case UNKOWN:
+            case UNKNOWN:
                 result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");
                 break;
             case REQUIRED:
@@ -467,8 +467,6 @@ public class OperatorHardwareController {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, user);
-        
-        hardwareDto.setHardwareType(hardwareDto.getHardwareType());
 
         hardwareDtoValidator.validate(hardwareDto, result);
 
@@ -489,7 +487,7 @@ public class OperatorHardwareController {
                 result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
             } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
                 switch (e.getType()) {
-                case UNKOWN:
+                case UNKNOWN:
                     result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");
                     break;
                 case REQUIRED:

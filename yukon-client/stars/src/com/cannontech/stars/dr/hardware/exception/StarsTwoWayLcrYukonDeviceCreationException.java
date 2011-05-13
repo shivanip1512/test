@@ -5,13 +5,13 @@ import com.cannontech.stars.util.StarsClientRequestException;
 public class StarsTwoWayLcrYukonDeviceCreationException extends StarsClientRequestException {
     
     public static enum Type {
-        UNKOWN,
+        UNKNOWN,
         REQUIRED,
         UNAVAILABLE,
         NON_NUMERIC
     }
     
-    private Type type = Type.UNKOWN;
+    private Type type = Type.UNKNOWN;
     
     public StarsTwoWayLcrYukonDeviceCreationException(String message) {
         super(message);

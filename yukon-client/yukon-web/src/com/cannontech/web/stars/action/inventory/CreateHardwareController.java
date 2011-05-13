@@ -4,11 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -27,15 +25,9 @@ import com.cannontech.web.stars.service.SwitchContextService;
 
 public class CreateHardwareController extends StarsInventoryActionController {
     private SwitchContextService switchContextService;
-    private PaoDao paoDao;
     
     public void setSwitchContextService(SwitchContextService switchContextService) {
         this.switchContextService = switchContextService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-    	this.paoDao = paoDao;
     }
 
     @Override
@@ -91,7 +83,5 @@ public class CreateHardwareController extends StarsInventoryActionController {
             String redirect = this.getReferer(request);
             response.sendRedirect(redirect);
         }
-        
     }
-    
 }
