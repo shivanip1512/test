@@ -402,7 +402,7 @@ public class InventoryBean {
 			if (liteInv.getAccountID() == 0) {
 			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
 			} else if (!showEnergyCompany || member.equals(energyCompany) || isManagable) {
-			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/hardware/hardwareEdit?accountId=").append(liteInv.getAccountID()).append("&inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
+			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/hardware/edit?accountId=").append(liteInv.getAccountID()).append("&inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
 			} else {
 				htmlBuf.append(deviceName);
 			}

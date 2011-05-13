@@ -101,8 +101,8 @@ function twoWayLCRCheck(el) {
 		}
 	}
 	%>
-	
-	if(twoWayLcrTypes.indexOf(el[el.selectedIndex].value) >= 0) {
+
+	if(twoWayLcrTypes.indexOf(parseInt(el[el.selectedIndex].value)) >= 0) {
 		$('twoWayLcr_TR').show();
 
 		if($('choosenYukonDeviceId').value.strip() == '' && $('yukonDeviceName').value.strip() == '') {
@@ -131,6 +131,8 @@ var setChoosenYukonDevice = function() {
 	return true;
 }
 
+function init() {
+}
 </script>
 
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -484,7 +486,7 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                       <input type="submit" name="Save" value="Save">
                     </td>
                     <td> 
-                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false);twoWayLCRCheck($('DeviceType'));">
                     </td>
                   </tr>
                 </table>
