@@ -18,6 +18,24 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
+<script type="text/javascript">
+function typeChanged(event) {
+    var selectElem = event.target;
+    if (selectElem.selectedIndex != -1) {
+        var textElem = $(selectElem.id.replace('definitionId', 'text'));
+        if (!$F(textElem)) {
+            textElem.value = selectElem.options[selectElem.selectedIndex].text;
+        }
+    }
+}
+
+Event.observe(window, 'load', function() {
+    $$('select[name^=entries]').each(function(selectElem) {
+            Event.observe(selectElem, 'change', typeChanged);
+    });
+});
+</script>
+
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".where">
         <tags:input path="whereIsList"/>

@@ -43,6 +43,10 @@
 
 <entry key="yukon.web.modules.adminSetup.list.restoreDefault.label">Restore Default</entry>
 
+<!-- Validation Errors -->
+<entry key="yukon.web.modules.adminSetup.list.definitionRequired">Required</entry>
+<entry key="yukon.web.modules.adminSetup.list.textRequired">Required</entry>
+
 <!-- General selection list keys -->
 <entry key="yukon.dr.selectionList.LM_CUSTOMER_EVENT">Customer Event</entry>
 <entry key="yukon.dr.selectionList.LM_CUSTOMER_ACTION">Customer Action</entry>
@@ -56,7 +60,7 @@
 <entry key="yukon.dr.selectionList.SERVICE_STATUS">Service Status</entry>
 <entry key="yukon.dr.selectionList.SEARCH_TYPE">Search By</entry>
 <entry key="yukon.dr.selectionList.MANUFACTURER">Manufacturer</entry>
-<entry key="yukon.dr.selectionList.APP_LOCATION">Appliance Location</entry>
+<entry key="yukon.dr.selectionList.APP_LOCATION">Location</entry>
 <entry key="yukon.dr.selectionList.DEVICE_LOCATION">Device Location</entry>
 <entry key="yukon.dr.selectionList.CHANCE_OF_CONTROL">Chance of Control</entry>
 <entry key="yukon.dr.selectionList.TIME_OF_WEEK">Time of Week</entry>

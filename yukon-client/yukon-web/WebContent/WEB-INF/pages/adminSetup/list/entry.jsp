@@ -18,7 +18,8 @@
     <table>
         <tr>
             <td>
-                <input type="text" name="entries[${entryIndex}].text"/>
+                <input type="text" name="entries[${entryIndex}].text"
+                    id="entries[${entryIndex}].text"/>
                 <input type="hidden" name="entries[${entryIndex}].entryId" value="0">
                 <input type="hidden" name="entries[${entryIndex}].order"
                     value="${entryIndex + 1}" class="orderField">
@@ -27,7 +28,8 @@
             </td>
             <c:if test="${usesType}">
                 <td>
-                <select name="entries[${entryIndex}].definitionId">
+                <select name="entries[${entryIndex}].definitionId"
+                    id="entries[${entryIndex}].definitionId">
                     <option selected value="0">
                         <i:inline key="yukon.web.modules.adminSetup.list.noDefinition"/>
                     </option>
@@ -42,4 +44,7 @@
         <tags:dynamicTableUndoRow columnSpan="${numEntryColumns}" nameKey="undoRow"/>
     </table>
 
+    <script type="text/javascript">
+    Event.observe($('entries[${entryIndex}].definitionId'), 'change', typeChanged);
+    </script>
 </tags:standardPageFragment>

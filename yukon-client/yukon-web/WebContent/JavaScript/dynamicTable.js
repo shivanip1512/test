@@ -50,6 +50,7 @@ DynamicTable.prototype = {
         this.addItemParameters.itemIndex = this.nextRowId;
         new Ajax.Updater(this.tempRequestDiv, 'addItem', {
             'parameters': this.addItemParameters,
+            'evalScripts': true,
             'onComplete': this.addItemSuccess.bind(this)
         });
     },

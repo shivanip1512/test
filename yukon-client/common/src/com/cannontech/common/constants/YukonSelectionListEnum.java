@@ -9,26 +9,26 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 
 public enum YukonSelectionListEnum implements DisplayableEnum, DatabaseRepresentationSource {
-	LM_CUSTOMER_EVENT(YUK_LIST_NAME_LM_CUSTOMER_EVENT, SYSTEM),
-	LM_CUSTOMER_ACTION(YUK_LIST_NAME_LM_CUSTOMER_ACTION, SYSTEM),
-	INVENTORY_CATEGORY(YUK_LIST_NAME_INVENTORY_CATEGORY, SYSTEM),
-    CONTACT_TYPE(YUK_LIST_NAME_CONTACT_TYPE, SYSTEM),
+	LM_CUSTOMER_EVENT(YUK_LIST_NAME_LM_CUSTOMER_EVENT, SYSTEM, true),
+	LM_CUSTOMER_ACTION(YUK_LIST_NAME_LM_CUSTOMER_ACTION, SYSTEM, true),
+	INVENTORY_CATEGORY(YUK_LIST_NAME_INVENTORY_CATEGORY, SYSTEM, true),
+    CONTACT_TYPE(YUK_LIST_NAME_CONTACT_TYPE, SYSTEM, true),
     CALC_FUNCTIONS(YUK_LIST_NAME_CALC_FUNCTIONS, SYSTEM),
 	DEVICE_VOLTAGE(YUK_LIST_NAME_DEVICE_VOLTAGE, HARDWARE), // User Editable
-	DEVICE_TYPE(YUK_LIST_NAME_DEVICE_TYPE, HARDWARE), // User Editable
-	DEVICE_STATUS(YUK_LIST_NAME_DEVICE_STATUS, HARDWARE), // User Editable
-	APPLIANCE_CATEGORY(YUK_LIST_NAME_APPLIANCE_CATEGORY, APPLIANCE),
+	DEVICE_TYPE(YUK_LIST_NAME_DEVICE_TYPE, HARDWARE, true, true), // User Editable
+	DEVICE_STATUS(YUK_LIST_NAME_DEVICE_STATUS, HARDWARE, true), // User Editable
+	APPLIANCE_CATEGORY(YUK_LIST_NAME_APPLIANCE_CATEGORY, APPLIANCE, true),
 	CALL_TYPE(YUK_LIST_NAME_CALL_TYPE, CALL_TRACKING), // User Editable
-	SERVICE_TYPE(YUK_LIST_NAME_SERVICE_TYPE, SERVICE_ORDER), // User Editable
-	SERVICE_STATUS(YUK_LIST_NAME_SERVICE_STATUS, SERVICE_ORDER),
-	SEARCH_TYPE(YUK_LIST_NAME_SEARCH_TYPE, SYSTEM),
+	SERVICE_TYPE(YUK_LIST_NAME_SERVICE_TYPE, SERVICE_ORDER, true), // User Editable
+	SERVICE_STATUS(YUK_LIST_NAME_SERVICE_STATUS, SERVICE_ORDER, true),
+	SEARCH_TYPE(YUK_LIST_NAME_SEARCH_TYPE, SYSTEM, true),
 	MANUFACTURER(YUK_LIST_NAME_MANUFACTURER, APPLIANCE), // User Editable
 	APP_LOCATION(YUK_LIST_NAME_APP_LOCATION, APPLIANCE), // User Editable
 	DEVICE_LOCATION(YUK_LIST_NAME_DEVICE_LOCATION, null),
 	CHANCE_OF_CONTROL(YUK_LIST_NAME_CHANCE_OF_CONTROL, CONTROL), // User Editable
-	TIME_OF_WEEK(YUK_LIST_NAME_TIME_OF_WEEK, THERMOSTAT),
-	THERMOSTAT_MODE(YUK_LIST_NAME_THERMOSTAT_MODE, THERMOSTAT),
-	THERMOSTAT_FAN_STATE(YUK_LIST_NAME_THERMOSTAT_FAN_STATE, THERMOSTAT),
+	TIME_OF_WEEK(YUK_LIST_NAME_TIME_OF_WEEK, THERMOSTAT, true),
+	THERMOSTAT_MODE(YUK_LIST_NAME_THERMOSTAT_MODE, THERMOSTAT, true),
+	THERMOSTAT_FAN_STATE(YUK_LIST_NAME_THERMOSTAT_FAN_STATE, THERMOSTAT, true),
 	RESIDENCE_TYPE(YUK_LIST_NAME_RESIDENCE_TYPE, RESIDENCE), // User Editable
 	CONSTRUCTION_MATERIAL(YUK_LIST_NAME_CONSTRUCTION_MATERIAL, RESIDENCE), // User Editable
 	DECADE_BUILT(YUK_LIST_NAME_DECADE_BUILT, RESIDENCE), // User Editable
@@ -64,13 +64,13 @@ public enum YukonSelectionListEnum implements DisplayableEnum, DatabaseRepresent
 	IRR_SOIL_TYPE(YUK_LIST_NAME_IRR_SOIL_TYPE, APPLIANCE_IRRIGATION), // User Editable
 	IRR_METER_LOCATION(YUK_LIST_NAME_IRR_METER_LOCATION, APPLIANCE_IRRIGATION), // User Editable
 	IRR_METER_VOLTAGE(YUK_LIST_NAME_IRR_METER_VOLTAGE, APPLIANCE_IRRIGATION), // User Editable
-	INV_SEARCH_BY(YUK_LIST_NAME_INV_SEARCH_BY, HARDWARE),
-	INV_SORT_BY(YUK_LIST_NAME_INV_SORT_BY, HARDWARE),
-	INV_FILTER_BY(YUK_LIST_NAME_INV_FILTER_BY, HARDWARE),
-	SO_SEARCH_BY(YUK_LIST_NAME_SO_SEARCH_BY, SERVICE_ORDER),
-	SO_SORT_BY(YUK_LIST_NAME_SO_SORT_BY, SERVICE_ORDER),
-	SO_FILTER_BY(YUK_LIST_NAME_SO_FILTER_BY, SERVICE_ORDER),
-	RATE_SCHEDULE(YUK_LIST_NAME_RATE_SCHEDULE, ACCOUNT), // User Editable
+	INV_SEARCH_BY(YUK_LIST_NAME_INV_SEARCH_BY, HARDWARE, true),
+	INV_SORT_BY(YUK_LIST_NAME_INV_SORT_BY, HARDWARE, true),
+	INV_FILTER_BY(YUK_LIST_NAME_INV_FILTER_BY, HARDWARE, true),
+	SO_SEARCH_BY(YUK_LIST_NAME_SO_SEARCH_BY, SERVICE_ORDER, true),
+	SO_SORT_BY(YUK_LIST_NAME_SO_SORT_BY, SERVICE_ORDER, true),
+	SO_FILTER_BY(YUK_LIST_NAME_SO_FILTER_BY, SERVICE_ORDER, true),
+	RATE_SCHEDULE(YUK_LIST_NAME_RATE_SCHEDULE, ACCOUNT, true), // User Editable
     CONSUMPTION_TYPE(YUK_LIST_NAME_CONSUMPTION_TYPE, null),
     EVENT_SYSTEM_CATEGORY(YUK_LIST_NAME_EVENT_SYSTEM_CATEGORY, SYSTEM),
     ACCOUNT_ACTION(YUK_LIST_NAME_ACCOUNT_ACTION, SYSTEM),
@@ -88,6 +88,8 @@ public enum YukonSelectionListEnum implements DisplayableEnum, DatabaseRepresent
 
     private final String listName;
     private final SelectionListCategory category;
+    private final boolean requiresType;
+    private final boolean requiresText;
 
     static {
         ImmutableMap.Builder<String, YukonSelectionListEnum> nameBuilder = ImmutableMap.builder();
@@ -110,8 +112,20 @@ public enum YukonSelectionListEnum implements DisplayableEnum, DatabaseRepresent
     }
 
     private YukonSelectionListEnum(String listName, SelectionListCategory category) {
+        this(listName, category, false, false);
+    }
+
+    private YukonSelectionListEnum(String listName, SelectionListCategory category,
+                                   boolean requiresType) {
+        this(listName, category, requiresType, false);
+    }
+
+    private YukonSelectionListEnum(String listName, SelectionListCategory category,
+                                   boolean requiresType, boolean requiresText) {
         this.listName = listName;
         this.category = category;
+        this.requiresType = requiresType;
+        this.requiresText = requiresText;
 	}
 
 	public String getListName() {
@@ -124,6 +138,14 @@ public enum YukonSelectionListEnum implements DisplayableEnum, DatabaseRepresent
 
     public static Iterable<YukonSelectionListEnum> getByCategory(SelectionListCategory category) {
         return lookupByCategory.get(category);
+    }
+
+    public boolean isRequiresType() {
+        return requiresType;
+    }
+    
+    public boolean isRequiresText() {
+        return requiresText;
     }
 
     @Override

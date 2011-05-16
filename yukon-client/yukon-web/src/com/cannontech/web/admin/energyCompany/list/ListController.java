@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,13 +55,22 @@ public class ListController {
             YukonValidationUtils.checkExceedsMaxLength(errors, "whereIsList",
                                                        list.getWhereIsList(), 100);
             int index = 0;
+            boolean requiresType = list.getType().isRequiresType();
+            boolean requiresText = list.getType().isRequiresText();
             for (SelectionListDto.Entry entry : list.getEntries()) {
+                errors.setNestedPath("entries[" + index + "].");
                 if (!entry.isDeletion()) {
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "entries[" + index + "].text",
-                                                               entry.getText(), 50);
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "text", entry.getText(), 50);
+                    if (requiresText) {
+                        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", baseKey + "textRequired");
+                    }
+                    if (requiresType && entry.getDefinitionId() == 0) {
+                        errors.rejectValue("definitionId", baseKey + "definitionRequired");
+                    }
                 }
                 index++;
             }
+            errors.setNestedPath("");
         }
     };
 
