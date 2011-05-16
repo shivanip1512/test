@@ -3,7 +3,8 @@
 <%--  abortedKey should a boolean updater key, if true, the progress bar will be filled in red for remaining percentage --%>
 <%@ attribute name="countKey" required="true" rtexprvalue="true"%>
 <%@ attribute name="failureCountKey" rtexprvalue="true" description="If supplied, then this progress bar is treated as a two part success-failure progress bar. The countKey is treated as the successes and the failureCountKey as the failures."%>
-<%@ attribute name="totalCount" required="true" type="java.lang.Integer" rtexprvalue="true"%>
+<%@ attribute name="totalCountKey" required="false" rtexprvalue="true" description="If supplied, then this total count is kept updated using a dataupdater call and the static totalCount attribute below is ignored. Either this attribute or totalCount is required."%>
+<%@ attribute name="totalCount" required="false" type="java.lang.Integer" rtexprvalue="true" description="Either this attribute or totalCountKey is required."%>
 <%@ attribute name="isAbortedKey" rtexprvalue="true"%>
 <%@ attribute name="hidePercent" type="java.lang.Boolean" rtexprvalue="true"%>
 <%@ attribute name="hideCount" type="java.lang.Boolean" rtexprvalue="true"%>
@@ -49,24 +50,43 @@
     <c:when test="${empty pageScope.completionCallback}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
-                <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})"
-                    initialize="true" completedCount="${countKey}" />
+                <c:choose>
+                    <c:when test="${empty totalCountKey}">
+                        <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})"
+                            initialize="true" completedCount="${countKey}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:dataUpdaterCallback function="updateProgressBarWithDynamicTotal('${pbarId}')"
+                            initialize="true" completedCount="${countKey}" 
+                            totalCount="${totalCountKey}" />
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:otherwise>
-                <cti:dataUpdaterCallback function="updateSuccessFailureProgressBar('${pbarId}', ${totalCount})"
-                    initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}" />
+                <cti:dataUpdaterCallback function="updateSuccessFailureProgressBar('${pbarId}')"
+                    initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"
+                    totalCount="${totalCountKey}" />
             </c:otherwise>
         </c:choose>
     </c:when>
     <c:otherwise>
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
-                <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount}, ${pageScope.completionCallback})"
-                    initialize="true" completedCount="${countKey}" />
+                <c:choose>
+                    <c:when test="${empty totalCountKey}">
+                        <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount},  ${pageScope.completionCallback})"
+                            initialize="true" completedCount="${countKey}" />
+                    </c:when>
+                    <c:otherwise>
+                        <cti:dataUpdaterCallback function="updateProgressBarWithDynamicTotal('${pbarId}', ${pageScope.completionCallback})"
+                            initialize="true" completedCount="${countKey}" totalCount="${totalCountKey}" />
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:otherwise>
-                <cti:dataUpdaterCallback function="updateSuccessFailureProgressBar('${pbarId}', ${totalCount}, ${pageScope.completionCallback})"
-                    initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}" />
+                <cti:dataUpdaterCallback function="updateSuccessFailureProgressBar('${pbarId}', ${pageScope.completionCallback})"
+                    initialize="true" successCompletedCount="${countKey}" failureCompletedCount="${failureCountKey}"
+                    totalCount="${totalCountKey}" />
             </c:otherwise>
         </c:choose>
     </c:otherwise>
