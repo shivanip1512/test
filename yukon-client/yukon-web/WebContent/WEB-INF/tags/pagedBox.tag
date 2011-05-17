@@ -8,6 +8,7 @@
 <%@ attribute name="showAllUrl" %>
 <%@ attribute name="pageByHundereds" %>
 <%@ attribute name="styleClass" %>
+<%@ attribute name="titleLinkHtml" required="false" type="java.lang.String" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -22,6 +23,9 @@
             <tr style="vertical-align: middle;">
                 <td class="titleArea">${pageScope.title}</td>
                 <td class="filterArea">
+                    <c:if test="${!empty pageScope.titleLinkHtml}">
+                        ${pageScope.titleLinkHtml}
+                    </c:if>
                     <c:if test="${!empty pageScope.filterDialog}">
                         <cti:button key="filter" styleClass="navlink" onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');" renderMode="labeledImage"/>
                         <c:if test="${pageScope.isFiltered}">

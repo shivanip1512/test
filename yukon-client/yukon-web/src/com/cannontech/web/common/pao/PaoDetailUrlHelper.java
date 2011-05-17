@@ -25,6 +25,11 @@ public class PaoDetailUrlHelper {
                 return "/spring/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
+        tagBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            public String apply(YukonPao pao) {
+                return "/spring/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
         tagBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
             	return "/spring/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();

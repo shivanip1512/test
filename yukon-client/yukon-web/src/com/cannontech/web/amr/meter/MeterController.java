@@ -1,9 +1,7 @@
 package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
@@ -50,6 +47,9 @@ import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -75,76 +75,12 @@ public class MeterController extends MultiActionController {
         super();
     }
     
-    @Autowired
-    public void setMeterSearchService(MeterSearchService meterSearchService) {
-        this.meterSearchService = meterSearchService;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-		this.attributeService = attributeService;
-	}
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-    
-    @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-    
-    @Autowired
-    public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
-        this.filterCollectionHelper = filterCollectionHelper;
-    }
-    
-    @Autowired
-    public void setCachingPointFormattingService(
-			CachingPointFormattingService cachingPointFormattingService) {
-		this.cachingPointFormattingService = cachingPointFormattingService;
-	}
-    
-    @Autowired
-    public void setPointUpdateBackingService(
-			PointUpdateBackingService pointUpdateBackingService) {
-		this.pointUpdateBackingService = pointUpdateBackingService;
-	}
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-    
-    @Autowired
-    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
-		this.mspMeterSearchService = mspMeterSearchService;
-	}
-    
     public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
         return new ModelAndView("start.jsp");
     }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
@@ -180,18 +116,15 @@ public class MeterController extends MultiActionController {
         String filterByString = MeterSearchUtils.getFilterByString(queryFilter);
 
         // Perform the search
-        SearchResult<Meter> results = meterSearchService.search(queryFilter,
-                                                                orderBy,
-                                                                startIndex,
-                                                                count);
-        
+        SearchResult<Meter> meterSearchResults = 
+            meterSearchService.search(queryFilter, orderBy, startIndex, count);
 
         ModelAndView mav;
         // Redirect to device home page if only one result is found
-        if (results.getHitCount() == 1) {
+        if (meterSearchResults.getHitCount() == 1) {
             mav = new ModelAndView("redirect:/spring/meter/home");
 
-            Meter meter = results.getResultList().get(0);
+            Meter meter = meterSearchResults.getResultList().get(0);
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
@@ -203,61 +136,25 @@ public class MeterController extends MultiActionController {
             
             mav.addObject("filterByString", filterByString);
             mav.addObject("orderBy", orderBy);
-            mav.addObject("results", results);
+            mav.addObject("meterSearchResults", meterSearchResults);
             mav.addObject("orderByFields", MeterSearchField.values());
             mav.addObject("filterByList", filterByList);
             
-            List<MeterDisplayFieldEnum> defaultDispEnumsOrder = new ArrayList<MeterDisplayFieldEnum>();
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.METER_NUMBER);
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_NAME);
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_TYPE);
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ADDRESS);
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ROUTE);
-            List<MeterDisplayFieldEnum> orderedDispEnums = orderColumnsByDisplayTemplate(defaultDispEnumsOrder, user);
-            mav.addObject("orderedDispEnums", orderedDispEnums);
+            ImmutableMap<String,Meter> paoIdToMeterMap = 
+                Maps.uniqueIndex(meterSearchResults.getResultList(), new Function<Meter, String>() {
+                    @Override
+                    public String apply(Meter meter) {
+                        return String.valueOf(meter.getDeviceId());
+                    }
+                });
             
-            
-            List<Map<MeterDisplayFieldEnum, String>> resultColumnsList = new ArrayList<Map<MeterDisplayFieldEnum, String>>();
-            List<Meter> resultMeterList = new ArrayList<Meter>();
-            
-            for (Meter meter : results.getResultList()) {
-                
-                Map<MeterDisplayFieldEnum, String> rowMap = new HashMap<MeterDisplayFieldEnum, String>();
-                for (MeterDisplayFieldEnum meterDisplayFieldEnum : MeterDisplayFieldEnum.values()) {
-                    rowMap.put(meterDisplayFieldEnum, meterDisplayFieldEnum.getField(meter));
-                }
-                resultColumnsList.add(rowMap);
-                resultMeterList.add(meter);
-            }
-            mav.addObject("idEnum", MeterDisplayFieldEnum.ID);
-            mav.addObject("resultColumnsList", resultColumnsList);
-            mav.addObject("resultMeterList", resultMeterList);
-            
-            
+            mav.addObject("paoIdToMeterMap", paoIdToMeterMap);
             
         }
 
         return mav;
     }
     
-    private List<MeterDisplayFieldEnum> orderColumnsByDisplayTemplate(List<MeterDisplayFieldEnum> defaultColumnOrder, LiteYukonUser user) {
-        
-        List<MeterDisplayFieldEnum> newOrder = new ArrayList<MeterDisplayFieldEnum>();
-        
-        try {
-            MeterDisplayFieldEnum roleDispFieldEnumVal = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, user);
-            
-            newOrder.addAll(defaultColumnOrder);
-            newOrder.remove(roleDispFieldEnumVal); // remove if present
-            newOrder.add(0,roleDispFieldEnumVal); // force to the front of the list 
-            
-        } catch (IllegalArgumentException e) {
-            return defaultColumnOrder;
-        }
-        
-        return newOrder;
-    }
-
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -363,5 +260,66 @@ public class MeterController extends MultiActionController {
         
         return mav;
     }
+
+    // DI Setters
+    @Autowired
+    public void setMeterSearchService(MeterSearchService meterSearchService) {
+        this.meterSearchService = meterSearchService;
+    }
     
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
+    @Autowired
+    public void setPointService(PointService pointService) {
+        this.pointService = pointService;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
+    }
+    
+    @Autowired
+    public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
+        this.filterCollectionHelper = filterCollectionHelper;
+    }
+    
+    @Autowired
+    public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
+        this.cachingPointFormattingService = cachingPointFormattingService;
+    }
+    
+    @Autowired
+    public void setPointUpdateBackingService(PointUpdateBackingService pointUpdateBackingService) {
+        this.pointUpdateBackingService = pointUpdateBackingService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
+    
+    @Autowired
+    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
+        this.mspMeterSearchService = mspMeterSearchService;
+    }
+
 }

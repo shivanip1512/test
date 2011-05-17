@@ -26,6 +26,8 @@
     	
     </script>
 	
+    <c:set var="baseUrl" value="/spring/meter/search"/>
+
 	<b>
 	<c:choose>
 		<c:when test="${results.hitCount == 0}">
@@ -72,74 +74,102 @@
     <br>
     <br>
 			
-	<c:if test="${results.hitCount > 0}">
-		<amr:searchNavigation 
-			orderBy="${orderBy}" 
-			results="${results}" 
-			filterByList="${filterByList}" 
-            deviceCollection="${deviceGroupCollection}">
-		</amr:searchNavigation>
+	<c:if test="${meterSearchResults.hitCount > 0}">
 		
-		<table id="deviceTable" class="resultsTable activeResultsTable">
-		    
-            <%-- COLUMN HEADERS --%>
-            <tr>
-          
-                <c:forEach var="dispEnum" items="${orderedDispEnums}">
-                
-                    <c:choose>
+        <%-- DATA ROWS --%>
+
+        <c:set var="linkHeaderHtml" >
+            <span class="navLink">
+                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
+                    <cti:mapParam value="${deviceGroupCollection.collectionParameters}"/>                        
+                </cti:link>
+            </span>
+        </c:set>
+
+        <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle"/>
+        <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}" 
+                       pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}" >
+            <table class="compactResultsTable rowHighlighting">
+                <tr>
+                    <th>
+                        <tags:sortLink key=".columnHeader.deviceName"
+                                       baseUrl="${baseUrl}" fieldName="PAONAME"
+                                       sortParam="orderBy" descendingParam="descending"/>
+                    </th>
+                    <th>
+                        <tags:sortLink key=".columnHeader.meterNumber"
+                                       baseUrl="${baseUrl}" fieldName="METERNUMBER"
+                                       sortParam="orderBy" descendingParam="descending"/>
                     
-                        <c:when test="${not empty dispEnum.searchField}">
-                            <th nowrap>
-                                <amr:sortByLink 
-                                    field="${dispEnum.searchField}" 
-                                    results="${results}" 
-                                    orderBy="${orderBy}" 
-                                    filterByList="${filterByList}">
-                                        ${dispEnum.searchField.meterSearchString}
-                                </amr:sortByLink>
-                            </th>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <th>${dispEnum.label}</th>
-                        </c:otherwise>
-                        
-                    </c:choose>
+                    </th>
+                    <th>
+                        <tags:sortLink key=".columnHeader.deviceType"
+                                       baseUrl="${baseUrl}" fieldName="TYPE"
+                                       sortParam="orderBy" descendingParam="descending"/>
                     
-                </c:forEach>
-	
-			</tr>
-            
-            <%-- DATA ROWS --%>
-            <c:forEach var="row" items="${resultColumnsList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>" 
-                	onclick="javascript:forwardToMeterHome(this, ${row[idEnum]})" 
-                	onmouseover="activeResultsTable_highLightRow(this)" 
-                	onmouseout="activeResultsTable_unHighLightRow(this)">
-                	
-                <c:forEach var="dispEnum" items="${orderedDispEnums}">
-                    <td>
-                        <%-- although the result of ${null} is <BLANK>, explicitly leave --%>
-                        <%-- open place to put a default value if value is null --%>
-                        <c:choose>
-                            <c:when test="${empty row[dispEnum]}"></c:when>
-                            <c:otherwise>${row[dispEnum]}</c:otherwise>
-                        </c:choose>
-                    </td>
-                </c:forEach>
+                    </th>
+                    <th>
+                        <tags:sortLink key=".columnHeader.address"
+                                       baseUrl="${baseUrl}" fieldName="ADDRESS"
+                                       sortParam="orderBy" descendingParam="descending"/>
+                    
+                    </th>
+                    <th>
+                        <tags:sortLink key=".columnHeader.route"
+                                       baseUrl="${baseUrl}" fieldName="ROUTE"
+                                       sortParam="orderBy" descendingParam="descending"/>
+                    
+                    </th>
                 </tr>
-            </c:forEach>
+
+                <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <cti:paoDetailUrl  yukonPao="${searchResultRow}" >
+                                <c:choose>
+                                    <c:when test="${empty searchResultRow.name}"></c:when>
+                                    <c:otherwise>${searchResultRow.name}</c:otherwise>
+                                </c:choose>
+                            </cti:paoDetailUrl>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${empty searchResultRow.meterNumber}"></c:when>
+                                <c:otherwise>${searchResultRow.meterNumber}</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <cti:paoTypeIcon yukonPao="${searchResultRow}" /> &nbsp
+                            <c:choose>
+                                <c:when test="${empty searchResultRow.paoType}"></c:when>
+                                <c:otherwise>${searchResultRow.paoType.dbString}</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${empty searchResultRow.address}"></c:when>
+                                <c:otherwise>${searchResultRow.address}</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${empty searchResultRow.route}"></c:when>
+                                <c:otherwise>${searchResultRow.route}</c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+
+                <c:if test="${empty meterSearchResults.resultList}">
+                    <tr>
+                        <td colspan="5">noResults</td>
+                    </tr>
+                </c:if>
+                
+            </table>
             
-		</table>
-	
-		<amr:searchNavigation 
-			orderBy="${orderBy}" 
-			results="${results}" 
-			filterByList="${filterByList}"
-            deviceCollection="${deviceGroupCollection}">
-		</amr:searchNavigation>
-    
+        </tags:pagedBox>
+            
 	</c:if>
 
 </cti:standardPage>
