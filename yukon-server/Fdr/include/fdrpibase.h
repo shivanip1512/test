@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786)
-#ifndef __FDRPIBASE_H__
-#define __FDRPIBASE_H__
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -67,10 +65,12 @@ protected:
 
   int _currentNodeIndex;
   int _connectionFailureCount;
-  int _collectiveConnectionRetries;
 
   bool connect();
   bool testConnection();
+  void setConnected( bool conn );
+  bool needConnection();
+  bool isConnected() { return _connected; };
 
   virtual void processNewPoint(CtiFDRPointSPtr ctiPoint);
   virtual void processNewPiPoint(PiPointInfoStruct &info) = 0;
@@ -78,11 +78,14 @@ protected:
   virtual void handleNewPoints() {};
 
   std::string getCurrentNodeName();
-  void switchCurrentNode();
+  std::string getPrimaryNodeName();
 
   bool isCollectiveConnection();
-  bool isCollectivePrimaryNodeOnline();
-  void attemptPrimaryReconnection();
+
+  bool tryPrimaryConnection();
+  bool trySecondaryConnection();
+
+  bool serverNodeLogin();
 
   int getPiPointIdFromTag(const string& tagName, PiPointId& piId);
 
@@ -101,11 +104,6 @@ private:
   typedef CtiFDRInterface Inherited;
 
   bool        _connected;
-  bool        _inited;
-  bool        _regFlag;
-  long        _linkStatusId;
-
-  string   _appName;
 
   static const CHAR * KEY_FLAVOR;
   static const CHAR * KEY_DB_RELOAD_RATE;
@@ -120,5 +118,3 @@ private:
   static const char PI_DIGITAL_POINT;
 
 };
-
-#endif // #ifndef __FDRPIBASE_H__

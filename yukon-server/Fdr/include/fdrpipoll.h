@@ -1,26 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __FDRPIPOLL_H__
-#define __FDRPIPOLL_H__
-
-/**
- *
- * File:   fdrpipoll
- *
- * Class:
- * Date:   1/11/2005
- *
- * Author: Tom Mack
- *
- * PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.8.2.2 $
- *    DATE         :  $Date: 2008/11/18 20:11:30 $
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *    History:
- */
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -81,5 +59,3 @@ private:
   static const CHAR * KEY_ALWAYS_SEND;
   static const CHAR * KEY_DEFAULT_PERIOD;
 };
-
-#endif // #ifndef __FDRPIPOLL_H__

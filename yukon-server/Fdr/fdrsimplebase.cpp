@@ -1,17 +1,5 @@
 #include "yukon.h"
 
-/**
- * File:   fdrsimple
- *
- * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
- *
- * Author: Tom Mack
- *
- * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.12.2.1 $
- * DATE         :  $Date: 2008/11/13 17:23:47 $
- */
-
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
@@ -56,7 +44,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 CtiFDRSimple::CtiFDRSimple(string interfaceName) :
     CtiFDRInterface(string(interfaceName.c_str())),
     _connected(false),
-    _inited(false),
     _linkStatusId(0)
 
 {
@@ -124,7 +111,6 @@ void CtiFDRSimple::threadFunctionGetData()
 
   try
   {
-    connect();
     for( ;; )
     {
       pSelf.sleep( loopPeriod );
@@ -134,7 +120,18 @@ void CtiFDRSimple::threadFunctionGetData()
       CtiFDRPointList &aList = getReceiveFromList();
       CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
 
-      if (isConnected())
+      if(needConnection())
+      {
+        if (reconnectLoopCount > loopsBeforeReconnect)
+        {
+          connect();
+          reconnectLoopCount = 0;
+        } else {
+          reconnectLoopCount++;
+        }
+      }
+
+      if ( isConnected() )
       {
         reconnectLoopCount = 0;
         try
@@ -153,6 +150,7 @@ void CtiFDRSimple::threadFunctionGetData()
       }
       else
       {
+        loadLists = true;
         if (reconnectLoopCount == 0)
         {
           if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
@@ -162,14 +160,6 @@ void CtiFDRSimple::threadFunctionGetData()
               << secondsBeforeReconnect << " seconds for reconnect" << endl;
           }
         }
-        if (reconnectLoopCount > loopsBeforeReconnect)
-        {
-          connect();
-          reconnectLoopCount = 0;
-        } else {
-          reconnectLoopCount++;
-        }
-        loadLists = true;
       }
     }
   }
@@ -188,7 +178,6 @@ void CtiFDRSimple::threadFunctionGetData()
     logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << endl;
   }
 }
-
 
 /**
  * Retreives updated list of points from database.

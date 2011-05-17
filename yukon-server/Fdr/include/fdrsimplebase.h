@@ -1,6 +1,4 @@
-#pragma warning( disable : 4786)
-#ifndef __FDRSIMPLE_H__
-#define __FDRSIMPLE_H__
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -41,6 +39,7 @@ protected:
   virtual void startup() {};
   virtual bool connect() = 0;
   virtual void setConnected( bool conn );
+  virtual bool needConnection() {return !_connected;};
   virtual bool isConnected() {return _connected;};
   virtual bool testConnection() = 0;
   virtual void shutdown() {};
@@ -74,17 +73,13 @@ public:
     FdrException() : exception("FdrException") {}
   };
 
-
 private:
 
   RWThreadFunction  _threadGetData;
   bool        _connected;
-  bool        _inited;
   long        _linkStatusId;
 
   void sendLinkState(bool state);
   void threadFunctionGetData();
 
 };
-
-#endif // #ifndef __FDRSIMPLE_H__

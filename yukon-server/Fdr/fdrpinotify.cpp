@@ -275,6 +275,7 @@ void CtiFDRPiNotify::doUpdates()
           logNow() << "Unable to update values from Pi, pisn_evmexceptions returned "
             << getPiErrorDescription(err, "pisn_evmexceptions") << endl;
         }
+        setConnected(false);
         throw PiException(err);
       }
       if( (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL && pointCount > 0)
@@ -316,14 +317,6 @@ void CtiFDRPiNotify::doUpdates()
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "No check made, no points registered." << endl;
     }
-  }
-
-  // Check to see if we're connected to the right database? 
-  // This function call happens very frequently. Seems like a good
-  // place to attempt to connect to the right database if we aren't already.
-  if(_currentNodeIndex != 0 && _serverNodeNames.size() > 0 )
-  {
-    attemptPrimaryReconnection();
   }
 }
 

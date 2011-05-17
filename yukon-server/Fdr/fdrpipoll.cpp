@@ -29,7 +29,6 @@ const CHAR * CtiFDRPiPoll::KEY_DEFAULT_PERIOD           = "FDR_PI_DEFAULT_PERIOD
  */
 CtiFDRPiPoll::CtiFDRPiPoll()
 {
-  readThisConfig();
 }
 
 /**
@@ -275,6 +274,7 @@ void CtiFDRPiPoll::doUpdates()
           logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
             << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
         }
+        setConnected(false);
         throw PiException(err);
       }
 
@@ -301,14 +301,6 @@ void CtiFDRPiPoll::doUpdates()
       while (pollInfo.nextUpdate < now);
 
     }
-  }
-
-  // Check to see if we're connected to the right database? 
-  // This function call happens very frequently. Seems like a good
-  // place to attempt to connect to the right database if we aren't already.
-  if(_currentNodeIndex != 0 && _serverNodeNames.size() > 0 )
-  {
-    attemptPrimaryReconnection();
   }
 }
 

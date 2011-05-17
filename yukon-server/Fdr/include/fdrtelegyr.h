@@ -1,9 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __FDRTELEGYR_H__
-#define __FDRTELEGYR_H__
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -82,6 +77,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void  setScanRateSeconds( const ULONG mySeconds );
 
       bool isConnected( void );
+      bool needConnection();
       CtiFDRTelegyr & setConnected( bool conn );
 
       string getPath( void );
@@ -114,12 +110,10 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
    protected:
 
       RWThreadFunction                    _threadGetTelegyrData;
-      RWThreadFunction                    _threadMain;
       int                                 _numberOfConnections;
       CtiTelegyrControlCenter             _controlCenter;
       double                              _hiReasonabilityFilter;
       long                                _linkStatusID;
-
 
       //Database Loading and Translating
       bool loadTranslationLists( void );
@@ -150,8 +144,4 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
 
       int noDataAction( int no_msg_count );
       int readConfig( void );
-
-
 };
-
-#endif // #ifndef __FDRTELEGYR_H__

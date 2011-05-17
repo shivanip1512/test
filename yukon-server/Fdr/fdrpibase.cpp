@@ -46,7 +46,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrpipoll.h"
 #include "fdrpinotify.h"
 
-
 // this class header
 #include "fdrpibase.h"
 
@@ -61,12 +60,9 @@ const CHAR * CtiFDRPiBase::KEY_SERVER_NODE_NAME         = "FDR_PI_SERVER_NODE_NA
 const CHAR * CtiFDRPiBase::KEY_SERVER_USERNAME          = "FDR_PI_SERVER_USERNAME";
 const CHAR * CtiFDRPiBase::KEY_SERVER_PASSWORD          = "FDR_PI_SERVER_PASSWORD";
 
-
 const char CtiFDRPiBase::PI_REAL_POINT = 'R';
 const char CtiFDRPiBase::PI_INTEGER_POINT = 'I';
 const char CtiFDRPiBase::PI_DIGITAL_POINT = 'D';
-
-
 
 /**
  * Default Constructor.
@@ -74,9 +70,9 @@ const char CtiFDRPiBase::PI_DIGITAL_POINT = 'D';
 CtiFDRPiBase::CtiFDRPiBase() : 
   CtiFDRSimple( "PI" ),
   _connectionFailureCount(0),
-  _collectiveConnectionRetries(0)
+  _connected(false),
+  _currentNodeIndex(0)
 {
-  readThisConfig();
 }
 
 /**
@@ -111,22 +107,86 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
 }
 
 /**
- * Open a connection to the remote system.
+ * Attempt a connection to the primary PI server. If the attempt
+ * to set the node and login to the server are successful, the 
+ * current node index is set to 0 to alert callers of 
+ * needConnetion() that we're happily connected to the primary. 
+ *  
+ * @return <code>true</code> if setting the active connection to
+ *         the primary PI server and subsequent login attempt
+ *         were successful,
+ *         <code>false</code> otherwise.
  */
-bool CtiFDRPiBase::connect()
+bool CtiFDRPiBase::tryPrimaryConnection()
 {
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Attempting connect to PI server " << endl;
+    logNow() << "Attempting connect to primary PI server: " << getPrimaryNodeName() << endl;
   }
-  if(_connectionFailureCount >= FailureThreshold)
+
+  int32 err = piut_setservernode(getPrimaryNodeName().c_str());
+  if (err != 0)
   {
-    // We've failed to connect to this guy alot. If there's only one node,
-    // there's nothing we can do, but if we're connecting to a collective
-    // we should try to switch to a secondary for next time!
-    switchCurrentNode();
+    if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+    {
+      std::string piError = getPiErrorDescription(err, "piut_setservernode");
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to set server node, piut_setservernode returned "
+        << piError << endl;
+    }
+    setConnected( false );
+    return false;
   }
+  else
+  {
+    if( serverNodeLogin() )
+    {
+      _currentNodeIndex = 0;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
+
+/**
+ * Attempt a connection to a secondary PI server. All handling 
+ * of secondary node switching occurs in this function. If a 
+ * secondary has been attempted too many times, future efforts 
+ * will attempt an alternative secondary node if any exist. This
+ * function will never attempt a connection to the primary node.
+ * If the attempt to set the node and login to the server are 
+ * successful, the connection failure count is reset. 
+ *  
+ * @return <code>true</code> if setting the active connection to
+ *         a secondary PI server and subsequent login attempt
+ *         were successful,
+ *         <code>false</code> otherwise.
+ */
+bool CtiFDRPiBase::trySecondaryConnection()
+{
+  if( !isCollectiveConnection() )
+  {
+    // This just won't do! We don't have any secondary nodes!
+    return false;
+  }
+
+  if(_currentNodeIndex == 0)
+  {
+    // We got in here because the connection to the primary wasn't any good. 
+    // Start with the first secondary and try to find a good backup to use!
+    _currentNodeIndex = 1;
+  }
+
+  if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
+  {
+    CtiLockGuard<CtiLogger> doubt_guard( dout );
+    logNow() << "Attempting connect to secondary PI server: " << getCurrentNodeName() << endl;
+  }
+
   int err = piut_setservernode(getCurrentNodeName().c_str());
   if (err != 0)
   {
@@ -138,17 +198,70 @@ bool CtiFDRPiBase::connect()
         << piError << endl;
     }
     setConnected( false );
+
+    // We failed to connect to this secondary. Increment the failure count.
     _connectionFailureCount++;
+
+    // Have we failed to connect enough times that it merits trying a new node?
+    if( _connectionFailureCount >= FailureThreshold )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Attempts to connect to PI server " << getCurrentNodeName() 
+        << " have failed. Attempting a node switch." << endl;
+      _currentNodeIndex = (_currentNodeIndex + 1) % _serverNodeNames.size();
+      _connectionFailureCount = 0;
+    }
+
     return false;
   }
+  else
+  {
+    if( serverNodeLogin() )
+    {
+      _connectionFailureCount = 0;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
 
-  // Reset the connection failure count if we get to this point!
-  _connectionFailureCount = 0;
+bool CtiFDRPiBase::needConnection()
+{
+  return !isConnected() || (_currentNodeIndex != 0);
+}
 
+/**
+ * Open a connection to the remote system. 
+ *  
+ * We are in this function for one of the following reasons: 
+ *    1) We are _NOT_ connected to any PI server
+ *    2) We _ARE_ connected to a secondary PI server
+ *    3) We lost connection to a secondary server (both of the
+ *      above)
+ */
+bool CtiFDRPiBase::connect()
+{
+  if( !tryPrimaryConnection() )
+  {
+    trySecondaryConnection();
+  }
+
+  return isConnected();
+}
+
+/**
+ * Attempt a login to the PI server we have currently set for 
+ * our active connection. 
+ */
+bool CtiFDRPiBase::serverNodeLogin()
+{
   int32 valid = 0;
-  err = piut_login(_serverUsername.c_str(),
-                   _serverPassword.c_str(),
-                   &valid);
+  int err = piut_login(_serverUsername.c_str(),
+                       _serverPassword.c_str(),
+                       &valid);
   if (err != 0)
   {
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
@@ -160,6 +273,7 @@ bool CtiFDRPiBase::connect()
         << ", valid = " << valid << endl;
     }
     setConnected( false );
+    return false;
   }
   else
   {
@@ -168,10 +282,8 @@ bool CtiFDRPiBase::connect()
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Login succesful, access level: " << valid << endl;
     }
-    testConnection();
+    return testConnection();
   }
-
-  return isConnected();
 }
 
 /**
@@ -203,6 +315,19 @@ bool CtiFDRPiBase::testConnection()
   }
 
   return isConnected();
+}
+
+void CtiFDRPiBase::setConnected( bool conn )
+{
+  if(_connected != conn)
+  {
+    if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "Setting PI " << (conn?"":"dis") << "connected" << endl;
+     }
+    _connected = conn;
+  }
 }
 
 /**
@@ -321,50 +446,14 @@ std::string CtiFDRPiBase::getCurrentNodeName()
   return _serverNodeNames[_currentNodeIndex];
 }
 
-/**
- * Function to switch the current node if we are having problems 
- * connecting to our primary node. This funtion will work 
- * correctly for both collectives and single node servers. 
- *  
- * If we aren't connecting to a collective, the current node 
- * index will remain untouched, so previous behavior will be 
- * left intact. 
- */
-void CtiFDRPiBase::switchCurrentNode()
+std::string CtiFDRPiBase::getPrimaryNodeName()
 {
-  // We ideally want to be connected to the primary server at all times.
-  if(_currentNodeIndex != 0)
+  if(_serverNodeNames.empty())
   {
-    // We were connected to a secondary node. Check if the primary is back up yet!
-    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to connect to secondary server node " << getCurrentNodeName() << ".\n";
-      _currentNodeIndex = 0;
-      logNow() << "Attempting to reconnect to primary server node " << getCurrentNodeName() << ".\n";
-    }
-    if(!isCollectivePrimaryNodeOnline())
-    {
-      // Our current node is bad and so is the primary! Switch to the next available.
-      // What happens if there aren't any more in the list? Just keep bouncing between
-      // offline nodes? Is this too expensive? Lots of questions!
-      _currentNodeIndex = (_currentNodeIndex + 1) % _serverNodeNames.size();
-      {
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Primary node and most recently connected secondary node are down. " << endl;
-        logNow() << "Attempting to connect to secondary server node " << getCurrentNodeName() << ".\n";
-      }
-    }
+    return "";
   }
-  else if(isCollectiveConnection())
-  {
-    // We are connecting to a collective and the primary is down! Choose a backup!
-    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to connect to primary server node " << getCurrentNodeName() << ".\n";
-      _currentNodeIndex = 1;
-      logNow() << "Switching to secondary server node " << getCurrentNodeName() << ".\n";
-    }
-  }
+
+  return _serverNodeNames[0];
 }
 
 /**
@@ -378,66 +467,6 @@ void CtiFDRPiBase::switchCurrentNode()
 bool CtiFDRPiBase::isCollectiveConnection()
 {
   return _serverNodeNames.size() > 1;
-}
-
-bool CtiFDRPiBase::isCollectivePrimaryNodeOnline()
-{
-  if(_currentNodeIndex == 0)
-  {
-    // No worries, we're already the primary.
-    return true;
-  }
-  else
-  {
-    // We are a collective since the index wasn't 0. Try to see if the primary is
-    // back up so that we can connect to it.
-
-    int lastNode = _currentNodeIndex;
-    _currentNodeIndex = 0;
-    int32 err = piut_setservernode(getCurrentNodeName().c_str());
-    if(err == 0 && testConnection())
-    {
-      return true;
-    }
-    else
-    {  
-      // Test failed, revert back to the node we were just connected to!
-      _currentNodeIndex = lastNode;
-      piut_setservernode(getCurrentNodeName().c_str());
-      return false;
-    }
-  }
-}
-
-/**
- * This function is used in the <code>doUpdates()</code> 
- * function of <code>CtiFDRPiPoll</code> and 
- * <code>CtiFDRPiNotify</code> to retry the connection to the 
- * primary node if we're utilizing a PI collective and we're 
- * currently connected to a secondary node.
- */
-void CtiFDRPiBase::attemptPrimaryReconnection()
-{  
-  if( ++_collectiveConnectionRetries % UpdatesPerRetry == 0 )
-  {
-    if(isCollectivePrimaryNodeOnline())
-    {
-      if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
-      {
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Connection test passed, switching to primary node " << getCurrentNodeName() << endl;
-      }
-    }
-    else
-    {
-      if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
-      {
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Connection test failed, remaining connected to secondary node " << getCurrentNodeName() << endl;
-      }
-    }
-    _collectiveConnectionRetries = 0;
-  }
 }
 
 int CtiFDRPiBase::getPiPointIdFromTag(const string& tagName, PiPointId& piId)
@@ -553,27 +582,12 @@ void CtiFDRPiBase::readThisConfig()
   CtiString serverNodeNames = gConfigParms.getValueAsString( KEY_SERVER_NODE_NAME, "" );
 
   // Determine if multiple server node names are present.
-  if(!serverNodeNames.empty() && _serverNodeNames.empty())
+  boost::char_separator<char> sep(", ");
+  Boost_char_tokenizer tokens(serverNodeNames, sep);
+
+  for each( std::string str in tokens )
   {
-    while(!serverNodeNames.empty())
-    {
-      CtiString str = serverNodeNames.match("[-.A-Za-z0-9]*,?");
-      if(!str.empty())
-      {
-        str = str.strip(CtiString::both, ' ');
-        str = str.strip(CtiString::trailing, ',');
-        str = str.strip(CtiString::both, ' ');
-        _serverNodeNames.push_back(str);
-      }
-
-      serverNodeNames.replace("[-.A-Za-z0-9]*,?", "");
-    }
-
-    if(!_serverNodeNames.empty())
-    {
-      // Primary is the first node listed in the master.cfg file. 
-      _currentNodeIndex = 0;
-    }
+    _serverNodeNames.push_back(str);
   }
 
   _serverUsername = gConfigParms.getValueAsString( KEY_SERVER_USERNAME, "" );
