@@ -133,7 +133,6 @@ void CtiFDRSimple::threadFunctionGetData()
 
       if ( isConnected() )
       {
-        reconnectLoopCount = 0;
         try
         {
           if (loadLists)
