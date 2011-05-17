@@ -129,13 +129,13 @@ public final class DeviceFactory {
         case RFN410FD:
         case RFN430A3:
         case RFN430KV:
+        case RFWHOLDER:
             returnDevice = new RfnBase();
             returnDevice.setDeviceClass(PaoClass.RFMESH.getDbString());
             returnDevice.setDeviceType(paoType.getDbString());
             break;
 
-
-            //Carrier type devices
+        //Carrier type devices
         case MCT213:
             returnDevice = new MCT213();
             break;

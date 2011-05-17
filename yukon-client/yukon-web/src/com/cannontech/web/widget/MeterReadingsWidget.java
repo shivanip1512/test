@@ -39,11 +39,17 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private MeteringEventLogService meteringEventLogService;
     private PointService pointService;
+    
     private List<? extends Attribute> attributesToShow;
+    private Attribute previousReadingsAttributeToShow;
     
     public void setAttributesToShow(List<BuiltInAttribute> attributesToShow) {
         // this setter accepts the enum to make Spring happy
         this.attributesToShow = attributesToShow;
+    }
+    public void setPreviousReadingsAttributeToShow(BuiltInAttribute previousReadingsAttributeToShow) {
+        // this setter accepts the enum to make Spring happy
+        this.previousReadingsAttributeToShow = previousReadingsAttributeToShow;
     }
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
@@ -53,6 +59,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
+        mav.addObject("previousReadingsAttribute", previousReadingsAttributeToShow);
+        
         Set<Attribute> allSupportedAttributes = attributeService.getAvailableAttributes(meter);
         Map<Attribute, Boolean> supportedAttributes = ServletUtil.convertSetToMap(allSupportedAttributes);
         mav.addObject("supportedAttributes", supportedAttributes);
@@ -61,9 +69,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         mav.addObject("existingAttributes", existingAttributes);
         
         // don't attempt unless USAGE is supported and exists
-        boolean usageAttributeExists = existingAttributes.containsKey(BuiltInAttribute.USAGE);
+        boolean usageAttributeExists = existingAttributes.containsKey(previousReadingsAttributeToShow);
         if (usageAttributeExists) {
-	        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
+	        LitePoint lp = attributeService.getPointForAttribute(meter, previousReadingsAttributeToShow);
 	        PreviousReadings previousReadings = pointService.getPreviousReadings(lp);
 	        
 	        mav.addObject("previousReadings_All", previousReadings.getPrevious36());

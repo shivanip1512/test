@@ -378,8 +378,7 @@
         <property name="databaseCache" ref="databaseCache"/>
     </bean>
     
-    <bean id="meterReadingsWidget"
-    	class="com.cannontech.web.widget.MeterReadingsWidget">
+    <bean id="meterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
     	<property name="title" value="Meter Readings"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -404,6 +403,37 @@
             <value>DEMAND</value>
             <value>VOLTAGE</value>
           </list>
+        </property>
+        <property name="previousReadingsAttributeToShow">
+          <value>USAGE</value>
+        </property>
+    </bean>
+
+    <bean id="waterMeterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
+        <property name="title" value="Water Meter Readings"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+              <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
+                  <property name="name" value="startOffset"/>
+                  <property name="description" value="the number of prior day's of point history to display"/>
+                  <property name="required" value="false"/>
+              </bean>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+        <property name="attributesToShow">
+          <list>
+            <value>WATER_USAGE</value>
+          </list>
+        </property>
+        <property name="previousReadingsAttributeToShow">
+          <value>WATER_USAGE</value>
         </property>
     </bean>
     
@@ -941,6 +971,10 @@
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
     </bean>
+
+    <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag">
+        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
+    </bean>
     
     <bean id="formatTemplateTagPrototype" class="com.cannontech.web.i18n.FormatTemplateTag">
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
@@ -1042,7 +1076,7 @@
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="trendWidget" abstract="true">
+    <bean id="electricTrendWidget" abstract="true">
     	<property name="title" value="Trend"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -1105,12 +1139,56 @@
         </property>
     </bean>
  
-    <bean id="csrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="trendWidget">
+    <bean id="csrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
         <property name="cachingWidgetParameterGrabber" ref="csrTrendWidgetCachingWidgetParameterGrabber" />
     </bean>
     
-    <bean id="hbcTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="trendWidget">
+    <bean id="hbcTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
         <property name="cachingWidgetParameterGrabber" ref="hbcTrendWidgetCachingWidgetParameterGrabber" />
+    </bean> 
+
+    <bean id="waterCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
+        <property name="useCache" value="true" />
+        <property name="uniqueIdentifiers">
+            <list>
+                <value>waterCsrTrendWidget</value>
+            </list>
+        </property>
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="waterTrendWidget" abstract="true">
+        <property name="title" value="Trend"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="attributeService" ref="attributeService" />
+        <property name="dateFormattingService" ref="dateFormattingService" />
+        <property name="supportedAttributeGraphSet">
+            <list>
+                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                    <property name="attribute" value="WATER_USAGE"/>
+                    <property name="graphType" value="COLUMN"/>
+                    <property name="converterType" value="NORMALIZED_DELTA"/>
+                    <property name="label" value="Water Usage (Normalized)"/>
+                    <property name="description">
+                        <value>
+                            <![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
+                            point on the graph is generated using the following formula: (reading - 
+                            previousReading) / (days between readings)]]>
+                        </value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="waterCsrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="waterTrendWidget">
+        <property name="cachingWidgetParameterGrabber" ref="waterCsrTrendWidgetCachingWidgetParameterGrabber" />
     </bean> 
 
     <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>

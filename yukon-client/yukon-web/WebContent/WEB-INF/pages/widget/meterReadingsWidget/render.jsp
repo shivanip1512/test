@@ -2,10 +2,11 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<cti:url var="previousReadingOptionsUrl"
-    value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 
-<ct:nameValueContainer altRowOn="true">
+<cti:url var="previousReadingOptionsUrl" value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
+
+<ct:nameValueContainer>
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
@@ -19,26 +20,30 @@
 	    		</ct:nameValue>
     		</c:when>
             <c:otherwise>
+
             	<ct:nameValue name="${attribute.description}">
-                    <ct:attributeValue device="${device}"
-                        attribute="${attribute}" />
+                    <ct:attributeValue device="${device}" attribute="${attribute}" />
 				</ct:nameValue>
 
-                <c:if test="${attribute == 'USAGE'}">
-                    <cti:msg2 var="previousUsage" key=".previousUsage"/>
-                    <ct:nameValue name="${previousUsage}">
-                        <select
-                            onChange="${widgetParameters.widgetId}_usageSelection()"
-                            id="${widgetParameters.widgetId}_prevSelect">
-                            <jsp:include page="${previousReadingOptionsUrl}" />
-                        </select>
-                    </ct:nameValue>
-
-                    <cti:msg2 var="totalConsumption" key=".totalConsumption"/>
-                    <ct:nameValue name="${totalConsumption}">
-                        <div id="${widgetParameters.widgetId}_totalConsumption"></div>
-                    </ct:nameValue>
+                <c:if test="${not empty previousReadingsAttribute}">
+                    <c:if test="${attribute == previousReadingsAttribute}">
+                        <cti:msg2 var="previousUsage" key=".previousUsage" />
+                        <ct:nameValue name="${previousUsage}">
+                            <select
+                                onChange="${widgetParameters.widgetId}_usageSelection()"
+                                id="${widgetParameters.widgetId}_prevSelect">
+                                <jsp:include page="${previousReadingOptionsUrl}" />
+                            </select>
+                        </ct:nameValue>
+    
+                        <cti:msg2 var="totalConsumption" key=".totalConsumption" />
+                        <ct:nameValue name="${totalConsumption}">
+                            <div id="${widgetParameters.widgetId}_totalConsumption"></div>
+                        </ct:nameValue>
+                    </c:if>
                 </c:if>
+
+                
             </c:otherwise>
         </c:choose>
     </c:forEach>
@@ -89,8 +94,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 ${widgetParameters.widgetId}_updateDifference();
 </script>
 
-<cti:attributeResolver device="${device}" attributeName="USAGE"
-        var="pointId" />
+<cti:attributeResolver device="${device}" attributeName="${previousReadingsAttribute}" var="pointId" />
         
 <cti:dataUpdaterCallback
     function="${widgetParameters.widgetId}_prependPrevious"

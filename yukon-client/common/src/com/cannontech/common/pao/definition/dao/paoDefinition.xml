@@ -201,6 +201,9 @@
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
         <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>electric</value>
+            </tag>
             <tag name="METER_DETAIL_DISPLAYABLE" />
             <tag name="STARS_ACCOUNT_ATTACHABLE_METER" />
             <tag name="LOCATE_ROUTE" />
@@ -4442,7 +4445,7 @@
         <displayName>SIXNET</displayName>
 	</pao>
 	
-	<pao id="RFN_BASE" abstract="true">
+	<pao id="RFN_ELECTRIC_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -4512,6 +4515,9 @@
             </attribute>
         </attributes>
         <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>electric</value>
+            </tag>
             <tag name="METER_DETAIL_DISPLAYABLE"/>
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
@@ -4542,11 +4548,11 @@
         </attributes>
     </pao>
     
-    <pao id="RFN410FL" inherits="RFN_BASE, RFN_BASIC_VOLTAGE">
+    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_BASIC_VOLTAGE">
         <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN_EXTENDED_BASE" inherits="RFN_BASE" abstract="true">
+    <pao id="RFN_EXTENDED_ELECTRIC_BASE" inherits="RFN_ELECTRIC_BASE" abstract="true">
         <points>
             <point type="Analog" offset="14">
                 <init>true</init>
@@ -4697,7 +4703,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED_BASE">
+    <pao id="RFN410FX" inherits="RFN_EXTENDED_ELECTRIC_BASE">
         <displayName>RFN-410fX</displayName>
     </pao>
     
@@ -4720,12 +4726,42 @@
         </tags>
     </pao>
 	
-    <pao id="RFN430A3" inherits="RFN_EXTENDED_BASE">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED_ELECTRIC_BASE">
         <displayName>RFN-430A3</displayName>
     </pao>
     
-    <pao id="RFN430KV" inherits="RFN_EXTENDED_BASE">
+    <pao id="RFN430KV" inherits="RFN_EXTENDED_ELECTRIC_BASE">
         <displayName>RFN-430KV</displayName>
+    </pao>
+
+    <pao id="RFN_WATER_BASE" abstract="true">
+        <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfw</changeGroup>
+        
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Water Usage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Gallons"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="WATER_USAGE">
+                <basicLookup point="Water Usage" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>water</value>
+            </tag>
+            <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
+        </tags>
+    </pao>
+
+    <pao id="RFWHOLDER" inherits="RFN_WATER_BASE">
+        <displayName>RFW-HOLDER</displayName>
     </pao>
     
 	<pao id="TRANSDATA_MARKV">

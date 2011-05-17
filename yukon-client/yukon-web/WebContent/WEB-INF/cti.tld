@@ -1998,6 +1998,17 @@
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+
+  <tag>
+    <name>paoTypeIcon</name>
+    <tag-class>com.cannontech.web.taglib.PaoTypeIconTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
   
   <tag>
     <name>msgScope</name>

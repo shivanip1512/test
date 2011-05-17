@@ -128,9 +128,7 @@
   </bean>
   <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache" >
     <property name="delegate">
-      <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" >
-        <property name="jdbcOps" ref="simpleJdbcTemplate"/>
-      </bean>
+      <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" />
     </property>
   </bean>
   <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >

@@ -9,14 +9,11 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.common.util.StopWatch;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
-import com.cannontech.database.db.device.DeviceRoutes;
-import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
  * Creation date: (3/15/00 3:57:58 PM)
@@ -30,7 +27,7 @@ public class YukonPAOLoader implements Runnable
 	private List<LiteYukonPAObject> allPAObjects = null;
 	private LitePaoRowMapper rowMapper = new LitePaoRowMapper();
 	
-	public YukonPAOLoader(java.util.ArrayList pAObjectArray, Map paoMap_) 
+	public YukonPAOLoader(List<LiteYukonPAObject> pAObjectArray, Map<Integer, LiteYukonPAObject> paoMap_) 
 	{
 		super();
 		this.allPAObjects = pAObjectArray;
@@ -45,17 +42,18 @@ public class YukonPAOLoader implements Runnable
 	    StopWatch sw = new StopWatch();
 	    sw.start();
 
-	    String sqlString = 
-	        "SELECT y.PAObjectID, y.Category, y.PAOName, " +
-	        "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " +
-	        "FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
-	        "on y.paobjectid = d.deviceid " +
-	        "left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +		
-	        "left outer join " + DeviceRoutes.TABLE_NAME + " dr on y.paobjectid = dr.deviceid " + 
-	        "ORDER BY y.Category, y.PAOClass, y.PAOName";
-
+	    
+	    SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+	    sql.append("SELECT PAO.PAObjectId, PAO.Category, PAO.PAOName, PAO.Type, PAO.PAOClass, PAO.Description,");
+	    sql.append("       PAO.DisableFlag, DDCS.PortId, DCS.Address, DR.RouteId ");
+	    sql.append("FROM YukonPAObject PAO");
+	    sql.append("  LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON PAO.PAObjectId = DDCS.DeviceId");
+	    sql.append("  LEFT OUTER JOIN DeviceCarrierSettings DCS ON PAO.PAObjectId = DCS.DeviceId");
+	    sql.append("  LEFT OUTER JOIN DeviceRoutes DR ON PAO.PAObjectId = DR.DeviceId");
+	    sql.append("ORDER BY PAO.Category, PAO.PAOClass, PAO.PAOName");
+	    
 	    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-	    jdbcOps.query(sqlString, new RowCallbackHandler() {
+	    jdbcOps.query(sql.toString(), new RowCallbackHandler() {
 	        private int row = 0;
 	        public void processRow(ResultSet rs) throws SQLException {
 	            LiteYukonPAObject pao = rowMapper.mapRow(rs, row++);

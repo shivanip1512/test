@@ -1,6 +1,11 @@
 package com.cannontech.common.pao.attribute.model;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 public enum BuiltInAttribute implements Attribute {
+    
     /* Keep this ordered alphabetically by description */
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
@@ -39,11 +44,11 @@ public enum BuiltInAttribute implements Attribute {
     USAGE("Usage Reading"), 
     VOLTAGE("Voltage"), 
     VOLTAGE_PROFILE("Voltage Profile", true),
+    WATER_USAGE("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
-    ZIGBEE_LINK_STATUS("Zigbee Link Status"),
+    ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     ;
     
-
 	private BuiltInAttribute(String description) {
         this(description, false);
     }
@@ -67,4 +72,5 @@ public enum BuiltInAttribute implements Attribute {
     public String getKey() {
         return this.name();
     }
+
 }

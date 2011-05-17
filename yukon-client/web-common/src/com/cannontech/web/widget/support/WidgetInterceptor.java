@@ -44,8 +44,16 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         JSONObject object = new JSONObject(existingParams);
         response.addHeader("X-JSON", object.toString());
    
+        Object target;
+        if(handler instanceof WidgetMultiActionController) {
+            target = ((WidgetMultiActionController) handler).getWidgetController();
+        } else {
+            target = handler;
+        }
+        
+        String className = target.getClass().getSimpleName();
         String beanName = existingParams.get("shortName");
-        MessageScopeHelper.forRequest(request).pushScope("widgets." + beanName);
+        MessageScopeHelper.forRequest(request).pushScope(beanName, "widgets." + beanName, "widgetClasses." + className);
     }
     
     @Override

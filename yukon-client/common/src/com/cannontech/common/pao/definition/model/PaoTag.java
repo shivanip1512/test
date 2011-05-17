@@ -18,6 +18,7 @@ public enum PaoTag {
 	DEVICE_CONFIGURATION_470("Device Configuration 470"),
 	DEVICE_CONFIGURATION_430("Device Configuration 430"),
 	DEVICE_CONFIGURATION_420("Device Configuration 420"),
+	DEVICE_ICON_TYPE("Device Icon Type", stringType()),
 	DISCONNECT_COLLAR_COMPATIBLE("Disconnect Collar Compatible"),
 	DISCONNECT_RFN("RFN Disconnect"),
 	DISCONNECT_410("410 Disconnect"),
@@ -40,7 +41,8 @@ public enum PaoTag {
     DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
     SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
     PLC_ADDRESS_RANGE("PLC Address Range", stringType()),
-	DUMMY_LONG_TAG("for internal testing", longType()), // can be removed when we add a real tag that uses long
+	DUMMY_LONG_TAG("for internal testing", longType()), 
+	WATER_METER_DETAIL_DISPLAYABLE("Water Detail Displayable"), // can be removed when we add a real tag that uses long
 	;
 
 	private final String description;

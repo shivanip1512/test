@@ -164,6 +164,8 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
     public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;
     
+    public final static int RFWHOLDER = DEVICE_OFFSET + 129;
+
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	

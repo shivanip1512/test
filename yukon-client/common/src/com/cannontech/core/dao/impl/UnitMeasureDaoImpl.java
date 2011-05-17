@@ -4,11 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 
 /**
@@ -17,8 +19,9 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
  * @author: alauinger
  */
 public final class UnitMeasureDaoImpl implements UnitMeasureDao {
-    private SimpleJdbcOperations jdbcOps;
-  
+    private YukonJdbcOperations yukonJdbcOperations;
+    
+    
     private static final ParameterizedRowMapper<LiteUnitMeasure> liteUnitMeasureRowMapper = 
         new ParameterizedRowMapper<LiteUnitMeasure>() {
         public LiteUnitMeasure mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -34,47 +37,60 @@ public final class UnitMeasureDaoImpl implements UnitMeasureDao {
         }
     };
     
-    public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
+    @Override
+    public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointId) {
 
         try {
-            String sql =
-                "select u.UoMID, u.UoMName, u.CalcType, u.LongName  from " +
-                "unitmeasure u inner join pointunit pu " +
-                "on u.uomid=pu.uomid " +
-                "where pu.pointid=?";
-
-            LiteUnitMeasure lum =
-                jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, pointID);
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT UM.UoMId, UM.UoMName, UM.CalcType, UM.LongName");
+            sql.append("FROM UM");
+            sql.append("  JOIN PointUnit PU ON UM.UoMId = PU.UoMId");
+            sql.append("where pu.pointid").eq(pointId);
+            
+            LiteUnitMeasure lum = yukonJdbcOperations.queryForObject(sql, liteUnitMeasureRowMapper);
             return lum;
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
     }
 
+    @Override
     public LiteUnitMeasure getLiteUnitMeasure(int uomid)  {        
-        String sql = "select UoMID, UoMName, CalcType, LongName from UnitMeasure where uomid=?";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UoMId, UoMName, CalcType, LongName");
+        sql.append("FROM UnitMeasure");
+        sql.append("WHERE UoMId").eq(uomid);
         
-        LiteUnitMeasure lum = (LiteUnitMeasure)
-            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, uomid);
+        LiteUnitMeasure lum = yukonJdbcOperations.queryForObject(sql, liteUnitMeasureRowMapper);
         
         return lum;
     }
 
-    public LiteUnitMeasure getLiteUnitMeasure(String uomName)  {        
-        String sql = "select UoMID, UoMName, CalcType, LongName from UnitMeasure where lower(LongName)=?";
+    @Override
+    public LiteUnitMeasure getLiteUnitMeasure(String uomName)  {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UoMId, UoMName, CalcType, LongName");
+        sql.append("FROM UnitMeasure");
+        sql.append("WHERE LOWER(LongName").eq(uomName.toLowerCase());
         
-        LiteUnitMeasure lum =
-            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, uomName.toLowerCase());
+        LiteUnitMeasure lum = yukonJdbcOperations.queryForObject(sql, liteUnitMeasureRowMapper);
         return lum;
     }
     
+    @Override
     public List<LiteUnitMeasure> getLiteUnitMeasures() {
-        List<LiteUnitMeasure> unitMeasures = 
-            jdbcOps.query("select UoMID, UoMName, CalcType, LongName from UnitMeasure", liteUnitMeasureRowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UoMId, UoMName, CalcType, LongName");
+        sql.append("FROM UnitMeasure");
+
+        List<LiteUnitMeasure> unitMeasures = yukonJdbcOperations.query(sql, liteUnitMeasureRowMapper);
         return unitMeasures;
     }
     
-    public void setJdbcOps(SimpleJdbcOperations jdbcOperations) {
-        this.jdbcOps = jdbcOperations;
+    // DI Setters
+    @Autowired
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+        this.yukonJdbcOperations = yukonJdbcOperations;
     }
 }

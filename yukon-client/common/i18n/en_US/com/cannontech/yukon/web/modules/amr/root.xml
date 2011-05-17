@@ -16,6 +16,13 @@
     <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>        
     
     <!-- meters.jsp -->
+    <entry key="yukon.web.modules.amr.meterSearchResults.meterSearchResultsTitle">Meter Search Results</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.address">Address</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.route">Route</entry>
+    
     <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.noResultsForFilter">No results for Filter: {0}</entry>
@@ -24,7 +31,7 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.filter.label">Filter</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
-    
+
     <!-- meterHome.jsp -->
     <entry key="yukon.web.modules.amr.meterDetail.pageName">Meter Detail</entry>
     <entry key="yukon.web.modules.amr.meterDetail.pageDescription">{0}</entry>
@@ -56,39 +63,39 @@
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     
     <!-- meterReadingsWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterReadingsWidget.unsupported">unsupported</entry>
-    <entry key="yukon.web.widgets.meterReadingsWidget.notConfigured">not configured</entry>
-    <entry key="yukon.web.widgets.meterReadingsWidget.previousUsage">Previous Usage Reading</entry>
-    <entry key="yukon.web.widgets.meterReadingsWidget.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgets.meterReadingsWidget.readNow">Read Now</entry>
-    <entry key="yukon.web.widgets.meterReadingsWidget.reading">Reading</entry>
-    
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.unsupported">unsupported</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.notConfigured">not configured</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow">Read Now</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading">Reading</entry>
+
     <!-- trendWidget/render.jsp -->
-    <entry key="yukon.web.widgets.csrTrendWidget.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.prev24HourData">Previous 24 hour's data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.prevWeeksData">Previous weeks's data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.prev3MonthsData">Previous 3 month's data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.oneDay">1D</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.oneWeek">1W</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.oneMonth">1M</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.threeMonths">3M</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.oneYear">1Y</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.reloadUsingCustomDates">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.line">Line</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.column">Column</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.columnGraph">Column Graph</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.tabularUsageData">Tabular Data</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgets.csrTrendWidget.noTrendsAvailable">No trends available for device</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.whatsThis">What's this?</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.graphType">Graph Type:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.timePeriod">Time Period:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hour's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous weeks's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous month's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 month's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous year's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.customDateRange">Custom Date Range</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneDay">1D</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneWeek">1W</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneMonth">1M</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.threeMonths">3M</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneYear">1Y</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.custom">Custom</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates">Reload Graph Using Custom Dates</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.column">Column</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.columnGraph">Column Graph</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.archivedUsageData">Archived Usage Data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.noTrendsAvailable">No trends available for device</entry>
     
     <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>

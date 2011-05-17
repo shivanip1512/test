@@ -1478,3 +1478,11 @@ button.image {
 div.f_toggle {
     padding-left: 30px;
 }
+
+.water_meter {
+	background: url(../Icons/water_16.png) no-repeat left top transparent;
+}
+
+.electric_meter {
+    background: url(../Icons/electric_16.png) no-repeat left top transparent;
+}
