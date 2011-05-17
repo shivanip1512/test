@@ -66,17 +66,17 @@ public class EnergyCompanyController {
     @RequestMapping("/energyCompany/home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         LiteYukonUser user = userContext.getYukonUser();
-        List<YukonEnergyCompany> companies = Lists.newArrayList();
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         
         if (superUser) {
             /* For super users show all energy companies. */
-            companies = yukonEnergyCompanyService.getAllEnergyCompanies();
+            List<YukonEnergyCompany> companies =
+                Lists.newArrayList(yukonEnergyCompanyService.getAllEnergyCompanies());
             if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
                 Iterator<YukonEnergyCompany> iter = companies.iterator();
                 while (iter.hasNext()) {
                     YukonEnergyCompany ec = iter.next();
-                    if (ec.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+                    if (ec.isDefault()) {
                         iter.remove();
                         break;
                     }
@@ -85,7 +85,8 @@ public class EnergyCompanyController {
             setupHomeModelMap(modelMap, user, companies);
             return "energyCompany/home.jsp";
         }
-        
+
+        List<YukonEnergyCompany> companies = Lists.newArrayList();
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         

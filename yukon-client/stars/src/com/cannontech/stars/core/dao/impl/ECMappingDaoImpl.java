@@ -374,7 +374,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM YukonUserGroup WHERE UserId IN (");
         sql.append(  "SELECT OperatorLoginId FROM EnergyCompanyOperatorLoginList");
-        sql.append(    "WHERE EnergyCompanyId").eq(ecId);
+        sql.append(  "WHERE EnergyCompanyId").eq(ecId);
         sql.append(") AND GroupId").eq(groupId);
         int numUses = yukonJdbcTemplate.queryForInt(sql);
         if (numUses > 0) {

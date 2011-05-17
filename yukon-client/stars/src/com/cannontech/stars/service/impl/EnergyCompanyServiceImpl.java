@@ -11,6 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -93,7 +95,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    
+    private ConfigurationSource configurationSource;
+
     @Override
     @Transactional
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user,
@@ -195,6 +198,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)
+                && energyCompany.isDefault()) {
+            return false;
+        }
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
         boolean manage = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
@@ -229,7 +236,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
-        if (ecId == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        if (energyCompany.isDefault()) {
             return false;
         }
 
@@ -271,6 +279,12 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
+        if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+            if (energyCompany.isDefault()) {
+                throw new NotAuthorizedException("default energy company is not editable");
+            }
+        }
         if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)) return;
         /* Check my own and all my anticendants operator login list for this user's id. */
         for (int energyCompanyId : ecMappingDao.getParentEnergyCompanyIds(ecId)) {
@@ -310,12 +324,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     @Transactional
     public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId) {
-        if (energyCompanyId == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
+        if (energyCompany.isDefault()) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
-        
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
-        
+
         String dbAlias = CtiUtilities.getDatabaseAlias();
     
         deleteAllOperatorLogins(energyCompany, dbAlias);
@@ -812,5 +825,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
-    
+
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
 }

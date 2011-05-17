@@ -9,5 +9,6 @@ public interface YukonEnergyCompany {
     public String getName();
     
     public LiteYukonUser getEnergyCompanyUser();
-    
+
+    public boolean isDefault();
 }

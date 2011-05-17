@@ -330,7 +330,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         defaultRouteId = CtiUtilities.NONE_ZERO_ID;
         routeIds = null;
     }
-    
+
+    public boolean isDefault() {
+        return getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+    }
+
     /**
      *  This method clears out both of the cache objects held by the appliance categories
      */
@@ -477,8 +481,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         // If parent company exists, then search the parent company for the list
         if (getParent() != null && useInherited)
             return getParent().getYukonSelectionList(listName, useInherited, useDefault);
-        
-        if (useDefault && !ECUtils.isDefaultEnergyCompany( this )) {
+
+        if (useDefault && !isDefault()) {
             YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList( listName, false, false );
             if (dftList != null) {
                 // If the list is user updatable, returns a copy of the default list; otherwise returns the default list itself
