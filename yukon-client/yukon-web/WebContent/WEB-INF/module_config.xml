@@ -1185,6 +1185,7 @@
                                 <labelArgument>${roleName}</labelArgument>
                             </page>
                             <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/editor/group/editGroup?groupId=${groupId}</link>
                                 <labelArgument>${groupName}</labelArgument>
@@ -1207,6 +1208,7 @@
                                 <labelArgument>${username}</labelArgument>
                             </page>
                             <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/editor/user/editUser?userId=${userId}</link>
                                 <labelArgument>${username}</labelArgument>
