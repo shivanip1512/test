@@ -241,6 +241,8 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorTransmitterOverheating,  "Transmitter is overheating",                   ERRTYPEPROTOCOL },
 
+    { ErrorNeedsChannelConfig,      "Command needs channel config to continue.",    ERRTYPESYSTEM   },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };

@@ -861,6 +861,16 @@
     </ul>
   </troubleshooting>
 </error>
+<error code="278">
+  <category>Yukon System</category>
+  <porter>Command requires channel configuration to continue.</porter>
+  <description>In order to collect load profile, the system needs to retrieve the channel setup information.</description>
+  <troubleshooting>The system will attempt to collect the required configuration data automatically.  Retry the command. 
+    <ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
 <error code="0">
 	<category>N/A</category> 
     <description>Successful Read</description>

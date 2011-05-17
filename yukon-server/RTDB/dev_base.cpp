@@ -75,12 +75,12 @@ void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device,
 }
 
 
-INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg                *pReq,
-                                       CtiCommandParser             &parse,
-                                       list< CtiMessage* >    &vgList,
-                                       list< CtiMessage* >    &retList,
-                                       list< OUTMESS* >       &outList,
-                                       const OUTMESS                *OutTemplate)
+INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
+                                       CtiCommandParser &parse,
+                                       CtiMessageList &vgList,
+                                       CtiMessageList &retList,
+                                       OutMessageList &outList,
+                                       const OUTMESS *OutTemplate)
 {
     INT      status = NORMAL;
     LONG     Id;
@@ -241,12 +241,12 @@ CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointTy
 }
 
 
-INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                  CtiCommandParser               &parse,
-                                  OUTMESS                        *&tempOut,
-                                  list< CtiMessage* >      &vgList,
-                                  list< CtiMessage* >      &retList,
-                                  list< OUTMESS* >         &outList)
+INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq,
+                                  CtiCommandParser &parse,
+                                  OUTMESS *&tempOut,
+                                  CtiMessageList &vgList,
+                                  CtiMessageList &retList,
+                                  OutMessageList &outList)
 {
     string resultString;
 
@@ -319,12 +319,12 @@ string CtiDeviceBase::getPutConfigAssignment(UINT modifier)
     return  string("config not done ") + getName();
 }
 
-INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
-                               CtiCommandParser               &parse,
-                               OUTMESS                        *&OutMessage,
-                               list< CtiMessage* >      &vgList,
-                               list< CtiMessage* >      &retList,
-                               list< OUTMESS* >         &outList)
+INT CtiDeviceBase::executeScan(CtiRequestMsg *pReq,
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList)
 {
     INT   nRet = NoError;
 
@@ -554,35 +554,35 @@ INT CtiDeviceBase::ReportError(INT mess)
 }
 
 /* Properly defined by the device types themselves... */
-INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return NoGeneralScanMethod;
 }
-INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return NoIntegrityScanMethod;
 }
-INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return NoAccumulatorScanMethod;
 }
-INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return NoLoadProfileScanMethod;
 }
 
-INT CtiDeviceBase::ResultDecode(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceBase::ResultDecode(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return NoResultDecodeMethod;
 }
 
-INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return NoProcessResultMethod;
 }
 
 
-INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  list< CtiMessage* > &retList)
+INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  CtiMessageList &retList)
 {
     return NoErrorDecodeMethod;
 }
@@ -739,12 +739,12 @@ CtiDeviceBase& CtiDeviceBase::setTrxID(int trx)
 }
 
 
-inline INT CtiDeviceBase::processTrxID( int trx, list< CtiMessage* >  &vgList )
+inline INT CtiDeviceBase::processTrxID( int trx, CtiMessageList &vgList )
 {
     return 0;
 }
 
-inline INT CtiDeviceBase::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList )
+inline INT CtiDeviceBase::initTrxID( int trx, CtiCommandParser &parse, CtiMessageList &vgList )
 {
     setResponsesOnTrxID(0);
     setTrxID(trx);
@@ -781,7 +781,7 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
 }
 
 
-INT CtiDeviceBase::checkForInhibitedDevice(list< CtiMessage* > &retList, const OUTMESS *OutMessage)
+INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage)
 {
     int status = NORMAL;
 

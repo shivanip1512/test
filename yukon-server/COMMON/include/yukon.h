@@ -263,6 +263,8 @@ enum YukonError_t
 
     ErrorTransmitterOverheating,
 
+    ErrorNeedsChannelConfig,
+
     FinalError
 };
 

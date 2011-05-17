@@ -27,8 +27,6 @@
 
 #include "cmd_dlc.h"
 
-using std::list;
-
 using Cti::Protocols::EmetconProtocol;
 
 using namespace Cti::Devices::Commands;
@@ -314,7 +312,7 @@ unsigned long MctDevice::getNextLPScanTime( void )
 }
 
 
-void MctDevice::sendLPInterval( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+void MctDevice::sendLPInterval( OUTMESS *&OutMessage, OutMessageList &outList )
 {
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
@@ -429,12 +427,12 @@ MctDevice::CommandSet MctDevice::initCommandStore()
  *  from the device, as well as status info, if the device can supply it in the same read.
  *****************************************************************************************/
 INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
-                              CtiCommandParser &parse,
-                              OUTMESS *&OutMessage,
-                              list< CtiMessage* > &vgList,
-                              list< CtiMessage* > &retList,
-                              list< OUTMESS* > &outList,
-                              INT ScanPriority)
+                           CtiCommandParser &parse,
+                           OUTMESS *&OutMessage,
+                           CtiMessageList &vgList,
+                           CtiMessageList &retList,
+                           OutMessageList &outList,
+                           INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -491,12 +489,12 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
  *  collect status information
  *****************************************************************************************/
 INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                list< CtiMessage* > &vgList,
-                                list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList,
-                                INT ScanPriority)
+                             CtiCommandParser &parse,
+                             OUTMESS *&OutMessage,
+                             CtiMessageList &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList &outList,
+                             INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -551,12 +549,12 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
  *  from the device, as well as status info, if the device can supply it in the same read.
  *****************************************************************************************/
 INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
-                                  INT ScanPriority)
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList,
+                               INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -613,12 +611,12 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
  *  and gathers load profile whenever 6 intervals have passed
  *****************************************************************************************/
 INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
-                                  INT ScanPriority)
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList,
+                               INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -674,7 +672,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
@@ -731,7 +729,7 @@ INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
 }
 
 
-INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -867,7 +865,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
     return status;
 }
 
-INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
+INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
     INT retCode = NORMAL;
 
@@ -1078,12 +1076,12 @@ int MctDevice::insertPointFail( const INMESS &InMessage, CtiReturnMsg *pPIL, int
 
 
 
-INT MctDevice::executeLoopback(CtiRequestMsg                  *pReq,
-                                  CtiCommandParser               &parse,
-                                  OUTMESS                        *&OutMessage,
-                                  list< CtiMessage* >      &vgList,
-                                  list< CtiMessage* >      &retList,
-                                  list< OUTMESS* >         &outList)
+INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList)
 {
     bool found = false;
     INT  nRet  = NoError;
@@ -1133,12 +1131,12 @@ INT MctDevice::executeLoopback(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::executeScan(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList)
+INT MctDevice::executeScan(CtiRequestMsg *pReq,
+                           CtiCommandParser &parse,
+                           OUTMESS *&OutMessage,
+                           CtiMessageList &vgList,
+                           CtiMessageList &retList,
+                           OutMessageList &outList)
 {
     bool found = false;
     INT  nRet  = NoError;
@@ -1224,12 +1222,12 @@ INT MctDevice::executeScan(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::executeGetValue( CtiRequestMsg              *pReq,
-                                   CtiCommandParser           &parse,
-                                   OUTMESS                   *&OutMessage,
-                                   list< CtiMessage* >  &vgList,
-                                   list< CtiMessage* >  &retList,
-                                   list< OUTMESS* >     &outList )
+INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList )
 {
     bool found = false;
     INT   nRet = NoError;
@@ -1421,12 +1419,12 @@ INT MctDevice::executeGetValue( CtiRequestMsg              *pReq,
     return nRet;
 }
 
-INT MctDevice::executePutValue(CtiRequestMsg                  *pReq,
-                                  CtiCommandParser               &parse,
-                                  OUTMESS                        *&OutMessage,
-                                  list< CtiMessage* >      &vgList,
-                                  list< CtiMessage* >      &retList,
-                                  list< OUTMESS* >         &outList)
+INT MctDevice::executePutValue(CtiRequestMsg *pReq,
+                               CtiCommandParser &parse,
+                               OUTMESS *&OutMessage,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList)
 {
     INT    nRet = NoError;
     long   rawPulses;
@@ -1660,12 +1658,12 @@ INT MctDevice::executePutValue(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT MctDevice::executeGetStatus(CtiRequestMsg                  *pReq,
-                                  CtiCommandParser               &parse,
-                                  OUTMESS                        *&OutMessage,
-                                  list< CtiMessage* >      &vgList,
-                                  list< CtiMessage* >      &retList,
-                                  list< OUTMESS* >         &outList)
+INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
+                                CtiCommandParser &parse,
+                                OUTMESS *&OutMessage,
+                                CtiMessageList &vgList,
+                                CtiMessageList &retList,
+                                OutMessageList &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -1752,12 +1750,12 @@ INT MctDevice::executeGetStatus(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::executePutStatus(CtiRequestMsg                  *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   list< CtiMessage* >      &vgList,
-                                   list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList)
+INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
+                                CtiCommandParser &parse,
+                                OUTMESS *&OutMessage,
+                                CtiMessageList &vgList,
+                                CtiMessageList &retList,
+                                OutMessageList &outList)
 {
     bool  found = false;
     INT   nRet = NoError;
@@ -1907,12 +1905,12 @@ INT MctDevice::executePutStatus(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::executeGetConfig(CtiRequestMsg                  *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   list< CtiMessage* >      &vgList,
-                                   list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList)
+INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
+                                CtiCommandParser &parse,
+                                OUTMESS *&OutMessage,
+                                CtiMessageList &vgList,
+                                CtiMessageList &retList,
+                                OutMessageList &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -2059,12 +2057,12 @@ INT MctDevice::executeGetConfig(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT MctDevice::executePutConfig(CtiRequestMsg                  *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   list< CtiMessage* >      &vgList,
-                                   list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList)
+INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
+                                CtiCommandParser &parse,
+                                OUTMESS *&OutMessage,
+                                CtiMessageList &vgList,
+                                CtiMessageList &retList,
+                                OutMessageList &outList)
 {
     bool  found = false;
     INT   function;
@@ -2643,12 +2641,12 @@ INT MctDevice::executePutConfig(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
-                                 CtiCommandParser               &parse,
-                                 OUTMESS                        *&OutMessage,
-                                 list< CtiMessage* >      &vgList,
-                                 list< CtiMessage* >      &retList,
-                                 list< OUTMESS* >         &outList)
+INT MctDevice::executeControl(CtiRequestMsg *pReq,
+                              CtiCommandParser &parse,
+                              OUTMESS *&OutMessage,
+                              CtiMessageList &vgList,
+                              CtiMessageList &retList,
+                              OutMessageList &outList)
 {
     bool found = false;
     bool dead_air = false;
@@ -2812,7 +2810,7 @@ INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -2846,7 +2844,7 @@ INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -2917,7 +2915,7 @@ INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -3170,7 +3168,7 @@ INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 }
 
 
-INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -3305,7 +3303,7 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, li
 
 
 
-INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3339,7 +3337,7 @@ INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessa
 }
 
 
-INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3373,7 +3371,7 @@ INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3407,7 +3405,7 @@ INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 }
 
 
-INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3800,7 +3798,7 @@ bool MctDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-INT MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     INT nRet = NoError;
 

@@ -289,492 +289,196 @@ INT resolvePAOCategory(const string& _category)
 }
 
 
+typedef std::map<string, int> device_lookup_t;
+
+device_lookup_t init_device_lookups()
+{
+    device_lookup_t device_types;
+
+    using std::make_pair;
+
+    //  --- GridSmart ---
+    device_types.insert(make_pair("capacitor bank neutral monitor",
+                                                        TYPE_NEUTRAL_MONITOR));
+    device_types.insert(make_pair("faulted circuit indicator",
+                                                        TYPE_FCI));
+
+    //  --- Capacitor Control ---
+    device_types.insert(make_pair("cap bank",           TYPECAPBANK));
+    device_types.insert(make_pair("cbc 6510",           TYPECBC6510));
+    device_types.insert(make_pair("cbc 7010",           TYPECBC7010));
+    device_types.insert(make_pair("cbc 7011",           TYPECBC7010));
+    device_types.insert(make_pair("cbc 7012",           TYPECBC7010));
+    device_types.insert(make_pair("cbc 7020",           TYPECBC7020));
+    device_types.insert(make_pair("cbc 7022",           TYPECBC7020));
+    device_types.insert(make_pair("cbc 7023",           TYPECBC7020));
+    device_types.insert(make_pair("cbc 7024",           TYPECBC7020));
+    device_types.insert(make_pair("cbc 7030",           TYPECBC7020));
+    device_types.insert(make_pair("cbc dnp",            TYPECBCDNP));
+    device_types.insert(make_pair("cbc expresscom",     TYPEEXPRESSCOMCBC));
+    device_types.insert(make_pair("cbc fp-2800",        TYPEFISHERPCBC));
+    device_types.insert(make_pair("cbc versacom",       TYPEVERSACOMCBC));
+    device_types.insert(make_pair("load tap changer",   TYPELTC));
+
+    //  --- Cooper PLC ---
+    device_types.insert(make_pair("ccu-700",            TYPE_CCU700));
+    device_types.insert(make_pair("ccu-710a",           TYPE_CCU710));
+    device_types.insert(make_pair("ccu-711",            TYPE_CCU711));
+    device_types.insert(make_pair("ccu-721",            TYPE_CCU721));
+    device_types.insert(make_pair("lcr-3102",           TYPELCR3102));
+    device_types.insert(make_pair("lmt-2",              TYPELMT2));
+    device_types.insert(make_pair("mct broadcast",      TYPEMCTBCAST));
+    device_types.insert(make_pair("mct-210",            TYPEMCT210));
+    device_types.insert(make_pair("mct-212",            TYPEMCT212));
+    device_types.insert(make_pair("mct-213",            TYPEMCT213));
+    device_types.insert(make_pair("mct-224",            TYPEMCT224));
+    device_types.insert(make_pair("mct-226",            TYPEMCT226));
+    device_types.insert(make_pair("mct-240",            TYPEMCT240));
+    device_types.insert(make_pair("mct-242",            TYPEMCT242));
+    device_types.insert(make_pair("mct-248",            TYPEMCT248));
+    device_types.insert(make_pair("mct-250",            TYPEMCT250));
+    device_types.insert(make_pair("mct-310",            TYPEMCT310));
+    device_types.insert(make_pair("mct-310ct",          TYPEMCT310));
+    device_types.insert(make_pair("mct-310id",          TYPEMCT310ID));
+    device_types.insert(make_pair("mct-310idl",         TYPEMCT310IDL));
+    device_types.insert(make_pair("mct-310il",          TYPEMCT310IL));
+    device_types.insert(make_pair("mct-318",            TYPEMCT318));
+    device_types.insert(make_pair("mct-318l",           TYPEMCT318L));
+    device_types.insert(make_pair("mct-360",            TYPEMCT360));
+    device_types.insert(make_pair("mct-370",            TYPEMCT370));
+    device_types.insert(make_pair("mct-410cl",          TYPEMCT410));
+    device_types.insert(make_pair("mct-410fl",          TYPEMCT410));
+    device_types.insert(make_pair("mct-410gl",          TYPEMCT410));
+    device_types.insert(make_pair("mct-410il",          TYPEMCT410));
+    device_types.insert(make_pair("mct-420cl",          TYPEMCT420CL));
+    device_types.insert(make_pair("mct-420cld",         TYPEMCT420CLD));
+    device_types.insert(make_pair("mct-420fl",          TYPEMCT420FL));
+    device_types.insert(make_pair("mct-420fld",         TYPEMCT420FLD));
+    device_types.insert(make_pair("mct-430a",           TYPEMCT430));
+    device_types.insert(make_pair("mct-430a3",          TYPEMCT430));
+    device_types.insert(make_pair("mct-430s4",          TYPEMCT430));
+    device_types.insert(make_pair("mct-430sl",          TYPEMCT430));
+    device_types.insert(make_pair("mct-470",            TYPEMCT470));
+    device_types.insert(make_pair("repeater 800",       TYPE_REPEATER800));
+    device_types.insert(make_pair("repeater 801",       TYPE_REPEATER800));
+    device_types.insert(make_pair("repeater 850",       TYPE_REPEATER850));
+    device_types.insert(make_pair("repeater 902",       TYPE_REPEATER900));
+    device_types.insert(make_pair("repeater 921",       TYPE_REPEATER900));
+    device_types.insert(make_pair("repeater",           TYPE_REPEATER900));
+
+    //  --- Receivers ---
+    device_types.insert(make_pair("fmu",                TYPE_FMU));
+    device_types.insert(make_pair("page receiver",      TYPE_PAGING_RECEIVER));
+
+    //  --- Eka ---
+    device_types.insert(make_pair("rfn-410fd",          TYPERFN410FD));
+    device_types.insert(make_pair("rfn-410fl",          TYPERFN410FL));
+    device_types.insert(make_pair("rfn-410fx",          TYPERFN410FX));
+    device_types.insert(make_pair("rfn-430a3",          TYPERFN430A3));
+    device_types.insert(make_pair("rfn-430kv",          TYPERFN430KV));
+
+    //  --- RTU devices ---
+    device_types.insert(make_pair("rtu-dart",           TYPE_DARTRTU));
+    device_types.insert(make_pair("rtu-dnp",            TYPE_DNPRTU));
+    device_types.insert(make_pair("rtu-ilex",           TYPE_ILEXRTU));
+    device_types.insert(make_pair("rtu-lmi",            TYPE_SERIESVLMIRTU));
+    device_types.insert(make_pair("rtu-modbus",         TYPE_MODBUS));
+    device_types.insert(make_pair("rtu-ses92",          TYPE_SES92RTU));
+    device_types.insert(make_pair("rtu-welco",          TYPE_WELCORTU));
+
+    //  --- GRE (Great River Energy) transmitters ---
+    device_types.insert(make_pair("rtc",                TYPE_RTC));
+    device_types.insert(make_pair("rtm",                TYPE_RTM));
+
+    //  --- GRE (Great River Energy) Load Management groups ---
+    device_types.insert(make_pair("golay group",        TYPE_LMGROUP_GOLAY));
+    device_types.insert(make_pair("sa-105 group",       TYPE_LMGROUP_SA105));
+    device_types.insert(make_pair("sa-205 group",       TYPE_LMGROUP_SA205));
+    device_types.insert(make_pair("sa-305 group",       TYPE_LMGROUP_SA305));
+    device_types.insert(make_pair("sa-digital group",   TYPE_LMGROUP_SADIGITAL));
+
+    //  --- Load Management ---
+    device_types.insert(make_pair("ci customer",        TYPE_CI_CUSTOMER));
+    device_types.insert(make_pair("lm control area",    TYPE_LM_CONTROL_AREA));
+    device_types.insert(make_pair("lm curtail program", TYPE_LMPROGRAM_CURTAILMENT));
+    device_types.insert(make_pair("lm direct program",  TYPE_LMPROGRAM_DIRECT));
+    device_types.insert(make_pair("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE));
+    device_types.insert(make_pair("lm sep program",     TYPE_LMPROGRAM_DIRECT));
+    device_types.insert(make_pair("digi sep group",     TYPE_LMGROUP_DIGI_SEP));
+    device_types.insert(make_pair("emetcon group",      TYPE_LMGROUP_EMETCON));
+    device_types.insert(make_pair("expresscom group",   TYPE_LMGROUP_EXPRESSCOM));
+    device_types.insert(make_pair("integration group",  TYPE_LMGROUP_XML));
+    device_types.insert(make_pair("mct group",          TYPE_LMGROUP_MCT));
+    device_types.insert(make_pair("point group",        TYPE_LMGROUP_POINT));
+    device_types.insert(make_pair("ripple group",       TYPE_LMGROUP_RIPPLE));
+    device_types.insert(make_pair("versacom group",     TYPE_LMGROUP_VERSACOM));
+
+    //  --- System ---
+    device_types.insert(make_pair("macro group",        TYPE_MACRO));
+    device_types.insert(make_pair("script",             0));
+    device_types.insert(make_pair("simple",             0));
+    device_types.insert(make_pair("system",             TYPE_SYSTEM));
+    device_types.insert(make_pair("virtual system",     TYPE_VIRTUAL_SYSTEM));
+
+    //  --- Transmitters ---
+    device_types.insert(make_pair("integration",        TYPE_XML_XMIT));
+    device_types.insert(make_pair("lcu-415",            TYPE_LCU415));
+    device_types.insert(make_pair("lcu-eastriver",      TYPE_LCU415ER));
+    device_types.insert(make_pair("lcu-lg",             TYPE_LCU415LG));
+    device_types.insert(make_pair("lcu-t3026",          TYPE_LCUT3026));
+    device_types.insert(make_pair("rds terminal",       TYPE_RDS));
+    device_types.insert(make_pair("snpp terminal",      TYPE_SNPP));
+    device_types.insert(make_pair("tap terminal",       TYPE_TAPTERM));
+    device_types.insert(make_pair("tcu-5000",           TYPE_TCU5000));
+    device_types.insert(make_pair("tcu-5500",           TYPE_TCU5500));
+    device_types.insert(make_pair("tnpp terminal",      TYPE_TNPP));
+    device_types.insert(make_pair("wctp terminal",      TYPE_WCTP));
+
+    //  --- IEDs and electronic meters ---
+    device_types.insert(make_pair("alpha a1",           TYPE_ALPHA_A1));
+    device_types.insert(make_pair("alpha a3",           TYPE_ALPHA_A3));
+    device_types.insert(make_pair("alpha power plus",   TYPE_ALPHA_PPLUS));
+    device_types.insert(make_pair("davis weather",      TYPE_DAVIS));
+    device_types.insert(make_pair("dct-501",            TYPEDCT501));
+    device_types.insert(make_pair("dr-87",              TYPE_DR87));
+    device_types.insert(make_pair("focus",              TYPE_FOCUS));
+    device_types.insert(make_pair("fulcrum",            TYPE_FULCRUM));
+    device_types.insert(make_pair("ion-7330",           TYPE_ION7330));
+    device_types.insert(make_pair("ion-7700",           TYPE_ION7700));
+    device_types.insert(make_pair("ion-8300",           TYPE_ION8300));
+    device_types.insert(make_pair("kv",                 TYPE_KV2));
+    device_types.insert(make_pair("kv2",                TYPE_KV2));
+    device_types.insert(make_pair("landis-gyr s4",      TYPE_LGS4));
+    device_types.insert(make_pair("quantum",            TYPE_QUANTUM));
+    device_types.insert(make_pair("sentinel",           TYPE_SENTINEL));
+    device_types.insert(make_pair("sixnet",             TYPE_SIXNET));
+    device_types.insert(make_pair("transdata mark-v",   TYPE_TDMARKV));
+    device_types.insert(make_pair("vectron",            TYPE_VECTRON));
+
+    return device_types;
+}
+
+static const device_lookup_t device_lookups = init_device_lookups();
+
 INT resolveDeviceType(const string& _rwsTemp)
 {
-    INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
     in_place_trim(rwsTemp);
 
-    if(rwsTemp == "mct-410il" || rwsTemp == "mct-410cl" ||
-       rwsTemp == "mct-410fl" || rwsTemp == "mct-410gl")
-    {
-        nRet = TYPEMCT410;
-    }
-    else if(rwsTemp == "mct-420cl")
-    {
-        nRet = TYPEMCT420CL;
-    }
-    else if(rwsTemp == "mct-420cld")
-    {
-        nRet = TYPEMCT420CLD;
-    }
-    else if(rwsTemp == "mct-420fl")
-    {
-        nRet = TYPEMCT420FL;
-    }
-    else if(rwsTemp == "mct-420fld")
-    {
-        nRet = TYPEMCT420FLD;
-    }
-    else if(rwsTemp == "mct-470")
-    {
-        nRet = TYPEMCT470;
-    }
-    else if (rwsTemp == "mct-430a"  || rwsTemp == "mct-430a3"
-             || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
-    {
-        nRet = TYPEMCT430;
-    }
-    else if(rwsTemp == "lcr-3102")
-    {
-        nRet = TYPELCR3102;
-    }
-    else if(rwsTemp == "load tap changer")
-    {
-        nRet = TYPELTC;
-    }
-    else if(rwsTemp == "ccu-711")
-    {
-        nRet = TYPE_CCU711;
-    }
-    else if(rwsTemp == "ccu-721")
-    {
-        nRet = TYPE_CCU721;
-    }
-    else if(rwsTemp == "ccu-710a")
-    {
-        nRet = TYPE_CCU710;
-    }
-    else if(rwsTemp == "ccu-700")
-    {
-        nRet = TYPE_CCU700;
-    }
-    else if(rwsTemp == "repeater" ||
-            rwsTemp == "repeater 902" ||
-            rwsTemp == "repeater 921")
-    {
-        nRet = TYPE_REPEATER900;
-    }
-    else if(rwsTemp == "repeater 800" ||
-            rwsTemp == "repeater 801")
-    {
-        nRet = TYPE_REPEATER800;
-    }
-    else if(rwsTemp == "repeater 850")
-    {
-        nRet = TYPE_REPEATER850;
-    }
-    else if(rwsTemp == "dct-501")
-    {
-        nRet = TYPEDCT501;
-    }
-    else if(rwsTemp == "mct-210")
-    {
-        nRet = TYPEMCT210;
-    }
-    else if(rwsTemp == "mct-212")
-    {
-        nRet = TYPEMCT212;
-    }
-    else if(rwsTemp == "mct-213")
-    {
-        nRet = TYPEMCT213;
-    }
-    else if(rwsTemp == "mct-224")
-    {
-        nRet = TYPEMCT224;
-    }
-    else if(rwsTemp == "mct-226")
-    {
-        nRet = TYPEMCT226;
-    }
-    else if(rwsTemp == "mct-240")
-    {
-        nRet = TYPEMCT240;
-    }
-    else if(rwsTemp == "mct-242")
-    {
-        nRet = TYPEMCT242;
-    }
-    else if(rwsTemp == "mct-248")
-    {
-        nRet = TYPEMCT248;
-    }
-    else if(rwsTemp == "mct-250")
-    {
-        nRet = TYPEMCT250;
-    }
-    else if(rwsTemp == "mct-310")
-    {
-        nRet = TYPEMCT310;
-    }
-    else if(rwsTemp == "mct-310ct")
-    {
-        nRet = TYPEMCT310;
-    }
-    else if(rwsTemp == "mct-310idl")
-    {
-        nRet = TYPEMCT310IDL;
-    }
-    else if(rwsTemp == "mct-310id")
-    {
-        nRet = TYPEMCT310ID;
-    }
-    else if(rwsTemp == "mct-310il")
-    {
-        nRet = TYPEMCT310IL;
-    }
-    else if(rwsTemp == "mct-318")
-    {
-        nRet = TYPEMCT318;
-    }
-    else if(rwsTemp == "mct-318l")
-    {
-        nRet = TYPEMCT318L;
-    }
-    else if(rwsTemp == "mct-360")
-    {
-        nRet = TYPEMCT360;
-    }
-    else if(rwsTemp == "mct-370")
-    {
-        nRet = TYPEMCT370;
-    }
-    else if(rwsTemp == "lmt-2")
-    {
-        nRet = TYPELMT2;
-    }
-    else if(rwsTemp == "rfn-430a3")
-    {
-        nRet = TYPERFN430A3;
-    }
-    else if(rwsTemp == "rfn-430kv")
-    {
-        nRet = TYPERFN430KV;
-    }
-    else if(rwsTemp == "rfn-410fl")
-    {
-        nRet = TYPERFN410FL;
-    }
-    else if(rwsTemp == "rfn-410fx")
-    {
-        nRet = TYPERFN410FX;
-    }
-    else if(rwsTemp == "rfn-410fd")
-    {
-        nRet = TYPERFN410FD;
-    }
-    else if(rwsTemp == "rtu-ilex")
-    {
-        nRet = TYPE_ILEXRTU;
-    }
-    else if(rwsTemp == "rtu-welco")
-    {
-        nRet = TYPE_WELCORTU;
-    }
-    else if(rwsTemp == "rtu-ses92")
-    {
-        nRet = TYPE_SES92RTU;
-    }
-    else if(rwsTemp == "rtu-dnp")
-    {
-        nRet = TYPE_DNPRTU;
-    }
-    else if(rwsTemp == "rtu-dart")
-    {
-        nRet = TYPE_DARTRTU;
-    }
-    else if(rwsTemp == "rtu-lmi")
-    {
-        nRet = TYPE_SERIESVLMIRTU;
-    }
-    else if(rwsTemp == "rtu-modbus")
-    {
-        nRet = TYPE_MODBUS;
-    }
-    else if(rwsTemp == "ion-7330")
-    {
-        nRet = TYPE_ION7330;
-    }
-    else if(rwsTemp == "ion-7700")
-    {
-        nRet = TYPE_ION7700;
-    }
-    else if(rwsTemp == "ion-8300")
-    {
-        nRet = TYPE_ION8300;
-    }
-    else if(rwsTemp == "davis weather")
-    {
-        nRet = TYPE_DAVIS;
-    }
-    else if(rwsTemp == "lcu-415")
-    {
-        nRet = TYPE_LCU415;
-    }
-    else if(rwsTemp == "lcu-lg")
-    {
-        nRet = TYPE_LCU415LG;
-    }
-    else if(rwsTemp == "lcu-eastriver")
-    {
-        nRet = TYPE_LCU415ER;
-    }
-    else if(rwsTemp == "lcu-t3026")
-    {
-        nRet = TYPE_LCUT3026;
-    }
-    else if(rwsTemp == "tcu-5000")
-    {
-        nRet = TYPE_TCU5000;
-    }
-    else if(rwsTemp == "tcu-5500")
-    {
-        nRet = TYPE_TCU5500;
-    }
-    else if(rwsTemp == "transdata mark-v")
-    {
-        nRet = TYPE_TDMARKV;
-    }
-    else if(rwsTemp == "davis weather")
-    {
-        nRet = TYPE_DAVIS;
-    }
-    else if(rwsTemp == "alpha power plus")
-    {
-        nRet = TYPE_ALPHA_PPLUS;
-    }
-    else if(rwsTemp == "alpha a1")
-    {
-        nRet = TYPE_ALPHA_A1;
-    }
-    else if(rwsTemp == "fulcrum")
-    {
-        nRet = TYPE_FULCRUM;
-    }
-    else if(rwsTemp == "quantum")
-    {
-        nRet = TYPE_QUANTUM;
-    }
-    else if(rwsTemp == "vectron")
-    {
-        nRet = TYPE_VECTRON;
-    }
-    else if(rwsTemp == "landis-gyr s4")
-    {
-        nRet = TYPE_LGS4;
-    }
-    else if(rwsTemp == "dr-87")
-    {
-        nRet = TYPE_DR87;
-    }
-    else if(rwsTemp == "kv2" || rwsTemp == "kv")
-    {
-        nRet = TYPE_KV2;
-    }
-    else if(rwsTemp == "alpha a3")
-    {
-        nRet = TYPE_ALPHA_A3;
-    }
-    else if(rwsTemp == "sentinel")
-    {
-        nRet = TYPE_SENTINEL;
-    }
-    else if(rwsTemp == "focus")
-    {
-        nRet = TYPE_FOCUS;
-    }
-    else if(rwsTemp == "sixnet")
-    {
-        nRet = TYPE_SIXNET;
-    }
-    else if(rwsTemp == "emetcon group")
-    {
-        nRet = TYPE_LMGROUP_EMETCON;
-    }
-    else if(rwsTemp == "point group")
-    {
-        nRet = TYPE_LMGROUP_POINT;
-    }
-    else if(rwsTemp == "ripple group")
-    {
-        nRet = TYPE_LMGROUP_RIPPLE;
-    }
-    else if(rwsTemp == "versacom group")
-    {
-        nRet = TYPE_LMGROUP_VERSACOM;
-    }
-    else if(rwsTemp == "expresscom group")
-    {
-        nRet = TYPE_LMGROUP_EXPRESSCOM;
-    }
-    else if(rwsTemp == "integration group")
-    {
-        nRet = TYPE_LMGROUP_XML;
-    }
-    else if(rwsTemp == "digi sep group")
-    {
-        nRet = TYPE_LMGROUP_DIGI_SEP;
-    }
-    else if(rwsTemp == "mct group")
-    {
-        nRet = TYPE_LMGROUP_MCT;
-    }
-    else if(rwsTemp == "macro group")
-    {
-        nRet = TYPE_MACRO;
-    }
-    else if(rwsTemp == "cap bank")
-    {
-        nRet = TYPECAPBANK;
-    }
-    else if(rwsTemp == "cbc 6510")
-    {
-        nRet = TYPECBC6510;
-    }
-    else if(rwsTemp == "cbc 7010" || rwsTemp == "cbc 7011" || rwsTemp == "cbc 7012")
-    {
-        nRet = TYPECBC7010;
-    }
-    else if(rwsTemp == "cbc 7020" || rwsTemp == "cbc 7022" || rwsTemp == "cbc 7023" || rwsTemp == "cbc 7024" || rwsTemp == "cbc 7030")
-    {
-        nRet = TYPECBC7020;
-    }
-    else if (rwsTemp == "cbc dnp")
-    {
-        nRet = TYPECBCDNP;
-    }
-    else if(rwsTemp == "cbc versacom")
-    {
-        nRet = TYPEVERSACOMCBC;
-    }
-    else if(rwsTemp == "cbc expresscom")
-    {
-        nRet = TYPEEXPRESSCOMCBC;
-    }
-    else if(rwsTemp == "cbc fp-2800")
-    {
-        nRet = TYPEFISHERPCBC;
-    }
-    else if(rwsTemp == "tap terminal")
-    {
-        nRet = TYPE_TAPTERM;
-    }
-    else if(rwsTemp == "snpp terminal")
-    {
-        nRet = TYPE_SNPP;
-    }
-    else if(rwsTemp == "rds terminal")
-    {
-        nRet = TYPE_RDS;
-    }
-    else if(rwsTemp == "tnpp terminal")
-    {
-        nRet = TYPE_TNPP;
-    }
-    else if(rwsTemp == "page receiver")
-    {
-      nRet = TYPE_PAGING_RECEIVER;
-    }
-    else if(rwsTemp == "wctp terminal")
-    {
-        nRet = TYPE_WCTP;
-    }
-    else if(rwsTemp == "lm direct program" ||
-            rwsTemp == "lm sep program")
-    {
-        nRet = TYPE_LMPROGRAM_DIRECT;
-    }
-    else if(rwsTemp == "lm curtail program")
-    {
-        nRet = TYPE_LMPROGRAM_CURTAILMENT;
-    }
-    else if(rwsTemp == "lm control area")
-    {
-        nRet = TYPE_LM_CONTROL_AREA;
-    }
-    else if(rwsTemp == "ci customer")
-    {
-        nRet = TYPE_CI_CUSTOMER;
-    }
-    else if(rwsTemp == "lm energy exchange")
-    {
-        nRet = TYPE_LMPROGRAM_ENERGYEXCHANGE;
-    }
-    else if(rwsTemp == "system")
-    {
-        nRet = TYPE_SYSTEM;
-    }
-    else if(rwsTemp == "script")
-    {
-        nRet = 0;
-    }
-    else if(rwsTemp == "simple")
-    {
-        nRet = 0;
-    }
-    else if(rwsTemp == "mct broadcast")
-    {
-        nRet = TYPEMCTBCAST;
-    }
-    else if(rwsTemp == "golay group")
-    {
-        nRet = TYPE_LMGROUP_GOLAY;
-    }
-    else if(rwsTemp == "sa-digital group")
-    {
-        nRet = TYPE_LMGROUP_SADIGITAL;
-    }
-    else if(rwsTemp == "sa-105 group")
-    {
-        nRet = TYPE_LMGROUP_SA105;
-    }
-    else if(rwsTemp == "sa-205 group")
-    {
-        nRet = TYPE_LMGROUP_SA205;
-    }
-    else if(rwsTemp == "sa-305 group")
-    {
-        nRet = TYPE_LMGROUP_SA305;
-    }
-    else if(rwsTemp == "rtc")
-    {
-        nRet = TYPE_RTC;
-    }
-    else if(rwsTemp == "rtm")
-    {
-        nRet = TYPE_RTM;
-    }
-    else if(rwsTemp == "fmu")
-    {
-        nRet = TYPE_FMU;
-    }
-    else if(rwsTemp == "faulted circuit indicator")
-    {
-        nRet = TYPE_FCI;
-    }
-    else if(rwsTemp == "capacitor bank neutral monitor")
-    {
-        nRet = TYPE_NEUTRAL_MONITOR;
-    }
-    else if(rwsTemp == "virtual system")
-    {
-        nRet = TYPE_VIRTUAL_SYSTEM;
-    }
-    else if(rwsTemp == "integration")
-    {
-        nRet = TYPE_XML_XMIT;
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unsupported DEVICE type \"" << rwsTemp << "\" " << endl;
-        }
+    device_lookup_t::const_iterator itr = device_lookups.find(rwsTemp);
+
+    if( itr != device_lookups.end() )
+    {
+        return itr->second;
     }
 
-    return nRet;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Unsupported DEVICE type \"" << rwsTemp << "\" " << endl;
+    }
+
+    return 0;
 }
 
 

@@ -19,8 +19,6 @@
 #include <boost/shared_ptr.hpp>
 #include <set>
 
-using std::list;
-
 class CtiMessage;
 class CtiRequestMsg;
 class CtiRouteManager;
@@ -49,6 +47,9 @@ public:
     {
         PutConfigAssignForce = 0x00000001
     };
+
+    typedef std::list<OUTMESS *> OutMessageList;
+    typedef std::list<CtiMessage *> CtiMessageList;
 
 private:
 
@@ -167,23 +168,23 @@ public:
 
     /* Properly defined by the device types themselves... */
     virtual void deviceInitialization(list< CtiRequestMsg * > &request_list);
-    virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
-    virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
-    virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 12);
-    virtual INT  LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 6);
-    virtual INT  ResultDecode (INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    virtual INT  ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
+    virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
+    virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 12);
+    virtual INT  LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 6);
+    virtual INT  ResultDecode (INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT  ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     // This is a preprocessing method which calls ExecuteRequest.
-    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, const OUTMESS *OutTemplate = NULL);
+    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate = NULL);
 
     // This one is implemented in the child classes
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    virtual INT processTrxID( int trx, list< CtiMessage* >  &vgList );
-    virtual INT initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList );
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT processTrxID( int trx, CtiMessageList &vgList );
+    virtual INT initTrxID( int trx, CtiCommandParser &parse, CtiMessageList &vgList );
 
     void propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq );
-    virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage*>& retList);
+    virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
 
     BOOL              getLogOnNeeded() const;
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
@@ -201,7 +202,7 @@ public:
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 
-    INT checkForInhibitedDevice(list< CtiMessage* > &retList, const OUTMESS *OutMessage);
+    INT checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage);
 
     INT             getCommFailCount() const;
     CtiDeviceBase&  setCommFailCount(const INT i);
@@ -214,7 +215,7 @@ public:
     INT             getAttemptSuccessCount() const;
     CtiDeviceBase&  setAttemptSuccessCount(const INT i);
 
-    virtual INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     bool adjustCommCounts( bool &isCommFail, bool retry );
     bool isCommFailed() const;
 
