@@ -695,15 +695,15 @@ CtiCCCapBankPtr CtiCCSubstationBusStore::getCapBankByPaoId(int paoId)
     return bank;
 }
 
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
+CapBankList CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
 {
     CapControlType type = determineTypeById(paoId);
     return getCapBanksByPaoIdAndType(paoId,type);
 }
 
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapControlType type)
+CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapControlType type)
 {
-    std::vector<CtiCCCapBankPtr> banks;
+    CapBankList banks;
 
     switch (type)
     {
@@ -11145,7 +11145,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
 
 bool CtiCCSubstationBusStore::isAnyBankClosed(int paoId, CapControlType type)
 {
-    std::vector<CtiCCCapBankPtr> banks = getCapBanksByPaoIdAndType(paoId,type);
+    CapBankList banks = getCapBanksByPaoIdAndType(paoId,type);
 
     for each (CtiCCCapBankPtr bank in banks)
     {
@@ -11161,7 +11161,7 @@ bool CtiCCSubstationBusStore::isAnyBankClosed(int paoId, CapControlType type)
 
 bool CtiCCSubstationBusStore::isAnyBankOpen(int paoId, CapControlType type)
 {
-    std::vector<CtiCCCapBankPtr> banks = getCapBanksByPaoIdAndType(paoId,type);
+    CapBankList banks = getCapBanksByPaoIdAndType(paoId,type);
 
     for each (CtiCCCapBankPtr bank in banks)
     {

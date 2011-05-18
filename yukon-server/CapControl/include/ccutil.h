@@ -23,6 +23,7 @@ enum CapControlType
 };
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user);
 bool isQualityOk(unsigned quality);
 
 class MissingPointAttribute : public std::exception

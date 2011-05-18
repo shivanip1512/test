@@ -108,8 +108,6 @@ typedef std::map     < long, MaxKvarObject > CapBankIdToKvarMap;
 
 typedef std::multimap< long, long > PaoIdToPointIdMultiMap;
 
-typedef std::list<CtiCCCapBankPtr> CapBankList;
-
 class CtiCCSubstationBusStore : public PointDataListener
 {
 public:
@@ -486,8 +484,8 @@ public:
     CtiCCSubstationBus_vec getSubBusesByCapControlByIdAndType(int paoId, Cti::CapControl::CapControlType type);
 
     CtiCCCapBankPtr getCapBankByPaoId(int paoId);
-    std::vector<CtiCCCapBankPtr> getCapBanksByPaoId(int paoId);
-    std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, Cti::CapControl::CapControlType type);
+    CapBankList getCapBanksByPaoId(int paoId);
+    CapBankList getCapBanksByPaoIdAndType(int paoId, Cti::CapControl::CapControlType type);
     Cti::CapControl::CapControlType determineTypeById(int paoId);
 
     CapControlPointDataHandler& getPointDataHandler();

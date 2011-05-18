@@ -249,6 +249,7 @@ public:
     bool updatePointResponseDelta(CtiCCMonitorPoint* point);
     bool updatePointResponsePreOpValue(long pointId, double value);
 
+    bool isExpresscom();
 
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
@@ -411,3 +412,5 @@ private:
 };
 
 typedef CtiCCCapBank* CtiCCCapBankPtr;
+
+typedef std::list<CtiCCCapBankPtr> CapBankList;

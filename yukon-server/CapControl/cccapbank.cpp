@@ -1815,6 +1815,14 @@ bool CtiCCCapBank::updatePointResponsePreOpValue(long pointId, double value)
     return _pointResponseManager.updatePointResponsePreOpValue(pointId,value);
 }
 
+bool CtiCCCapBank::isExpresscom()
+{
+    std::string devType = getControlDeviceType();
+
+    return ( stringContainsIgnoreCase( devType, "cbc 701" ) ||
+             stringContainsIgnoreCase( devType, "cbc expresscom" ) ); 
+}
+
 /*---------------------------------------------------------------------------
     setControlStatus
 

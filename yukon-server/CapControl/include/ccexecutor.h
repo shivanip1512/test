@@ -102,6 +102,8 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void ControlAllCapBanks(LONG paoId, int control);
         void syncCbcAndCapBankStates();
 
+        void queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks);
+
         // Local Control Command Funtions
         void sendLocalControl();
         void enableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);

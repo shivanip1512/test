@@ -22,9 +22,15 @@ namespace CapControl    {
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString) 
 {
-
     CtiRequestMsg* reqMsg = new CtiRequestMsg(controllerId, commandString);
     reqMsg->setMessagePriority(_MSG_PRIORITY);
+    return reqMsg;
+};
+
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user) 
+{
+    CtiRequestMsg* reqMsg = createPorterRequestMsg(controllerId, commandString);
+    reqMsg->setUser(user);
     return reqMsg;
 };
 
