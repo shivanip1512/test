@@ -59,18 +59,21 @@ void CtiFDRPiNotify::handleNewPoints()
   }
   int32 count = _registerList.size();
   int32 initial_count = count;
-  PiPointId *piIdArray = &_registerList[0];
-  int err = pisn_evmestablish(&count, piIdArray);
-  if (err != 0 || count != initial_count)
+  if (count > 0) 
   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to register for "
-        << (initial_count - count) << " of " << initial_count
-        << " point notications from Pi, pisn_evmestablish returned "
-        << getPiErrorDescription(err, "pisn_evmestablish") << endl;
-  }
+	  PiPointId *piIdArray = &_registerList[0];
+	  int err = pisn_evmestablish(&count, piIdArray);
+	  if (err != 0 || count != initial_count)
+	  {
+		  CtiLockGuard<CtiLogger> doubt_guard( dout );
+		  logNow() << "Unable to register for "
+			<< (initial_count - count) << " of " << initial_count
+			<< " point notications from Pi, pisn_evmestablish returned "
+			<< getPiErrorDescription(err, "pisn_evmestablish") << endl;
+	  }
 
-  forceUpdateAllPoints();
+	  forceUpdateAllPoints();
+  }
 
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
   {
@@ -90,7 +93,7 @@ void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 
   PiPointId pid;
   int err = getPiPointIdFromTag(tagName,pid);
-  if (err == 0)
+  if (err != 0)
   {
     {
       std::string piError = getPiErrorDescription(err, "pipt_findpoint");
@@ -367,7 +370,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     {
       // remove local offset (might not be thread-safe)
       time_t tTime = timeArray[i];
-      time_t timeToSend = mktime(std::gmtime(&tTime) );
+      time_t timeToSend = mktime(CtiTime::gmtime_r(&tTime) );
 
       PiPointId thisPoint = piIdArray[i];
 
