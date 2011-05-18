@@ -2,7 +2,6 @@ package com.cannontech.web.stars.dr.operator.service.impl;
 
 import java.util.List;
 
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,13 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
+import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
@@ -50,6 +52,14 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	private ContactNotificationService contactNotificationService;
 	private ContactNotificationFormattingService contactNotificationFormattingService;
 	private OperatorAccountSearchDao operatorAccountSearchDao;
+	private AccountService accountService;
+	
+	@Override
+	public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator, OperatorGeneralUiExtras operatorGeneralUiExtras) {
+	    int accountId = accountService.addAccount(updatableAccount, operator, operatorGeneralUiExtras.getNotes(), operatorGeneralUiExtras.getAccountSiteNotes());
+	    setupEmailNotification(accountId, operatorGeneralUiExtras);
+	    return accountId;
+	}
 	
 	@Override
 	@Transactional
@@ -57,19 +67,12 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	
     	// get objects
     	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-    	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
     	AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
-    	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteAddress billingAddress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         
         // notifyOddsOfControl
-        if (emailNotif != null) {
-	    	boolean emailDisabled = !operatorGeneralUiExtras.isNotifyOddsForControl();
-	    	emailNotif.setDisableFlag(BooleanUtils.toString(emailDisabled, "Y", "N"));
-	    	contactNotificationDao.saveNotification(emailNotif);
-        }
+        setupEmailNotification(accountId, operatorGeneralUiExtras);
     	
     	// notes
     	customerAccount.setAccountNotes(operatorGeneralUiExtras.getNotes());
@@ -98,6 +101,16 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     		}
     	}
     }
+	
+	private void setupEmailNotification(int accountId, OperatorGeneralUiExtras extras) {
+	    LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+	    LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+	    if (emailNotif != null) {
+	        boolean emailDisabled = !extras.isNotifyOddsForControl();
+	        emailNotif.setDisableFlag(BooleanUtils.toString(emailDisabled, "Y", "N"));
+	        contactNotificationDao.saveNotification(emailNotif);
+	    }
+	}
 	
 	private void copyAddress(LiteAddress from, LiteAddress to) {
 		
@@ -380,4 +393,9 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	public void setOperatorAccountSearchDao(OperatorAccountSearchDao operatorAccountSearchDao) {
 		this.operatorAccountSearchDao = operatorAccountSearchDao;
 	}
+
+	@Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 }
