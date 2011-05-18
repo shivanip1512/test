@@ -19,7 +19,7 @@ int DeviceConfigurationLoadProfileData::getLastIntervalDemandRate() const
 {
     long demand = _deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
 
-    return demand;
+    return demand * SecondsPerMinute;
 }
 
 int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
