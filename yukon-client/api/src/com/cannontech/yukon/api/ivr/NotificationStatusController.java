@@ -22,16 +22,42 @@ public class NotificationStatusController {
 
     /**
      * This method should be invoked after the call was dialed.
-     * @param callToken
-     * @param success
      */
     @RequestMapping(method = RequestMethod.POST)
-    public void callComplete(String callToken, boolean success) {
-        notifClientConnection.sendCallEvent(callToken, success ? NotifCallEvent.CONFIRMED : NotifCallEvent.UNCONFIRMED);
+    public void callComplete(String callToken, boolean success, Writer response) throws IOException {
+        log.debug("received callComplete for " + callToken + " with success=" + success);
+        try {
+            Validate.notEmpty(callToken, "callToken must not be null");
+            notifClientConnection.sendCallEvent(callToken, success ? NotifCallEvent.CONFIRMED : NotifCallEvent.UNCONFIRMED);
+        } catch (Exception e) {
+            response.write("failure: " + e.toString());
+            log.warn("unable to handle callComplete", e);
+            return;
+        }
+        response.write("success");
+    }
+    
+    /**
+     * This method should be invoked once the line is clear and a Yukon can initiate a new
+     * call.
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public void callEnd(String callToken, boolean failure, Writer response) throws IOException {
+        log.debug("received callEnd for " + callToken + " with failure=" + failure);
+        try {
+            Validate.notEmpty(callToken, "callToken must not be null");
+            notifClientConnection.sendCallEvent(callToken, failure ? NotifCallEvent.FAILURE : NotifCallEvent.DISCONNECT);
+        } catch (Exception e) {
+            response.write("failure: " + e.toString());
+            log.warn("unable to handle callEnd", e);
+            return;
+        }
+        response.write("success");
     }
     
     @RequestMapping(method = RequestMethod.POST)
     public void callDisconnect(String yukonCallToken, Writer response) throws IOException {
+        log.debug("received callComplete for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
         notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.DISCONNECT);
         response.write("exitEvent\n");
@@ -39,6 +65,7 @@ public class NotificationStatusController {
     
     @RequestMapping(method = RequestMethod.POST)
     public void callFailed(String yukonCallToken, Writer response) throws IOException {
+        log.debug("received callComplete for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
         notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.FAILURE);
         response.write("exitEvent\n");
