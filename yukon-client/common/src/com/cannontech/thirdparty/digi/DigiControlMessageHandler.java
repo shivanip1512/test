@@ -32,7 +32,6 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     
     private IServerConnection dispatchConnection;
     private AttributeService attributeService;
-    private DynamicDataSource dynamicDataSource;
     private ZigbeeWebService zigbeeWebService;
     private NextValueHelper nextValueHelper;
     private DigiControlEventDao digiControlEventDao;
@@ -106,7 +105,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private ControlHistoryMessage buildControlHistoryMessage(int eventId, SepControlMessage message, Date date) {
         ControlHistoryMessage chMessage = buildCommonControlHistoryMessage(eventId,message.getGroupId(),date);
         
-        chMessage.setControlDuration(message.getControlMinutes());
+        // For this message, duration is in seconds.
+        chMessage.setControlDuration(message.getControlMinutes() * 60);
         
         int standardCycle = message.getStandardCyclePercent();
         int averageCycle = Math.abs(message.getAverageCyclePercent());
@@ -124,12 +124,14 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             chMessage.setReductionRatio(100);
         }
         
-        //Distinguish between activate or restore  "Y" or "N"
+        //Shed = T, Restore = M, based on existing porter code
         if (message.getControlMinutes() > 0) {
-            chMessage.setActiveRestore("Y");
+            chMessage.setActiveRestore("T");
+            chMessage.setRawState(1);
         }
         else {
-            chMessage.setActiveRestore("N");
+            chMessage.setActiveRestore("M");
+            chMessage.setRawState(0);
         }
         
         chMessage.setReductionValue(0.0);
@@ -140,13 +142,11 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private ControlHistoryMessage buildCommonControlHistoryMessage(int eventId, int groupId, Date date) {
         PaoIdentifier paoIdentifier = paoDao.getYukonPao(groupId).getPaoIdentifier();
         LitePoint point = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.LM_GROUP_STATUS);
-        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(point.getLiteID());
         
         ControlHistoryMessage chMessage = new ControlHistoryMessage();
         
         chMessage.setPaoId(groupId);
         chMessage.setPointId(point.getLiteID());
-        chMessage.setRawState((int)pointValue.getValue());
 
         chMessage.setStartTime(date);
         chMessage.setControlType("Digi Control");
@@ -172,11 +172,6 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
     }
     
     @Autowired
