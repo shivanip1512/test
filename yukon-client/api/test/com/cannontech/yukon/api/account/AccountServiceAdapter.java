@@ -58,4 +58,11 @@ public class AccountServiceAdapter implements AccountService {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
+    @Override
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator,
+                          String customerNotes, String accountSiteNotes)
+            throws AccountNumberUnavailableException, UserNameUnavailableException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
 }
