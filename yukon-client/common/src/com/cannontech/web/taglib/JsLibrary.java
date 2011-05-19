@@ -28,7 +28,9 @@ public enum JsLibrary {
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
     
     // --DEPRECATED VERSIONS --//
-    PROTOTYPE_150("/JavaScript/prototype150.js");
+    PROTOTYPE_150("/JavaScript/prototype150.js"),
+    SCRIPTACULOUS_161("/JavaScript/lib/scriptaculous/1.6.1/scriptaculous.js"),
+    SCRIPTACULOUS_EFFECTS_161("/JavaScript/lib/scriptaculous/1.6.1/effects.js");
     //-- END DEPRECATED VERSIONS --//
     
     private String path = "";  //path to library

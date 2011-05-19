@@ -21,7 +21,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             "AnchorPosition.js",
             "PopupWindow.js", 
             "prototype150.js",
-            "scriptaculous/scriptaculous.js",
+            "lib/scriptaculous/1.6.1/scriptaculous.js",
             "cc.js",
             "cconelinepopup.js",
             "GreyBox/AmiJS.js",

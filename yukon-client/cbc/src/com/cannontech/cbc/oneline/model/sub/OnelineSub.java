@@ -211,7 +211,8 @@ public class OnelineSub extends OnelineObject {
         return OnelineSub.NAME_PREFIX + getPaoId();
     }
     
-    public void setUser(final YukonUserContext userContext) {
+    @Override
+    public final void setYukonUserContext(final YukonUserContext userContext) {
         this.userContext = userContext;
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
         commandsFlag = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, userContext.getYukonUser());
