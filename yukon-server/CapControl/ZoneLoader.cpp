@@ -22,6 +22,7 @@ ZoneManager::ZoneMap ZoneDBLoader::load(const long Id)
     loadCore(Id, loaded);
     loadBankParameters(Id, loaded);
     loadPointParameters(Id, loaded);
+    loadRegulatorParameters(Id, loaded);
 
     return loaded;
 }
@@ -29,7 +30,7 @@ ZoneManager::ZoneMap ZoneDBLoader::load(const long Id)
 
 void ZoneDBLoader::loadCore(const long Id, ZoneManager::ZoneMap &zones)
 {
-    static const std::string sql =   "SELECT ZoneId, ZoneName, RegulatorId, SubstationBusId, ParentId FROM Zone";
+    static const std::string sql =   "SELECT ZoneId, ZoneName, SubstationBusId, ParentId, ZoneType FROM Zone";
     static const std::string where = " WHERE ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
@@ -60,14 +61,14 @@ void ZoneDBLoader::loadCore(const long Id, ZoneManager::ZoneMap &zones)
     {
         long Id;
         long parentId;
-        long regulatorId;
         long subbusId;
         std::string name;
+        std::string type;
 
         rdr["ZoneId"]           >> Id;
         rdr["ZoneName"]         >> name;
-        rdr["RegulatorId"]      >> regulatorId;
         rdr["SubstationBusId"]  >> subbusId;
+        rdr["ZoneType"]         >> type;
 
         parentId = Id;      // zone has no parent --> Id == parentId
 
@@ -76,7 +77,7 @@ void ZoneDBLoader::loadCore(const long Id, ZoneManager::ZoneMap &zones)
             rdr["ParentId"] >> parentId;
         }
   
-        ZoneManager::SharedPtr zone = boost::make_shared<ZoneManager::SharedPtr::element_type>( Id, parentId, regulatorId, subbusId, name );
+        ZoneManager::SharedPtr zone = boost::make_shared<ZoneManager::SharedPtr::element_type>( Id, parentId, subbusId, name, type );
               
         if ( zone && rdr.isValid() )            // reader is ~still~ valid
         {
@@ -181,6 +182,62 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
             {
                 zone->second->addPointId(Id);
             }
+        }
+    }
+}
+
+
+void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &zones)
+{
+
+    static const std::string sql =   "SELECT RegulatorId, ZoneId, Phase FROM ZoneRegulator";
+    static const std::string where = " WHERE ZoneId = ?";
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection);
+
+    if( Id >= 0 )
+    {
+        rdr.setCommandText(sql + where);
+        rdr << Id;
+    }
+    else
+    {
+        rdr.setCommandText(sql);
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        std::string loggedSQLstring = rdr.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
+        }
+    }
+
+    while ( rdr() )
+    {
+        long Id;
+
+        rdr["ZoneId"] >> Id;
+
+        ZoneManager::ZoneMap::iterator zone = zones.find(Id);
+
+        if ( zone != zones.end() )
+        {
+            long        regulatorId;
+            std::string phase("X");         // 'X' will be the designator for a gang-operated regulator (all phases)
+
+            rdr["RegulatorId"] >> regulatorId;
+
+            if ( ! rdr["Phase"].isNull() )
+            {
+                rdr["Phase"] >> phase;
+            }
+
+            zone->second->addRegulatorId( phase[0], regulatorId );
         }
     }
 }

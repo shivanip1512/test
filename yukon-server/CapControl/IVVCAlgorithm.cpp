@@ -635,8 +635,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if ( regulatorId > 0 )
                         {
-                            CtiCCExecutorFactory::createExecutor(
-                                new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
+//                            CtiCCExecutorFactory::createExecutor(
+  //                              new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -654,8 +654,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if ( regulatorId > 0 )
                         {
-                            CtiCCExecutorFactory::createExecutor(
-                                new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
+//                            CtiCCExecutorFactory::createExecutor(
+  //                              new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -805,8 +805,8 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
             if ( sendScan )
             {
-                CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN,
-                                                                        zone->getRegulatorId() ) )->execute();
+//                CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN,
+  //                                                                      zone->getRegulatorId() ) )->execute();
             }
 
             // 2-way CBCs
@@ -986,8 +986,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
         long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
         if (regulatorID > 0)
         {
-            CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE,
-                                                                    regulatorID ) )->execute();
+//            CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE,
+  //                                                                  regulatorID ) )->execute();
         }
     }
 
@@ -1645,8 +1645,8 @@ void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr
             {
                 if ( isVoltageRegulatorInRemoteMode(regulatorID) )
                 {
-                    CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
-                                                                            regulatorID ) )->execute();
+//                    CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
+  //                                                                          regulatorID ) )->execute();
                 }
             }
         }

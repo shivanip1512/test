@@ -4,6 +4,12 @@
 #include "VoltageRegulator.h"
 #include "ccutil.h"
 
+#include "logger.h"
+
+#include "msg_signal.h"
+#include "msg_pcrequest.h"
+#include "Capcontroller.h"
+
 
 namespace Cti           {
 namespace CapControl    {
@@ -20,19 +26,27 @@ VoltageRegulator::VoltageRegulator()
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
-    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
+    _keepAliveConfig(0),
+    _keepAliveTimer(0),
+    _nextKeepAliveSendTime(CtiTime(pos_infin))
 {
     // empty...
 }
+
 
 VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     : CapControlPao(rdr),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
-    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
+    _keepAliveConfig(0),
+    _keepAliveTimer(0),
+    _nextKeepAliveSendTime(CtiTime(pos_infin))
 {
-    // empty...
+    rdr["KeepAliveTimer"]   >> _keepAliveTimer;
+    rdr["KeepAliveConfig"]  >> _keepAliveConfig;
 }
 
 
@@ -41,7 +55,10 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
-    _lastMissingAttributeComplainTime(CtiTime(neg_infin))
+    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
+    _keepAliveConfig(0),
+    _keepAliveTimer(0),
+    _nextKeepAliveSendTime(CtiTime(pos_infin))
 {
     operator=(toCopy);
 }
@@ -64,6 +81,10 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
         _pointValues = rhs._pointValues;
 
         _lastMissingAttributeComplainTime = rhs._lastMissingAttributeComplainTime;
+
+        _keepAliveConfig        = rhs._keepAliveConfig;
+        _keepAliveTimer         = rhs._keepAliveTimer;
+        _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
     }
 
     return *this;
@@ -75,7 +96,7 @@ void VoltageRegulator::saveGuts(RWvostream& ostrm) const
     RWCollectable::saveGuts(ostrm);
     CapControlPao::saveGuts(ostrm);
 
-    ostrm << 0//parentId Must be here for clients...
+    ostrm << 0                      //parentId Must be here for clients...
           << _lastTapOperation
           << _lastTapOperationTime;
 }
@@ -101,7 +122,7 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
 }
 
 
-LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute) 
+LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute)
 {
     AttributeMap::const_iterator iter = _attributes.find(attribute);
 
@@ -111,18 +132,6 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
     }
 
     return iter->second;
-}
-
-
-void VoltageRegulator::setOperatingMode(const OperatingMode & mode)
-{
-    _mode = mode;
-}
-
-
-VoltageRegulator::OperatingMode VoltageRegulator::getOperatingMode() const
-{
-    return _mode;
 }
 
 
@@ -160,11 +169,15 @@ void VoltageRegulator::loadPointAttributes(AttributeService * service, const Poi
         _attributes.insert( std::make_pair( attribute, point ) );
     }
 }
+
+
 CtiTime VoltageRegulator::updateMissingAttributeComplainTime()
 {
     _lastMissingAttributeComplainTime = CtiTime();
     return _lastMissingAttributeComplainTime;
 }
+
+
 bool VoltageRegulator::isTimeForMissingAttributeComplain(CtiTime time)
 {
     if ( _lastMissingAttributeComplainTime + 300 < time )
@@ -173,6 +186,128 @@ bool VoltageRegulator::isTimeForMissingAttributeComplain(CtiTime time)
         return true;
     }
     return false;
+}
+
+
+void VoltageRegulator::setKeepAliveConfig(const long value)
+{
+    _keepAliveConfig = value;
+}
+
+
+void VoltageRegulator::executeTapUpOperation()
+{
+    notifyTapOperation( VoltageRegulator::RaiseTap );
+
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), "Raise Tap Position" );
+}
+
+
+void VoltageRegulator::executeTapDownOperation()
+{
+    notifyTapOperation( VoltageRegulator::LowerTap );
+
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), "Lower Tap Position" );
+}
+
+
+void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
+{
+    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), "Integrity Scan" ) );
+
+    std::string commandString = "scan integrity " + CtiNumStr( point.getPaoId() );
+
+    CtiRequestMsg *request = createPorterRequestMsg( point.getPointId(), commandString );
+    request->setSOE(5);
+
+    CtiCapController::getInstance()->manualCapBankControl( request );
+}
+
+
+void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
+                                                   const std::string & textDescription,
+                                                   const bool recordEvent )
+{
+    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), textDescription ) );
+
+    if ( recordEvent )
+    {
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId() ) );
+    }
+
+    std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
+
+    CtiRequestMsg * request = createPorterRequestMsg( point.getPaoId(), commandString );
+    request->setSOE(5);
+
+    CtiCapController::getInstance()->manualCapBankControl( request );
+}
+
+
+void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
+                                                   const int keepAliveValue,
+                                                   const std::string & textDescription)
+{
+    CtiSignalMsg * signalMsg = createDispatchMessage( point.getPointId(), textDescription );
+
+    signalMsg->setPointValue(keepAliveValue);
+
+    CtiCapController::getInstance()->sendMessageToDispatch( signalMsg );
+}
+
+
+void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const int keepAliveValue )
+{
+    long pointOffset = point.getPointOffset() % 10000;
+
+    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointOffset(), "Keep Alive" ) );
+
+    std::string commandString = "putvalue analog " + CtiNumStr( pointOffset ) + " " + CtiNumStr( keepAliveValue );
+
+    CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
+    request->setSOE(5);
+
+    CtiCapController::getInstance()->manualCapBankControl( request );
+
+    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
+    {
+        _nextKeepAliveSendTime += _keepAliveTimer;
+    }
+}
+
+
+CtiSignalMsg * VoltageRegulator::createDispatchMessage( const long ID, const std::string & text )
+{
+    return new CtiSignalMsg( ID,
+                             0,
+                             text,
+                             std::string("Voltage Regulator Name: " + getPaoName()),
+                             CapControlLogType,
+                             SignalEvent,
+                             std::string("cap control") );
+}
+
+
+/*
+    Return the operating mode based on the auto/remote point
+*/
+VoltageRegulator::OperatingMode VoltageRegulator::getOperatingMode()
+{
+    double    value = -1.0;
+    LitePoint point = getPointByAttribute( PointAttribute::AutoRemoteControl );
+
+    if ( getPointValue( point.getPointId(), value ) )
+    {        
+        return ( value == 1.0 ) ? RemoteMode : LocalMode;
+    }
+
+    return UnknownMode;
+}
+
+
+bool VoltageRegulator::isTimeToSendKeepAlive()
+{
+    return ( ( _keepAliveTimer != 0 ) && ( CtiTime::now() >= _nextKeepAliveSendTime ) );
 }
 
 }

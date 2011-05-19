@@ -4,6 +4,8 @@
 #include "logger.h"
 #include "GangOperatedVoltageRegulator.h"
 #include "ccutil.h"
+#include "capcontroller.h"
+
 
 
 namespace Cti           {
@@ -12,10 +14,22 @@ namespace CapControl    {
 RWDEFINE_COLLECTABLE( GangOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
 
 
+const PointAttribute GangOperatedVoltageRegulator::attributes[] =
+{
+    PointAttribute::VoltageY,
+    PointAttribute::TapDown,
+    PointAttribute::TapUp,
+    PointAttribute::TapPosition,
+    PointAttribute::AutoRemoteControl,
+    PointAttribute::KeepAlive
+};
+
+
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator()
     : VoltageRegulator(),
-    _autoRemote(false),
-    _recentOperation(false)
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false)
 {
     // empty...
 }
@@ -23,8 +37,9 @@ GangOperatedVoltageRegulator::GangOperatedVoltageRegulator()
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(Cti::RowReader & rdr)
     : VoltageRegulator(rdr),
-    _autoRemote(false),
-    _recentOperation(false)
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false)
 {
     // empty...
 }
@@ -32,8 +47,9 @@ GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(Cti::RowReader & rdr)
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(const GangOperatedVoltageRegulator & toCopy)
     : VoltageRegulator(),
-    _autoRemote(false),
-    _recentOperation(false)
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false)
 {
     operator=(toCopy);
 }
@@ -45,8 +61,10 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
     {
         VoltageRegulator::operator=(rhs);
 
-        _recentOperation = rhs._recentOperation;
-        _autoRemote = rhs._autoRemote;
+        _recentTapOperation = rhs._recentTapOperation;
+
+        _lastOperatingMode          = rhs._lastOperatingMode;
+        _lastCommandedOperatingMode = rhs._lastCommandedOperatingMode;
     }
 
     return *this;
@@ -57,24 +75,15 @@ void GangOperatedVoltageRegulator::saveGuts(RWvostream & ostrm) const
 {
     VoltageRegulator::saveGuts(ostrm);
 
-    ostrm << _recentOperation
-          << _autoRemote
-          << getOperatingMode();
+    ostrm
+        << _recentTapOperation
+        << _lastOperatingMode
+        << _lastCommandedOperatingMode;
 }
 
 
 void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
-    const PointAttribute attributes[] =
-    {
-        PointAttribute::Voltage,
-        PointAttribute::TapDown,
-        PointAttribute::TapUp,
-        PointAttribute::TapPosition,
-        PointAttribute::AutoRemoteControl,
-        PointAttribute::KeepAlive
-    };
-
     for each ( const PointAttribute attribute in attributes )
     {
         loadPointAttributes(service, attribute);
@@ -84,44 +93,20 @@ void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 
 void GangOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
-    CtiTime now;
+    bool recentOperation = ( ( _lastTapOperationTime + 30 ) > CtiTime() );
 
-    bool recentOperation = false;
-
-    if ((_lastTapOperationTime + 30) > now)
+    if (_recentTapOperation != recentOperation)
     {
-        recentOperation = true;
-    }
-
-    if (_recentOperation != recentOperation)
-    {
-        _recentOperation = recentOperation;
+        _recentTapOperation = recentOperation;
         setUpdated(true);
     }
 
-    try
-    {
-        bool   autoRemote = false;
-        double pointValue = 0.0;
+    OperatingMode currentMode = getOperatingMode();
 
-        if ( _pointValues.getPointValue( getPointByAttribute(PointAttribute::AutoRemoteControl).getPointId(), pointValue ) )
-        {
-            autoRemote = (pointValue == 0.0);
-        }
-
-        if (_autoRemote != autoRemote)
-        {
-            _autoRemote = autoRemote;
-            setUpdated(true);
-        }
-    }
-    catch ( const MissingPointAttribute & error )
+    if (_lastOperatingMode != currentMode)
     {
-        if (error.complain())
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << error.what() << std::endl;
-        }
+        _lastOperatingMode = currentMode;
+        setUpdated(true);
     }
 }
 
@@ -141,6 +126,47 @@ const VoltageRegulator::Type GangOperatedVoltageRegulator::getType() const
 
     return VoltageRegulator::GangOperatedVoltageRegulatorType;
 }
+
+
+void GangOperatedVoltageRegulator::executeIntegrityScan()
+{
+    // Scan Downside voltage only
+
+    executeIntegrityScanHelper( getPointByAttribute( PointAttribute::VoltageY ) );
+}
+
+
+void GangOperatedVoltageRegulator::executeEnableKeepAlive()
+{
+    executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
+}
+
+
+void GangOperatedVoltageRegulator::executeDisableKeepAlive()
+{
+    executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0);
+}
+
+
+void GangOperatedVoltageRegulator::executeEnableRemoteControl()
+{
+    _lastCommandedOperatingMode = RemoteMode;
+
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control" );
+
+    executeEnableKeepAlive();
+}
+
+
+void GangOperatedVoltageRegulator::executeDisableRemoteControl()
+{
+    _lastCommandedOperatingMode = LocalMode;
+
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0, "Disable Remote Control" );
+
+    executeDisableKeepAlive();
+}
+
 
 }
 }

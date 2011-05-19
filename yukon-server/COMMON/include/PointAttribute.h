@@ -20,6 +20,11 @@ class IM_EX_CTIBASE PointAttribute
             TapPositionAttribute,
             KeepAliveAttribute,
 
+            VoltageXAttribute,
+            VoltageYAttribute,
+            TerminateAttribute,
+            AutoBlockEnableAttribute,
+
             CbcVoltageAttribute,
             HighVoltageAttribute,
             LowVoltageAttribute,
@@ -77,6 +82,11 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute AutoRemoteControl;
         static const PointAttribute TapPosition;
         static const PointAttribute KeepAlive;
+
+        static const PointAttribute VoltageX;
+        static const PointAttribute VoltageY;
+        static const PointAttribute Terminate;
+        static const PointAttribute AutoBlockEnable;
 
         static const PointAttribute CbcVoltage;
         static const PointAttribute HighVoltage;

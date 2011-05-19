@@ -8,7 +8,8 @@
 namespace Cti           {
 namespace CapControl    {
 
-const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1, -1, -1, -1, "(none)" ) );
+//const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1, -1, -1, -1, "(none)" ) );
+const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1, -1, -1, "(none)" ) );
 
 
 ZoneManager::ZoneManager( std::auto_ptr<ZoneLoader> loader )

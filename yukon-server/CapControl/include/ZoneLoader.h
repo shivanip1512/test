@@ -41,6 +41,7 @@ private:
 
     void loadBankParameters(const long Id, ZoneManager::ZoneMap &zones);
     void loadPointParameters(const long Id, ZoneManager::ZoneMap &zones);
+    void loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &zones);
 };
 
 }   // namespace Cti

@@ -7,6 +7,7 @@
 #include "database_reader.h"
 #include "VoltageRegulatorLoader.h"
 #include "GangOperatedVoltageRegulator.h"
+#include "PhaseOperatedVoltageRegulator.h"
 
 #include <string>
 
@@ -28,10 +29,12 @@ VoltageRegulatorManager::VoltageRegulatorMap VoltageRegulatorDBLoader::load(cons
 
 void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::VoltageRegulatorMap &voltageRegulators)
 {
-    static const std::string sql        = "SELECT PAObjectID, Category, PAOClass, PAOName, Type, Description, DisableFlag"
-                                          " FROM YukonPAObject"
-                                          " WHERE Type IN";
-    static const std::string and_clause = " AND PAObjectID = ?";
+    static const std::string sql = "SELECT Y.PAObjectID, Y.Category, Y.PAOClass, Y.PAOName, Y.Type, Y.Description,"
+                                   " Y.DisableFlag, R.KeepAliveTimer, R.KeepAliveConfig"
+                                   " FROM YukonPAObject Y, Regulator R"
+                                   " WHERE Y.PAObjectID = R.RegulatorId AND Type IN";
+
+    static const std::string and_clause = " AND Y.PAObjectID = ?";
 
     const std::string inClause = " ('"  + VoltageRegulator::LoadTapChanger +
                                  "', '" + VoltageRegulator::GangOperatedVoltageRegulator + 
@@ -78,6 +81,10 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
                  regulatorType == VoltageRegulator::GangOperatedVoltageRegulator )
             {
                 regulator.reset( new GangOperatedVoltageRegulator(rdr) );
+            }
+            else if ( regulatorType == VoltageRegulator::PhaseOperatedVoltageRegulator )
+            {
+                regulator.reset( new PhaseOperatedVoltageRegulator(rdr) );
             }
             else
             {

@@ -119,7 +119,6 @@ CtiCapController::~CtiCapController()
     _pilConnection = NULL;
     if( _instance != NULL )
     {
-        delete _instance;
         _instance = NULL;
     }
 }
@@ -4326,6 +4325,11 @@ CtiPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
 CtiPCPtrQueue< RWCollectable > &CtiCapController::getCCEventMsgQueueHandle()
 {
     return _ccEventMsgQueue;
+}
+
+void CtiCapController::sendEventLogMessage(CtiMessage* message)
+{
+    getCCEventMsgQueueHandle().write(message);
 }
 
 /*

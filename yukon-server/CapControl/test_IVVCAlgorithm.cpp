@@ -148,37 +148,44 @@ private:
         {
             case 101:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 11, 35, "The Root Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 11, 35, "The Root Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 35, "The Root Zone" ) );
                 break;
             }
             case 103:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 22, 35, "The Left Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 22, 35, "The Left Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 35, "The Left Zone" ) );
                 break;
             }
             case 104:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 44, 35, "The Left Right Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 44, 35, "The Left Right Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 35, "The Left Right Zone" ) );
                 break;
             }
             case 106:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 66, 35, "The Right Left Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 66, 35, "The Right Left Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 35, "The Right Left Zone" ) );
                 break;
             }
             case 107:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 33, 35, "The Right Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 33, 35, "The Right Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 35, "The Right Zone" ) );
                 break;
             }
             case 108:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 77, 35, "The Right Right Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 77, 35, "The Right Right Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 35, "The Right Right Zone" ) );
                 break;
             }
             case 109:
             {
-                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 55, 35, "The Left Left Zone" ) );
+//                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 55, 35, "The Left Left Zone" ) );
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 35, "The Left Left Zone" ) );
                 break;
             }
 

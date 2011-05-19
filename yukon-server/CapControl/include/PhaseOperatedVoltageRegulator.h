@@ -9,17 +9,17 @@
 namespace Cti           {
 namespace CapControl    {
 
-class GangOperatedVoltageRegulator : public VoltageRegulator
+class PhaseOperatedVoltageRegulator : public VoltageRegulator
 {
 public:
 
-    RWDECLARE_COLLECTABLE( GangOperatedVoltageRegulator )
+    RWDECLARE_COLLECTABLE( PhaseOperatedVoltageRegulator )
 
-    GangOperatedVoltageRegulator();
-    GangOperatedVoltageRegulator(Cti::RowReader & rdr);
-    GangOperatedVoltageRegulator(const GangOperatedVoltageRegulator & toCopy);
+    PhaseOperatedVoltageRegulator();
+    PhaseOperatedVoltageRegulator(Cti::RowReader & rdr);
+    PhaseOperatedVoltageRegulator(const PhaseOperatedVoltageRegulator & toCopy);
 
-    GangOperatedVoltageRegulator & operator=(const GangOperatedVoltageRegulator & rhs);
+    PhaseOperatedVoltageRegulator & operator=(const PhaseOperatedVoltageRegulator & rhs);
 
     virtual void saveGuts(RWvostream & ostrm) const;
 

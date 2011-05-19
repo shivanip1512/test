@@ -8,14 +8,14 @@ namespace CapControl    {
 
 Zone::Zone( const long Id,
             const long parentId,
-            const long regulatorId,
             const long subbusId,
-            const std::string & name ) :
+            const std::string & name, 
+            const std::string & type) :
     _Id(Id),
     _parentId(parentId),
-    _regulatorId(regulatorId),
     _subbusId(subbusId),
-    _name(name)
+    _name(name),
+    _type(type)
 {
     // empty!
 }
@@ -59,7 +59,7 @@ long Zone::getParentId() const
 
 long Zone::getRegulatorId() const
 {
-    return _regulatorId;
+    return -1;      // jmoc -- fix me!?!??!?!?
 }
 
 
@@ -118,6 +118,13 @@ void Zone::addPointId( const long Id )
 {
     _voltagePoints.insert(Id);
 }
+
+
+void Zone::addRegulatorId( const char Phase, const long Id )
+{
+    _regulatorIds.insert(  std::make_pair(Phase, Id) );
+}
+
 
 }   // namespace Cti
 }   // namespace CapControl

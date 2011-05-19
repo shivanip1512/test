@@ -15,13 +15,14 @@ class Zone : private boost::noncopyable
 
 public:
 
-    typedef std::set<long>  IdSet;
+    typedef std::set<long>          IdSet;
+    typedef std::map<char, long>    RegulatorIdMap;
 
     Zone( const long Id,
           const long parentId,
-          const long regulatorId,
           const long subbusId,
-          const std::string & name );
+          const std::string & name,
+          const std::string & type = std::string("GANG_OPERATED") );
 
     ~Zone();
 
@@ -33,7 +34,9 @@ public:
 
     long getId() const;
     long getParentId() const;
+
     long getRegulatorId() const;
+
     long getSubbusId() const;
     std::string getName() const;
 
@@ -43,6 +46,8 @@ public:
     IdSet getPointIds() const;
 
     // Mutators
+
+    void addRegulatorId( const char Phase, const long Id );
 
     void addChildId( const long Id );
     void clearChildIds();
@@ -54,10 +59,13 @@ private:
 
     long _Id;
     long _parentId;
-    long _regulatorId;
+
+    RegulatorIdMap _regulatorIds;
+
     long _subbusId;
 
     std::string _name;
+    std::string _type;
 
     IdSet _childIds;
 

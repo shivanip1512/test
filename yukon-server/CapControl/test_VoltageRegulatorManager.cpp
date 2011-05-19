@@ -75,7 +75,7 @@ private:
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapDown ),
                                       LitePoint(342, StatusPointType, "Tap Down", 0, 101 ) ) );
 
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::Voltage ),
+        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::VoltageY ),
                                       LitePoint(442, AnalogPointType, "Voltage", 0, 102 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::AutoRemoteControl ),
@@ -90,7 +90,7 @@ private:
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::TapDown ),
                                       LitePoint(345, StatusPointType, "Tap Down", 0, 101 ) ) );
 
-        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::Voltage ),
+        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::VoltageY ),
                                       LitePoint(445, AnalogPointType, "Voltage", 0, 102 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::AutoRemoteControl ),
@@ -159,15 +159,9 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_GangOperatedVoltageRegulator_L
     // available attributes
     BOOST_CHECK_EQUAL( 242, regulator->getPointByAttribute(PointAttribute::TapUp).getPointId() );
     BOOST_CHECK_EQUAL( 342, regulator->getPointByAttribute(PointAttribute::TapDown).getPointId() );
-    BOOST_CHECK_EQUAL( 442, regulator->getPointByAttribute(PointAttribute::Voltage).getPointId() );
+    BOOST_CHECK_EQUAL( 442, regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
     BOOST_CHECK_EQUAL( 542, regulator->getPointByAttribute(PointAttribute::AutoRemoteControl).getPointId() );
     BOOST_CHECK_EQUAL( 642, regulator->getPointByAttribute(PointAttribute::TapPosition).getPointId() );
-
-    // test operating mode
-    BOOST_CHECK_EQUAL( VoltageRegulator::RemoteMode, regulator->getOperatingMode() );
-
-    regulator->setOperatingMode(VoltageRegulator::LocalMode);
-    BOOST_CHECK_EQUAL( VoltageRegulator::LocalMode, regulator->getOperatingMode() );
 
     // test updated flag
     BOOST_CHECK_EQUAL(  true, regulator->isUpdated() );
@@ -204,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_with_miss
     // available attributes
     BOOST_CHECK_EQUAL( 245, regulator->getPointByAttribute(PointAttribute::TapUp).getPointId() );
     BOOST_CHECK_EQUAL( 345, regulator->getPointByAttribute(PointAttribute::TapDown).getPointId() );
-    BOOST_CHECK_EQUAL( 445, regulator->getPointByAttribute(PointAttribute::Voltage).getPointId() );
+    BOOST_CHECK_EQUAL( 445, regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
     BOOST_CHECK_EQUAL( 545, regulator->getPointByAttribute(PointAttribute::AutoRemoteControl).getPointId() );
 
     BOOST_CHECK_EQUAL( VoltageRegulator::LoadTapChangerType, regulator->getType() );

@@ -18,6 +18,7 @@
 #include <string>
 #include <stdexcept>
 
+class CtiSignalMsg;
 
 namespace Cti           {
 namespace CapControl    {
@@ -35,6 +36,7 @@ public:
 
     enum OperatingMode
     {
+        UnknownMode = -1,
         RemoteMode,
         LocalMode
     };
@@ -69,13 +71,10 @@ public:
 
     LitePoint getPointByAttribute(const PointAttribute & attribute);
 
-    void setOperatingMode(const OperatingMode & mode);
-    OperatingMode getOperatingMode() const;
+    OperatingMode getOperatingMode();
 
     bool isUpdated() const;
     void setUpdated(const bool updated);
-
-    void notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp);
 
     bool getPointValue(int pointId, double & value);
 
@@ -86,6 +85,17 @@ public:
     virtual void updateFlags(const unsigned tapDelay) = 0;
 
     virtual VoltageRegulator * replicate() const = 0;
+
+    virtual void executeTapUpOperation();
+    virtual void executeTapDownOperation();
+    virtual void executeIntegrityScan() = 0;
+    virtual void executeEnableRemoteControl() = 0;
+    virtual void executeDisableRemoteControl() = 0;
+    virtual void executeEnableKeepAlive() = 0;
+    virtual void executeDisableKeepAlive() = 0;
+
+    void setKeepAliveConfig(const long value);
+    bool isTimeToSendKeepAlive();
 
 protected:
 
@@ -98,9 +108,25 @@ protected:
     AttributeMap    _attributes;
 
     PointValueHolder    _pointValues;
-    
+
+    long        _keepAliveConfig;
+    long        _keepAliveTimer;
+    CtiTime     _nextKeepAliveSendTime;
+
     CtiTime         _lastMissingAttributeComplainTime;
+
     virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
+
+    void executeIntegrityScanHelper( const LitePoint & point );
+    void executeDigitalOutputHelper( const LitePoint & point,
+                                     const std::string & textDescription,
+                                     const bool recordEvent = true );
+    void executeRemoteControlHelper( const LitePoint & point, const int keepAliveValue, const std::string & textDescription);
+    void executeKeepAliveHelper(const LitePoint & point, const int keepAliveValue);
+
+    CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );
+
+    void notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp = CtiTime() );
 };
 
 }

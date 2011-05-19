@@ -115,20 +115,8 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
         void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
 
-        // Voltage Regulator Commands
-        void sendVoltageRegulatorCommands   (const LONG command);
-    public:
-        // Voltage Regulator Commands
-        // Public for unit tests. This must stand until the message sending can be/is refactored.
-        // These should never be called outside the class
-        void scanVoltageRegulatorIntegrity    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendVoltageRegulatorRemoteControl(const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendVoltageRegulatorTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendVoltageRegulatorKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
-
     private:
         //Helper Functions
-        void voltageRegulatorKeepAliveHelper(Cti::CapControl::VoltageRegulatorManager::SharedPtr regulator, const int keepAliveTime, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
         void setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
         void printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const string& actionText, const string& userName,
                                           CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);

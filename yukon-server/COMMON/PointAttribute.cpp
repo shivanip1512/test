@@ -12,6 +12,11 @@ const PointAttribute PointAttribute::AutoRemoteControl = PointAttribute(PointAtt
 const PointAttribute PointAttribute::TapPosition = PointAttribute(PointAttribute::TapPositionAttribute,"TAP_POSITION");
 const PointAttribute PointAttribute::KeepAlive = PointAttribute(PointAttribute::KeepAliveAttribute,"KEEP_ALIVE");
 
+const PointAttribute PointAttribute::VoltageX = PointAttribute(PointAttribute::VoltageXAttribute,"VOLTAGE_X");
+const PointAttribute PointAttribute::VoltageY = PointAttribute(PointAttribute::VoltageYAttribute,"VOLTAGE_Y");
+const PointAttribute PointAttribute::Terminate = PointAttribute(PointAttribute::TerminateAttribute,"TERMINATE");
+const PointAttribute PointAttribute::AutoBlockEnable = PointAttribute(PointAttribute::AutoBlockEnableAttribute,"AUTO_BLOCK_ENABLE");
+
 const PointAttribute PointAttribute::CbcVoltage = PointAttribute(PointAttribute::CbcVoltageAttribute, "Voltage");
 const PointAttribute PointAttribute::HighVoltage = PointAttribute(PointAttribute::HighVoltageAttribute, "High Voltage");
 const PointAttribute PointAttribute::LowVoltage = PointAttribute(PointAttribute::LowVoltageAttribute, "Low Voltage");
