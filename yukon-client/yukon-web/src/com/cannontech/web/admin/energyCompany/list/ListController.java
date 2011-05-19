@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -66,6 +67,10 @@ public class ListController {
                     }
                     if (requiresType && entry.getDefinitionId() == 0) {
                         errors.rejectValue("definitionId", baseKey + "definitionRequired");
+                    }
+                    if (list.getType() == YukonSelectionListEnum.SETTLEMENT_TYPE &&
+                        entry.getDefinitionId() != YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO) {
+                        errors.rejectValue("definitionId", baseKey + "notAValidSettlementId");
                     }
                 }
                 index++;

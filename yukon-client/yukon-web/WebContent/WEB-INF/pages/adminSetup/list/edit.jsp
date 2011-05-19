@@ -62,15 +62,22 @@ Event.observe(window, 'load', function() {
                         <tags:input path="entries[${status.index}].text"/>
                         <form:hidden path="entries[${status.index}].entryId"/>
                         <form:hidden path="entries[${status.index}].order" class="orderField"/>
-                        <form:hidden path="entries[${status.index}].deletion"
-                            class="isDeletionField"/>
+                        <form:hidden path="entries[${status.index}].deletion" class="isDeletionField"/>
                     </td>
                     <c:if test="${usesType}">
                         <td>
-                            <cti:msg2 var="noDefinitionMsg" key=".noDefinition"/>
-                            <tags:selectWithItems path="entries[${status.index}].definitionId"
-                                items="${listDefinitions}" itemValue="definitionId"
-                                defaultItemLabel="${noDefinitionMsg}" defaultItemValue="0"/>
+                            <c:choose>
+                                <c:when test="${list.type eq 'SETTLEMENT_TYPE'}">
+                                    <cti:msg2 var="noDefinitionMsg" key=".noDefinition"/>
+                                    <tags:input path="entries[${status.index}].definitionId"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:msg2 var="noDefinitionMsg" key=".noDefinition"/>
+                                    <tags:selectWithItems path="entries[${status.index}].definitionId"
+                                        items="${listDefinitions}" itemValue="definitionId"
+                                        defaultItemLabel="${noDefinitionMsg}" defaultItemValue="0"/>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </c:if>
                     <tags:dynamicTableActionsCell tableId="entryTable"

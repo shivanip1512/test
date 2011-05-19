@@ -46,6 +46,7 @@
 <!-- Validation Errors -->
 <entry key="yukon.web.modules.adminSetup.list.definitionRequired">Required</entry>
 <entry key="yukon.web.modules.adminSetup.list.textRequired">Required</entry>
+<entry key="yukon.web.modules.adminSetup.list.notAValidSettlementId">Not a valid settlement definition id</entry>
 
 <!-- General selection list keys -->
 <entry key="yukon.dr.selectionList.LM_CUSTOMER_EVENT">Customer Event</entry>
