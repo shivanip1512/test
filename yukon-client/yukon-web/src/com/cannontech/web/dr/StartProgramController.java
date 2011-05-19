@@ -26,6 +26,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -460,6 +461,9 @@ public class StartProgramController extends ProgramControllerBase {
             programsByProgramId.put(programId, program);
 
             LMProgramBase programBase = programService.getProgramForPao(program);
+            if (programBase == null) {
+                throw new NotFoundException("Program in database but not reported by server. Check LM server connection or program configuration.");
+            }
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 

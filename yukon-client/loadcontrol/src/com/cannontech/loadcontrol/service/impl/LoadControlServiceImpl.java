@@ -73,7 +73,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
-            return null;
+            throw new NotFoundException("Program in database but not reported by server. Check configuration.");
         }
         
         return new ProgramStatus(program);
@@ -136,7 +136,10 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
-            return null;
+            if(loadControlClientConnection.isValid())
+                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
+            else
+                throw new BadServerResponseException();
         }
         
         return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
@@ -155,7 +158,10 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
-            return null;
+            if(loadControlClientConnection.isValid())
+                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
+            else
+                throw new BadServerResponseException();
         }
         
         int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
@@ -176,7 +182,10 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
-            return null;
+            if(loadControlClientConnection.isValid())
+                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
+            else
+                throw new BadServerResponseException();
         }
         
         return doExecuteStopRequest(program, stopTime, null, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
