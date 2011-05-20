@@ -292,7 +292,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int disableOvUvFdr = CapControlCommand.SEND_ALL_DISABLE_OVUV;
         mav.addObject("disableOvUvFdr", disableOvUvFdr);
         
-        int sendAll2WayFdr = CapControlCommand.SCAN_2WAY_DEV;
+        int sendAll2WayFdr = CapControlCommand.SEND_ALL_SCAN_2WAY;
         mav.addObject("sendAll2WayFdr", sendAll2WayFdr);
         
         int sendTimeSyncFdr = CapControlCommand.SEND_TIMESYNC;
@@ -337,7 +337,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int disableOvUvSub = CapControlCommand.SEND_ALL_DISABLE_OVUV;
         mav.addObject("disableOvUvSub", disableOvUvSub);
         
-        int sendAll2WaySub = CapControlCommand.SCAN_2WAY_DEV;
+        int sendAll2WaySub = CapControlCommand.SEND_ALL_SCAN_2WAY;
         mav.addObject("sendAll2WaySub", sendAll2WaySub);
         
         int sendTimeSyncSub = CapControlCommand.SEND_TIMESYNC;
