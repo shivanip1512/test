@@ -3,5 +3,6 @@
 <properties>
 
     <entry key="yukon.web.modules.adminSetup.moduleName">System Administration</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.adminPages.title">Administration Pages</entry>
     
 </properties>

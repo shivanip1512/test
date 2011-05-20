@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -20,22 +19,12 @@ public class SystemAdminController {
     
     /* System Administration Pages */
     @RequestMapping("/systemAdmin")
-    public String home(YukonUserContext userContext, ModelMap modelMap) {
+    public String home(YukonUserContext userContext, ModelMap model) {
         LiteYukonUser user = userContext.getYukonUser();
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean isEcOperator = energyCompanyService.isOperator(user);
-        boolean hasMultiSpeak = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
-        boolean hasUserGroupEditor = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
-        
-        if (superUser || isEcOperator) {
-            return "redirect:/spring/adminSetup/energyCompany/home";
-        } else if (hasMultiSpeak) {
-            return "redirect:/spring/multispeak/setup/home";
-        } else if (hasUserGroupEditor) {
-            return "redirect:/spring/adminSetup/userGroupEditor/home";
-        } else {
-            throw new NotAuthorizedException("User " + user.getUsername() + "is not authorized to perform system administration");
-        }
+        model.addAttribute("isEcOperator", (isEcOperator || superUser));
+        return "home.jsp";
     }
 
     @Autowired

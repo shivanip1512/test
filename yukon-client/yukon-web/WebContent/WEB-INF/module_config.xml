@@ -160,6 +160,9 @@
         <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
 
         <options>
+          <option name="systemAdministration">
+            <link>/spring/adminSetup/systemAdmin</link>
+          </option>
           <option name="viewBatchCommands">
             <link>/operator/Admin/SwitchCommands.jsp</link>
             <requireRoleProperty value="ADMIN_VIEW_BATCH_COMMANDS" />
@@ -1118,7 +1121,7 @@
                     </options>
                 </option>
                 <option name="userGroupEditor">
-                    <requireRoleProperty value="ADMIN_SUPER_USER" />
+                    <requireRoleProperty value="ADMIN_SUPER_USER,ADMIN_LM_USER_ASSIGN" />
                     <link>/spring/adminSetup/userGroupEditor/home</link>
                     <options>
                         <option name="home">
@@ -1138,261 +1141,268 @@
         </menu>
         
         <pages>
-            <page name="substationToRouteMapping" type="BASIC">
-                <menu>substationToRouteMapping|home</menu>
-                <link>/spring/multispeak/setup/routemapping/mappings</link>
-            </page>
-        
-            <page name="interfaces" type="BASIC">
-                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                <menu>multispeak|interfaces</menu>
-                <link>/spring/multispeak/setup/home</link>
+            <page name="systemAdministration" type="LANDING">
+                <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
+                <menu>adminSetup</menu>
+                <link>/spring/adminSetup/systemAdmin</link>
                 <pages>
-                    <page name="lmMappings" type="BASIC">
-                        <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                        <menu>multispeak|lm_mappings</menu>
-                        <link>/spring/multispeak/setup/lmMappings/home</link>
+                    <page name="substationToRouteMapping" type="BASIC">
+                        <menu>substationToRouteMapping|home</menu>
+                        <link>/spring/multispeak/setup/routemapping/mappings</link>
                     </page>
-                    <page name="deviceGroupSyncHome" type="BASIC">
-                        <menu>multispeak|synchronization</menu>
-                        <link>/spring/multispeak/setup/deviceGroupSync/home</link>
-                    </page>
-                    <page name="deviceGroupSyncProgress" type="BASIC">
+                
+                    <page name="interfaces" type="BASIC">
                         <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                        <menu>multispeak|synchronization</menu>
-                        <link>/spring/multispeak/setup/deviceGroupSync/progress</link>
-                    </page>
-                </pages>
-            </page>
-            <page name="userGroupEditor" type="BASIC">
-                <requireRoleProperty value="ADMIN_SUPER_USER" />
-                <menu>userGroupEditor|home</menu>
-                <link>/spring/adminSetup/userGroupEditor/home</link>
-                <pages>
-                    <page name="groupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                        <menu>userGroupEditor|home</menu>
-                        <link>/spring/adminSetup/groupEditor/view?groupId=${groupId}</link>
-                        <labelArgument>${groupName}</labelArgument>
+                        <menu>multispeak|interfaces</menu>
+                        <link>/spring/multispeak/setup/home</link>
                         <pages>
-                            <page name="groupEditor.EDIT" type="DETAIL_CHILD">
-                                <menu>userGroupEditor|home</menu>
-                                <link>/spring/adminSetup/groupEditor/edit?groupId=${groupId}</link>
-                                <labelArgument>${groupName}</labelArgument>
+                            <page name="lmMappings" type="BASIC">
+                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                                <menu>multispeak|lm_mappings</menu>
+                                <link>/spring/multispeak/setup/lmMappings/home</link>
                             </page>
-                            <page name="roles" type="DETAIL">
-                                <menu>userGroupEditor|home</menu>
-                                <link>/spring/adminSetup/roleEditor/view?groupId=${groupId}&amp;roleId=${roleId}</link>
-                                <labelArgument>${roleName}</labelArgument>
+                            <page name="deviceGroupSyncHome" type="BASIC">
+                                <menu>multispeak|synchronization</menu>
+                                <link>/spring/multispeak/setup/deviceGroupSync/home</link>
                             </page>
-                            <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                            	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                <menu>userGroupEditor|home</menu>
-                                <link>/spring/editor/group/editGroup?groupId=${groupId}</link>
-                                <labelArgument>${groupName}</labelArgument>
-                            </page>
-                            <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>userGroupEditor|home</menu>
-                                <link>/spring/adminSetup/groupEditor/users?groupId=${groupId}</link>
-                                <labelArgument>${groupName}</labelArgument>
+                            <page name="deviceGroupSyncProgress" type="BASIC">
+                                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                                <menu>multispeak|synchronization</menu>
+                                <link>/spring/multispeak/setup/deviceGroupSync/progress</link>
                             </page>
                         </pages>
                     </page>
-                    <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                    <page name="userGroupEditor" type="BASIC">
+                        <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <menu>userGroupEditor|home</menu>
-                        <link>/spring/adminSetup/userEditor/view?userId=${userId}</link>
-                        <labelArgument>${username}</labelArgument>
+                        <link>/spring/adminSetup/userGroupEditor/home</link>
                         <pages>
-                            <page name="userEditor.EDIT" type="DETAIL_CHILD">
+                            <page name="groupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userGroupEditor|home</menu>
-                                <link>/spring/adminSetup/userEditor/edit?userId=${userId}</link>
-                                <labelArgument>${username}</labelArgument>
+                                <link>/spring/adminSetup/groupEditor/view?groupId=${groupId}</link>
+                                <labelArgument>${groupName}</labelArgument>
+                                <pages>
+                                    <page name="groupEditor.EDIT" type="DETAIL_CHILD">
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/adminSetup/groupEditor/edit?groupId=${groupId}</link>
+                                        <labelArgument>${groupName}</labelArgument>
+                                    </page>
+                                    <page name="roles" type="DETAIL">
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/adminSetup/roleEditor/view?groupId=${groupId}&amp;roleId=${roleId}</link>
+                                        <labelArgument>${roleName}</labelArgument>
+                                    </page>
+                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/editor/group/editGroup?groupId=${groupId}</link>
+                                        <labelArgument>${groupName}</labelArgument>
+                                    </page>
+                                    <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/adminSetup/groupEditor/users?groupId=${groupId}</link>
+                                        <labelArgument>${groupName}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
-                            <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                            	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                            <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userGroupEditor|home</menu>
-                                <link>/spring/editor/user/editUser?userId=${userId}</link>
+                                <link>/spring/adminSetup/userEditor/view?userId=${userId}</link>
                                 <labelArgument>${username}</labelArgument>
-                            </page>
-                            <page name="groups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>userGroupEditor|home</menu>
-                                <link>/spring/adminSetup/userEditor/groups?userId=${userId}</link>
-                                <labelArgument>${username}</labelArgument>
+                                <pages>
+                                    <page name="userEditor.EDIT" type="DETAIL_CHILD">
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/adminSetup/userEditor/edit?userId=${userId}</link>
+                                        <labelArgument>${username}</labelArgument>
+                                    </page>
+                                    <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/editor/user/editUser?userId=${userId}</link>
+                                        <labelArgument>${username}</labelArgument>
+                                    </page>
+                                    <page name="groups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>userGroupEditor|home</menu>
+                                        <link>/spring/adminSetup/userEditor/groups?userId=${userId}</link>
+                                        <labelArgument>${username}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                         </pages>
                     </page>
-                </pages>
-            </page>
-            <page name="home" type="BASIC">
-                <menu>energyCompanySetup|home"</menu>
-                <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
-                <pages>
-                    <page name="createEnergyCompany" type="BASIC">
-                        <menu>energyCompanySetup|home</menu>
-                        <link>/spring/adminSetup/energyCompany/new</link>
-                    </page>
-                    <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                        <menu>energyCompanySetup|home</menu>
-                        <link>/spring/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
-                        <labelArgument>${energyCompanyName}</labelArgument>
-                        <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                    <page name="home" type="BASIC">
+                        <menu>energyCompanySetup|home"</menu>
+                        <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
                         <pages>
-                            <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                            <page name="createEnergyCompany" type="BASIC">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <link>/spring/adminSetup/energyCompany/new</link>
                             </page>
-                            <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
+                            <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                            </page>
-                            <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompany|home</menu>
-                                <link>/spring/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="operatorLogin.VIEW" type="DETAIL">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
-                                        <labelArgument>${operatorLogin.username}</labelArgument>
-                                        <pages>
-                                            <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
-                                                <menu>energyCompany|home</menu>
-                                                <labelArgument>${operatorLogin.username}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
-                                        <menu>energyCompany|home</menu>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="applianceCategory.VIEW" type="DETAIL">
+                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
-                                        <pages>
-                                            <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-                                                <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="applianceCategory.CREATE" type="BASIC">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
-                                <menu>energyCompanySetup|home</menu>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                            </page>
-                            <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <menu>energyCompanySetup|home</menu>
-                                <pages>
-                                    <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
-                                        <labelArgument>${serviceCompany.companyName}</labelArgument>
-                                        <pages>
-                                            <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
-                                                <labelArgument>${serviceCompany.companyName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
-                                <menu>energyCompany|home</menu>
-                                <link>/spring/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="warehouse.VIEW" type="DETAIL">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
-                                        <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
-                                        <pages>
-                                            <page name="warehouse.EDIT" type="DETAIL_CHILD">
-                                                <menu>energyCompany|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
-                                                <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/warehouse/create?id=${id}</link>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                        <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
-                                </pages>
-                            </page>
-                            <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="list.VIEW" type="DETAIL">
+                                    <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
-                                        <labelArgument>${list.type}</labelArgument>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
-                                            <page name="list.EDIT" type="DETAIL_CHILD">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
-                                                <labelArgument>${list.type}</labelArgument>
+                                            <page name="operatorLogin.VIEW" type="DETAIL">
+                                                <menu>energyCompany|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${operatorLogin.username}</labelArgument>
+                                                <pages>
+                                                    <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
+                                                        <menu>energyCompany|home</menu>
+                                                        <labelArgument>${operatorLogin.username}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
+                                                <menu>energyCompany|home</menu>
                                             </page>
                                         </pages>
                                     </page>
-                                </pages>
-                            </page>
-                            <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="schedules.EDIT" type="DETAIL">
+                                    <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
-                                        <labelArgument>${typeStr}</labelArgument>
+                                        <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="applianceCategory.VIEW" type="DETAIL">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                                <pages>
+                                                    <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
+                                                        <menu>energyCompanySetup|home</menu>
+                                                        <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="applianceCategory.CREATE" type="BASIC">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
+                                            </page>
+                                        </pages>
                                     </page>
-                                </pages>
-                            </page>
-                            <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <pages>
-                                    <page name="settlements.EDIT" type="DETAIL">
+                                    <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}</link>
-                                        <labelArgument>${settlementName}</labelArgument>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <menu>energyCompanySetup|home</menu>
+                                        <pages>
+                                            <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                                <pages>
+                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                        <menu>energyCompanySetup|home</menu>
+                                                        <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
+                                                        <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="warehouse.VIEW" type="DETAIL">
+                                                <menu>energyCompany|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
+                                                <pages>
+                                                    <page name="warehouse.EDIT" type="DETAIL_CHILD">
+                                                        <menu>energyCompany|home</menu>
+                                                        <link>/spring/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
+                                                        <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
+                                                <menu>energyCompany|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/warehouse/create?id=${id}</link>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                                <labelArgument>${energyCompanyName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="list.VIEW" type="DETAIL">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                <labelArgument>${list.type}</labelArgument>
+                                                <pages>
+                                                    <page name="list.EDIT" type="DETAIL_CHILD">
+                                                        <menu>energyCompanySetup|home</menu>
+                                                        <link>/spring/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                        <labelArgument>${list.type}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="schedules.EDIT" type="DETAIL">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
+                                                <labelArgument>${typeStr}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="settlements.EDIT" type="DETAIL">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}</link>
+                                                <labelArgument>${settlementName}</labelArgument>
+                                            </page>
+                                        </pages>
                                     </page>
                                 </pages>
                             </page>
