@@ -325,6 +325,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Transactional
     public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
+        String energyCompanyName = energyCompany.getName();
+
         if (energyCompany.isDefault()) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
@@ -353,7 +355,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         deleteLoginGroupAndLogin(energyCompany, liteGroup);
         
-        starsEventLogService.deleteEnergyCompany(user, energyCompany.getName());
+        starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
     }
 
     /**
