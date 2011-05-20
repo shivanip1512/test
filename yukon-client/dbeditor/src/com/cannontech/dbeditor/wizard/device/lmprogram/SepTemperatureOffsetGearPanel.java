@@ -359,7 +359,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                 heatingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
                 heatingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, 0.0);
+                    new JCDoubleValidator(null, 0.0, SepTemperatureOffsetGear.MAX_FAHRENHEIT, 0.1, "##.#", false, false, false, null, 0.0);
                 validator.setEditPattern("#0.0");
 
                 heatingOffsetSpinField.setDataProperties(new DataProperties(validator, 
@@ -389,7 +389,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                 coolingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
                 coolingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, 77.7, 0.1, "##.#", false, false, false, null, 0.0);
+                    new JCDoubleValidator(null, 0.0, SepTemperatureOffsetGear.MAX_FAHRENHEIT, 0.1, "##.#", false, false, false, null, 0.0);
                 validator.setEditPattern("#0.0");
 
                 coolingOffsetSpinField.setDataProperties(new DataProperties(validator, 
@@ -703,13 +703,13 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
 
         gear = (SepTemperatureOffsetGear) o;
 
-        gear.getSettings().setCharAt(1, isFahrenheit?'F':'C');
+        gear.getSettings().setCharAt(1, getIsFahrenheit()?'F':'C');
 
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
        
-        gear.setHeatingOffset((Double)getJCSpinFieldHeatingOffset().getValue());
-        gear.setCoolingOffset((Double)getJCSpinFieldCoolingOffset().getValue());
+        gear.setHeatingOffset(toDouble(getJCSpinFieldHeatingOffset().getValue()));
+        gear.setCoolingOffset(toDouble(getJCSpinFieldCoolingOffset().getValue()));
         
         gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
         if (getJComboBoxHowToStop().getSelectedItem() != null) {
@@ -759,24 +759,31 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         
         heatingOffsetSpinField.addValueListener(new JCValueListener() {
             @Override
-            public void valueChanging(JCValueEvent arg0) { }
+            public void valueChanging(JCValueEvent arg0) {
+                if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
+                else if(!getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_CELSIUS))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_CELSIUS);
+            }
             @Override
             public void valueChanged(JCValueEvent arg0) {
-                if (toDouble(arg0.getNewValue()) != 0.0) {
+                if (toDouble(arg0.getNewValue()) != 0.0) 
                     getJCSpinFieldCoolingOffset().setValue(0.0);
-                }
             }
         });
         
         coolingOffsetSpinField.addValueListener(new JCValueListener() {
             @Override
-            public void valueChanging(JCValueEvent arg0) { }
+            public void valueChanging(JCValueEvent arg0) {
+                if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
+                else if(!getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_CELSIUS))
+                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_CELSIUS);
+            }
             @Override
             public void valueChanged(JCValueEvent arg0) {
                 if (toDouble(arg0.getNewValue()) != 0.0)
-                {
                     getJCSpinFieldHeatingOffset().setValue(0.0);
-                }
             }
         });
     }
@@ -908,7 +915,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
-        setTemperatureUnits(isFahrenheit?'F':'C');
+        setTemperatureUnits(getIsFahrenheit()?'F':'C');
         getJComboBoxWhenChange().setSelectedItem(LMProgramDirectGear.CHANGE_NONE);
         getJComboBoxHowToStop().setSelectedItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
         
@@ -961,8 +968,8 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     }
     
     public void jButtonTemperatureUnits_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-        isFahrenheit = !isFahrenheit;
-        if( isFahrenheit ) {
+        setIsFahrenheit(!getIsFahrenheit());
+        if( getIsFahrenheit() ) {
             setTemperatureUnits('F');
         }
         else {                                                         
@@ -972,7 +979,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     
     public void setTemperatureUnits(char temperatureUnit) {
         if (temperatureUnit == 'C') {
-            isFahrenheit = false;
+            setIsFahrenheit(false);
             getJLabelHeatingUnits().setText("°C");
             getJLabelCoolingUnits().setText("°C");
             ((JCDoubleValidator) getJCSpinFieldHeatingOffset().getValidator()).setMax(SepTemperatureOffsetGear.MAX_CELSIUS);
@@ -986,7 +993,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             getJCSpinFieldHeatingOffset().revalidate();
             getJCSpinFieldCoolingOffset().revalidate();
         } else {
-            isFahrenheit = true;
+            setIsFahrenheit(true);
             getJLabelHeatingUnits().setText("°F");
             getJLabelCoolingUnits().setText("°F");
             
@@ -1051,6 +1058,14 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
 
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
         this.fireInputUpdate();
+    }
+
+    public void setIsFahrenheit(Boolean isFahrenheit) {
+        this.isFahrenheit = isFahrenheit;
+    }
+
+    public Boolean getIsFahrenheit() {
+        return isFahrenheit;
     }
     
 }
