@@ -24,8 +24,6 @@ public interface AccountService {
      */
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
-    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator, String customerNotes, String accountSiteNotes) throws AccountNumberUnavailableException, UserNameUnavailableException;
-    
     /**
      * Method to update an account.
      * The energy company for the user is retrieved, then updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) is called.

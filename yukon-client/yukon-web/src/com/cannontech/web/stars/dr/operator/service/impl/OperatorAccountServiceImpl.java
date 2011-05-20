@@ -56,7 +56,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	
 	@Override
 	public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator, OperatorGeneralUiExtras operatorGeneralUiExtras) {
-	    int accountId = accountService.addAccount(updatableAccount, operator, operatorGeneralUiExtras.getNotes(), operatorGeneralUiExtras.getAccountSiteNotes());
+	    int accountId = accountService.addAccount(updatableAccount, operator);
 	    setupEmailNotification(accountId, operatorGeneralUiExtras);
 	    return accountId;
 	}

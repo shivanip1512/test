@@ -376,7 +376,6 @@ public class OperatorAccountController {
 	    final UpdatableAccount updatableAccount = new UpdatableAccount();
 	    updatableAccount.setAccountDto(accountDto);
 	    updatableAccount.setAccountNumber(accountDto.getAccountNumber());
-
 	    /* Validate and Create */
 	    try {
             
@@ -393,7 +392,10 @@ public class OperatorAccountController {
                     /* Check to see if the user is trying to modify the default user */
                     checkEditingDefaultUser(accountGeneral.getLoginBackingBean().getUsername());
                 }
-	    
+                
+                updatableAccount.setCustomerNotes(accountGeneral.getOperatorGeneralUiExtras().getNotes());
+                updatableAccount.setAccountSiteNotes(accountGeneral.getOperatorGeneralUiExtras().getAccountSiteNotes());
+                
                 /* Validation passed, proceed with creation */
     	        /* IMPORTANT NOTE HERE
     	         * 

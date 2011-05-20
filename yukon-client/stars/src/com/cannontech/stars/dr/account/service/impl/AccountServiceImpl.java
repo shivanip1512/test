@@ -121,8 +121,7 @@ public class AccountServiceImpl implements AccountService {
     // ADD ACCOUNT
     @Override
     @Transactional
-    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator,
-                          String accountNotes, String accountSiteNotes) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
     	/* Add the account to the user's energy company,  we do not have a mechanism to allow 
     	 * an operator user of a parent energy company to add accounts to member energy companies. */
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(operator);
@@ -348,7 +347,7 @@ public class AccountServiceImpl implements AccountService {
         }
         
         accountSite.setSiteNumber(accountDto.getMapNumber());
-        accountSite.setPropertyNotes(accountSiteNotes == null ? CtiUtilities.STRING_NONE : accountSiteNotes);
+        accountSite.setPropertyNotes(updatableAccount.getAccountSiteNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountSiteNotes());
         accountSiteDao.add(accountSite);
         
         /*
@@ -358,7 +357,7 @@ public class AccountServiceImpl implements AccountService {
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
         customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
-        customerAccount.setAccountNotes(accountNotes == null ? CtiUtilities.STRING_NONE : accountNotes);
+        customerAccount.setAccountNotes(updatableAccount.getCustomerNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getCustomerNotes());
         if(liteBillingAddress != null) {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
         }
@@ -381,10 +380,6 @@ public class AccountServiceImpl implements AccountService {
         accountEventLogService.accountAdded(operator, accountNumber);
         
         return customerAccount.getAccountId();
-    }
-    
-    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) {
-        return addAccount(updatableAccount, operator, null, null);
     }
 
     // DELETE ACCOUNT
