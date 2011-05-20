@@ -135,8 +135,12 @@ public class RfnMeterReadService {
         for (ChannelData channelData : meterReadingData.getRfnMeterReadingData().getChannelDataList()) {
             LogHelper.debug(log, "Processing %s for %s", channelData, meterReadingData.getRfnMeter());
             ChannelDataStatus status = channelData.getStatus();
+            if (status == null) {
+                LogHelper.debug(log, "Received null status for channelData, skipping");
+                continue;
+            }
             if (!status.isOk()) {
-                LogHelper.debug(log, "Received status of %s for channelData", status);
+                LogHelper.debug(log, "Received status of %s for channelData, skipping", status);
                 continue;
             }
             
@@ -149,7 +153,6 @@ public class RfnMeterReadService {
             
             int pointId;
             try {
-                // this call is probably a little heavy considering how little of the LitePoint is actually needed
                 pointId = pointDao.getPointId(pointValueHandler.getPaoPointIdentifier());
             } catch (NotFoundException e) {
                 LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
@@ -193,8 +196,6 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        
-        
         rrrTemplate = new RequestReplyReplyTemplate();
         rrrTemplate.setConfigurationName("RFN_METER_READ");
         rrrTemplate.setConfigurationSource(configurationSource);
