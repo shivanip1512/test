@@ -14,6 +14,7 @@ import org.joda.time.Duration;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
 
@@ -453,5 +454,13 @@ public static int differenceMinutes(Date from, Date to) {
         Interval interval = new Interval(new Instant(UTC_2000_EPOCH),instant);
         
         return interval.toDurationMillis();
+    }
+    
+    public static Instant toMidnightAtBeginningOfDay(LocalDate date, DateTimeZone dateTimeZone) {
+        return date.toDateTimeAtStartOfDay(dateTimeZone).toInstant();
+    }
+    
+    public static Instant toMidnightAtEndOfDay(LocalDate date, DateTimeZone dateTimeZone) {
+        return date.plusDays(1).toDateTimeAtStartOfDay(dateTimeZone).toInstant();
     }
 }

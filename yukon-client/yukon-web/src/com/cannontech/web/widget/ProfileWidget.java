@@ -17,6 +17,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Days;
+import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -33,6 +36,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TemplateProcessorFactory;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -318,34 +322,25 @@ public class ProfileWidget extends WidgetControllerBase {
             mav.addObject("startDateStr", startDateStr);
             mav.addObject("stopDateStr", stopDateStr);
 
-            Date startDate = dateFormattingService.flexibleDateParser(startDateStr,
-                                                                      DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                      userContext);
-
-            Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr,
-                                                                     DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                     userContext);
-
+            LocalDate startDate = dateFormattingService.parseLocalDate(startDateStr, userContext);
+            LocalDate stopDate = dateFormattingService.parseLocalDate(stopDateStr, userContext);
+            
             if (startDate == null) {
                 errorMsg = "Start Date Required";
             } else if (stopDate == null) {
                 errorMsg = "Stop Date Required";
             } else {
-                stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                LocalDate today = new LocalDate(userContext.getJodaTimeZone());
                 
-                //TEM DateUtils.round() should do this for you
-                String todayStr = dateFormattingService.format(new Date(),
-                                                                   DateFormattingService.DateFormatEnum.DATE,
-                                                                   userContext);
-                Date today = dateFormattingService.flexibleDateParser(todayStr,
-                                                                      DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                      userContext);
+                Instant startInstant = TimeUtil.toMidnightAtBeginningOfDay(startDate, userContext.getJodaTimeZone());
+                Instant stopInstant = TimeUtil.toMidnightAtEndOfDay(stopDate, userContext.getJodaTimeZone());
 
-                if (!startDate.before(stopDate)) {
-                    errorMsg = "Start Date Must Be Before Stop Date";
-                } else if (stopDate.after(today)) {
+                if (stopDate.isBefore(startDate)) {
+                    errorMsg = "Start Date Must Be On Or Before Stop Date";
+                } else if (stopDate.isAfter(today)) {
                     errorMsg = "Stop Date Must Be On Or Before Today";
                 } else {
+                    stopDate = stopDate.plusDays(1);  //move stop date to end of specified day
                     // map of email elements
                     Map<String, Object> msgData = new HashMap<String, Object>();
                     msgData.put("email", email);
@@ -353,9 +348,10 @@ public class ProfileWidget extends WidgetControllerBase {
                     msgData.put("deviceName", device.getPaoName());
                     msgData.put("meterNumber", meterNum.getMeterNumber());
                     msgData.put("physAddress", device.getAddress());
-                    msgData.put("startDate", startDate);
-                    msgData.put("stopDate", stopDate);
-                    long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
+                    msgData.put("startDate", startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate());  //e-mail callback service expects type Date
+                    msgData.put("stopDate", stopDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate());
+                    long numDays = Days.daysBetween(startDate, stopDate).getDays();
+                    
                     msgData.put("totalDays", Long.toString(numDays));
                     
                     // determine pointId in order to build report URL
@@ -370,8 +366,8 @@ public class ProfileWidget extends WidgetControllerBase {
                     msgData.put("channelName", channelName);
                     
                     Map<String, Object> inputValues = new HashMap<String, Object>();
-                    inputValues.put("startDate", startDate.getTime());
-                    inputValues.put("stopDate", stopDate.getTime());
+                    inputValues.put("startDate", startInstant.getMillis());
+                    inputValues.put("stopDate", stopInstant.getMillis());
                     inputValues.put("pointId", litePoint.getPointID());
                     
                     Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
@@ -398,8 +394,8 @@ public class ProfileWidget extends WidgetControllerBase {
                     // will throw InitiateLoadProfileRequestException if connection problem
                     loadProfileService.initiateLoadProfile(device,
                                                                channel,
-                                                               startDate,
-                                                               stopDate,
+                                                               startInstant.toDate(),
+                                                               stopInstant.toDate(),
                                                                callback,
                                                                userContext);
     
@@ -623,6 +619,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                  DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                                  userContext);
         stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+        stopDate = DateUtils.addDays(stopDate, 1);
         reportStopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
        
         // build query
