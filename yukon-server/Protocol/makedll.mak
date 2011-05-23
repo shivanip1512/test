@@ -123,7 +123,6 @@ prot_sixnet.obj \
 prot_base.obj \
 prot_dnp.obj \
 prot_modbus.obj \
-prot_xml.obj \
 $(DNPOBJS) \
 prot_ion.obj \
 $(IONOBJS) \
@@ -832,12 +831,6 @@ prot_versacom.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		parsevalue.h prot_versacom.h master.h msg_pcrequest.h \
 		message.h collectable.h devicetypes.h logger.h thread.h \
 		CtiPCPtrQueue.h
-prot_xml.obj:	yukon.h precompiled.h types.h ctidbgmem.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
-		CtiPCPtrQueue.h porter.h dsm2.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h devicetypes.h prot_xml.h \
-		cmdparse.h ctitokenizer.h parsevalue.h
 prot_ymodem.obj:	yukon.h precompiled.h types.h ctidbgmem.h guard.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		numstr.h sorted_vector.h logger.h thread.h mutex.h \
@@ -1028,8 +1021,6 @@ test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h tbl_dialup.h tbl_direct.h \
 		tbl_dv_address.h device_queue_interface.h
-test_prot_xml.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		prot_xml.h cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h
 transdata_application.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

@@ -826,11 +826,11 @@ unsolicited_handler.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h \
 		msg_dbchg.h millisecond_timer.h prot_gpuff.h packet_finder.h \
-		portglob.h porter.h devicetypes.h dev_dnp.h dev_remote.h \
-		tbl_dialup.h tbl_direct.h prot_dnp.h dnp_application.h \
-		dnp_objects.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h msg_trace.h StatisticsManager.h \
-		PaoStatistics.h PaoStatisticsRecord.h ThreadStatusKeeper.h \
-		thread_register_data.h thread_monitor.h
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h portglob.h \
+		porter.h devicetypes.h dev_dnp.h dev_remote.h tbl_dialup.h \
+		tbl_direct.h prot_dnp.h dnp_application.h dnp_objects.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h msg_trace.h \
+		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
+		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h
 #ENDUPDATE#

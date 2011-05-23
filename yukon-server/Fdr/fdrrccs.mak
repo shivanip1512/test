@@ -246,15 +246,6 @@ socketinterface.obj:    socketinterface.h dlldefs.h fdrinterface.h \
                 msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
                 fdrpoint.h fdrdestination.h cparms.h fdrdebuglevel.h \
                 fdrprotectedmaplist.h queues.h fdrpointidmap.h
-testinterface.obj:      dlldefs.h fdrinterface.h message.h collectable.h \
-                connection.h exchange.h dllbase.h os2_2w32.h types.h \
-                cticalls.h dsm2.h mutex.h guard.h msg_multi.h msg_pdata.h \
-                pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-                queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
-                fdrdestination.h cparms.h fdrdebuglevel.h \
-                fdrprotectedmaplist.h queues.h fdrpointidmap.h \
-                testinterface.h fdrinterface.cpp ctinexus.h msg_cmd.h \
-                msg_dbchg.h logger.h thread.h
 #ENDUPDATE#
 
 

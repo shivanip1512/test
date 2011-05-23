@@ -46,7 +46,6 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("tnpp terminal route"),  RouteTypeTNPP);
     BOOST_CHECK_EQUAL(resolveRouteType("rtc route"),            RouteTypeRTC);
     BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
-    BOOST_CHECK_EQUAL(resolveRouteType("integration route"), RouteTypeXML);
 }
 
 BOOST_AUTO_TEST_CASE(test_resolveAmpUseType)
@@ -470,9 +469,6 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "virtual system";
     devType = TYPE_VIRTUAL_SYSTEM;
-    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "integration";
-    devType = TYPE_XML_XMIT;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "lcr-3102";
     devType = TYPELCR3102;

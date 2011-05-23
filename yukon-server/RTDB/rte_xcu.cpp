@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_xcu
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
@@ -31,8 +18,6 @@
 #include "dev_pagingreceiver.h"
 #include "dev_lcu.h"
 #include "dev_wctp.h"
-#include "dev_grp_xml.h"
-#include "dev_xml.h"
 #include "msg_pcrequest.h"
 #include "msg_signal.h"
 #include "porter.h"
@@ -90,7 +75,7 @@ void CtiRouteXCU::DumpData()
 void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    
+
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -610,42 +595,6 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
         switch(_transmitterDevice->getType())
         {
-        case TYPE_XML_XMIT:
-            {
-                //  pass the ActiveMQ queue name up to the XML group
-                string keyName = "ACTIVEMQ_" + _transmitterDevice->getName() + "_QUEUE";
-
-                string queueName = gConfigParms.getValueAsString(keyName);
-
-                //  the buffer is 300 bytes long...
-                unsigned char *buf = OutMessage->Buffer.OutMessage;
-
-                //  ... we use up to 100 bytes of the buffer to store the name...
-                if( queueName.size() < 100 )
-                {
-                    copy(queueName.begin(), queueName.end(), buf);
-                    buf += queueName.size();
-                }
-
-                *buf++ = 0;  //  null-terminate the queue name
-
-                //  ... and we assume the Expresscom message is less than 197 bytes, which we implicitly know from the protocol
-                *buf++ = xcom.getStartByte();
-
-                for(i = 0; i < xcom.messageSize(); i++)
-                {
-                    *buf++ = xcom.getByte(i);
-                }
-
-                *buf++ = xcom.getStopByte();
-
-                *buf++ = 0;  //  null-terminate the xcom bytes
-
-                outList.push_back( OutMessage );
-                OutMessage = 0; // It has been used, don't let it be deleted!
-
-                break;
-            }
         case TYPE_RDS:
             {
                 xcom.setUseASCII(false);
@@ -717,7 +666,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                         {
                             byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
                         }
-                        else 
+                        else
                         {
                             byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
                         }
@@ -746,7 +695,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         if(status == NORMAL)
         {
             resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
-    
+
             if( stringCompareIgnoreCase(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true") != 0 )
             {
                 resultString += " \n" + byteString;

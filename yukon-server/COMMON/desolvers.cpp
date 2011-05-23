@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   desolvers
-*
-* Date:   8/16/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/10/21 21:51:12 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 
 #include "desolvers.h"
@@ -25,16 +9,8 @@
 #include "logger.h"
 #include "utility.h"
 
-string desolveScanType( LONG scanType )
+string desolveScanType( long scanType )
 {
-/*
-   ScanRateGeneral = 0,
-   ScanRateAccum,
-   ScanRateStatus,
-   ScanRateIntegrity,
-   ScanRateInvalid
-*/
-
     string Ret;
 
     switch( scanType )
@@ -59,7 +35,7 @@ string desolveScanType( LONG scanType )
     return Ret;
 }
 
-string desolveDeviceWindowType( LONG aType )
+string desolveDeviceWindowType( long aType )
 {
     string Ret;
 
@@ -85,7 +61,7 @@ string desolveDeviceWindowType( LONG aType )
 }
 
 
-string desolveStatisticsType( INT statType )
+string desolveStatisticsType( int statType )
 {
     string Ret;
 
@@ -110,26 +86,7 @@ string desolveStatisticsType( INT statType )
     return Ret;
 }
 
-string desolveAmpUseType( INT useType )
-{
-    string autype;
-
-    switch( useType )
-    {
-        case RouteAmpAlternating:    autype = AMPUSE_ATLTERNATE;     break;
-        case RouteAmpAltFail:        autype = AMPUSE_WITHFAIL;       break;
-        case RouteAmpDefault1Fail2:  autype = AMPUSE_DEFAULTONE;     break;
-        case RouteAmpDefault2Fail1:  autype = AMPUSE_DEFAULTTWO;     break;
-        case RouteAmp1:              autype = AMPUSE_AMPONE;         break;
-        case RouteAmp2:              autype = AMPUSE_AMPTWO;         break;
-        default:                     autype = AMPUSE_DEFAULTTWO;     break;
-    }
-
-    return autype;
-}
-
-
-string desolveDeviceType( INT aType )
+string desolveDeviceType( int aType )
 {
     string Ret;
 
@@ -161,8 +118,6 @@ string desolveDeviceType( INT aType )
         case TYPE_LCUT3026:     Ret = "lcu-t026";       break;
         case TYPE_TCU5000:      Ret = "tcu-5000";       break;
         case TYPE_TCU5500:      Ret = "tcu-5500";       break;
-
-        case TYPE_XML_XMIT:     Ret = "integration"; break;
 
         case TYPE_TDMARKV:      Ret = "transdata mark-v";   break;
 
@@ -233,7 +188,6 @@ string desolveDeviceType( INT aType )
         case TYPE_LMGROUP_RIPPLE:       Ret = "ripple group";       break;
         case TYPE_LMGROUP_VERSACOM:     Ret = "versacom group";     break;
         case TYPE_LMGROUP_EXPRESSCOM:   Ret = "expresscom group";   break;
-        case TYPE_LMGROUP_XML:          Ret = "integration group";  break;
         case TYPE_LMGROUP_DIGI_SEP:     Ret = "digi sep group";     break;
         case TYPE_LMGROUP_MCT:          Ret = "mct group";          break;
         case TYPE_LMGROUP_GOLAY:        Ret = "golay group";        break;
@@ -284,34 +238,7 @@ string desolveDeviceType( INT aType )
     return Ret;
 }
 
-string desolvePAOCategory( INT aCategory )
-{
-    string Ret;
-
-    switch( aCategory )
-    {
-        case PAO_CATEGORY_DEVICE:           Ret = "device";         break;
-        case PAO_CATEGORY_PORT:             Ret = "port";           break;
-        case PAO_CATEGORY_ROUTE:            Ret = "route";          break;
-        case PAO_CATEGORY_LOAD_MANAGEMENT:  Ret = "loadmanagement"; break;
-        case PAO_CATEGORY_CAP_CONTROL:      Ret = "capcontrol";     break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported pao category in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-
-            Ret = "invalid";
-
-            break;
-        }
-    }
-
-    return Ret;
-}
-
-string desolvePointType( INT aPointType )
+string desolvePointType( int aPointType )
 {
     static const string analog = "Analog";
     static const string status = "Status";
@@ -342,128 +269,4 @@ string desolvePointType( INT aPointType )
 
     return Ret;
 }
-
-string desolvePortType( INT aType )
-{
-    string Ret;
-
-    switch( aType )
-    {
-        case PortTypeLocalDirect:       Ret = "local serial port";      break;
-        case PortTypeLocalDialup:       Ret = "local dialup";           break;
-        case PortTypeLocalDialBack:     Ret = "local dialback";         break;
-        case PortTypeTcp:               Ret = "tcp";                    break;
-        case PortTypeUdp:               Ret = "udp";                    break;
-        case PortTypeTServerDirect:     Ret = "terminal server";        break;
-        case PortTypeTServerDialup:     Ret = "terminal server dialup"; break;
-        case PortTypeTServerDialBack:   Ret = "terminal server dialback";   break;
-        case PortTypePoolDialout:       Ret = "dialout pool";           break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported port type in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-
-            Ret = "invalid";
-
-            break;
-        }
-    }
-
-    return Ret;
-}
-
-
-string desolveRouteType( INT aType )
-{
-    string Ret;
-
-    switch( aType )
-    {
-        case RouteTypeCCU:          Ret = "ccu";    break;
-        case RouteTypeTCU:          Ret = "tcu";    break;
-        case RouteTypeMacro:        Ret = "macro";  break;
-        case RouteTypeLCU:          Ret = "lcu";    break;
-        case RouteTypeVersacom:     Ret = "versacom";   break;
-        case RouteTypeExpresscom:   Ret = "expresscom"; break;
-        case RouteTypeTap:          Ret = "tap paging"; break;
-        case RouteTypeXML:          Ret = "integration route"; break;
-        case RouteTypeWCTP:         Ret = "wctp terminal route";    break;
-        case RouteTypeTNPP:         Ret = "tnpp terminal route";    break;
-        //paging?
-        case RouteTypeSNPP:         Ret = "snpp terminal route";  break;
-        case RouteTypeRDS:          Ret = "rds terminal route"; break;
-        case RouteTypeRTC:          Ret = "rtc route";    break;
-        case RouteTypeSeriesVLMI:   Ret = "series 5 lmi";   break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported route type in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-
-            Ret = "invalid";
-
-            break;
-        }
-    }
-
-    return Ret;
-}
-
-
-string desolveLoadManagementType( INT aType )
-{
-    string Ret;
-
-    switch( aType )
-    {
-        case TYPE_LMPROGRAM_DIRECT:         Ret = "lm direct program";      break;
-        case TYPE_LMPROGRAM_CURTAILMENT:    Ret = "lm curtail program";     break;
-        case TYPE_LM_CONTROL_AREA:          Ret = "lm control area";        break;
-        case TYPE_CI_CUSTOMER:              Ret = "ci customer";            break;
-        case TYPE_LMPROGRAM_ENERGYEXCHANGE: Ret = "lm energy exchange";     break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported load management type in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-
-            Ret = "invalid";
-
-            break;
-        }
-    }
-
-    return Ret;
-}
-
-
-string desolveCapControlType( INT aType )
-{
-    string Ret;
-
-    switch( aType )
-    {
-        case TYPE_CC_SUBSTATION_BUS:    Ret = "ccsubbus";   break;
-        case TYPE_CC_FEEDER:            Ret = "ccfeeder";   break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported cap control type in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-
-            Ret = "invalid";
-
-        break;
-        }
-    }
-
-    return Ret;
-}
-
-
 

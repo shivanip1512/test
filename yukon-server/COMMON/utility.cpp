@@ -764,19 +764,7 @@ bool isLCU(INT type)
 
 bool isExpresscomGroup(INT Type)
 {
-    bool isit = false;
-
-    switch(Type)
-    {
-        case TYPE_LMGROUP_EXPRESSCOM:
-        case TYPE_LMGROUP_XML:
-        {
-            isit = true;
-            break;
-        }
-    }
-
-    return isit;
+    return Type == TYPE_LMGROUP_EXPRESSCOM;
 }
 
 bool isRepeater(INT Type)

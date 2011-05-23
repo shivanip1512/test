@@ -727,7 +727,7 @@ ccsubstationbusstore.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		VoltageRegulatorManager.h VoltageRegulatorLoader.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		desolvers.h db_entry_defines.h resolvers.h ctibase.h \
+		desolvers.h resolvers.h db_entry_defines.h ctibase.h \
 		ctinexus.h configparms.h msg_dbchg.h msg_signal.h \
 		capcontroller.h DispatchConnection.h \
 		CapControlDispatchConnection.h ccexecutor.h ctdpcptrq.h \

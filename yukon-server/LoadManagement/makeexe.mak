@@ -784,14 +784,13 @@ lmprogramdirect.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
 		tbl_lmprogramhistory.h lmgrouppoint.h devicetypes.h lmid.h \
-		desolvers.h db_entry_defines.h loadmanager.h configparms.h \
-		lmcontrolareastore.h executor.h ctdpcptrq.h msg_server_req.h \
-		lmmessage.h clientconn.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h ctinexus.h msg_signal.h msg_notif_lmcontrol.h \
-		lmprogramthermostatgear.h lmprogramcontrolwindow.h \
-		lmconstraint.h lmutility.h database_writer.h row_writer.h \
-		smartgearbase.h
+		desolvers.h loadmanager.h configparms.h lmcontrolareastore.h \
+		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
+		clientconn.h ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
+		msg_signal.h msg_notif_lmcontrol.h lmprogramthermostatgear.h \
+		lmprogramcontrolwindow.h lmconstraint.h lmutility.h \
+		database_writer.h row_writer.h smartgearbase.h
 lmprogramdirectgear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \

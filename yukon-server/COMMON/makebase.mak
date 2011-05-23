@@ -79,7 +79,6 @@ thread_register_data.obj \
 thread_monitor.obj \
 ThreadStatusKeeper.obj \
 timeperiod.obj \
-xml_object.obj \
 LitePoint.obj \
 AttributeService.obj \
 PointAttribute.obj \
@@ -275,10 +274,10 @@ debug_timer.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h
 desolvers.obj:	yukon.h precompiled.h types.h ctidbgmem.h desolvers.h \
-		db_entry_defines.h dlldefs.h pointtypes.h dsm2.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h sorted_vector.h cticonnect.h netports.h dsm2err.h \
-		words.h optional.h resolvers.h devicetypes.h logger.h \
+		dlldefs.h dsm2.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
+		netports.h dsm2err.h words.h optional.h resolvers.h \
+		pointtypes.h db_entry_defines.h devicetypes.h logger.h \
 		thread.h CtiPCPtrQueue.h
 dllbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -418,10 +417,9 @@ test_date_utility.obj:	date_utility.h ctidate.h dlldefs.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
 		CtiPCPtrQueue.h
-test_desolvers.obj:	desolvers.h db_entry_defines.h yukon.h \
-		precompiled.h types.h ctidbgmem.h dlldefs.h pointtypes.h \
-		devicetypes.h boostutil.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h sorted_vector.h
+test_desolvers.obj:	desolvers.h dlldefs.h devicetypes.h boostutil.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h sorted_vector.h
 test_fifo_multiset.obj:	fifo_multiset.h boostutil.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h
@@ -472,9 +470,6 @@ test_utility.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h dsm2.h mutex.h guard.h cticonnect.h \
 		netports.h dsm2err.h words.h optional.h devicetypes.h
-test_xmlobject.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		xml_object.h boostutil.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h
 tfexec.obj:	yukon.h precompiled.h types.h ctidbgmem.h tfexec.h
 thread.obj:	yukon.h precompiled.h types.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h cticalls.h dsm2.h mutex.h guard.h \
@@ -539,7 +534,4 @@ xfer.obj:	yukon.h precompiled.h types.h ctidbgmem.h xfer.h dsm2.h \
 		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
 		netports.h dsm2err.h words.h optional.h
-xml_object.obj:	yukon.h precompiled.h types.h ctidbgmem.h xml_object.h \
-		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h numstr.h sorted_vector.h
 #ENDUPDATE#

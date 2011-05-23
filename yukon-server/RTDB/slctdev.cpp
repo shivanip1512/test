@@ -55,7 +55,6 @@
 #include "dev_grp_sa305.h"
 #include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
-#include "dev_grp_xml.h"
 #include "dev_davis.h"
 #include "dev_dlcbase.h"
 #include "dev_system.h"
@@ -92,7 +91,6 @@
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
 #include "dev_fmu.h"
-#include "dev_xml.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -262,8 +260,6 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
 
-        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new XmlGroupDevice;     break;
-
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;
 
         case TYPE_LMGROUP_GOLAY:        NewDevice = CTIDBG_new CtiDeviceGroupGolay;         break;
@@ -299,7 +295,6 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCTBCAST:              NewDevice = CTIDBG_new MctBroadcastDevice;   break;
 
         case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
-        case TYPE_XML_XMIT:             NewDevice = CTIDBG_new XmlDevice; break;
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
         case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
 
@@ -360,7 +355,6 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
             case RouteTypeSNPP:
             case RouteTypeRTC:
             case RouteTypeSeriesVLMI:
-            case RouteTypeXML:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;
                 break;

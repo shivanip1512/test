@@ -43,10 +43,6 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeExpresscom;
     }
-    else if(rwsTemp == "integration route")
-    {
-        Ret = RouteTypeXML;
-    }
     else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
     {
         Ret = RouteTypeTap;
@@ -407,7 +403,6 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("digi sep group",     TYPE_LMGROUP_DIGI_SEP));
     device_types.insert(make_pair("emetcon group",      TYPE_LMGROUP_EMETCON));
     device_types.insert(make_pair("expresscom group",   TYPE_LMGROUP_EXPRESSCOM));
-    device_types.insert(make_pair("integration group",  TYPE_LMGROUP_XML));
     device_types.insert(make_pair("mct group",          TYPE_LMGROUP_MCT));
     device_types.insert(make_pair("point group",        TYPE_LMGROUP_POINT));
     device_types.insert(make_pair("ripple group",       TYPE_LMGROUP_RIPPLE));
@@ -421,7 +416,6 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("virtual system",     TYPE_VIRTUAL_SYSTEM));
 
     //  --- Transmitters ---
-    device_types.insert(make_pair("integration",        TYPE_XML_XMIT));
     device_types.insert(make_pair("lcu-415",            TYPE_LCU415));
     device_types.insert(make_pair("lcu-eastriver",      TYPE_LCU415ER));
     device_types.insert(make_pair("lcu-lg",             TYPE_LCU415LG));
@@ -929,7 +923,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_PAGING_RECEIVER:
         case TYPE_FCI:
         case TYPE_NEUTRAL_MONITOR:
-        case TYPE_XML_XMIT:
         {
             bRet = true;
             break;
@@ -945,7 +938,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_RIPPLE:
         case TYPE_LMGROUP_VERSACOM:
         case TYPE_LMGROUP_EXPRESSCOM:
-        case TYPE_LMGROUP_XML:
         case TYPE_LMGROUP_DIGI_SEP:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:
@@ -1501,17 +1493,6 @@ CtiControlType_t  resolveControlType(const string& _str)
 INT resolveUomToCalcType(const string& _str)
 {
     INT Ret = CalcTypeNormal;
-
-#if 0
-    string str = _str;
-    CtiToLower(str);
-    in_place_trim(str);
-
-    if(str == "volts")
-    {
-        Ret = CalcTypeVoltsFromV2H;
-    }
-#endif
 
     return Ret;
 }

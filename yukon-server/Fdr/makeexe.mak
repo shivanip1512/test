@@ -423,11 +423,12 @@ fdrpibase.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		pointdefs.h pointtypes.h message.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h connection.h exchange.h \
 		string_utility.h queue.h hashkey.h hash_functions.h \
-		resolvers.h db_entry_defines.h fdr.h fdrdebuglevel.h \
-		fdrinterface.h msg_dbchg.h mgr_fdrpoint.h smartmap.h \
-		readers_writer_lock.h critical_section.h fdrpoint.h \
-		fdrdestination.h fdrpointlist.h fdrpipoll.h fdrpibase.h \
-		fdrsimplebase.h fdrasciiimportbase.h fdrpinotify.h
+		resolvers.h db_entry_defines.h ctistring.h fdr.h \
+		fdrdebuglevel.h fdrinterface.h msg_dbchg.h mgr_fdrpoint.h \
+		smartmap.h readers_writer_lock.h critical_section.h \
+		fdrpoint.h fdrdestination.h fdrpointlist.h fdrpipoll.h \
+		fdrpibase.h fdrsimplebase.h fdrasciiimportbase.h \
+		fdrpinotify.h
 fdrpinotify.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h numstr.h \

@@ -40,8 +40,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_TCU5000]     = "TCU-5000";
     type_lookups[TYPE_TCU5500]     = "TCU-5500";
 
-    type_lookups[TYPE_XML_XMIT]    = "INTEGRATION";
-
     type_lookups[TYPE_TDMARKV]     = "TRANSDATA MARK-V";
 
     type_lookups[TYPE_DAVIS]       = "DAVISWEATHER";
@@ -114,7 +112,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_LMGROUP_RIPPLE]      = "RIPPLE GROUP";
     type_lookups[TYPE_LMGROUP_VERSACOM]    = "VERSACOM GROUP";
     type_lookups[TYPE_LMGROUP_EXPRESSCOM]  = "EXPRESSCOM GROUP";
-    type_lookups[TYPE_LMGROUP_XML]         = "INTEGRATION GROUP";
     type_lookups[TYPE_LMGROUP_DIGI_SEP]    = "DIGI SEP GROUP";
     type_lookups[TYPE_LMGROUP_MCT]         = "MCT GROUP";
     type_lookups[TYPE_LMGROUP_GOLAY]       = "GOLAY GROUP";

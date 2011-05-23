@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   porter
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.139 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <iostream>
@@ -219,7 +206,6 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                 case RouteTypeSNPP:
                 case RouteTypeRTC:
                 case RouteTypeSeriesVLMI:
-                case RouteTypeXML:
                 {
                     CtiRouteXCUSPtr pXCU = boost::static_pointer_cast<CtiRouteXCU>(itr->second);
 

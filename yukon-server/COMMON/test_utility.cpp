@@ -266,17 +266,12 @@ BOOST_AUTO_TEST_CASE(test_isExpresscomGroup)
     bool ret = isExpresscomGroup(TYPE_LMGROUP_EXPRESSCOM);
     BOOST_CHECK_EQUAL(ret, true);
 
-    ret = isExpresscomGroup(TYPE_LMGROUP_XML);
-    BOOST_CHECK_EQUAL(ret, true);
-
     //False cases
     for (int i = 0; i < 3000; ++i)
     {
-        ret = isExpresscomGroup(i);
-        if (i == TYPE_LMGROUP_EXPRESSCOM || i == TYPE_LMGROUP_XML)
+        if( i != TYPE_LMGROUP_EXPRESSCOM )
         {
-            BOOST_CHECK_EQUAL(ret, true);
-        } else {
+            ret = isExpresscomGroup(i);
             BOOST_CHECK_EQUAL(ret, false);
         }
     }

@@ -350,7 +350,6 @@ enum CtiRoute_t
     RouteTypeRTC,
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
-    RouteTypeXML,
     RouteTypeTNPP,
     RouteTypeRDS,
 

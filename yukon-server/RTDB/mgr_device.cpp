@@ -40,11 +40,9 @@
 #include "dev_grp_sa205.h"
 #include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
-#include "dev_grp_xml.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
 #include "dev_rds.h"
-#include "dev_xml.h"
 #include "tbl_static_paoinfo.h"
 
 #include "devicetypes.h"
@@ -747,10 +745,6 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceIED(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
-                        //  XML Transmitters
-                        rowFound |= loadDeviceType(paoid_subset, "Integration devices",    CtiDeviceRemote(),   "Integration");
-                        rowFound |= loadDeviceType(paoid_subset, "Integration groups",     Devices::XmlGroupDevice());
-
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
                         rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
@@ -1273,94 +1267,6 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
     }
 }
 
-void CtiDeviceManager::refreshDeviceParameters(Cti::Database::id_set &paoids, int type)
-{
-    if(!type || type == TYPE_LMGROUP_XML)
-    {
-        //Clear devices listed in paoids. if none, clear ALL
-        if (!paoids.empty())
-        {
-            Cti::Database::id_set::const_iterator itr = paoids.begin();
-            for ( itr = paoids.begin(); itr != paoids.end(); itr++)
-            {
-                CtiDeviceSPtr device = getDeviceByID(*itr);
-                if (device)
-                {
-                    device->clearParameters();
-                }
-            }
-        }
-        else
-        {
-            //clear all devices.
-            apply(applyDeviceClearParameters, NULL);
-        }
-
-        static const string sqlCore =  "SELECT XML.LMGroupXMLParameterId, XML.lmgroupid, XML.parametername, "
-                                         "XML.parametervalue "
-                                       "FROM LMGroupXMLParameter XML";
-        static const string orderBy =  "ORDER BY XML.lmgroupid ASC";
-        const string idClause = createIdSqlClause(paoids, "XML", "lmgroupid");
-
-        string sql = sqlCore;
-
-        if(!idClause.empty())
-        {
-            sql += " WHERE ";
-            sql += idClause;
-            sql += " ";
-            sql += orderBy;
-        }
-        else
-        {
-            sql += " ";
-            sql += orderBy;
-        }
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection, sql);
-
-        rdr.execute();
-
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
-        }
-
-        if(rdr.isValid())
-        {
-            int prevDev = -1;
-            CtiDeviceSPtr device;
-            while(rdr())
-            {
-                int deviceId = -1;
-                rdr["lmgroupid"] >> deviceId;
-
-                if (prevDev != deviceId)
-                {
-                    prevDev = deviceId;
-                    device = getDeviceByID(deviceId);
-                }
-
-                if (device)
-                {
-                    device->decodeParameters(rdr);
-                }
-            }
-        }
-
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Done looking for XML Properties" << endl;
-        }
-    }
-}
-
 void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 {
     int childcount = 0;
@@ -1840,11 +1746,6 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
     }
 
     {
-        Timing::DebugTimer timer("loading Device Parameters");
-        refreshDeviceParameters(paoids, type);
-    }
-
-    {
         Timing::DebugTimer timer("loading device exclusions");
         refreshExclusions(paoids);
     }
@@ -2257,7 +2158,6 @@ void CtiDeviceManager::refreshGroupHierarchy(LONG deviceID)
         vector< CtiDeviceSPtr > match_coll;
         vector< CtiDeviceGroupBaseSPtr > groupVec;
         getDevicesByType(TYPE_LMGROUP_EXPRESSCOM, match_coll);
-        getDevicesByType(TYPE_LMGROUP_XML, match_coll);
         //This makes me so very unhappy.
         for( vector< CtiDeviceSPtr >::iterator iter = match_coll.begin(); iter != match_coll.end(); iter++ )
         {
