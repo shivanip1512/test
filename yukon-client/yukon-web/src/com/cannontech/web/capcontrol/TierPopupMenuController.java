@@ -287,10 +287,10 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.CBC_TIMESYNC);
 
-        if (is702xDevice || is701xDevice) {
+        if (is702xDevice) {
             mav.addObject("allowLocalControl", allowLocalControl);
             mav.addObject("localControlTypeCBC", true);
-        } else {
+        } else if( allowLocalControl ) {
             list.add(CommandHolder.CBC_ENABLE_OVUV);
             list.add(CommandHolder.CBC_DISABLE_OVUV);
         }
