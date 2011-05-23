@@ -33,11 +33,11 @@
             </c:forEach>
         </table>
         <br>
-        <tags:csrfTokenRequest>
+<%--        <tags:csrfTokenRequest> --%>
           <cti:button key="save" name="save" type="submit"/>
           <cti:button key="delete" id="deleteButton" type="button"/>
           <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${groupName}" submitName="delete"/>
           <cti:button key="cancel" name="cancel" type="submit"/>
-        </tags:csrfTokenRequest>
+<%--        </tags:csrfTokenRequest> --%>
     </form:form>
 </cti:standardPage>

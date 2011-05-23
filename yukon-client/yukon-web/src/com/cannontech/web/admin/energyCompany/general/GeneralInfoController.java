@@ -46,7 +46,6 @@ import com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -56,7 +55,7 @@ import com.google.common.collect.Lists;
 public class GeneralInfoController {
     private final static String baseKey = "yukon.web.modules.adminSetup.generalInfo.";
 
-    private CsrfTokenService csrfTokenService;
+//    private CsrfTokenService csrfTokenService;
     private EnergyCompanyService energyCompanyService;
     private ECMappingDao ecMappingDao;
     private GeneralInfoService generalInfoService;
@@ -124,7 +123,8 @@ public class GeneralInfoController {
         }
         
         starsEventLogService.deleteEnergyCompanyAttemptedByOperator(user, fragment.getCompanyName());
-        
+
+/*
         // Check the csrf validation
         String errorCode = csrfTokenService.checkRequest(request);
         if(org.apache.commons.lang.StringUtils.isNotEmpty(errorCode)) {
@@ -132,7 +132,7 @@ public class GeneralInfoController {
             flashScope.setError(new YukonMessageSourceResolvable(errorCode));
             return "redirect:delete";
         }
-
+*/
         energyCompanyService.deleteEnergyCompany(user, ecId);
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
@@ -379,11 +379,12 @@ public class GeneralInfoController {
     }
     
     /* Dependencies */
+/*
     @Autowired
     public void setCsrfTokenService(CsrfTokenService csrfTokenService) {
         this.csrfTokenService = csrfTokenService;
     }
-    
+*/    
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;

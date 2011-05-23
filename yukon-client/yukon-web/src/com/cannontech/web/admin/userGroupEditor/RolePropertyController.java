@@ -33,7 +33,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
@@ -45,7 +44,7 @@ public class RolePropertyController {
 
     private RolePropertyEditorDao rolePropertyEditorDao;
     private YukonGroupDao yukonGroupDao;
-    private CsrfTokenService csrfTokenService;
+//    private CsrfTokenService csrfTokenService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Map<YukonRole, MappedPropertiesHelper<DescriptiveRoleProperty>> helperLookup;
@@ -103,7 +102,8 @@ public class RolePropertyController {
     @RequestMapping(value="update", method=RequestMethod.POST, params="save")
     public String save(HttpServletRequest request, @ModelAttribute("command")GroupRolePropertyEditorBean command, BindingResult result, 
                        YukonUserContext context, ModelMap map, FlashScope flashScope, int groupId, int roleId) throws Exception {
-        csrfTokenService.checkRequest(request, result);
+
+//        csrfTokenService.checkRequest(request, result);
         LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(groupId);
         YukonRole role = YukonRole.getForId(roleId);
         if (result.hasErrors()) {
@@ -163,12 +163,12 @@ public class RolePropertyController {
     public void setRolePropertyEditorDao(RolePropertyEditorDao rolePropertyEditorDao) {
         this.rolePropertyEditorDao = rolePropertyEditorDao;
     }
-    
+/*    
     @Autowired
     public void setCsrfTokenService(CsrfTokenService csrfTokenService) {
         this.csrfTokenService = csrfTokenService;
     }
-    
+*/    
     @Autowired
     public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
         this.yukonGroupDao = yukonGroupDao;
