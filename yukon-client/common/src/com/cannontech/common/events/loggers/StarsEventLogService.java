@@ -25,6 +25,29 @@ public interface StarsEventLogService {
                                                  @Arg(ArgEnum.energyCompanyName) String energyCompanyName,
                                                  @Arg(ArgEnum.routeId) int oldRouteId,
                                                  @Arg(ArgEnum.routeId) int newRouteId);
+
+    // Warehouse
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void addWarehouseAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                @Arg(ArgEnum.warehouseName) String warehouseName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void updateWarehouseAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                   @Arg(ArgEnum.warehouseName) String warehouseName);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void deleteWarehouseAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                   @Arg(ArgEnum.warehouseName) String warehouseName);
+    
+    // Warehouse service level
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void addWarehouse(@Arg(ArgEnum.warehouseName) String warehouseName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void updateWarehouse(@Arg(ArgEnum.warehouseName) String warehouseName);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
+    public void deleteWarehouse(@Arg(ArgEnum.warehouseName) String warehouseName);
     
 /* System Opt Outs */
     // Cancel All Opt Out

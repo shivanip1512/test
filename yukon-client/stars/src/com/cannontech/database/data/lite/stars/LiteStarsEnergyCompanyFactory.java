@@ -105,6 +105,14 @@ public class LiteStarsEnergyCompanyFactory {
                 energyCompany.resetApplianceCategoryList();
             }
         });
+        
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.WAREHOUSE,
+                                                              new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                energyCompany.clearWarehouseCache();
+            }
+        });
 
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY,
                                                               new DatabaseChangeEventListener() {

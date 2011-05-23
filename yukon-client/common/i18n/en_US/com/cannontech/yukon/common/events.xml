@@ -36,6 +36,7 @@
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.username">Username</entry>
+    <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
     
 <!-- Event log message text and column names -->
@@ -319,6 +320,14 @@
     <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompanyAttemptedByOperator">The user {1} is attempting to delete the energy company {2}.</entry>
     <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompany">The user {1} deleted the energy company {2}.</entry>
     
+    <entry key="yukon.common.events.stars.warehouse.addWarehouseAttemptedByOperator">The user {1} is attempting to add the warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.updateWarehouseAttemptedByOperator">The user {1} is attempting to update the warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.deleteWarehouseAttemptedByOperator">The user {1} is attempting to delete the warehouse {2}.</entry>
+
+    <entry key="yukon.common.events.stars.warehouse.addWarehouse">The warehouse {1} has been added.</entry>
+    <entry key="yukon.common.events.stars.warehouse.updateWarehouse">The warehouse {1} has been updated.</entry>
+    <entry key="yukon.common.events.stars.warehouse.deleteWarehouse">The warehouse {1} has been deleted.</entry>
+
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the Api.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the operator pages.</entry>

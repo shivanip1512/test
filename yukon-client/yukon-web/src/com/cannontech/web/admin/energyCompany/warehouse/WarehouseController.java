@@ -12,6 +12,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.common.validator.SimpleValidator;
@@ -27,7 +28,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;
-import com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl;
+import com.cannontech.web.admin.energyCompany.warehouse.service.WarehouseService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -39,7 +40,9 @@ public class WarehouseController {
     public StarsDatabaseCache starsDatabaseCache;
     
     private EnergyCompanyService energyCompanyService;
-    private WarehouseServiceImpl warehouseService;
+    private StarsEventLogService starsEventLogService;
+    private WarehouseService warehouseService;
+    
     private final String baseUrl = "/spring/adminSetup/energyCompany/warehouse";
     
     /* Main page */
@@ -98,6 +101,9 @@ public class WarehouseController {
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+        starsEventLogService.addWarehouseAttemptedByOperator(userContext.getYukonUser(), 
+                                                             warehouseDto.getWarehouse().getWarehouseName());
+        
         modelMap.addAttribute("ecId", ecId);
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
         validator.validate(warehouseDto, bindingResult);
@@ -139,6 +145,10 @@ public class WarehouseController {
                                  FlashScope flashScope,
                                  EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
+
+        starsEventLogService.updateWarehouseAttemptedByOperator(userContext.getYukonUser(), 
+                                                                warehouseDto.getWarehouse().getWarehouseName());
+        
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
         validator.validate(warehouseDto, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -162,6 +172,9 @@ public class WarehouseController {
                                   final @ModelAttribute ("warehouseDto") WarehouseDto warehouseDto,
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+        
+        starsEventLogService.deleteWarehouseAttemptedByOperator(userContext.getYukonUser(),
+                                                                warehouseDto.getWarehouse().getWarehouseName());
         
         warehouseService.deleteWarehouse(warehouseDto);
         
@@ -199,14 +212,19 @@ public class WarehouseController {
         return this.baseUrl;
     }
     
+    // DI Setters
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
     }
     
     @Autowired
-    public void setWarehouseService(WarehouseServiceImpl warehouseService) {
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
+    }
+
+    @Autowired
+    public void setWarehouseService(WarehouseService warehouseService) {
         this.warehouseService = warehouseService;
     }
-    
 }

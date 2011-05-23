@@ -35,6 +35,7 @@ public enum ArgEnum {
     taskName,
     thermostatLabel,
     username, 
+    warehouseName,
     workOrderNumber,
     inventoryId,
     commandRequestExecutionIdentifier,

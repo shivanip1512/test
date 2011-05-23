@@ -42,9 +42,10 @@ public enum DbChangeCategory {
     CBC_ADDINFO("CB Additional Info"),
     WEB_CONFIG("Web Configuration"),
     STARS_PUBLISHED_PROGRAM("Stars Published Program"),
+    WAREHOUSE("Warehouse"),
     YUKON_SELECTION_LIST("YukonSelectionList"), 
     YUKON_LIST_ENTRY("YukonListEntry"),
-    PORTER_RESPONSE_MONITOR,
+    PORTER_RESPONSE_MONITOR, 
     ;
     
     private final String representation;
