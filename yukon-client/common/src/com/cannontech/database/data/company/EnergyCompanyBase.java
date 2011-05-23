@@ -77,16 +77,16 @@ public void delete() throws java.sql.SQLException
 
 	setDbConnection(null);
 */
-	delete( "EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
-	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
+	delete( "EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId() );
+	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId() );
 	getEnergyCompany().delete();
 	
-	if (getEnergyCompany().getPrimaryContactID() != null
-		&& getEnergyCompany().getPrimaryContactID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)
+	if (getEnergyCompany().getPrimaryContactId() != null
+		&& getEnergyCompany().getPrimaryContactId().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)
 	{
 		com.cannontech.database.data.customer.Contact contact =
 				new com.cannontech.database.data.customer.Contact();
-		contact.setContactID( getEnergyCompany().getPrimaryContactID() );
+		contact.setContactID( getEnergyCompany().getPrimaryContactId() );
 		contact.setDbConnection( getDbConnection() );
 		contact.delete();
 	}
@@ -100,7 +100,7 @@ public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
 	DBChangeMsg[] msgs = {
 	        new DBChangeMsg(
-	                        getEnergyCompany().getEnergyCompanyID().intValue(),
+	                        getEnergyCompany().getEnergyCompanyId().intValue(),
 	                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
 	                        DBChangeMsg.CAT_ENERGY_COMPANY,
 	                        null,
@@ -162,7 +162,7 @@ public void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany ne
  */
 public void setEnergyCompanyID(Integer ecID)
 {
-	getEnergyCompany().setEnergyCompanyID( ecID );
+	getEnergyCompany().setEnergyCompanyId( ecID );
 }
 
 public void setName(String name) {
