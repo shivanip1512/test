@@ -1,8 +1,5 @@
 package com.cannontech.common.pao.attribute.model;
 
-import org.springframework.context.MessageSourceResolvable;
-
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public enum BuiltInAttribute implements Attribute {
     
@@ -18,7 +15,7 @@ public enum BuiltInAttribute implements Attribute {
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
-    LOAD_PROFILE("Load Profile", true),
+    LOAD_PROFILE("Load Profile", true, false),
     TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
@@ -27,8 +24,8 @@ public enum BuiltInAttribute implements Attribute {
     PEAK_DEMAND("Peak Demand"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
-    PROFILE_CHANNEL_2("Profile Channel 2", true),
-    PROFILE_CHANNEL_3("Profile Channel 3", true),
+    PROFILE_CHANNEL_2("Profile Channel 2", true, false),
+    PROFILE_CHANNEL_3("Profile Channel 3", true, false),
     TAP_UP("Raise Tap Position"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     TAMPER_FLAG("Tamper Flag"),
@@ -37,29 +34,32 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_B_PEAK_DEMAND("Tou Rate B Peak"),
     TOU_RATE_C_PEAK_DEMAND("Tou Rate C Peak"),
     TOU_RATE_D_PEAK_DEMAND("Tou Rate D Peak"),
-    TOU_RATE_A_USAGE("Tou Rate A Usage"), 
-    TOU_RATE_B_USAGE("Tou Rate B Usage"), 
-    TOU_RATE_C_USAGE("Tou Rate C Usage"), 
-    TOU_RATE_D_USAGE("Tou Rate D Usage"), 
-    USAGE("Usage Reading"), 
+    TOU_RATE_A_USAGE("Tou Rate A Usage", false, true), 
+    TOU_RATE_B_USAGE("Tou Rate B Usage", false, true), 
+    TOU_RATE_C_USAGE("Tou Rate C Usage", false, true), 
+    TOU_RATE_D_USAGE("Tou Rate D Usage", false, true), 
+    USAGE("Usage Reading", false, true), 
     VOLTAGE("Voltage"), 
-    VOLTAGE_PROFILE("Voltage Profile", true),
-    WATER_USAGE("Water Usage Reading"),
+    VOLTAGE_PROFILE("Voltage Profile", true, false),
+    WATER_USAGE("Water Usage Reading", false, true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     ;
-    
-	private BuiltInAttribute(String description) {
-        this(description, false);
+
+    private BuiltInAttribute(String description) {
+    	this.description = description;
+		this.profile = false;
+		this.accumulator = false;
     }
-    
-    private BuiltInAttribute(String description, boolean profile) {
+    private BuiltInAttribute(String description, boolean profile, boolean accumulator) {
     	this.description = description;
 		this.profile = profile;
+		this.accumulator = accumulator;
     }
     
     private String description;
     private final boolean profile;
+    private final boolean accumulator;	//point is an accumulation; Example: Usage 
     
     public String getDescription() {
         return description;
@@ -67,6 +67,10 @@ public enum BuiltInAttribute implements Attribute {
     
     public boolean isProfile() {
 		return profile;
+	}
+
+    public boolean isAccumulator() {
+		return accumulator;
 	}
     
     public String getKey() {
