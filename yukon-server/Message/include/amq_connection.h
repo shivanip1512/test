@@ -12,7 +12,6 @@ namespace Cti {
 namespace Messaging {
 
 class StreamableMessage;
-struct amq_envelope;
 
 class IM_EX_MSG ActiveMQConnectionManager : private CtiThread
 {
@@ -22,17 +21,26 @@ public:
 
 private:
 
+    struct envelope
+    {
+        std::string queue;
+
+        boost::scoped_ptr<StreamableMessage> message;
+    };
+
     void run();
 
-    void validateSetup();
+    void getIncomingMessages();
 
     void sendPendingMessages();
 
-    void sendMessage(cms::Session &session, const amq_envelope &e);
+    void validateSetup();
+
+    void sendMessage(cms::Session &session, const envelope &e);
+
+    void purgePendingMessages();
 
     cms::MessageProducer *getProducer(cms::Session &session, const std::string &queue);
-
-    void enqueueEnvelope(std::auto_ptr<amq_envelope> e);
 
     std::string getQueueName(Queues queue) const;
 
@@ -45,12 +53,12 @@ private:
 
     const std::string _broker_uri;
 
-    std::queue<amq_envelope *> _incoming_messages;
-    CtiCriticalSection   _incoming_message_mux;
+    std::queue<envelope *> _incoming_messages;
+    CtiCriticalSection     _incoming_message_mux;
 
-    std::queue<amq_envelope *> _pending_messages;
+    std::queue<envelope *> _pending_messages;
 
-    typedef std::map<std::string, cms::MessageProducer *> producer_map;
+    typedef boost::ptr_map<const std::string, cms::MessageProducer> producer_map;
 
     producer_map _producers;
 
@@ -68,12 +76,6 @@ public:
     ActiveMQConnectionManager(const std::string &broker_uri);
 
     virtual ~ActiveMQConnectionManager();
-
-    /**
-     * @deprecated  Prefer {@link #enqueueMessage(const Queues
-     *              queue, const StreamableMessage &message);}
-     */
-    void enqueueMessage(const std::string &queueName, const std::string &message);
 
     void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
 

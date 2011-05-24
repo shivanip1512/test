@@ -18,45 +18,6 @@ using boost::scoped_ptr;
 namespace Cti {
 namespace Messaging {
 
-struct amq_envelope
-{
-    string queue;
-
-    virtual ~amq_envelope() {}
-
-    virtual auto_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
-};
-
-struct string_envelope : amq_envelope
-{
-    string message;
-
-    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
-    {
-        return auto_ptr<cms::Message>(session.createTextMessage(message));
-    }
-};
-
-struct streamable_envelope : amq_envelope
-{
-    scoped_ptr<StreamableMessage> message;
-
-    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
-    {
-        auto_ptr<cms::StreamMessage> streamMessage;
-
-        if( message.get() )
-        {
-            streamMessage.reset(session.createStreamMessage());
-
-            message->streamInto(*streamMessage);
-        }
-
-        return streamMessage;
-    }
-};
-
-
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri),
     _initialized(false),
@@ -77,7 +38,7 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
         join();
     }
 
-    delete_assoc_container(_producers);
+    _producers.clear();
 
     _connection.reset();
     _session.reset();
@@ -106,9 +67,28 @@ void ActiveMQConnectionManager::run()
 {
     while( !isSet(SHUTDOWN) )
     {
+        getIncomingMessages();
+
         sendPendingMessages();
 
         sleep(_delay * 1000);
+    }
+}
+
+
+void Cti::Messaging::ActiveMQConnectionManager::getIncomingMessages()
+{
+    CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
+
+    while( !_incoming_messages.empty() )
+    {
+        //  guarantee that we will not have null pointers in _pending_messages
+        if( _incoming_messages.front() )
+        {
+            _pending_messages.push(_incoming_messages.front());
+        }
+
+        _incoming_messages.pop();
     }
 }
 
@@ -157,35 +137,42 @@ void ActiveMQConnectionManager::validateSetup()
 }
 
 
+void ActiveMQConnectionManager::purgePendingMessages()
+{
+    while( ! _pending_messages.empty() )
+    {
+        delete _pending_messages.front();
+
+        _pending_messages.pop();
+    }
+}
+
+
 void ActiveMQConnectionManager::sendPendingMessages()
 try
 {
-    validateSetup();
-
+    try
     {
-        //  lock as little as possible - just empty out the pending queue and let go
-        CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
+        validateSetup();
+    }
+    catch( cms::CMSException &e )
+    {
+        //  If there's been an error establishing the connection, purge any pending messages
+        purgePendingMessages();
 
-        while( !_incoming_messages.empty() )
-        {
-            //  guarantee that we cannot have null pointers in _pending_messages
-            if( _incoming_messages.front() )
-            {
-                _pending_messages.push(_incoming_messages.front());
-            }
-
-            _incoming_messages.pop();
-        }
+        throw;
     }
 
     while( !_pending_messages.empty() )
     {
-        scoped_ptr<amq_envelope> e(_pending_messages.front());
-
-        _pending_messages.pop();
+        envelope *e = _pending_messages.front();
 
         //  _session must be valid if we passed validateSetup()
         sendMessage(*_session, *e);
+
+        delete e;
+
+        _pending_messages.pop();
     }
 
     //  If successful, reset delay
@@ -208,54 +195,15 @@ catch( cms::CMSException &e )
         dout << CtiTime() << " ActiveMQ CMS error - \"" << trim(string(e.what())) << "\" - delaying " << _delay << " seconds\n";
     }
 
-    //  If there's been an error, purge any pending messages
-    while( ! _pending_messages.empty() )
-    {
-        delete _pending_messages.front();
-
-        _pending_messages.pop();
-    }
-
     //  Clear all of the connection, session, and producer info
     _connection.reset();
 
     _session.reset();
 
-    delete_assoc_container(_producers);
     _producers.clear();
-
-    return;
 }
 catch( std::runtime_error &e )
 {
-    return;
-}
-
-
-void ActiveMQConnectionManager::enqueueEnvelope(auto_ptr<amq_envelope> e)
-{
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
-
-        _incoming_messages.push(e.release());
-    }
-
-    if( !isRunning() )
-    {
-        //  starts its thread on first outbound message
-        start();
-    }
-}
-
-
-void ActiveMQConnectionManager::enqueueMessage(const std::string &queueName, const std::string &message)
-{
-    string_envelope *e = new string_envelope;
-
-    e->queue   = queueName;
-    e->message = message;
-
-    enqueueEnvelope(auto_ptr<amq_envelope>(e));
 }
 
 
@@ -263,27 +211,46 @@ void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<St
 {
     std::string queueName = getQueueName(queueId);
 
-    if( ! queueName.empty() )
+    //  ensure the message is not null
+    if( ! queueName.empty() && message.get() )
     {
-        streamable_envelope *se = new streamable_envelope;
+        envelope *e = new envelope;
 
-        se->queue   = queueName;
-        se->message.reset(message.release());
+        e->queue = queueName;
+        e->message.reset(message.release());
 
-        enqueueEnvelope(auto_ptr<amq_envelope>(se));
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
+
+            _incoming_messages.push(e);
+        }
+
+        if( !isRunning() )
+        {
+            //  starts its thread on first outbound message
+            start();
+        }
     }
 }
 
 
-void ActiveMQConnectionManager::sendMessage(cms::Session &session, const amq_envelope &e)
+void ActiveMQConnectionManager::sendMessage(cms::Session &session, const envelope &e)
 {
     if( cms::MessageProducer * const producer = getProducer(session, e.queue) )
     {
-        auto_ptr<cms::Message> m(e.extractMessage(session));
+        std::auto_ptr<cms::StreamMessage> streamMessage(session.createStreamMessage());
 
-        if( m.get() )
+        if( streamMessage.get() )
         {
-            producer->send(m.get());
+            e.message->streamInto(*streamMessage);
+
+            producer->send(streamMessage.get());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+
+            dout << CtiTime() << " ActiveMQ CMS session error - could not create a stream message \n";
         }
     }
     else
@@ -324,7 +291,7 @@ cms::MessageProducer *ActiveMQConnectionManager::getProducer(cms::Session &sessi
 
             producer->setTimeToLive(DefaultTimeToLive);
 
-            _producers.insert(make_pair(queueName, producer));
+            _producers.insert(queueName, producer);
 
             return producer;
         }
