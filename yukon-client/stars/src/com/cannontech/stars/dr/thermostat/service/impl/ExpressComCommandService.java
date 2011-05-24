@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +77,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
         if (type == HardwareType.UTILITY_PRO) {
             try {
-                fixUtilProScheduleMode(stat, mode, user);
+                sendFixForUtilProScheduleMode(stat, mode, user);
             } catch (CommandCompletionException e) {
                 log.error("Failed to update thermostat schedule mode.", e);
                 return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_ERROR;
@@ -102,7 +101,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
     /**
      * For Utility Pro's: update the mode if the 5-2 schedule role property is true
      */
-    private void fixUtilProScheduleMode(Thermostat stat, ThermostatScheduleMode mode, LiteYukonUser user) throws CommandCompletionException{
+    private void sendFixForUtilProScheduleMode(Thermostat stat, ThermostatScheduleMode mode, LiteYukonUser user) throws CommandCompletionException{
         boolean isOperator = energyCompanyService.isOperator(user);
         
         // We have to update the schedule mode for Utility Pro thermostats every
@@ -178,8 +177,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
             } else {
                 
-                DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
-                String startTimeString = timeFormatter.print(startTime);
+                String startTimeString = startTime.toString("HH:mm");
                 command.append(startTimeString + ",");
                 command.append(heatTemp + ",");
                 command.append(coolTemp);

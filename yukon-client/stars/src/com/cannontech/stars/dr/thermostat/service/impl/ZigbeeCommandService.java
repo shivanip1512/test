@@ -7,8 +7,6 @@ import java.util.List;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -79,9 +77,9 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             message.setStartTime(new Instant());
             zigbeeWebService.sendTextMessage(message);
         } catch (ZigbeeClusterLibraryException e) {
-            throw new CommandCompletionException(e.getMessage());
+            throw new CommandCompletionException(e.getMessage(), e);
         } catch (DigiWebServiceException e) {
-            throw new CommandCompletionException(e.getMessage());
+            throw new CommandCompletionException(e.getMessage(), e);
         }
     }
 
@@ -145,7 +143,6 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
     
     private String buildZigbeeSetPoints(Collection<AccountThermostatScheduleEntry> entries) {
         StringBuilder builder = new StringBuilder();
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HHmm");
         
         /* Assume for ZigBee devices we will always be provided 4 set point entries */
         String[] setPoints = new String[] {"w", "l", "r", "s"};
@@ -164,7 +161,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             int coolTemp = entry.getCoolTemp();
             int heatTemp = entry.getHeatTemp();
 
-            String startTimeString = timeFormatter.print(startTime);
+            String startTimeString = startTime.toString("HH:mm");
             builder.append(startTimeString + ",");
             builder.append(coolTemp + ",");
             builder.append(heatTemp);

@@ -19,6 +19,7 @@ public class ButtonTag extends YukonTagSupport {
 
     protected String id = null;
     protected String key = null;
+    protected String arguments = null;
     protected String href = null;
     protected String onclick = null;
     protected String styleClass = null;
@@ -46,6 +47,10 @@ public class ButtonTag extends YukonTagSupport {
 
     public void setKey(String key) {
         this.key = key;
+    }
+    
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
     }
 
     public void setHref(String href) {
@@ -135,11 +140,11 @@ public class ButtonTag extends YukonTagSupport {
             boolean override = false;
             /* Allow localizers to override the complete button text for any specific button.
              * This means the dialogButton attribut's appending of ellipsis feature will not be respected. */
-            MessageSourceResolvable overrideLabelTextResolvable = messageScope.generateResolvable(".label.override");
+            MessageSourceResolvable overrideLabelTextResolvable = messageScope.generateResolvable(".label.override", arguments);
             labelText = getLocalMessage(overrideLabelTextResolvable, false);
             
             if (StringUtils.isBlank(labelText)) {
-                MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label");
+                MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label", arguments);
                 labelText = getLocalMessage(labelTextResolvable, false);
             } else {
                 override = true;

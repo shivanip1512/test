@@ -39,7 +39,6 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatCommandExecutionService;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -57,7 +56,6 @@ public class ThermostatServiceImpl implements ThermostatService {
     private InventoryDao inventoryDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
-    private EnergyCompanyService energyCompanyService;
     private CommandServiceFactory commandServiceFactory;
     
     @Override
@@ -70,21 +68,13 @@ public class ThermostatServiceImpl implements ThermostatService {
 
         // Make sure the device is available
         if (!thermostat.isAvailable()) {
-            if (energyCompanyService.isOperator(user)) {
-                return ThermostatManualEventResult.UNAVAILABLE_ERROR;
-            } else {
-                return ThermostatManualEventResult.MANUAL_ERROR;
-            }
+            return ThermostatManualEventResult.UNAVAILABLE_ERROR;
         }
 
         // Make sure the device has a serial number
         String serialNumber = thermostat.getSerialNumber();
         if (StringUtils.isBlank(serialNumber)) {
-            if (energyCompanyService.isOperator(user)) {
-                return ThermostatManualEventResult.NO_SERIAL_ERROR;
-            } else {
-                return ThermostatManualEventResult.MANUAL_ERROR;
-            }
+            return ThermostatManualEventResult.NO_SERIAL_ERROR;
         }
 
         // Send command to thermostat
@@ -425,11 +415,6 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired
     public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
         this.thermostatEventHistoryDao = thermostatEventHistoryDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
     }
     
     @Autowired
