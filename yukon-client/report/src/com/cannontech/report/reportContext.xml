@@ -80,6 +80,9 @@
     
     <!-- Device Readings Model -->
    <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype"/>
+
+    <!-- Meter Usage Model -->
+   <bean id="meterUsageModel" class="com.cannontech.analysis.tablemodel.MeterUsageModel" scope="prototype"/>
     
      <!-- Device Request Detail Model -->
    <bean id="deviceRequestDetailModel" class="com.cannontech.analysis.tablemodel.DeviceRequestDetailModel" scope="prototype"/>

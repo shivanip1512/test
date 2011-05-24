@@ -22,7 +22,7 @@ public class LabelFooterFieldFactory implements AggregateFooterFieldFactory {
         return factory;
     }
 
-    public Expression createExpression(String string) {
+    public Expression createExpression() {
         return null;
     }
 

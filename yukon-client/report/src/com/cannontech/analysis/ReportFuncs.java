@@ -203,8 +203,6 @@ public class ReportFuncs
             returnVal = new ScheduledMeterReadReport();
         else if( model instanceof RepeaterRoleCollisionModel)
             returnVal = new RepeaterRoleCollisionReport();
-        else if( model instanceof MeterUsageModel)
-            returnVal = new MeterUsageReport();
         else
             return null;
 

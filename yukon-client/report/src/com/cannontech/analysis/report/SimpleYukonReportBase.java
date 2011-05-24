@@ -3,8 +3,8 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Float;
+import java.awt.geom.Rectangle2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -22,6 +22,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.ReportFooter;
 import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.NumberFieldElementFactory;
@@ -36,12 +37,15 @@ import org.jfree.ui.FloatDimension;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.function.AggregateFooterFieldFactory;
+import com.cannontech.analysis.function.ExpressionFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.BareReportModelAdapter;
 import com.cannontech.analysis.tablemodel.DatedModelAttributes;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelDelegate;
 import com.cannontech.analysis.tablemodel.ReportModelLayout;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 /**
  * This class is meant to be used as a base class for reports that have a very simple
@@ -113,6 +117,15 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         // extending classes can choose to implement
         return Collections.emptyList();
     }
+    protected List<? extends AggregateFooterFieldFactory> getReportFooterColumns() {
+        // extending classes can choose to implement
+        return Collections.emptyList();
+    }    
+    protected List<? extends ExpressionFieldFactory> getBodyExpressions() {
+    	// extending classes can choose to implement
+    	return Collections.emptyList();    	
+    }
+    
     protected int getExtraFieldSpacing() {
         return 0;
     }
@@ -254,11 +267,36 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
     }
     
     @Override
+    protected ReportFooter createReportFooter() {
+    	ReportFooter reportFooter = super.createReportFooter();
+    	
+        List<? extends AggregateFooterFieldFactory> totalColumns = getReportFooterColumns();
+        for (AggregateFooterFieldFactory factory : totalColumns) {
+            TextElementFactory elementFactory = factory.createElementFactory();
+            applyElementProperties(elementFactory, factory.getSourceColumn());
+            reportFooter.addElement(elementFactory.createElement());
+        }
+
+		return reportFooter;		
+    }
+    
+    @Override
     protected ExpressionCollection getExpressions() throws FunctionInitializeException {
         ExpressionCollection expressionCollection = super.getExpressions();
-        List<? extends AggregateFooterFieldFactory> totalColumns = getFooterColumns();
-        for (AggregateFooterFieldFactory factory : totalColumns) {
-            Expression expression = factory.createExpression(getSingleGroupName());
+
+        List<? extends ExpressionFieldFactory> bodyExpressions = getBodyExpressions();
+        for (ExpressionFieldFactory factory : bodyExpressions) {
+            Expression expression = factory.createExpression();
+            if (expression != null) {
+                expressionCollection.add(expression);
+            }
+        }
+
+        List<? extends AggregateFooterFieldFactory> allFooterColumns = 
+        	Lists.newArrayList(Iterables.concat(getFooterColumns(), getReportFooterColumns()));
+        
+        for (AggregateFooterFieldFactory factory : allFooterColumns) {
+            Expression expression = factory.createExpression();
             if (expression != null) {
                 expressionCollection.add(expression);
             }

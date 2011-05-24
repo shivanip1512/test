@@ -43,7 +43,7 @@ public enum ReportTypes {
         "Summary report of archived profile point data values and timestamps; includes 6 peaks and lows per point."),      
     SCHEDULED_METER_READS("Scheduled Meter Reads (MACS)", ScheduledMeterReadModel.class, ReportGroup.METERING,
         "Detailed report of MACS schedules; includes schedule start/stop; request start/stop, and status codes for meters processed."),
-    METER_USAGE("Meter Usage", MeterUsageModel.class, ReportGroup.METERING,
+    METER_USAGE("Meter Usage", MeterUsageController.class, ReportGroup.METERING,
         "Detailed report of archived kWh readings and calculated usage (delta between readings)."),
     MCT_CONFIG("MCT 430/470 Config To Device", MCTConfigController.class, ReportGroup.METERING,
         "Utility report identifying 430/470 MCT meters and configuration assignments; meter information, profile and demand rates."),

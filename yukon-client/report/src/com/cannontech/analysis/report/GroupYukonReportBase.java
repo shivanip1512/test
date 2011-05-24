@@ -107,7 +107,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
     protected void applyLabelProperties(LabelElementFactory labelFactory, ColumnLayoutData layoutData) {
         super.applyLabelProperties(labelFactory, layoutData);
         Point2D pos = labelFactory.getAbsolutePosition();
-        labelFactory.setAbsolutePosition(new Point2D.Float((float)pos.getX(), 18f) ); 
+        labelFactory.setAbsolutePosition(new Point2D.Float((float)pos.getX(), 20f) ); 
     }
 
     protected abstract List<ColumnLayoutData> getMultiGroupFieldData();

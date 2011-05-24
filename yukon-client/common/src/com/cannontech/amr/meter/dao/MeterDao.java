@@ -7,6 +7,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
 
 public interface MeterDao {
@@ -35,6 +36,8 @@ public interface MeterDao {
     public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
     
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
+    
+    public List<Meter> getMetersForYukonPaos(Iterable<? extends YukonPao> identifiers);
     
     public int getMeterCount();
     
