@@ -143,8 +143,9 @@ public class ListController {
         model.addAttribute("entryIndex", itemIndex);
 
         YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
-                                                  list.getEnergyCompanyId());
+        model.addAttribute("list", list);
+        
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(), list.getEnergyCompanyId());
         addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
 
         return "list/entry.jsp";

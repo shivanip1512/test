@@ -18,25 +18,28 @@
     <table>
         <tr>
             <td>
-                <input type="text" name="entries[${entryIndex}].text"
-                    id="entries[${entryIndex}].text"/>
+                <input type="text" name="entries[${entryIndex}].text" id="entries[${entryIndex}].text"/>
                 <input type="hidden" name="entries[${entryIndex}].entryId" value="0">
-                <input type="hidden" name="entries[${entryIndex}].order"
-                    value="${entryIndex + 1}" class="orderField">
-                <input type="hidden" name="entries[${entryIndex}].deletion"
-                    value="false" class="isDeletionField">
+                <input type="hidden" name="entries[${entryIndex}].order" value="${entryIndex + 1}" class="orderField">
+                <input type="hidden" name="entries[${entryIndex}].deletion" value="false" class="isDeletionField">
             </td>
             <c:if test="${usesType}">
                 <td>
-                <select name="entries[${entryIndex}].definitionId"
-                    id="entries[${entryIndex}].definitionId">
-                    <option selected value="0">
-                        <i:inline key="yukon.web.modules.adminSetup.list.noDefinition"/>
-                    </option>
-                    <c:forEach var="definition" items="${listDefinitions}">
-                        <option value="${definition.definitionId}"><i:inline key="${definition}"/></option>
-                    </c:forEach>
-                </select>
+                    <c:choose>
+                        <c:when test="${list.type eq 'SETTLEMENT_TYPE'}">
+                            <input type="text" name="entries[${entryIndex}].definitionId" id="entries[${entryIndex}].definitionId" />
+                        </c:when>
+                        <c:otherwise>
+                            <select name="entries[${entryIndex}].definitionId" id="entries[${entryIndex}].definitionId">
+                                <option selected value="0">
+                                    <i:inline key="yukon.web.modules.adminSetup.list.noDefinition"/>
+                                </option>
+                                <c:forEach var="definition" items="${listDefinitions}">
+                                    <option value="${definition.definitionId}"><i:inline key="${definition}"/></option>
+                                </c:forEach>
+                            </select>
+                        </c:otherwise>
+                    </c:choose>
                 </td>
             </c:if>
             <tags:dynamicTableActionsCell tableId="entryTable" isFirst="true" isLast="true"/>
