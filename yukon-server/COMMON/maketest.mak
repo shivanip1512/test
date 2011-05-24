@@ -41,6 +41,7 @@ test_date_utility.obj \
 test_utility.obj \
 test_string_utility.obj \
 test_PointAttribute.obj \
+test_compiler_behaviors.obj \
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
