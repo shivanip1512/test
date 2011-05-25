@@ -35,7 +35,6 @@ Mct410Device::Mct410Device( ) :
     _daily_read_info.request.multi_day_retries = -1;
     _daily_read_info.request.in_progress = false;
 
-    _daily_read_info.interest.channel = 0;
     _daily_read_info.interest.date = DawnOfTime_Date;
 }
 
@@ -1697,12 +1696,23 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                     found = true;
                 }
             }
-            else if( parse.isKeyValid("daily_read_date_end") )
+            else if( parse.isKeyValid("daily_read_date_end") ||
+                     parse.isKeyValid("daily_reads") )
             {
                 //  multi-day read - we'll send the period-of-interest OM later, if needed
 
-                //  grab the end date
-                CtiDate date_end = parseDateValue(parse.getsValue("daily_read_date_end"));
+                CtiDate date_end;
+
+                if( parse.isKeyValid("daily_read_date_end") )
+                {
+                    parseDateValue(parse.getsValue("daily_read_date_end"));
+                }
+                else
+                {
+                    //  no dates specified - collect 6 most recent daily reads
+                    date_begin = Today - 5;
+                    date_end   = Today;
+                }
 
                 if( date_begin < Today - 92 )
                 {
@@ -1716,11 +1726,11 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                     returnErrorMessage(BADPARAM, OutMessage, retList,
                                        "Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
-                else if( date_end > Yesterday )    //  must end on or before yesterday
+                else if( date_end > Today )    //  must end on or before today
                 {
                     nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       "Invalid end date for multi-day daily read request; must be before today (" + parse.getsValue("daily_read_date_end") + ")");
+                                       "Invalid end date for multi-day daily read request; must be on or before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else
                 {
@@ -1803,6 +1813,8 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
                 {
+                    //  dates should always be sent, since they're more likely to change than channels
+                    //    also, they are vulnerable to aliasing in older MCT-410 firmware
                     if( _daily_read_info.request.begin != _daily_read_info.interest.date )
                     {
                         _daily_read_info.interest.date = _daily_read_info.request.begin;
@@ -1831,12 +1843,10 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                     }
                 }
                 else if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay &&
-                         _daily_read_info.request.channel != _daily_read_info.interest.channel )
+                         _daily_read_info.request.channel != getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel)  )
                 {
-                    _daily_read_info.interest.channel = _daily_read_info.request.channel;
-
                     //  multi-day request - only set the channel
-                    interest_om->Buffer.BSt.Message[1] = _daily_read_info.interest.channel;
+                    interest_om->Buffer.BSt.Message[1] = _daily_read_info.request.channel;
                     interest_om->Buffer.BSt.Message[2] = 0;
                     interest_om->Buffer.BSt.Message[3] = 0;
 
@@ -3372,6 +3382,8 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                         if( !channel )
                         {
                             channel = ((*pos & 0xc0) >> 6) + 1;
+
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
                         }
 
                         reading = getData(pos, 2, ValueType_AccumulatorDelta);
@@ -3458,14 +3470,14 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                     channel = ((DSt->Message[10] & 0x30) >> 4) + 1;
                     month   =   DSt->Message[10] & 0x0f;
                     day     =   DSt->Message[9];
+
+                    setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
                 }
 
                 if( channel != _daily_read_info.request.channel )
                 {
                     resultString  = getName() + " / Invalid channel returned by daily read ";
                     resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
-
-                    _daily_read_info.interest.channel = 0;  //  reset it - it doesn't match what the MCT has
 
                     status = ErrorInvalidChannel;
                 }

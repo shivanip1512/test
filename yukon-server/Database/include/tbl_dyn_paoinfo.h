@@ -128,6 +128,8 @@ public:
         Key_MCT_LLPInterest_RequestBegin,
         Key_MCT_LLPInterest_RequestEnd,
 
+        Key_MCT_DailyReadInterestChannel,
+
         Key_FreezeCounter,
         Key_FreezeExpected,
         Key_VerificationSequence,
@@ -294,6 +296,8 @@ protected:
     static const string _key_mct_llp_interest_channel;
     static const string _key_mct_llp_interest_request_begin;
     static const string _key_mct_llp_interest_request_end;
+
+    static const string _key_mct_daily_read_interest_channel;
 
     static const string _key_mct_dnp_realtime1_crc;
     static const string _key_mct_dnp_realtime2_crc;

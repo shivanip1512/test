@@ -421,13 +421,15 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp peak hour channel 3 10-15-2003 15
     static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
+    //  getvalue daily read
     //  getvalue daily read 12/12/2007
     //  getvalue daily read 12/12/2007 12/27/2007
-    //  getvalue daily read channel n 12/12/2007
     //  getvalue daily read channel n 12/12/2007 12/27/2007
     //  getvalue daily read detail 12/12/2007
     //  getvalue daily read detail channel n 12/12/2007
-    static const boost::regex  re_daily_read(CtiString("daily read( detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
+    //  getvalue daily reads
+    //  getvalue daily reads 12/12/2007 12/27/2007
+    static const boost::regex  re_daily_read(CtiString("daily read(s)?( detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
 
     //  getvalue hourly read
     //  getvalue hourly read 12/12/2007
@@ -705,6 +707,11 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 //  getvalue daily read detail channel n 12/12/2007
 
                 _cmd["daily_read"] = true;
+
+                if( !temp.match(" reads").empty() )
+                {
+                    _cmd["daily_reads"] = true;
+                }
 
                 if( !temp.match(" detail ").empty() )
                 {

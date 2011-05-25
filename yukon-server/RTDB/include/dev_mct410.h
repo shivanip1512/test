@@ -51,7 +51,6 @@ private:
 
         struct
         {
-            unsigned channel;
             CtiDate  date;
             bool     needs_verification;  //  if the date is susceptible to check-bit aliasing and needs to be read from the meter
 

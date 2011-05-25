@@ -130,6 +130,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_channel          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_begin    = "mct llp interest request begin";
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_end      = "mct llp interest request end";
 
+const string CtiTableDynamicPaoInfo::_key_mct_daily_read_interest_channel   = "mct daily read interest channel";
+
 const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_01 = "mct lcd metric 01";
 const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_02 = "mct lcd metric 02";
 const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_03 = "mct lcd metric 03";
@@ -279,6 +281,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_LLPInterest_Channel,        &_key_mct_llp_interest_channel));
     retval.insert(make_pair(Key_MCT_LLPInterest_RequestBegin,   &_key_mct_llp_interest_request_begin));
     retval.insert(make_pair(Key_MCT_LLPInterest_RequestEnd,     &_key_mct_llp_interest_request_end));
+
+    retval.insert(make_pair(Key_MCT_DailyReadInterestChannel,   &_key_mct_daily_read_interest_channel));
 
     retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC1,        &_key_mct_dnp_accumulator_crc1));
     retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC2,        &_key_mct_dnp_accumulator_crc2));
