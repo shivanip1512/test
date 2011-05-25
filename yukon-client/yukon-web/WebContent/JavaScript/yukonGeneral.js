@@ -9,6 +9,18 @@ function yukonGeneral_setSelectToValue(selectId, selectedValue) {
 	}
 }
 
+function getSelectedOptionHTML(element) {
+    if (!(element = $(element))) return;
+    var index = element.selectedIndex;
+    return index >= 0 ? element.options[index].innerHTML : undefined;
+}
+
+function getSelectedOptionValue(element) {
+    if (!(element = $(element))) return;
+    var index = element.selectedIndex;
+    return index >= 0 ? element.options[index].value : undefined;
+}
+
 function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	
 	//this contains all the selected indexes

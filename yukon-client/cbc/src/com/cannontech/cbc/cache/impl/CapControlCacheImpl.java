@@ -674,7 +674,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     private void handleVoltageRegulator(VoltageRegulatorFlagMessage regulatorMessage) {
-        List<VoltageRegulatorFlags> regulators = regulatorMessage.getVoltageRegulators();
+        List<VoltageRegulatorFlags> regulators = regulatorMessage.getVoltageRegulatorFlags();
         
         for (VoltageRegulatorFlags regulator : regulators) {
             Validate.notNull(regulator, "regulator can't be null");

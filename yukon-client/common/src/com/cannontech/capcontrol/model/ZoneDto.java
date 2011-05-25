@@ -3,20 +3,31 @@ package com.cannontech.capcontrol.model;
 import java.util.List;
 
 import com.cannontech.common.util.LazyList;
+import com.cannontech.database.data.pao.ZoneType;
 
-public class ZoneDto {
+public abstract class ZoneDto {
     
     private String name;
-    private Integer zoneId = null;
-    private Integer parentZoneId = null;
+    private Integer zoneId;
+    private Integer parentZoneId;
     private int substationBusId = -1;
-    private int regulatorId = -1;
     private double graphStartPosition;
     
     private List<ZoneAssignmentCapBankRow> bankAssignments = LazyList.ofInstance(ZoneAssignmentCapBankRow.class);
-    
     private List<ZoneAssignmentPointRow> pointAssignments = LazyList.ofInstance(ZoneAssignmentPointRow.class);
-
+    
+    public ZoneDto() {
+        super();
+    }
+    
+    public ZoneDto(Zone zone) {
+        this.name = zone.getName();
+        this.zoneId = zone.getId();
+        this.parentZoneId = zone.getParentId();
+        this.substationBusId = zone.getSubstationBusId();
+        this.graphStartPosition = zone.getGraphStartPosition();
+    }
+    
     public Integer getZoneId() {
         return zoneId;
     }
@@ -49,15 +60,7 @@ public class ZoneDto {
         this.substationBusId = substationBusId;
     }
 
-    public int getRegulatorId() {
-        return regulatorId;
-    }
-
-    public void setRegulatorId(int regulatorId) {
-        this.regulatorId = regulatorId;
-    }
-
-	public double getGraphStartPosition() {
+    public double getGraphStartPosition() {
 		return graphStartPosition;
 	}
 
@@ -80,4 +83,26 @@ public class ZoneDto {
 	public void setPointAssignments(List<ZoneAssignmentPointRow> pointAssignments) {
 		this.pointAssignments = pointAssignments;
 	}
+
+    public abstract ZoneType getZoneType();
+
+    public abstract ZoneRegulator getRegulator();
+
+    public abstract void setRegulator(ZoneRegulator regulator);
+
+    public abstract List<ZoneRegulator> getRegulators();
+
+    public abstract void setRegulators(List<ZoneRegulator> regulators);
+
+    public abstract ZoneRegulator getRegulatorA();
+
+    public abstract void setRegulatorA(ZoneRegulator regulatorA);
+
+    public abstract ZoneRegulator getRegulatorB();
+
+    public abstract void setRegulatorB(ZoneRegulator regulatorB);
+
+    public abstract ZoneRegulator getRegulatorC();
+
+    public abstract void setRegulatorC(ZoneRegulator regulatorC);
 }

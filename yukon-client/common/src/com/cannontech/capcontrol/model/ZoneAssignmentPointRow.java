@@ -1,5 +1,7 @@
 package com.cannontech.capcontrol.model;
 
+import com.cannontech.enums.Phase;
+
 public class ZoneAssignmentPointRow {
     
     private String type;
@@ -8,6 +10,7 @@ public class ZoneAssignmentPointRow {
     private String device;
     private double graphPositionOffset;
     private double distance;
+    private Phase phase;
     
     public String getType() {
         return type;
@@ -56,4 +59,13 @@ public class ZoneAssignmentPointRow {
 	public void setDistance(double distance) {
 		this.distance = distance;
 	}
+
+    public Phase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Phase phase) {
+        this.phase = phase;
+    }
+
 }

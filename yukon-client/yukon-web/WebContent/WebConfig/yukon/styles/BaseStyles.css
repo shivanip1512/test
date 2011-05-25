@@ -203,6 +203,7 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .R0{right:0px}
 .B0{bottom:0px}
 .L0{left:0px}
+.P0{padding:0px}
 .box,.oh{overflow:hidden}
 .oa{overflow:auto}
 .ov{overflow:visible}

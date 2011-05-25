@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.common.search.SearchResult;
 

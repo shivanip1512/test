@@ -1,12 +1,14 @@
 package com.cannontech.capcontrol.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
-import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.enums.Phase;
 
 public interface ZoneDao {
     
@@ -159,6 +161,13 @@ public interface ZoneDao {
     public List<Integer> getMonitorPointsForBank(int bankId);
 
     /**
+     * Returns a Map of point Id to Phase for the given Cap Bank Id
+     * @param bankId
+     * @return
+     */
+    public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId);
+
+    /**
      * Returns the latest CCEvents for the zone and subBus passed in. 
      * It will limit the return by rowLimit
      * @param zoneId
@@ -166,5 +175,5 @@ public interface ZoneDao {
      * @param rowLimit
      * @return
      */
-    List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit);
+    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit);
 }

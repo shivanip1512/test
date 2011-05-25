@@ -3,13 +3,20 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.activation.UnsupportedDataTypeException;
+import javax.jms.IllegalStateException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.validation.MessageCodesResolver;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
@@ -22,18 +29,19 @@ import com.cannontech.capcontrol.model.ZoneDto;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.google.common.collect.Lists;
@@ -46,36 +54,116 @@ public class ZoneWizardController {
     private ZoneService zoneService;
     private ZoneDtoValidator zoneDtoValidator;
     private FilterCacheFactory filterCacheFactory;
-    private PaoDao paoDao;
-    private PointDao pointDao;
+    private ZoneDtoHelper zoneDtoHelper;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping
-    public String zoneCreation(ModelMap model, LiteYukonUser user, int subBusId) {
+    public String zoneCreationWizard(ModelMap model, LiteYukonUser user, int subBusId) {
+        Zone zone = new Zone();
+        zone.setSubstationBusId(subBusId);
+        return wizardSelectParent(model, user, zone);
+    }
+
+    @RequestMapping
+    public String wizardSelectParent(ModelMap model, LiteYukonUser user, Zone zone) {
+        List<Zone> parentZones = zoneService.getZonesBySubBusId(zone.getSubstationBusId());
+        model.addAttribute("parentZones", parentZones);
+        model.addAttribute("zone", zone);
         
-        setupZoneCreation(model,user,subBusId);
-        ZoneDto zoneDto = new ZoneDto();
-        zoneDto.setSubstationBusId(subBusId);
+        addZoneEnums(model);
         
+        return "ivvc/zoneWizardParent.jsp";
+    }
+
+    @RequestMapping
+    public String wizardParentSelected(ModelMap model, YukonUserContext userContext, Zone zone) {
+        List<ZoneType> availableZoneTypes = Lists.newArrayListWithCapacity(3);
+        List<Phase> availableZonePhases = Lists.newArrayListWithCapacity(3);
+        Integer parentZoneId = zone.getParentId();
+
+        if (parentZoneId == null) {
+            availableZoneTypes = getAllZoneTypes();
+            availableZonePhases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String root = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneWizard.label.creatingAsRootZone");
+            model.addAttribute("parentZoneName", root);
+        } else {
+            Zone parentZone = zoneService.getZoneById(parentZoneId);
+            if (parentZone.getZoneType() == ZoneType.GANG_OPERATED) {
+                availableZoneTypes = getAllZoneTypes();
+                availableZonePhases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
+            } else if (parentZone.getZoneType() == ZoneType.THREE_PHASE) {
+                availableZoneTypes.add(ZoneType.THREE_PHASE);
+                availableZoneTypes.add(ZoneType.SINGLE_PHASE);
+                availableZonePhases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
+            } else {
+                availableZoneTypes.add(ZoneType.SINGLE_PHASE);
+                Phase parentPhase = parentZone.getRegulators().get(0).getPhase();
+                availableZonePhases.add(parentPhase);
+            }
+
+            model.addAttribute("parentZoneName", parentZone.getName());
+        }
+
+        model.addAttribute("zone", zone);
+        model.addAttribute("availableZoneTypes", availableZoneTypes);
+        model.addAttribute("availableZonePhases", availableZonePhases);
+        
+        return "ivvc/zoneWizardType.jsp";
+    }
+
+    @RequestMapping
+    public String wizardTypeSelected(ModelMap model, LiteYukonUser user, Zone zone) throws IllegalStateException, UnsupportedDataTypeException {
+        Integer parentZoneId = zone.getParentId();
+        if (parentZoneId != null) {
+            Zone parentZone = zoneService.getZoneById(parentZoneId);
+            model.addAttribute("parentZoneName", parentZone.getName());
+        } else {
+            model.addAttribute("parentZoneName", "Creating as Parent");
+        }
+
+        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZone(zone, user);
+        setupZoneCreation(model, user, zoneDto);
+        
+        return "ivvc/zoneWizardDetails.jsp";
+    }
+
+    private void setupZoneCreation(ModelMap model, LiteYukonUser user, ZoneDto zoneDto) {
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+        SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
+        model.addAttribute("subBusName", subBus.getCcName());
+
         model.addAttribute("zoneDto", zoneDto);
         
-        return "ivvc/zoneWizard.jsp";
-    }
-    
-    private void setupZoneCreation(ModelMap model, LiteYukonUser user, int subBusId) {
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        SubBus subBus = cache.getSubBus(subBusId);
+        List<Phase> phases = getPhasesForZone(zoneDto);
+        model.addAttribute("phases", phases);
         
-        List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
-        model.addAttribute("zones",zones);
-        model.addAttribute("subBusName", subBus.getCcName());
-        
+        addZoneEnums(model);
+
+        boolean phaseUneditable = false;
+        if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
+            phaseUneditable = true;
+        }
+        model.addAttribute("phaseUneditable", phaseUneditable);
+
         model.addAttribute("mode", PageEditMode.CREATE.name());
     }
     
+    private void addZoneEnums(ModelMap model) {
+        model.addAttribute("gangOperated", ZoneType.GANG_OPERATED);
+        model.addAttribute("threePhase", ZoneType.THREE_PHASE);
+        model.addAttribute("singlePhase", ZoneType.SINGLE_PHASE);
+        model.addAttribute("phaseA", Phase.A);
+        model.addAttribute("phaseB", Phase.B);
+        model.addAttribute("phaseC", Phase.C);
+    }
+    
     @RequestMapping
-    public String createZone(@ModelAttribute("zoneDto") ZoneDto zoneDto, BindingResult bindingResult,
-                             ModelMap model, FlashScope flashScope, LiteYukonUser user) {
-        
+    public String createZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
+                             YukonUserContext userContext, ZoneType zoneType) {
+        ZoneDto zoneDto = zoneDtoHelper.getNewZoneDtoFromZoneType(zoneType);
+        BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
+
         boolean noErrors = true;
         try {
             noErrors = saveZone(zoneDto,bindingResult,flashScope);
@@ -89,70 +177,96 @@ public class ZoneWizardController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
             return closeDialog(model);                
         } else {
-            setupZoneCreation(model,user,zoneDto.getSubstationBusId());
-            
-            if (zoneDto.getRegulatorId() != -1) {
-                CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-                VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zoneDto.getRegulatorId());
-                model.addAttribute("regulatorName", regulatorFlags.getCcName());
-            }
+            setupZoneCreation(model, userContext.getYukonUser(), zoneDto);
             
             //Add Errors to flash scope
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
         }
 
-        return "ivvc/zoneWizard.jsp";   
+        return "ivvc/zoneWizardDetails.jsp";
     }
     
     @RequestMapping
     public String zoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
-        Zone zone = zoneService.getZoneById(zoneId);
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+        setupZoneEditor(model, user, zoneId);
         
-        ZoneDto zoneDto = new ZoneDto();
-        zoneDto.setZoneId(zoneId);
-        zoneDto.setName(zone.getName());
-        zoneDto.setSubstationBusId(zone.getSubstationBusId());
-        zoneDto.setRegulatorId(zone.getRegulatorId());
-        zoneDto.setParentZoneId(zone.getParentId());
-        zoneDto.setGraphStartPosition(zone.getGraphStartPosition());
-        
-        //Add Bank Assignments
-        List<ZoneAssignmentCapBankRow> bankAssignments = buildBankAssignmentList(zone,cache);
-        zoneDto.setBankAssignments(bankAssignments);
-        
-        //Add Point Assignments
-        List<ZoneAssignmentPointRow> pointAssignments = buildPointAssignmentList(zone);
-        zoneDto.setPointAssignments(pointAssignments);
-        
-        model.addAttribute("zoneDto", zoneDto);
-        
-        setupZoneEditor(model,cache,zone);
-        
-        return "ivvc/zoneWizard.jsp";
+        return "ivvc/zoneWizardDetails.jsp";
     }
     
-    private void setupZoneEditor(ModelMap model, CapControlCache cache, Zone zone) {       
-        SubBus subBus = cache.getSubBus(zone.getSubstationBusId());
-        VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zone.getRegulatorId());
-        
-        List<Zone> zones = zoneService.getZonesBySubBusId(zone.getSubstationBusId());
-        model.addAttribute("zones",zones);
+    private void setupZoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZoneId(zoneId, user);
 
-        Integer parentId = zone.getParentId();
+        SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
+        
+        if (zoneDto.getZoneType() == ZoneType.GANG_OPERATED || zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
+            VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(0).getRegulatorId());
+            model.addAttribute("regulatorName", regulatorFlags.getCcName());
+        } else if (zoneDto.getZoneType() == ZoneType.THREE_PHASE) {
+            VoltageRegulatorFlags regulatorFlagsPhaseA = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(0).getRegulatorId()); //wrong. fix. later.
+            VoltageRegulatorFlags regulatorFlagsPhaseB = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(1).getRegulatorId()); //wrong. fix. later.
+            VoltageRegulatorFlags regulatorFlagsPhaseC = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(2).getRegulatorId()); //wrong. fix. later.
+            model.addAttribute("regulatorNamePhaseA", regulatorFlagsPhaseA.getCcName());
+            model.addAttribute("regulatorNamePhaseB", regulatorFlagsPhaseB.getCcName());
+            model.addAttribute("regulatorNamePhaseC", regulatorFlagsPhaseC.getCcName());
+        }
+        
+        model.addAttribute("zoneDto", zoneDto);
+
+        Integer parentId = zoneDto.getParentZoneId();
         String parentName = "---";
         if (parentId != null) {
             Zone parentZone = zoneService.getZoneById(parentId);
             parentName = parentZone.getName();
         }
         model.addAttribute("parentZoneName", parentName);
+
+        List<Phase> phases = getPhasesForZone(zoneDto);
+        model.addAttribute("phases", phases);
         
-        model.addAttribute("regulatorName", regulatorFlags.getCcName());
+        addZoneEnums(model);
+
+        boolean phaseUneditable = false;
+        if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
+            phaseUneditable = true;
+        }
+        model.addAttribute("phaseUneditable", phaseUneditable);
+
         model.addAttribute("subBusName", subBus.getCcName());
         model.addAttribute("mode", PageEditMode.EDIT.name());
     }
-    
+
+    private List<ZoneType> getAllZoneTypes() {
+        List<ZoneType> zoneTypes = Lists.newArrayList();
+        zoneTypes.add(ZoneType.GANG_OPERATED);
+        zoneTypes.add(ZoneType.THREE_PHASE);
+        zoneTypes.add(ZoneType.SINGLE_PHASE);
+        return zoneTypes;
+    }
+
+    private List<Phase> getPhasesForZone(ZoneDto zoneDto) {
+        List<Phase> phases = Lists.newArrayListWithCapacity(3);
+        if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
+            Phase phase = zoneDto.getRegulator().getPhase();
+            phases.add(phase);
+        } else {
+            phases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
+        }
+        return phases;
+    }
+
+    private List<Phase> getPhasesForZoneTypeAndPhase(ZoneType zoneType, Phase phase) {
+        List<Phase> phases = Lists.newArrayListWithCapacity(3);
+        if (zoneType == ZoneType.SINGLE_PHASE) {
+            phases.add(phase);
+        } else {
+            phases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
+        }
+        
+        return phases;
+    }
+
     private List<ZoneAssignmentCapBankRow> getRemainingBankAssignments(List<ZoneAssignmentCapBankRow> bankAssignments, Integer[] removedBanks) {
     	if (removedBanks == null) {
     		return bankAssignments;
@@ -188,9 +302,13 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String updateZone(@ModelAttribute("zoneDto") ZoneDto zoneDto, BindingResult bindingResult,
-    						 Integer[] banksToRemove, Integer[] pointsToRemove,
-                             ModelMap model, FlashScope flashScope, LiteYukonUser user) {
+    public String updateZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
+                             YukonUserContext userContext, ZoneType zoneType, 
+                             Integer[] banksToRemove, Integer[] pointsToRemove) {
+
+        ZoneDto zoneDto = zoneDtoHelper.getNewZoneDtoFromZoneType(zoneType);
+        BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
+
         boolean noErrors = true;
         try {
         	List<ZoneAssignmentCapBankRow> bankAssignments = getRemainingBankAssignments(zoneDto.getBankAssignments(), banksToRemove);
@@ -210,20 +328,38 @@ public class ZoneWizardController {
             return closeDialog(model); 
         } else {
             bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
-            Zone zone = zoneService.getZoneById(zoneDto.getZoneId());
-            CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-            
-            model.addAttribute("zoneDto", zoneDto);
-            setupZoneEditor(model,cache,zone);
+
+            setupZoneEditor(model, userContext.getYukonUser(), zoneDto.getZoneId());
             
             //Add Errors to flash scope
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
-            return "ivvc/zoneWizard.jsp";                  
+            return "ivvc/zoneWizardDetails.jsp";
         }        
     }
-    
+
+    private BindingResult bind(ModelMap model, HttpServletRequest request,
+                               Object target, String objectName, YukonUserContext userContext) {
+        ServletRequestDataBinder binder =
+            new ServletRequestDataBinder(target, objectName);
+        initBinder(binder, userContext);
+        binder.bind(request);
+        BindingResult bindingResult = binder.getBindingResult();
+        model.addAttribute("zoneDto", target);
+        model.putAll(binder.getBindingResult().getModel());
+        return bindingResult;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver =
+                new YukonMessageCodeResolver("yukon.web.modules.capcontrol.ivvc.zoneWizard.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
+    }
+
     private boolean saveZone(ZoneDto zoneDto, BindingResult bindingResult, FlashScope flashScope) {
         zoneDtoValidator.validate(zoneDto, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -235,7 +371,7 @@ public class ZoneWizardController {
     }
     
     private String closeDialog(ModelMap modelMap) {
-        modelMap.addAttribute("popupId", "tierContentPopup");
+        modelMap.addAttribute("popupId", "zoneWizardPopup");
         return "ivvc/closePopup.jsp";
     }
     
@@ -254,85 +390,43 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, int index) {
+    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, Integer zoneId, int index) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
         bankToZone.setDeviceId(id);
         bankToZone.setGraphPositionOffset(0);
-        ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);        
+        ZoneAssignmentCapBankRow row = zoneDtoHelper.getBankAssignmentFromMapping(bankToZone, cache);        
         modelMap.addAttribute("row",row);
         modelMap.addAttribute("index", index);
         
-        return "ivvc/addZoneTableRow.jsp";
+        return "ivvc/addZoneCapBankRow.jsp";
     }
     
     @RequestMapping
-    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, int index) {
+    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, String zoneType, String phase, int index) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);
     	pointToZone.setGraphPositionOffset(0);
-        ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);        
+        ZoneAssignmentPointRow row = zoneDtoHelper.getPointAssignmentFromMapping(pointToZone);        
         modelMap.addAttribute("row",row);
         modelMap.addAttribute("index", index);
-        
-        return "ivvc/addZoneTableRow.jsp";
-    }
 
-    private List<ZoneAssignmentPointRow> buildPointAssignmentList(Zone zone) {
-    	List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
-        
-        List<ZoneAssignmentPointRow> rows = Lists.newArrayList();
-        for (PointToZoneMapping pointToZone : pointsToZone) {
-        	ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);
-            rows.add(row);
+        ZoneType type = ZoneType.valueOf(zoneType);
+        Phase regPhase = null;
+        if (phase != null) {
+            regPhase = Phase.valueOf(phase);
         }
+        List<Phase> phases = getPhasesForZoneTypeAndPhase(type, regPhase);
+        modelMap.addAttribute("phases", phases);
         
-        return rows;
-    }
-    
-    private ZoneAssignmentPointRow buildPointAssignment(PointToZoneMapping pointToZone) {
-    	int pointId = pointToZone.getPointId();
-        LitePoint point = pointDao.getLitePoint(pointId);
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
-
-        ZoneAssignmentPointRow row = new ZoneAssignmentPointRow();
-        row.setType("point");
-        row.setId(pointId);        
-        row.setName(point.getPointName());
-        row.setDevice(pao.getPaoName());
-        row.setGraphPositionOffset(pointToZone.getGraphPositionOffset());
-        row.setDistance(pointToZone.getDistance());
-        
-        return row;
-    }
-    
-    private List<ZoneAssignmentCapBankRow> buildBankAssignmentList(Zone zone, CapControlCache cache) {
-        List<ZoneAssignmentCapBankRow> rows = Lists.newArrayList();
-        List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
-        
-        for (CapBankToZoneMapping bankToZone : banksToZone) {
-        	ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);
-            rows.add(row);
+        boolean phaseUneditable = false;
+        if (type == ZoneType.SINGLE_PHASE) {
+            phaseUneditable = true;
         }
+        modelMap.addAttribute("phaseUneditable", phaseUneditable);
         
-        return rows;
-    }
-    
-    private ZoneAssignmentCapBankRow buildBankAssignment(CapBankToZoneMapping bankToZone, CapControlCache cache) {
-        int bankId = bankToZone.getDeviceId();
-		CapBankDevice bank = cache.getCapBankDevice(bankId);
-        LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
-
-        ZoneAssignmentCapBankRow row = new ZoneAssignmentCapBankRow();
-        row.setType("bank");
-        row.setId(bankId);        
-        row.setName(bank.getCcName());
-        row.setDevice(controller.getPaoName());
-        row.setGraphPositionOffset(bankToZone.getGraphPositionOffset());
-        row.setDistance(bankToZone.getDistance());
-        
-        return row;
+        return "ivvc/addZoneVoltagePointRow.jsp";
     }
     
     @Autowired
@@ -346,17 +440,17 @@ public class ZoneWizardController {
     }
     
     @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
     public void setZoneDtoValidator(ZoneDtoValidator zoneDtoValidator) {
         this.zoneDtoValidator = zoneDtoValidator;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setZoneDtoHelpers(ZoneDtoHelper zoneDtoHelpers) {
+        this.zoneDtoHelper = zoneDtoHelpers;
     }
 }

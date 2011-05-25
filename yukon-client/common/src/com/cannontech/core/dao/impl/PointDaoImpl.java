@@ -40,6 +40,7 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.enums.Phase;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -376,32 +377,39 @@ public final class PointDaoImpl implements PointDao {
         }
     }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.PointDao#getCapBankMonitorPoints(com.cannontech.database.data.capcontrol.CapBank)
-     */
-	public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
-		List<CapBankMonitorPointParams> monitorPointList = new ArrayList<CapBankMonitorPointParams>();
-		for (Iterator<CCMonitorBankList> iter = capBank.getCcMonitorBankList().iterator(); iter.hasNext();) {
-			CCMonitorBankList point = iter.next();			
-			
-			CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
-			monitorPoint.setCapBankId(point.getCapBankId().intValue());
-			monitorPoint.setPointId(point.getPointId().intValue());
-			monitorPoint.setDisplayOrder(point.getDisplayOrder().intValue());
-			if (point.getScannable().charValue() == 'Y') 
-				monitorPoint.setInitScan(true);
-			else
-				monitorPoint.setInitScan(false);
-			monitorPoint.setNINAvg(point.getNINAvg().longValue());
-			monitorPoint.setLowerBandwidth(point.getLowerBandwidth().floatValue());
-			monitorPoint.setUpperBandwidth(point.getUpperBandwidth().floatValue());			
-			LitePoint p = getLitePoint(point.getPointId().intValue());
-			monitorPoint.setPointName(p.getPointName());
-			monitorPoint.setOverrideFdrLimits(false);
-			monitorPointList.add(monitorPoint);
-		}
-			return monitorPointList;
-	}
+    public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
+        List<CapBankMonitorPointParams> monitorPointList = new ArrayList<CapBankMonitorPointParams>();
+        for (CCMonitorBankList point : capBank.getCcMonitorBankList()) {
+
+            CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
+            monitorPoint.setCapBankId(point.getCapBankId().intValue());
+            monitorPoint.setPointId(point.getPointId().intValue());
+            monitorPoint.setDisplayOrder(point.getDisplayOrder().intValue());
+
+            if (point.getScannable().charValue() == 'Y') {
+                monitorPoint.setInitScan(true);
+            } else {
+                monitorPoint.setInitScan(false);
+            }
+
+            monitorPoint.setNINAvg(point.getNINAvg().longValue());
+            monitorPoint.setLowerBandwidth(point.getLowerBandwidth().floatValue());
+            monitorPoint.setUpperBandwidth(point.getUpperBandwidth().floatValue());
+
+            Character phaseChar = point.getPhase();
+            if (phaseChar != null) {
+                monitorPoint.setPhase(String.valueOf(phaseChar));
+            } else {
+                monitorPoint.setPhase(Phase.A.name());
+            }
+
+            LitePoint p = getLitePoint(point.getPointId().intValue());
+            monitorPoint.setPointName(p.getPointName());
+            monitorPoint.setOverrideFdrLimits(false);
+            monitorPointList.add(monitorPoint);
+        }
+        return monitorPointList;
+    }
     
     @SuppressWarnings("unchecked")
     public List<LitePoint> searchByName(final String name, final String paoClass) {

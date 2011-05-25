@@ -1,4 +1,4 @@
-package com.cannontech.cbc.model;
+package com.cannontech.capcontrol.model;
 
 public class LiteCapControlObject {
 	private Integer id;

@@ -85,7 +85,7 @@
   	
   	<balloon>
   		<color>#FFCC00</color>
-  		<alpha>45</alpha>
+  		<alpha>70</alpha>
   		<text_color>#000000</text_color>
   	</balloon>
   	
@@ -97,7 +97,7 @@
 		<chart>
 			<graphs>
 				<c:forEach var="line" items="${graph.lines}">
-					<graph gid="${line.id}" title="${line.zoneName}"
+					<graph gid="${line.id}" title="${line.lineName}"
 						bullet="${line.settings.bullet}"
 						fill_alpha="${line.settings.fillAlpha}"
 						min_max="${line.settings.minMax}"

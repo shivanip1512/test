@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.dao.SubstationBusDao;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;

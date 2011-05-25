@@ -12,13 +12,16 @@ import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
 
@@ -35,6 +38,11 @@ public class BusViewController {
     
     @RequestMapping
     public String detail(ModelMap model, LiteYukonUser user, Boolean isSpecialArea, int subBusId) {
+        setupDetails(model, user, isSpecialArea, subBusId);
+        return "ivvc/busView.jsp";
+    }
+    
+    private void setupDetails(ModelMap model, LiteYukonUser user, Boolean isSpecialArea, int subBusId) {
         if(isSpecialArea == null) {
             isSpecialArea = false;
         }
@@ -50,18 +58,25 @@ public class BusViewController {
         setupBreadCrumbs(model,cache,subBusId,isSpecialArea);
         setupZoneList(model,cache,subBusId);
         setupStrategyDetails(model,cache,subBusId);
-        
-        return "ivvc/busView.jsp";
+
+        model.addAttribute("gangOperatedZone", ZoneType.GANG_OPERATED);
+        model.addAttribute("threePhaseOperatedZone", ZoneType.THREE_PHASE);
+        model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
     }
     
     @RequestMapping
-    public String chart(ModelMap model, YukonUserContext userContext, int subBusId) {
+    public String chart(ModelMap model, FlashScope flash, YukonUserContext userContext, int subBusId) {
+        try {
+            VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
+            
+            model.addAttribute("graph", graph);
+            model.addAttribute("graphSettings", graph.getSettings());
+        } catch (IllegalUseOfAttribute e) {
+//            flash.setError(new YukonMessageSourceResolvable(
+//            "yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.missingVoltageAttribute"));
+        }
         
-        VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
-        model.addAttribute("graph", graph);
-        model.addAttribute("graphSettings", graph.getSettings());
-        
-        return "ivvc/flatnessGraph.jsp";
+        return "ivvc/flatnessGraphLine.jsp";
     }
     
     private void setupStrategyDetails(ModelMap model, CapControlCache cache, int subBusId) {

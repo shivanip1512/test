@@ -943,6 +943,7 @@
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
 	<bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
 	<bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
+	<bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
 	
     <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.CBCAreaFormattingService"
           parent="abstractAreaFormattingService"/>
@@ -1647,7 +1648,8 @@
     </bean> 
 
 	<bean name="availableCapBankPicker" class="com.cannontech.web.picker.v2.AvailableCapBankPicker"/>
-	<bean name="availableVoltageRegulatorPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorPicker"/>
+	<bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorGangPicker"/>
+    <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorPhasePicker"/>
 
     <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>

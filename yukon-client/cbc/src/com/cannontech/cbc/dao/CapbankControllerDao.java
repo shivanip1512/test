@@ -2,9 +2,9 @@ package com.cannontech.cbc.dao;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.search.SearchResult;
 

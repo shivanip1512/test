@@ -11,12 +11,15 @@
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/amChart.js" />
+    <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 	<cti:includeCss link="/capcontrol/css/ivvc.css"/>
 
     <c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
+
+    <!-- Zone Wizard Dialog -->
+    <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
 
 	<script type="text/javascript">
 	
@@ -57,7 +60,7 @@
 	    }
 	    
     	function showZoneWizard(url) {
-			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
+			openSimpleDialog('zoneWizardPopup', url, 'Zone Wizard', null, null, 'get');
 		}
 	</script>
 
@@ -113,22 +116,26 @@
     </cti:url>
     
 	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
-	
-		<cti:dataGridCell>			
-			
-			<tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
-				<tags:alternateRowReset/>			
-				<table class="compactResultsTable">
-					<tr>
-						<th></th>
-						<th><i:inline key=".details.table.name"/></th>
-						<th><i:inline key=".details.table.actions"/></th>
-					</tr>
+		<cti:dataGridCell>
+    		<tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
+    			<tags:alternateRowReset/>			
+    			<table class="compactResultsTable">
+    				<tr>
+    					<th></th>
+    					<th><i:inline key=".details.table.name"/></th>
+                        <th><i:inline key=".details.table.type"/></th>
+    					<th><i:inline key=".details.table.actions"/></th>
+    				</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.zone"/></B></td>
 						<td>
 							<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
 						</td>
+                        <td>
+                            <spring:escapeBody htmlEscape="true">
+                                <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
+                            </spring:escapeBody>
+                        </td>
 						<td>
 							<c:choose>
 								<c:when test="${hasEditingRole}">
@@ -142,59 +149,309 @@
 							</c:choose>
                         </td>
 					</tr>
-				
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><B><i:inline key=".details.table.regulator"/></B></td>
-						<td>
-							<capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
-							<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
-						</td>
-						<td>
-							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
-                            	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                            </a>
-                        </td>
-					</tr>
-				</table>
+                    <c:choose>
+                        <c:when test="${zoneDto.zoneType == threePhase}">
+        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+        						<td><B><i:inline key=".details.table.regulator"/> - 
+                                        <i:inline key="${zoneDto.regulatorA.phase.formatKey}"/></B>
+                                </td>
+        						<td>
+        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseA}" type="VOLTAGE_REGULATOR"/>
+        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseA}</spring:escapeBody>
+        						</td>
+                                <td>
+                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                </td>
+        						<td>
+        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseA}" class="tierIconLink">
+                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
+                                    </a>
+                                </td>
+        					</tr>
+        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+        						<td><B><i:inline key=".details.table.regulator"/> - 
+                                        <i:inline key="${zoneDto.regulatorB.phase.formatKey}"/></B>
+                                </td>
+        						<td>
+        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseB}" type="VOLTAGE_REGULATOR"/>
+        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseB}</spring:escapeBody>
+        						</td>
+                                <td>
+                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                </td>
+        						<td>
+        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseB}" class="tierIconLink">
+                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
+                                    </a>
+                                </td>
+        					</tr>
+        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+        						<td><B><i:inline key=".details.table.regulator"/> - 
+                                        <i:inline key="${zoneDto.regulatorC.phase.formatKey}"/></B>
+                                </td>
+        						<td>
+        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseC}" type="VOLTAGE_REGULATOR"/>
+        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseC}</spring:escapeBody>
+        						</td>
+                                <td>
+                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                </td>
+        						<td>
+        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseC}" class="tierIconLink">
+                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
+                                    </a>
+                                </td>
+        					</tr>
+                        </c:when>
+                        <c:when test="${zoneDto.zoneType == singlePhase}">
+                            <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                                <td><B><i:inline key=".details.table.regulator"/> - 
+                                        <i:inline key="${zoneDto.regulator.phase.formatKey}"/></B>
+                                </td>
+                                <td>
+                                    <capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
+                                    <spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
+                                </td>
+                                <td>
+                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                </td>
+                                <td>
+                                    <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
+                                        <img alt="Edit" class="tierImg" src="${editInfoImage}">
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:when>
+                        <c:otherwise>
+        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+        						<td><B><i:inline key=".details.table.regulator"/></B></td>
+        						<td>
+        							<capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
+        							<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
+        						</td>
+                                <td>
+                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                </td>
+        						<td>
+        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
+                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
+                                    </a>
+                                </td>
+        					</tr>
+                        </c:otherwise>
+                    </c:choose>
+                </table>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true">			
-				<div>
-					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
-													'${scanCommandHolder.cmdId}',
-													'${scanCommandHolder.commandName}',
-													'${regulatorType}',
-													'false');"/>
-				</div>
-				<div>
-					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
-													'${tapUpCommandHolder.cmdId}',
-													'${tapUpCommandHolder.commandName}',
-													'${regulatorType}',
-													'false');"/>
-				</div>
-				<div>
-					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
-													'${tapDownCommandHolder.cmdId}',
-													'${tapDownCommandHolder.commandName}',
-													'${regulatorType}',
-													'false');"/>
-				</div>
-				<div>
-					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
-													'${enableRemoteCommandHolder.cmdId}',
-													'${enableRemoteCommandHolder.commandName}',
-													'${regulatorType}',
-													'false');"/>
-				</div>
-				<div>
-					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
-													'${disableRemoteCommandHolder.cmdId}',
-													'${disableRemoteCommandHolder.commandName}',
-													'${regulatorType}',
-													'false');"/>
-				</div>
-			</tags:boxContainer2>
+                <c:choose>
+                    <c:when test="${zoneDto.zoneType == threePhase}">
+                        <table class="compactResultsTable">
+                            <tr>
+                                <th><i:inline key=".details.table.phase.A"/></th>
+                                <th><i:inline key=".details.table.phase.B"/></th>
+                                <th><i:inline key=".details.table.phase.C"/></th>
+                            </tr>
+                            <tr>
+                                <td>
+                    				<div>
+                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                    													'${scanCommandHolder.cmdId}',
+                    													'${scanCommandHolder.commandName}',
+                    													'${regulatorAType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                    													'${tapUpCommandHolder.cmdId}',
+                    													'${tapUpCommandHolder.commandName}',
+                    													'${regulatorAType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                    													'${tapDownCommandHolder.cmdId}',
+                    													'${tapDownCommandHolder.commandName}',
+                    													'${regulatorAType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                    													'${enableRemoteCommandHolder.cmdId}',
+                    													'${enableRemoteCommandHolder.commandName}',
+                    													'${regulatorAType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                    													'${disableRemoteCommandHolder.cmdId}',
+                    													'${disableRemoteCommandHolder.commandName}',
+                    													'${regulatorAType}',
+                    													'false');"/>
+                    				</div>
+                                </td>
+                                <td>
+                    				<div>
+                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                    													'${scanCommandHolder.cmdId}',
+                    													'${scanCommandHolder.commandName}',
+                    													'${regulatorBType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                    													'${tapUpCommandHolder.cmdId}',
+                    													'${tapUpCommandHolder.commandName}',
+                    													'${regulatorBType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                    													'${tapDownCommandHolder.cmdId}',
+                    													'${tapDownCommandHolder.commandName}',
+                    													'${regulatorBType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                    													'${enableRemoteCommandHolder.cmdId}',
+                    													'${enableRemoteCommandHolder.commandName}',
+                    													'${regulatorBType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                    													'${disableRemoteCommandHolder.cmdId}',
+                    													'${disableRemoteCommandHolder.commandName}',
+                    													'${regulatorBType}',
+                    													'false');"/>
+                    				</div>
+                                </td>
+                                <td>
+                    				<div>
+                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                    													'${scanCommandHolder.cmdId}',
+                    													'${scanCommandHolder.commandName}',
+                    													'${regulatorCType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                    													'${tapUpCommandHolder.cmdId}',
+                    													'${tapUpCommandHolder.commandName}',
+                    													'${regulatorCType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                    													'${tapDownCommandHolder.cmdId}',
+                    													'${tapDownCommandHolder.commandName}',
+                    													'${regulatorCType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                    													'${enableRemoteCommandHolder.cmdId}',
+                    													'${enableRemoteCommandHolder.commandName}',
+                    													'${regulatorCType}',
+                    													'false');"/>
+                    				</div>
+                    				<div>
+                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                    													'${disableRemoteCommandHolder.cmdId}',
+                    													'${disableRemoteCommandHolder.commandName}',
+                    													'${regulatorCType}',
+                    													'false');"/>
+                    				</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </c:when>
+                    <c:when test="${zoneDto.zoneType == singlePhase}">
+                        <table class="compactResultsTable">
+                            <tr>
+                                <th><i:inline key=".details.table.phase.${zoneDto.regulator.phase}"/></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
+                                                                        '${scanCommandHolder.cmdId}',
+                                                                        '${scanCommandHolder.commandName}',
+                                                                        '${regulatorType}',
+                                                                        'false');"/>
+                                    </div>
+                                    <div>
+                                        <cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
+                                                                        '${tapUpCommandHolder.cmdId}',
+                                                                        '${tapUpCommandHolder.commandName}',
+                                                                        '${regulatorType}',
+                                                                        'false');"/>
+                                    </div>
+                                    <div>
+                                        <cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
+                                                                        '${tapDownCommandHolder.cmdId}',
+                                                                        '${tapDownCommandHolder.commandName}',
+                                                                        '${regulatorType}',
+                                                                        'false');"/>
+                                    </div>
+                                    <div>
+                                        <cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
+                                                                        '${enableRemoteCommandHolder.cmdId}',
+                                                                        '${enableRemoteCommandHolder.commandName}',
+                                                                        '${regulatorType}',
+                                                                        'false');"/>
+                                    </div>
+                                    <div>
+                                        <cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
+                                                                        '${disableRemoteCommandHolder.cmdId}',
+                                                                        '${disableRemoteCommandHolder.commandName}',
+                                                                        '${regulatorType}',
+                                                                        'false');"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <div>
+                            <cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
+                                                            '${scanCommandHolder.cmdId}',
+                                                            '${scanCommandHolder.commandName}',
+                                                            '${regulatorType}',
+                                                            'false');"/>
+                        </div>
+                        <div>
+                            <cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
+                                                            '${tapUpCommandHolder.cmdId}',
+                                                            '${tapUpCommandHolder.commandName}',
+                                                            '${regulatorType}',
+                                                            'false');"/>
+                        </div>
+                        <div>
+                            <cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
+                                                            '${tapDownCommandHolder.cmdId}',
+                                                            '${tapDownCommandHolder.commandName}',
+                                                            '${regulatorType}',
+                                                            'false');"/>
+                        </div>
+                        <div>
+                            <cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
+                                                            '${enableRemoteCommandHolder.cmdId}',
+                                                            '${enableRemoteCommandHolder.commandName}',
+                                                            '${regulatorType}',
+                                                            'false');"/>
+                        </div>
+                        <div>
+                            <cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
+                                                            '${disableRemoteCommandHolder.cmdId}',
+                                                            '${disableRemoteCommandHolder.commandName}',
+                                                            '${regulatorType}',
+                                                            'false');"/>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>
@@ -203,7 +460,7 @@
 						<i:inline key=".ivvcEvents.none"/>
 					</c:when>
 					<c:otherwise>
-						<div class="historyContainer ">
+						<div class="historyContainer">
 							<table class="compactResultsTable ">
 								<tr>
 									<th><i:inline key=".ivvcEvents.description"/></th>
@@ -222,49 +479,94 @@
 				
 			</tags:boxContainer2>
 			<br>
-			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
-				<tags:alternateRowReset/>
-		        <table class="compactResultsTable">
-		            <tr style="text-align: left;">
-		                <th><i:inline key=".attributes.name"/></th>
-		                <th><i:inline key=".attributes.value"/></th>
-		                <th><i:inline key=".attributes.timestamp"/></th>
-		            </tr>
-		            
-		            <c:forEach var="point" items="${regulatorPointMappings}">
-		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-		                    <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
-		                    <td>
-		                        <c:choose>
-		                            <c:when test="${point.pointId > 0}">
-		                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-		                            </c:when>
-		                            <c:otherwise>
-		                                ---
-		                            </c:otherwise>
-		                        </c:choose>
-		                    </td>
-		                    <td>
-		                        <c:choose>
-		                            <c:when test="${point.pointId > 0}">
-		                                <cti:pointValue pointId="${point.pointId}" format="DATE"/>
-		                            </c:when>
-		                            <c:otherwise>
-		                                ---
-		                            </c:otherwise>
-		                        </c:choose>
-		                    </td>
-		                </tr>
-		            </c:forEach>
-		            
-		        </table>
-			</tags:boxContainer2>
+            <c:choose>
+                <c:when test="${zoneDto.zoneType == threePhase}">
+                    <tags:tabbedBoxContainer nameKeys="${nameKeys}">
+                        <c:forEach var="regulatorPointMappings" items="${regulatorPointMappingsList}" varStatus="status">
+                            <tags:tabbedBoxContainerElement>
+                                <tags:alternateRowReset/>
+                                <table class="compactResultsTable">
+                                    <tr style="text-align: left;">
+                                        <th><i:inline key=".attributes.name"/></th>
+                                        <th><i:inline key=".attributes.value"/></th>
+                                        <th><i:inline key=".attributes.timestamp"/></th>
+                                    </tr>
+                                    
+                                    <c:forEach var="point" items="${regulatorPointMappings}">
+                                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                            <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${point.pointId > 0}">
+                                                        <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ---
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${point.pointId > 0}">
+                                                        <cti:pointValue pointId="${point.pointId}" format="DATE"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ---
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </table>
+                            </tags:tabbedBoxContainerElement>
+                        </c:forEach>
+                    </tags:tabbedBoxContainer>
+                </c:when>
+                <c:otherwise>
+        			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
+        				<tags:alternateRowReset/>
+        		        <table class="compactResultsTable">
+        		            <tr style="text-align: left;">
+        		                <th><i:inline key=".attributes.name"/></th>
+        		                <th><i:inline key=".attributes.value"/></th>
+        		                <th><i:inline key=".attributes.timestamp"/></th>
+        		            </tr>
+        		            
+        		            <c:forEach var="point" items="${regulatorPointMappings}">
+        		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+        		                    <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
+        		                    <td>
+        		                        <c:choose>
+        		                            <c:when test="${point.pointId > 0}">
+        		                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+        		                            </c:when>
+        		                            <c:otherwise>
+        		                                ---
+        		                            </c:otherwise>
+        		                        </c:choose>
+        		                    </td>
+        		                    <td>
+        		                        <c:choose>
+        		                            <c:when test="${point.pointId > 0}">
+        		                                <cti:pointValue pointId="${point.pointId}" format="DATE"/>
+        		                            </c:when>
+        		                            <c:otherwise>
+        		                                ---
+        		                            </c:otherwise>
+        		                        </c:choose>
+        		                    </td>
+        		                </tr>
+        		            </c:forEach>
+        		        </table>
+        			</tags:boxContainer2>
+                </c:otherwise>
+            </c:choose>
 		</cti:dataGridCell>
 		
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
-		        <c:set var="amChartsProduct" value="amxy"/>
+		        <c:set var="amChartsProduct" value="amline"/>
 		        <c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/zone/chart">
 		        	<cti:param name="zoneId" value="${zoneId}"/>
 		        </c:url>
@@ -311,9 +613,6 @@
 			
 			<tags:boxContainer2 nameKey="capBanks" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>
-				<c:if test="${unassignedBanksExist}">
-					<div class="strongWarningMessage"><i:inline key=".capBanks.unassignedBanks"/></div>
-				</c:if>
 				<table class="compactResultsTable ">
 					<tr>
 						<th><i:inline key=".capBanks.cbcName"/></th>
@@ -345,8 +644,11 @@
 		                    </td>
 		                </tr>
 		            </c:forEach>
-					
 				</table>
+                <c:if test="${unassignedBanksExist}">
+                    <br>
+                    <div class="strongWarningMessage"><i:inline key=".capBanks.unassignedBanks"/></div>
+                </c:if>
 			</tags:boxContainer2>
 		</cti:dataGridCell>	
 	</cti:dataGrid>

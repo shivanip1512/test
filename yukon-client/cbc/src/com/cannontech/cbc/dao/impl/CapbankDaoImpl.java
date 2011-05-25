@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;

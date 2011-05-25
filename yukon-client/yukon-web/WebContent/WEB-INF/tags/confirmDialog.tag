@@ -8,8 +8,9 @@
 <%@ attribute name="id" rtexprvalue="true"%>
 <%@ attribute name="submitName" rtexprvalue="true" description="This will be the name of the OK submit button."%>
 <%@ attribute name="argument" type="java.lang.Object" rtexprvalue="true"%>
-<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
+<%@ attribute name="on" rtexprvalue="true" description="registers click event on the element with this CSS selector"%>
 <%@ attribute name="styleClass"  rtexprvalue="true"%>
+<%@ attribute name="href"  rtexprvalue="true"%>
 
 <cti:uniqueIdentifier var="uniqueId"/>
 <c:if test="${!empty pageScope.id}">
@@ -33,7 +34,7 @@
                 <cti:button key="ok" type="submit" />
             </c:if>
             <c:if test="${!empty pageScope.submitName}">
-                <cti:button key="ok" type="submit" name="${pageScope.submitName}" />
+                <cti:button key="ok" type="submit" name="${pageScope.submitName}" href="${pageScope.href}"/>
             </c:if>
             <cti:button key="cancel" onclick="$('${uniqueId}').hide()" />
         </div>

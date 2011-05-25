@@ -163,30 +163,37 @@
 			<h:dataTable id="pointConfig" var="point" value="#{capBankEditor.assignedPoints}">
             
 				<h:column>
-                    <h:panelGrid columns="3" styleClass="pointConfigSectionTable">
+                    <h:panelGrid columns="5" styleClass="pointConfigSectionTable">
                         
                         <x:outputText value="#{point.pointName}" styleClass="nameValueLabel"/>
+                        <x:outputText value=""/>
+                        <x:outputText value=""/>
                         <x:outputText value=""/>
                         <x:outputText value=""/>
                         
                         <x:outputText value="Adaptive Count: "/>
                         <x:inputText value="#{point.NINAvg}" onchange="checkAdaptiveCount(this);" />
                         <x:outputText value=""/>
-                        
+                        <x:outputLabel for="phaseSelect" value="Phase: "/>
+                        <x:selectOneMenu id="phaseSelect"
+                            value="#{point.phase}">
+                            <f:selectItems id="capControlFormPhases" value="#{selLists.phases}" />
+                        </x:selectOneMenu>
+
                         <h:panelGroup>
                             <x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" disabled="#{!capControlForm.editingAuthorized}" onclick="submit();" />
                             <x:outputText value="Initiate scan on unsolicited" styleClass="padCheckBoxLabel" />
                         </h:panelGroup>
                         <x:outputText value=""/>
                         <x:outputText value=""/>
+                        <x:outputText value="Upper Bandwidth: " />
+                        <x:inputText value="#{point.upperBandwidth}" disabled="#{!point.overrideFdrLimits}" />
                         
                         <h:panelGroup>
         					<x:selectBooleanCheckbox id="inheritFdr1" value="#{point.overrideFdrLimits}" onclick="submit();" disabled="#{!capControlForm.editingAuthorized}"/>
         					<x:outputText value="Override feeder limits" styleClass="padCheckBoxLabel" />
                         </h:panelGroup>
-                        <x:outputText value="Upper Bandwidth: " />
-    					<x:inputText value="#{point.upperBandwidth}" disabled="#{!point.overrideFdrLimits}" />
-    					
+                        <x:outputText value=""/>
                         <x:outputText value=""/>
                         <x:outputText value="Lower Bandwidth: " />
                         <x:inputText value="#{point.lowerBandwidth}" disabled="#{!point.overrideFdrLimits}" />

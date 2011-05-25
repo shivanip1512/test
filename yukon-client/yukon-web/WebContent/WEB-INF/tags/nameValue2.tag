@@ -2,17 +2,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="nameKey" required="true" rtexprvalue="true" %>
 <%@ attribute name="label" required="false" type="java.lang.Object"%>
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
-<%@ attribute name="rowId" %>
+<%@ attribute name="rowId" rtexprvalue="true" %>
 <%@ attribute name="rowClass" %>
+<%@ attribute name="rowStyle" rtexprvalue="true" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
-            <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
+            <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>
+            <c:if test="${!empty rowStyle}"> style="${rowStyle}"</c:if>>
 			<td class="name" style="white-space:nowrap;">
 			
 				<c:set var="colonSuffix" value=":"/>

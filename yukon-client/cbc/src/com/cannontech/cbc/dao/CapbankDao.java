@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.common.search.SearchResult;
 
 public interface CapbankDao {

@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
@@ -9,6 +10,7 @@ import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneDto;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
+import com.cannontech.enums.Phase;
 
 public interface ZoneService {
     
@@ -108,6 +110,13 @@ public interface ZoneService {
      * @return
      */
     public List<Integer> getMonitorPointsForBank(int bankId);
+
+    /**
+     * Returns a Map of point Id to Phase for the given Cap Bank Id
+     * @param bankId
+     * @return
+     */
+    public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId);
     
     /**
      * Returns the latest CCEvents for the zone and subBus passed in. 

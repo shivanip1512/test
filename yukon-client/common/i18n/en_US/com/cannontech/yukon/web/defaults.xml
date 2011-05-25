@@ -17,6 +17,7 @@
 <entry key="yukon.web.defaults.year">Year</entry>
 
 <entry key="yukon.web.defaults.dashes">---</entry>
+<entry key="yukon.web.defaults.dashesTwo">--</entry>
 
 <entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
 

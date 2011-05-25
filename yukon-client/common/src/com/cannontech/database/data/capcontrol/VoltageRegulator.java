@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -20,6 +21,9 @@ import com.google.common.collect.Lists;
 
 public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDevice{
     private List<VoltageRegulatorPointMapping> pointMappings;
+    private int keepAliveTimer;
+    private int keepAliveConfig;
+    boolean displayConfig;
 
     public VoltageRegulator() {
         super();
@@ -66,6 +70,12 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     @Override
     public void update() throws java.sql.SQLException {
         super.update();
+        
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        Integer paoId = getCapControlPAOID();
+        voltageRegulatorDao.update(paoId, keepAliveTimer, keepAliveConfig);
+        
+        //Point Mappings
         ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
         List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
         for(VoltageRegulatorPointMapping mapping : pointMappings) {
@@ -96,7 +106,34 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         }
         return pointMappings;
     }
-    
+
+    public int getKeepAliveTimer() {
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        Integer paoId = getCapControlPAOID();
+        keepAliveTimer = voltageRegulatorDao.getKeepAliveTimerForRegulator(paoId);
+        return keepAliveTimer;
+    }
+
+    public int getKeepAliveConfig() {
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        Integer paoId = getCapControlPAOID();
+        keepAliveConfig = voltageRegulatorDao.getKeepAliveConfigForRegulator(paoId);
+        return keepAliveConfig;
+    }
+
+    public void setKeepAliveTimer(int keepAliveTimer) {
+        this.keepAliveTimer = keepAliveTimer;
+    }
+
+    public void setKeepAliveConfig(int keepAliveConfig) {
+        this.keepAliveConfig = keepAliveConfig;
+    }
+
+    public boolean isDisplayConfig() {
+        PaoType paoType = PaoType.getForDbString(getPAOType());
+        return paoType == PaoType.LOAD_TAP_CHANGER;
+    }
+
     @Override
     public PaoIdentifier getPaoIdentifier() {
         return new PaoIdentifier(getPAObjectID(),PaoType.getForDbString(getPAOType()));

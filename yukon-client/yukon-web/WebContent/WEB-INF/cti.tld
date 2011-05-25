@@ -572,7 +572,12 @@
       <name>var</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-    </attribute>    
+    </attribute>
+    <attribute>
+      <name>depth</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
 
   <tag>

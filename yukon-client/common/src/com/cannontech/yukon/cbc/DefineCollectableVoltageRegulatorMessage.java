@@ -45,9 +45,9 @@ public class DefineCollectableVoltageRegulatorMessage extends DefineCollectableC
     throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-        Vector<VoltageRegulatorFlags> voltageRegulators = CollectionExtracter.extractVector(vstr, polystr);
+        Vector<VoltageRegulatorFlags> voltageRegulatorFlags = CollectionExtracter.extractVector(vstr, polystr);
         
-        ((VoltageRegulatorFlagMessage) obj).setVoltageRegulators(voltageRegulators);
+        ((VoltageRegulatorFlagMessage) obj).setVoltageRegulatorFlags(voltageRegulatorFlags);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) {

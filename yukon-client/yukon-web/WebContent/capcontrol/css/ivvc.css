@@ -1,56 +1,80 @@
 .tableCell {
-	font-size: 12px;
+    font-size: 12px;
 }
 
 .altTableCell {
-	font-size: 12px;
+    font-size: 12px;
 }
 
 .errorIndicator {
-	color:pink;
+    color: pink;
 }
 
 .disabledRow {
-	font-style: italic;
+    font-style: italic;
 }
 
 .ivvcContainer {
-	width:auto;
-	vertical-align:top;
+    width: auto;
+    vertical-align: top;
 }
 
 .ivvcChart {
-	width:100%;
-	vertical-align:top;
+    width: 100%;
+    vertical-align: top;
 }
 
-div.zoneHierarchy ul {
-	padding-left:1em;
+span.leftIndent {
+    margin-left: 1em;
 }
 
 div.zoneHierarchy li {
-	list-style-type:none;
-	margin: 6px 0; 
-}
-div.zoneHierarchy li div {
-	position: relative;
-	border-bottom: 1px #CCCCCC solid;
-	padding-bottom: 2px;
+    list-style-type: none;
+    margin: 6px 0;
 }
 
-div.zoneHierarchy li div div {
-	position: absolute;
-	top: 0;
-	right: 2%;
-	border: none;
+table.zoneListTable th.zoneName,
+table.zoneListTable td.zoneName {
+    width: 50%;
 }
 
-div.zoneHierarchy li div div div {
-	position: absolute;
-	top: 0;
-	text-align:left;
-	right: 200%;
-	border: none;
+table.zoneListTable td.zoneType {
+    width: 85px;
+}
+
+table.zoneListTable .tapContainer {
+    width: 97px;
+}
+table.zoneListTable .tapContainer > span {
+    width: 30px;
+    text-align: center;
+    display: inline-block;
+}
+
+table.zoneListTable .tapContainer .phaseLetter {
+    font-weight: bold;
+}
+
+table.zoneListTable th.lastOperation {
+    padding-left: 10px;
+}
+
+table.zoneListTable th.zoneActions,
+table.zoneListTable td.zoneActions {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.regulatorModeRemote {
+    display: none;
+}
+.regulatorModeLocal,
+.regulatorModeLocalWarning {
+    display: inline;
+    font-weight: bold;
+}
+.regulatorModeLocalWarning {
+    color: orange;    
 }
 
 div.historyContainer {
@@ -61,14 +85,36 @@ div.historyContainer {
 
 table.ivvcGridLayout td.first,
 table.ivvcGridLayout td.middle {
-	padding-right: 10px;
-	width: 20%;
+    padding-right: 10px;
+    width: 20%;
 }
 
 table.ivvcGridLayout td.last {
-	width: 20%;
+    width: 20%;
 }
 
 table.ivvcGridLayout tr {
-	vertical-align:top;
+    vertical-align: top;
+}
+
+#zoneWizardPopup table.nameValueTable,
+#zoneWizardPopup table.compactResultsTable {
+    font-size: 14px;
+}
+
+.zoneWizardTableScrollArea {
+    height: 97px;
+    overflow: auto;
+}
+
+.zoneWizardVoltagePoints,
+.zoneWizardCapBanks {
+    width: 400px;
+    height: auto;
+    overflow: auto;
+    padding-top: 5px;
+}
+
+.zoneWizardCapBanks {
+    padding-right: 5px;
 }

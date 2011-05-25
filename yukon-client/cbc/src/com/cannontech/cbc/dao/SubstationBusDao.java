@@ -2,7 +2,7 @@ package com.cannontech.cbc.dao;
 
 import java.util.List;
 
-import com.cannontech.cbc.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.common.search.SearchResult;

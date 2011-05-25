@@ -1,13 +1,19 @@
 package com.cannontech.capcontrol.model;
 
+import java.util.List;
+
+import com.cannontech.database.data.pao.ZoneType;
+import com.google.common.collect.Lists;
+
 public class Zone {
 
-    private Integer id = null;//Can be null
+    private Integer id;
     private String name;
-    private int regulatorId;
+    private List<ZoneRegulator> regulators = Lists.newArrayListWithCapacity(3);
     private int substationBusId;
-    private Integer parentId;//Can be null
+    private Integer parentId;
     private double graphStartPosition;
+    private ZoneType typeType = ZoneType.GANG_OPERATED;
     
     public Zone () {
         
@@ -29,12 +35,12 @@ public class Zone {
         this.name = name;
     }
 
-    public int getRegulatorId() {
-        return regulatorId;
+    public List<ZoneRegulator> getRegulators() {
+        return regulators;
     }
 
-    public void setRegulatorId(int regulatorId) {
-        this.regulatorId = regulatorId;
+    public void setRegulators(List<ZoneRegulator> regulators) {
+        this.regulators = regulators;
     }
 
     public int getSubstationBusId() {
@@ -61,53 +67,67 @@ public class Zone {
 		this.graphStartPosition = graphStartPosition;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(graphStartPosition);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((parentId == null) ? 0 : parentId.hashCode());
-		result = prime * result + regulatorId;
-		result = prime * result + substationBusId;
-		return result;
-	}
+    public ZoneType getZoneType() {
+        return typeType;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Zone other = (Zone) obj;
-		if (Double.doubleToLongBits(graphStartPosition) != Double
-				.doubleToLongBits(other.graphStartPosition))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (parentId == null) {
-			if (other.parentId != null)
-				return false;
-		} else if (!parentId.equals(other.parentId))
-			return false;
-		if (regulatorId != other.regulatorId)
-			return false;
-		if (substationBusId != other.substationBusId)
-			return false;
-		return true;
-	}
+    public void setZoneType(ZoneType zoneType) {
+        this.typeType = zoneType;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(graphStartPosition);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((parentId == null) ? 0 : parentId.hashCode());
+        result = prime * result + ((regulators == null) ? 0 : regulators.hashCode());
+        result = prime * result + substationBusId;
+        result = prime * result + ((typeType == null) ? 0 : typeType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Zone other = (Zone) obj;
+        if (Double.doubleToLongBits(graphStartPosition) != Double
+            .doubleToLongBits(other.graphStartPosition))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (parentId == null) {
+            if (other.parentId != null)
+                return false;
+        } else if (!parentId.equals(other.parentId))
+            return false;
+        if (regulators == null) {
+            if (other.regulators != null)
+                return false;
+        } else if (!regulators.equals(other.regulators))
+            return false;
+        if (substationBusId != other.substationBusId)
+            return false;
+        if (typeType != other.typeType)
+            return false;
+        return true;
+    }
+
 }

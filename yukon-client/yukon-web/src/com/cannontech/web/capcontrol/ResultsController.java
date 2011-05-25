@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.dao.CapbankControllerDao;
@@ -18,9 +20,7 @@ import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.dao.SubstationDao;
-import com.cannontech.cbc.dao.VoltageRegulatorDao;
 import com.cannontech.cbc.exceptions.MissingSearchType;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;

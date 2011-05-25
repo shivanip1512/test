@@ -19,10 +19,29 @@
 			<x:panelGroup>
 				<x:outputLabel for="paoDescription" value="Description: "
 					title="Description of the Voltage Regulator" />
-
 				<x:inputText id="paoDescription"
 					value="#{capControlForm.PAOBase.PAODescription}" required="false"
 					maxlength="60" styleClass="char32Label" />
+
+                <x:htmlTag value="br"/>
+                <x:htmlTag value="br"/>
+
+                <x:outputLabel for="keepAliveTimer" value="Keep Alive Timer: "
+                    title="Keep Alive Timer (in minutes) for the Voltage Regulator" />
+                <x:inputText id="keepAliveTimer"
+                    value="#{capControlForm.regulatorBase.keepAliveTimer}" required="false"
+                    maxlength="10" styleClass="char4Label" />
+
+                <x:htmlTag value="br"/>
+                <x:htmlTag value="br"/>
+
+                <x:outputLabel for="keepAliveConfig" value="Keep Alive Config: "
+                    title="Keep Alive Config for the Voltage Regulator"
+                    rendered="#{capControlForm.regulatorBase.displayConfig}" />
+                <x:inputText id="keepAliveConfig"
+                    value="#{capControlForm.regulatorBase.keepAliveConfig}" required="false"
+                    maxlength="10" styleClass="char4Label"
+                    rendered="#{capControlForm.regulatorBase.displayConfig}" />
 			</x:panelGroup>
 		</x:panelGrid>
 	</x:htmlTag>
@@ -80,6 +99,7 @@
 			                picker[rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
 							var filterType = document.getElementById('filterType[' + rowNumber + ']').value;
 			                picker[rowNumber].extraArgs = filterType;
+			                picker[rowNumber].immediateSelectMode = true;
 			                picker[rowNumber].init();
 
 			                function createPickerShower(rowNumberIn) {

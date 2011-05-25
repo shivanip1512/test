@@ -12,22 +12,25 @@
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/amChart.js" />
+    <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 	
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/capcontrol/css/ivvc.css"/>
     
-    <cti:url var="zoneCreatorUrl" value="/spring/capcontrol/ivvc/wizard/zoneCreation">
+    <cti:url var="zoneCreatorUrl" value="/spring/capcontrol/ivvc/wizard/zoneCreationWizard">
     	<cti:param name="subBusId" value="${subBusId}"/>
     </cti:url>
 
     <c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
 
+    <!-- Zone Wizard Dialog -->
+    <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
+
     <script type="text/javascript">
     	function showZoneWizard(url) {
-			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
+			openSimpleDialog('zoneWizardPopup', url, 'Zone Creation Wizard', null, null, 'get');
 		}
-
+    	
 		function selectZone(event) {
 			var span = event.target;
 
@@ -103,61 +106,72 @@
 			<br>
 
 			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
-				<div class="zoneHierarchy">
-					<ul>
-						<li>
-							<div style="font-weight: bold">
-								<i:inline key=".zoneList.name"/>
-								<div>
-									<i:inline key="modules.capcontrol.actions"/>
-									<div class="nonwrapping">
-										<i:inline key="modules.capcontrol.lastOperation"/>
-									</div>
-								</div>
-							</div>
-						</li>
-					</ul>
-				</div>
-				<cti:navigableHierarchy hierarchy="${zones}" 
-					styleClass="zoneHierarchy"
-					var="zone">
-					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
-				    	<cti:param name="zoneId" value="${zone.id}"/>
-				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-				    </cti:url>
-				    <cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
-   						<cti:param name="zoneId" value="${zone.id}"/>
-				    </cti:url>
-					<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
-   						<cti:param name="zoneId" value="${zone.id}"/>
-				    </cti:url> 
-					<div>
-						<capTags:regulatorModeIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
-						<a href="${zoneDetailUrl}">${zone.name}</a>
-						<div>
-						<c:choose>
-							<c:when  test="${hasEditingRole}">
-								<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
-								<a href="${zoneDeleteUrl}"><cti:img key="remove"/></a>
-							</c:when>
-							<c:otherwise>
-								<cti:img key="disabledEdit"/> 
-								<cti:img key="disabledRemove"/>
-							</c:otherwise>
-						</c:choose>
-							<div class="nonwrapping">
-								<capTags:regulatorTapIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
-							</div>
-						</div>
-					</div>
-				</cti:navigableHierarchy>
+                <table class="zoneListTable compactResultsTable">
+                    <tr>
+                        <th class="zoneName"><i:inline key=".zoneList.name" /></th>
+                        <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
+                        <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
+                        <th class="zoneActions"><i:inline key="modules.capcontrol.actions"/></th>
+                    </tr>
+    				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}" styleClass="zoneHierarchy">
+    					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+    				    	<cti:param name="zoneId" value="${zone.zoneId}"/>
+    				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+    				    </cti:url>
+    				    <cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
+       						<cti:param name="zoneId" value="${zone.zoneId}"/>
+    				    </cti:url>
+    					<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
+       						<cti:param name="zoneId" value="${zone.zoneId}"/>
+    				    </cti:url>
+                
+                        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                            <td class="zoneName">
+                                <c:if test="${depth > 0}">
+                                    <c:forEach begin="0" end="${depth-1}">
+                                        <span class="leftIndent"></span>
+                                    </c:forEach>
+                                </c:if>
+                                <a href="${zoneDetailUrl}">
+                                    <spring:escapeBody htmlEscape="true">${zone.name}</spring:escapeBody>
+                                </a>
+                            </td>
+                            <td class="zoneType">
+                                <c:choose>
+                                    <c:when test="${zone.zoneType == singlePhaseZone}">
+                                        <i:inline key="${zone.zoneType.formatKey}"/>:&nbsp<i:inline key="${zone.regulator.phase.formatKey}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i:inline key="${zone.zoneType.formatKey}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="lastOperation">
+                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"/>
+                            </td>
+                            <td class="zoneActions">
+                                <c:choose>
+                                    <c:when  test="${hasEditingRole}">
+                                        <a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+                                        <cti:button id="delete_${zone.zoneId}" key="remove" renderMode="image" href="${zoneDeleteUrl}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:img key="disabledEdit"/> 
+                                        <cti:img key="disabledRemove"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+    				</cti:navigableHierarchy>
+                </table>
+
 				<c:if test="${hasEditingRole}">
 					<div class="actionArea">
+        				<c:if test="${unassignedBanksExist}">
+        					<span class="strongWarningMessage fl"><i:inline key=".zoneList.unassignedBanks"/></span>
+        				</c:if>
 						<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
 					</div>
-				</c:if>
-				<c:if test="${unassignedBanksExist}">
-					<div class="strongWarningMessage"><i:inline key=".zoneList.unassignedBanks"/></div>
 				</c:if>
 				
 			</tags:boxContainer2>
@@ -204,7 +218,7 @@
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
-		        <c:set var="amChartsProduct" value="amxy"/>
+		        <c:set var="amChartsProduct" value="amline"/>
 		        <c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
 		        	<cti:param name="subBusId" value="${subBusId}"/>
 		        </c:url>

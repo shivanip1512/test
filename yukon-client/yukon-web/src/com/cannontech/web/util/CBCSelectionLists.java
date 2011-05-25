@@ -11,6 +11,7 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -25,6 +26,10 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.enums.Phase;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 
@@ -66,6 +71,10 @@ public class CBCSelectionLists {
 	private LiteYukonUser yukonUser;
 	private AuthDao authDao;
 	private CbcHelperService cbcHelperService;
+    private static YukonUserContextMessageSourceResolver messageSourceResolver;
+    static {
+        messageSourceResolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
+    }
 	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -291,7 +300,34 @@ public class CBCSelectionLists {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), CapControlType.LTC.getDisplayValue() ),
 		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), CapControlType.GO_REGULATOR.getDisplayValue() ),
+        new SelectItem(new Integer(PAOGroups.PHASE_OPERATED_REGULATOR), CapControlType.PO_REGULATOR.getDisplayValue() ),
 	};
+
+	private static YukonUserContext userContext;
+	private static MessageSourceAccessor messageSourceAccessor;
+	private static final String phaseAString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseA");
+	private static final String phaseBString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseB");
+	private static final String phaseCString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseC");
+	private static final SelectItem[] phases = {
+	    new SelectItem(Phase.A.name(), phaseAString),
+	    new SelectItem(Phase.B.name(), phaseBString),
+	    new SelectItem(Phase.C.name(), phaseCString)
+	};
+	
+	private static MessageSourceAccessor getMessageSourceAccessor() {
+	    if (messageSourceAccessor == null) {
+	        YukonUserContext yukonUserContext = getYukonUserContext();
+	        messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+	    }
+	    return messageSourceAccessor;
+	}
+	
+	private static YukonUserContext getYukonUserContext() {
+	    if (userContext == null) {
+	        userContext = JSFUtil.getYukonUserContext();
+	    }
+	    return userContext;
+	}
     
 	/**
 	 * Returns all possible Comm Channels
@@ -618,7 +654,11 @@ public class CBCSelectionLists {
     public SelectItem[] getSwitchManufacturers() {
         return switchManufacturers;
     }
-    
+
+    public SelectItem[] getPhases() {
+        return phases;
+    }
+
     public SelectItem[] getSwitchTypes() {
         return switchTypes;
     }

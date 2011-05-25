@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +16,15 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneDto;
+import com.cannontech.capcontrol.model.ZoneGangDto;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
+import com.cannontech.capcontrol.model.ZoneSinglePhaseDto;
+import com.cannontech.capcontrol.model.ZoneThreePhaseDto;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.enums.Phase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ArrayListMultimap;
@@ -52,9 +58,10 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setId(zoneDto.getZoneId());
         zone.setName(zoneDto.getName());
         zone.setParentId(zoneDto.getParentZoneId());
-        zone.setRegulatorId(zoneDto.getRegulatorId());
+        zone.setRegulators(zoneDto.getRegulators());
         zone.setSubstationBusId(zoneDto.getSubstationBusId());
         zone.setGraphStartPosition(zoneDto.getGraphStartPosition());
+        zone.setZoneType(zoneDto.getZoneType());
         
         zoneDao.save(zone);
         //Sets the new Id if this was an insert.
@@ -98,7 +105,8 @@ public class ZoneServiceImpl implements ZoneService {
         	int zoneId = zoneDto.getZoneId();
         	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
-        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist);
+        	Phase phase = pointRow.getPhase();
+        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist, phase);
         	points.add(point);
         }
         return points;
@@ -110,17 +118,34 @@ public class ZoneServiceImpl implements ZoneService {
         return zones;
     }
     
+    private List<ZoneDto> getZoneDtoListFromZones(List<Zone> zones) {
+        List<ZoneDto> zoneDtoList = Lists.newArrayList();
+        for (Zone zone: zones) {
+            ZoneDto zoneDto = null;
+            if (zone.getZoneType() == ZoneType.GANG_OPERATED) {
+                zoneDto = new ZoneGangDto(zone);
+            } else if (zone.getZoneType() == ZoneType.SINGLE_PHASE) {
+                zoneDto = new ZoneSinglePhaseDto(zone);
+            } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
+                zoneDto = new ZoneThreePhaseDto(zone);
+            }
+            zoneDtoList.add(zoneDto);
+        }
+        return zoneDtoList;
+    }
+    
     @Override
     public ZoneHierarchy getZoneHierarchyBySubBusId(int subbusId) {
         //Find parent zone and build lookup map
-        Zone root = null;
+        ZoneDto root = null;
         List<Zone> zones = getZonesBySubBusId(subbusId);
-        Multimap<Integer, Zone> childOfLookup = ArrayListMultimap.create();
-        for (Zone zone : zones) {
-            if (zone.getParentId() == null) {
-                root = zone;
+        List<ZoneDto> zoneDtoList = getZoneDtoListFromZones(zones);
+        Multimap<Integer, ZoneDto> childOfLookup = ArrayListMultimap.create();
+        for (ZoneDto zoneDto : zoneDtoList) {
+            if (zoneDto.getParentZoneId() == null) {
+                root = zoneDto;
             } else {
-                childOfLookup.put(zone.getParentId(), zone);
+                childOfLookup.put(zoneDto.getParentZoneId(), zoneDto);
             }
         }
 
@@ -129,21 +154,21 @@ public class ZoneServiceImpl implements ZoneService {
         hierarchy.setZone(root);
         //Recursive call to set children
         if (root != null) {
-            setChildHierarchy(hierarchy, root.getId(), childOfLookup);
+            setChildHierarchy(hierarchy, root.getZoneId(), childOfLookup);
         }
 
         return hierarchy;
     }
 
-    private void setChildHierarchy(ZoneHierarchy hierarchy, Integer rootId, Multimap<Integer,Zone> childOfLookup) {       
+    private void setChildHierarchy(ZoneHierarchy hierarchy, Integer rootId, Multimap<Integer, ZoneDto> childOfLookup) {       
         List<ZoneHierarchy> childZones = Lists.newArrayList();
         
-        Iterable<Zone> childGroups = childOfLookup.get(rootId);
-        for (Zone zone : childGroups) {
+        Iterable<ZoneDto> childGroups = childOfLookup.get(rootId);
+        for (ZoneDto zoneDto : childGroups) {
             ZoneHierarchy childHierarchy = new ZoneHierarchy();
-            childHierarchy.setZone(zone);
+            childHierarchy.setZone(zoneDto);
             
-            setChildHierarchy(childHierarchy, zone.getId(), childOfLookup);
+            setChildHierarchy(childHierarchy, zoneDto.getZoneId(), childOfLookup);
             
             childZones.add(childHierarchy);
         }
@@ -227,6 +252,10 @@ public class ZoneServiceImpl implements ZoneService {
     
     public List<Integer> getMonitorPointsForBank(int bankId) {
         return zoneDao.getMonitorPointsForBank(bankId);
+    }
+    
+    public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId) {
+        return zoneDao.getMonitorPointsForBankAndPhase(bankId);
     }
     
     @Autowired

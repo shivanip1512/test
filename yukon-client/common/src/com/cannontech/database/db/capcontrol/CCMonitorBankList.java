@@ -21,6 +21,7 @@ public class CCMonitorBankList extends DBPersistent {
 	private Long NINAvg = new Long ( 3 );
 	private Float upperBandwidth = new Float(0);
 	private Float lowerBandwidth = new Float(0);
+	private Character phase;
 	
 	private CapBankMonitorPointParams monitorPoint = null;
 
@@ -31,7 +32,8 @@ public class CCMonitorBankList extends DBPersistent {
 		"Scannable",
 		"NINAvg",
 		"UpperBandwidth",
-		"LowerBandwidth"
+		"LowerBandwidth",
+		"Phase"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "BankId", "PointId" };
@@ -56,13 +58,18 @@ public class CCMonitorBankList extends DBPersistent {
 		NINAvg = new Long ( monitorPoint.getNINAvg() );
 		upperBandwidth = new Float ( monitorPoint.getUpperBandwidth() );
 		lowerBandwidth = new Float ( monitorPoint.getLowerBandwidth() );
-		
+		String phaseParam = monitorPoint.getPhase();
+		if (phaseParam != null) {
+		    phase = new Character (phaseParam.charAt(0));
+		} else {
+		    phase = new Character ('A'); //Default to phase A
+		}
 	}
 
 	public void add() throws SQLException {
 
 		Object[] addValues = { getCapBankId(), getPointId(), getDisplayOrder(), getScannable(),
-							   getNINAvg(), getUpperBandwidth(), getLowerBandwidth()	
+							   getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), getPhase()
 							   };
 
 		add( TABLE_NAME, addValues );
@@ -86,7 +93,7 @@ public class CCMonitorBankList extends DBPersistent {
 			setNINAvg((Long) results[2]);
 			setUpperBandwidth((Float) results[3]);
 			setLowerBandwidth((Float) results[4]);
-			
+			setPhase((Character) results[5]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -97,7 +104,8 @@ public class CCMonitorBankList extends DBPersistent {
 	public void update() throws SQLException {
 		Object setValues[]= 
 		{
-			getDisplayOrder(),getScannable(), getNINAvg(), getUpperBandwidth(), getLowerBandwidth()
+			getDisplayOrder(),getScannable(), getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), 
+			getPhase()
 		};
 
 		Object constraintValues[] = { getCapBankId(), getPointId()};
@@ -166,8 +174,16 @@ public class CCMonitorBankList extends DBPersistent {
 	public void setUpperBandwidth(Float upperBandwidth) {
 		this.upperBandwidth = upperBandwidth;
 	}
-	
-	public CapBankMonitorPointParams getMonitorPoint() {
+
+	public Character getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Character phase) {
+        this.phase = phase;
+    }
+
+    public CapBankMonitorPointParams getMonitorPoint() {
 		if (monitorPoint == null)
 			monitorPoint = new CapBankMonitorPointParams();
 		return monitorPoint;
@@ -189,7 +205,13 @@ public class CCMonitorBankList extends DBPersistent {
         				monitorPoint.setNINAvg(new Long ( rs.getBigDecimal(5).longValue() ));
         				monitorPoint.setUpperBandwidth(new Float (rs.getFloat(6) ));
         				monitorPoint.setLowerBandwidth(new Float (rs.getFloat(7) ));
-        				return monitorPoint;        				
+        				String phase = rs.getString(8);
+        				if (phase != null) {
+        				    monitorPoint.setPhase(new Character (phase.charAt(0) ));
+        				} else {
+        				    monitorPoint.setPhase(null);
+        				}
+        				return monitorPoint;
         			}
         		});
 

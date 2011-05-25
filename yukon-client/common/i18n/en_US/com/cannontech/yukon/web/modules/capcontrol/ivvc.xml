@@ -7,6 +7,10 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.actions">Actions</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.name">Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.type">Type</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.phase.A">Phase A</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.phase.B">Phase B</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.phase.C">Phase C</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.actions.title">Voltage Regulator Commands</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.up.hoverText">Click to Tap Up</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.up.label">Tap Up</entry>
@@ -16,15 +20,21 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.hoverUrl">/WebConfig/yukon/Icons/transmit_blue_over.png</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.hoverText">Click to Scan</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.label">Send Integrity Scan</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.label">Send Disable Remote Control</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.label">Disable Remote Control</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.hoverText">Click to Disable</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.label">Send Enable Remote Control</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.label">Enable Remote Control</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.hoverText">Click to Enable</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.title">Voltage Regulator Attributes</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributesRegA.title">Regulator A Attributes</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributesRegB.title">Regulator B Attributes</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributesRegC.title">Regulator C Attributes</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.tabOne.title">ONE</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.tabTwo.title">TWO</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.tabThree.title">THREE</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.name">Attribute Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.value">Value</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.timestamp">Timestamp</entry>
@@ -36,6 +46,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.unassignedBanks">* Not assigned to any Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.title">Recent Events</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.description">Event Description</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.phase">Event Phase</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.none">No Past Events to Display</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.voltageProfile.title">Voltage Profile</entry>
@@ -64,10 +75,9 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVar</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kw">kW</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.title">Voltage Profile</entry>
-
-	<!-- OverLoaded Text for images in components.xml -->	
-	<entry key="yukon.web.modules.capcontrol.ivvc.busView.flashingGreenUpArrow.hoverText">Recent Tap Up Operation</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.busView.flashingGreenDownArrow.hoverText">Recent Tap Down Operation</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.missingVoltageAttribute">Missing voltage attribute on regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.title">Delete Zone</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title">Zone Wizard</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltageDevice.title">Assigned Cap Bank Devices</entry>
@@ -76,19 +86,27 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title.editTitle">Edit Zone</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.name">Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.substationBus">Substation Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zoneType">Zone Type</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zonePhase">Zone Phase</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulatorA">Regulator A</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulatorB">Regulator B</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulatorC">Regulator C</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.parentZone">Parent Zone</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.createAsParentZone">Create as Parent</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.createAsRootZone">Create as Root</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.creatingAsRootZone">Creating as Root</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.isRoot">---</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.graphStartPosition">Graph Start Position</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.picker">Add</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.updateButton">Update</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.createButton">Create</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.remove">Remove</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.name">Cap Bank Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.name">Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.device">CBC Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.position">Position</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.distance">Distance</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Point Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
@@ -98,17 +116,68 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId">A Substation Bus is required.</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulatorId">A Voltage Regulator is required, please select a Regulator.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator">A Voltage Regulator is required, please select a Regulator.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved">Zone was successfully saved.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.zoneDeleteError">Error deleting Zone, delete any child Zones first.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists">Error creating Zone. A root Zone already exists on this Substation bus, please select a Parent Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone">There was an error saving the Zone.</entry>
-	
-	<!-- Text used on both BusView and ZoneDetail Voltage Profile graphs -->
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>{4}<br>Dist:{5}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>{4}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>Dist:{4}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}]]></entry>
-	
-	
+    <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zoneType">Zone Type</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.parentZone">Parent Zone</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zonePhase">Phase</entry>
+    
+    <!-- Zone Types -->
+    <entry key="yukon.web.modules.capcontrol.ivvc.zone.GANG_OPERATED">Gang Operated</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zone.THREE_PHASE">Three Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zone.SINGLE_PHASE">Single Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zone.phase">Phase</entry>
+
+    <!-- Regulator Types -->
+    <entry key="yukon.web.modules.capcontrol.ivvc.regulator.GANG_OPERATED">Gang Operated</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.regulator.THREE_PHASE">Phase Operated</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.regulator.SINGLE_PHASE">Phase Operated</entry>
+    
+	<!-- Voltage Profile graphs (used on both BusView and ZoneDetail )-->
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphLabel">Voltage Profile</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.yAxisLabel">Volts</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.xAxisLabel">Position</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.noPhaseBulletType">round_outlined</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseABulletType">round_outlined</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBBulletType">round_outlined</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCBulletType">round_outlined</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.noPhaseVisibleInLegend">true</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.noPhaseVisibleNoLegend">false</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseAVisibleInLegend">true</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBVisibleInLegend">true</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCVisibleInLegend">true</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;Dist:{5}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;{5}&lt;br&gt;Dist:{6}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;{5}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;Dist:{4}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;Dist:{5}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#047D08</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#F50000</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#007AF5</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#00F500</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionColor">#E32222</entry>
+    
+    <!-- Last Operation Widget Tooltips -->
+    <entry key="yukon.web.modules.capcontrol.ivvc.flashingGreenUpArrow.tooltip">Recent Tap Up</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.flashingGreenDownArrow.tooltip">Recent Tap Down</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.flashingOrangeUpArrow.tooltip">Recent Tap Up (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.flashingOrangeDownArrow.tooltip">Recent Tap Down (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.greenUpArrow.tooltip">Tap Up</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.greenDownArrow.tooltip">Tap Down</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.orangeUpArrow.tooltip">Tap Up (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.orangeDownArrow.tooltip">Tap Down (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.noLastOp.tooltip">No Last Operation</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.local">L</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.localWarning">L</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.local.tooltip">Local Mode</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.localWarning.tooltip">Local Mode (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.remote">R</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.mode.remote.tooltip">Remote Mode</entry>
 </properties>

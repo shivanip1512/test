@@ -575,17 +575,29 @@ div.triangleContainer .triangleContainer_titleBar .controls {
     cursor: pointer;
 }
 
-div.boxContainer .boxContainer_titleBar,
+
+.greyGradientBox, div.boxContainer .boxContainer_titleBar,
 table.boxContainer td.boxContainer_titleBar,
 div.pagedBox .title, div.pagedBox .footer,
 div.boxContainerFooter .footer {
 	background-color: #F7F7F7;
 	border: 1px solid #BBBBBB;
-	padding: .25em .5em; 
 	background-image: url(../Icons/boxContainerBg26px.gif);
 	background-position: left bottom;
 	background-repeat:repeat-x;
 	text-align: left;
+}
+
+.greyGradientBox {
+    background-position: top left;
+    background-color: #E1E1E1; /* Bottom color of boxContainerBg26px.gif */
+}
+
+div.boxContainer .boxContainer_titleBar,
+table.boxContainer td.boxContainer_titleBar,
+div.pagedBox .title, div.pagedBox .footer,
+div.boxContainerFooter .footer {
+    padding: .25em .5em; 
 }
 
 .boxContainer_titleBar{position:relative; overflow:hidden;}
@@ -609,6 +621,7 @@ div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer {
     position:relative;
 }
 
+div.greyGradientBox .controls,
 div.boxContainer .boxContainer_titleBar .controls { 
 	float: right;
 	padding-top: 1px;
@@ -631,6 +644,10 @@ div.boxContainer .boxContainer_content, div.pagedBox .content {
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;
+}
+
+div.greyGradientBox .boxContainer_content {
+    border-style: solid none none;
 }
 
 table.boxContainer {
@@ -1477,6 +1494,67 @@ button.image {
 
 div.f_toggle {
     padding-left: 30px;
+}
+
+/*TABS*/
+.f_tab {
+    display:none;
+}
+
+.f_tab.active {
+    display:block;
+}
+
+.f_tabs {
+    overflow:hidden;
+    margin-bottom: -1px;
+}
+
+.f_tabs li {
+    background: transparent;
+    cursor: pointer;
+    color: #999;
+    display: inline;
+    margin: 0;
+    padding: 2px 8px;
+    float:left;
+    overflow:hidden;
+    clear:none;
+    border-right: solid 1px #CCC;
+    border-top: solid 1px #CCC;
+    position: relative;
+    z-index:10;
+}
+
+.f_tabs li:hover {
+    color: #333;
+}
+
+.f_tabs li.active {
+    background-color: white;
+    color: black;
+    cursor: default; 
+}
+/* END TABS */
+
+.greyGradientBox .f_tabs li {
+    border-top: none;
+    padding: .25em .5em;
+    min-height: 19px;  /* height determined by control icon: 1px padding top + 1px border (top & bottom)  */
+    line-height: 19px;
+    font-weight: bold; 
+}
+.greyGradientBox .f_tabs li.active {
+    color: #0066CC;
+}
+.greyGradientBox .f_tabs .controls {
+    position: absolute;
+    right: .5em;
+    top: .25em;
+}
+.greyGradientBox .f_tabbed {
+    border-top: 1px solid #BBB;
+    background-color: white;
 }
 
 .water_meter {

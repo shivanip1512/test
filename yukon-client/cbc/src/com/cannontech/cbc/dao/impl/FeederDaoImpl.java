@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;

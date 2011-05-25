@@ -4,17 +4,17 @@ import java.util.Vector;
 
 public class VoltageRegulatorFlagMessage extends CapControlMessage {
     
-    private Vector<VoltageRegulatorFlags> voltageRegulators;
+    private Vector<VoltageRegulatorFlags> voltageRegulatorFlags;
     
     public VoltageRegulatorFlagMessage() {
         
     }
     
-    public void setVoltageRegulators(Vector<VoltageRegulatorFlags> voltageRegulators) {
-        this.voltageRegulators = voltageRegulators;
+    public void setVoltageRegulatorFlags(Vector<VoltageRegulatorFlags> voltageRegulatorFlags) {
+        this.voltageRegulatorFlags = voltageRegulatorFlags;
     }
     
-    public Vector<VoltageRegulatorFlags> getVoltageRegulators() {
-        return voltageRegulators;
+    public Vector<VoltageRegulatorFlags> getVoltageRegulatorFlags() {
+        return voltageRegulatorFlags;
     }
 }

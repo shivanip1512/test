@@ -276,8 +276,10 @@ Picker.prototype = {
 		this.allPagesSelected = $('picker_' + this.pickerId + '_allPagesSelected');
 		this.clearEntireSelectionLink = $('picker_' + this.pickerId + '_clearEntireSelection');
 		this.entireSelectionCleared = $('picker_' + this.pickerId + '_entireSelectionCleared');
-		this.outputColumns = json.outputColumns;
-		this.idFieldName = json.idFieldName;
+		if (json != null) {
+    		this.outputColumns = json.outputColumns;
+    		this.idFieldName = json.idFieldName;
+		}
 
 		this.doIdSearch(initialIds);
 
@@ -308,7 +310,7 @@ Picker.prototype = {
 
 	onIdSearchComplete : function(transport) {
 		var json = transport.responseText.evalJSON();
-		if (json.hits && json.hits.resultList) {
+		if (json && json.hits && json.hits.resultList) {
 			this.selectedItems = json.hits.resultList;
 			if (this.showSelectedLink) this.showSelectedLink.show();
 		}
@@ -358,10 +360,6 @@ Picker.prototype = {
 			return;
 		}
 
-		if (this.endAction && !this.endAction(this.selectedItems)) {
-			return false;
-		}
-
 		var hit = null;
 		if (this.selectedItems.length > 0) {
 			hit = this.selectedItems[0];
@@ -398,6 +396,9 @@ Picker.prototype = {
 				$(extraDestinationField.fieldId).innerHTML = value;
 			}
 		}
+        if (this.endAction) {
+            this.endAction(this.selectedItems, this);
+        }
 		return true;
 	},
 
@@ -411,6 +412,18 @@ Picker.prototype = {
 			this.selectionLabel.innerHTML = this.originalSelectionLabel;
 			this.selectionLabel.addClassName('noSelectionPickerLabel');
 		}
+	},
+
+	/**
+	 * Get the id(s) of the selected item(s).
+	 * If this is a multi-select picker, an array will be returned, 
+	 * but in single select mode a single selected item will be returned.
+	 */
+	getSelected: function() {
+	    var retVal = this.destinationFieldId
+            ? $F(this.destinationFieldId).split(',')
+            : this.inputAreaDiv.getElementsBySelector('input').pluck('value');
+	    return this.multiSelectMode ? retVal : retVal[0];
 	},
 
 	previous: function() {

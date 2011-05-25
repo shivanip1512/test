@@ -18,6 +18,7 @@ public class NavigableHierarchyTag extends YukonTagSupport {
     private NavigableHierarchy<?> hierarchy;
     private String styleClass = null;
     private String var;
+    private String depth;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -29,7 +30,7 @@ public class NavigableHierarchyTag extends YukonTagSupport {
         if (root != null) {
             List<NavigableHierarchy<?>> children = Lists.newArrayList();
             children.add(hierarchy);
-            doTagZones(out,children);
+            doTagZones(out, children, 0);
         }
         
         out.print("</div>");
@@ -41,16 +42,18 @@ public class NavigableHierarchyTag extends YukonTagSupport {
      * @throws JspException
      * @throws IOException
      */
-    private void doTagZones(JspWriter out, List<? extends NavigableHierarchy<?>> children) throws JspException, IOException{
+    private void doTagZones(JspWriter out, List<? extends NavigableHierarchy<?>> children, Integer childDepth) throws JspException, IOException{
 
         out.print("<ul>");
         for (NavigableHierarchy<?> child : children) {            
-            out.print("<li>");    
+            out.print("<li>");
             getJspContext().setAttribute(var, child.getNode());
+            getJspContext().setAttribute(depth, childDepth);
             getJspBody().invoke(out);
             List<? extends NavigableHierarchy<?>> grandChildren = child.getChildren();
             if (!grandChildren.isEmpty()) {
-                doTagZones(out,grandChildren);
+                Integer newDepth = childDepth + 1;
+                doTagZones(out, grandChildren, newDepth);
             }
             out.print("</li>");
 
@@ -69,4 +72,9 @@ public class NavigableHierarchyTag extends YukonTagSupport {
     public void setVar(String var) {
         this.var = var;
     }
+
+    public void setDepth(String depth) {
+        this.depth = depth;
+    }
+    
 }

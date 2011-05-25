@@ -20,8 +20,10 @@ public class YukonDeviceCreationProvider extends BaseCreationProvider<NullFields
 
     @Override
     public boolean isTypeSupported(PaoType paoType) {
-        //TODO Make function to check if we are a device.
-        return true;
+        //TODO This is wrong. Will be fixed by Thain
+        return paoType != PaoType.GANG_OPERATED &&
+            paoType != PaoType.PHASE_OPERATED &&
+            paoType != PaoType.LOAD_TAP_CHANGER;
     }
 
     @Override

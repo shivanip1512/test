@@ -39,7 +39,7 @@ Yukon.ui = {
             elem.observe('click', function(event){
                 Yukon.ui.unblockPage();
                 return true;
-            })
+            });
         });
         
         // resize it with the window
@@ -69,6 +69,8 @@ Yukon.ui = {
             
             Yukon.ui.toggleInputs(elem);
         });
+        
+        Yukon.uiUtils.tabs.init();
         
         /*
          * Focus the designated input element
@@ -252,16 +254,97 @@ Yukon.uiUtils = {
             window.onresize = null;
         }
     },
+    
+    tabs: {
+        init: function(elem){
+            if(elem === undefined){
+                $$(".f_tabs > li").each(function(elem){
+                    elem.observe('click', function(event){
+                        Yukon.uiUtils.tabs.showTab(event.element());
+                    });
+                });
+                
+                $$(".f_tabs").each(function(elem){
+                    elem.select("li:first").each(function(li){
+                        Yukon.uiUtils.tabs.showTab(li);
+                    });
+                });                
+            } else {
+                elem.select(".f_tabs > li").each(function(elem){
+                    elem.observe('click', function(event){
+                        Yukon.uiUtils.tabs.showTab(event.element());
+                    });
+                });
+                
+                elem.select(".f_tabs").each(function(elem){
+                    elem.select("li:first").each(function(li){
+                        Yukon.uiUtils.tabs.showTab(li);
+                    });
+                });
+            }
+        },
+        showTab: function(tab){
+            if(!tab.hasClassName("active")){
+                var tabIndex = 0;
+                var tabbed = null;
+                var tabControls = null;
+                
+                tab.parentNode.childElements().each(function(elem, idx){ //no native support for indexing an element in prototype!
+                    if (elem === tab) {
+                        tabIndex = idx;
+                    }
+                });
+                
+                
+                if(tab.hasClassName("f_tab")){
+                    tabbed = tab.parentNode;
+                    // IE doesn't extend the parentNode for some reason in Prototype 1.7
+                    tabControls = $(tab.parentNode.parentNode).select(".f_tabs")[0];
+                }else{
+                    tabControls = tab.parentNode;
+                 // IE doesn't extend the parentNode for some reason in Prototype 1.7
+                    tabbed = $(tab.parentNode.parentNode).select(".f_tabbed")[0];
+                }
+                
+                tabbed.childElements().each(function(elem){
+                    elem.removeClassName("active");
+                });
+                
+                tabControls.childElements().each(function(elem){
+                    elem.removeClassName("active");
+                });
+                
+                tabbed.select(".f_tab")[tabIndex].addClassName("active");
+                tabControls.select("li")[tabIndex].addClassName("active");
+                return true;
+            }
+            return false;
+        }
+    },
 
     viewport : {
         height : function() {
-            return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            return (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
         },
         width : function() {
-            return document.body.offsetWidth || window.innerWidth || document.documentElement.clientWidth || 0;
+            return (document.body.offsetWidth || window.innerWidth || document.documentElement.clientWidth || 0);
         }
     }
 };
+
+//Really Prototype doesn't have this!
+Element.prototype.trigger = function(eventName)
+{
+    if (document.createEvent){
+        var evt = document.createEvent('HTMLEvents');
+        evt.initEvent(eventName, true, true);
+        return this.dispatchEvent(evt);
+    }
+
+    if (this.fireEvent){
+        return this.fireEvent('on' + eventName);
+    }
+}
 
 //initialize the lib
 document.observe("dom:loaded", function() {

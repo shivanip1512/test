@@ -11,10 +11,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;

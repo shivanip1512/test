@@ -17,9 +17,9 @@ private char scannable = 'N';
 private long NINAvg = 3;
 private float upperBandwidth = (float) 0.0;
 private float lowerBandwidth = (float) 0.0;
-private String pointName = "";
 private boolean overrideFdrLimits = false;
 private boolean initScan = false;
+private String phase;
 
 
 	public CapBankMonitorPointParams(){
@@ -126,6 +126,13 @@ private boolean initScan = false;
 	public void setMonitorPoint(LitePoint monitorPoint) {
 		this.monitorPoint = monitorPoint;
 	}
-	
+
+    public String getPhase() {
+        return phase;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
 
 }

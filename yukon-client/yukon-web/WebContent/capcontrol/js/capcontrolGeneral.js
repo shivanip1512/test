@@ -353,42 +353,215 @@ function updateRegulatorModeIndicator(id){
 	}
 }
 
-function updateRegulatorTapIndicator(id){
-  //assumes data is of type Hash
-	return function(data) {
-        var lowerTapSpan = $(id + '_lower');
-        var raiseTapSpan = $(id + '_raise');
-        var lowerTapSpanRecent = $(id + '_lower_recent');
-        var raiseTapSpanRecent = $(id + '_raise_recent');
-        var timeSpan = $(id + '_time');
-        var defaultSpan = $(id + '_default');
-        
-        var icon = data.get('value');
-        
-        //Hide all
-    	lowerTapSpan.hide();
-    	raiseTapSpan.hide();
-    	lowerTapSpanRecent.hide();
-    	raiseTapSpanRecent.hide();
-    	timeSpan.hide();
-    	defaultSpan.hide();
-        
-        if (icon == 'NONE') {
-        	defaultSpan.show();
-        } else if (icon == 'RAISE_TAP') {
-        	raiseTapSpan.show();
-        	timeSpan.show();
-        } else if (icon == 'LOWER_TAP') {
-        	lowerTapSpan.show();
-        	timeSpan.show();
-        } else if (icon == 'LOWER_TAP_RECENT') {
-        	lowerTapSpanRecent.show();
-        	timeSpan.show();
-        } else if (icon == 'RAISE_TAP_RECENT') {
-        	raiseTapSpanRecent.show();
-        	timeSpan.show();
+function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
+
+    var tapContainer = $('tapContainer_' + zoneId);
+    var divPhaseA = tapContainer.down('.phaseA');
+    var divPhaseB = tapContainer.down('.phaseB');
+    var divPhaseC = tapContainer.down('.phaseC');
+    
+    if (zoneType == 'THREE_PHASE') {
+        // assumes data is of type Hash
+        return function(data) {
+            
+            hideAll();
+
+            var modeA = data.get('modeA');
+            var modeB = data.get('modeB');
+            var modeC = data.get('modeC');
+            var tapIconA = data.get('tapA');
+            var tapIconB = data.get('tapB');
+            var tapIconC = data.get('tapC');
+            var tapTooltipA = data.get('tapTooltipA');
+            var tapTooltipB = data.get('tapTooltipB');
+            var tapTooltipC = data.get('tapTooltipC');
+            
+            setMode(modeA, divPhaseA);
+            setMode(modeB, divPhaseB);
+            setMode(modeC, divPhaseC);
+            
+            setTapIcon(tapIconA, modeA, divPhaseA, tapTooltipA);
+            setTapIcon(tapIconB, modeB, divPhaseB, tapTooltipB);
+            setTapIcon(tapIconC, modeC, divPhaseC, tapTooltipC);
         }
-	}
+    } else if (zoneType == 'GANG_OPERATED') {
+        // assumes data is of type Hash
+        return function(data) {
+            
+            hideAll();
+            
+            var mode = data.get('mode');
+            var icon = data.get('value');
+            var tapTooltip = data.get('tapTooltip');
+
+            setMode(mode, divPhaseA);
+            setMode(mode, divPhaseB);
+            setMode(mode, divPhaseC);
+            
+            setTapIcon(icon, mode, divPhaseA, tapTooltip);
+            setTapIcon(icon, mode, divPhaseB, tapTooltip);
+            setTapIcon(icon, mode, divPhaseC, tapTooltip);
+        }
+    } else if (zoneType == 'SINGLE_PHASE') {
+        // assumes data is of type Hash
+        return function(data) {
+            
+            hideAll();
+
+            var mode = data.get('mode');
+            var icon = data.get('value');
+            var tapTooltip = data.get('tapTooltip');
+            var divPhase;
+
+            if (phase == 'A') {
+                divPhase = divPhaseA;
+            } else if (phase == 'B') {
+                divPhase = divPhaseB;
+            } else {
+                divPhase = divPhaseC;
+            }
+
+            setMode(mode, divPhase);
+            setTapIcon(icon, mode, divPhase, tapTooltip);
+        }
+    }
+
+    function setMode(mode, div) {
+        if (mode == 'none') {
+            setModeNormalRemote(div);
+        } else if (mode == 'NormalLocal'){
+            setModeNormalLocal(div);
+        } else if (mode == 'WarningLocal'){
+            setModeWarningLocal(div);
+        }
+    }
+    
+    function setTapIcon(tapIcon, mode, div, tapTooltip) {
+        if (tapIcon == 'NONE') {
+            showTapDefault(div, tapTooltip);
+        } else if (tapIcon == 'RAISE_TAP') {
+            if (mode == 'WarningLocal') {
+                showTapRaiseWarning(div, tapTooltip);
+            } else {
+                showTapRaise(div, tapTooltip);
+            }
+        } else if (tapIcon == 'LOWER_TAP') {
+            if (mode == 'WarningLocal') {
+                showTapLowerWarning(div, tapTooltip);
+            } else {
+                showTapLower(div, tapTooltip);
+            }
+        } else if (tapIcon == 'LOWER_TAP_RECENT') {
+            if (mode == 'WarningLocal') {
+                showTapLowerRecentWarning(div, tapTooltip);
+            } else {
+                showTapLowerRecent(div, tapTooltip);
+            }
+        } else if (tapIcon == 'RAISE_TAP_RECENT') {
+            if (mode == 'WarningLocal') {
+                showTapRaiseRecentWarning(div, tapTooltip);
+            } else {
+                showTapRaiseRecent(div, tapTooltip);
+            }
+        }
+    }
+    
+    function showTapDefault(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapDefault');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapRaise(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapRaise');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapRaiseWarning(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapRaiseWarning');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapLower(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapLower');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapLowerWarning(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapLowerWarning');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapLowerRecent(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapLowerRecent');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapLowerRecentWarning(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapLowerRecentWarning');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapRaiseRecent(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapRaiseRecent');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+    function showTapRaiseRecentWarning(phase, tapTooltip) {
+        var tapDiv = phase.down('.tapRaiseRecentWarning');
+        tapDiv.title = tapTooltip;
+        tapDiv.show();
+    }
+
+    function setModeNormalRemote(divPhase) {
+        divPhase.down('.regulatorModeRemote').show();
+    }
+    function setModeNormalLocal(divPhase) {
+        divPhase.down('.regulatorModeLocal').show();
+    }
+    function setModeWarningLocal(divPhase) {
+        divPhase.down('.regulatorModeLocalWarning').show();
+    }
+
+    function hideAll() {
+        divPhaseA.down('.tapLower').hide();
+        divPhaseA.down('.tapLowerWarning').hide();
+        divPhaseA.down('.tapRaise').hide();
+        divPhaseA.down('.tapRaiseWarning').hide();
+        divPhaseA.down('.tapLowerRecent').hide();
+        divPhaseA.down('.tapLowerRecentWarning').hide();
+        divPhaseA.down('.tapRaiseRecent').hide();
+        divPhaseA.down('.tapRaiseRecentWarning').hide();
+        divPhaseA.down('.tapDefault').hide();
+        divPhaseA.down('.regulatorModeRemote').hide();
+        divPhaseA.down('.regulatorModeLocal').hide();
+        divPhaseA.down('.regulatorModeLocalWarning').hide();
+        
+        divPhaseB.down('.tapLower').hide();
+        divPhaseB.down('.tapLowerWarning').hide();
+        divPhaseB.down('.tapRaise').hide();
+        divPhaseB.down('.tapRaiseWarning').hide();
+        divPhaseB.down('.tapLowerRecent').hide();
+        divPhaseB.down('.tapLowerRecentWarning').hide();
+        divPhaseB.down('.tapRaiseRecent').hide();
+        divPhaseB.down('.tapRaiseRecentWarning').hide();
+        divPhaseB.down('.tapDefault').hide();
+        divPhaseB.down('.regulatorModeRemote').hide();
+        divPhaseB.down('.regulatorModeLocal').hide();
+        divPhaseB.down('.regulatorModeLocalWarning').hide();
+
+        divPhaseC.down('.tapLower').hide();
+        divPhaseC.down('.tapLowerWarning').hide();
+        divPhaseC.down('.tapRaise').hide();
+        divPhaseC.down('.tapRaiseWarning').hide();
+        divPhaseC.down('.tapLowerRecent').hide();
+        divPhaseC.down('.tapLowerRecentWarning').hide();
+        divPhaseC.down('.tapRaiseRecent').hide();
+        divPhaseC.down('.tapRaiseRecentWarning').hide();
+        divPhaseC.down('.tapDefault').hide();
+        divPhaseC.down('.regulatorModeRemote').hide();
+        divPhaseC.down('.regulatorModeLocal').hide();
+        divPhaseC.down('.regulatorModeLocalWarning').hide();
+    }
 }
 
 function updateVerificationImage(spanId) {

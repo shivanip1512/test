@@ -1,26 +1,33 @@
 package com.cannontech.cbc.service.impl;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.VoltageRegulatorDefaults;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.dao.CapbankControllerDao;
-import com.cannontech.cbc.dao.VoltageRegulatorDao;
+import com.cannontech.cbc.dao.CapbankDao;
+import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.dao.SubstationDao;
-import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.VoltageRegulator;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.service.PaoCreationService;
+import com.cannontech.common.pao.service.PaoTemplate;
+import com.cannontech.common.pao.service.PaoTemplatePart;
+import com.cannontech.common.pao.service.providers.fields.YukonPaObjectFields;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoScheduleDao;
@@ -31,7 +38,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.common.pao.PaoType;
+import com.google.common.collect.ClassToInstanceMap;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
@@ -45,7 +52,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	private DBPersistentDao dbPersistantDao;
     private PaoScheduleDao paoScheduleDao;
     private StrategyDao strategyDao;
-    private VoltageRegulatorDao voltageRegulatorDao;
+    private PaoCreationService paoCreationService;
 	
 	@Override
 	public int create(int type, String name, boolean disabled, int portId) {
@@ -146,29 +153,19 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	private int createRegulator(String name, boolean disabled, int type) {
-		
-		VoltageRegulator regulator = new VoltageRegulator();
-        regulator.setName(name);
-        regulator.setDisabled(disabled);
-        
-        switch (type) {
-        	case CapControlTypes.CAP_CONTROL_LTC:
-        		regulator.setType(PaoType.LOAD_TAP_CHANGER);
-        		break;
-        	case CapControlTypes.GANG_OPERATED_REGULATOR:
-        		regulator.setType(PaoType.GANG_OPERATED);
-        		break;
-        	case CapControlTypes.PHASE_OPERATED_REGULATOR:
-        		regulator.setType(PaoType.PHASE_OPERATED);
-        		break;
-        	//default can't be reached b/c of how createRegulator is called above
-        }
-        
-	    int newRegId = voltageRegulatorDao.add(regulator);
+	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields();
+	    voltageRegulatorFields.setKeepAliveTimer(VoltageRegulatorDefaults.KEEP_ALIVE_TIMER);
+	    voltageRegulatorFields.setKeepAliveConfig(VoltageRegulatorDefaults.KEEP_ALIVE_CONFIG);
 
-        sendDeviceDBChangeMessage(newRegId, DbChangeType.ADD, regulator.getType().getDbString());
-        
-        return newRegId;
+	    YukonPaObjectFields yukonPaoFields = new YukonPaObjectFields(name);
+	    ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
+	    paoFields.put(YukonPaObjectFields.class, yukonPaoFields);
+	    paoFields.put(VoltageRegulatorFields.class, voltageRegulatorFields);
+
+	    PaoTemplate paoTemplate = new PaoTemplate(PaoType.getForId(type), paoFields);
+	    PaoIdentifier paoIdentifier = paoCreationService.createPao(paoTemplate);
+
+        return paoIdentifier.getPaoId();
     }
 	
     @Override
@@ -460,7 +457,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	@Autowired
-	public void setVoltageRegulatorDaoDao(VoltageRegulatorDao voltageRegulatorDao){
-	    this.voltageRegulatorDao = voltageRegulatorDao;
-	}
+	public void setPaoCreationService(PaoCreationService paoCreationService) {
+        this.paoCreationService = paoCreationService;
+    }
 }

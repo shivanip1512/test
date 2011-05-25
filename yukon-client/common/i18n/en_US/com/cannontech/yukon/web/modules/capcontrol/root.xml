@@ -6,6 +6,7 @@
     
     <entry key="yukon.web.modules.capcontrol.actions">Actions</entry>
     <entry key="yukon.web.modules.capcontrol.lastOperation">Last Operation</entry>
+    <entry key="yukon.web.modules.capcontrol.zoneType">Type</entry>
     <entry key="yukon.web.modules.capcontrol.noPreviousOperation">No Previous Operation</entry>
     
     <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>

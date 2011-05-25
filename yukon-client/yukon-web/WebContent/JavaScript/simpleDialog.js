@@ -123,10 +123,14 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
  *            The HTTP method ('get' or 'post'). 'post' is the default.
  */
 function submitFormViaAjax(dialogId, formId, url, title, method) {
-	if (arguments.length < 3 || url == null) {
-		url = $(formId).action;
-	}
-	openSimpleDialog(dialogId, url, title, $(formId).serialize(true), true, method);
+    submitFormViaAjaxWithSkipShow(dialogId, formId, url, title, true, method);
+}
+
+function submitFormViaAjaxWithSkipShow(dialogId, formId, url, title, skipShow, method) {
+    if (arguments.length < 3 || url == null) {
+        url = $(formId).action;
+    }
+    openSimpleDialog(dialogId, url, title, $(formId).serialize(true), skipShow, method);
     return false; // useful if we want to use this for "onsubmit" on a form
 }
 

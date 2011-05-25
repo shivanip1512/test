@@ -1,57 +1,74 @@
-package com.cannontech.cbc.dao.impl;
+package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.cbc.dao.VoltageRegulatorDao;
-import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.cbc.model.VoltageRegulator;
+import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
 
 public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
-
-    private NextValueHelper nextValueHelper;
+    
+    @Override
+    public void add(int paoId, int keepAliveTimer, int keepAliveConfig) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink p = sql.insertInto("Regulator");
+        p.addValue("RegulatorId", paoId);
+        p.addValue("KeepAliveTimer", keepAliveTimer);
+        p.addValue("KeepAliveConfig", keepAliveConfig);
+        
+        yukonJdbcTemplate.update(sql);
+    }
 
     @Override
-    public int add(VoltageRegulator regulator) {
-        int newId = nextValueHelper.getNextValue("YukonPaObject");
+    public void update(int paoId, int keepAliveTimer, int keepAliveConfig) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        YukonPAObject persistentLtc = new YukonPAObject();
-        persistentLtc.setPaObjectID(newId);
-        persistentLtc.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-        persistentLtc.setPaoClass(PaoClass.CAPCONTROL.getDbString());
-        persistentLtc.setPaoName(regulator.getName());
-        persistentLtc.setType(regulator.getType().getDbString());
-        persistentLtc.setDescription(regulator.getDescription());
-        persistentLtc.setDisableFlag(regulator.getDisabled()?'Y':'N');
+        SqlParameterSink p = sql.update("Regulator");
+        p.addValue("KeepAliveTimer", keepAliveTimer);
+        p.addValue("KeepAliveConfig", keepAliveConfig);
+        sql.append("WHERE RegulatorId").eq(paoId);
         
-        try {
-            Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLtc).execute();
-            regulator.setId(persistentLtc.getPaObjectID());
-        } catch (TransactionException e) {
-            throw new DataIntegrityViolationException("Insert of VoltageRegulator, " + regulator.getName() + ", failed.", e);
-        }
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public int getKeepAliveTimerForRegulator(int regulatorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        return newId;
+        sql.append("SELECT KeepAliveTimer");
+        sql.append("FROM Regulator");
+        sql.append("WHERE RegulatorId").eq(regulatorId);
+        
+        int result = yukonJdbcTemplate.queryForInt(sql);
+        return result;
+    }
+    
+    @Override
+    public int getKeepAliveConfigForRegulator(int regulatorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT KeepAliveConfig");
+        sql.append("FROM Regulator");
+        sql.append("WHERE RegulatorId").eq(regulatorId);
+        
+        int result = yukonJdbcTemplate.queryForInt(sql);
+        return result;
     }
 
     @Override
@@ -87,7 +104,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM Zone)");
+        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM ZoneRegulator)");
         sql.append("    AND Type").in(regulatorTypes);
         
         
@@ -99,14 +116,14 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM Zone)");
+        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM ZoneRegulator)");
         sql.append("    AND Type").in(regulatorTypes);
         sql.append("ORDER BY PAOName");
         
-        PagingResultSetExtractor orphanExtractor = new PagingResultSetExtractor(start, count, rowMapper);
+        PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, rowMapper);
         yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
-        List<LiteCapControlObject> unassignedLtcs = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedLtcs = orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedLtcs);
@@ -119,10 +136,4 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
 }

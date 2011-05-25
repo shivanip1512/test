@@ -10,9 +10,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.model.Area;
-import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
