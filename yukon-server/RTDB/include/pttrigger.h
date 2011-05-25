@@ -35,8 +35,8 @@ class IM_EX_PNTDB CtiPointTriggerManager
 public:
 
     typedef CtiLockGuard<CtiMutex>         LockGuard;
-    typedef map<long, PtVerifyTriggerSPtr> coll_type;              // This is the collection type!
-    typedef map<long, coll_type>           trig_coll_type;
+    typedef std::map<long, PtVerifyTriggerSPtr> coll_type;              // This is the collection type!
+    typedef std::map<long, coll_type>           trig_coll_type;
     typedef coll_type::iterator            spiterator;
 
 private:

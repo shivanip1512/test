@@ -1,28 +1,4 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PENDING_INFO_H__
-#define __PENDING_INFO_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   pending_info
-*
-* Class:  CtiPendingPointOperations
-* Date:   11/17/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.15.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:48 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
+#pragma once
 
 #include <windows.h>
 #include <limits.h>
@@ -36,7 +12,7 @@ class CtiPendingPointOperations
 {
 public:
 
-    typedef map< int, long > CtiOffsetPIDMap_t;
+    typedef std::map< int, long > CtiOffsetPIDMap_t;
 
     typedef enum
     {
@@ -173,4 +149,3 @@ private:
     CtiTime getLastHistoryPost() const;       // Time this was last posted.
     void setLastHistoryPost(CtiTime rwt);
 };
-#endif // #ifndef __PENDING_INFO_H__

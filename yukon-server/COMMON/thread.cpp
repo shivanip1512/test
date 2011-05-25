@@ -1,20 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  thread.h
-
-    Programmer:  Aaron  Lauinger
-
-    Description:    Source file for CtiThread.
-
-    Initial Date:  11/7/00
-
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/17 22:50:24 $
-*
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <iostream>
@@ -24,9 +7,7 @@ using namespace std;
 #include "thread.h"
 
 CtiThread::CtiThread() :
-_usingCreateThread(false),
-_thrhandle(INVALID_HANDLE_VALUE),
-_thrhandle2(0)
+_thread_handle(0)
 {
    set(STARTING, false);
    set(SHUTDOWN, false);
@@ -37,7 +18,6 @@ _thrhandle2(0)
 CtiThread::~CtiThread()
 {
    if(hInterrupt != INVALID_HANDLE_VALUE) CloseHandle(hInterrupt);
-   if(_usingCreateThread && _thrhandle != INVALID_HANDLE_VALUE) CloseHandle(_thrhandle);
 }
 
 /*-----------------------------------------------------------------------------
@@ -47,30 +27,17 @@ CtiThread::~CtiThread()
 -----------------------------------------------------------------------------*/
 void CtiThread::start()
 {
-    bool failed = false;
-
     // set(STARTING, true) is the synchronization method here.
    if( !isRunning() && set(STARTING, true))
    {
-
-#ifdef _WINDOWS
 
       // ThreadProc is a static member function that will acquire _running_mux
       // and then call the run() memeber function using a pointer to this
       // smuggled across as a void*
 
-      if(_usingCreateThread)
-      {
-      _thrhandle = CreateThread(NULL, 0, CtiThread::ThreadProc, this, 0, &_thrid);
-          if( _thrhandle == NULL ) failed = true;
-      }
-      else
-      {
-          _thrhandle2 = _beginthreadex(NULL, 0, CtiThread::ThreadProc2, this, 0, &_thrid2);
-          if( _thrhandle2 == 0 ) failed = true;
-      }
+      _thread_handle = _beginthreadex(NULL, 0, CtiThread::ThreadProc, this, 0, &_thread_id);
 
-      if( failed )
+      if( ! _thread_handle )
       {
          LPVOID lpMsgBuf;
          FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -90,7 +57,6 @@ void CtiThread::start()
          // Free the buffer.
          LocalFree( lpMsgBuf );
       }
-#endif
    }
 }
 /*-----------------------------------------------------------------------------
@@ -100,9 +66,7 @@ void CtiThread::start()
 -----------------------------------------------------------------------------*/
 void CtiThread::interrupt()
 {
-#ifdef _WINDOWS
    SetEvent(hInterrupt);
-#endif
 }
 
 /*-----------------------------------------------------------------------------
@@ -144,9 +108,7 @@ void CtiThread::join()
 -----------------------------------------------------------------------------*/
 bool CtiThread::sleep(unsigned long millis)
 {
-#ifdef _WINDOWS
    return( WaitForSingleObject( hInterrupt, millis ) == WAIT_OBJECT_0 );
-#endif
 }
 
 bool CtiThread::isSet(int id)
@@ -189,18 +151,10 @@ bool CtiThread::isRunning()
 
 int CtiThread::getID() const
 {
-#ifdef _WINDOWS
-   int id;
-
-   if(_usingCreateThread) id = _thrid;
-   else id = _thrid2;
-
-   return id;
-#endif
+   return _thread_id;
 }
-#ifdef _WINDOWS
 
-DWORD WINAPI CtiThread::ThreadProc(LPVOID lpData )
+unsigned WINAPI CtiThread::ThreadProc(LPVOID lpData )
 {
    // We are using lpData to smuggle in a pointer to a CtiThread
    CtiThread* thr = (CtiThread*) lpData;
@@ -213,17 +167,3 @@ DWORD WINAPI CtiThread::ThreadProc(LPVOID lpData )
    return 0;
 }
 
-unsigned WINAPI CtiThread::ThreadProc2(LPVOID lpData )
-{
-   // We are using lpData to smuggle in a pointer to a CtiThread
-   CtiThread* thr = (CtiThread*) lpData;
-
-   // This order is very important!
-   CtiLockGuard<CtiMutex> guard(thr->_running_mux);
-   thr->set(STARTING, false );
-   thr->run();
-
-   return 0;
-}
-
-#endif

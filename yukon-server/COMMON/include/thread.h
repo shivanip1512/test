@@ -1,43 +1,12 @@
-/*-----------------------------------------------------------------------------
-    Filename:  thread.h
+#pragma once
 
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiThread.
-                    CtiThread encapsulates common thread functionality.
-
-                    To create a thread:
-                    Create a class that inherits from CtiThread
-                    - you must implement a run() function, this
-                      is where the newly created thread will begin
-                      execution.
-
-    Initial Date:  11/7/00
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __CTITHREAD_H__
-#define __CTITHREAD_H__
-
-#ifdef _WINDOWS
-    
-    #if !defined (NOMINMAX)
-    #define NOMINMAX
-    #endif
-
-    #include <windows.h>
-#endif
+#include <windows.h>
 
 #include <map>
-
 
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
-
-using std::map;
 
 class IM_EX_CTIBASE CtiThread
 {
@@ -66,25 +35,15 @@ protected:
     bool isSet(int id);
 
 private:
-    map< int, bool > _event_map;
+    std::map< int, bool > _event_map;
 
     CtiMutex _event_mux;
     CtiMutex _running_mux;
 
-#ifdef _WINDOWS
-
-    bool _usingCreateThread;
-
-    static DWORD WINAPI ThreadProc( LPVOID lpData );
-    HANDLE _thrhandle;
-    DWORD  _thrid;
-
-    static unsigned WINAPI ThreadProc2( LPVOID lpData );
-    unsigned long _thrhandle2;
-    unsigned _thrid2;
+    static unsigned WINAPI ThreadProc( LPVOID lpData );
+    unsigned _thread_handle;
+    unsigned _thread_id;
 
     HANDLE hInterrupt;
-#endif
-
 };
-#endif
+
