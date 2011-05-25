@@ -699,12 +699,14 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             if( !(temp = CmdStr.match(re_daily_read)).empty() )
             {
+                //  getvalue daily read
                 //  getvalue daily read 12/12/2007
                 //  getvalue daily read 12/12/2007 12/27/2007
-                //  getvalue daily read channel n 12/12/2007
                 //  getvalue daily read channel n 12/12/2007 12/27/2007
                 //  getvalue daily read detail 12/12/2007
                 //  getvalue daily read detail channel n 12/12/2007
+                //  getvalue daily reads
+                //  getvalue daily reads 12/12/2007 12/27/2007
 
                 _cmd["daily_read"] = true;
 
