@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/21/2011 3:51:13 PM                         */
+/* Created on:     5/25/2011 12:51:03 PM                        */
 /*==============================================================*/
 
 
@@ -376,6 +376,43 @@ create table ApplianceWaterHeater  (
    EnergySourceID       NUMBER                          not null,
    NumberOfElements     NUMBER                          not null,
    constraint PK_APPLIANCEWATERHEATER primary key (ApplianceID)
+);
+
+/*==============================================================*/
+/* Table: ArchiveDataAnalysis                                   */
+/*==============================================================*/
+create table ArchiveDataAnalysis  (
+   AnalysisId           NUMBER                          not null,
+   Attribute            VARCHAR2(60)                    not null,
+   IntervalLength       NUMBER                          not null,
+   LastChangeId         NUMBER                          not null,
+   RunDate              DATE                            not null,
+   ExcludeBadPointQualities CHAR(1)                         not null,
+   StartDate            DATE                            not null,
+   StopDate             DATE                            not null,
+   constraint PK_ArcDataAnal primary key (AnalysisId)
+);
+
+/*==============================================================*/
+/* Table: ArchiveDataAnalysisSlotValues                         */
+/*==============================================================*/
+create table ArchiveDataAnalysisSlotValues  (
+   SlotValueId          NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   SlotId               NUMBER                          not null,
+   HasValue             CHAR(1)                         not null,
+   ChangeId             NUMBER,
+   constraint PK_ArcDataAnalSlotValues primary key (SlotValueId)
+);
+
+/*==============================================================*/
+/* Table: ArchiveDataAnalysisSlots                              */
+/*==============================================================*/
+create table ArchiveDataAnalysisSlots  (
+   SlotId               NUMBER                          not null,
+   AnalysisId           NUMBER                          not null,
+   Timestamp            DATE                            not null,
+   constraint PK_ArcDataAnalSlots primary key (SlotId)
 );
 
 /*==============================================================*/
@@ -9918,6 +9955,21 @@ alter table ApplianceWaterHeater
 alter table ApplianceWaterHeater
    add constraint FK_AppWtHt_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID);
+
+alter table ArchiveDataAnalysisSlotValues
+   add constraint FK_ArcDataAnalSlotVal_ArcData foreign key (SlotId)
+      references ArchiveDataAnalysisSlots (SlotId)
+      on delete cascade;
+
+alter table ArchiveDataAnalysisSlotValues
+   add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table ArchiveDataAnalysisSlots
+   add constraint FK_ArcDataAnalSlots_ArcDataAna foreign key (AnalysisId)
+      references ArchiveDataAnalysis (AnalysisId)
+      on delete cascade;
 
 alter table BaseLine
    add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
