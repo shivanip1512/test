@@ -23,7 +23,7 @@ public class SystemAdminController {
         LiteYukonUser user = userContext.getYukonUser();
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean isEcOperator = energyCompanyService.isOperator(user);
-        model.addAttribute("isEcOperator", (isEcOperator || superUser));
+        model.addAttribute("displayLinkToEnergyCompanySetup", (isEcOperator || superUser));
         return "home.jsp";
     }
 

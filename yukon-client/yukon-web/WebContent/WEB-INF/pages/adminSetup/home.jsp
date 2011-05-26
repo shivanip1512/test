@@ -5,21 +5,21 @@
 
 <cti:standardPage module="adminSetup" page="systemAdministration">
     <tags:boxContainer2 nameKey="adminPages" styleClass="mediumContainer">
-        <div><c:if test="${isEcOperator}">
+        <c:if test="${displayLinkToEnergyCompanySetup}"><div>
             <cti:url var="ecHome" value="/spring/adminSetup/energyCompany/home"/>
-            <a href="${ecHome}">Energy Company Administration</a><br>
-        </c:if></div>
-        <div><cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP">
+            <a href="${ecHome}"><i:inline key=".energyCompanyAdministration"/></a>
+        </div></c:if>
+        <cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP"><div>
             <cti:url var="multiSpeakSetup" value="/spring/multispeak/setup/home"/>
-            <a href="${multiSpeakSetup}">MultiSpeak Setup</a>
-        </cti:checkRolesAndProperties></div>
-        <div><cti:checkRolesAndProperties value="ADMIN_SUPER_USER,ADMIN_LM_USER_ASSIGN">
+            <a href="${multiSpeakSetup}"><i:inline key=".multiSpeakSetup"/></a>
+        </div></cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER"><div>
             <cti:url var="lmUserAssign" value="/spring/adminSetup/userGroupEditor/home"/>
-            <a href="${lmUserAssign}">User/Group Editor</a><br>
-        </cti:checkRolesAndProperties></div>
+            <a href="${lmUserAssign}"><i:inline key=".userGroupEditor"/></a>
+        </div></cti:checkRolesAndProperties>
         <div>
             <cti:url var="substation" value="/spring/adminSetup/substations/routeMapping/view"/>
-            <a href="${substation}">Substations</a>
+            <a href="${substation}"><i:inline key=".substations"/></a>
         </div>
     </tags:boxContainer2>
 </cti:standardPage>

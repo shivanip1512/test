@@ -4,5 +4,9 @@
 
     <entry key="yukon.web.modules.adminSetup.moduleName">System Administration</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.adminPages.title">Administration Pages</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.energyCompanyAdministration">Energy Company Administration</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.multiSpeakSetup">MultiSpeak Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.userGroupEditor">User/Group Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.substations">Substations</entry>
     
 </properties>

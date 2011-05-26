@@ -1121,7 +1121,7 @@
                     </options>
                 </option>
                 <option name="userGroupEditor">
-                    <requireRoleProperty value="ADMIN_SUPER_USER,ADMIN_LM_USER_ASSIGN" />
+                    <requireRoleProperty value="ADMIN_SUPER_USER" />
                     <link>/spring/adminSetup/userGroupEditor/home</link>
                     <options>
                         <option name="home">
