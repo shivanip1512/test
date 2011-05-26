@@ -8,7 +8,7 @@ public class VfLine {
     
     private int id;
     private String lineName;
-    private boolean boundary;
+    private String zoneName;
     private Phase phase;
     private VfLineSettings settings;
     private List<VfPoint> points;
@@ -19,14 +19,14 @@ public class VfLine {
     public VfLine() {
     }
     
-    public VfLine(int id, boolean boundary, Phase phase, VfLineSettings settings, List<VfPoint> points) {
-        this(id, null, boundary, phase, settings, points);
+    public VfLine(int id, Phase phase, VfLineSettings settings, List<VfPoint> points) {
+        this(id, null, null, phase, settings, points);
     }
     
-    public VfLine(int id, String lineName, boolean boundary, Phase phase, VfLineSettings settings, List<VfPoint> points) {
+    public VfLine(int id, String lineName, String zoneName, Phase phase, VfLineSettings settings, List<VfPoint> points) {
         this.id = id;
         this.lineName = lineName;
-        this.boundary = boundary;
+        this.zoneName = zoneName;
         this.phase = phase;
         this.settings = settings;
         this.points = points;
@@ -56,21 +56,21 @@ public class VfLine {
 		this.lineName = lineName;
 	}
 
-	public VfLineSettings getSettings() {
+	public String getZoneName() {
+        return zoneName;
+    }
+
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
+    }
+
+    public VfLineSettings getSettings() {
 		return settings;
 	}
 
 	public void setSettings(VfLineSettings settings) {
 		this.settings = settings;
 	}
-
-    public boolean isBoundary() {
-        return boundary;
-    }
-
-    public void setBoundary(boolean boundary) {
-        this.boundary = boundary;
-    }
 
     public Phase getPhase() {
         return phase;

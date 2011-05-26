@@ -3,51 +3,60 @@ package com.cannontech.web.capcontrol.ivvc.models;
 public class VfLineSettings {
     
     private String color;
-    private int fillAlpha = 0;
+    private String lineAlpha = null;
     private String bullet = null;
     private boolean minMax = true;
     private boolean showBullet = true;
     private boolean showBalloon = true;
     private boolean visibleInLegend = false;
+    private boolean selected = true;
+    private boolean verticalLines = false;
+    private String dataLabel = null;
     
-    public VfLineSettings(String color, int fillAlpha, String bullet, boolean minMax, boolean showBullet, boolean showBalloon, boolean visibleInLegend) {
+    public VfLineSettings(String color, String bullet, boolean minMax, 
+                          boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
+                          boolean selected) {
+        this(color, null, bullet, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
+    }
+    
+    public VfLineSettings(String color, String lineAlpha, String bullet, boolean minMax, 
+                          boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
+                          boolean selected) {
+        this(color, lineAlpha, bullet, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
+    }
+    
+    public VfLineSettings(String color, String lineAlpha, String bullet, boolean minMax, 
+                          boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
+                          boolean selected, boolean verticalLines, String dataLabel) {
         this.color = color;
-        this.fillAlpha = fillAlpha;
+        this.lineAlpha = lineAlpha;
         this.bullet = bullet;
         this.minMax = minMax;
         this.showBullet = showBullet;
         this.showBalloon = showBalloon;
         this.visibleInLegend = visibleInLegend;
+        this.selected = selected;
+        this.verticalLines = verticalLines;
+        this.dataLabel = dataLabel;
     }
     
     public String getColor() {
         return color;
     }
     
-    /**
-     * Hex value for the color of the line and fillAlpha
-     * @param color
-     */
     public void setColor(String color) {
         this.color = color;
     }
 
-    public int getFillAlpha() {
-        return fillAlpha;
+	public String getLineAlpha() {
+        return lineAlpha;
     }
 
-    /**
-     * Fill Alpha is the intensity of the color used to fill.
-     * 0 - 100. 0 is no fill, 100 is solid.
-     * 
-     * Uses the color set in this object.
-     * @param fillAlpha
-     */
-    public void setFillAlpha(int fillAlpha) {
-        this.fillAlpha = fillAlpha;
+    public void setLineAlpha(String lineAlpha) {
+        this.lineAlpha = lineAlpha;
     }
 
-	public boolean isMinMax() {
+    public boolean isMinMax() {
 		return minMax;
 	}
 
@@ -86,4 +95,28 @@ public class VfLineSettings {
 	public void setBullet(String bullet) {
 		this.bullet = bullet;
 	}
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public boolean isVerticalLines() {
+        return verticalLines;
+    }
+
+    public void setVerticalLines(boolean verticalLines) {
+        this.verticalLines = verticalLines;
+    }
+
+    public String getDataLabel() {
+        return dataLabel;
+    }
+
+    public void setDataLabel(String dataLabel) {
+        this.dataLabel = dataLabel;
+    }
 }

@@ -336,7 +336,7 @@
             							</td>
             						</tr>
             						<tr style="display: none" id="${row.type}_${row.id}_undo" class="undoRow">
-            							<td colspan="5" align="center">
+            							<td colspan="4" align="center">
             								${row.name} will be removed
             							</td>
             							<td colspan="1" align="center">

@@ -28,7 +28,7 @@ function hideAllGraphsWithSameTitle(chart_Id, index, hiddenGraphTitle) {
     for (var graphIndex = 0; graphIndex < graphsLength; graphIndex++) {
         chart.getParam('graphs.graph['+ graphIndex + '].title');
         var graphTitle = chart.value;
-        if (graphTitle == hiddenGraphTitle && graphIndex != index) {
+        if (graphTitle != null && graphTitle == hiddenGraphTitle && graphIndex != index) {
             chart.hideGraph(graphIndex);
         }
     }
