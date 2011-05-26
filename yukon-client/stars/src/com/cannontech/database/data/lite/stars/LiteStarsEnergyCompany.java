@@ -955,7 +955,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return null;
     }
     
-    public synchronized void clearWarehouseCache() {
+    public void clearWarehouseCache() {
         warehouses = null;
     }
     

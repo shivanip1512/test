@@ -77,6 +77,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Transactional
     public void deleteWarehouse(int warehouseId) {
         WarehouseDto warehouseDto = getWarehouse(warehouseId);
         deleteWarehouse(warehouseDto);
