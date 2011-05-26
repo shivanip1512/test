@@ -93,4 +93,9 @@ public class YukonSelectionList {
     public void setYukonListEntries(List<YukonListEntry> yukonListEntries) {
         this.yukonListEntries = yukonListEntries;
     }
+
+    public boolean isSettlementType(){
+        return type == YukonSelectionListEnum.SETTLEMENT_TYPE;
+    }
+    
 }

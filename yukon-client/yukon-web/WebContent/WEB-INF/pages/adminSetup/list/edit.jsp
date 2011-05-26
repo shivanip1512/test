@@ -67,8 +67,7 @@ Event.observe(window, 'load', function() {
                     <c:if test="${usesType}">
                         <td>
                             <c:choose>
-                                <c:when test="${list.type eq 'SETTLEMENT_TYPE'}">
-                                    <cti:msg2 var="noDefinitionMsg" key=".noDefinition"/>
+                                <c:when test="${list.yukonSelectionList.settlementType}">
                                     <tags:input path="entries[${status.index}].definitionId"/>
                                 </c:when>
                                 <c:otherwise>

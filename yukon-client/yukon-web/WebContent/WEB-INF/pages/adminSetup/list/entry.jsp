@@ -26,7 +26,7 @@
             <c:if test="${usesType}">
                 <td>
                     <c:choose>
-                        <c:when test="${list.type eq 'SETTLEMENT_TYPE'}">
+                        <c:when test="${list.settlementType}">
                             <input type="text" name="entries[${entryIndex}].definitionId" id="entries[${entryIndex}].definitionId" />
                         </c:when>
                         <c:otherwise>
