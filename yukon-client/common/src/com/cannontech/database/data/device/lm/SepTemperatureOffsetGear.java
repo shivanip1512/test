@@ -14,7 +14,7 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     }
 
     public boolean isFrontRampEnabled() {
-        return getFrontRampOption().compareTo(RAMP_RANDOM) == 0;
+        return getFrontRampOption().equals(RAMP_RANDOM);
     }
 
     public void setFrontRampEnabled(boolean doRamp) {
@@ -26,7 +26,7 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     }
     
     public boolean isBackRampEnabled() {
-        return getBackRampOption().compareTo(RAMP_RANDOM) == 0;
+        return getBackRampOption().equals(RAMP_RANDOM);
     }
 
     public void setBackRampEnabled(boolean doRamp) {
@@ -47,12 +47,12 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
     
     //Store heating & cooling offset values as integers that represent tenths of a degree.
     //Motivated by need to store a single decimal point floating value in an int database field.
-    public void setHeatingOffset(Double offset) {
-        setValueTa(((Double)(offset * 10.0)).intValue());
+    public void setHeatingOffset(double offset) {
+        setValueTa((int)(offset * 10));
     }
     
-    public void setCoolingOffset(Double offset) {
-        setValueTb(((Double)(offset * 10.0)).intValue());
+    public void setCoolingOffset(double offset) {
+        setValueTb((int)(offset * 10));
     }
     
     public Double getHeatingOffset() {
