@@ -1705,7 +1705,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( parse.isKeyValid("daily_read_date_end") )
                 {
-                    parseDateValue(parse.getsValue("daily_read_date_end"));
+                    date_end = parseDateValue(parse.getsValue("daily_read_date_end"));
                 }
                 else
                 {
