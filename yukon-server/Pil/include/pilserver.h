@@ -1,9 +1,4 @@
-#ifndef __PILSERVER_H__
-#define __PILSERVER_H__
-
-#include <functional>
-#include <iostream>
-using std::iostream;
+#pragma once
 
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
@@ -22,7 +17,10 @@ using std::iostream;
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "ctibase.h"
-#include "fifo_multiset.h"
+
+#include <functional>
+#include <iostream>
+#include <set>
 
 class IM_EX_CTIPIL CtiPILServer : public CtiServer
 {
@@ -44,7 +42,7 @@ class IM_EX_CTIPIL CtiPILServer : public CtiServer
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
 
-   typedef fifo_multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
+   typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 
    group_queue_t _groupQueue;
 
@@ -108,7 +106,4 @@ public:
    int reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg * pReqOrig, const CtiRequestMsg *pExecReq, list< CtiMessage* > &vgList, list< CtiMessage* > &retList);
 
 };
-
-#endif // #ifndef __PILSERVER_H__
-
 

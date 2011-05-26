@@ -3,7 +3,6 @@
 #include "CcuIDLC.h"
 #include "types.h"
 #include "ctitime.h"
-#include "fifo_multiset.h"
 #include "PlcTransmitter.h"
 #include "EmetconWords.h"
 
@@ -16,6 +15,7 @@
 
 #include <queue>
 #include <vector>
+#include <set>
 
 namespace Cti {
 namespace Simulator {
@@ -114,19 +114,19 @@ private:
 
     struct queue_entry
     {
-        queue_entry() : 
+        queue_entry() :
             priority(0),
             sequence(0),
             dlc_length(0)
         {};
-    
+
         unsigned priority;
         unsigned sequence;
         unsigned dlc_length;
-    
+
         struct request_info
         {
-            request_info() : 
+            request_info() :
                 word_type(EmetconWord::WordType_Invalid),
                 //address(0),
                 bus(0),
@@ -140,37 +140,37 @@ private:
                 dlcType(0),
                 stagesToFollow(0)
             {};
-    
+
             CtiTime arrival;
-    
+
             bool broadcast;
             unsigned bus;
             unsigned length;
             unsigned stagesToFollow;
             unsigned short dlcType;
-    
+
             EmetconWord::WordTypes word_type;
-    
+
             bool write;
             bool function;
-    
+
             bytes data;
-    
+
             EmetconWordB b_word;
             vector<EmetconWordC> c_words;
-    
+
         } request;
-    
+
         struct result_info
         {
             result_info() : completion_status(CompletionStatus_NoAttempt) {};
-    
+
             CtiTime completion_time;
-    
+
             bytes data;
-    
+
             words_t as_words;
-    
+
             enum CompletionStatuses
             {
                 //  see Section 2 EMETCON Protocols, 4-71 to 4-72, pdf pages 106-107
@@ -178,11 +178,11 @@ private:
                 CompletionStatus_Successful,
                 CompletionStatus_RouteFailure,
                 CompletionStatus_TransponderFailure
-    
+
             } completion_status;
-    
+
         } result;
-    
+
         struct pending_less
         {
             bool operator()(const queue_entry &lhs, const queue_entry &rhs) const
@@ -192,7 +192,7 @@ private:
                 return lhs.request.arrival < rhs.request.arrival;
             };
         };
-    
+
         struct completed_less
         {
             bool operator()(const queue_entry &lhs, const queue_entry &rhs) const
@@ -223,7 +223,7 @@ private:
 
     struct idlc_header
     {
-        idlc_header() : 
+        idlc_header() :
             control_command(IdlcLink_Invalid),
             address(0),
             control_sequence(0),
@@ -240,7 +240,7 @@ private:
 
     struct request_info
     {
-        request_info() : 
+        request_info() :
             command(Klondike_CommandInvalid),
             reply_length(0){ };
 
@@ -250,7 +250,7 @@ private:
 
         struct xtime_info
         {
-            xtime_info() : 
+            xtime_info() :
                 year(0),
                 day(0),
                 day_of_week(0),
@@ -277,7 +277,7 @@ private:
         struct readBuffer_info
         {
             readBuffer_info() : flags(0) {};
-            
+
             unsigned char flags;
 
         } readBuffer;
@@ -291,7 +291,7 @@ private:
         struct clearBuffer_info
         {
             clearBuffer_info() : clearAll(false) {};
-            
+
             bool clearAll;
             std::vector<int> sequences;
 
@@ -397,8 +397,8 @@ private:
 
     struct queue_info
     {
-        typedef fifo_multiset<const queue_entry, queue_entry::pending_less>   pending_set;
-        typedef fifo_multiset<const queue_entry, queue_entry::completed_less> completed_set;
+        typedef std::multiset<const queue_entry, queue_entry::pending_less>   pending_set;
+        typedef std::multiset<const queue_entry, queue_entry::completed_less> completed_set;
 
         pending_set   pending;
 

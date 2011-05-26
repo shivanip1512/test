@@ -1,25 +1,14 @@
-/*
- * test Cti::Protocol::Klondike
- *
- */
+#define BOOST_TEST_MAIN "Test Klondike protocol"
 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test fifo_multiset"
 #include <boost/test/unit_test.hpp>
 
-
-#include "boostutil.h"
-#include "boost_test_helpers.h"
-
 using boost::unit_test_framework::test_suite;
+
+#include "boost_test_helpers.h"
 
 #include <iostream>
 #include "prot_klondike.h"
 #include "dev_ccu721.h"  //  for timesync writes
-
-#define BOOST_AUTO_TEST_MAIN "Test Klondike Protocol"
-using boost::unit_test_framework::test_suite;
 
 using namespace std;
 

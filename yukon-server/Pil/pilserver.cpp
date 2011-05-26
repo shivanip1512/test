@@ -1440,7 +1440,7 @@ struct message_time_less : public binary_function< CtiMessage *, CtiMessage *, b
 
 void CtiPILServer::schedulerThread()
 {
-    fifo_multiset<CtiMessage *, message_time_less> message_queue;
+    std::multiset<CtiMessage *, message_time_less> message_queue;
 
     CtiMessage *pMsg;
 

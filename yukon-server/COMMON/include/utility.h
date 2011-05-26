@@ -10,7 +10,9 @@ using std::string;
 #include "queues.h"
 #include "dlldefs.h"
 #include "numstr.h"
-#include "sorted_vector.h"
+
+#include <algorithm>
+#include <vector>
 using std::vector;
 
 class INMESS;
@@ -349,6 +351,16 @@ struct padded_output_iterator : public std::iterator<std::output_iterator_tag, v
         s << std::setw(width) << num;
 
         return *this;
+    }
+};
+
+
+template <class T>
+struct ptr_priority_sort : public std::binary_function<T *, T *, bool>
+{
+    bool operator()(const T *lhs, const T *rhs)
+    {
+        return (lhs && rhs)?(lhs->Priority > rhs->Priority):(rhs);
     }
 };
 

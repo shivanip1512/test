@@ -134,12 +134,12 @@ deps:
 #UPDATE#
 test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
-		lmprogrambase.h dbmemobject.h observe.h msg_multi.h \
-		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
-		rwutil.h database_connection.h dbaccess.h dllbase.h dsm2.h \
-		mutex.h guard.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h sema.h database_reader.h row_reader.h boost_time.h \
+		queues.h cticalls.h os2_2w32.h numstr.h lmprogrambase.h \
+		dbmemobject.h observe.h msg_multi.h collectable.h msg_pdata.h \
+		pointdefs.h pointtypes.h message.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h mutex.h \
+		guard.h cticonnect.h netports.h dsm2err.h words.h optional.h \
+		sema.h database_reader.h row_reader.h boost_time.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h ctidate.h logger.h thread.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
@@ -152,7 +152,6 @@ test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 test_lm_constraintviolations.obj:	yukon.h precompiled.h types.h \
 		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h \
 		ctidate.h logger.h thread.h mutex.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
-		CtiPCPtrQueue.h
+		queues.h cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h
 #ENDUPDATE#
 

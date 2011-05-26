@@ -4,11 +4,11 @@
 #include "prot_idlc.h"
 //#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
 
-#include "fifo_multiset.h"
 #include "critical_section.h"
 
 #include <queue>
 #include <functional>
+#include <set>
 
 namespace Cti {
 namespace Protocols {
@@ -112,7 +112,7 @@ private:
         bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
     };
 
-    typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
+    typedef std::multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
     typedef std::map<unsigned, local_work_t::iterator>                 pending_work_t;
     typedef std::map<unsigned, queue_entry_t>                          remote_work_t;
 

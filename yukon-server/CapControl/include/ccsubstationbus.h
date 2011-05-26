@@ -17,6 +17,7 @@
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
+#include "sorted_vector.h"
 
 namespace Cti {
 namespace Database {

@@ -2,7 +2,6 @@
 
 #include "ccu710.h"
 #include "ctitime.h"
-#include "fifo_multiset.h"
 #include "PlcTransmitter.h"
 #include "BehaviorCollection.h"
 
@@ -14,6 +13,7 @@
 
 #include <queue>
 #include <vector>
+#include <set>
 
 namespace Cti {
 namespace Simulator {
@@ -81,7 +81,7 @@ private:
 
     struct idlc_header
     {
-        idlc_header() : 
+        idlc_header() :
             control_command(IdlcLink_Invalid),
             address(0),
             control_sequence(0),
@@ -108,7 +108,7 @@ private:
 
         struct request_info
         {
-            request_info() : 
+            request_info() :
                 word_type(EmetconWord::WordType_Invalid),
                 address(0),
                 bus(0),
@@ -147,7 +147,7 @@ private:
 
         struct result_info
         {
-            result_info() : 
+            result_info() :
                 completion_status(CompletionStatus_NoAttempt),
                 ts_values(0)
             {};
@@ -194,7 +194,7 @@ private:
 
     struct request_info
     {
-        request_info() : 
+        request_info() :
             command(Command_Invalid),
             reply_length(0){ };
 
@@ -204,7 +204,7 @@ private:
 
         struct xtime_info
         {
-            xtime_info() : 
+            xtime_info() :
                 year(0),
                 day(0),
                 day_of_week(0),
@@ -335,8 +335,8 @@ private:
 
     struct queue_info
     {
-        typedef fifo_multiset<const queue_entry, queue_entry::pending_less>   pending_set;
-        typedef fifo_multiset<const queue_entry, queue_entry::completed_less> completed_set;
+        typedef std::multiset<const queue_entry, queue_entry::pending_less>   pending_set;
+        typedef std::multiset<const queue_entry, queue_entry::completed_less> completed_set;
 
         pending_set   pending;
 

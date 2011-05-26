@@ -1,32 +1,7 @@
-/*************************************************************************
- *
- * mgr_route.h      7/7/99
- *
- *****
- *
- * The class which owns and manages route real time database
- *
- * Originated by:
- *     Corey G. Plender    7/7/99
- *
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
-*
- * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __MGR_POINT_H__
-#define __MGR_POINT_H__
-#pragma warning( disable : 4786 )
-
+#pragma once
 
 #include "dlldefs.h"
 #include "smartmap.h"
-#include "fifo_multiset.h"
 #include "pt_base.h"
 
 
@@ -138,4 +113,3 @@ public:
     void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
 };
 
-#endif                  // #ifndef __MGR_POINT_H__

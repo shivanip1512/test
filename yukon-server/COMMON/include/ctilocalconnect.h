@@ -4,14 +4,13 @@
 
 #include "critical_section.h"
 #include "dlldefs.h"
-#include "fifo_multiset.h"
 
 template <class Outbound, class Inbound>
 class IM_EX_CTIBASE CtiLocalConnect : public CtiConnect
 {
 private:
 
-    typedef fifo_multiset<Outbound *, ptr_priority_sort<Outbound> > queue_t;
+    typedef std::multiset<Outbound *, ptr_priority_sort<Outbound> > queue_t;
 
     queue_t _outQueue;
     CtiLocalConnect<Inbound, Outbound> *_directConnection;
