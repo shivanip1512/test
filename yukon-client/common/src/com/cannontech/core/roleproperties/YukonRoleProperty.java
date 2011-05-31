@@ -419,7 +419,6 @@ public enum YukonRoleProperty {
     MAIL_FROM_ADDRESS(SYSTEM, com.cannontech.roles.yukon.SystemRole.MAIL_FROM_ADDRESS, stringType()),
     STARS_PRELOAD_DATA(SYSTEM, com.cannontech.roles.yukon.SystemRole.STARS_PRELOAD_DATA, stringType()),
     WEB_LOGO_URL(SYSTEM, com.cannontech.roles.yukon.SystemRole.WEB_LOGO_URL, stringType()),
-    VOICE_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.VOICE_HOST, stringType()),
     NOTIFICATION_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_HOST, stringType()),
     NOTIFICATION_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_PORT, integerType()),
     BATCHED_SWITCH_COMMAND_TOGGLE(SYSTEM, com.cannontech.roles.yukon.SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE, stringType()),
