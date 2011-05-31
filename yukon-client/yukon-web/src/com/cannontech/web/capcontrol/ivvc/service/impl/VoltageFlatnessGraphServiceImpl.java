@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private String zoneLineColorPhaseA;
     private String zoneLineColorPhaseB;
     private String zoneLineColorPhaseC;
-    private String zoneTransitionColor;
      
     private String phaseABulletType;
     private String phaseBBulletType;
@@ -142,7 +142,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
         zoneTransitionDataLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel");
 
-        zoneTransitionColor = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionColor");
         zoneLineColorPhaseA = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA");
         zoneLineColorPhaseB = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB");
         zoneLineColorPhaseC = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC");
@@ -564,12 +563,12 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	        String phaseString = getPhaseString(phase);
 	        if (distance != 0) {
 	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist",
+	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndDist",
 	                           pointValueString, phaseString, displayablePao.getName(), timestamp,
 	                           zone.getName(), distance);
 	        } else {
 	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist",
+	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndNoDist",
 	                           pointValueString, phaseString, displayablePao.getName(), timestamp,
 	                           zone.getName());
 	        }
@@ -722,33 +721,42 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             }
         }
         
+        double min = Collections.min(xValues);
         double max = Collections.max(xValues);
         
-        double currentVal = 0;
-        double bucketSize = getGraphBucketSize(max);
+        BigDecimal bucketSize = getGraphBucketSize(max);
+        double bucketSizeAsDouble = bucketSize.doubleValue();
         List<Double> bucketXValues = Lists.newArrayList();
+        Integer iterationNum = 0;
+        Double currentVal = 0.0;
+        int precision = bucketSize.scale();
+        DecimalFormat f = new DecimalFormat();
+        f.setMaximumFractionDigits(precision);
+        f.setGroupingUsed(false);
         
-        while(currentVal < (max + bucketSize)) {
+        //this "while" conditional statement below makes the graph have the same amount of
+        //leading space between the last point and the right y-axis as exists between the left y-axis and the first point
+        while(currentVal <= (max + min)) {
             bucketXValues.add(currentVal);
-            currentVal += bucketSize;
+            iterationNum++;
+            currentVal = Double.valueOf(f.format(iterationNum * bucketSizeAsDouble));
         }
-        
+        graph.setSeriesValues(bucketXValues);
+
         List<VfPoint> seriesPoints = getBaseSeriesPoints(bucketXValues);
         for (VfLine line : lines) {
             for (VfPoint point : line.getPoints()) {
-                Integer seriesId = getSeriesIdForPoint(seriesPoints, point, bucketSize);
+                Integer seriesId = getSeriesIdForPoint(seriesPoints, point, bucketSizeAsDouble);
                 point.setSeriesId(seriesId);
             }
         }
-
-        graph.setSeriesValues(bucketXValues);
     }
     
     private Integer getSeriesIdForPoint(List<VfPoint> seriesPoints, VfPoint pointToPlace, double bucketSize) {
+        double pointX = pointToPlace.getX();
         for (VfPoint seriesPoint : seriesPoints) {
             double seriesX = seriesPoint.getX();
-            double pointX = pointToPlace.getX();
-            if (seriesX < pointX && pointX < (seriesX + bucketSize)) {
+            if (seriesX <= pointX && pointX < (seriesX + bucketSize)) {
                 return seriesPoint.getSeriesId();
             }
         }
@@ -765,66 +773,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return basePoints;
     }
 
-    private double getGraphBucketSize(double max) {
-        double iterationSize = max / bucketResolution;
-        BigDecimal iterationSizeRoundedUp = GraphIntervalRounding.roundUp(iterationSize, 1);
-        double result = iterationSizeRoundedUp.doubleValue();
-        return result;
-    }
-
-    /**
-     * Used for debugging graph (b/c you can plug in this output into the amchart website's
-     * visual editor)
-     */
-    private void outputGraphXML(VfGraph graph) {
-        System.out.println("Points:");
-        System.out.println("");
-        for (VfLine line : graph.getLines()) {
-            for (VfPoint point : line.getPoints()) {
-                System.out.println("x: " + point.getX());
-                System.out.println("y: " + point.getY());
-                System.out.println("desc: " + point.getDescription());
-            }
-        }
-        System.out.println("");
-        System.out.println("<graphs>");
-        for (VfLine line : graph.getLines()) {
-            System.out.println("<graph gid=\"" + line.getId() + ">");
-            System.out.println("<title>" + line.getLineName() + "</title>");
-            System.out.println("<bullet_size>10</bullet_size>");
-            System.out.println("<balloon_text><![CDATA[{description}]]></balloon_text>");
-            System.out.println("<bullet>" + line.getSettings().getBullet() + "</bullet>");
-            System.out.println("</graph>");
-        }
-        System.out.println("</graphs>");
-        System.out.println("");
-
-        System.out.println("<chart>");
-        System.out.println("<series>");
-        int index = 0;
-        for (Double seriesValue : graph.getSeriesValues()) {
-            System.out.println("<value xid=\"" + index + "\">" + seriesValue + "</value>");
-            index++;
-        }
-        System.out.println("</series>");
-        System.out.println("<graphs>");
-        
-        index = 1;
-        for (VfLine line : graph.getLines()) {
-            System.out.println("<graph gid=\"" + line.getId() + ">");
-            for (VfPoint point : line.getPoints()) {
-                if (point.getY() != null) {
-                    System.out.println("<value xid=\"" + point.getSeriesId() + "\" description=\"" + point.getDescription() + ">" + point.getY() + "</value>");
-                } else {
-                    System.out.println("<value xid=\"" + point.getSeriesId() + "\"></value>");
-                }
-            }
-            System.out.println("</graph>");
-            index++;
-        }
-        
-        System.out.println("</graphs>");
-        System.out.println("</chart>");
+    private BigDecimal getGraphBucketSize(double max) {
+        Double iterationSize = max / bucketResolution;
+        BigDecimal iterationSizeRoundedUp = GraphIntervalRounding.roundUp(iterationSize, 5);
+        return iterationSizeRoundedUp;
     }
 
     @Autowired

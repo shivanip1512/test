@@ -7,11 +7,10 @@
     <font><cti:msg2 key=".font"/></font>
     <text_size><cti:msg2 key=".textSize"/></text_size>
     <text_color><cti:msg2 key=".textColor"/></text_color>
-    <connect><cti:msg2 key=".connect"/></connect>
-    <start_on_axis><cti:msg2 key=".startOnAxis"/></start_on_axis>
-    <rescale_on_hide><cti:msg2 key=".rescaleOnHide"/></rescale_on_hide>
     <decimals_separator>.</decimals_separator>
-    <redraw><cti:msg2 key=".redraw"/></redraw>
+    <redraw>true</redraw>
+    <rescale_on_hide>true</rescale_on_hide>
+    <connect>true</connect>
     
     <background>
         <color><cti:msg2 key=".background.color"/></color>
@@ -27,36 +26,27 @@
         <border_color><cti:msg2 key=".plotArea.borderColor"/></border_color>
         <border_alpha><cti:msg2 key=".plotArea.borderAlpha"/></border_alpha>
         <margins>
-            <left><cti:msg2 key=".plotArea.margins.left"/></left>
-            <top><cti:msg2 key=".plotArea.margins.top"/></top>
-            <right><cti:msg2 key=".plotArea.margins.right"/></right>
-            <bottom><cti:msg2 key=".plotArea.margins.bottom"/></bottom>
+            <left>50</left>
+            <top>35</top>
+            <right>15</right>
+            <bottom>80</bottom>
         </margins>
     </plot_area>
     
     <values>
         <x>
-            <enabled><cti:msg2 key=".values.x.enabled"/></enabled>
-            <frequency><cti:msg2 key=".values.x.frequency"/></frequency>
             <color><cti:msg2 key=".values.x.color"/></color>
             <text_size><cti:msg2 key=".values.x.textSize"/></text_size>
-            <inside><cti:msg2 key=".values.x.inside"/></inside>
         </x>
         <y_left>
-            <enabled><cti:msg2 key=".values.yLeft.enabled"/></enabled>
-            <reverse><cti:msg2 key=".values.yLeft.reverse"/></reverse>
             <cti:msg2 var="yLeftMin" key=".values.yLeft.min"/>
             <cti:msg2 var="yLeftMax" key=".values.yLeft.max"/>
             <min>${graphSettings.YLowerBound + yLeftMin}</min>
             <max>${graphSettings.YUpperBound + yLeftMax}</max>
-            <strict_min_max><cti:msg2 key=".values.yLeft.strictMinMax"/></strict_min_max>
-            <frequency><cti:msg2 key=".values.yLeft.frequency"/></frequency>
             <color><cti:msg2 key=".values.yLeft.color"/></color>
             <text_size><cti:msg2 key=".values.yLeft.textSize"/></text_size>
             <unit><cti:msg2 key=".values.yLeft.unit"/></unit>
             <unit_position><cti:msg2 key=".values.yLeft.unitPosition"/></unit_position>
-            <integers_only><cti:msg2 key=".values.yLeft.integersOnly"/></integers_only>
-            <inside><cti:msg2 key=".values.yLeft.inside"/></inside>
         </y_left>
     </values>
 
@@ -73,7 +63,6 @@
             <alpha><cti:msg2 key=".axis.yLeft.alpha"/></alpha>
             <width><cti:msg2 key=".axis.yLeft.width"/></width>
             <tick_length><cti:msg2 key=".axis.yLeft.tickLength"/></tick_length>
-            <logarithmic><cti:msg2 key=".axis.yLeft.logarithmic"/></logarithmic>
         </y_left>
     </axes>
     
@@ -89,14 +78,12 @@
     </indicator>
 
     <balloon>
-        <enabled><cti:msg2 key=".balloon.enabled"/></enabled>
         <only_one><cti:msg2 key=".balloon.onlyOne"/></only_one>
         <on_off><cti:msg2 key=".balloon.onOff"/></on_off>
         <color><cti:msg2 key=".balloon.color"/></color>
         <alpha><cti:msg2 key=".balloon.alpha"/></alpha>
         <text_color><cti:msg2 key=".balloon.textColor"/></text_color>
         <text_size><cti:msg2 key=".balloon.textSize"/></text_size>
-        <max_width><cti:msg2 key=".balloon.maxWidth"/></max_width>
         <corner_radius><cti:msg2 key=".balloon.cornerRadius"/></corner_radius>
         <border_width><cti:msg2 key=".balloon.borderWidth"/></border_width>
         <border_alpha><cti:msg2 key=".balloon.borderAlpha"/></border_alpha>
@@ -104,42 +91,25 @@
     </balloon>
 
     <legend>
-        <enabled><cti:msg2 key=".legend.enabled"/></enabled>
-        <x><cti:msg2 key=".legend.x"/></x>
-        <y><cti:msg2 key=".legend.y"/></y>
-        <width><cti:msg2 key=".legend.width"/></width>
+        <x></x>
+        <y>90%</y>
         <color><cti:msg2 key=".legend.color"/></color>
-        <max_columns><cti:msg2 key=".legend.maxColumns"/></max_columns>
         <alpha><cti:msg2 key=".legend.alpha"/></alpha>
         <border_color><cti:msg2 key=".legend.borderColor"/></border_color>
         <border_alpha><cti:msg2 key=".legend.borderAlpha"/></border_alpha>
         <text_color><cti:msg2 key=".legend.textColor"/></text_color>
         <text_color_hover><cti:msg2 key=".legend.textColorHover"/></text_color_hover>
         <text_size><cti:msg2 key=".legend.textSize"/></text_size>
-        <spacing><cti:msg2 key=".legend.spacing"/></spacing>
-        <margins><cti:msg2 key=".legend.margins"/></margins>
         <graph_on_off><cti:msg2 key=".legend.graphOnOff"/></graph_on_off>
-        <reverse_order><cti:msg2 key=".legend.reverseOrder"/></reverse_order>
-        <align><cti:msg2 key=".legend.align"/></align>
         <key>
             <size><cti:msg2 key=".legend.key.size"/></size>
             <border_color><cti:msg2 key=".legend.key.borderColor"/></border_color>
             <key_mark_color><cti:msg2 key=".legend.key.keyMarkColor"/></key_mark_color>
         </key>
         <values>
-            <enabled><cti:msg2 key=".legend.values.enabled"/></enabled>
-            <width><cti:msg2 key=".legend.values.width"/></width>
-            <align><cti:msg2 key=".legend.values.align"/></align>
             <text><cti:msg2 key=".legend.values.text"/></text>
         </values>
     </legend>
-    
-    <vertical_lines>
-        <width><cti:msg2 key=".verticalLines.width"/></width>
-        <alpha><cti:msg2 key=".verticalLines.alpha"/></alpha>
-        <clustered><cti:msg2 key=".verticalLines.clustered"/></clustered>
-        <mask><cti:msg2 key=".verticalLines.mask"/></mask>
-    </vertical_lines>
     
     <strings>
         <no_data><cti:msg2 key=".strings.noData"/></no_data>
@@ -147,22 +117,20 @@
 
     <labels>
         <label>
-            <x><cti:msg2 key=".labels.graphTitle.x"/></x>
-            <y><cti:msg2 key=".labels.graphTitle.y"/></y>
-            <width><cti:msg2 key=".labels.graphTitle.width"/></width>
+            <x></x>
+            <y>2%</y>
+            <align>center</align>
             <text_color><cti:msg2 key=".labels.graphTitle.textColor"/></text_color>
             <text_size><cti:msg2 key=".labels.graphTitle.textSize"/></text_size>
-            <align><cti:msg2 key=".labels.graphTitle.align"/></align>  
             <text>
                 <![CDATA[<b>${graphSettings.graphTitle}</b>]]>
             </text>
         </label>
         <label>
-            <x><cti:msg2 key=".labels.yAxis.x"/></x>
-            <y><cti:msg2 key=".labels.yAxis.y"/></y>
+            <x></x>
+            <y>50%</y>
             <rotate>90</rotate>
-            <align><cti:msg2 key=".labels.yAxis.align"/></align>
-            <width><cti:msg2 key=".labels.yAxis.width"/></width>
+            <align>left</align>
             <text_color><cti:msg2 key=".labels.yAxis.textColor"/></text_color>
             <text_size><cti:msg2 key=".labels.yAxis.textSize"/></text_size>
             <text>
@@ -170,10 +138,9 @@
             </text>        
         </label>
         <label>
-            <x><cti:msg2 key=".labels.xAxis.x"/></x>
-            <y><cti:msg2 key=".labels.xAxis.y"/></y>
-            <align><cti:msg2 key=".labels.xAxis.align"/></align>
-            <width><cti:msg2 key=".labels.xAxis.width"/></width>
+            <x></x>
+            <y>81%</y>
+            <align>center</align>
             <text_color><cti:msg2 key=".labels.xAxis.textColor"/></text_color>
             <text_size><cti:msg2 key=".labels.xAxis.textSize"/></text_size>
             <text>
