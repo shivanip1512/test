@@ -9,12 +9,12 @@ import java.util.List;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -99,8 +99,8 @@ public class PeakReportServiceImpl implements PeakReportService {
 	            peakResult.setErrors(commandResultHolder.getErrors());
 	            
 	            StringBuffer sb = new StringBuffer();
-	            List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
-	            for (DeviceErrorDescription ded : errors) {
+	            List<SpecificDeviceErrorDescription> errors = commandResultHolder.getErrors();
+	            for (SpecificDeviceErrorDescription ded : errors) {
 	                sb.append(ded.toString() + "\n");
 	            }
 	            

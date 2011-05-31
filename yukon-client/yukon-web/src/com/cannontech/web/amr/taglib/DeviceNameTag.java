@@ -6,6 +6,7 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
@@ -16,7 +17,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
-@Configurable("deviceNameTagPrototype")
+@Configurable(value="deviceNameTagPrototype", autowire = Autowire.BY_NAME)
 public class DeviceNameTag extends YukonTagSupport {
     
 	private String var = null;

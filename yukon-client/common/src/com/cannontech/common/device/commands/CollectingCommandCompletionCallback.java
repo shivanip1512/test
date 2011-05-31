@@ -3,8 +3,8 @@ package com.cannontech.common.device.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -13,7 +13,7 @@ public class CollectingCommandCompletionCallback implements
         CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
     
 	private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
-    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
+    private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
     private List<String> resultStrings = new ArrayList<String>();
     private boolean complete = false;
@@ -22,7 +22,7 @@ public class CollectingCommandCompletionCallback implements
     private String processingErrorReason = "";
 
     @Override
-    public void receivedIntermediateError(Object command, DeviceErrorDescription error) {
+    public void receivedIntermediateError(Object command, SpecificDeviceErrorDescription error) {
         // ignore
     }
 
@@ -32,7 +32,7 @@ public class CollectingCommandCompletionCallback implements
     }
 
     @Override
-    public void receivedLastError(Object command, DeviceErrorDescription error) {
+    public void receivedLastError(Object command, SpecificDeviceErrorDescription error) {
         errors.add(error);
     }
 
@@ -66,7 +66,7 @@ public class CollectingCommandCompletionCallback implements
         return !errors.isEmpty();
     }
 
-    public List<DeviceErrorDescription> getErrors() {
+    public List<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
 

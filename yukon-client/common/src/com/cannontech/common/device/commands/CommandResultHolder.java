@@ -2,8 +2,8 @@ package com.cannontech.common.device.commands;
 
 import java.util.List;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -14,7 +14,7 @@ public interface CommandResultHolder extends Completable, ExceptionStatus {
      * Returns a list of friendly error messages for errors
      * that were received as the last response to each request.
      */
-    public List<DeviceErrorDescription> getErrors();
+    public List<SpecificDeviceErrorDescription> getErrors();
 
     /**
      * Returns all of the PointData messages returned by all of the

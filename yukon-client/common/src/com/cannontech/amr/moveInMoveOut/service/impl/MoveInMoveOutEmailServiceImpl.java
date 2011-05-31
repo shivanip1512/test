@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
@@ -339,7 +339,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("stopDate", currentDate);
     }
 
-    private void buildErrorStr(List<DeviceErrorDescription> errors,
+    private void buildErrorStr(List<SpecificDeviceErrorDescription> errors,
             String errorMessage, Map<String, Object> msgData) {
         String errorsStr = "";
         String tab = "    ";
@@ -350,7 +350,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             msgData.put("errorMessage", " ");
         }
         
-        for (DeviceErrorDescription description : errors) {
+        for (SpecificDeviceErrorDescription description : errors) {
             errorsStr += description.getDescription() + " " + description.getErrorCode() + "\r\n" + tab + description.getPorter() + " \r\n" + tab + description.getTroubleshooting() + " \r\n";
         }
         

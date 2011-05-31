@@ -1,7 +1,7 @@
 package com.cannontech.common.device.service;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CommandCompletionCallbackAdapter<T> implements
@@ -13,7 +13,7 @@ public class CommandCompletionCallbackAdapter<T> implements
 
     @Override
     public void receivedIntermediateError(T command,
-            DeviceErrorDescription error) {
+                                          SpecificDeviceErrorDescription error) {
     }
 
     @Override
@@ -21,7 +21,7 @@ public class CommandCompletionCallbackAdapter<T> implements
     }
 
     @Override
-    public void receivedLastError(T command, DeviceErrorDescription error) {
+    public void receivedLastError(T command, SpecificDeviceErrorDescription error) {
     }
 
     @Override

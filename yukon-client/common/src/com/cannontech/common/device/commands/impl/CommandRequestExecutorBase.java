@@ -134,11 +134,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     }
                     
                     // check the status message and create an error if necessary 
-                    DeviceErrorDescription errorDescription = null;
+                    SpecificDeviceErrorDescription specificErrorDescription = null;
                     int status = retMessage.getStatus();
                     if (status != 0) {
-                        errorDescription = deviceErrorTranslatorDao.translateErrorCode(status);
-                        errorDescription.setPorter(retMessage.getResultString());
+                        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(status);
+                        specificErrorDescription  = new SpecificDeviceErrorDescription(errorDescription, retMessage.getResultString());
                         if (debug) {
                             log.debug("Calling receivedError on " + callback + " for " + retMessage);
                         }
@@ -161,11 +161,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     // last results
                     if (retMessage.getExpectMore() == 0) {
 
-                        if (errorDescription != null) {
+                        if (specificErrorDescription != null) {
                             if (debug) {
                                 log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
                             }
-                            callback.receivedLastError(command, errorDescription);
+                            callback.receivedLastError(command, specificErrorDescription);
                             
                             
                         } else {
@@ -181,11 +181,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                         
                     // intermediate results
                     } else {
-                        if (errorDescription != null) {
+                        if (specificErrorDescription != null) {
                             if (debug) {
                                 log.debug("Calling receivedIntermediateError on " + callback + " for " + retMessage);
                             }
-                            callback.receivedIntermediateError(command, errorDescription);
+                            callback.receivedIntermediateError(command, specificErrorDescription);
                         } else {
                             if (debug) {
                                 log.debug("Calling receivedIntermediateResultString on " + callback + " for " + retMessage);

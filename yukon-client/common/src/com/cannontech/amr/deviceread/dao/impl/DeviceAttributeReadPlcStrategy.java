@@ -11,12 +11,12 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -71,7 +71,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             }
 
             @Override
-            public void receivedLastError(CommandRequestDevice command, DeviceErrorDescription error) {
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.plc.errorSummary", error.getCategory(), error.getDescription(), error.getErrorCode(), error.getPorter());
                 MessageSourceResolvable detail = YukonMessageSourceResolvable.createDefaultWithoutCode(error.getTroubleshooting());
                 DeviceAttributeReadError readError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary, detail);

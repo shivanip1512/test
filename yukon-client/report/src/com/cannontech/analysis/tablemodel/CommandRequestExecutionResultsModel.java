@@ -88,6 +88,8 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     		
     		int errorCode = result.getErrorCode();
     		if (errorCode != 0) {
+    		    // This is not right! We don't want the deviceErrorTranslatorDao to get us the description
+    		    // because those descriptions are the default ones!
 	    		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(result.getErrorCode());
 	    		row.status = "(Err: " + errorCode + ") " + deviceErrorDescription.getPorter();
     		} else {

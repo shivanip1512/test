@@ -34,9 +34,9 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         }
 
         // Clone the defaultTranslation and set the error code
-        DeviceErrorDescription ded = defaultTranslation.clone();
-        ded.setErrorCode(error);
-        return ded;
+        DeviceErrorDescription ded = defaultTranslation;
+        return new DeviceErrorDescription(error, ded.getCategory(), ded.getPorter(), 
+                                          ded.getDescription(), ded.getTroubleshooting());
     }
 
     @SuppressWarnings("unchecked")
@@ -70,12 +70,8 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
                 troubleNodes = troubleEl.getContent();
             }
             String troubleHtml = xmlOut.outputString(troubleNodes).trim();
-            DeviceErrorDescription dded = new DeviceErrorDescription();
-            dded.setErrorCode(errorCode);
-            dded.setCategory(category);
-            dded.setPorter(porter);
-            dded.setDescription(description);
-            dded.setTroubleshooting(troubleHtml);
+            DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, category, porter, 
+                                                                     description, troubleHtml);
             if (errorCode == null) {
                 defaultTranslation = dded;
             } else {

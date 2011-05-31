@@ -8,7 +8,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -133,13 +133,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
             
             @Override
-            public void receivedIntermediateError(CommandRequestDevice command, DeviceErrorDescription error) {
+            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 SimpleDevice device = command.getDevice();
                 result.addError(device, error.getPorter());
             }
             
             @Override
-            public void receivedLastError(CommandRequestDevice command, DeviceErrorDescription error) {
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 SimpleDevice device = command.getDevice();
                 result.addError(device, error.getPorter());
                 result.handleFailure(device);

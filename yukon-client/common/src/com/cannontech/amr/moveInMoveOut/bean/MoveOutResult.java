@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -15,7 +15,7 @@ public class MoveOutResult{
     private PointValueHolder currentReading;
     private PointValueHolder calculatedDifference;
     private Meter previousMeter;
-    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();    //contains device read errors 
+    private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>();    //contains device read errors 
     private List<DeviceGroup> deviceGroupsAdded = new ArrayList<DeviceGroup>();
     private String emailAddress;
     private String submissionType;
@@ -40,10 +40,10 @@ public class MoveOutResult{
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
-    public List<DeviceErrorDescription> getErrors() {
+    public List<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
-    public void setErrors(List<DeviceErrorDescription> errors) {
+    public void setErrors(List<SpecificDeviceErrorDescription> errors) {
         this.errors = errors;
     }
     public Meter getPreviousMeter() {

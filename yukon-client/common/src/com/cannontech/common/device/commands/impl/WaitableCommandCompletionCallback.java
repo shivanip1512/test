@@ -6,7 +6,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 
@@ -71,13 +70,13 @@ public final class WaitableCommandCompletionCallback<T> implements CommandComple
     }
     
     @Override
-    public void receivedIntermediateError(T command, DeviceErrorDescription error) {
+    public void receivedIntermediateError(T command, SpecificDeviceErrorDescription error) {
         delegate.receivedIntermediateError(command, error);
         kick();
     }
     
     @Override
-    public void receivedLastError(T command, DeviceErrorDescription error) {
+    public void receivedLastError(T command, SpecificDeviceErrorDescription error) {
         delegate.receivedLastError(command, error);
         kick();
     }

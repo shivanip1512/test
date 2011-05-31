@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.phaseDetect.data.DetectedPhase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
@@ -26,6 +25,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -199,7 +199,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             }
             
             @Override
-            public void receivedLastError(CommandRequestDevice command, DeviceErrorDescription error) {
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 phaseDetectResult.getFailureGroupMap().put(command.getDevice(), error.getPorter());
             }
             

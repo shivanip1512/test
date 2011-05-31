@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
@@ -17,7 +17,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public class GroupCommandCompletionCallback implements
         CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, ExceptionStatus, MultipleDeviceResultHolder {
     
-    private Map<SimpleDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, DeviceErrorDescription>(100, .75f, 1);
+    private Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
     private Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);
     private Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<SimpleDevice, Object>(100, .75f, 1);
     private Object PRESENT = new Object(); // used as the value for the allDevices map
@@ -28,7 +28,7 @@ public class GroupCommandCompletionCallback implements
     private String processingErrorReason = "";
     
     @Override
-    public void receivedIntermediateError(CommandRequestDevice command, DeviceErrorDescription error) {
+    public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
         // ignore
     }
 
@@ -38,7 +38,7 @@ public class GroupCommandCompletionCallback implements
     }
 
     @Override
-    public void receivedLastError(CommandRequestDevice command, DeviceErrorDescription error) {
+    public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
         errors.put(command.getDevice(),error);
         allDevices.put(command.getDevice(), PRESENT);
         handleFailure(command.getDevice());
@@ -136,7 +136,7 @@ public class GroupCommandCompletionCallback implements
     	return processingErrorReason;
     }
 
-    public Map<SimpleDevice, DeviceErrorDescription> getErrors() {
+    public Map<SimpleDevice, SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
 

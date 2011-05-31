@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.cannontech.amr.deviceread.service.RetryParameters;
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -175,7 +174,7 @@ public class CommandRequestRetryExecutor<T> {
 
 
         @Override
-        public void receivedLastError(T command, DeviceErrorDescription error) {
+        public void receivedLastError(T command, SpecificDeviceErrorDescription error) {
 
             // no more retry
             if (retryCount <= 0) {
@@ -207,7 +206,7 @@ public class CommandRequestRetryExecutor<T> {
         }
         
         @Override
-        public void receivedIntermediateError(T command, DeviceErrorDescription error) {
+        public void receivedIntermediateError(T command, SpecificDeviceErrorDescription error) {
             delegateCallback.receivedIntermediateError(command, error);
             
         }
@@ -226,9 +225,9 @@ public class CommandRequestRetryExecutor<T> {
     private class FailedCommandAndError {
         
         private T command;
-        private DeviceErrorDescription error;
+        private SpecificDeviceErrorDescription error;
         
-        public FailedCommandAndError(T command, DeviceErrorDescription error) {
+        public FailedCommandAndError(T command, SpecificDeviceErrorDescription error) {
             this.command = command;
             this.error = error;
         }
@@ -236,7 +235,7 @@ public class CommandRequestRetryExecutor<T> {
         public T getCommand() {
             return this.command;
         }
-        public DeviceErrorDescription getError() {
+        public SpecificDeviceErrorDescription getError() {
             return this.error;
         }
     }

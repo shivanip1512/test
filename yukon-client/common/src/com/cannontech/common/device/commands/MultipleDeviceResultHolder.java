@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -28,7 +28,7 @@ public interface MultipleDeviceResultHolder {
     
     public boolean isCanceled();
 
-    public Map<SimpleDevice, DeviceErrorDescription> getErrors();
+    public Map<SimpleDevice, SpecificDeviceErrorDescription> getErrors();
 
     public Map<SimpleDevice, String> getResultStrings();
 

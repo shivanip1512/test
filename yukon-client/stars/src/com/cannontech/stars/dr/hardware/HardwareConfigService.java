@@ -20,7 +20,6 @@ import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -29,10 +28,10 @@ import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -46,6 +45,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.WebClientException;
 import com.google.common.collect.Lists;
 
@@ -78,7 +78,7 @@ public class HardwareConfigService {
                 new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
                     @Override
                     public void receivedLastError(CommandRequestRoute command,
-                            DeviceErrorDescription error) {
+                            SpecificDeviceErrorDescription error) {
                         hadErrors = true;
                     }
             };

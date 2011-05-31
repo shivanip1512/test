@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
+import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -94,7 +94,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     	}
                     	
                         @Override
-                        public void receivedLastError(CommandRequestRouteAndDevice command, DeviceErrorDescription error) {
+                        public void receivedLastError(CommandRequestRouteAndDevice command, SpecificDeviceErrorDescription error) {
 
                             int errorCode = error.getErrorCode();
                             int currentAttemptCount = state.getAttemptCount();
