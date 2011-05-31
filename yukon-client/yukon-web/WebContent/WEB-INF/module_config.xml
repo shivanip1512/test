@@ -426,6 +426,9 @@
                 
             </pages>
         </page>
+        <page name="analysisResults" type="BASIC">
+            <menu>meters</menu>
+        </page>
     </pages>
   </module>
 

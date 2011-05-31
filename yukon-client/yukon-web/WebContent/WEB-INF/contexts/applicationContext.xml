@@ -1218,6 +1218,8 @@
     <bean id="formatCronTagPrototype" class="com.cannontech.web.taglib.FormatCronTag"/>
     
     <bean id="formatObjectTagPrototype" class="com.cannontech.web.taglib.FormatObjectTag"/>
+    
+    <bean id="formatIntervalTagPrototype" class="com.cannontech.web.taglib.FormatIntervalTag"/>
 
     <bean id="formatTimePeriodTagPrototype" class="com.cannontech.web.taglib.FormatTimePeriodTag"/>
     
@@ -1453,6 +1455,8 @@
             </list>
         </property>
     </bean>
+    
+    <bean id="adaResultsHelper" class="com.cannontech.web.bulk.service.AdaResultsHelper"/>
     
     <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InventoryOperationsFilterServiceImpl"/>
     

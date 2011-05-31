@@ -52,3 +52,28 @@ table.compactResultsTable tr.undoRow td img {
     max-width: 600px;
     width: 100%;
 }
+
+.notesSection {
+    padding-bottom: 10px;
+}
+
+div.resultBar {
+    height: 14px;
+    border: 1px solid grey;
+    overflow: hidden;
+}
+
+div.resultBarInterval {
+    display: inline-block;
+    position: relative;
+    float: left;
+    height: 100%;
+}
+
+.dataPresent {
+    background-color: #228855;
+}
+
+.dataAvailable {
+    background: white;
+}
