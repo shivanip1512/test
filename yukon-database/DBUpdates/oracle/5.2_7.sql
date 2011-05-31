@@ -91,3 +91,4 @@ WHERE DeviceId IN (SELECT PAObjectId
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '26-MAY-2011', 'Latest Update', 7);
