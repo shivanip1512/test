@@ -145,7 +145,11 @@ public final class CBCUtils {
             Float order1 = o1.getControlOrder();
             Float order2 = o2.getControlOrder();
             int result = order1.compareTo(order2);
-            return result;
+            if (result == 0) {
+                result = o1.getDeviceID().compareTo(o2.getDeviceID());
+            }
+                
+            return result; 
         }
 	};
 	
@@ -155,6 +159,10 @@ public final class CBCUtils {
             Float order1 = o1.getCloseOrder();
             Float order2 = o2.getCloseOrder();
             int result = order1.compareTo(order2);
+            if (result == 0) {
+                result = o1.getDeviceID().compareTo(o2.getDeviceID());
+            }
+            
             return result;
         }
 	};
@@ -165,6 +173,10 @@ public final class CBCUtils {
             Float order1 = o1.getTripOrder();
             Float order2 = o2.getTripOrder();
             int result = order1.compareTo(order2);
+            if (result == 0) {
+                result = o1.getDeviceID().compareTo(o2.getDeviceID());
+            }
+            
             return result;
         }
 	};
