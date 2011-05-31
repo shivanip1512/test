@@ -1010,6 +1010,9 @@
             <option name="uiToolkitDemo">
               <link>/spring/support/development/uiToolkitDemo/main</link>
             </option>
+            <option name="miscellaneousMethods">
+              <link>/spring/support/development/miscellaneousMethod/main</link>
+            </option>
           </options>
         </option>
         <option name="other">
@@ -1071,6 +1074,10 @@
                 <page name="uiToolkitDemo" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|uiToolkitDemo</menu>
+                </page>
+                <page name="miscellaneousMethod" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                    <menu>development|miscellaneousMethod</menu>
                 </page>
             </pages>
             <link>/spring/support/</link>

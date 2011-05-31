@@ -35,10 +35,6 @@ public class UrlDialerFactory implements DialerFactory {
     public Dialer createDialer(LiteEnergyCompany energyCompany) {
         final LiteYukonUser ecUser = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
 
-        final String urlTemplate = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_TEMPLATE, ecUser);
-        log.debug("template: " + urlTemplate);
-        final int callTimeoutSeconds = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CALL_RESPONSE_TIMEOUT, null);
-        final String dialPrefix = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CALL_PREFIX, null);
         
         int retryCount = configurationSource.getInteger("IVR_URL_DIALER_RETRY_COUNT", 3);
         int retryDelayMs = configurationSource.getInteger("IVR_URL_DIALER_RETRY_DELAY_MS", 4000);
@@ -50,6 +46,14 @@ public class UrlDialerFactory implements DialerFactory {
             @Override
             protected void dialCall(Call call) {
                 // get configuration from role properties
+                final String urlTemplate = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_TEMPLATE, ecUser);
+                log.debug("template: " + urlTemplate);
+                
+                final int callTimeoutSeconds = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CALL_RESPONSE_TIMEOUT, null);
+                log.debug("callTimeoutSeconds: " + callTimeoutSeconds);
+                
+                final String dialPrefix = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CALL_PREFIX, null);
+                log.debug("dialPrefix: " + dialPrefix);
                 
                 final String successMatcherStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_SUCCESS_MATCHER, ecUser);
                 Pattern successPattern;
@@ -77,7 +81,13 @@ public class UrlDialerFactory implements DialerFactory {
                     InputStream inputStream = method.getResponseBodyAsStream();
                     byte[] inputBuffer = new byte[2000];
                     int bytesRead = inputStream.read(inputBuffer);
-                    String response = new String(inputBuffer, 0, bytesRead, Charset.forName("UTF-8"));
+                    String response;
+                    if (bytesRead < 0) {
+                        log.debug("encountered EOF reading URL response, treating as blank");
+                        response = "";
+                    } else {
+                        response = new String(inputBuffer, 0, bytesRead, Charset.forName("UTF-8"));
+                    }
                     
                     
                     log.debug("URL response: " + StringUtils.left(response, 200));
