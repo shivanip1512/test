@@ -14,9 +14,6 @@ import com.roguewave.vsj.DefineCollectable;
 
 public class CapControlClientConnection extends ClientConnection
 {
-	private String host = "127.0.0.1";
-	private int port = 1910;
-	
 	private java.util.Vector messageEvntListGUI = new java.util.Vector();
 	private java.util.Hashtable areaNames = null;
 
@@ -61,8 +58,7 @@ public class CapControlClientConnection extends ClientConnection
 	 */
 	public CapControlClientConnection() 
 	{
-		super("CBC");// "127.0.0.1", 1910 );
-        initialize();
+		super("CBC");
         setRegistrationMsg(new CapControlCommand ( CapControlCommand.REQUEST_ALL_AREAS, 0) );
 	}
 	
@@ -144,15 +140,6 @@ public class CapControlClientConnection extends ClientConnection
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
     
-    
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/18/00 5:11:57 PM)
-	 */
-	public void initialize() 
-	{	
-		setAutoReconnect( true );
-	}
     
 	public void sendCommand(CapControlCommand cmd)
 	{

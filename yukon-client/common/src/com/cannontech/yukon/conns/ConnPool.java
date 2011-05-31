@@ -76,9 +76,6 @@ public class ConnPool
 		com.cannontech.message.porter.ClientConnection porterCC = 
 				new com.cannontech.message.porter.ClientConnection();
 
-		porterCC.setQueueMessages(false);	//don't keep messages, toss once read.
-		porterCC.setAutoReconnect(true);
-
 		return porterCC;
 	}
 
@@ -99,7 +96,6 @@ public class ConnPool
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(300); // 5 minutes should be OK
 	        
-		connToDispatch.setAutoReconnect(true);
 		connToDispatch.setRegistrationMsg(reg);
 		
 		return connToDispatch;
@@ -211,7 +207,6 @@ public class ConnPool
     
             macsConn.setHost(host);
             macsConn.setPort(port);
-        	macsConn.setAutoReconnect(true);
             
             macsConn.setRegistrationMsg(macsConn.getRetrieveAllSchedulesMsg());
 

@@ -6,32 +6,23 @@ package com.cannontech.message.porter;
 import com.roguewave.vsj.CollectableStreamer;
 
 public class ClientConnection extends com.cannontech.message.util.ClientConnection {
-/**
- * ClientConnection constructor comment.
- */
-public ClientConnection() {
-	super("Porter");
-}
-/**
- * ClientConnection constructor comment.
- * @param host java.lang.String
- * @param port int
- */
-@Deprecated
-public ClientConnection(String host, int port) {
-	super(host, port);
-}
-/**
- * This method was created in VisualAge.
- */
-protected void registerMappings(CollectableStreamer polystreamer) {
-	super.registerMappings(polystreamer);
+    /**
+     * ClientConnection constructor comment.
+     */
+    public ClientConnection() {
+        super("Porter");
+    }
 
-	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
-	
-	for( int i = 0; i < mappings.length; i++ )
-	{
-		polystreamer.register( mappings[i] );
-	}
-}
+    /**
+     * This method was created in VisualAge.
+     */
+    protected void registerMappings(CollectableStreamer polystreamer) {
+        super.registerMappings(polystreamer);
+
+        com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
+
+        for (int i = 0; i < mappings.length; i++) {
+            polystreamer.register( mappings[i] );
+        }
+    }
 }

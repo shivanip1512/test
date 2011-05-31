@@ -32,7 +32,6 @@ public class LoadControlClientConnectionFactory {
 			clientConnection.setPort(lcPort);
 		}
     		
-    	clientConnection.setAutoReconnect(true);	
     	clientConnection.connectWithoutWait();
     	
     	// init

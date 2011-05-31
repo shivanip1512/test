@@ -12,15 +12,6 @@ public class ClientConnection extends com.cannontech.message.util.ClientConnecti
         super("Dispatch");
     }
 
-    /**
-     * @param host java.lang.String
-     * @param port int
-     */
-    @Deprecated
-    public ClientConnection(String host, int port) {
-        super(host, port);
-    }
-
     protected void fireMessageEvent(Message msg) {
         if (msg instanceof Command && ((Command) msg).getOperation() == Command.ARE_YOU_THERE) {
             // Only instances of com.cannontech.message.dispatch.message.Command

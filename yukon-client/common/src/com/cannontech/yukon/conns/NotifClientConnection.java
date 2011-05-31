@@ -63,18 +63,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
 	public NotifClientConnection() 
 	{
 		super("Notification");
-		initialize();
 	}
-
-	/**
-	 * Any special initing should be done here.
-	 * 
-	 */
-	private void initialize() 
-	{	
-		setAutoReconnect( true );
-	}	
-
 
 	protected void registerMappings(CollectableStreamer polystreamer) 
 	{

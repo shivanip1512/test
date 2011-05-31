@@ -3,10 +3,14 @@ package com.cannontech.message.util;
 /**
  * This type was created in VisualAge.
  */
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,6 +21,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.collect.Iterables;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
@@ -39,7 +44,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
     private AtomicLong totalReceivedMessages = new AtomicLong();
     private AtomicLong totalFiredEvents = new AtomicLong();
 
-    protected ArrayList inQueue = new ArrayList(100);
+    protected ArrayList<Object> inQueue = new ArrayList<Object>(100);
     protected PriorityBlockingQueue<Message> outQueue =
         new PriorityBlockingQueue<Message>(100, new MessagePriorityComparable());
 
@@ -61,7 +66,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
     private int lastReadIndex = 0;
 
     // Keep track of all of this connections MessageListeners
-    private ArrayList messageListeners = new ArrayList(5);
+    private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
     private final String connectionName;
 
     /**
@@ -70,16 +75,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
     public ClientConnection(String connectionName) {
         super();
         this.connectionName = connectionName;
-    }
-
-    /**
-     * ClientConnection constructor comment.
-     */
-    @Deprecated
-    public ClientConnection(String host, int port) {
-        this("Unknown for " + host + " and " + port);
-        this.host = host;
-        this.port = port;
+        autoReconnect = true;
     }
 
     /**
@@ -106,11 +102,6 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
                 outStrm.close();
             }
 
-            /*
-             * if( inStrm != null )
-             * inStrm.close();
-             * inStrm = null;
-             */
             outStrm = null;
             sock = null;
         } catch (java.io.IOException ex) {
@@ -366,8 +357,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
         return serverSocket;
     }
 
-    /**
-     * This method was created in VisualAge.
+    /*
+     * This is for the monitor thread.
      */
     @Override
     public void run() {
@@ -388,8 +379,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
                     this.sock = new Socket(this.host, this.port);
                 }
 
-                inStrm = new java.io.BufferedInputStream(this.sock.getInputStream());
-                outStrm = new java.io.BufferedOutputStream(this.sock.getOutputStream());
+                inStrm = new BufferedInputStream(this.sock.getInputStream());
+                outStrm = new BufferedOutputStream(this.sock.getOutputStream());
 
                 PortableInputStream pinStrm = new PortableInputStream(inStrm);
                 PortableOutputStream poutStrm = new PortableOutputStream(outStrm);
@@ -575,8 +566,11 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
         if (logger.isDebugEnabled()) {
             logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + e);
         }
-        for (int i = messageListeners.size() - 1; i >= 0; i--) {
-            MessageListener ml = (MessageListener) messageListeners.get(i);
+        // At one time, the listeners were processed in reverse so that the messageReceived
+        // implementation could remove itself as a listener without causing a concurrent 
+        // modification problem. That is no longer a problem, but just in case there is some code 
+        // that relies on the reverse ordering, we'll keep it.
+        for (MessageListener ml : Iterables.reverse(messageListeners)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("sending MessageEvent to " + ml);
             }
