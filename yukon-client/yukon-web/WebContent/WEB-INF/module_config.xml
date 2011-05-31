@@ -1184,6 +1184,7 @@
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/adminSetup/groupEditor/view?groupId=${groupId}</link>
                                 <labelArgument>${groupName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/groupInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="groupEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userGroupEditor|home</menu>
@@ -1212,6 +1213,7 @@
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/adminSetup/userEditor/view?userId=${userId}</link>
                                 <labelArgument>${username}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userGroupEditor|home</menu>
