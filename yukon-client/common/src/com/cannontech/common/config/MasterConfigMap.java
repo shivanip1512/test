@@ -33,7 +33,7 @@ public class MasterConfigMap implements ConfigurationSource {
         log.debug("reseting");
         configMap.clear();
     }
-        
+
     public void setConfigSource(InputStream is) {
         this.inputStream = is;
     }
@@ -45,6 +45,10 @@ public class MasterConfigMap implements ConfigurationSource {
         String line = null;
         try {
             while ((line = bufReader.readLine()) != null) {
+                // Replace all  '&nbsp;'
+                line = line.replaceAll("\u00A0", " ");
+                // Replace all non-ascii characters
+                line = line.replaceAll("[^\\p{ASCII}]", "");
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     log.debug("Found line match: " + line);
