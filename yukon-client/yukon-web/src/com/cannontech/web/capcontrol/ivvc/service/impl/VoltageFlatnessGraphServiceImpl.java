@@ -94,10 +94,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private String phaseBBulletType;
     private String phaseCBulletType;
     
-    private boolean phaseAVisibleInLegend;
-    private boolean phaseBVisibleInLegend;
-    private boolean phaseCVisibleInLegend;
-
     private boolean showZoneTransitionText;
     private String zoneTransitionDataLabel;
     
@@ -150,9 +146,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         phaseBBulletType = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBBulletType");
         phaseCBulletType = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCBulletType");
 
-        phaseAVisibleInLegend = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseAVisibleInLegend"));
-        phaseBVisibleInLegend = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBVisibleInLegend"));
-        phaseCVisibleInLegend = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCVisibleInLegend"));
         showZoneTransitionText = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText"));
     }
     
@@ -657,19 +650,19 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
     private VfLineSettings getPhaseALineSetting() {
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorPhaseA, phaseABulletType, 
-                                                        true, true, true, phaseAVisibleInLegend, true);
+                                                        true, true, true, true, true);
         return lineSetting;
     }
     
     private VfLineSettings getPhaseBLineSetting() {
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorPhaseB, phaseBBulletType,
-                                                        true, true, true, phaseBVisibleInLegend, true);
+                                                        true, true, true, true, true);
         return lineSetting;
     }
     
     private VfLineSettings getPhaseCLineSetting() {
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorPhaseC, phaseCBulletType, 
-                                                        true, true, true, phaseCVisibleInLegend, true);
+                                                        true, true, true, true, true);
         return lineSetting;
     }
 

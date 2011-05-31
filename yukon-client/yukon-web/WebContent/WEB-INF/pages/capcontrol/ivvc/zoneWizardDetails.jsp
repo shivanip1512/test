@@ -153,7 +153,7 @@
             <span id="parentZoneName" class="disabledRow">
                 <c:choose>
                     <c:when test="${zoneDto.parentZoneId == null}">
-                        <spring:escapeBody htmlEscape="true"><i:inline key=".isRoot"/></spring:escapeBody>
+                        <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.defaults.dashes"/></spring:escapeBody>
                     </c:when>
                     <c:otherwise>
                         <spring:escapeBody htmlEscape="true">${parentZoneName} - <i:inline key="${zoneDto.zoneType}"/></spring:escapeBody>
