@@ -1,8 +1,13 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/25/2011 12:49:39 PM                        */
+/* Created on:     6/1/2011 1:46:45 PM                          */
 /*==============================================================*/
+
+
+set define off;
+
+
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -788,7 +793,8 @@ create table CCMonitorBankList (
    NINAvg               numeric              not null,
    UpperBandwidth       float                not null,
    LowerBandwidth       float                not null,
-   constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
+   Phase                char(1)              null,
+   constraint PK_CCMONITORBANKLIST primary key nonclustered (BankId, PointId)
 )
 go
 
@@ -6919,6 +6925,7 @@ create table PointToZoneMapping (
    ZoneId               numeric              not null,
    GraphPositionOffset  float                null,
    Distance             float                null,
+   Phase                char(1)              not null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go
@@ -7101,6 +7108,28 @@ create table RPHTag (
    ChangeId             numeric              not null,
    TagName              varchar(150)         not null,
    constraint PK_RPHTag primary key (ChangeId, TagName)
+)
+go
+
+/*==============================================================*/
+/* Table: Regulator                                             */
+/*==============================================================*/
+create table Regulator (
+   RegulatorId          numeric              not null,
+   KeepAliveTimer       numeric              not null,
+   KeepAliveConfig      numeric              not null,
+   constraint PK_Reg primary key (RegulatorId)
+)
+go
+
+/*==============================================================*/
+/* Table: RegulatorToZoneMapping                                */
+/*==============================================================*/
+create table RegulatorToZoneMapping (
+   RegulatorId          numeric              not null,
+   ZoneId               numeric              not null,
+   Phase                char(1)              null,
+   constraint PK_RegToZoneMap primary key (RegulatorId)
 )
 go
 
@@ -9825,19 +9854,11 @@ go
 create table Zone (
    ZoneId               numeric              not null,
    ZoneName             varchar(255)         not null,
-   RegulatorId          numeric              not null,
    SubstationBusId      numeric              not null,
    ParentId             numeric              null,
    GraphStartPosition   float                null,
+   ZoneType             varchar(40)          not null,
    constraint PK_Zone primary key (ZoneId)
-)
-go
-
-/*==============================================================*/
-/* Index: Indx_Zone_RegId_UNQ                                   */
-/*==============================================================*/
-create unique index Indx_Zone_RegId_UNQ on Zone (
-RegulatorId ASC
 )
 go
 
@@ -12825,6 +12846,24 @@ alter table RPHTag
          on delete cascade
 go
 
+alter table Regulator
+   add constraint FK_Reg_PAO foreign key (RegulatorId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
+go
+
+alter table RegulatorToZoneMapping
+   add constraint FK_ZoneReg_Reg foreign key (RegulatorId)
+      references Regulator (RegulatorId)
+         on delete cascade
+go
+
+alter table RegulatorToZoneMapping
+   add constraint FK_ZoneReg_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+         on delete cascade
+go
+
 alter table RepeaterRoute
    add constraint SYS_C0013269 foreign key (ROUTEID)
       references Route (RouteID)
@@ -13170,11 +13209,6 @@ alter table Zone
    add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
          on delete cascade
-go
-
-alter table Zone
-   add constraint FK_Zone_PAO foreign key (RegulatorId)
-      references YukonPAObject (PAObjectID)
 go
 
 alter table Zone

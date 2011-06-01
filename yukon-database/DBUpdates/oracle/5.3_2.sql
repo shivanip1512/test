@@ -47,6 +47,81 @@ ALTER TABLE ArchiveDataAnalysisSlots
             ON DELETE CASCADE;
 /* End YUK-9847 */
 
+/* Start YUK-9797 */
+UPDATE YukonPAObject
+SET PAOClass = 'CAPCONTROL'
+WHERE PAOClass = 'VOLTAGEREGULATOR';
+
+/* Regulator table informaiton */
+CREATE TABLE Regulator  (
+   RegulatorId          NUMBER                          not null,
+   KeepAliveTimer       NUMBER                          not null,
+   KeepAliveConfig      NUMBER                          not null,
+   CONSTRAINT PK_REG PRIMARY KEY (RegulatorId)
+);
+
+ALTER TABLE Regulator
+    ADD CONSTRAINT FK_Reg_PAO FOREIGN KEY (RegulatorId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+
+INSERT INTO Regulator (RegulatorId, KeepAliveTimer, KeepAliveConfig)
+SELECT PaobjectId, 0, 0
+FROM YukonPAObject
+WHERE Type = 'LTC' 
+  OR Type = 'PO_REGULATOR' 
+  OR Type = 'GO_REGULATOR';
+
+/* RegulatorToZoneMapping table informaiton */
+CREATE TABLE RegulatorToZoneMapping  (
+   RegulatorId          NUMBER                          NOT NULL,
+   ZoneId               NUMBER                          NOT NULL,
+   Phase                CHAR,
+   CONSTRAINT PK_RegToZoneMap PRIMARY KEY (RegulatorId)
+);
+
+ALTER TABLE RegulatorToZoneMapping
+    ADD CONSTRAINT FK_ZoneReg_Reg FOREIGN KEY (RegulatorId)
+        REFERENCES Regulator (RegulatorId)
+            ON DELETE CASCADE;
+
+ALTER TABLE RegulatorToZoneMapping
+    ADD CONSTRAINT FK_ZoneReg_Zone FOREIGN KEY (ZoneId)
+        REFERENCES Zone (ZoneId)
+            ON DELETE CASCADE;
+
+INSERT INTO ZoneRegulator (RegulatorId, ZoneId)
+SELECT RegulatorId, ZoneId
+FROM Zone;
+
+/* Remove old regulatorId */
+DROP INDEX Indx_Zone_RegId_UNQ;
+
+ALTER TABLE Zone
+DROP CONSTRAINT FK_Zone_PAO;
+
+ALTER TABLE Zone
+DROP COLUMN RegulatorId;
+
+/* Adding Phase columns */
+ALTER TABLE Zone
+ADD ZoneType VARCHAR2(40);
+UPDATE Zone
+SET ZoneType = 'GANG_OPERATED';
+ALTER TABLE Zone
+MODIFY ZoneType VARCHAR2(40) NOT NULL;
+
+ALTER TABLE PointToZoneMapping 
+ADD Phase CHAR;
+UPDATE PointToZoneMapping
+SET Phase = 'A';
+ALTER TABLE PointToZoneMapping
+MODIFY Phase CHAR NOT NULL;
+
+ALTER TABLE CCMonitorBankList
+ADD Phase CHAR;
+/* End YUK-9797 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

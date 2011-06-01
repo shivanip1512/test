@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/25/2011 12:51:03 PM                        */
+/* Created on:     6/1/2011 1:40:49 PM                          */
 /*==============================================================*/
 
 
@@ -742,6 +742,7 @@ create table CCMonitorBankList  (
    NINAvg               NUMBER                          not null,
    UpperBandwidth       FLOAT                           not null,
    LowerBandwidth       FLOAT                           not null,
+   Phase                CHAR(1),
    constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
 );
 
@@ -6515,6 +6516,7 @@ create table PointToZoneMapping  (
    ZoneId               NUMBER                          not null,
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
+   Phase                CHAR(1)                         not null,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -6682,6 +6684,26 @@ create table RPHTag  (
    ChangeId             NUMBER                          not null,
    TagName              VARCHAR2(150)                   not null,
    constraint PK_RPHTag primary key (ChangeId, TagName)
+);
+
+/*==============================================================*/
+/* Table: Regulator                                             */
+/*==============================================================*/
+create table Regulator  (
+   RegulatorId          NUMBER                          not null,
+   KeepAliveTimer       NUMBER                          not null,
+   KeepAliveConfig      NUMBER                          not null,
+   constraint PK_Reg primary key (RegulatorId)
+);
+
+/*==============================================================*/
+/* Table: RegulatorToZoneMapping                                */
+/*==============================================================*/
+create table RegulatorToZoneMapping  (
+   RegulatorId          NUMBER                          not null,
+   ZoneId               NUMBER                          not null,
+   Phase                CHAR(1),
+   constraint PK_RegToZoneMap primary key (RegulatorId)
 );
 
 /*==============================================================*/
@@ -9327,18 +9349,11 @@ create table ZBGatewayToDeviceMapping  (
 create table Zone  (
    ZoneId               NUMBER                          not null,
    ZoneName             VARCHAR2(255)                   not null,
-   RegulatorId          NUMBER                          not null,
    SubstationBusId      NUMBER                          not null,
    ParentId             NUMBER,
    GraphStartPosition   FLOAT,
+   ZoneType             VARCHAR2(40)                    not null,
    constraint PK_Zone primary key (ZoneId)
-);
-
-/*==============================================================*/
-/* Index: Indx_Zone_RegId_UNQ                                   */
-/*==============================================================*/
-create unique index Indx_Zone_RegId_UNQ on Zone (
-   RegulatorId ASC
 );
 
 /*==============================================================*/
@@ -11784,6 +11799,21 @@ alter table RPHTag
       references RAWPOINTHISTORY (CHANGEID)
       on delete cascade;
 
+alter table Regulator
+   add constraint FK_Reg_PAO foreign key (RegulatorId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
+
+alter table RegulatorToZoneMapping
+   add constraint FK_ZoneReg_Reg foreign key (RegulatorId)
+      references Regulator (RegulatorId)
+      on delete cascade;
+
+alter table RegulatorToZoneMapping
+   add constraint FK_ZoneReg_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+      on delete cascade;
+
 alter table RepeaterRoute
    add constraint SYS_C0013269 foreign key (ROUTEID)
       references Route (RouteID);
@@ -12064,10 +12094,6 @@ alter table Zone
    add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
       on delete cascade;
-
-alter table Zone
-   add constraint FK_Zone_PAO foreign key (RegulatorId)
-      references YukonPAObject (PAObjectID);
 
 alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
