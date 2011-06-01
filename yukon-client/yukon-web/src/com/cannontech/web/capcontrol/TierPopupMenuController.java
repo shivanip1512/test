@@ -290,7 +290,9 @@ public class TierPopupMenuController extends MultiActionController {
         if (is702xDevice) {
             mav.addObject("allowLocalControl", allowLocalControl);
             mav.addObject("localControlTypeCBC", true);
-        } else if( allowLocalControl ) {
+        }
+        
+        if (allowLocalControl && !is702xDevice) {
             list.add(CommandHolder.CBC_ENABLE_OVUV);
             list.add(CommandHolder.CBC_DISABLE_OVUV);
         }
@@ -298,6 +300,7 @@ public class TierPopupMenuController extends MultiActionController {
         if (allowFlip && is701xDevice) {
             list.add(CommandHolder.CBC_FLIP);
         }
+        
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
