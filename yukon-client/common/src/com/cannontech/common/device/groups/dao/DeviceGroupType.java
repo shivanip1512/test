@@ -15,5 +15,7 @@ public enum DeviceGroupType {
     METERS_DISABLED,
     COMPOSED,
     METERS_DISCONNECT_COLLAR,
+    ATTRDEF,
+    ATTREXIST,
     ;
 }

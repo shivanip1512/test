@@ -11,6 +11,8 @@ public enum SystemGroupEnum {
     DISCONNECTSTATUS("/Meters/Flags/DisconnectedStatus/"), 
     USAGEMONITORING("/Meters/Flags/UsageMonitoring/"),
     SYSTEM("/System/"),
+    ATTRIBUTES_EXISTING("/System/Attributes/Existing"),
+    ATTRIBUTES_SUPPORTED("/System/Attributes/Supported"),
     DEVICETYPES("/System/Device Types/"),
     DEVICECONFIGS("/System/Meters/Device Configs/"),
     ROUTES("/System/Routes/"),

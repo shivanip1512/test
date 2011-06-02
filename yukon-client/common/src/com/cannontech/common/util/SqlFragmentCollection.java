@@ -57,6 +57,11 @@ public class SqlFragmentCollection implements SqlFragmentSource {
         return result;
     }
     
+    @Override
+    public String toString() {
+        return joiner + sql;
+    }
+    
     public SqlFragmentCollection add(SqlFragmentSource fragment) {
         sql.add(fragment.getSql());
         arguments.addAll(fragment.getArgumentList());

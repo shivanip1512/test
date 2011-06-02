@@ -101,7 +101,17 @@
         class="com.cannontech.common.device.groups.dao.impl.providers.DeviceTagGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
+
+    <bean id="attributeDefinedGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.AttributeDefinedGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
     
+    <bean id="attributeExistsGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.AttributeExistsGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
+
     <bean id="loadProfileScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.LoadProfileScanIndicatingDevice" />
     <bean id="loadProfileScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -172,6 +182,8 @@
                 <entry key="METERS_DISABLED" value-ref="disabledMeterGroupProvider"/>
                 <entry key="METERS_DISCONNECT_COLLAR" value-ref="disconnectCollarGroupProvider"/>
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
+                <entry key="ATTRDEF" value-ref="attributeDefinedGroupProvider"/>
+                <entry key="ATTREXIST" value-ref="attributeExistsGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
