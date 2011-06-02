@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -84,16 +83,10 @@ import com.google.common.collect.Lists;
                 row.runTimeLoad = rs.getString("runTimeLoad");
                 row.relayShedTime = rs.getString("relayShed");
                 row.timestamp = rs.getString("maxDateTime");
-                String runTimeLoadPoint = rs.getString("runTimePointName");
-                String relayShedPoint = rs.getString("relayShedPointName");
-                String containsRelayNumber = (StringUtils.isBlank(runTimeLoadPoint) ? relayShedPoint : runTimeLoadPoint);
-                String words[] = containsRelayNumber.split(" ");
-                if (StringUtils.isNotBlank(runTimeLoadPoint)) {
-		            row.relay = "Relay " + words[2];	//Ex: Runtime Load #
-                } else { 
-                	row.relay = "Relay " + words[1];	//Ex: Relay # Shed Time
-            	}
-	            
+                String runTimeRelay = rs.getString("runTimeRelay");
+                String relayShedRelay = rs.getString("relayShedRelay");
+                String relay = (runTimeRelay != null ? runTimeRelay : (relayShedRelay != null ? relayShedRelay : "-"));
+                row.relay = "Relay " + relay;
                 data.add(row);
             }
         });
@@ -113,10 +106,10 @@ import com.google.common.collect.Lists;
         sql.append("SELECT PAO.PAOName deviceName, LMHBASE.ManufacturerSerialNumber serialNumber, ROUTE.PAOName route,");
         sql.append(    "runTimePointName, runTimeLoad, runTimeLoadTime,");
         sql.append(    "relayShedPointName, relayShed, relayShedTime,");
-        sql.append(    "maxDateTime");
+        sql.append(    "maxDateTime, runTimeRelay, relayShedRelay");
         sql.append("FROM YukonPaobject PAO");
         sql.append(    "LEFT JOIN InventoryBase INVBASE ON INVBASE.DeviceID = PAO.PAObjectID");
-        sql.append(    "LEFT JOIN LMHardwareBase LMHBASE on LMHBASE.InventoryID = INVBASE.InventoryID");
+        sql.append(    "LEFT JOIN LMHardwareBase LMHBASE ON LMHBASE.InventoryID = INVBASE.InventoryID");
         sql.append(    "JOIN DeviceRoutes DR ON pao.PAObjectID = DR.DEVICEID");
         sql.append(    "JOIN Yukonpaobject ROUTE ON ROUTE.PAObjectID = DR.ROUTEID");
         sql.append(    "JOIN (");
@@ -124,12 +117,14 @@ import com.google.common.collect.Lists;
         sql.append(            "runTimePointName, runtimeload, runtimeloadtime, relayShedPointName, relayShed, relayShedTime,");
         sql.append(            "CASE WHEN runTimeLoadTime IS NULL THEN relayShedTime");
         sql.append(                "ELSE runTimeLoadTime");
-        sql.append(            "END maxDateTime");
+        sql.append(            "END maxDateTime,");
+        sql.append(            "(runTime.POINTOFFSET - 4) runTimeRelay,");	//removing 4 to get to a 1-based relay value
+        sql.append(            "(relayShed.POINTOFFSET - 8) relayShedRelay");	//removing 8 to get to a 1-based relay value
         sql.append(        "FROM (");
         sql.append(            "SELECT DISTINCT PAO.paobjectid, RTPOINT.POINTNAME runTimePointName, RTPOINT.POINTOFFSET,");
         sql.append(                "RTRPH.VALUE runTimeLoad, RTRPH.TIMESTAMP runTimeLoadTime");
         sql.append(            "FROM YukonPAObject PAO");
-        sql.append(                "JOIN Point RTPOINT on RTPOINT.PAObjectID = PAO.PAObjectID");
+        sql.append(                "JOIN Point RTPOINT ON RTPOINT.PAObjectID = PAO.PAObjectID");
         sql.append(                "JOIN RawPointHistory RTRPH ON RTPOINT.PointID = RTRPH.PointID"); 
         sql.append(            "WHERE RTPOINT.POINTOFFSET IN (5, 6, 7, 8)");	// 5, 6, 7, 8 are defined point offsets for RunTime Load points on LCR-3102 devices
         sql.append(                "AND PAO.Type").eq_k(PaoType.LCR3102);
@@ -141,7 +136,7 @@ import com.google.common.collect.Lists;
 		sql.append(            "SELECT DISTINCT PAO.PAObjectID, rsPoint.POINTNAME relayShedPointName, rsPoint.POINTOFFSET,");
 		sql.append(                "RSRPH.VALUE relayShed, RSRPH.TIMESTAMP relayShedTime");
 		sql.append(            "FROM YukonPAObject PAO");
-		sql.append(                "JOIN Point RSPOINT on RSPOINT.PAObjectID = PAO.PAObjectID");
+		sql.append(                "JOIN Point RSPOINT ON RSPOINT.PAObjectID = PAO.PAObjectID");
 		sql.append(                "LEFT JOIN RawPointHistory RSRPH ON RSPOINT.PointID = RSRPH.PointID");
 		sql.append(            "WHERE RSPOINT.POINTOFFSET IN (9, 10, 11, 12)");	// 9, 10, 11, 12 are defined point offsets for RelayShed points on LCR-3102 devices
         sql.append(                "AND PAO.Type").eq_k(PaoType.LCR3102);
