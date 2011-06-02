@@ -120,7 +120,7 @@ Thank you for your participation.
         <subject>Default Event Adjust</subject>
         <body>Utility is notifying all customers enrolled in the program of an Adjustment to the current Curtailment Event.
 
-Today is <xsl:value-of select="startdate" />. Utility is extending the event which originally started at <xsl:value-of select="starttime" /> and will now continue until <xsl:value-of select="stoptime" />.
+Today is <xsl:value-of select="startdate" />. Utility is modifying the event which will now end at <xsl:value-of select="stoptime" />.
 <xsl:call-template name="closing" />
         </body>
     </xsl:template>

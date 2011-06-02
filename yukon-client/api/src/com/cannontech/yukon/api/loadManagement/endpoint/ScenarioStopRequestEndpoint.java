@@ -22,6 +22,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -82,6 +83,10 @@ public class ScenarioStopRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (BadServerResponseException e) {
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
+            resp.addContent(fe);
+            return resp;
+        } catch (ConnectionException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
             resp.addContent(fe);
             return resp;

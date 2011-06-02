@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -32,6 +33,7 @@ import com.cannontech.loadcontrol.dynamic.receive.LMTriggerChanged;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -186,6 +188,28 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     {
         DatedObject<LMProgramBase> datedProgram = programs.get(programId);
         return datedProgram == null ? null : datedProgram.getObject();
+    }
+    
+    /**
+     * Returns a LMProgramBase object for the given program id. Throws if the connection is not valid
+     * or if the program cannot be found based on the id.
+     * 
+     * @throws ConnectionException
+     * @throws NotFoundException
+     */
+    public LMProgramBase getProgramSafe(int programId) throws ConnectionException, NotFoundException
+    {
+        if(!isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
+        
+        DatedObject<LMProgramBase> datedProgram = programs.get(programId);
+        
+        if(datedProgram == null) {
+            throw new NotFoundException("The requested program with id " + programId + " was not found.");
+        } else {
+            return datedProgram.getObject();
+        }
     }
     
     /**

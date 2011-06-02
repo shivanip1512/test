@@ -460,10 +460,8 @@ public class StartProgramController extends ProgramControllerBase {
             DisplayablePao program = programService.getProgram(programId);
             programsByProgramId.put(programId, program);
 
-            LMProgramBase programBase = programService.getProgramForPao(program);
-            if (programBase == null) {
-                throw new NotFoundException("Program in database but not reported by server. Check LM server connection or program configuration.");
-            }
+            LMProgramBase programBase = programService.getProgramForPaoSafe(program);
+
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 

@@ -70,11 +70,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         
         validateProgramIsVisibleToUser(programName, programId, user);
         
-        LMProgramBase program = loadControlClientConnection.getProgram(programId);
-        
-        if (program == null) {
-            throw new NotFoundException("Program in database but not reported by server. Check configuration.");
-        }
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         
         return new ProgramStatus(program);
     }
@@ -133,14 +129,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 		
         validateProgramIsVisibleToUser(programName, programId, user);
         
-        LMProgramBase program = loadControlClientConnection.getProgram(programId);
-        
-        if (program == null) {
-            if(loadControlClientConnection.isValid())
-                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
-            else
-                throw new BadServerResponseException();
-        }
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         
         return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
@@ -155,15 +144,8 @@ public class LoadControlServiceImpl implements LoadControlService {
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         validateProgramIsVisibleToUser(programName, programId, user);
         
-        LMProgramBase program = loadControlClientConnection.getProgram(programId);
-        
-        if (program == null) {
-            if(loadControlClientConnection.isValid())
-                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
-            else
-                throw new BadServerResponseException();
-        }
-        
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+
         int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
         
         return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
@@ -179,15 +161,8 @@ public class LoadControlServiceImpl implements LoadControlService {
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         validateProgramIsVisibleToUser(programName, programId, user);
         
-        LMProgramBase program = loadControlClientConnection.getProgram(programId);
-        
-        if (program == null) {
-            if(loadControlClientConnection.isValid())
-                throw new NotFoundException("Program in database but not reported by server. Check configuration.");
-            else
-                throw new BadServerResponseException();
-        }
-        
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+      
         return doExecuteStopRequest(program, stopTime, null, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
     }
     

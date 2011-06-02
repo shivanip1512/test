@@ -23,6 +23,8 @@ public interface ProgramService {
     
     public LMProgramBase getProgramForPao(YukonPao from);
     
+    public LMProgramBase getProgramForPaoSafe(YukonPao from);
+    
     public DatedObject<LMProgramBase> findDatedProgram(int programId);
 
     public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 

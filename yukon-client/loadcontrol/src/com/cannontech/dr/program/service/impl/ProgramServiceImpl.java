@@ -102,6 +102,11 @@ public class ProgramServiceImpl implements ProgramService {
             loadControlClientConnection.getDatedProgram(from.getPaoIdentifier().getPaoId());
         return datedProgram == null ? null : datedProgram.getObject();
     }
+    
+    @Override
+    public LMProgramBase getProgramForPaoSafe(YukonPao from) {
+            return loadControlClientConnection.getProgramSafe(from.getPaoIdentifier().getPaoId());
+    }
 
     @Override
     public DatedObject<LMProgramBase> findDatedProgram(int programId) {
