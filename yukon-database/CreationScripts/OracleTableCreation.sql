@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/1/2011 1:40:49 PM                          */
+/* Created on:     6/2/2011 10:16:14 AM                         */
 /*==============================================================*/
 
 
@@ -3690,18 +3690,6 @@ create table DeviceWindow  (
    AlternateOpen        NUMBER                          not null,
    AlternateClose       NUMBER                          not null,
    constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
-);
-
-/*==============================================================*/
-/* Table: DigiControlEventMapping                               */
-/*==============================================================*/
-create table DigiControlEventMapping  (
-   EventId              NUMBER                          not null,
-   StartTime            DATE                            not null,
-   GroupId              NUMBER                          not null,
-   LMControlHistoryId   NUMBER,
-   DeviceCount          NUMBER,
-   constraint PK_DigiContEventMap primary key (EventId)
 );
 
 /*==============================================================*/
@@ -9306,12 +9294,25 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /* Table: ZBControlEvent                                        */
 /*==============================================================*/
 create table ZBControlEvent  (
-   ZBControlEventId     NUMBER                          not null,
    EventId              NUMBER                          not null,
-   EventTime            DATE                            not null,
+   IntegrationType      VARCHAR2(50)                    not null,
+   StartTime            DATE                            not null,
+   GroupId              NUMBER                          not null,
+   LMControlHistoryId   NUMBER,
+   constraint PK_ZBContEvent primary key (EventId)
+);
+
+/*==============================================================*/
+/* Table: ZBControlEventDevice                                  */
+/*==============================================================*/
+create table ZBControlEventDevice  (
+   EventId              NUMBER                          not null,
    DeviceId             NUMBER                          not null,
-   Action               VARCHAR2(255)                   not null,
-   constraint PK_ZBContEvent primary key (ZBControlEventId)
+   DeviceAck            char                            not null,
+   StartTime            DATE,
+   StopTime             DATE,
+   Canceled             char,
+   constraint PK_ZBContEventDev primary key (EventId, DeviceId)
 );
 
 /*==============================================================*/
@@ -10709,15 +10710,6 @@ alter table DeviceWindow
    add constraint FK_DevScWin_Dev foreign key (DeviceID)
       references DEVICE (DEVICEID);
 
-alter table DigiControlEventMapping
-   add constraint FK_DigiContEventMap_LMContHist foreign key (LMControlHistoryId)
-      references LMControlHistory (LMCtrlHistID);
-
-alter table DigiControlEventMapping
-   add constraint FK_DigiContEventMap_LMGroup foreign key (GroupId)
-      references LMGroup (DeviceID)
-      on delete cascade;
-
 alter table DigiGateway
    add constraint FK_DigiGate_ZBGate foreign key (DeviceId)
       references ZBGateway (DeviceId)
@@ -12063,12 +12055,21 @@ alter table YukonUserRole
       references YukonUser (UserID);
 
 alter table ZBControlEvent
-   add constraint FK_ZBContEvent_DigiContEventMa foreign key (EventId)
-      references DigiControlEventMapping (EventId)
-      on delete cascade;
+   add constraint FK_ZBContEvent_LMContHist foreign key (LMControlHistoryId)
+      references LMControlHistory (LMCtrlHistID);
 
 alter table ZBControlEvent
-   add constraint FK_ZBContEvent_ZBEndPoint foreign key (DeviceId)
+   add constraint FK_ZBContEvent_LMGroup foreign key (GroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
+
+alter table ZBControlEventDevice
+   add constraint FK_ZBContEventDev_ZBContEvent foreign key (EventId)
+      references ZBControlEvent (EventId)
+      on delete cascade;
+
+alter table ZBControlEventDevice
+   add constraint FK_ZBContEventDev_ZBEndPoint foreign key (DeviceId)
       references ZBEndPoint (DeviceId)
       on delete cascade;
 

@@ -132,6 +132,52 @@ ALTER TABLE CCMonitorBankList
 ADD Phase CHAR;
 /* End YUK-9797 */
 
+/* Start YUK-9855 */
+DROP TABLE DigiControlEventMapping;
+DROP TABLE ZBControlEvent;
+GO
+
+CREATE TABLE ZBControlEvent (
+   EventId              NUMERIC              NOT NULL,
+   IntegrationType      VARCHAR(50)          NOT NULL,
+   StartTime            DATETIME             NOT NULL,
+   GroupId              NUMERIC              NOT NULL,
+   LMControlHistoryId   NUMERIC              null,
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+);
+
+CREATE TABLE ZBControlEventDevice (
+   EventId              NUMERIC              NOT NULL,
+   DeviceId             NUMERIC              NOT NULL,
+   DeviceAck            CHAR                 NOT NULL,
+   StartTime            DATETIME             NULL,
+   StopTime             DATETIME             NULL,
+   Canceled             CHAR                 NULL,
+   CONSTRAINT PK_ZBContEventDev PRIMARY KEY (EventId, DeviceId)
+);
+GO
+
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_LMContHist FOREIGN KEY (LMControlHistoryId)
+        REFERENCES LMControlHistory (LMCtrlHistId);
+
+ALTER TABLE ZBControlEvent
+    ADD CONSTRAINT FK_ZBContEvent_LMGroup FOREIGN KEY (GroupId)
+        REFERENCES LMGroup (DeviceId)
+            ON DELETE CASCADE;
+
+ALTER TABLE ZBControlEventDevice
+    ADD CONSTRAINT FK_ZBContEventDev_ZBContEvent FOREIGN KEY (EventId)
+        REFERENCES ZBControlEvent (EventId)
+            ON DELETE CASCADE;
+
+ALTER TABLE ZBControlEventDevice
+    ADD CONSTRAINT FK_ZBContEventDev_ZBEndPoint FOREIGN KEY (DeviceId)
+        REFERENCES ZBEndPoint (DeviceId)
+            ON DELETE CASCADE;
+GO
+/* End YUK-9855 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
