@@ -40,20 +40,27 @@ public class MasterConfigMap implements ConfigurationSource {
     
     public void initialize() {
         log.debug("starting initialization");
-        Pattern pattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)");
+        Pattern dupCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)");
+        Pattern badCharPatter = Pattern.compile("[^\\p{Print}\n\t\r]");
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
         String line = null;
+        int lineNum = 0;
+        
         try {
-            while ((line = bufReader.readLine()) != null) {
-                // Replace all  '&nbsp;'
-                line = line.replaceAll("\u00A0", " ");
-                // Replace all non-ascii characters
-                line = line.replaceAll("[^\\p{ASCII}]", "");
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
+            while ((line = bufReader.readLine()) != null) { 
+               lineNum++;
+               Matcher badCharMatcher = badCharPatter.matcher(line);
+                
+               if (badCharMatcher.find()) {
+                    log.warn(" Line " + lineNum + ": Extended characters found: " + line);
+               }
+                // replace any space characters with a normal space
+                line = line.replaceAll("\\p{Zs}", " ");                
+                Matcher dupMatcher = dupCharPattern.matcher(line);
+                if (dupMatcher.find()) {
                     log.debug("Found line match: " + line);
-                    String key = matcher.group(1);
-                    String value = matcher.group(2).trim();
+                    String key = dupMatcher.group(1);
+                    String value = dupMatcher.group(2).trim();
                     if (configMap.containsKey(key)) {
                         log.warn("Duplicate key found while reading Master Config file: " + key);
                     }
