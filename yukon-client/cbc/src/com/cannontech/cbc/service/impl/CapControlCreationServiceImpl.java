@@ -3,6 +3,7 @@ package com.cannontech.cbc.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.VoltageRegulatorDefaults;
 import com.cannontech.capcontrol.dao.StrategyDao;
@@ -55,6 +56,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     private PaoCreationService paoCreationService;
 	
 	@Override
+	@Transactional
 	public int create(int type, String name, boolean disabled, int portId) {
         int id = -1;
         switch(type) {
@@ -169,6 +171,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
     @Override
+    @Transactional
 	public void createArea(Area area) {
 		areaDao.add(area);
 		
@@ -177,6 +180,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
     public void createSpecialArea(SpecialArea specialArea) {
         areaDao.addSpecialArea(specialArea);
         
@@ -185,6 +189,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	@Override
+	@Transactional
 	public void createSubstation(Substation substation) {
 		substationDao.add(substation);
 
@@ -193,16 +198,19 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
     public int createPAOSchedule(String name, boolean disabled) {
         return paoScheduleDao.add(name, disabled);
     }
 	
 	@Override
+	@Transactional
     public int createStrategy(String name) {
         return strategyDao.add(name);
     }
 	
 	@Override
+	@Transactional
 	public boolean assignSubstation(int substationId, int areaId) {
 		boolean ret = substationDao.assignSubstation(areaId, substationId);
 		
@@ -212,6 +220,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		}
 		return ret;
 	}
+
 	@Override
 	public boolean assignSubstation(int substationId, String areaName) { 
 		int id = getPaoIdByName(areaName);
@@ -221,12 +230,15 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		
 		return assignSubstation(substationId, id);
 	}
+
 	@Override
+	@Transactional
 	public boolean unassignSubstation(int substationId) {
 		return substationDao.unassignSubstation(substationId);
 	}
 	
 	@Override
+	@Transactional
 	public void createCapbank(Capbank bank) {
 		capbankDao.add(bank);
 		
@@ -234,6 +246,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean assignCapbank(int bankId, int feederId) {
 		boolean ret = capbankDao.assignCapbank(feederId, bankId);
 		
@@ -245,6 +258,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		return ret;
 		
 	}
+
 	@Override
 	public boolean assignCapbank(int bankId, String feederName) {
 		int id = getPaoIdByName(feederName);
@@ -254,12 +268,15 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		
 		return assignCapbank(bankId, id);
 	}
+
 	@Override
+	@Transactional
 	public boolean unassignCapbank(int capbankId) {
 		return capbankDao.unassignCapbank(capbankId);
 	}
 
 	@Override
+	@Transactional
 	public void createFeeder(Feeder feeder) {
 		feederDao.add(feeder);
 		
@@ -267,6 +284,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean assignFeeder(int feederId, int subBusId) {
 		boolean ret = feederDao.assignFeeder(subBusId, feederId);
 		if (ret) {
@@ -288,11 +306,13 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
+	@Transactional
 	public boolean unassignFeeder(int feederId) {
 		return feederDao.unassignFeeder(feederId);
 	}
 	
 	@Override
+	@Transactional
 	public void createSubstationBus(SubstationBus subBus) {
 		substationBusDao.add(subBus);
 		
@@ -300,6 +320,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean assignSubstationBus(int subBusId, int substationId) {
 		boolean ret = substationBusDao.assignSubstationBus(substationId, subBusId);
 		
@@ -322,11 +343,13 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
+	@Transactional
 	public boolean unassignSubstationBus(int subBusId) {
 		return substationBusDao.unassignSubstationBus(subBusId);
 	}
 	
 	@Override
+	@Transactional
 	public void createController(CapbankController controller) {
 		capbankControllerDao.add(controller);
 
@@ -335,6 +358,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean createControllerFromTemplate(String template, CapbankController controller) {
 		//Dao must set type in controller.
 		boolean success = capbankControllerDao.createControllerFromTemplate(template, controller);
@@ -348,6 +372,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean assignController(CapbankController controller, int capbankId) {
 		boolean ret = capbankControllerDao.assignController(capbankId, controller.getId());
 		PaoType deviceType = controller.getType();
@@ -371,6 +396,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+	@Transactional
 	public boolean unassignController(int controllerId) {
 		return capbankControllerDao.unassignController(controllerId);
 	}

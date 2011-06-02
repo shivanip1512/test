@@ -1,64 +1,60 @@
-/**
- * CapacitorBank.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis 1.4 Dec 28, 2007 (09:53:13 CST) WSDL2Java emitter.
- */
-
 package com.cannontech.multispeak.deploy.service;
 
+import java.lang.reflect.Array;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axis.description.ElementDesc;
+import org.apache.axis.description.TypeDesc;
+import org.apache.axis.encoding.Deserializer;
+import org.apache.axis.encoding.Serializer;
+import org.apache.axis.encoding.ser.BeanDeserializer;
+import org.apache.axis.encoding.ser.BeanSerializer;
+
 public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.MspBankObject  implements java.io.Serializable {
-    private com.cannontech.multispeak.deploy.service.ConnectionCode connectionCd;
-
-    private com.cannontech.multispeak.deploy.service.SwType swType;
-
-    private com.cannontech.multispeak.deploy.service.SwStatus swStatus;
-
-    private java.lang.Float swOn;
-
-    private java.lang.Float swOff;
-
-    private com.cannontech.multispeak.deploy.service.ObjectRef cntrCkt;
-
-    private java.lang.Float bankKvar;
-
-    private java.lang.Float volts;
-
-    private com.cannontech.multispeak.deploy.service.Capacitor[] capacitorList;
+    private ConnectionCode connectionCd;
+    private SwType swType;
+    private SwStatus swStatus;
+    private Float swOn;
+    private Float swOff;
+    private ObjectRef cntrCkt;
+    private Float bankKvar;
+    private Float volts;
+    private Capacitor[] capacitorList;
 
     public CapacitorBank() {
     }
 
     public CapacitorBank(
-           java.lang.String objectID,
-           com.cannontech.multispeak.deploy.service.Action verb,
-           java.lang.String errorString,
-           java.lang.String replaceID,
-           java.lang.String utility,
-           com.cannontech.multispeak.deploy.service.Extensions extensions,
-           java.lang.String comments,
-           com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
-           com.cannontech.multispeak.deploy.service.PointType mapLocation,
-           java.lang.String gridLocation,
-           java.lang.Float rotation,
-           java.lang.String facilityID,
-           com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
-           com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
-           java.lang.String sectionID,
-           com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
-           com.cannontech.multispeak.deploy.service.MspLoadGroup load,
-           com.cannontech.multispeak.deploy.service.ConnectionCode connectionCd,
-           com.cannontech.multispeak.deploy.service.SwType swType,
-           com.cannontech.multispeak.deploy.service.SwStatus swStatus,
-           java.lang.Float swOn,
-           java.lang.Float swOff,
-           com.cannontech.multispeak.deploy.service.ObjectRef cntrCkt,
-           java.lang.Float bankKvar,
-           java.lang.Float volts,
-           com.cannontech.multispeak.deploy.service.Capacitor[] capacitorList) {
+           String objectID,
+           Action verb,
+           String errorString,
+           String replaceID,
+           String utility,
+           Extensions extensions,
+           String comments,
+           ExtensionsItem[] extensionsList,
+           PointType mapLocation,
+           String gridLocation,
+           Float rotation,
+           String facilityID,
+           GraphicSymbol[] graphicSymbol,
+           GenericAnnotationFeature[] annotationList,
+           NodeIdentifier toNodeID,
+           NodeIdentifier fromNodeID,
+           ObjectRef parentSectionID,
+           String sectionID,
+           PhaseCd phaseCode,
+           MspLoadGroup load,
+           ConnectionCode connectionCd,
+           SwType swType,
+           SwStatus swStatus,
+           Float swOn,
+           Float swOff,
+           ObjectRef cntrCkt,
+           Float bankKvar,
+           Float volts,
+           Capacitor[] capacitorList) {
         super(
             objectID,
             verb,
@@ -97,7 +93,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return connectionCd
      */
-    public com.cannontech.multispeak.deploy.service.ConnectionCode getConnectionCd() {
+    public ConnectionCode getConnectionCd() {
         return connectionCd;
     }
 
@@ -107,7 +103,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param connectionCd
      */
-    public void setConnectionCd(com.cannontech.multispeak.deploy.service.ConnectionCode connectionCd) {
+    public void setConnectionCd(ConnectionCode connectionCd) {
         this.connectionCd = connectionCd;
     }
 
@@ -117,7 +113,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return swType
      */
-    public com.cannontech.multispeak.deploy.service.SwType getSwType() {
+    public SwType getSwType() {
         return swType;
     }
 
@@ -127,7 +123,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param swType
      */
-    public void setSwType(com.cannontech.multispeak.deploy.service.SwType swType) {
+    public void setSwType(SwType swType) {
         this.swType = swType;
     }
 
@@ -137,7 +133,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return swStatus
      */
-    public com.cannontech.multispeak.deploy.service.SwStatus getSwStatus() {
+    public SwStatus getSwStatus() {
         return swStatus;
     }
 
@@ -147,7 +143,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param swStatus
      */
-    public void setSwStatus(com.cannontech.multispeak.deploy.service.SwStatus swStatus) {
+    public void setSwStatus(SwStatus swStatus) {
         this.swStatus = swStatus;
     }
 
@@ -157,7 +153,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return swOn
      */
-    public java.lang.Float getSwOn() {
+    public Float getSwOn() {
         return swOn;
     }
 
@@ -167,7 +163,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param swOn
      */
-    public void setSwOn(java.lang.Float swOn) {
+    public void setSwOn(Float swOn) {
         this.swOn = swOn;
     }
 
@@ -177,7 +173,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return swOff
      */
-    public java.lang.Float getSwOff() {
+    public Float getSwOff() {
         return swOff;
     }
 
@@ -187,7 +183,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param swOff
      */
-    public void setSwOff(java.lang.Float swOff) {
+    public void setSwOff(Float swOff) {
         this.swOff = swOff;
     }
 
@@ -197,7 +193,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return cntrCkt
      */
-    public com.cannontech.multispeak.deploy.service.ObjectRef getCntrCkt() {
+    public ObjectRef getCntrCkt() {
         return cntrCkt;
     }
 
@@ -207,7 +203,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param cntrCkt
      */
-    public void setCntrCkt(com.cannontech.multispeak.deploy.service.ObjectRef cntrCkt) {
+    public void setCntrCkt(ObjectRef cntrCkt) {
         this.cntrCkt = cntrCkt;
     }
 
@@ -217,7 +213,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return bankKvar
      */
-    public java.lang.Float getBankKvar() {
+    public Float getBankKvar() {
         return bankKvar;
     }
 
@@ -227,7 +223,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param bankKvar
      */
-    public void setBankKvar(java.lang.Float bankKvar) {
+    public void setBankKvar(Float bankKvar) {
         this.bankKvar = bankKvar;
     }
 
@@ -237,7 +233,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return volts
      */
-    public java.lang.Float getVolts() {
+    public Float getVolts() {
         return volts;
     }
 
@@ -247,7 +243,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param volts
      */
-    public void setVolts(java.lang.Float volts) {
+    public void setVolts(Float volts) {
         this.volts = volts;
     }
 
@@ -257,7 +253,7 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @return capacitorList
      */
-    public com.cannontech.multispeak.deploy.service.Capacitor[] getCapacitorList() {
+    public Capacitor[] getCapacitorList() {
         return capacitorList;
     }
 
@@ -267,12 +263,12 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
      * 
      * @param capacitorList
      */
-    public void setCapacitorList(com.cannontech.multispeak.deploy.service.Capacitor[] capacitorList) {
+    public void setCapacitorList(Capacitor[] capacitorList) {
         this.capacitorList = capacitorList;
     }
 
-    private java.lang.Object __equalsCalc = null;
-    public synchronized boolean equals(java.lang.Object obj) {
+    private Object __equalsCalc = null;
+    public synchronized boolean equals(Object obj) {
         if (!(obj instanceof CapacitorBank)) return false;
         CapacitorBank other = (CapacitorBank) obj;
         if (obj == null) return false;
@@ -347,9 +343,9 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
         }
         if (getCapacitorList() != null) {
             for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getCapacitorList());
+                 i<Array.getLength(getCapacitorList());
                  i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getCapacitorList(), i);
+                java.lang.Object obj = Array.get(getCapacitorList(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -361,105 +357,105 @@ public class CapacitorBank  extends com.cannontech.multispeak.deploy.service.Msp
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(CapacitorBank.class, true);
+    private static TypeDesc typeDesc =
+        new TypeDesc(CapacitorBank.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitorBank"));
-        org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        typeDesc.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "capacitorBank"));
+        ElementDesc elemField = new ElementDesc();
         elemField.setFieldName("connectionCd");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "connectionCd"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "connectionCode"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "connectionCd"));
+        elemField.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "connectionCode"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("swType");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swType"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swType"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "swType"));
+        elemField.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "swType"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("swStatus");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swStatus"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swStatus"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "swStatus"));
+        elemField.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "swStatus"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("swOn");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swOn"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "swOn"));
+        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("swOff");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "swOff"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "swOff"));
+        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("cntrCkt");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cntrCkt"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "cntrCkt"));
+        elemField.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "objectRef"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("bankKvar");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "bankKvar"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "bankKvar"));
+        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("volts");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "volts"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "volts"));
+        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
+        elemField = new ElementDesc();
         elemField.setFieldName("capacitorList");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitorList"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitor"));
+        elemField.setXmlName(new QName("http://www.multispeak.org/Version_3.0", "capacitorList"));
+        elemField.setXmlType(new QName("http://www.multispeak.org/Version_3.0", "capacitor"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitor"));
+        elemField.setItemQName(new QName("http://www.multispeak.org/Version_3.0", "capacitor"));
         typeDesc.addFieldDesc(elemField);
     }
 
     /**
      * Return type metadata object
      */
-    public static org.apache.axis.description.TypeDesc getTypeDesc() {
+    public static TypeDesc getTypeDesc() {
         return typeDesc;
     }
 
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
+    public static Serializer getSerializer(
+           String mechType, 
+           Class _javaType,  
+           QName _xmlType) {
         return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
+          new  BeanSerializer(
             _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
+    public static Deserializer getDeserializer(
+           String mechType, 
+           Class _javaType,  
+           QName _xmlType) {
         return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
+          new  BeanDeserializer(
             _javaType, _xmlType, typeDesc);
     }
 

@@ -24,7 +24,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
@@ -164,6 +166,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private RolePropertyDao rolePropertyDao;
     private CBCSelectionLists selectionLists;
     private NextValueHelper nextValueHelper;
+    private TransactionTemplate transactionTemplate;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
     private ControlAlgorithm currentControlAlgorithm;
@@ -962,38 +965,44 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
      * Creates a cap control object, strategy, or schedule.
      * @Return String the url to go when done.
      */
-    @Transactional
     public String create() {
         FacesMessage facesMsg = new FacesMessage();
         FacesContext facesContext = FacesContext.getCurrentInstance();
         
-        CBCWizardModel wizard = (CBCWizardModel) getWizData();
-        String name = wizard.getName();
-        if(org.apache.commons.lang.StringUtils.isBlank(name)) {
+        final CBCWizardModel wizard = (CBCWizardModel) getWizData();
+        final String bankName = wizard.getName();
+        if(org.apache.commons.lang.StringUtils.isBlank(bankName)) {
             facesMsg.setDetail("A name must be specified for this object.");
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             facesContext.addMessage("cti_db_add", facesMsg);
             return "";
         }
-        int type = wizard.getSelectedType();
-        boolean disabled = wizard.getDisabled();
-        int portId = wizard.getPortID();
+        final int type = wizard.getSelectedType();
+        final boolean disabled = wizard.getDisabled();
+        final int portId = wizard.getPortID();
+        final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK 
+                && wizard.isCreateNested());
 
         try {
-            
-            if(type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested()) {
-                /* Create the cbc, then the cap bank, then assign cbc to cap bank */
-                CBCWizardModel cbcWizard = wizard.getNestedWizard();
-                int cbcType = cbcWizard.getSelectedType();
-                boolean cbcDisabled = cbcWizard.getDisabled();
-                String cbcName = cbcWizard.getName();
-                int cbcPortId = cbcWizard.getPortID();
-                int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
-                itemId = capControlCreationService.create(type, name, disabled, portId);
-                capbankControllerDao.assignController(itemId, controllerId);
-            } else {
-                itemId = capControlCreationService.create(type, name, disabled, portId);
-            }
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    if (isCapBankAndNested) {
+                        /* Create the cbc, then the cap bank, then assign cbc to cap bank */
+                        CBCWizardModel cbcWizard = wizard.getNestedWizard();
+                        int cbcType = cbcWizard.getSelectedType();
+                        boolean cbcDisabled = cbcWizard.getDisabled();
+                        String cbcName = cbcWizard.getName();
+                        int cbcPortId = cbcWizard.getPortID();
+                        int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
+                        int tempItemId = capControlCreationService.create(type, bankName, disabled, portId);
+                        capbankControllerDao.assignController(tempItemId, controllerId);
+                        itemId = tempItemId;
+                    } else {
+                        itemId = capControlCreationService.create(type, bankName, disabled, portId);
+                    }
+                }
+            });
             
             /* Redirect to the editor after creation */
             facesMsg.setDetail("Database add was SUCCESSFUL");
@@ -1006,9 +1015,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             /* Does the actually redirection to the editor url */
             JSFUtil.redirect(url);
             
-        } catch (DataIntegrityViolationException e) { //TODO do something smarter with this
+        }catch (DataIntegrityViolationException e) { //TODO do something smarter with this
             facesMsg.setDetail(e.getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+
+            if (isCapBankAndNested) {
+                String cbcName = wizard.getNestedWizard().getName();
+                if (bankName.equalsIgnoreCase(cbcName)) {
+                    facesMsg.setDetail("ERROR - Cannot create new Capacitor Bank and CBC with the same name. " + e.getMessage());
+                }
+            }
+
             return "";
         }catch (Exception e) {
             facesMsg.setDetail(e.getCause().getMessage());
@@ -2134,5 +2151,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+    
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }
