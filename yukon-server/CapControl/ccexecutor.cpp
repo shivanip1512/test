@@ -1913,19 +1913,12 @@ void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilM
             }
             else
             {
-                pilMessages.push_back(createPorterRequestMsg(controlID,     timeSyncCommand, _command->getUser()));
+                pilMessages.push_back(createPorterRequestMsg(controlID, timeSyncCommand, _command->getUser()));
             }
         }
     }
 }
 
-/** 
- * Step 1 - Get Store.
- * Step 2 - Lock Store.
- * Step 3 - ???
- * Step 4 - PROFIT!! 
- * Step 5 - Shower. 
- */
 void CtiCCCommandExecutor::SendTimeSync()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
