@@ -123,6 +123,15 @@ ADD Phase CHAR;
 /* End YUK-9797 */
 
 /* Start YUK-9855 */
+ALTER TABLE DigiControlEventMapping
+DROP CONSTRAINT FK_DigiContEventMap_LMContHist;
+ALTER TABLE DigiControlEventMapping
+DROP CONSTRAINT FK_DigiContEventMap_LMGroup;
+ALTER TABLE ZBControlEvent
+DROP CONSTRAINT FK_ZBContEvent_DigiContEventMa;
+ALTER TABLE ZBControlEvent
+DROP CONSTRAINT FK_ZBContEvent_ZBEndPoint;
+
 DROP TABLE DigiControlEventMapping;
 DROP TABLE ZBControlEvent;
 
