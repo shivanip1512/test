@@ -183,6 +183,44 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -1015;
 /* End YUK-9886 */
 
+/* Start YUK-9878 */
+UPDATE Point 
+SET PointName = 'Capacitor Bank State' 
+WHERE PointName = 'Capacitor bank state'; 
+UPDATE Point 
+SET PointName = 'Total Op Count' 
+WHERE PointName = 'Total op count'; 
+UPDATE Point 
+SET PointName = 'OV Op Count' 
+WHERE PointName = 'OV op count'; 
+UPDATE Point 
+SET PointName = 'UV Op Count' 
+WHERE PointName = 'UV op count'; 
+UPDATE Point 
+SET PointName = 'OV Threshold' 
+WHERE PointName = 'Control OV Set Point'; 
+
+UPDATE Point 
+SET PointName = 'UV Threshold' 
+WHERE PointName = 'Control UV Set Point'; 
+UPDATE Point 
+SET PointName = 'Emergency OV Threshold'
+WHERE PointName = 'Emergency OV Set Point'; 
+UPDATE Point 
+SET PointName = 'Emergency UV Threshold' 
+WHERE PointName = 'Emergency UV Set Point'; 
+UPDATE Point 
+SET PointName = 'Comms Loss Time' 
+WHERE PointName = 'Com Loss Time';
+UPDATE Point 
+SET PointName = 'Comms Retry Delay Time' 
+WHERE PointName = 'Com Retry Delay Time'; 
+
+UPDATE Point 
+SET PointName = 'Neutral Current Alarm Threshold' 
+WHERE PointName = 'Neutral Current Alarm Set Point';
+/* End YUK-9878 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
