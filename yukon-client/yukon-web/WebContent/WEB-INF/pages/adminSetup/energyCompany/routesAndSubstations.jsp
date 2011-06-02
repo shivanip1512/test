@@ -32,21 +32,27 @@
                                 <table class="compactResultsTable">
                                     <tr>
                                         <th><i:inline key=".route"/></th>
-                                        <th class="removeColumn"><i:inline key=".remove"/></th>
+                                        <c:if test="${not isSingleEnergyCompany}">
+                                            <th class="removeColumn"><i:inline key=".remove"/></th>
+                                        </c:if>
                                     </tr>
                                     
                                     <c:forEach items="${ecRoutes}" var="route" >
                                         <tr>
                                             <td><spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody></td>
-                                            <c:if test="${not route.value.deletable}">
-                                            <td class="removeColumn"><i:inline key="${route.value}" /></td>
-                                            </c:if>
-                                            <c:if test="${route.value.deletable}">
-                                            <td class="removeColumn">
-                                                <div class="dib">
-                                                    <input type="submit" class="pointer icon icon_remove" name="removeRoute" value="${route.key.yukonID}">
-                                                </div>
-                                            </td>
+                                            <c:if test="${not isSingleEnergyCompany}">
+                                                <c:if test="${not route.value.deletable}">
+                                                    <td class="removeColumn">
+                                                        <i:inline key="${route.value}" />
+                                                    </td>
+                                                </c:if>
+                                                <c:if test="${route.value.deletable}">
+                                                    <td class="removeColumn">
+                                                        <div class="dib">
+                                                            <input type="submit" class="pointer icon icon_remove" name="removeRoute" value="${route.key.yukonID}">
+                                                        </div>
+                                                    </td>
+                                                </c:if>
                                             </c:if>
                                         </tr>
                                     </c:forEach>

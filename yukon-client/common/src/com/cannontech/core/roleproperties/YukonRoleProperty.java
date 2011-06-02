@@ -385,7 +385,7 @@ public enum YukonRoleProperty {
     CUSTOMER_GROUP_IDS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.CUSTOMER_GROUP_IDS, stringType()),
     OPERATOR_GROUP_IDS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPERATOR_GROUP_IDS, stringType()),
     TRACK_HARDWARE_ADDRESSING(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, booleanType()),
-    SINGLE_ENERGY_COMPANY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SINGLE_ENERGY_COMPANY, stringType()),
+    SINGLE_ENERGY_COMPANY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SINGLE_ENERGY_COMPANY, booleanType()),
     OPTIONAL_PRODUCT_DEV(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, stringType()),
     DEFAULT_TEMPERATURE_UNIT(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT, stringType()),
     METER_MCT_BASE_DESIGNATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.METER_MCT_BASE_DESIGNATION, stringType()),

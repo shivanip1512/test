@@ -13,6 +13,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -63,6 +64,7 @@ public class RouteAndSubstationController {
         }
     }
 
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private EnergyCompanyService energyCompanyService;
     private GeneralInfoService generalInfoService;
     private PaoDao paoDao;
@@ -221,6 +223,7 @@ public class RouteAndSubstationController {
             routeToReason.put(childDefault, Reason.CHILD_DEFAULT);
         }
         
+        modelMap.addAttribute("isSingleEnergyCompany", energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SINGLE_ENERGY_COMPANY, energyCompany));
         modelMap.addAttribute("ecRoutes", routeToReason);
 
         List<LiteSubstation> inheritedSubstations = getInheritedSubstations(energyCompany);
@@ -338,6 +341,11 @@ public class RouteAndSubstationController {
     }
 
     // DI Setters
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
     @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
