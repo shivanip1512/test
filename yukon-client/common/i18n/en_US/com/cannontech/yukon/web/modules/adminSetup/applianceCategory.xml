@@ -23,8 +23,8 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.PROGRAMS.virtualProgramName">Virtual Program {0}</entry>
 
 <!-- Create Appliance Category -->
-<entry key="yukon.web.modules.adminSetup.applianceCategory.CREATE.pageName">Appliance Category</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.CREATE.pageDescription">Create</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.CREATE.pageName">Create Appliance Category</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.CREATE.contextualPageName">Create</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.CREATE.detailsDialogTitle">Create Appliance Category</entry>
 
 

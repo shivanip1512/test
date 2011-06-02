@@ -59,6 +59,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -96,6 +97,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private YukonUserDao yukonUserDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private ConfigurationSource configurationSource;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     @Override
     @Transactional
@@ -199,7 +201,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)
-                && energyCompany.isDefault()) {
+                && yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
             return false;
         }
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
@@ -237,7 +239,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        if (energyCompany.isDefault()) {
+        if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
             return false;
         }
 
@@ -281,7 +283,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-            if (energyCompany.isDefault()) {
+            if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }
         }
@@ -327,7 +329,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
         String energyCompanyName = energyCompany.getName();
 
-        if (energyCompany.isDefault()) {
+        if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
 
@@ -831,5 +833,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }

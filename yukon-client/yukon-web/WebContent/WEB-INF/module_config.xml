@@ -1397,7 +1397,7 @@
                                         <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
-                                            <page name="schedules.EDIT" type="DETAIL">
+                                            <page name="schedules.EDIT" type="DETAIL_CHILD">
                                                 <menu>energyCompanySetup|home</menu>
                                                 <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
                                                 <labelArgument>${typeStr}</labelArgument>

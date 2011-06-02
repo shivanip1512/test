@@ -21,6 +21,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -44,6 +45,7 @@ public class LiteStarsEnergyCompanyFactory {
 	private EnergyCompanyDao energyCompanyDao;
 	private EnergyCompanyService energyCompanyService;
 	private RoleDao roleDao;
+	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -75,6 +77,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setEnergyCompanyDao(energyCompanyDao);
         energyCompany.setEnergyCompanyService(energyCompanyService);
         energyCompany.setRoleDao(roleDao);
+        energyCompany.setYukonEnergyCompanyService(yukonEnergyCompanyService);
 
         energyCompany.initialize();
 
@@ -213,5 +216,9 @@ public class LiteStarsEnergyCompanyFactory {
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
-    
+
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
 }

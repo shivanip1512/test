@@ -238,7 +238,7 @@ public class ApplianceCategoryController {
 
         ApplianceCategory applianceCategory = new ApplianceCategory();
         applianceCategory.setEnergyCompanyId(ecId);
-        return edit(PageEditMode.EDIT, model, applianceCategory, context,
+        return edit(PageEditMode.CREATE, model, applianceCategory, context,
                     ecInfo.getEnergyCompanyId());
     }
 

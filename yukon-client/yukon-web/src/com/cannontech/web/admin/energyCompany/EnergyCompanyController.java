@@ -76,7 +76,7 @@ public class EnergyCompanyController {
                 Iterator<YukonEnergyCompany> iter = companies.iterator();
                 while (iter.hasNext()) {
                     YukonEnergyCompany ec = iter.next();
-                    if (ec.isDefault()) {
+                    if (yukonEnergyCompanyService.isDefaultEnergyCompany(ec)) {
                         iter.remove();
                         break;
                     }

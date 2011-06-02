@@ -323,7 +323,7 @@
         </c:if>
     </cti:displayForPageEditModes>
 
-    <cti:displayForPageEditModes modes="EDIT">
+    <cti:displayForPageEditModes modes="CREATE,EDIT">
         <cti:button key="save" name="save" type="submit"/>
         <c:if test="${empty applianceCategoryId}">
             <cti:url var="backUrl" value="list">

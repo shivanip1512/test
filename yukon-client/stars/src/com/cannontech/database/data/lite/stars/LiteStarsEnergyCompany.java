@@ -72,6 +72,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -112,7 +113,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private EnergyCompanyDao energyCompanyDao;
     private EnergyCompanyService energyCompanyService;
     private RoleDao roleDao;
-    
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
+
 	private final static long serialVersionUID = 1L;
 	
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
@@ -331,10 +333,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         routeIds = null;
     }
 
-    public boolean isDefault() {
-        return getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
-    }
-
     /**
      *  This method clears out both of the cache objects held by the appliance categories
      */
@@ -482,7 +480,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         if (getParent() != null && useInherited)
             return getParent().getYukonSelectionList(listName, useInherited, useDefault);
 
-        if (useDefault && !isDefault()) {
+        if (useDefault && !yukonEnergyCompanyService.isDefaultEnergyCompany(this)) {
             YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList( listName, false, false );
             if (dftList != null) {
                 // If the list is user updatable, returns a copy of the default list; otherwise returns the default list itself
@@ -1951,5 +1949,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
-    
+
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
 }

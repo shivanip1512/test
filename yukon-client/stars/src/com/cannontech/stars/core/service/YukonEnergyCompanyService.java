@@ -30,4 +30,6 @@ public interface YukonEnergyCompanyService {
      * Returns a list of all energy companies
      */
     public List<YukonEnergyCompany> getAllEnergyCompanies();
+
+    public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany);
 }

@@ -192,14 +192,18 @@ public interface ECMappingDao {
     public void addECToResidentialGroupMapping(int ecId, List<Integer> groupIds);
 
     /**
-     * Removes a login group from the operator login group list for an energy company
+     * Removes a login group from the operator login group list for an energy company.
+     * @throws InUseException If the mapping cannot be deleted because the energy company has logins
+     *             associated with the given group.
      */
-    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException ;
-    
+    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException;
+
     /**
      * Removes a login group from the customer login group list for an energy company
+     * @throws InUseException If the mapping cannot be deleted because the energy company has logins
+     *             associated with the given group.
      */
-    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException ;
+    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException;
 
     /**
      * Returns the operator login of an energy company it's parent energy company uses to login to it.

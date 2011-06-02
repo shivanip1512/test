@@ -43,22 +43,23 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyNotUpdated">There was a problem updating the Service Company.</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyDeleted">Successfully deleted the Service Company.</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyNotDeleted">There was a problem deleting the Service Company.</entry>
-    
-    
-    <!-- home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageName">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageDescription">Service Companies</entry>
 
-    <!-- home.jsp -->
+    <!-- Standard Page Messages -->
     <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageName">Service Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.list.pageDescription">{0}</entry>
+
     <entry key="yukon.web.modules.adminSetup.serviceCompany.CREATE.pageName">Create Service Company</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageName">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.CREATE.contextualPageName">Create</entry>
+
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageName">Edit Service Company</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageName">Service Company {0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageName">Service Company</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageDescription">{0}</entry>
+
     <entry key="yukon.web.modules.adminSetup.serviceCompany.infoContainer">Service Companies</entry>
-    
+
     <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
 
 </properties>

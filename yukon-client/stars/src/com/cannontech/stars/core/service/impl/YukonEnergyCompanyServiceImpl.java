@@ -52,7 +52,12 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         List<YukonEnergyCompany> energyCompanies = Lists.<YukonEnergyCompany>newArrayList(starsDatabaseCache.getAllEnergyCompanies());
         return energyCompanies;
     }
-    
+
+    @Override
+    public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
+        return energyCompany.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+    }
+
     // DI Setters
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
