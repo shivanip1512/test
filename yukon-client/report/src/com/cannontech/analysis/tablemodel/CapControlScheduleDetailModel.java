@@ -120,7 +120,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select ps.schedulename schedulename, yp.paoname substationbus, yp1.paoname feeder, psa.command outgoingcommand, ");
+        StringBuffer sql = new StringBuffer ("select distinct ps.schedulename schedulename, yp.paoname substationbus, yp1.paoname feeder, psa.command outgoingcommand, ");
         sql.append("ps.nextruntime, ps.lastruntime lastruntime, ps.nextruntime, ps.intervalrate interval " );
         sql.append("from paoscheduleassignment psa  ");
         sql.append("join yukonpaobject yp on psa.paoid = yp.paobjectid  ");
