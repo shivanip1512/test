@@ -174,6 +174,15 @@ ALTER TABLE ZBControlEventDevice
             ON DELETE CASCADE;
 /* End YUK-9855 */
 
+/* Start YUK-9886 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -1015; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -1015; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -1015;
+/* End YUK-9886 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
