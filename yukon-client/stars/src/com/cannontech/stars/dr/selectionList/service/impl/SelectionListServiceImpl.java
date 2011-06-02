@@ -140,7 +140,7 @@ public class SelectionListServiceImpl implements SelectionListService {
             return false;
         }
         try {
-            int optionalProductDev = Integer.parseInt(optionalProductDevStr);
+            int optionalProductDev = Integer.parseInt(optionalProductDevStr, 16);
             return (optionalProductDev & ECUtils.RIGHT_SHOW_ADDTL_PROTOCOLS) != 0;
         } catch (NumberFormatException nfe) {
         }
