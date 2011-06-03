@@ -77,7 +77,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void  setScanRateSeconds( const ULONG mySeconds );
 
       bool isConnected( void );
-      bool needConnection();
+      bool needsConnection();
       CtiFDRTelegyr & setConnected( bool conn );
 
       string getPath( void );

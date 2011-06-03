@@ -161,7 +161,7 @@ bool CtiFDRTelegyr::contact( int &status )
 
    connect( index, status );
 
-   if( !needConnection() )
+   if( isConnected() )
    {
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -172,7 +172,7 @@ bool CtiFDRTelegyr::contact( int &status )
       deleteGroups();
    }
 
-   return( !needConnection() );
+   return( isConnected() );
 }
 
 //=================================================================================================================================
@@ -230,7 +230,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
       _numberOfConnections++;
    }
 
-   return !needConnection();
+   return isConnected();
 }
 
 //=================================================================================================================================
@@ -241,7 +241,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
 
 void CtiFDRTelegyr::deleteGroups( void )
 {
-   if( !needConnection() )
+   if( isConnected() )
    {
       if( 0 != _controlCenter.getTelegyrGroupList().size() )
       {
@@ -382,7 +382,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
          CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
 
-         if( !needConnection() )
+         if( isConnected() )
          {
             //peek at the input-queue and see if anybody wrote to us from home...
             int reason = -1;
@@ -659,7 +659,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
                waiter = 0;
 
-               if( needConnection() )
+               if( !isConnected() )
                {
                   sendLinkState( FDR_NOT_CONNECTED );
                }
@@ -820,7 +820,7 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
          }
 
          //do the api-registration of the group...
-         if( !needConnection() )
+         if( isConnected() )
          {
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
@@ -1103,7 +1103,7 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
    loadTranslationLists();
 
    //If we are connected, send call to delete groups, triggering a new build and register.
-   if (!needConnection())
+   if (isConnected())
    {
       deleteGroups();
       _reloadTimer = CtiTime::now();
@@ -1952,7 +1952,7 @@ bool CtiFDRTelegyr::isConnected()
 //=================================================================================================================================
 //=================================================================================================================================
 
-bool CtiFDRTelegyr::needConnection( void )
+bool CtiFDRTelegyr::needsConnection( void )
 {
    if( !_connected )
    {
@@ -2261,7 +2261,7 @@ void CtiFDRTelegyr::halt( void )
    int               more;
    int               result[256];
 
-   if( !needConnection() )
+   if( isConnected() )
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);

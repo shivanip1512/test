@@ -120,7 +120,7 @@ void CtiFDRSimple::threadFunctionGetData()
       CtiFDRPointList &aList = getReceiveFromList();
       CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
 
-      if(needConnection())
+      if(needsConnection())
       {
         if (reconnectLoopCount > loopsBeforeReconnect)
         {

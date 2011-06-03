@@ -69,7 +69,7 @@ protected:
   bool connect();
   bool testConnection();
   void setConnected( bool conn );
-  bool needConnection();
+  bool needsConnection();
   bool isConnected() { return _connected; };
 
   virtual void processNewPoint(CtiFDRPointSPtr ctiPoint);

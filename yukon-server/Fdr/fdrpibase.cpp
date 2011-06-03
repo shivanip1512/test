@@ -228,7 +228,7 @@ bool CtiFDRPiBase::trySecondaryConnection()
   }
 }
 
-bool CtiFDRPiBase::needConnection()
+bool CtiFDRPiBase::needsConnection()
 {
   return !isConnected() || (_currentNodeIndex != 0);
 }

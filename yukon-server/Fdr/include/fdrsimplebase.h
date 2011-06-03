@@ -39,7 +39,7 @@ protected:
   virtual void startup() {};
   virtual bool connect() = 0;
   virtual void setConnected( bool conn );
-  virtual bool needConnection() {return !_connected;};
+  virtual bool needsConnection() {return !_connected;};
   virtual bool isConnected() {return _connected;};
   virtual bool testConnection() = 0;
   virtual void shutdown() {};
