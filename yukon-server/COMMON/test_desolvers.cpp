@@ -128,6 +128,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPECBC6510]              = "CBC 6510";
     type_lookups[TYPECBC7010]              = "CBC 7010";
     type_lookups[TYPECBC7020]              = "CBC 7020";
+    type_lookups[TYPECBC8020]              = "CBC 8020";
     type_lookups[TYPECBCDNP]               = "CBC DNP";
     type_lookups[TYPECAPBANK]              = "CAP BANK";
 

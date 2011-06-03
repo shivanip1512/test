@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   slctdev
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include "dev_710.h"
 #include "dev_base.h"
@@ -21,6 +6,7 @@
 #include "dev_cbc6510.h"
 #include "dev_cbc.h"
 #include "dev_cbc7020.h"
+#include "dev_cbc8020.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
 #include "dev_welco.h"
@@ -279,6 +265,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPECBC6510:               NewDevice = CTIDBG_new Cbc6510Device;    break;
 
         case TYPECBC7020:               NewDevice = CTIDBG_new Cbc7020Device;     break;
+
+        case TYPECBC8020:               NewDevice = CTIDBG_new Cbc8020Device;     break;
 
         case TYPECBC7010:
         case TYPEFISHERPCBC:

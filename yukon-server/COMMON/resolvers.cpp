@@ -310,6 +310,8 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("cbc 7023",           TYPECBC7020));
     device_types.insert(make_pair("cbc 7024",           TYPECBC7020));
     device_types.insert(make_pair("cbc 7030",           TYPECBC7020));
+    device_types.insert(make_pair("cbc 8020",           TYPECBC8020));
+    device_types.insert(make_pair("cbc 8024",           TYPECBC8020));
     device_types.insert(make_pair("cbc dnp",            TYPECBCDNP));
     device_types.insert(make_pair("cbc expresscom",     TYPEEXPRESSCOMCBC));
     device_types.insert(make_pair("cbc fp-2800",        TYPEFISHERPCBC));
@@ -916,6 +918,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPELMT2:
         case TYPECBC6510:
         case TYPECBC7020:
+        case TYPECBC8020:
         case TYPECBCDNP:
         case TYPE_RTC:
         case TYPE_RTM:

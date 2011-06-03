@@ -516,6 +516,7 @@ bool UnsolicitedHandler::isDnpDevice(const CtiDeviceSingle &ds)
     {
         case TYPE_DNPRTU:
         case TYPECBC7020:
+        case TYPECBC8020:
         case TYPECBCDNP:
         {
             return true;

@@ -27,11 +27,11 @@ const PointAttribute PointAttribute::RSSI = PointAttribute(PointAttribute::RSSIA
 const PointAttribute PointAttribute::IgnoredReason = PointAttribute(PointAttribute::IgnoredReasonAttribute, "Ignored Reason");
 
 const PointAttribute PointAttribute::VoltageControl = PointAttribute(PointAttribute::VoltageControlAttribute, "Voltage Control");
-const PointAttribute PointAttribute::UvSetPoint = PointAttribute(PointAttribute::UvSetPointAttribute, "Uv Set Point");
-const PointAttribute PointAttribute::OvSetPoint = PointAttribute(PointAttribute::OvSetPointAttribute, "Ov Set Point");
+const PointAttribute PointAttribute::UvThreshold = PointAttribute(PointAttribute::UvThresholdAttribute, "Uv Threshold");
+const PointAttribute PointAttribute::OvThreshold = PointAttribute(PointAttribute::OvThresholdAttribute, "Ov Threshold");
 const PointAttribute PointAttribute::OVUVTrackTime = PointAttribute(PointAttribute::OVUVTrackTimeAttribute, "OVUV Track Time");
 const PointAttribute PointAttribute::NeutralCurrentSensor = PointAttribute(PointAttribute::NeutralCurrentSensorAttribute, "Neutral Current Sensor");
-const PointAttribute PointAttribute::NeutralCurrentAlarmSetPoint = PointAttribute(PointAttribute::NeutralCurrentAlarmSetPointAttribute, "Neutral Current Alarm Set Point");
+const PointAttribute PointAttribute::NeutralCurrentAlarmThreshold = PointAttribute(PointAttribute::NeutralCurrentAlarmThresholdAttribute, "Neutral Current Alarm Threshold");
 const PointAttribute PointAttribute::TimeTempSeasonOne = PointAttribute(PointAttribute::TimeTempSeasonOneAttribute, "Time Temp Season One");
 const PointAttribute PointAttribute::TimeTempSeasonTwo = PointAttribute(PointAttribute::TimeTempSeasonTwoAttribute, "Time Temp Season Two");
 const PointAttribute PointAttribute::VarControl = PointAttribute(PointAttribute::VarControlAttribute, "Var Control");
@@ -39,7 +39,7 @@ const PointAttribute PointAttribute::UDPIpAddress = PointAttribute(PointAttribut
 const PointAttribute PointAttribute::UDPPortNumber = PointAttribute(PointAttribute::UDPPortNumberAttribute, "UDP Port Number");
 
 const PointAttribute PointAttribute::CapacitorBankState = PointAttribute(PointAttribute::CapacitorBankStateAttribute, "Capacitor Bank State");
-const PointAttribute PointAttribute::ReCloseBlocked = PointAttribute(PointAttribute::ReCloseBlockedAttribute, "ReClose Blocked");
+const PointAttribute PointAttribute::ReCloseBlocked = PointAttribute(PointAttribute::ReCloseBlockedAttribute, "Re-Close Blocked");
 const PointAttribute PointAttribute::ControlMode = PointAttribute(PointAttribute::ControlModeAttribute, "Control Mode");
 const PointAttribute PointAttribute::AutoVoltControl = PointAttribute(PointAttribute::AutoVoltControlAttribute, "Auto Volt Control");
 const PointAttribute PointAttribute::LastControlLocal = PointAttribute(PointAttribute::LastControlLocalAttribute, "Last Control Local");

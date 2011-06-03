@@ -35,11 +35,11 @@ class IM_EX_CTIBASE PointAttribute
             IgnoredReasonAttribute,
 
             VoltageControlAttribute,
-            UvSetPointAttribute,
-            OvSetPointAttribute,
+            UvThresholdAttribute,
+            OvThresholdAttribute,
             OVUVTrackTimeAttribute,
             NeutralCurrentSensorAttribute,
-            NeutralCurrentAlarmSetPointAttribute,
+            NeutralCurrentAlarmThresholdAttribute,
             TimeTempSeasonOneAttribute,
             TimeTempSeasonTwoAttribute,
             VarControlAttribute,
@@ -98,11 +98,11 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute IgnoredReason;
 
         static const PointAttribute VoltageControl;
-        static const PointAttribute UvSetPoint;
-        static const PointAttribute OvSetPoint;
+        static const PointAttribute UvThreshold;
+        static const PointAttribute OvThreshold;
         static const PointAttribute OVUVTrackTime;
         static const PointAttribute NeutralCurrentSensor;
-        static const PointAttribute NeutralCurrentAlarmSetPoint;
+        static const PointAttribute NeutralCurrentAlarmThreshold;
         static const PointAttribute TimeTempSeasonOne;
         static const PointAttribute TimeTempSeasonTwo;
         static const PointAttribute VarControl;

@@ -2177,6 +2177,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                                   resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC8020 ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBCDNP ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) )
@@ -4025,10 +4026,10 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     {
         if ( ((currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to close, through sendAll command
-             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) + twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) > twoWayPts->getPointValueByAttribute(PointAttribute::OvSetPoint)) ||
+             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) + twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) > twoWayPts->getPointValueByAttribute(PointAttribute::OvThreshold)) ||
              ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) - twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) < twoWayPts->getPointValueByAttribute(PointAttribute::UvSetPoint)) )
+             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) - twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) < twoWayPts->getPointValueByAttribute(PointAttribute::UvThreshold)) )
         {
             currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
             text1 += " delta";
@@ -4036,10 +4037,10 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
 
         else if ( ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to open, through sendAll command
-              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) >= twoWayPts->getPointValueByAttribute(PointAttribute::OvSetPoint))  ||
+              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) >= twoWayPts->getPointValueByAttribute(PointAttribute::OvThreshold))  ||
              ( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) <= twoWayPts->getPointValueByAttribute(PointAttribute::UvSetPoint) ) ||
+              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) <= twoWayPts->getPointValueByAttribute(PointAttribute::UvThreshold) ) ||
              twoWayPts->getPointValueByAttribute(PointAttribute::OvCondition) || twoWayPts->getPointValueByAttribute(PointAttribute::UvCondition) )
         {
             currentCapBank->setPercentChangeString(" Rejection by OVUV ");

@@ -53,6 +53,7 @@
 #define TYPECBC7010                          250
 #define TYPECBC7020                          260
 #define TYPECBCDNP                           261
+#define TYPECBC8020                          270
 
 #define TYPERFN430A3                         300
 #define TYPERFN430EKA                        301

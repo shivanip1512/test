@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_resolvers
-*
-* Date:   5/14/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.7.2.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dsm2.h"
@@ -382,6 +369,11 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "cbc 7024";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "cbc 7030";
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "cbc 8020";
+    devType = TYPECBC8020;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "cbc 8024";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "cbc dnp";
     devType = TYPECBCDNP;

@@ -44,11 +44,11 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid, string paotype)
         PointAttribute::RSSI,                                            
         PointAttribute::IgnoredReason,                                   
         PointAttribute::VoltageControl,                                  
-        PointAttribute::UvSetPoint,                                      
-        PointAttribute::OvSetPoint,                                      
+        PointAttribute::UvThreshold,                                      
+        PointAttribute::OvThreshold,                                      
         PointAttribute::OVUVTrackTime,                                   
         PointAttribute::NeutralCurrentSensor,                            
-        PointAttribute::NeutralCurrentAlarmSetPoint,                     
+        PointAttribute::NeutralCurrentAlarmThreshold,                     
         PointAttribute::TimeTempSeasonOne,                               
         PointAttribute::TimeTempSeasonTwo,                               
         PointAttribute::VarControl,                                      
@@ -97,11 +97,11 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid, string paotype)
 
     //dnp analog output points have offsets starting with 10000
     _analogOffsetAttribute.insert( std::make_pair( 10001, PointAttribute::VoltageControl) );
-    _analogOffsetAttribute.insert( std::make_pair( 10002, PointAttribute::UvSetPoint) );
-    _analogOffsetAttribute.insert( std::make_pair( 10003, PointAttribute::OvSetPoint) );
+    _analogOffsetAttribute.insert( std::make_pair( 10002, PointAttribute::UvThreshold) );
+    _analogOffsetAttribute.insert( std::make_pair( 10003, PointAttribute::OvThreshold) );
     _analogOffsetAttribute.insert( std::make_pair( 10004, PointAttribute::OVUVTrackTime) );
     _analogOffsetAttribute.insert( std::make_pair( 10010, PointAttribute::NeutralCurrentSensor) );
-    _analogOffsetAttribute.insert( std::make_pair( 10011, PointAttribute::NeutralCurrentAlarmSetPoint) );
+    _analogOffsetAttribute.insert( std::make_pair( 10011, PointAttribute::NeutralCurrentAlarmThreshold) );
     _analogOffsetAttribute.insert( std::make_pair( 10026, PointAttribute::TimeTempSeasonOne) );
     _analogOffsetAttribute.insert( std::make_pair( 10042, PointAttribute::TimeTempSeasonTwo) );
     _analogOffsetAttribute.insert( std::make_pair( 10068, PointAttribute::VarControl) );
@@ -269,12 +269,12 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                 << getPointValueByAttribute(PointAttribute::UvCount) 
                 << getPointValueByAttribute(PointAttribute::OvCount)
                 << _ovuvCountResetDate
-                << getPointValueByAttribute(PointAttribute::UvSetPoint) 
-                << getPointValueByAttribute(PointAttribute::OvSetPoint)
+                << getPointValueByAttribute(PointAttribute::UvThreshold) 
+                << getPointValueByAttribute(PointAttribute::OvThreshold)
                 << getPointValueByAttribute(PointAttribute::OVUVTrackTime) 
                 << _lastOvUvDateTime
                 << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor) 
-                << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmSetPoint) 
+                << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold) 
                 << getPointValueByAttribute(PointAttribute::UDPIpAddress) 
                 << getPointValueByAttribute(PointAttribute::UDPPortNumber) 
                 << _paoid;
@@ -354,12 +354,12 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                      << getPointValueByAttribute(PointAttribute::UvCount)                                     
                      << getPointValueByAttribute(PointAttribute::OvCount)                                     
                      << _ovuvCountResetDate                                                                   
-                     << getPointValueByAttribute(PointAttribute::UvSetPoint)                                  
-                     << getPointValueByAttribute(PointAttribute::OvSetPoint)                                  
+                     << getPointValueByAttribute(PointAttribute::UvThreshold)                                  
+                     << getPointValueByAttribute(PointAttribute::OvThreshold)                                  
                      << getPointValueByAttribute(PointAttribute::OVUVTrackTime)                               
                      << _lastOvUvDateTime                                                                     
                      << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor)                        
-                     << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmSetPoint)                 
+                     << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold)                 
                      << getPointValueByAttribute(PointAttribute::UDPIpAddress)                                
                      << getPointValueByAttribute(PointAttribute::UDPPortNumber);                               
 
@@ -634,16 +634,16 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, CtiTime timestamp)
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCount), tempLong, timestamp);
     rdr["ovuvcountresetdate"] >> _ovuvCountResetDate; //toADD
     rdr["uvsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvSetPoint), tempLong, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvThreshold), tempLong, timestamp);
     rdr["ovsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvSetPoint), tempLong, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvThreshold), tempLong, timestamp);
     rdr["ovuvtracktime"] >> tempLong;
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OVUVTrackTime), tempLong, timestamp);
     rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
     rdr["neutralcurrentsensor"] >> tempLong;
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentSensor), tempLong, timestamp);
     rdr["neutralcurrentalarmsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentAlarmSetPoint), tempLong, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentAlarmThreshold), tempLong, timestamp);
     rdr["ipaddress"]  >> tempLong;
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPIpAddress), tempLong, timestamp);
     rdr["udpport"] >>  tempLong;

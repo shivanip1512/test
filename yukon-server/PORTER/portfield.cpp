@@ -1227,6 +1227,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_ION8300:
                     case TYPECBC6510:
                     case TYPECBC7020:
+                    case TYPECBC8020:
                     case TYPECBCDNP:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -2013,6 +2014,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             break;
                         }
                     case TYPECBC7020:
+                    case TYPECBC8020:
                     case TYPECBCDNP:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -2077,6 +2079,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_RDS:
                     case TYPECBC6510:
                     case TYPECBC7020:
+                    case TYPECBC8020:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
@@ -2142,6 +2145,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_DAVIS:
                     case TYPECBC6510:
                     case TYPECBC7020:
+                    case TYPECBC8020:
                     case TYPECBCDNP:
                         {
                             {
