@@ -131,7 +131,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         sql.append("join paoschedule ps on ps.scheduleid = psa.scheduleid and ps.disabled = 'N'  ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = cfs.substationbusid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='CCAREA' ) ca on ca.paobjectid = saa.areaid ");
         sql.append("left outer join ccfeederbanklist fbl on fbl.feederid = cfs.feederid ");
         
         String result = null;
