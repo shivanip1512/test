@@ -1498,7 +1498,7 @@ CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(LONG value)
 
 CtiCCCapBank& CtiCCCapBank::setPartialPhaseInfo(const string& info)
 {
-    if (!stringCompareIgnoreCase(_partialPhaseInfo,info))
+    if (string_equal(_partialPhaseInfo,info))
     {
         _dirty = TRUE;
     }

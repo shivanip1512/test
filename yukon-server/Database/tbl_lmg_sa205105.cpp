@@ -84,15 +84,15 @@ int CtiTableSA205105Group::getFunction(bool shed) const
 {
     int function = 2;       // default to test off to prevent any bad errors.
 
-    if(!stringCompareIgnoreCase(getLoadNumber(),"load 1"))
+    if(string_equal(getLoadNumber(),"load 1"))
     {
         function = shed ? 8 : 9;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 2"))
+    else if(string_equal(getLoadNumber(),"load 2"))
     {
         function = shed ? 10 : 11;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 3"))
+    else if(string_equal(getLoadNumber(),"load 3"))
     {
         string s = gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123");
         std::transform(s.begin(), s.end(), s.begin(), tolower);
@@ -105,27 +105,27 @@ int CtiTableSA205105Group::getFunction(bool shed) const
             function = 1; // restores must be handled with a 7.5m shed!
         }
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 4"))
+    else if(string_equal(getLoadNumber(),"load 4"))
     {
         function = shed ? 3 : 4;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2"))
+    else if(string_equal(getLoadNumber(),"load 1,2"))
     {
         function = shed ? 14 : 15;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2,3"))
+    else if(string_equal(getLoadNumber(),"load 1,2,3"))
     {
         function = shed ? 5 : 6;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2,3,4"))
+    else if(string_equal(getLoadNumber(),"load 1,2,3,4"))
     {
         function = shed ? 12 : 13;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"test"))
+    else if(string_equal(getLoadNumber(),"test"))
     {
         function = shed ? 7 : 2;                // shed ? TEST_ON : TEST_OFF;
     }
-    else if(!stringCompareIgnoreCase(getLoadNumber(),"memory erase"))
+    else if(string_equal(getLoadNumber(),"memory erase"))
     {
         function = shed ? 0 : 0;
     }

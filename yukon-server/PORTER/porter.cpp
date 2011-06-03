@@ -819,7 +819,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
 
     SET_CRT_OUTPUT_MODES;
-    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
     //Match up the connections
@@ -855,7 +855,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     _statisticsThread.start();
 
     /* Start the verification thread */
-    if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_START_VERIFICATIONTHREAD", "TRUE"),"true"))
+    if(gConfigParms.isTrue("PORTER_START_VERIFICATIONTHREAD", true))
     {
         PorterVerificationThread.start();
     }
@@ -1231,7 +1231,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_START_VERIFICATIONTHREAD", "TRUE"),"true"))
+    if(gConfigParms.isTrue("PORTER_START_VERIFICATIONTHREAD", true))
     {
         PorterVerificationThread.join();
 

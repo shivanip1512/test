@@ -78,7 +78,7 @@ void CtiTableTag::DecodeDatabaseReader(Cti::RowReader& rdr)
     rdr["colorid"]      >> _colorId;
     rdr["imageid"]      >> _imageId;
 
-    _inhibit = ( stringCompareIgnoreCase(rwsTemp,"Y") == 0 ? true : false );
+    _inhibit = string_equal(rwsTemp,"Y");
 
     resetDirty(FALSE);
 }

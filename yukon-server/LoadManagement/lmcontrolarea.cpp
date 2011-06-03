@@ -839,8 +839,8 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     for(int i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
-            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( ( (currentTrigger->getPointValue() + currentReduction) >
                   (currentTrigger->getThreshold() - currentTrigger->getMinRestoreOffset()) ) ||
@@ -850,7 +850,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
                 triggersStillTripped++;
             }
         }
-        else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
+        else if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
         {
             if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
             {
@@ -965,8 +965,8 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped(CtiLMProgramBaseSPtr program)
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
-            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( currentTrigger->getPointValue() > (currentTrigger->getThreshold()+offset) ||
                 currentTrigger->getProjectedPointValue() > (currentTrigger->getThreshold()+offset) )
@@ -984,8 +984,8 @@ BOOL CtiLMControlArea::hasThresholdTrigger()
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
-            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             return TRUE;
         }
@@ -998,7 +998,7 @@ BOOL CtiLMControlArea::hasStatusTrigger()
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )
         {
             return TRUE;
         }
@@ -1021,7 +1021,7 @@ BOOL CtiLMControlArea::isStatusTriggerTripped(CtiLMProgramBaseSPtr program)
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )
         {
             if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
             {
@@ -1046,8 +1046,8 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     for( LONG i=0;i<_lmcontrolareatriggers.size();i++ )   //why is the load from all triggers added up???
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
-            !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
+        if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+            string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) )
         {
             if( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
                 currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() )
@@ -1105,7 +1105,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
+        else if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
         {
             if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
             {
@@ -1233,7 +1233,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
 
         if( !currentLMProgram->getDisableFlag() &&
-            (!stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || !stringCompareIgnoreCase(currentLMProgram->getControlType(), "Enabled")) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+            (string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || string_equal(currentLMProgram->getControlType(), "Enabled")) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
         {
             if( con_checker.checkAutomaticProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
             /*            if( currentLMProgram->isAvailableToday() &&
@@ -1362,10 +1362,11 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                 //possibly attemping control state?
             }
         }
-        //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-        else if( stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) &&
-                 stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) &&
-                 stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType) )//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+        else if ( !(string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) || 
+                    string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || 
+                    string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)) )
+
+
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1506,8 +1507,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
 
-        if( !stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
-            !stringCompareIgnoreCase(currentLMProgram->getControlType(), "Enabled") )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+        if( string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
+            string_equal(currentLMProgram->getControlType(), "Enabled") )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
         {
             if( currentLMProgram->isAvailableToday() &&
                 currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
@@ -1606,8 +1607,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                 //possibly attemping control state?
             }
         }
-        else if( stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) &&
-                 stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType) )//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+        else if( !(string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType)) &&
+                 !(string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)))
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unknown LM Program Control Type in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1661,8 +1662,8 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
             CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
 
 
-            if( !stringCompareIgnoreCase(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) ||
-                !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+            if( string_equal(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) ||
+                string_equal(currentLMProgram->getControlType(),"Enabled") )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             {
                 CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
                 //Check manual but not notification time
@@ -1775,7 +1776,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
 
-        if( !stringCompareIgnoreCase(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+        if( string_equal(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
         {
 
             string text("Manual Status Trigger Stop, LM Control Area: ");
@@ -1997,7 +1998,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
-            (!stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || !stringCompareIgnoreCase(currentLMProgram->getControlType(), "Enabled")) &&
+            (string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || string_equal(currentLMProgram->getControlType(), "Enabled")) &&
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
         {
@@ -2073,8 +2074,8 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
     {
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
-            ( !stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
-              !stringCompareIgnoreCase(currentLMProgram->getControlType(), "Enabled") ) &&
+            ( string_equal(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
+              string_equal(currentLMProgram->getControlType(), "Enabled") ) &&
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::NonControllingState ) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
@@ -2834,8 +2835,8 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
     for( int i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-        if( (!stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
-             !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) ) &&
+        if( (string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) ||
+             string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdPointTriggerType) ) &&
             ( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
               currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() ) )
         {
@@ -2862,7 +2863,7 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
             *returnString += tempchar;
             *returnString += " (" + getPAOName() + ")";
         }
-        else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) &&
+        else if( string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) &&
                  currentTrigger->getPointValue() != currentTrigger->getNormalState() )
         {
             if( returnString->length() > 0 )

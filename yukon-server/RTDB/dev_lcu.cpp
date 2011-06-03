@@ -1500,7 +1500,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuObserveBusyBit = false;       // Make us go at maximal speed.
         }
 
-        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("RIPPLE_EXCLUDE_ALL_INJECTORS"),"TRUE") )
+        if( gConfigParms.isTrue("RIPPLE_EXCLUDE_ALL_INJECTORS") )
         {
             _excludeAllLCUs = true;
         }
@@ -2259,7 +2259,7 @@ INT CtiDeviceLCU::getProtocolWrap() const
 
     if(gConfigParms.isOpt("LCU_PROTOCOLWRAP"))
     {
-        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("LCU_PROTOCOLWRAP"),"idlc") )
+        if( string_equal(gConfigParms.getValueAsString("LCU_PROTOCOLWRAP"),"idlc") )
         {
             protocol = ProtocolWrapIDLC;
         }

@@ -559,7 +559,7 @@ void CtiCapController::controlLoop()
                             {
                                 CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
                                 if ( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
-                                    stringCompareIgnoreCase(currentFeeder->getStrategy()->getStrategyName(), ControlStrategy::NoControlUnit) &&
+                                    !(string_equal(currentFeeder->getStrategy()->getStrategyName(), ControlStrategy::NoControlUnit)) &&
                                     (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
                                 {
                                     currentFeeder->isPeakTime(currentDateTime);
@@ -2081,7 +2081,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         {
                             objType = Cti::CapControl::Strategy;
                         }
-                        else if (dbChange->getDatabase() == ChangePAODb && !(stringCompareIgnoreCase(dbChange->getObjectType(),"cap bank")))
+                        else if (dbChange->getDatabase() == ChangePAODb && string_equal(dbChange->getObjectType(),"cap bank"))
                         {
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {
@@ -2360,7 +2360,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     if (currentBus->getAltDualSubId() == currentBus->getPaoId() )
     {
-        if (!stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
+        if (string_equal(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
         {
             CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
             if (altSub != NULL)
@@ -2381,9 +2381,9 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
     CtiCCSubstationBusPtr primarySub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
     if (primarySub != NULL)
     {
-        if( !stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-            !stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-            !stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+        if( string_equal(currentBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+            string_equal(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+            string_equal(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
         {
             if (primarySub->getPrimaryBusFlag())
             {
@@ -2413,7 +2413,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             primarySub->setBusUpdatedFlag(TRUE);
             currentBus->setBusUpdatedFlag(TRUE);
         }
-        else if (!stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
+        else if (string_equal(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
         {
             if (currentBus->getSwitchOverStatus())
             {
@@ -2514,9 +2514,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                         else
                         {
                             text += " Alt Sub Enabled";
-                            if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if (string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                                string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                                string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                             {
 
                                 altSub->setPrimaryBusFlag(TRUE);
@@ -2574,9 +2574,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                             altSub->setPrimaryBusFlag(FALSE);
                             altSub->setBusUpdatedFlag(TRUE);
                             text += " Alt Sub Not Enabled";
-                            if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if (string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                                string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                                string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                             {
 
                                 CtiFeeder_vec& ccFeeders = altSub->getCCFeeders();
@@ -2980,7 +2980,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                         {
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if( string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                             {
                                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()),timestamp);
                             }
@@ -2997,10 +2997,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                             }
                         }
-                        //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                        else if( !( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)) )
-                        {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                        else if( !( string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                                    string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)) )
+                        {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
@@ -3016,7 +3015,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     if( timestamp > currentSubstationBus->getLastWattPointTime() )
                     {
                         currentSubstationBus->setLastWattPointTime(timestamp);
-                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit))
+                        if (string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit))
                         {
                             DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
                             currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
@@ -3049,9 +3048,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                             }
                         }
-                        //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                        else if( stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
-                        {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                        else if( !string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
+                        {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
@@ -3149,9 +3147,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID((*it).second);
                     if (altSub != NULL)
                     {
-                        if( !stringCompareIgnoreCase(altSub->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                            !stringCompareIgnoreCase(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                            !stringCompareIgnoreCase(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                        if( string_equal(altSub->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                            string_equal(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                            string_equal(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                         {
                             if (currentSubstationBus->getPrimaryBusFlag())
                             {
@@ -3315,7 +3313,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
                             if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                             {
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                                if( string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                                 {
                                     currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()), timestamp);
                                 }
@@ -3331,11 +3329,10 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                                 }
-                            }
-                            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                            else if( !( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                        !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
-                            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                            }                          
+                            else if( !( string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                                        string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
+                            {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
@@ -3347,7 +3344,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                         if( timestamp > currentFeeder->getLastWattPointTime() )
                         {
                             currentFeeder->setLastWattPointTime(timestamp);
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if( string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                             {
                                 DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
                                 currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
@@ -3376,9 +3373,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                                 }
                             }
-                            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                            else if( stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
-                            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                            else if( !string_equal(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
+                            {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
@@ -3823,8 +3819,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString )
 {
     string commandString = _commandString;
-    if( !stringCompareIgnoreCase(commandString, "scan general") ||
-        !stringCompareIgnoreCase(commandString, "scan integrity") )
+    if( string_equal(commandString, "scan general") ||
+        string_equal(commandString, "scan integrity") )
     {
         return;
     }

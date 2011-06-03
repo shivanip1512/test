@@ -753,7 +753,7 @@ void CtiCalculateThread::baselineThread( void )
         {
             nextCalcTime.addDays(1);
         }
-        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("CALC_LOGIC_RUN_BASELINE_ON_STARTUP"),"true") )
+        if( gConfigParms.isTrue("CALC_LOGIC_RUN_BASELINE_ON_STARTUP") )
         {
             nextCalcTime.addDays(-1);//Should let us run immediately
         }
@@ -1397,7 +1397,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
         return;
     }
 
-    if( !stringCompareIgnoreCase(operationType, "Get Interval Minutes") || !stringCompareIgnoreCase(operationType, "Get Point Limit") )
+    if( string_equal(operationType, "Get Interval Minutes") || string_equal(operationType, "Get Point Limit") )
     {
         pointID = 0;
     }

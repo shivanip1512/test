@@ -3392,7 +3392,7 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
             if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL default : " << CntlStopInterval << endl;
         }
 
-        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT"),"true") )
+        if( gConfigParms.isTrue("DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT") )
         {
             ShutdownOnThreadTimeout = true;
         }
@@ -3824,7 +3824,7 @@ CtiServer::ptr_type CtiVanGogh::getPILConnection()
         {
             Mgr = itr->second;
 
-            if(!stringCompareIgnoreCase(Mgr->getClientName(), PIL_REGISTRATION_NAME))
+            if(string_equal(Mgr->getClientName(), PIL_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the PIL.
             }
@@ -3850,7 +3850,7 @@ CtiServer::ptr_type CtiVanGogh::getScannerConnection()
         {
             Mgr = itr->second;
 
-            if(!stringCompareIgnoreCase(Mgr->getClientName(), SCANNER_REGISTRATION_NAME))
+            if(string_equal(Mgr->getClientName(), SCANNER_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the SCANNER.
             }
@@ -4952,7 +4952,7 @@ bool CtiVanGogh::isDeviceGroupType(const LONG devid)
             {
                 // dliteit should be an iterator which represents the lite device now!
                 CtiDeviceBaseLite &dLite = *dliteit;
-                bret = (stringCompareIgnoreCase(dLite.getClass(), "group") == 0);
+                bret = string_equal(dLite.getClass(), "group");
             }
         }
         catch(...)
@@ -4975,7 +4975,7 @@ bool CtiVanGogh::isDeviceGroupType(const CtiDeviceBaseLite *device)
     {
         try
         {
-            bret = (stringCompareIgnoreCase(device->getClass(), "group") == 0);
+            bret = string_equal(device->getClass(), "group");
         }
         catch(...)
         {

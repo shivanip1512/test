@@ -85,8 +85,8 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, Cti::RowReade
 
     if(temp.empty() ||
        !temp.compare("0") ||
-       !stringCompareIgnoreCase(temp, "none") ||
-       !stringCompareIgnoreCase(temp, "(none)"))
+       string_equal(temp, "none") ||
+       string_equal(temp, "(none)"))
     {
         _password = string();
     }

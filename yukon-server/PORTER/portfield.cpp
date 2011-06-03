@@ -3915,8 +3915,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
     try
     {
-        if(OutMessage &&
-           !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
+        if(OutMessage && gConfigParms.isTrue("PORTER_EXCLUSION_TEST") )     // Indicates an excludable message!
         {
             CtiDeviceSPtr Device = DeviceManager.getDeviceByID( OutMessage->DeviceID );
 

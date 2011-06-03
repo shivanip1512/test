@@ -1207,9 +1207,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         currentTrigger->setPointValue(value);
                     }
     
-                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    if( (stringCompareIgnoreCase(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && stringCompareIgnoreCase(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
-                        stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    if( (!(string_equal(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType)) && !string_equal(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
+                        !(string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType)) ) 
                     {
                         if( quality != NonUpdatedQuality && isNewData )
                         {
@@ -1240,8 +1239,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             }
                         }
                     }
-                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    else if( stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )//make the projected value equal to the real value
+                    else if( !(string_equal(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType)))//make the projected value equal to the real value
                     {
                         currentTrigger->setProjectedPointValue(value);
                     }

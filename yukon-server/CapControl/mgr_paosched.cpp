@@ -430,23 +430,23 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     if ( findStringIgnoreCase(command,"CapBanks"))
     {
         retVal = CapControlVerification;
-        if (!stringCompareIgnoreCase(command,"Verify ALL CapBanks"))
+        if (string_equal(command,"Verify ALL CapBanks"))
         {
             strategy = AllBanks;
         }
-        else if (!stringCompareIgnoreCase(command,"Verify Failed and Questionable CapBanks"))
+        else if (string_equal(command,"Verify Failed and Questionable CapBanks"))
         {
             strategy = FailedAndQuestionableBanks;
         }
-        else if (!stringCompareIgnoreCase(command,"Verify Failed CapBanks"))
+        else if (string_equal(command,"Verify Failed CapBanks"))
         {
             strategy = FailedBanks;
         }
-        else if (!stringCompareIgnoreCase(command,"Verify Questionable CapBanks"))
+        else if (string_equal(command,"Verify Questionable CapBanks"))
         {
             strategy = QuestionableBanks;
         }
-        else if (!stringCompareIgnoreCase(command,"Verify Selected CapBanks"))
+        else if (string_equal(command,"Verify Selected CapBanks"))
         {
             strategy = SelectedForVerificationBanks;
         }
@@ -491,7 +491,7 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
                 retVal = SomethingElse;
 
         }
-        else if (!stringCompareIgnoreCase(command,"Verify Standalone CapBanks"))
+        else if (string_equal(command,"Verify Standalone CapBanks"))
         {
            strategy = StandAloneBanks;
         }

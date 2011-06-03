@@ -29,7 +29,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
 {
     _valid = TRUE;
 
-    if( componentPointId <= 0 && !stringCompareIgnoreCase(componentType,"operation" ) )
+    if( componentPointId <= 0 && string_equal(componentType,"operation" ) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -37,7 +37,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         }
         _valid = FALSE;
     }
-    else if( !stringCompareIgnoreCase(componentType,"operation") )
+    else if( string_equal(componentType,"operation") )
     {
         _componentType = operation;
         _componentPointId = componentPointId;
@@ -52,7 +52,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         else if( operationType == ">=" )    _operationType = geq;
         else if( operationType == "<" )     _operationType = less;
         else if( operationType == "<=" )    _operationType = leq;
-        else if( !stringCompareIgnoreCase(operationType,"push" ) )  _operationType = push;
+        else if( string_equal(operationType,"push" ) )  _operationType = push;
         else
         {
             {
@@ -69,7 +69,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         }
 
     }
-    else if( !stringCompareIgnoreCase(componentType,"constant" ) )
+    else if( string_equal(componentType,"constant" ) )
     {
         _componentType = constant;
         _constantValue = constantValue;
@@ -79,7 +79,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
         else if( operationType == "%" )     _operationType = modulo;
-        else if( !stringCompareIgnoreCase(operationType,"push" ) )  _operationType = push;
+        else if( string_equal(operationType,"push" ) )  _operationType = push;
         else
         {
             {
@@ -95,7 +95,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
             dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
         }
     }
-    else if( !stringCompareIgnoreCase(componentType,"function" ) )
+    else if( string_equal(componentType,"function" ) )
     {
         _componentType = function;
         _functionName = functionName;
@@ -183,7 +183,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastU
             }
             return TRUE;
         }
-        else if( !stringCompareIgnoreCase(_functionName,"Get Interval Minutes") || !stringCompareIgnoreCase(_functionName,"Get Point Limit") )
+        else if( string_equal(_functionName,"Get Interval Minutes") || string_equal(_functionName,"Get Point Limit") )
         {
             return TRUE;
         }
@@ -321,28 +321,28 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
     try
     {
-        if( !stringCompareIgnoreCase(functionName,"addition" ) )
+        if( string_equal(functionName,"addition" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 + operand2;
         }
-        else if( !stringCompareIgnoreCase(functionName,"subtraction" ) )
+        else if( string_equal(functionName,"subtraction" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 - operand2;
         }
-        else if( !stringCompareIgnoreCase(functionName,"multiplication" ) )
+        else if( string_equal(functionName,"multiplication" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 * operand2;
         }
-        else if( !stringCompareIgnoreCase(functionName,"division" ) )
+        else if( string_equal(functionName,"division" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -354,7 +354,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             else
                 validCalc = false;
         }
-        else if( !stringCompareIgnoreCase(functionName,"modulo divide" ) )
+        else if( string_equal(functionName,"modulo divide" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -366,55 +366,55 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             else
                 validCalc = false;
         }
-        else if( !stringCompareIgnoreCase(functionName,">") || !stringCompareIgnoreCase(functionName,"greater than" ) )
+        else if( string_equal(functionName,">") || string_equal(functionName,"greater than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 > operand2) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,">=" ) || !stringCompareIgnoreCase(functionName,"geq than" ) )
+        else if( string_equal(functionName,">=" ) || string_equal(functionName,"geq than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 >= operand2) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"<" ) || !stringCompareIgnoreCase(functionName,"less than" ) )
+        else if( string_equal(functionName,"<" ) || string_equal(functionName,"less than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 < operand2) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"<=" ) || !stringCompareIgnoreCase(functionName,"leq than" ) )
+        else if( string_equal(functionName,"<=" ) || string_equal(functionName,"leq than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 <= operand2) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"logical and" ) )
+        else if( string_equal(functionName,"logical and" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 != 0.0 && operand2 != 0.0) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"logical or" ) )
+        else if( string_equal(functionName,"logical or" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 != 0.0 || operand2 != 0.0) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"logical not" ) )
+        else if( string_equal(functionName,"logical not" ) )
         {
             double operand = _calcpoint->pop( );
 
             retVal = (operand == 0.0) ? 1.0 : 0.0;
         }
-        else if( !stringCompareIgnoreCase(functionName,"logical xor" ) )
+        else if( string_equal(functionName,"logical xor" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -425,7 +425,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
         //  params:  Thermal Age Hours - the current thermal age of the transformer
         //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
         //           UpdateFreq - the minutes between updates of the thermal age
-        else if( !stringCompareIgnoreCase(functionName,"XfrmThermAge" ) )
+        else if( string_equal(functionName,"XfrmThermAge" ) )
         {
             double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
             ThermalAgeHours = _calcpoint->pop( );
@@ -446,7 +446,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
         }
         //  Hot Spot Calculation
         //  params:
-        else if( !stringCompareIgnoreCase(functionName,"HotSpot" ) )
+        else if( string_equal(functionName,"HotSpot" ) )
         {
             double HotSpotTemp, OilTemp, TempRise, Load;
             double Rating, Mfactor, LoadWatts, LoadVARs;
@@ -477,27 +477,27 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = HotSpotTemp;
         }
-        else if( !stringCompareIgnoreCase(functionName,"DemandAvg1" ) )
+        else if( string_equal(functionName,"DemandAvg1" ) )
         {
             retVal = _calcpoint->figureDemandAvg(60);// seconds in avg
         }
-        else if( !stringCompareIgnoreCase(functionName,"DemandAvg5" ) )
+        else if( string_equal(functionName,"DemandAvg5" ) )
         {
             retVal = _calcpoint->figureDemandAvg(300);// seconds in avg
         }
-        else if( !stringCompareIgnoreCase(functionName,"DemandAvg15" ) )
+        else if( string_equal(functionName,"DemandAvg15" ) )
         {
             retVal = _calcpoint->figureDemandAvg(900);// seconds in avg
         }
-        else if( !stringCompareIgnoreCase(functionName,"DemandAvg30" ) )
+        else if( string_equal(functionName,"DemandAvg30" ) )
         {
             retVal = _calcpoint->figureDemandAvg(1800);// seconds in avg
         }
-        else if( !stringCompareIgnoreCase(functionName,"DemandAvg60" ) )
+        else if( string_equal(functionName,"DemandAvg60" ) )
         {
             retVal = _calcpoint->figureDemandAvg(3600);// seconds in avg
         }
-        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KVar" ) )
+        else if( string_equal(functionName,"P-Factor KW/KVar" ) )
         {
             double kvar = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -525,7 +525,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             }
             retVal = newPowerFactorValue;
         }
-        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KQ" ) )
+        else if( string_equal(functionName,"P-Factor KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -554,7 +554,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             }
             retVal = newPowerFactorValue;
         }
-        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KVa" ) )
+        else if( string_equal(functionName,"P-Factor KW/KVa" ) )
         {
             double kva = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -576,7 +576,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             retVal = newPowerFactorValue;
         }
         //added 3/4/03 JW
-        else if( !stringCompareIgnoreCase(functionName,"KVar from KW/KQ" ) )
+        else if( string_equal(functionName,"KVar from KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -584,7 +584,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = kvar;
         }
-        else if( !stringCompareIgnoreCase(functionName,"KVa from KW/KVar" ) )
+        else if( string_equal(functionName,"KVa from KW/KVar" ) )
         {
             double kvar = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -603,7 +603,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = kva;
         }
-        else if( !stringCompareIgnoreCase(functionName,"KVa from KW/KQ" ) )
+        else if( string_equal(functionName,"KVa from KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -623,7 +623,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = kva;
         }
-        else if( !stringCompareIgnoreCase(functionName,"KW from KVa/KVAR" ) )
+        else if( string_equal(functionName,"KW from KVa/KVAR" ) )
         {
             double kvar = _calcpoint->pop();
             double kva = _calcpoint->pop();
@@ -642,7 +642,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = kw;
         }
-        else if( !stringCompareIgnoreCase(functionName,"KVAR from KW/KVa" ) )
+        else if( string_equal(functionName,"KVAR from KW/KVa" ) )
         {
             double kva = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -661,13 +661,13 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = kvar;
         }
-        else if( !stringCompareIgnoreCase(functionName,"Squared" ) )
+        else if( string_equal(functionName,"Squared" ) )
         {
             double componentPointValue = _calcpoint->pop( );;
 
             retVal = componentPointValue*componentPointValue;
         }
-        else if( !stringCompareIgnoreCase(functionName,"Square Root" ) )
+        else if( string_equal(functionName,"Square Root" ) )
         {
             double componentPointValue = _calcpoint->pop( );;
 
@@ -681,7 +681,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 retVal = sqrt(componentPointValue);
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"COS from P/Q" ) )
+        else if( string_equal(functionName,"COS from P/Q" ) )
         {
             double q = _calcpoint->pop();
             double p = _calcpoint->pop();
@@ -703,62 +703,62 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"sin") )
+        else if( string_equal(functionName,"sin") )
         {
             double temp = _calcpoint->pop();
             retVal = sin(temp);
         }
-        else if( !stringCompareIgnoreCase(functionName,"cos") )
+        else if( string_equal(functionName,"cos") )
         {
             double temp = _calcpoint->pop();
             retVal = cos(temp);
         }
-        else if( !stringCompareIgnoreCase(functionName,"tan") )
+        else if( string_equal(functionName,"tan") )
         {
             double temp = _calcpoint->pop();
             retVal = tan(temp);
         }
-        else if( !stringCompareIgnoreCase(functionName,"arcsin") )
+        else if( string_equal(functionName,"arcsin") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = asin(componentPointValue);
         }
-        else if( !stringCompareIgnoreCase(functionName,"arccos") )
+        else if( string_equal(functionName,"arccos") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = acos(componentPointValue);
         }
-        else if( !stringCompareIgnoreCase(functionName,"arctan") )
+        else if( string_equal(functionName,"arctan") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = atan(componentPointValue);
         }
-        else if( !stringCompareIgnoreCase(functionName,"X^Y" ) )
+        else if( string_equal(functionName,"X^Y" ) )
         {
             double y = _calcpoint->pop();
             double x = _calcpoint->pop();
             retVal = pow(x,y);
         }
-        else if( !stringCompareIgnoreCase(functionName,"Max" ) )
+        else if( string_equal(functionName,"Max" ) )
         {
             DOUBLE a = _calcpoint->pop();
             DOUBLE b = _calcpoint->pop();
 
             retVal = ((a)>(b))?(a):(b);
         }
-        else if( !stringCompareIgnoreCase(functionName,"Min" ) )
+        else if( string_equal(functionName,"Min" ) )
         {
             DOUBLE a = _calcpoint->pop();
             DOUBLE b = _calcpoint->pop();
 
             retVal = ((a)<(b))?(a):(b);
         }
-        else if( !stringCompareIgnoreCase(functionName,"Absolute Value" ) )
+        else if( string_equal(functionName,"Absolute Value" ) )
         {
             double a = _calcpoint->pop();
             retVal = fabs(a);
         }
-        else if( !stringCompareIgnoreCase(functionName,"Max Difference" ) )
+        else if( string_equal(functionName,"Max Difference" ) )
         {
             double a = _calcpoint->pop();
             double b = _calcpoint->pop();
@@ -768,7 +768,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
         }
 
-        else if( !stringCompareIgnoreCase(functionName,"lohi accumulator") )
+        else if( string_equal(functionName,"lohi accumulator") )
         {
             CtiPointStore* pointStore = CtiPointStore::getInstance();
             CtiHashKey componentHashKey(_componentPointId);
@@ -788,7 +788,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = val + inc;
         }
-        else if( !stringCompareIgnoreCase(functionName,"State Timer") )
+        else if( string_equal(functionName,"State Timer") )
         {
             /*
              *  This function pops a number representing the trigger state of a status and returns the
@@ -815,7 +815,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"True,False,Condition") )
+        else if( string_equal(functionName,"True,False,Condition") )
         {
             double c = _calcpoint->pop();
             double b = _calcpoint->pop();
@@ -823,7 +823,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = ( c != 0.0 ? a : b );
         }
-        else if( !stringCompareIgnoreCase(functionName,"Regression") )      // Stack has Depth,Minutes,Value
+        else if( string_equal(functionName,"Regression") )      // Stack has Depth,Minutes,Value
         {
             /*
              *  This function pops a number representing the trigger state of a status and returns the
@@ -848,7 +848,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"Float From 16bit") )      // Stack has two 16 bit unsigned.
+        else if( string_equal(functionName,"Float From 16bit") )      // Stack has two 16 bit unsigned.
         {
             unsigned short umsw = _calcpoint->pop();
             unsigned short ulsw = _calcpoint->pop();
@@ -860,7 +860,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = *floatPtr;
         }
-        else if( !stringCompareIgnoreCase(functionName,"Binary Encode") )
+        else if( string_equal(functionName,"Binary Encode") )
         {
             double newValue = _calcpoint->pop( );
             double oldResult  = _calcpoint->pop( );
@@ -868,7 +868,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             oldResult = oldResult*2;
             retVal = oldResult + newValue;
         }
-        else if( !stringCompareIgnoreCase(functionName,"Mid Level Latch") )
+        else if( string_equal(functionName,"Mid Level Latch") )
         {
             double point1 = _calcpoint->pop( );
             double point2  = _calcpoint->pop( );
@@ -889,7 +889,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 retVal = parentPointPtr->getPointValue();
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"Get Interval Minutes") )
+        else if( string_equal(functionName,"Get Interval Minutes") )
         {
             retVal = 0;
             if( _calcpoint != NULL )
@@ -899,7 +899,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             retVal = retVal/60; //Convert to minutes
         }
-        else if( !stringCompareIgnoreCase(functionName,"Get Point Limit") )
+        else if( string_equal(functionName,"Get Point Limit") )
         {
             _calcpoint->pop(); //throwaway value
             int limitFunc = _calcpoint->pop( );
@@ -934,7 +934,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 int interval = 0;
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"Intervals To Value") )      // Stack has Depth,Minutes,Value
+        else if( string_equal(functionName,"Intervals To Value") )      // Stack has Depth,Minutes,Value
         {
             // This function calculates a regression and estimates the number of intervals until a limit is reached.
 
@@ -1023,7 +1023,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 retVal = 9999;
             }
         }
-        else if( !stringCompareIgnoreCase(functionName,"Linear Slope") )      // Stack has Depth,Minutes,Value
+        else if( string_equal(functionName,"Linear Slope") )      // Stack has Depth,Minutes,Value
         {
             // This function calculates a regression and estimates the number of intervals until a limit is reached.
 

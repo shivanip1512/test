@@ -238,7 +238,7 @@ string CtiFDRPoint::getTranslateName( string &aDestinationName )
 
     for (int x=0; x < entries; x++)
     {
-        if(!stringCompareIgnoreCase(iDestinationList[x].getDestination(), aDestinationName))
+        if(string_equal(iDestinationList[x].getDestination(), aDestinationName))
             retVal = iDestinationList[x].getTranslation();
     }
 

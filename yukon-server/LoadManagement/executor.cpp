@@ -2457,7 +2457,7 @@ void figureHourlyCommittedForOfferId(LONG offerId, const std::vector<CtiLMEnergy
         {
             CtiLMEnergyExchangeCustomerReply* currentLMEECustomerReply = (CtiLMEnergyExchangeCustomerReply*)customerReplies[j];
             if( currentLMEECustomerReply->getOfferId() == offerId &&
-                !stringCompareIgnoreCase(currentLMEECustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
+                string_equal(currentLMEECustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
             {
                 vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentLMEECustomerReply->getLMEnergyExchangeHourlyCustomers();
 
@@ -2564,7 +2564,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                     CtiLMEnergyExchangeOfferRevision* currentRevision = currentOffer->getCurrentOfferRevision();
                                     vector<CtiLMEnergyExchangeHourlyOffer*>& revisionHourlyOffers = currentRevision->getLMEnergyExchangeHourlyOffers();
 
-                                    if( !stringCompareIgnoreCase(currentLMEnergyExchangeCustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
+                                    if( string_equal(currentLMEnergyExchangeCustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
                                     {
                                         if( lmHourlyCustomers.size() == 0 )
                                         {

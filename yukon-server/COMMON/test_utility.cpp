@@ -86,19 +86,19 @@ BOOST_AUTO_TEST_CASE(test_delete_assoc_container)
 
 BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
-    BOOST_CHECK(!stringCompareIgnoreCase("cat", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("Cat", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("cAt", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("CAt", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("caT", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("CaT", "cat"));
-    BOOST_CHECK(!stringCompareIgnoreCase("cAT", "cat"));
+    BOOST_CHECK(string_equal("cat", "cat"));
+    BOOST_CHECK(string_equal("Cat", "cat"));
+    BOOST_CHECK(string_equal("cAt", "cat"));
+    BOOST_CHECK(string_equal("CAt", "cat"));
+    BOOST_CHECK(string_equal("caT", "cat"));
+    BOOST_CHECK(string_equal("CaT", "cat"));
+    BOOST_CHECK(string_equal("cAT", "cat"));
 
-    BOOST_CHECK( stringCompareIgnoreCase("CAT", "catt"));
-    BOOST_CHECK( stringCompareIgnoreCase("cat", "ca"));
+    BOOST_CHECK( !string_equal("CAT", "catt"));
+    BOOST_CHECK( !string_equal("cat", "ca"));
 
-    BOOST_CHECK( stringCompareIgnoreCase("", "CAT"));
-    BOOST_CHECK( stringCompareIgnoreCase("CAT", ""));
+    BOOST_CHECK( !string_equal("", "CAT"));
+    BOOST_CHECK( !string_equal("CAT", ""));
 }
 
 BOOST_AUTO_TEST_CASE(test_stringContainsIgnoreCase)

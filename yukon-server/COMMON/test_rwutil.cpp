@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
     std::string s1 = "My Compare";
     std::string s2 = "my cOmParE";
-    BOOST_CHECK_EQUAL( stringCompareIgnoreCase(s1, s2), 0 );
+    BOOST_CHECK_EQUAL( string_equal(s1, s2),true );
 
 
 }

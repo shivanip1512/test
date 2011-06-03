@@ -112,7 +112,7 @@ int CtiFDRAcsMulti::readConfig()
     // default to true
     setUpdatePCTimeFlag (true);
     tempStr = gConfigParms.getValueAsString(KEY_TIMESYNC_UPDATE, "true");
-    if (!stringCompareIgnoreCase (tempStr,"false"))
+    if (string_equal (tempStr,"false"))
     {
         setUpdatePCTimeFlag (false);
     }

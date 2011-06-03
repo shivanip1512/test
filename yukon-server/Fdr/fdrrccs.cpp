@@ -312,15 +312,15 @@ int CtiFDR_Rccs::resolvePairNumber(string &aPair)
 {
     int retVal = 0;
 
-    if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_ONE))))
+    if (string_equal(aPair,string (RCCS_PAIR_ONE)))
         retVal = 1;
-    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_TWO))))
+    else if (string_equal(aPair,string (RCCS_PAIR_TWO)))
         retVal = 2;
-    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_THREE))))
+    else if (string_equal(aPair,string (RCCS_PAIR_THREE)))
         retVal = 3;
-    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_FOUR))))
+    else if (string_equal(aPair,string (RCCS_PAIR_FOUR)))
         retVal = 4;
-    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_STANDALONE))))
+    else if (string_equal(aPair,string (RCCS_STANDALONE)))
         retVal = 1;
 
 
@@ -544,7 +544,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             for (int z = 0; z < connEntries; z++)
             {
                 // if the names match
-                if(!(stringCompareIgnoreCase(getConnectionList()[z]->getName(),destinationName)))
+                if(string_equal(getConnectionList()[z]->getName(),destinationName))
                 {
                     foundFlag = true;
                 }
@@ -630,7 +630,7 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
             for (int y = 0; y < connEntries; y++)
             {
                 // if the names match
-                if(!(stringCompareIgnoreCase(getConnectionList()[y]->getName(),destinationName)))
+                if(string_equal(getConnectionList()[y]->getName(),destinationName))
                 {
                     getConnectionList()[y]->setLinkStatusID(linkID);
                     getConnectionList()[y]->sendLinkState (FDR_CONNECTED);
@@ -882,8 +882,8 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
     pointName.resize(20,' ');
 
     // check for our special device names
-    if (!(stringCompareIgnoreCase(deviceName,string (RCCSDEVICEPRIMARY)))
-        || !(stringCompareIgnoreCase(deviceName,string (RCCSDEVICESTANDBY))))
+    if (string_equal(deviceName,string (RCCSDEVICEPRIMARY))
+        || string_equal(deviceName,string (RCCSDEVICESTANDBY)))
     {
 
 //        {
@@ -893,7 +893,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 
 
         //we've got a primary, check his status
-        if (!(stringCompareIgnoreCase(pointName,string (RCCSPOINTMASTER))))
+        if (string_equal(pointName,string (RCCSPOINTMASTER)))
         {
 
             setAuthorizationFlag (atoi(temp.c_str()), TRUE);

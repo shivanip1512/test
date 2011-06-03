@@ -1017,7 +1017,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["controlmethod"] >> controlmethod;
                     if( rdr["settings"].isNull() )
                     {
-                        if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
+                        if( string_equal(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
                         {
                             newDirectGear = CTIDBG_new SEPCycleGear(rdr);
                         }
@@ -1028,7 +1028,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
+                        if( string_equal(controlmethod,CtiLMProgramDirectGear::SEPTempOffsetMethod) )
                         {
                             newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
                         }
@@ -2311,12 +2311,12 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     for( long i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        // not equal, so no "!" on the compareTo()
-        if( stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )//check default operational state
+  
+        if( !string_equal(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )//check default operational state
         {
-            if( ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateEnabled ) &&
+            if( ( string_equal(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateEnabled ) &&
                   currentControlArea->getDisableFlag() ) ||
-                ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateDisabled ) &&
+                ( string_equal(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateDisabled ) &&
                   !currentControlArea->getDisableFlag() ) )
             {
                 {
@@ -2429,8 +2429,8 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
             for( LONG j=0;j<lmControlAreaTriggers.size();j++ )
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(j);
-                if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
-                     stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )   // LSF Projection not available on Status triggers
+                if( string_equal(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
+                     !string_equal(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )   // LSF Projection not available on Status triggers
                 {
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);

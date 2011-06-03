@@ -575,7 +575,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempStr,"false"))
+        if (string_equal(tempStr,"false"))
         {
             setDeleteFileAfterImport (false);
         }

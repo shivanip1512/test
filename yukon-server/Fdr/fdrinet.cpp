@@ -414,7 +414,7 @@ void CtiFDR_Inet::setCurrentClientLinkStates()
         for (int y = 0; y < connEntries; y++)
         {
             // if the names match
-            if(!(stringCompareIgnoreCase(iConnectionList[y]->getName(),iClientList[x])))
+            if(string_equal(iConnectionList[y]->getName(),iClientList[x]))
             {
                 iConnectionList[y]->setLinkStatusID(linkID);
                 iConnectionList[y]->sendLinkState (FDR_CONNECTED);
@@ -721,7 +721,7 @@ bool CtiFDR_Inet::loadClientList()
 
                         for (int y=0; y < iClientList.size(); y++)
                         {
-                            if(!(stringCompareIgnoreCase(iClientList[y],translationPoint->getDestinationList()[x].getDestination())))
+                            if(string_equal(iClientList[y],translationPoint->getDestinationList()[x].getDestination()))
                                 foundDestination = true;
                         }
 
@@ -771,7 +771,7 @@ bool CtiFDR_Inet::loadClientList()
 
                 for (int y=0; y < iClientList.size(); y++)
                 {
-                    if(!(stringCompareIgnoreCase(iClientList[y],myInterfaceName)))
+                    if(string_equal(iClientList[y],myInterfaceName))
                         foundDestination = true;
                 }
 
@@ -1049,7 +1049,7 @@ int CtiFDR_Inet::findConnectionByNameInList(string aName)
     while ((index < entries) && !foundFlag)
     {
         // find the point id
-        if(!(stringCompareIgnoreCase(iConnectionList[index]->getName(),aName)))
+        if(string_equal(iConnectionList[index]->getName(),aName))
         {
             foundFlag = true;
             foundIndex = index;
@@ -1325,7 +1325,7 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
         for (int y = 0; y < connEntries; y++)
         {
             // if the names match
-            if(!(stringCompareIgnoreCase(iConnectionList[y]->getName(),iClientList[x])))
+            if(string_equal(iConnectionList[y]->getName(),iClientList[x]))
             {
                 foundFlag = true;
             }

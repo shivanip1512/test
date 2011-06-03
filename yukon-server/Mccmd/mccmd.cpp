@@ -729,7 +729,7 @@ int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         firsttok = *optoken.begin();
     }
 
-    if(!stringCompareIgnoreCase(firsttok,"pil"))
+    if(string_equal(firsttok,"pil"))
     {   // Hack slash rip. CGP 11/07/2002  White rabbit entry point.
         cmd.replace((size_t)0, (size_t)4, "");    // erase the existence of "pil "
     }

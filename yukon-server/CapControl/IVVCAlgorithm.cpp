@@ -1160,7 +1160,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             // if banks operational state isn't switched or if disabled
             // or not in one of the above 4 states we aren't eligible for control.
 
-            if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+            if ( string_equal(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
                  !currentBank->getLocalControlFlag() &&
                  !currentBank->getDisableFlag() &&
                  !currentBank->getIgnoreFlag() &&

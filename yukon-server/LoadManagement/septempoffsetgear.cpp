@@ -70,12 +70,12 @@ bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long
 
 bool SEPTemperatureOffsetGear::stopControl(CtiLMGroupPtr currentLMGroup)
 {
-    if( !stringCompareIgnoreCase(getMethodStopType(),CtiLMProgramDirectGear::RestoreStopType ) )
+    if( string_equal(getMethodStopType(),CtiLMProgramDirectGear::RestoreStopType ) )
     {
         currentLMGroup->sendStopControl(true);
     }
-    else if( !stringCompareIgnoreCase(getMethodStopType(),CtiLMProgramDirectGear::StopCycleStopType ) ||
-             !stringCompareIgnoreCase(getMethodStopType(),CtiLMProgramDirectGear::TimeInStopType ) )
+    else if( string_equal(getMethodStopType(),CtiLMProgramDirectGear::StopCycleStopType ) ||
+             string_equal(getMethodStopType(),CtiLMProgramDirectGear::TimeInStopType ) )
     {
         currentLMGroup->sendStopControl(false);
     }

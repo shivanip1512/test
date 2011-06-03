@@ -208,7 +208,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
     INT count = getResponsesOnTrxID();
     CtiPointSPtr pPoint;
 
-    bool erdb = !stringCompareIgnoreCase(gConfigParms.getValueAsString("EASTRIVER_DEBUG"), "true");
+    bool erdb = gConfigParms.isTrue("EASTRIVER_DEBUG");
 
     if( trx == getCurrentTrxID() )
     {

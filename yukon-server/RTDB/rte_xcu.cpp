@@ -696,7 +696,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         {
             resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
 
-            if( stringCompareIgnoreCase(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true") != 0 )
+            if(!string_equal(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true"))
             {
                 resultString += " \n" + byteString;
             }

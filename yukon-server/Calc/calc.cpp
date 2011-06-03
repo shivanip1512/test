@@ -30,7 +30,7 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     _baselineId = 0;
     _baselinePercentId = 0;
 
-    if( !stringCompareIgnoreCase(qualityFlag, "y") )
+    if( string_equal(qualityFlag, "y") )
     {
         //if "Y" do not calculate, always return NORMAL.
         _calculateQuality = false;
@@ -40,35 +40,35 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
         _calculateQuality = true;
     }
 
-    if( (!stringCompareIgnoreCase(updateType,UpdateType_Periodic))
+    if( (string_equal(updateType,UpdateType_Periodic))
         && (updateInterval > 0) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = periodic;
     }
-    else if( !stringCompareIgnoreCase(updateType,UpdateType_AllChange))
+    else if( string_equal(updateType,UpdateType_AllChange))
     {
         _updateInterval = 0;
         _updateType = allUpdate;
     }
-    else if( !stringCompareIgnoreCase(updateType,UpdateType_OneChange))
+    else if( string_equal(updateType,UpdateType_OneChange))
     {
         _updateInterval = 0;
         _updateType = anyUpdate;
     }
-    else if( !stringCompareIgnoreCase(updateType,UpdateType_Historical))
+    else if( string_equal(updateType,UpdateType_Historical))
     {
         _updateInterval = 0;
         _updateType = historical;
     }
-    else if( !stringCompareIgnoreCase(updateType,UpdateType_PeriodicPlusUpdate) )
+    else if( string_equal(updateType,UpdateType_PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = periodicPlusUpdate;
     }
-    else if( !stringCompareIgnoreCase(updateType,UpdateType_Constant) )
+    else if( string_equal(updateType,UpdateType_Constant) )
     {
         _updateInterval = 0;
         _updateType = constant;

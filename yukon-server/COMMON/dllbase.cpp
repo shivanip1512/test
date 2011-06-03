@@ -367,12 +367,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
         {
             //  if it's uninitialized
-            if( gSimulatePorts == 0 && stringCompareIgnoreCase(id_str,"true") == 0 )
+            if( gSimulatePorts == 0 && string_equal(id_str,"true") )
             {
                 gSimulatePorts =  1;
             }
             //  if they want to exclude instead, make sure they already turned it on
-            else if( gSimulatePorts == 1 && stringCompareIgnoreCase(id_str,"exclude") == 0 )
+            else if( gSimulatePorts == 1 && string_equal(id_str,"exclude") )
             {
                 gSimulatePorts = -1;
             }

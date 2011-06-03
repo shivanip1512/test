@@ -295,7 +295,7 @@ int CtiFDR_BEPC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_APPEND_FILE);
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase("true", tempStr) )
+        if (string_equal("true", tempStr) )
         {
             setAppendToFile(true);
         }

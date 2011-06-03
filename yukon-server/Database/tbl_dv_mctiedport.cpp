@@ -208,7 +208,7 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["password"] >> temp;
     std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
-    if( temp.empty() || !stringCompareIgnoreCase(temp, "none") || !stringCompareIgnoreCase(temp, "(none)") )
+    if( temp.empty() || string_equal(temp, "none") || string_equal(temp, "(none)") )
         _password = "0000";
     else
         _password = temp;

@@ -375,7 +375,7 @@ int CtiFDR_ACS::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESYNC_UPDATE);
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempStr,"false"))
+        if (string_equal(tempStr,"false"))
         {
             setUpdatePCTimeFlag (false);
         }

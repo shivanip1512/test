@@ -1749,7 +1749,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
 
     strcpy(var, "CALC_SHUTDOWN_ON_THREAD_TIMEOUT");
-    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var),"true") )
+    if( string_equal(gConfigParms.getValueAsString(var),"true") )
     {
         _shutdownOnThreadTimeout = true;
     }
@@ -1760,7 +1760,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
 
     strcpy(var, "CALC_LOGIC_RUN_HISTORICAL");
-    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var),"true") )
+    if( string_equal(gConfigParms.getValueAsString(var),"true") )
     {
         _runCalcHistorical = true;
         if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : " << _shutdownOnThreadTimeout << endl;
@@ -1771,7 +1771,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
 
     strcpy(var, "CALC_LOGIC_RUN_BASELINE");
-    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var),"true") )
+    if( string_equal(gConfigParms.getValueAsString(var),"true") )
     {
         _runCalcBaseline = true;
         if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : " << _shutdownOnThreadTimeout << endl;
@@ -1782,7 +1782,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
 
     strcpy(var, "CALC_IGNORE_TIME_VALID_TAG");
-    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var, "false"),"true") )
+    if( string_equal(gConfigParms.getValueAsString(var, "false"),"true") )
     {
         _ignoreTimeValidTag = true;
     }
@@ -1793,7 +1793,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
 
     SET_CRT_OUTPUT_MODES;
-    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 }
 

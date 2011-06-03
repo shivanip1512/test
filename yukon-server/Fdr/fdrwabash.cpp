@@ -63,7 +63,7 @@ bool FDRWabash::readConfig()
     tempString = getCparmValueAsString(KEY_INITIAL_LOAD);
     if (tempString.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempString,"true"))
+        if (string_equal(tempString,"true"))
         {
             _writeInitialLoad = true;
         }

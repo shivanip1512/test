@@ -610,8 +610,8 @@ INT CtiDeviceTCU::getProtocolWrap() const
 
     if(gConfigParms.isOpt("TCU_PROTOCOLWRAP"))
     {
-        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"mastercom") ||
-            !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"none") )
+        if( string_equal(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"mastercom") ||
+            string_equal(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"none") )
         {
             protocol = ProtocolWrapNone;
         }

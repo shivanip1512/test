@@ -215,12 +215,15 @@ inline bool ci_equal(char ch1, char ch2)
     return ::tolower((unsigned char)ch1) == ::tolower((unsigned char)ch2);
 }
 
-inline int stringCompareIgnoreCase(const std::string& str1, const std::string& str2)
+/**
+ * Case Insensitive comparison
+ */
+inline bool string_equal(const std::string& str1, const std::string& str2)
 {
     if( str1.size() != str2.size() )
-        return 1;
+        return false;
     else
-        return !std::equal(str1.begin(), str1.end(), str2.begin(), ci_equal);
+        return std::equal(str1.begin(), str1.end(), str2.begin(), ci_equal);
 }
 
 inline int stringContainsIgnoreCase(const std::string& str, const std::string& frag)

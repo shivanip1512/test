@@ -256,11 +256,11 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
     USHORT Quality = NonUpdatedQuality;
 
     //fixThis;
-    if (!stringCompareIgnoreCase(aQuality," "))
+    if (string_equal(aQuality," "))
         Quality = NormalQuality;
-    /*if (!stringCompareIgnoreCase(aQuality,"B"))
+    /*if (string_equal(aQuality,"B"))
         Quality = NonUpdatedQuality;
-    if (!stringCompareIgnoreCase(aQuality,"M"))
+    if (string_equal(aQuality,"M"))
         Quality = ManualQuality;*/
 
     return(Quality);
@@ -420,7 +420,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
     tempStr = getCparmValueAsString(getKeyDeleteFile());
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempStr,"true"))
+        if (string_equal(tempStr,"true"))
         {
             setDeleteFileAfterImport(true);
         }
@@ -430,7 +430,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
     tempStr = getCparmValueAsString(getKeyRenameSave());
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempStr,"false"))
+        if (string_equal(tempStr,"false"))
         {
             setRenameSaveFileAfterImport(false);
         }
