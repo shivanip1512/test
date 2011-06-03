@@ -6,16 +6,22 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.DatedModelAttributes;
 import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
+import com.cannontech.analysis.tablemodel.FilteredModelAttributes;
+import com.cannontech.analysis.tablemodel.FilteredModelHelper;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.UserContextModelAttributes;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model = null;
@@ -72,6 +78,18 @@ public abstract class ReportControllerBase implements ReportController {
         if (model instanceof UserContextModelAttributes){
             UserContextModelAttributes commonModel = (UserContextModelAttributes)model;
             commonModel.setUserContext(YukonUserContextUtils.getYukonUserContext(req));
+        }
+        
+        if (model instanceof FilteredModelAttributes) {
+        	FilteredModelAttributes filteredModel = (FilteredModelAttributes)model;
+	    
+        	ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(req, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
+			String groups[] = ServletRequestUtils.getStringParameters(req, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+			String deviceNameValues = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_DEVICE_VALUES, "").trim();
+		    String meterNumberValues = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_METER_VALUES, "").trim();
+		    
+		    FilteredModelHelper modelHelper = new FilteredModelHelper(filter, groups, deviceNameValues, meterNumberValues);
+		    filteredModel.setFilteredModelHelper(modelHelper);
         }
     }
     

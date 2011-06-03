@@ -10,18 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
 
-public class MeterUsageModel extends SimpleMeterReportModelBase<MeterUsageModel.MeterUsageRow> implements UserContextModelAttributes {
+public class MeterUsageModel extends FilteredReportModelBase<MeterUsageModel.MeterUsageRow> {
 
     private RawPointHistoryDao rawPointHistoryDao;
     private MeterDao meterDao;
@@ -31,15 +30,10 @@ public class MeterUsageModel extends SimpleMeterReportModelBase<MeterUsageModel.
 	/** A string for the title of the data */
 	private static String title = "Meter Usage Report";
     
-    /** Temporary counters */
-    private Double previousReading = null;
-    private String previousDevice = null;
-
     /** Class fields */
     private List<MeterUsageRow> data = new ArrayList<MeterUsageRow>();
     private Attribute attribute;
     private boolean excludeDisabledDevices = false; 
-    private YukonUserContext userContext;
     
     static public class MeterUsageRow {
         public String deviceName;
@@ -71,21 +65,17 @@ public class MeterUsageModel extends SimpleMeterReportModelBase<MeterUsageModel.
     	return title;
     }
     
-	@Override
-	public void setUserContext(YukonUserContext userContext) {
-		this.userContext = userContext;
-	}
-	
     @Override
     public void doLoadData() {
-        Iterable<SimpleDevice> devices = getDeviceList();
-        
+    	
+        Iterable<? extends YukonPao> devices = getYukonPaoList();
         List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults = 
         	rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
            
         for (Meter meter : meters) {
+        	Double previousReading = null;
             List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueHolder : values) {
             	MeterUsageRow meterUsage = new MeterUsageRow();
@@ -95,23 +85,16 @@ public class MeterUsageModel extends SimpleMeterReportModelBase<MeterUsageModel.
         	    meterUsage.timestamp = pointValueHolder.getPointDataTimeStamp();
         	    meterUsage.reading = pointValueHolder.getValue();
 
-        	    if(previousDevice != null) {
-        	        if( !meterUsage.deviceName.equals(previousDevice)) {
-        	            previousReading = null;
-        	        }
-        	    }
+				if (previousReading != null) {
+					meterUsage.previousReading = previousReading;
+					meterUsage.totalUsage = meterUsage.reading - previousReading;
+				} else {
+					meterUsage.totalUsage = null;
+					meterUsage.previousReading = null;
+				}
 
-        	    meterUsage.previousReading = previousReading;
-
-        	    if(previousReading != null) {
-        	        meterUsage.totalUsage = meterUsage.reading - previousReading;
-        	    }else {
-        	        meterUsage.totalUsage = null;
-        	    }
-
-        	    data.add(meterUsage);
-        	    previousReading = meterUsage.reading;
-        	    previousDevice = meterUsage.deviceName;
+				data.add(meterUsage);
+				previousReading = meterUsage.reading;
             }
         }
 

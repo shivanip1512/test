@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.DeviceReadingsReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.DeviceReadingsModel;
@@ -23,10 +24,12 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
-public class DeviceReadingsController extends SimpleDeviceReportControllerBase {
+public class DeviceReadingsController extends ReportControllerBase {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
+	private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS, ReportFilter.DEVICE};
+
     public DeviceReadingsController() {
         super();
         model = YukonSpringHook.getBean("deviceReadingsModel", DeviceReadingsModel.class);
@@ -38,6 +41,11 @@ public class DeviceReadingsController extends SimpleDeviceReportControllerBase {
         return report;
     }
 
+    @Override
+    public ReportFilter[] getFilterModelTypes() {
+    	return filterModelTypes;
+    }
+    
     @SuppressWarnings("unchecked")
     public ReportModelBase<DeviceReadingsModel> getModel() {
         return report.getModel();

@@ -12,13 +12,9 @@ import com.cannontech.analysis.function.LabelFooterFieldFactory;
 import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.function.TotalSumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.MeterUsageModel;
-import com.cannontech.spring.YukonSpringHook;
 
 public class MeterUsageReport extends SingleGroupYukonReportBase
 {
-    private MeterUsageModel meterUsageModel;
-
     private static final ColumnLayoutData groupColumn = 
     	new ColumnLayoutData("Device Name:", "deviceName", 200);
     
@@ -49,11 +45,6 @@ public class MeterUsageReport extends SingleGroupYukonReportBase
 	
     public MeterUsageReport(BareReportModel bareModel) {
         super(bareModel);
-        this.meterUsageModel = (MeterUsageModel)bareModel;
-    }
-    
-    public MeterUsageReport() {
-        this(YukonSpringHook.getBean("meterUsageModel", MeterUsageModel.class));
     }
 
     @Override

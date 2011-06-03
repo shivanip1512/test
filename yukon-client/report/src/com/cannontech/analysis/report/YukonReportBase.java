@@ -160,14 +160,11 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	 */
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
-		if( expressions == null)
-		{
-			expressions = new ExpressionCollection();
-			expressions.add(getPageXofYExpression());
-			expressions.add(getBackgroundTriggerFunction());
-			expressions.add(getPageNumberFunction());
-			expressions.add(getPageTotalFunction());
-		}
+		expressions = new ExpressionCollection();
+		expressions.add(getPageXofYExpression());
+		expressions.add(getBackgroundTriggerFunction());
+		expressions.add(getPageNumberFunction());
+		expressions.add(getPageTotalFunction());
 		return expressions;
 	}	
 

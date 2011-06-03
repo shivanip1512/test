@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -22,7 +22,7 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
 
-public class DeviceReadingsModel extends SimpleDeviceReportModelBase<DeviceReadingsModel.ModelRow> 
+public class DeviceReadingsModel extends FilteredReportModelBase<DeviceReadingsModel.ModelRow> 
                                    implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);
@@ -68,7 +68,7 @@ public class DeviceReadingsModel extends SimpleDeviceReportModelBase<DeviceReadi
 
     @Override
     public void doLoadData() {
-        Iterable<SimpleDevice> devices = getDeviceList();
+        Iterable<? extends YukonPao> devices = getYukonPaoList();
         List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;

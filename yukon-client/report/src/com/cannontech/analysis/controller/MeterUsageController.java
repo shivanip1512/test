@@ -2,6 +2,7 @@ package com.cannontech.analysis.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.MeterUsageReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.MeterUsageModel;
@@ -12,8 +13,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.ServletRequestEnumUtils;
 
-public class MeterUsageController extends SimpleMeterReportControllerBase {
+public class MeterUsageController extends ReportControllerBase {
 
+	private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS, ReportFilter.DEVICE, ReportFilter.METER};
+	
 	private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
@@ -54,6 +57,11 @@ public class MeterUsageController extends SimpleMeterReportControllerBase {
         return true;
     }
 
+	@Override
+	public ReportFilter[] getFilterModelTypes() {
+		return filterModelTypes;
+	}
+	
     @Override
     public String getHTMLOptionsTable() {
 	    final StringBuilder sb = new StringBuilder();

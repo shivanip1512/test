@@ -139,6 +139,36 @@ public final class StringUtils {
 		return intArr;
 	}
 
+	/**
+	 * Parse a delimited string into List of Strings using the following delimiters:
+	 * ,\t\n\r\f (comma, tab, new-line, carriage return, and form-feed characters)
+	 * Each token is trimmed and does not include _blank_ tokens from string. (See parseStringsForList(String string, String delimiters)). 
+	 * @param string
+	 * @return
+	 */
+	public static List<String> parseStringsForList(String string) {
+		return parseStringsForList(string, ",\t\n\r\f");
+	}
+	
+	/**
+	 * Parse a delimited string into List of Strings using delimiters.
+	 * Each token is trimmed and does not include _blank_ tokens from string.
+	 * @param string
+	 * @param delimiters
+	 * @return
+	 */
+	public static List<String> parseStringsForList(String string, String delimiters) {
+        StringTokenizer st = new StringTokenizer(string, delimiters);
+	    final List<String> tokenStrings = new ArrayList<String>(st.countTokens());
+	    while (st.hasMoreTokens()) {
+	    	String token = st.nextToken().trim();
+	    	if (org.apache.commons.lang.StringUtils.isNotBlank(token)) {
+	    		tokenStrings.add(token);
+	    	}
+	    }
+	    return tokenStrings;
+	}
+	
     /**
      * First remove any whitespace, then parse the comma separated string into an int[].
      * @param s
