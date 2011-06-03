@@ -89,6 +89,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private String zoneLineColorPhaseA;
     private String zoneLineColorPhaseB;
     private String zoneLineColorPhaseC;
+    private String zoneLineColorNoPhase;
      
     private String phaseABulletType;
     private String phaseBBulletType;
@@ -97,7 +98,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private boolean showZoneTransitionText;
     private String zoneTransitionDataLabel;
     
-    private double bucketResolution;
+    private int bucketResolution;
 
     //Every Graph must have a unique id
     private AtomicInteger graphId = new AtomicInteger();
@@ -120,10 +121,13 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             xAxisLabel = null;
         }
         
+        String bucketResolutionKey = "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution";
         try {
-            bucketResolution = Double.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution"));
+            bucketResolution = Integer.valueOf(messageSourceAccessor.getMessage(bucketResolutionKey));
         } catch (NumberFormatException e) {
-            bucketResolution = 400;
+            bucketResolution = 200;
+            log.error("Error getting numeric value from key: " + bucketResolutionKey + 
+                      ". Using default of " + bucketResolution + ". ", e);
         }
         
         upperLimit = getUpperVoltLimitForSubBus(cache, subBusId);
@@ -141,6 +145,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         zoneLineColorPhaseA = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA");
         zoneLineColorPhaseB = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB");
         zoneLineColorPhaseC = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC");
+        zoneLineColorNoPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase");
 
         phaseABulletType = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseABulletType");
         phaseBBulletType = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBBulletType");
@@ -218,7 +223,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<VfLine> linesWithZoneTransitions = Lists.newArrayList(graph.getLines());
         for (Entry<Double, VfPoint> entry : zoneTransitionPoints.entrySet()) {
             VfPoint point = entry.getValue();
-            VfPoint transitionPoint = new VfPoint(point.getZoneName(), null, false, point.getX(), point.getY());
+            VfPoint transitionPoint = new VfPoint(point.getZoneName(), null, null, false, point.getX(), point.getY());
             List<VfPoint> points = Lists.newArrayListWithCapacity(1);
             points.add(transitionPoint);
             VfLineSettings lineSettings = getZoneTransitionLineSetting();
@@ -477,7 +482,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             }
         }
 
+        boolean haveShownLine = false;
         if (!phaseAPoints.isEmpty() && pointsContainPhase(phaseAPoints, Phase.A)) {
+            haveShownLine = true;
             Collections.sort(phaseAPoints, positionOrderer);
             VfLineSettings phaseALineSettings = getPhaseALineSetting();
             VfLine phaseALine = new VfLine(graphId.getAndIncrement(), phaseAString, zone.getName(), Phase.A, phaseALineSettings, phaseAPoints);
@@ -485,6 +492,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         }
 
         if (!phaseBPoints.isEmpty() && pointsContainPhase(phaseBPoints, Phase.B)) {
+            haveShownLine = true;
             Collections.sort(phaseBPoints, positionOrderer);
             VfLineSettings phaseBLineSettings = getPhaseBLineSetting();
             VfLine phaseBLine = new VfLine(graphId.getAndIncrement(), phaseBString, zone.getName(), Phase.B, phaseBLineSettings, phaseBPoints);
@@ -492,10 +500,19 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         }
 
         if (!phaseCPoints.isEmpty() && pointsContainPhase(phaseCPoints, Phase.C)) {
+            haveShownLine = true;
             Collections.sort(phaseCPoints, positionOrderer);
             VfLineSettings phaseCLineSettings = getPhaseCLineSetting();
             VfLine phaseCLine = new VfLine(graphId.getAndIncrement(), phaseCString, zone.getName(), Phase.C, phaseCLineSettings, phaseCPoints);
             lines.add(phaseCLine);
+        }
+        
+        if (!phaseAPoints.isEmpty() && haveShownLine == false) {
+            //Using phase A points here since all three phases contain our "no phase" points
+            Collections.sort(phaseAPoints, positionOrderer);
+            VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting();
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), null, zone.getName(), null, noPhaseLineSettings, phaseAPoints);
+            lines.add(noPhaseLine);
         }
         
         return lines;
@@ -581,7 +598,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	    
 	    
 	    double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
-	    VfPoint graphPoint = new VfPoint(description, phase, false, xPosition, pointValue.getValue());
+	    VfPoint graphPoint = new VfPoint(description, zone.getName(), phase, false, xPosition, pointValue.getValue());
 	    return graphPoint;
 	}
 	
@@ -626,7 +643,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		}
 		
 		double xPosition = graphStartPosition + pointToZone.getGraphPositionOffset();
-		VfPoint graphPoint = new VfPoint(description, phase, false, xPosition, pointValue.getValue());
+		VfPoint graphPoint = new VfPoint(description, zone.getName(), phase, false, xPosition, pointValue.getValue());
 		return graphPoint;
 	}
 
@@ -663,6 +680,12 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private VfLineSettings getPhaseCLineSetting() {
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorPhaseC, phaseCBulletType, 
                                                         true, true, true, true, true);
+        return lineSetting;
+    }
+    
+    private VfLineSettings getNoPhaseLineSetting() {
+        VfLineSettings lineSetting = new VfLineSettings(zoneLineColorNoPhase, phaseABulletType, 
+                                                        true, true, true, false, true);
         return lineSetting;
     }
 

@@ -23,12 +23,19 @@
 
     <c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
 
+    <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title" var="zoneCreationWizardTitle"/>
+    <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneEditorWizardTitle"/>
+
     <!-- Zone Wizard Dialog -->
     <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
 
     <script type="text/javascript">
-    	function showZoneWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, 'Zone Creation Wizard', null, null, 'get');
+    	function showZoneCreationWizard(url) {
+			openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, null, 'get');
+		}
+
+    	function showZoneEditorWizard(url) {
+			openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, null, 'get');
 		}
     	
 		function selectZone(event) {
@@ -139,10 +146,10 @@
                             <td class="zoneType">
                                 <c:choose>
                                     <c:when test="${zone.zoneType == singlePhaseZone}">
-                                        <i:inline key="${zone.zoneType.formatKey}"/>:&nbsp<i:inline key="${zone.regulator.phase.formatKey}"/>
+                                        <i:inline key="${zone.zoneType}"/>:&nbsp<i:inline key="${zone.regulator.phase}"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <i:inline key="${zone.zoneType.formatKey}"/>
+                                        <i:inline key="${zone.zoneType}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
@@ -152,7 +159,7 @@
                             <td class="zoneActions">
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
-                                        <a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+                                        <a href="javascript:showZoneEditorWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
                                         <cti:button id="delete_${zone.zoneId}" key="remove" renderMode="image" href="${zoneDeleteUrl}"/>
                                     </c:when>
                                     <c:otherwise>
@@ -170,7 +177,7 @@
         				<c:if test="${unassignedBanksExist}">
         					<span class="strongWarningMessage fl"><i:inline key=".zoneList.unassignedBanks"/></span>
         				</c:if>
-						<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
+						<cti:button key="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');"/>
 					</div>
 				</c:if>
 				

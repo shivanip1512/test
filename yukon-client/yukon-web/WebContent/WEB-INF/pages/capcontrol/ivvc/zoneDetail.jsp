@@ -17,6 +17,7 @@
 	<cti:includeCss link="/capcontrol/css/ivvc.css"/>
 
     <c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
+    <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
 
     <!-- Zone Wizard Dialog -->
     <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
@@ -60,7 +61,7 @@
 	    }
 	    
     	function showZoneWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, 'Zone Wizard', null, null, 'get');
+			openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}", null, null, 'get');
 		}
 	</script>
 
@@ -153,7 +154,7 @@
                         <c:when test="${zoneDto.zoneType == threePhase}">
         					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
         						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorA.phase.formatKey}"/></B>
+                                        <i:inline key="${zoneDto.regulatorA.phase}"/></B>
                                 </td>
         						<td>
         							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseA}" type="VOLTAGE_REGULATOR"/>
@@ -170,7 +171,7 @@
         					</tr>
         					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
         						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorB.phase.formatKey}"/></B>
+                                        <i:inline key="${zoneDto.regulatorB.phase}"/></B>
                                 </td>
         						<td>
         							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseB}" type="VOLTAGE_REGULATOR"/>
@@ -187,7 +188,7 @@
         					</tr>
         					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
         						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorC.phase.formatKey}"/></B>
+                                        <i:inline key="${zoneDto.regulatorC.phase}"/></B>
                                 </td>
         						<td>
         							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseC}" type="VOLTAGE_REGULATOR"/>
@@ -206,7 +207,7 @@
                         <c:when test="${zoneDto.zoneType == singlePhase}">
                             <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
                                 <td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulator.phase.formatKey}"/></B>
+                                        <i:inline key="${zoneDto.regulator.phase}"/></B>
                                 </td>
                                 <td>
                                     <capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
@@ -501,7 +502,7 @@
                                                         <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        ---
+                                                        <i:inline key="yukon.web.defaults.dashes"/>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -511,7 +512,7 @@
                                                         <cti:pointValue pointId="${point.pointId}" format="DATE"/>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        ---
+                                                        <i:inline key="yukon.web.defaults.dashes"/>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -541,7 +542,7 @@
         		                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
         		                            </c:when>
         		                            <c:otherwise>
-        		                                ---
+        		                                <i:inline key="yukon.web.defaults.dashes"/>
         		                            </c:otherwise>
         		                        </c:choose>
         		                    </td>
@@ -551,7 +552,7 @@
         		                                <cti:pointValue pointId="${point.pointId}" format="DATE"/>
         		                            </c:when>
         		                            <c:otherwise>
-        		                                ---
+        		                                <i:inline key="yukon.web.defaults.dashes"/>
         		                            </c:otherwise>
         		                        </c:choose>
         		                    </td>
@@ -638,7 +639,7 @@
 		                                <cti:pointValue pointId="${capBank.voltagePointId}" format="VALUE"/>
 		                            </c:when>
 		                            <c:otherwise>
-		                                ---
+		                                <i:inline key="yukon.web.defaults.dashes"/>
 		                            </c:otherwise>
 		                        </c:choose>
 		                    </td>

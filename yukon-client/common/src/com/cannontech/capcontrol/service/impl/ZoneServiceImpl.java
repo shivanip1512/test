@@ -46,7 +46,7 @@ public class ZoneServiceImpl implements ZoneService {
             dbChangeType = DbChangeType.ADD;
             
             //If we are creating this as the root. Make sure one is not already on the subbus.
-            if (zoneDto.getParentZoneId() == null) {
+            if (zoneDto.getParentId() == null) {
                 Zone rootZone = zoneDao.findParentZoneByBusId(zoneDto.getSubstationBusId());
                 if (rootZone != null) {
                     throw new RootZoneExistsException();
@@ -57,7 +57,7 @@ public class ZoneServiceImpl implements ZoneService {
         Zone zone = new Zone();
         zone.setId(zoneDto.getZoneId());
         zone.setName(zoneDto.getName());
-        zone.setParentId(zoneDto.getParentZoneId());
+        zone.setParentId(zoneDto.getParentId());
         zone.setRegulators(zoneDto.getRegulators());
         zone.setSubstationBusId(zoneDto.getSubstationBusId());
         zone.setGraphStartPosition(zoneDto.getGraphStartPosition());
@@ -142,10 +142,10 @@ public class ZoneServiceImpl implements ZoneService {
         List<ZoneDto> zoneDtoList = getZoneDtoListFromZones(zones);
         Multimap<Integer, ZoneDto> childOfLookup = ArrayListMultimap.create();
         for (ZoneDto zoneDto : zoneDtoList) {
-            if (zoneDto.getParentZoneId() == null) {
+            if (zoneDto.getParentId() == null) {
                 root = zoneDto;
             } else {
-                childOfLookup.put(zoneDto.getParentZoneId(), zoneDto);
+                childOfLookup.put(zoneDto.getParentId(), zoneDto);
             }
         }
 

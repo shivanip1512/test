@@ -26,10 +26,6 @@ public class VfPoint {
         this(point.getDescription(), point.getZoneName(),point.getPhase(), point.isRegulator(), point.getX(), point.getY(), point.getSeriesId());
     }
     
-    public VfPoint(String description, Phase phase, boolean regulator, Double x, Double y) {
-        this(description, null, phase, regulator, x, y, null);
-    }
-    
     public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y) {
         this(description, zoneName, phase, regulator, x, y, null);
     }

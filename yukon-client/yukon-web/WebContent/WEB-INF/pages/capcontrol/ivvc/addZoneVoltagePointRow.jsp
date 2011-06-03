@@ -14,7 +14,7 @@
         <select name="${row.type}Assignments[${index}].phase">
             <c:forEach var="phase" items="${phases}">
                 <option value="${phase}">
-                    <i:inline key="${phase.formatKey}" />
+                    <i:inline key="${phase}" />
                 </option>
             </c:forEach>
         </select>

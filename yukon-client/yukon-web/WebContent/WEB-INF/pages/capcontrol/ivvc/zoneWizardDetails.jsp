@@ -22,7 +22,7 @@
         var url = '/spring/capcontrol/ivvc/wizard/addCapBank';
         var index = $$('.bankRowCounter').length;
         
-        for(var i = 0; i < selectedPaoInfo.size(); i++) {
+        for(var i = 0; i < selectedPaoInfo.length; i++) {
             var paoId = selectedPaoInfo[i].paoId;
             addRow(url,paoId,index++,'bank');   
         }
@@ -34,7 +34,7 @@
         var url = '/spring/capcontrol/ivvc/wizard/addVoltagePoint';
         var index = $$('.pointRowCounter').length;
         
-        for(var i = 0; i < selectedPointInfo.size(); i++) {
+        for(var i = 0; i < selectedPointInfo.length; i++) {
             var pointId = selectedPointInfo[i].pointId;     
             addRow(url,pointId,index++,'point');
         }
@@ -131,11 +131,13 @@
 
 <form:form id="zoneDetailsForm" commandName="zoneDto" action="${action}" >
 	<form:hidden path="zoneId"/>
-    <form:hidden path="parentZoneId"/>
+    <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>
     <input type="hidden" name="zoneType" value="${zoneDto.zoneType}"/>
 	
-	<span id="errorOnPage" style="display:none" class="errorIndicator">Missing fields are marked in red.</span>
+	<span id="errorOnPage" style="display:none" class="errorIndicator">
+		<i:inline key=".error.missingFields"/>
+	</span>
 
 	<tags:nameValueContainer2>
 		<%-- Zone Name --%>
@@ -144,7 +146,7 @@
         <%-- Zone Type --%>
         <tags:nameValue2 nameKey=".label.zoneType">
             <span class="disabledRow">
-                <i:inline key="${zoneDto.zoneType.formatKey}"/>
+                <i:inline key="${zoneDto.zoneType}"/>
             </span>
         </tags:nameValue2>
 
@@ -152,11 +154,11 @@
         <tags:nameValue2 nameKey=".label.parentZone">
             <span id="parentZoneName" class="disabledRow">
                 <c:choose>
-                    <c:when test="${zoneDto.parentZoneId == null}">
+                    <c:when test="${zoneDto.parentId == null}">
                         <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.defaults.dashes"/></spring:escapeBody>
                     </c:when>
                     <c:otherwise>
-                        <spring:escapeBody htmlEscape="true">${parentZoneName} - <i:inline key="${zoneDto.zoneType}"/></spring:escapeBody>
+                        <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/></spring:escapeBody>
                     </c:otherwise>
                 </c:choose>
             </span>
@@ -289,11 +291,6 @@
 
 	</tags:nameValueContainer2>
     
-    <c:set var="numColumns" value="2"/>
-    <c:if test="${zoneDto.zoneType == singlePhase}">
-        <c:set var="numColumns" value="1"/>
-    </c:if>
-	
 	<table style="display:none">
 		<tr id="defaultRow">
 			<td colspan="5" style="text-align: center"><img src="/WebConfig/yukon/Icons/indicator_arrows.gif"></td>
@@ -386,7 +383,7 @@
                                         <form:select path="pointAssignments[${status.index}].phase">
                                             <c:forEach var="phase" items="${phases}">
                                                 <form:option value="${phase}">
-                                                    <i:inline key="${phase.formatKey}" />
+                                                    <i:inline key="${phase}" />
                                                 </form:option>
                                             </c:forEach>
                                         </form:select>

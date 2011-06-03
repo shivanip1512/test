@@ -13,7 +13,7 @@ public class Zone {
     private int substationBusId;
     private Integer parentId;
     private double graphStartPosition;
-    private ZoneType typeType = ZoneType.GANG_OPERATED;
+    private ZoneType zoneType = ZoneType.GANG_OPERATED;
     
     public Zone () {
         
@@ -68,11 +68,11 @@ public class Zone {
 	}
 
     public ZoneType getZoneType() {
-        return typeType;
+        return zoneType;
     }
 
     public void setZoneType(ZoneType zoneType) {
-        this.typeType = zoneType;
+        this.zoneType = zoneType;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Zone {
         result = prime * result + ((parentId == null) ? 0 : parentId.hashCode());
         result = prime * result + ((regulators == null) ? 0 : regulators.hashCode());
         result = prime * result + substationBusId;
-        result = prime * result + ((typeType == null) ? 0 : typeType.hashCode());
+        result = prime * result + ((zoneType == null) ? 0 : zoneType.hashCode());
         return result;
     }
 
@@ -125,7 +125,7 @@ public class Zone {
             return false;
         if (substationBusId != other.substationBusId)
             return false;
-        if (typeType != other.typeType)
+        if (zoneType != other.zoneType)
             return false;
         return true;
     }

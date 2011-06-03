@@ -37,7 +37,7 @@ public class VoltageRegulatorTapTooltipHandler implements VoltageRegulatorUpdate
             String text = null;
             
             if (tapOp == TapOperation.NONE) {
-                text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.noLastOp.tooltip");
+                text = messageSourceAccessor.getMessage("yukon.web.defaults.na");
             } else if (tapOp == TapOperation.LOWER_TAP) {
                 if (regulatorFlags.isRecentOperation()) {
                     if (isWarning(regulatorFlags)) {

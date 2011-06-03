@@ -9,7 +9,7 @@ public abstract class ZoneDto {
     
     private String name;
     private Integer zoneId;
-    private Integer parentZoneId;
+    private Integer parentId;
     private int substationBusId = -1;
     private double graphStartPosition;
     
@@ -23,7 +23,7 @@ public abstract class ZoneDto {
     public ZoneDto(Zone zone) {
         this.name = zone.getName();
         this.zoneId = zone.getId();
-        this.parentZoneId = zone.getParentId();
+        this.parentId = zone.getParentId();
         this.substationBusId = zone.getSubstationBusId();
         this.graphStartPosition = zone.getGraphStartPosition();
     }
@@ -44,12 +44,12 @@ public abstract class ZoneDto {
         this.name = name;
     }
 
-    public Integer getParentZoneId() {
-        return parentZoneId;
+    public Integer getParentId() {
+        return parentId;
     }
 
-    public void setParentZoneId(Integer parentZoneId) {
-        this.parentZoneId = parentZoneId;
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public int getSubstationBusId() {

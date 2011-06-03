@@ -77,6 +77,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title">Zone Wizard</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title">Zone Creation Wizard</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title">Zone Editor</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltageDevice.title">Assigned Cap Bank Devices</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltagePoint.title">Assigned Voltage Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title.createTitle">Create New Zone</entry>
@@ -115,6 +117,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator">A Voltage Regulator is required, please select a Regulator.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved">Zone was successfully saved.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.zoneDeleteError">Error deleting Zone, delete any child Zones first.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.missingFields">Missing fields are marked in red.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists">Error creating Zone. A root Zone already exists on this Substation bus, please select a Parent Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone">There was an error saving the Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zoneType">Zone Type</entry>
@@ -133,11 +136,12 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.regulator.SINGLE_PHASE">Phase Operated</entry>
     
 	<!-- Voltage Profile graphs (used on both BusView and ZoneDetail )-->
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution">200</entry>
+    <!-- If any of these below are left blank, then amchart's default value will be used instead -->
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphLabel">Voltage Profile</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.yAxisLabel">Volts</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.xAxisLabel"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText">true</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution">200</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseABulletType">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBBulletType">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCBulletType">round_outlined</entry>
@@ -152,6 +156,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#993333</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#006600</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#000000</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel">{description}</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.font">Arial</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.textSize"></entry>
@@ -242,7 +247,6 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.greenDownArrow.tooltip">Tap Down</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.orangeUpArrow.tooltip">Tap Up (Warning)</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.orangeDownArrow.tooltip">Tap Down (Warning)</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.noLastOp.tooltip">No Last Operation</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.mode.local">L</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.mode.localWarning">L</entry>

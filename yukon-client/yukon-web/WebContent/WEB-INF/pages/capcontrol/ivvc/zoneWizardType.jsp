@@ -36,7 +36,7 @@
             <form:select path="zoneType">
                 <c:forEach var="availableZoneType" items="${availableZoneTypes}">
                     <form:option value="${availableZoneType}" onclick="${availableZoneType}_option()">
-                        <i:inline key="${availableZoneType.formatKey}" />
+                        <i:inline key="${availableZoneType}" />
                     </form:option>
                 </c:forEach>
             </form:select>
@@ -52,7 +52,9 @@
             <form:select path="regulators[0].phase">
                 <c:forEach var="phase" items="${availableZonePhases}">
                     <form:option value="${phase}">
-                        <spring:escapeBody htmlEscape="true"><i:inline key="${phase.formatKey}" /></spring:escapeBody>
+                        <spring:escapeBody htmlEscape="true">
+                        	<i:inline key="${phase}" />
+                        </spring:escapeBody>
                     </form:option>
                 </c:forEach>
             </form:select>

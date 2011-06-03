@@ -79,16 +79,16 @@ public class ZoneWizardController {
     public String wizardParentSelected(ModelMap model, YukonUserContext userContext, Zone zone) {
         List<ZoneType> availableZoneTypes = Lists.newArrayListWithCapacity(3);
         List<Phase> availableZonePhases = Lists.newArrayListWithCapacity(3);
-        Integer parentZoneId = zone.getParentId();
+        Integer parentId = zone.getParentId();
 
-        if (parentZoneId == null) {
+        if (parentId == null) {
             availableZoneTypes = getAllZoneTypes();
             availableZonePhases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String root = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneWizard.label.creatingAsRootZone");
             model.addAttribute("parentZoneName", root);
         } else {
-            Zone parentZone = zoneService.getZoneById(parentZoneId);
+            Zone parentZone = zoneService.getZoneById(parentId);
             if (parentZone.getZoneType() == ZoneType.GANG_OPERATED) {
                 availableZoneTypes = getAllZoneTypes();
                 availableZonePhases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
@@ -108,22 +108,25 @@ public class ZoneWizardController {
         model.addAttribute("zone", zone);
         model.addAttribute("availableZoneTypes", availableZoneTypes);
         model.addAttribute("availableZonePhases", availableZonePhases);
-        
+        addZoneEnums(model);
+
         return "ivvc/zoneWizardType.jsp";
     }
 
     @RequestMapping
-    public String wizardTypeSelected(ModelMap model, LiteYukonUser user, Zone zone) throws IllegalStateException, UnsupportedDataTypeException {
-        Integer parentZoneId = zone.getParentId();
-        if (parentZoneId != null) {
-            Zone parentZone = zoneService.getZoneById(parentZoneId);
-            model.addAttribute("parentZoneName", parentZone.getName());
+    public String wizardTypeSelected(ModelMap model, YukonUserContext userContext, Zone zone) throws IllegalStateException, UnsupportedDataTypeException {
+        Integer parentId = zone.getParentId();
+        if (parentId != null) {
+            Zone parentZone = zoneService.getZoneById(parentId);
+            model.addAttribute("parentZone", parentZone);
         } else {
-            model.addAttribute("parentZoneName", "Creating as Parent");
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String creatingAsRootString = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneWizard.label.creatingAsRootZone");
+            model.addAttribute("parentZoneName", creatingAsRootString);
         }
 
-        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZone(zone, user);
-        setupZoneCreation(model, user, zoneDto);
+        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZone(zone, userContext.getYukonUser());
+        setupZoneCreation(model, userContext.getYukonUser(), zoneDto);
         
         return "ivvc/zoneWizardDetails.jsp";
     }
@@ -214,7 +217,7 @@ public class ZoneWizardController {
         
         model.addAttribute("zoneDto", zoneDto);
 
-        Integer parentId = zoneDto.getParentZoneId();
+        Integer parentId = zoneDto.getParentId();
         String parentName = "---";
         if (parentId != null) {
             Zone parentZone = zoneService.getZoneById(parentId);
