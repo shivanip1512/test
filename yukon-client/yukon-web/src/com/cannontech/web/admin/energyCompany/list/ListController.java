@@ -126,12 +126,6 @@ public class ListController {
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   list.getEnergyCompanyId());
 
-        // Moving items up and down on the page doesn't change their indexes so the entries
-        // are in the order they were originally added to the page...not the order specified.
-        // Sort them so they match again.  (This is only strictly necessary when called from
-        // validation errors but doesn't hurt otherwise.
-        list.sortEntries();
-
         addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
 
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -178,6 +172,13 @@ public class ListController {
         // Get type from old list since it can't be changed.  (We don't have to pass it and
         // we don't have to worry about the user tampering with it.)
         list.setType(oldList.getType());
+
+        // Moving items up and down on the page doesn't change their indexes so the entries
+        // are in the order they were originally added to the page...not the order specified.
+        // Sort them so they match again in case we have validation errors and need to go back
+        // to the edit page.  (We have to do this before actual validation so the errors show
+        // up on the correct rows.)
+        list.sortEntries();
 
         validator.validate(list, bindingResult);
         if (bindingResult.hasErrors()) {
