@@ -221,6 +221,15 @@ SET PointName = 'Neutral Current Alarm Threshold'
 WHERE PointName = 'Neutral Current Alarm Set Point';
 /* End YUK-9878 */
 
+/* Start YUK-9871 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -20907; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -20907; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -20907;
+/* End YUK-9871 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
