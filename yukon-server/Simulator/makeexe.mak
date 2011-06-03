@@ -41,8 +41,6 @@ INCLPATHS+= \
 CCU_SIMULATOR_OBJS=\
 ccu_simulator.obj \
 CommInterface.obj \
-SimulatorLogger.obj \
-LoggerDecorators.obj \
 PortLogger.obj \
 PlcInfrastructure.obj \
 EmetconWords.obj \
@@ -186,11 +184,6 @@ delaybehavior.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		os2_2w32.h numstr.h CtiPCPtrQueue.h
 emetconwords.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		EmetconWords.h dlldefs.h cti_asmc.h cticalls.h os2_2w32.h
-loggerdecorators.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		LoggerDecorators.h SimulatorLogger.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h sorted_vector.h \
-		CtiPCPtrQueue.h
 mct410.obj:	yukon.h precompiled.h types.h ctidbgmem.h Mct410.h \
 		EmetconWords.h ctitime.h dlldefs.h logger.h thread.h mutex.h \
 		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -235,14 +228,6 @@ portlogger.obj:	yukon.h precompiled.h types.h ctidbgmem.h portlogger.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		CtiPCPtrQueue.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
-scopedlogger.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		ScopedLogger.h SimulatorLogger.h logger.h dlldefs.h thread.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h sorted_vector.h CtiPCPtrQueue.h
-simulatorlogger.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		SimulatorLogger.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		sorted_vector.h CtiPCPtrQueue.h
 simulator_main.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ctitime.h dlldefs.h ccusimsvc.h cservice.h CServiceConfig.h \
 		ctibase.h ctinexus.h netports.h cticonnect.h dllbase.h \
@@ -269,10 +254,6 @@ test_delay_behavior.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		os2_2w32.h numstr.h BehaviorCollection.h DelayBehavior.h \
 		CommsBehavior.h logger.h thread.h mutex.h guard.h \
 		CtiPCPtrQueue.h
-test_logger_decorators.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h LoggerDecorators.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h CtiPCPtrQueue.h
 test_mct410_sim.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h numstr.h Mct410.h EmetconWords.h
