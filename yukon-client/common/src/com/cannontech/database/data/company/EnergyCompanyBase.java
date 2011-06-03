@@ -103,7 +103,6 @@ public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 	                        getEnergyCompany().getEnergyCompanyId().intValue(),
 	                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
 	                        DBChangeMsg.CAT_ENERGY_COMPANY,
-	                        null,
 	                        dbChangeType)
 	};
 

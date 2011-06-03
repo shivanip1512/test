@@ -150,7 +150,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                             energyCompany.getEnergyCompanyId(),
                             DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
                             DBChangeMsg.CAT_ENERGY_COMPANY,
-                            null,
                             DbChangeType.ADD));
 
         /* Set Default Route */
