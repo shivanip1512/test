@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/3/2011 3:48:47 PM                          */
+/* Created on:     6/6/2011 11:12:21 AM                         */
 /*==============================================================*/
 
 
@@ -7583,7 +7583,6 @@ insert into YukonGroupRole values(-11,-1,-1,-1010,'(none)');
 insert into YukonGroupRole values(-12,-1,-1,-1011,'(none)');
 insert into YukonGroupRole values(-14,-1,-1,-1013,'(none)');
 insert into YukonGroupRole values(-15,-1,-1,-1014,'CannonLogo.gif');
-insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
 insert into YukonGroupRole values(-17,-1,-1,-1016,'(none)');
 insert into YukonGroupRole values(-18,-1,-1,-1017,'(none)');
 insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
@@ -9305,10 +9304,10 @@ create table ZBControlEvent  (
 create table ZBControlEventDevice  (
    EventId              NUMBER                          not null,
    DeviceId             NUMBER                          not null,
-   DeviceAck            char                            not null,
+   DeviceAck            CHAR(1)                         not null,
    StartTime            DATE,
    StopTime             DATE,
-   Canceled             char,
+   Canceled             CHAR(1),
    constraint PK_ZBContEventDev primary key (EventId, DeviceId)
 );
 
