@@ -40,29 +40,29 @@ public class MasterConfigMap implements ConfigurationSource {
     
     public void initialize() {
         log.debug("starting initialization");
-        Pattern dupCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)");
-        Pattern badCharPatter = Pattern.compile("[^\\p{Print}\n\t\r]");
+        Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)");
+        Pattern extCharPattern = Pattern.compile("[^\\p{Print}\n\t\r]");
+        Pattern spacePattern = Pattern.compile("\\p{Zs}");
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
         String line = null;
         int lineNum = 0;
         
         try {
             while ((line = bufReader.readLine()) != null) { 
-               lineNum++;
-               Matcher badCharMatcher = badCharPatter.matcher(line);
+                lineNum++;
+                Matcher extCharMatcher = extCharPattern.matcher(line);
                 
-               if (badCharMatcher.find()) {
+                if (extCharMatcher.find()) {
                     log.warn(" Line " + lineNum + ": Extended characters found: " + line);
-               }
-                // replace any space characters with a normal space
-                line = line.replaceAll("\\p{Zs}", " ");                
-                Matcher dupMatcher = dupCharPattern.matcher(line);
-                if (dupMatcher.find()) {
+                }
+                line = spacePattern.matcher(line).replaceAll(" ");                
+                Matcher keyMatcher = keyCharPattern.matcher(line);
+                if (keyMatcher.find()) {
                     log.debug("Found line match: " + line);
-                    String key = dupMatcher.group(1);
-                    String value = dupMatcher.group(2).trim();
+                    String key = keyMatcher.group(1);
+                    String value = keyMatcher.group(2).trim();
                     if (configMap.containsKey(key)) {
-                        log.warn("Duplicate key found while reading Master Config file: " + key);
+                        log.warn(" Line " + lineNum + ": Duplicate key found while reading Master Config file: " + key);
                     }
                     log.debug("Storing key='" + key + "', value='" + value + "'");
                     configMap.put(key, value);
