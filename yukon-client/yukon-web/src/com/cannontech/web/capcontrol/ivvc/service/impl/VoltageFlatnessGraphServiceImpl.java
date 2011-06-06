@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private boolean showZoneTransitionText;
     private String zoneTransitionDataLabel;
     
+    private String balloonDistanceText;
+    
     private int bucketResolution;
 
     //Every Graph must have a unique id
@@ -120,6 +123,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         } else {
             xAxisLabel = null;
         }
+        
+        balloonDistanceText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance");
         
         String bucketResolutionKey = "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution";
         try {
@@ -537,20 +542,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
         String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
         String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String nameString = displayablePao.getName();
-        String description = null;
-        if (phase != null) {
-            String phaseString = getPhaseString(phase);
-            description = messageSourceAccessor.
-                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndNoDist",
-                           pointValueString, phaseString, nameString, timestamp, zoneName);
-        } else {
-            description = messageSourceAccessor.
-                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist",
-                           pointValueString, nameString, timestamp, zoneName);
-        }
-            
+        String phaseString = getPhaseString(phase);
+        String description = getBalloonText(userContext, pointValueString, phaseString, null, 
+                                            nameString, timestamp, zoneName, null);
         VfPoint regulatorGraphPoint = new VfPoint(description, zoneName, phase, true, 
                                                   graphStartPosition, pointValue.getValue());
         return regulatorGraphPoint;
@@ -559,8 +554,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	private VfPoint getCapBankToZoneVfPoint(YukonUserContext userContext, CapControlCache cache, 
 	                                        CapBankToZoneMapping bankToZone, Integer pointId, 
 	                                        Phase phase, Zone zone, double graphStartPosition) {
-	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-	    
 	    CapBankDevice bank = cache.getCapBankDevice(bankToZone.getDeviceId());
 	    YukonPao yukonPao = paoDao.getYukonPao(bank.getControlDeviceID());
 	    DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
@@ -568,42 +561,18 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	    String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
 	    String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
 	    double distance = bankToZone.getDistance();
-	    String description = "";
-	    if (phase != null) {
-	        String phaseString = getPhaseString(phase);
-	        if (distance != 0) {
-	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndDist",
-	                           pointValueString, phaseString, displayablePao.getName(), timestamp,
-	                           zone.getName(), distance);
-	        } else {
-	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndNoDist",
-	                           pointValueString, phaseString, displayablePao.getName(), timestamp,
-	                           zone.getName());
-	        }
-	    } else {
-	        if (distance != 0) {
-	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist",
-	                           pointValueString, displayablePao.getName(), timestamp, 
-	                           zone.getName(), distance);
-	        } else {
-	            description = messageSourceAccessor.
-	                getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist",
-	                           pointValueString, displayablePao.getName(), timestamp,
-	                           zone.getName());
-	        }
-	    }
-	    
-	    
+	    String distanceString = (distance != 0) ? String.valueOf(distance) : null;
+        String phaseString = getPhaseString(phase);
+        String balloonText = getBalloonText(userContext, pointValueString, phaseString, null, 
+                                            displayablePao.getName(), timestamp, zone.getName(), 
+                                            distanceString);
 	    double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
-	    VfPoint graphPoint = new VfPoint(description, zone.getName(), phase, false, xPosition, pointValue.getValue());
+	    VfPoint graphPoint = new VfPoint(balloonText, zone.getName(), phase, false, xPosition, 
+	                                     pointValue.getValue());
 	    return graphPoint;
 	}
-	
+
 	private VfPoint getPointToZoneVfPoint(YukonUserContext userContext, PointToZoneMapping pointToZone, Zone zone, double graphStartPosition) {
-	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 		int pointId = pointToZone.getPointId();
 		LitePoint litePoint = pointDao.getLitePoint(pointId);
 		YukonPao yukonPao = paoDao.getYukonPao(litePoint.getPaobjectID());
@@ -611,42 +580,59 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
 		String litePointString = litePoint.getPointName();
 		Phase phase = pointToZone.getPhase();
+        String phaseString = getPhaseString(phase);
 		String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
 		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-		double distance = pointToZone.getDistance();
-		String description = "";
-		if (phase != null) {
-		    String phaseString = getPhaseString(phase);
-		    if (distance != 0) {
-		        description = messageSourceAccessor.
-		            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndDist",
-		                       pointValueString, phaseString, litePointString, 
-		                       displayablePao.getName(), timestamp, zone.getName(), distance);
-		    } else {
-		        description = messageSourceAccessor.
-		            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndNoDist",
-		                       pointValueString, phaseString, litePointString, 
-		                       displayablePao.getName(), timestamp, zone.getName());
-		    }
-		} else {
-		    if (distance != 0) {
-		        description = messageSourceAccessor.
-		            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist",
-		                       pointValueString, litePointString, displayablePao.getName(), 
-		                       timestamp, zone.getName(), distance);
-		    } else {
-		        description = messageSourceAccessor.
-		            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist",
-		                       pointValueString, litePointString, displayablePao.getName(),
-		                       timestamp, zone.getName());
-		    }
-		}
-		
+        double distance = pointToZone.getDistance();
+        String distanceString = (distance != 0) ? String.valueOf(distance) : null;
+        String balloonText = getBalloonText(userContext, pointValueString, phaseString, litePointString, 
+		                       displayablePao.getName(), timestamp, zone.getName(), distanceString);
 		double xPosition = graphStartPosition + pointToZone.getGraphPositionOffset();
-		VfPoint graphPoint = new VfPoint(description, zone.getName(), phase, false, xPosition, pointValue.getValue());
+		VfPoint graphPoint = new VfPoint(balloonText, zone.getName(), phase, false, xPosition, 
+		                                 pointValue.getValue());
 		return graphPoint;
 	}
 
+    private String getBalloonText(YukonUserContext userContext, String value, String phase, 
+                                  String pointName, String paoName, String timeStamp, String zone, 
+                                  String distance) {
+        value = StringUtils.defaultIfEmpty(value, "");
+        phase = StringUtils.defaultIfEmpty(phase, "");
+        pointName = StringUtils.defaultIfEmpty(pointName, "");
+        paoName = StringUtils.defaultIfEmpty(paoName, "");
+        timeStamp = StringUtils.defaultIfEmpty(timeStamp, "");
+        zone = StringUtils.defaultIfEmpty(zone, "");
+        distance = StringUtils.defaultIfEmpty(distance, "");
+        
+        if (!distance.isEmpty()) {
+            distance = balloonDistanceText + distance;
+        }
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String balloonText = messageSourceAccessor.
+            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
+                       value, phase, pointName, paoName, timeStamp, zone, distance);
+        
+        balloonText = cleanUpBalloonText(balloonText);
+        return balloonText;
+    }
+    
+    private String cleanUpBalloonText(String value) {
+        value = removeEmptyLines(value);
+        value = StringUtils.trimToEmpty(value);
+        value = StringUtils.replace(value, "\\n", "<br>");
+        value = StringEscapeUtils.escapeHtml(value);
+        return value;
+    }
+    
+    private String removeEmptyLines(String value) {
+        if (StringUtils.contains(value, "\\n\\n")) {
+            value = StringUtils.replace(value, "\\n\\n", "\\n");
+            value = removeEmptyLines(value);
+        }
+        return value;
+    }
+    
     private String getPhaseString(Phase phase) {
         if (phase == Phase.A) {
             return phaseAString;

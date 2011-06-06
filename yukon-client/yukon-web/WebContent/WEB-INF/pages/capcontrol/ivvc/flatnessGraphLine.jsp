@@ -179,7 +179,7 @@
         <c:forEach var="line" items="${graph.lines}">
             <graph gid="${line.id}">
                 <title>${line.lineName}</title>
-                <balloon_text><![CDATA[{description}]]></balloon_text>
+                <balloon_text>{description}</balloon_text>
                 <bullet>${line.settings.bullet}</bullet>
                 <bullet_size><cti:msg2 key=".graphs.bulletSize"/></bullet_size>
                 <bullet_alpha><cti:msg2 key=".graphs.bulletAlpha"/></bullet_alpha>

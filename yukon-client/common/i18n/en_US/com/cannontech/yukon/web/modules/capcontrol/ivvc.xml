@@ -145,14 +145,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseABulletType">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBBulletType">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseCBulletType">round_outlined</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;Dist:{5}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;{5}&lt;br&gt;Dist:{6}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndPhaseAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;{5}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;Dist:{4}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}&lt;br&gt;Dist:{5}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}]]></entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndPhaseAndNoDist"><![CDATA[{0}&lt;br&gt;{1}&lt;br&gt;{2}&lt;br&gt;{3}&lt;br&gt;{4}]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText">{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance">Dist: </entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#993333</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#006600</entry>

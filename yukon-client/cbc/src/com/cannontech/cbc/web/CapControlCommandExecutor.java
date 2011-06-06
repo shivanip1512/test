@@ -103,16 +103,8 @@ public class CapControlCommandExecutor
                 executeCBCCommand(paoId, optParams);
                 break;
             }
-            case LTC: {
-                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-                executeCommand(paoId, cmdId);
-                break;
-            }
-            case GO_REGULATOR: {
-                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-                executeCommand(paoId, cmdId);
-                break;
-            }
+            case LTC:
+            case GO_REGULATOR:
             case PO_REGULATOR: {
                 rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
                 executeCommand(paoId, cmdId);
