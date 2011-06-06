@@ -23,6 +23,8 @@ import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
@@ -75,6 +77,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private PaoLoadingService paoLoadingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
+    private ConfigurationSource configurationSource;
     
     private double upperLimit;
     private double lowerLimit;
@@ -126,12 +129,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         balloonDistanceText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance");
         
-        String bucketResolutionKey = "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.resolution";
         try {
-            bucketResolution = Integer.valueOf(messageSourceAccessor.getMessage(bucketResolutionKey));
+            bucketResolution = configurationSource.getInteger(MasterConfigIntegerKeysEnum.CAP_CONTROL_IVVC_GRAPH_RESOLUTION.name(), 200);
         } catch (NumberFormatException e) {
             bucketResolution = 200;
-            log.error("Error getting numeric value from key: " + bucketResolutionKey + 
+            log.error("Error getting numeric value from master config value: " + MasterConfigIntegerKeysEnum.CAP_CONTROL_IVVC_GRAPH_RESOLUTION.name() + 
                       ". Using default of " + bucketResolution + ". ", e);
         }
         
@@ -835,4 +837,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
 		this.messageSourceResolver = messageSourceResolver;
 	}
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
 }
