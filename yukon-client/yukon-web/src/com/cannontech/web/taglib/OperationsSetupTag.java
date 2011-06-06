@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.util.ServletUtil;
 
@@ -20,6 +22,7 @@ public class OperationsSetupTag extends YukonTagSupport {
     
     private EnergyCompanyService energyCompanyService;
     private RolePropertyDao rolePropertyDao;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -28,7 +31,8 @@ public class OperationsSetupTag extends YukonTagSupport {
         boolean isEcOperator = energyCompanyService.isOperator(user);
         boolean hasMultiSpeak = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
         boolean hasUserGroupEditor = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
-        
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+
         boolean showSystemAdmin = false;
         if ((superUser || isEcOperator)
                 || hasMultiSpeak
@@ -37,6 +41,7 @@ public class OperationsSetupTag extends YukonTagSupport {
         }
         
         getJspContext().setAttribute("showSystemAdmin", showSystemAdmin);
+        getJspContext().setAttribute("energyCompany", energyCompany);
     }
     
     @Autowired
@@ -49,4 +54,8 @@ public class OperationsSetupTag extends YukonTagSupport {
         this.rolePropertyDao = rolePropertyDao;
     }
     
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
 }

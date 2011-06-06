@@ -6,7 +6,7 @@
 <entry key="yukon.web.menu.home">Home</entry>
 <entry key="yukon.web.menu.home.title">Return to the home page</entry>
 <entry key="yukon.web.menu.logout">Logout</entry>
-<entry key="yukon.web.menu.logout.title">Logout of Yukon</entry>
+<entry key="yukon.web.menu.logout.title">Logout {0}</entry>
 <entry key="yukon.web.menu.backToEc">Back to ({0})</entry>
 <entry key="yukon.web.menu.backToEc.title">Logout as member operator and login as previous user.</entry>
 <entry key="yukon.web.menu.alertBeforeNum">Alerts (</entry>

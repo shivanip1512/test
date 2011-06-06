@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
@@ -57,6 +58,7 @@ public class LayoutController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PageDetailProducer pageDetailProducer;
     private ConfigurationSource configurationSource;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private List<String> layoutScriptFiles;
     
@@ -179,7 +181,7 @@ public class LayoutController {
             if (skin.isLeftSideMenu()) {
                 menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
             } else {
-                menuRenderer = new StandardMenuRenderer(request, moduleBase, pageInfo, messageSourceResolver);
+                menuRenderer = new StandardMenuRenderer(request, moduleBase, pageInfo, messageSourceResolver, yukonEnergyCompanyService);
             }
             menuRenderer.setMenuSelection(menuSelection);
             // if bread crumbs were specified within the JSP, use them (old style)
@@ -277,5 +279,10 @@ public class LayoutController {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }
