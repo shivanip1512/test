@@ -204,6 +204,8 @@ public final static boolean isCapBankController( int deviceType )
              || deviceType == CBC_7022
              || deviceType == CBC_7023
              || deviceType == CBC_7024
+             || deviceType == CBC_8020
+             || deviceType == CBC_8024
              || deviceType == CBC_DNP);
 }
 
@@ -213,6 +215,11 @@ public final static boolean isCapBankController702X( int deviceType )
              || deviceType == CBC_7022
              || deviceType == CBC_7023
              || deviceType == CBC_7024);
+}
+
+public final static boolean isCapBankController802X( int deviceType )
+{
+    return ( deviceType == CBC_8020 || deviceType == CBC_8024 );
 }
 
 public final static boolean isCapBankControllerDNP( int deviceType )
@@ -242,6 +249,8 @@ public final static boolean cbcHasPort( int cbcType ) {
         || cbcType == CBC_7022
         || cbcType == CBC_7023
         || cbcType == CBC_7024
+        || cbcType == CBC_8020
+        || cbcType == CBC_8024
         || cbcType == CBC_DNP;
 }
 
@@ -1560,6 +1569,8 @@ public static Object changeType (String newType,
 	    	case CBC_7022:
 	    	case CBC_7023:
 	    	case CBC_7024:
+	    	case CBC_8020:
+	    	case CBC_8024:
 	    	case CBC_DNP:
 	    		return true;
 		

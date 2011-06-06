@@ -48,9 +48,9 @@ public class CBCPointFactory {
 
     private static final PointParams[] CBC_POINT_PROTOTYPES = {
             new StatusPointParams(1,
-                                  "Capacitor bank state",
+                                  "Capacitor Bank State",
                                   PointTypes.CONTROLTYPE_NORMAL),
-            new StatusPointParams(2, "Re-close Blocked"),
+            new StatusPointParams(2, "Re-Close Blocked"),
             new StatusPointParams(3, "Control Mode"),
             new StatusPointParams(4, "Auto Volt Control"),
             new StatusPointParams(5, "Last Control - Local"),
@@ -93,21 +93,21 @@ public class CBCPointFactory {
 			new AnalogPointParams(1.0, 20, "VAR 1 Phase kVA", PointUnits.UOMID_KVA),
 			new AnalogPointParams(1.0, 21, "VAR 1 Phase kWatts", PointUnits.UOMID_KW),
 			new AnalogPointParams(1.0, 22, "VAR Power Factor", PointUnits.UOMID_UNDEF),
-			new AnalogPointParams(1.0, 10002, "Control UV Set Point", PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10003, "Control OV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10002, "UV Threshold", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10003, "OV Threshold", PointUnits.UOMID_VOLTS),
 			new AnalogPointParams(1.0, 10004, "Control OVUV Track Time", PointUnits.UOMID_SECONDS),
 			new AnalogPointParams(1.0, 10006, "Daily Control Limit", PointUnits.UOMID_COUNTS),
-			new AnalogPointParams(1.0, 10007, "Emergency UV Set Point", PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10008, "Emergency OV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10007, "Emergency UV Threshold", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10008, "Emergency OV Threshold", PointUnits.UOMID_VOLTS),
 			new AnalogPointParams(1.0, 10009, "Emergency OVUV Track Time", PointUnits.UOMID_SECONDS),
 			new AnalogPointParams(1.0, 10010, "Neutral Current Sensor", PointUnits.UOMID_AMPS),
-			new AnalogPointParams(1.0, 10011, "Neutral Current Alarm Set Point", PointUnits.UOMID_AMPS),
+			new AnalogPointParams(1.0, 10011, "Neutral Current Alarm Threshold", PointUnits.UOMID_AMPS),
 			new AnalogPointParams(1.0, 10015, "Trip Delay Time", PointUnits.UOMID_SECONDS),
 			new AnalogPointParams(1.0, 10016, "Close Delay Time", PointUnits.UOMID_SECONDS),
 			new AnalogPointParams(1.0, 10017, "Bank Control Time", PointUnits.UOMID_MINUTES),
             new AnalogPointParams(1.0,10018,"Re-Close Delay Time", PointUnits.UOMID_SECONDS),
-            new AnalogPointParams(1.0,10057,"Com Loss Time", PointUnits.UOMID_SECONDS),
-            new AnalogPointParams(1.0,10110,"Com Retry Delay Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10057,"Comms Loss Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10110,"Comms Retry Delay Time", PointUnits.UOMID_SECONDS),
             new AnalogPointParams(1.0,10111,"Yukon Poll Time", PointUnits.UOMID_SECONDS),
             new AnalogPointParams(1.0,10113,"VAR Close Point", PointUnits.UOMID_KVAR),
             new AnalogPointParams(1.0,10114,"VAR Trip Point", PointUnits.UOMID_KVAR),
@@ -115,9 +115,9 @@ public class CBCPointFactory {
 			new AnalogPointParams(1.0, 20002, "UDP Port", PointUnits.UOMID_UNDEF),
 
             // accumulator
-			new AccumPointParams(1.0, 1, "Total op count", PointUnits.UOMID_COUNTS),
-			new AccumPointParams(1.0, 2, "UV op count", PointUnits.UOMID_COUNTS),
-			new AccumPointParams(1.0, 3, "OV op count", PointUnits.UOMID_COUNTS)
+			new AccumPointParams(1.0, 1, "Total Op Count", PointUnits.UOMID_COUNTS),
+			new AccumPointParams(1.0, 2, "UV Op Count", PointUnits.UOMID_COUNTS),
+			new AccumPointParams(1.0, 3, "OV Op Count", PointUnits.UOMID_COUNTS)
 
     };
 
@@ -135,7 +135,9 @@ public class CBCPointFactory {
 	        case PAOGroups.CBC_7020:
 	        case PAOGroups.CBC_7022:
 	        case PAOGroups.CBC_7023:
-	        case PAOGroups.CBC_7024: {
+	        case PAOGroups.CBC_7024: 
+	        case PAOGroups.CBC_8020:
+	        case PAOGroups.CBC_8024: {
 	        
 	            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDevice(paoId);
 	            break;

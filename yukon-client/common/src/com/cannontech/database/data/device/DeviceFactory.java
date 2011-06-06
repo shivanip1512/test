@@ -352,7 +352,16 @@ public final class DeviceFactory {
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[2] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-
+        case CBC_8020:
+            returnDevice = new CapBankController702x();
+            returnDevice.setDeviceType(paoType.getPaoTypeName());
+            returnDevice.setDeviceClass(paoType.getPaoClass().getDbString());
+            break;
+        case CBC_8024:
+            returnDevice = new CapBankController702x();
+            returnDevice.setDeviceType(paoType.getPaoTypeName());
+            returnDevice.setDeviceClass(paoType.getPaoClass().getDbString());
+            break;
         case CBC_FP_2800:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBankController_FP_2800();
             returnDevice.setDeviceType( PAOGroups.STRING_CBC_FP_2800[0] );

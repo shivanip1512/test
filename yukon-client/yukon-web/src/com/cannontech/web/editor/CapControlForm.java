@@ -701,6 +701,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             case PAOGroups.CBC_7022:
             case PAOGroups.CBC_7023:
             case PAOGroups.CBC_7024: 
+            case PAOGroups.CBC_8020:
+            case PAOGroups.CBC_8024:
             case PAOGroups.CBC_DNP:
     			setEditorTitle("CBC");
     			setPaoDescLabel(null);

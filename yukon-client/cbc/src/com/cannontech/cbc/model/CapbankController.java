@@ -230,6 +230,8 @@ public class CapbankController {
             case CBC_7022:
             case CBC_7023:
             case CBC_7024:
+            case CBC_8020:
+            case CBC_8024:
             case CBC_DNP:
             case CBC_EXPRESSCOM:
             case CBC_FP_2800:

@@ -26,6 +26,11 @@
         					rendered="#{capControlForm.CBControllerEditor.device701X && capControlForm.PAOBase.PAOType != 'CAP BANK'}">
         					<f:selectItems value="#{selLists.typeList701X}" />
         				</x:selectOneMenu>
+                        
+                        <x:selectOneMenu id="Select_802XCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}"
+                            rendered="#{capControlForm.CBControllerEditor.device802X && capControlForm.PAOBase.PAOType != 'CAP BANK'}">
+                            <f:selectItems value="#{selLists.typeList802X}" />
+                        </x:selectOneMenu>
         				
                         <x:selectOneMenu id="Select_DNPCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}"
         					rendered="#{capControlForm.CBControllerEditor.deviceDNP && capControlForm.PAOBase.PAOType != 'CAP BANK'}">

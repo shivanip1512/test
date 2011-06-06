@@ -140,6 +140,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     CBC_7024(DeviceTypes.CBC_7024, "CBC 7024", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_7011(DeviceTypes.CBC_7011, "CBC 7011", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_7012(DeviceTypes.CBC_7012, "CBC 7012", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_8020(DeviceTypes.CBC_8020, "CBC 8020", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_8024(DeviceTypes.CBC_8024, "CBC 8024", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_FP_2800(DeviceTypes.CBC_FP_2800, "CBC FP-2800", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     DNP_CBC_6510(DeviceTypes.DNP_CBC_6510, "CBC 6510", PaoCategory.DEVICE, PaoClass.CAPCONTROL),

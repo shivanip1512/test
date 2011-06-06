@@ -704,6 +704,8 @@ public final class CBCUtils {
 	        case PAOGroups.CBC_7022:
 	        case PAOGroups.CBC_7023:
 	        case PAOGroups.CBC_7024:
+	        case PAOGroups.CBC_8020:
+	        case PAOGroups.CBC_8024:
 	        case PAOGroups.CBC_EXPRESSCOM:
 	        case PAOGroups.CAPBANKCONTROLLER:
 	        case PAOGroups.CBC_DNP:

@@ -55,19 +55,19 @@ public class CapControlDaoImpl  implements CapControlDao{
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
     	cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Firmware Version");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Com Loss Time");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Com Retry Delay Time");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Comms Loss Time");
+        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Comms Retry Delay Time");
         cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Yukon Poll Time");
         
     	// Accumulator Group
-    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total op count");
-    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "UV op count");
-    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "OV op count");
+    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total Op Count");
+    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "UV Op Count");
+    	cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "OV Op Count");
     	
     	// Status Group
-    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Capacitor bank state");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Capacitor Bank State");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Control Mode");
-    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Re-close Blocked");
+    	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Re-Close Blocked");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Local");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Remote");
     	cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - OVUV");
@@ -91,13 +91,13 @@ public class CapControlDaoImpl  implements CapControlDao{
     	
     	// Configurable Parameters
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Daily Control Limit");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control UV Set Point");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OV Set Point");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "UV Threshold");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "OV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OVUV Track Time");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Set Point");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OV Set Point");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Threshold");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OV Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OVUV Track Time");
-    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Neutral Current Alarm Set Point");
+    	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Neutral Current Alarm Threshold");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Trip Delay Time");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Delay Time");
     	cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Re-Close Delay Time");

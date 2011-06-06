@@ -106,6 +106,11 @@ public class CBCSelectionLists {
         new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) )
     };
     
+    private static final SelectItem[] typeList802X = {
+        new SelectItem(new Integer(PAOGroups.CBC_8020), PAOGroups.getPAOTypeString(PAOGroups.CBC_8020) ),
+        new SelectItem(new Integer(PAOGroups.CBC_8024), PAOGroups.getPAOTypeString(PAOGroups.CBC_8024) )
+    };
+    
     private static final SelectItem[] typeListDNP = {
         new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) )
     };
@@ -120,6 +125,8 @@ public class CBCSelectionLists {
         new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
         new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
         new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) ),
+        new SelectItem(new Integer(PAOGroups.CBC_8020), PAOGroups.getPAOTypeString(PAOGroups.CBC_8020) ),
+        new SelectItem(new Integer(PAOGroups.CBC_8024), PAOGroups.getPAOTypeString(PAOGroups.CBC_8024) ),
         new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) ),
 		new SelectItem(new Integer(PAOGroups.CBC_FP_2800), PAOGroups.getPAOTypeString(PAOGroups.CBC_FP_2800) )
         
@@ -541,6 +548,10 @@ public class CBCSelectionLists {
 
 	public  SelectItem[] getTypeList702X() {
 		return typeList702X;
+	}
+	
+	public SelectItem[] getTypeList802X() {
+	    return typeList802X;
 	}
 	
 	public  SelectItem[] getTypeListDNP() {
