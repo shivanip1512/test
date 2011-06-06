@@ -5246,7 +5246,7 @@
         <changeGroup>cap1</changeGroup>
         <points>
             <point type="Status" offset="1">
-                <name>Capacitor bank state</name>
+                <name>Capacitor Bank State</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
@@ -5254,88 +5254,113 @@
     
     <pao id="CBC_2WAY_BASE" abstract="true">
     	<changeGroup>cap2</changeGroup>
-    	<!-- PULSE ACCUMULATOR POINTS -->
     	<points>
+            <!-- PULSE ACCUMULATOR POINTS -->
         	<point type="PulseAccumulator" offset="1">
         		<init>true</init>
-                <name>Total op count</name>
+                <name>Total Op Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="1"/>
             </point>
-        	<point type="PulseAccumulator" offset="2">
-        		<init>true</init>
-                <name>UV op count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="3"/>
-            </point>
-        	<point type="PulseAccumulator" offset="3">
-        		<init>true</init>
-                <name>OV op count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="3"/>
-            </point>
             <!-- ANALOG POINTS -->
-            <point type="Analog" offset="3">
-            	<init>true</init>
-                <name>Firmware Version</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="5">
-            	<init>true</init>
-                <name>Voltage</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="6">
-            	<init>true</init>
-                <name>High Voltage</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="7">
-            	<init>true</init>
-                <name>Low Voltage</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="8">
             	<init>true</init>
                 <name>Delta Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
+            </point>          
+            <point type="Analog" offset="10002">
+            	<init>true</init>
+                <name>UV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <!-- STATUS POINTS -->
+            <point type="Status" offset="1">
+                <name>Capacitor Bank State</name>
+                <controltype>NORMAL</controltype>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage" />
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">
+        <points>
+            <!-- PULSE ACCUMULATOR POINTS -->
+            <point type="PulseAccumulator" offset="2">
+                <init>true</init>
+                <name>UV Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="3">
+                <init>true</init>
+                <name>OV Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <!-- ANALOG POINTS -->
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Firmware Version</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="6">
+                <init>true</init>
+                <name>High Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="7">
+                <init>true</init>
+                <name>Low Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="9">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input 1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <name>Temperature</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-F"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="13">
-            	<init>true</init>
+                <init>true</init>
                 <name>RSSI</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="14">
-            	<init>true</init>
+                <init>true</init>
                 <name>Control Ignored Reason</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -5403,93 +5428,86 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="0"/>
-            </point>            
-            <point type="Analog" offset="10002">
-            	<init>true</init>
-                <name>Control UV Set Point</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10003">
-            	<init>true</init>
-                <name>Control OV Set Point</name>
+                <init>true</init>
+                <name>OV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10004">
-            	<init>true</init>
+                <init>true</init>
                 <name>Control OVUV Track Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10006">
-            	<init>true</init>
+                <init>true</init>
                 <name>Daily Control Limit</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10007">
-            	<init>true</init>
-                <name>Emergency UV Set Point</name>
+                <init>true</init>
+                <name>Emergency UV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10008">
-            	<init>true</init>
-                <name>Emergency OV Set Point</name>
+                <init>true</init>
+                <name>Emergency OV Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10009">
-            	<init>true</init>
+                <init>true</init>
                 <name>Emergency OVUV Track Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10010">
-            	<init>true</init>
+                <init>true</init>
                 <name>Neutral Current Sensor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10011">
-            	<init>true</init>
-                <name>Neutral Current Alarm Set Point</name>
+                <init>true</init>
+                <name>Neutral Current Alarm Threshold</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10015">
-            	<init>true</init>
+                <init>true</init>
                 <name>Trip Delay Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10016">
-            	<init>true</init>
+                <init>true</init>
                 <name>Close Delay Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10017">
-            	<init>true</init>
+                <init>true</init>
                 <name>Bank Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10018">
-            	<init>true</init>
+                <init>true</init>
                 <name>Re-Close Delay Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
@@ -5511,7 +5529,7 @@
             </point>
             <point type="Analog" offset="10057">
                 <init>true</init>
-                <name>Com Loss Time</name>
+                <name>Comms Loss Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
@@ -5552,27 +5570,22 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="20001">
-            	<init>true</init>
+                <init>true</init>
                 <name>IP Address</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="20002">
-            	<init>true</init>
+                <init>true</init>
                 <name>UDP Port</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <!-- STATUS POINTS -->
-            <point type="Status" offset="1">
-                <name>Capacitor bank state</name>
-                <controltype>NORMAL</controltype>
-                <stategroup value="TwoStateStatus"/>
-            </point>
             <point type="Status" offset="2">
-                <name>Re-close Blocked</name>
+                <name>Re-Close Blocked</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
@@ -5669,24 +5682,228 @@
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage" />
-            </attribute>
-        </attributes>
     </pao>
     
-    <pao id="CBC_7020" inherits="CBC_2WAY_BASE">
+    <pao id="CBC_7020" inherits="CBC_702X_BASE">
         <displayName>CBC 7020</displayName>
     </pao>
-    <pao id="CBC_7022" inherits="CBC_2WAY_BASE">
+    <pao id="CBC_7022" inherits="CBC_702X_BASE">
         <displayName>CBC 7022</displayName>
     </pao>
-    <pao id="CBC_7023" inherits="CBC_2WAY_BASE">
+    <pao id="CBC_7023" inherits="CBC_702X_BASE">
         <displayName>CBC 7023</displayName>
     </pao>
-    <pao id="CBC_7024" inherits="CBC_2WAY_BASE">
+    <pao id="CBC_7024" inherits="CBC_702X_BASE">
         <displayName>CBC 7024</displayName>
+    </pao>
+    
+    <pao id="CBC_802X_BASE" inherits="CBC_2WAY_BASE" abstract="true">
+        <points>
+            <!-- PULSE ACCUMULATOR POINTS -->
+            <point type="PulseAccumulator" offset="2">
+                <init>true</init>
+                <name>OV Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="3">
+                <init>true</init>
+                <name>UV Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="4">
+                <init>true</init>
+                <name>Close Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="5">
+                <init>true</init>
+                <name>Open Op Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <!-- STATUS POINTS -->
+            <point type="Status" offset="2">
+                <name>SCADA Override</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="3">
+                <name>Neutral Lockout</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4">
+                <name>CVR Mode</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <!-- ANALOG POINTS -->
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Serial Number</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Control Mode</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Line Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>true</init>
+                <name>Line Voltage THD</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Percent"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Firmware Version</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="7">
+                <init>true</init>
+                <name>Temperature</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="9">
+                <init>true</init>
+                <name>High Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10">
+                <init>true</init>
+                <name>Low Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="11">
+                <init>true</init>
+                <name>Last Control Reason</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10001">
+                <init>true</init>
+                <name>OV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10003">
+                <init>true</init>
+                <name>Daily Control Limit</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10004">
+                <init>true</init>
+                <name>Close Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10005">
+                <init>true</init>
+                <name>Open Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10006">
+                <init>true</init>
+                <name>Bank Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10007">
+                <init>true</init>
+                <name>Re-Close Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10008">
+                <init>true</init>
+                <name>Comms Loss Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10009">
+                <init>true</init>
+                <name>CVR OV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10010">
+                <init>true</init>
+                <name>CVR UV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10011">
+                <init>true</init>
+                <name>Emergency OV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10012">
+                <init>true</init>
+                <name>Emergency UV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10013">
+                <init>true</init>
+                <name>Comms Loss OV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10014">
+                <init>true</init>
+                <name>Comms Loss UV Threshold</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+    </pao>
+    
+    <pao id="CBC_8020" inherits="CBC_802X_BASE">
+        <displayName>CBC 8020</displayName>
+    </pao>
+    <pao id="CBC_8024" inherits="CBC_802X_BASE">
+        <displayName>CBC 8024</displayName>
     </pao>
     
     <pao id="CAPBANK">
