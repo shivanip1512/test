@@ -123,7 +123,7 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
  *            The HTTP method ('get' or 'post'). 'post' is the default.
  */
 function submitFormViaAjax(dialogId, formId, url, title, method) {
-    submitFormViaAjaxWithSkipShow(dialogId, formId, url, title, true, method);
+    return submitFormViaAjaxWithSkipShow(dialogId, formId, url, title, true, method);
 }
 
 function submitFormViaAjaxWithSkipShow(dialogId, formId, url, title, skipShow, method) {
