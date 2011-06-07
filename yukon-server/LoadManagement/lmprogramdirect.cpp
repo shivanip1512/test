@@ -666,7 +666,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
                 {
                     LONG refreshRate = currentGearObject->getMethodRate();
                     LONG shedTime = currentGearObject->getMethodPeriod();
@@ -763,9 +763,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         }
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::SmartCycleMethod) ||
-                         string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
-                         string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::SmartCycleMethod) ||
+                         ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
+                         ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                 {
                     LONG percent = currentGearObject->getMethodRate();
                     LONG period = currentGearObject->getMethodPeriod();
@@ -803,11 +803,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 cycleCount = 8;//seems like a reasonable default
                             }
 
-                            if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                            if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                             {
                                 adjust_counts = true;
                             }
-                            else if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                            else if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                             {
                             }//we have to send the default because it is programmed in the switch
 
@@ -817,8 +817,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
 
-                                if( (string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                                     string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
+                                if( (ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                     ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
                                     (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
@@ -827,8 +827,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                                        string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                                    if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                        ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << ", Smart Cycling instead in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -867,7 +867,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
                 {
                     LONG percent = currentGearObject->getMethodRate();
                     LONG period = currentGearObject->getMethodPeriod();
@@ -897,11 +897,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 cycleCount = 8;//seems like a reasonable default
                             }
 
-                            if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                            if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                             {
                                 adjust_counts = true;
                             }
-                            else if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                            else if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                             {
                             }//we have to send the default because it is programmed in the switch
 
@@ -918,8 +918,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear ::TrueCycleMethod) ||
-                                        string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                                    if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear ::TrueCycleMethod) ||
+                                        ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not Target Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << ", Smart Cycling instead in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -958,7 +958,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) )
                 {
                     ResetGroups();
                     expectedLoadReduced = StartMasterCycle(secondsFrom1901, currentGearObject);
@@ -967,7 +967,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
                 {
                     LONG sendRate = currentGearObject->getMethodRate();
                     LONG shedTime = currentGearObject->getMethodPeriod();
@@ -1029,7 +1029,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
                 {
                     LONG gearStartRawState = currentGearObject->getMethodRateCount();
 
@@ -1084,7 +1084,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) )
                 {
                     CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
                     string settings = thermostatGearObject->getSettings();
@@ -1141,7 +1141,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                 {
                     bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, expectedLoadReduced, false);
                     if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
@@ -1149,7 +1149,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::NoControlMethod) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::NoControlMethod) )
                 {
                     if( _LM_DEBUG & LM_DEBUG_EXTENDED )
                     {
@@ -1252,7 +1252,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
             {
                 bool do_ramp = (currentGearObject->getRampInPercent() > 0);
 //                ResetGroups(); this also clears out next control times!
@@ -1283,8 +1283,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() )
                         {
-                            if( string_equal(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
-                                string_equal(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                            if( ciStringEqual(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
+                                ciStringEqual(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                             {
                                 if( maxRefreshShedTime > 0 )   // Try to fit the shed time into the time the program will run
                                 {
@@ -1357,7 +1357,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::SmartCycleMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::SmartCycleMethod) )
             {
                 LONG percent = currentGearObject->getMethodRate();
                 LONG period = currentGearObject->getMethodPeriod();
@@ -1381,7 +1381,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         //reset the default for each group if the previous groups was different
                         cycleCount = currentGearObject->getMethodRateCount();
 
-                        if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                        if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                         {
                             if( maxCycleCount > 0 || cycleCount == 0 )
                             {
@@ -1448,7 +1448,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                                 cycleCount = tempCycleCount;
                             }
                         }
-                        else if( string_equal(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                        else if( ciStringEqual(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                         {
                         }//we have to send the default because it is programmed in the switch
 
@@ -1479,12 +1479,12 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MasterCycleMethod) )  //NOTE: add ramp in logic
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MasterCycleMethod) )  //NOTE: add ramp in logic
             {
                 ResetGroups();
                 StartMasterCycle(CtiTime().seconds(), currentGearObject);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
             {
                 LONG sendRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
@@ -1545,7 +1545,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
 
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
             {
                 LONG gearStartRawState = currentGearObject->getMethodRateCount();
 
@@ -1592,8 +1592,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
-                     string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
+                     ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
             {
                 LONG percent = currentGearObject->getMethodRate();
                 LONG period = currentGearObject->getMethodPeriod();
@@ -1616,7 +1616,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         //reset the default for each group if the previous groups was different
                         cycleCount = currentGearObject->getMethodRateCount();
 
-                        if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                        if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                         {
                             if( maxCycleCount > 0 || cycleCount == 0 )
                             {
@@ -1683,7 +1683,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                                 cycleCount = tempCycleCount;
                             }
                         }
-                        else if( string_equal(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                        else if( ciStringEqual(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                         {
                         }//we have to send the default because it is programmed in the switch
 
@@ -1734,7 +1734,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
             {
                 DOUBLE kw = currentGearObject->getKWReduction();
                 LONG percent = currentGearObject->getMethodRate();
@@ -1758,7 +1758,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         //reset the default for each group if the previous groups was different
                         cycleCount = currentGearObject->getMethodRateCount();
 
-                        if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                        if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                         {
                             if( maxCycleCount > 0 || cycleCount == 0 )
                             {
@@ -1825,7 +1825,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                                 cycleCount = tempCycleCount;
                             }
                         }
-                        else if( string_equal(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                        else if( ciStringEqual(currentGearObject->getMethodOptionType(), CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                         {
                         }//we have to send the default because it is programmed in the switch
 
@@ -1876,7 +1876,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
             {
                 CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
                 string settings = thermostatGearObject->getSettings();
@@ -1932,7 +1932,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
             }
-            else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
             {
                 bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, expectedLoadReduced, false);
                 if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
@@ -1940,7 +1940,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
             }
-            else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::NoControlMethod) )
+            else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::NoControlMethod) )
             {
                 if( _LM_DEBUG & LM_DEBUG_EXTENDED )
                 {
@@ -1987,7 +1987,7 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
 {
     CtiLMGroupPtr returnGroup;
 
-    if( string_equal(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::LastControlledSelectionMethod) )
+    if( ciStringEqual(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::LastControlledSelectionMethod) )
     {
         BOOL found = FALSE;
         for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
@@ -2001,7 +2001,7 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
                 if( !currentLMGroup->getDisableFlag() &&
                     !currentLMGroup->getControlInhibit() &&
                     ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                      string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) ) )
+                      ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) ) )
                 {
                     found = TRUE;
                     returnGroup = currentLMGroup;
@@ -2027,9 +2027,9 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
             }
         }
     }
-    else if( string_equal(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod) )
+    else if( ciStringEqual(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod) )
     {
-        if( !(string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) ))//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+        if( !(ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) ))//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
         {
             for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
             {
@@ -2116,7 +2116,7 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
             }
         }
     }
-    else if( string_equal(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::LeastControlTimeSelectionMethod) )
+    else if( ciStringEqual(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::LeastControlTimeSelectionMethod) )
     {
         // progressive lookup first look at current hours daily then current hours monthly
         // then current hours seasonal but not annually
@@ -2308,11 +2308,11 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
             prevGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
         }
 
-        if( string_equal(currentGearObject->getChangeCondition(), CtiLMProgramDirectGear::NoneChangeCondition) )
+        if( ciStringEqual(currentGearObject->getChangeCondition(), CtiLMProgramDirectGear::NoneChangeCondition) )
         {
             //returnBoolean = FALSE;
         }
-        else if( string_equal(currentGearObject->getChangeCondition(), CtiLMProgramDirectGear::DurationChangeCondition) )
+        else if( ciStringEqual(currentGearObject->getChangeCondition(), CtiLMProgramDirectGear::DurationChangeCondition) )
         {
             LONG secondsControlling = secondsFrom1901 - getStartedControlling().seconds();
             if( getProgramState() != CtiLMProgramBase::InactiveState &&
@@ -2345,7 +2345,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                 returnBoolean = TRUE;
             }
         }
-        else if( string_equal(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::PriorityChangeCondition) )
+        else if( ciStringEqual(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::PriorityChangeCondition) )
         {
             if( currentPriority >= currentGearObject->getChangePriority() &&
                 _currentgearnumber+1 < _lmprogramdirectgears.size() )
@@ -2376,7 +2376,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                 returnBoolean = TRUE;
             }
         }
-        else if( string_equal(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
+        else if( ciStringEqual(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
         {
             if( currentGearObject->getChangeTriggerNumber() > 0 &&
                 currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
@@ -2414,7 +2414,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                         returnBoolean = TRUE;
                     }
-                    else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) &&
+                    else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) &&
                              prevGearObject != 0 &&
                              (trigger->getPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) ||
                               (trigger->getProjectedPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) && trigger->getProjectedPointValue() > 0)) )
@@ -2480,12 +2480,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
         {
             CtiLMProgramDirectGear* previousGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
 
-            if( string_equal(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::DurationChangeCondition) )
+            if( ciStringEqual(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::DurationChangeCondition) )
             {
                 //doesn't make sense to shift down from a duration shift up
                 //returnBoolean = FALSE;
             }
-            else if( string_equal(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::PriorityChangeCondition) )
+            else if( ciStringEqual(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::PriorityChangeCondition) )
             {
                 if( currentPriority < previousGearObject->getChangePriority() &&
                     _currentgearnumber-1 >= 0 )
@@ -2516,7 +2516,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                     returnBoolean = TRUE;
                 }
             }
-            else if( string_equal(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
+            else if( ciStringEqual(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
             {
                 if( previousGearObject->getChangeTriggerNumber() > 0 &&
                     previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
@@ -2559,7 +2559,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                     dout << CtiTime() << " - Invalid ChangeTriggerNumber: " << previousGearObject->getChangeTriggerNumber() << ", trigger numbers start at 1 in program: " << getPAOName() << endl;
                 }
             }
-            else if( string_equal(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::NoneChangeCondition) )
+            else if( ciStringEqual(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::NoneChangeCondition) )
             {
                 //This will only happen on a manual gear change, how else would you get
                 //to a higher gear if the previous change condition was none
@@ -2696,16 +2696,16 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
 
             updateStandardControlActiveState(numberOfActiveGroups);
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
-            if( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                string_equal(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod) ||
-                ( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) &&
+            if( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod) ||
+                ( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) &&
                   getManualControlReceivedFlag() ) )
             {
                 // Normally we would only take the commented out "numberOfGroupsToTake" but when we
@@ -2728,9 +2728,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     if( !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() &&
                         ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState ||
-                          string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) ) )
+                          ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) ) )
                     {
-                        if( string_equal(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) )
+                        if( ciStringEqual(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) )
                         {
                             if( maxRefreshShedTime > 0 )
                             {
@@ -2809,8 +2809,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                 }
             }
-            else if( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod ) ||
-                     ( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) &&
+            else if( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod ) ||
+                     ( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) &&
                        !getManualControlReceivedFlag() ) )
             {
                 LONG refreshRate = currentGearObject->getMethodRate();
@@ -2836,8 +2836,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                     else
                     {
-                        if( string_equal(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
-                            string_equal(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
+                        if( ciStringEqual(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
+                            ciStringEqual(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                         {
                             if( maxRefreshShedTime > 0 )
                             {
@@ -2925,7 +2925,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 dout << CtiTime() << " - Program: " << getPAOName() << ", Gear#: " << previousGearObject->getGearNumber() << " doesn't have a valid control method in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) )
         {
             LONG percent = currentGearObject->getMethodRate();
             LONG period = currentGearObject->getMethodPeriod();
@@ -2945,11 +2945,11 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     !currentLMGroup->getControlInhibit() )
                 {
                     cycleCount = currentGearObject->getMethodRateCount();
-                    if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType ) )
+                    if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType ) )
                     {
                         // group constraints will adjust counts down...!?
                     }
-                    else if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )//can't really do anything for limited count down on start up
+                    else if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )//can't really do anything for limited count down on start up
                     {
                     }//we have to send the default because it is programmed in the switch
 
@@ -2983,7 +2983,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod ) )
         {
             expectedLoadReduced = 0.0;
 
@@ -3004,11 +3004,11 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) )
         {
 
-            if( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod ) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
+            if( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod ) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
             {
                 LONG sendRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
@@ -3052,9 +3052,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                 }
             }
-            else if( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
-                     string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                     string_equal(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )   // Stop the groups from cycling, before we start doing rotation on them
+            else if( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
+                     ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                     ciStringEqual(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )   // Stop the groups from cycling, before we start doing rotation on them
             {
                 for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
                 {
@@ -3066,11 +3066,11 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
             // On a gear upshift from rotation to rotation we want to control some load immediately, however,
             // On a downshift, we want to do nothing but continue rotation, but with the new rotation settings.
             // Added for northern plains 11/05/04
-            if( (string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) &&
+            if( (ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) &&
                  getCurrentGearNumber() > previousGearNumber ) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
-                string_equal(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
+                ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                ciStringEqual(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
             {
                 // Get standard rotation going
                 LONG sendRate = currentGearObject->getMethodRate();
@@ -3135,13 +3135,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 }
             }
         } // End switching to rotation gear
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod ) )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method can't support gear changes.  In: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                 string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                 ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
         {
             LONG percent = currentGearObject->getMethodRate();
             LONG period = currentGearObject->getMethodPeriod();
@@ -3161,11 +3161,11 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     !currentLMGroup->getControlInhibit() )
                 {
                     cycleCount = currentGearObject->getMethodRateCount();
-                    if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType ) )
+                    if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType ) )
                     {
                         // group constraints will adjust counts down...!?
                     }
-                    else if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )//can't really do anything for limited count down on start up
+                    else if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )//can't really do anything for limited count down on start up
                     {
                     }//we have to send the default because it is programmed in the switch
 
@@ -3211,7 +3211,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
         {
             DOUBLE kw = currentGearObject->getKWReduction();
             LONG percent = currentGearObject->getMethodRate();
@@ -3232,11 +3232,11 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     !currentLMGroup->getControlInhibit() )
                 {
                     cycleCount = currentGearObject->getMethodRateCount();
-                    if( string_equal(cycleCountDownType,CtiLMProgramDirectGear ::CountDownMethodOptionType) )
+                    if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear ::CountDownMethodOptionType) )
                     {
                         // group constraints will adjust counts down...!?
                     }
-                    else if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
+                    else if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )//can't really do anything for limited count down on start up
                     {
                     }//we have to send the default because it is programmed in the switch
 
@@ -3275,7 +3275,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
         {
             CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
             string settings = thermostatGearObject->getSettings();
@@ -3329,7 +3329,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
         {
             if( _LM_DEBUG & LM_DEBUG_EXTENDED )
             {
@@ -3348,17 +3348,17 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
                     getManualControlReceivedFlag() )
                 {
-                    if( string_equal(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                        string_equal(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
-                        string_equal(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                    if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
+                        ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                        ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                     {
-                        if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
+                        if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                         {
                             restoreGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                         }
-                        else if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
-                                 string_equal(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
-                                 string_equal(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+                        else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
+                                 ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
+                                 ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                         {
                             terminateGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                         }
@@ -3368,16 +3368,16 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             dout << CtiTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
-                    else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::TimeRefreshMethod ) ||
-                             string_equal(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod ) ||
-                             string_equal(tempControlMethod,CtiLMProgramDirectGear::RotationMethod ) ||
-                             string_equal(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod ) )
+                    else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::TimeRefreshMethod ) ||
+                             ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod ) ||
+                             ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::RotationMethod ) ||
+                             ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod ) )
                     {
-                        if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
+                        if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                         {
                             restoreGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                         }
-                        else if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) || string_equal(tempMethodStopType,"Time-In" ) )
+                        else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) || ciStringEqual(tempMethodStopType,"Time-In" ) )
                         {
                             //"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                             //CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3387,13 +3387,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             //setLastControlSent(CtiTime());
                             //currentLMGroup->setLastControlSent(CtiTime());
                             CtiTime timeToTimeIn = gInvalidCtiTime; //put in a bogus time stamp
-                            if( string_equal(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod ) )
+                            if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod ) )
                             {
                                 timeToTimeIn = currentLMGroup->getLastControlSent();
                                 LONG offTimeInSeconds = previousGearObject->getMethodPeriod() * (previousGearObject->getMethodRate() / 100.0);
                                 timeToTimeIn.addMinutes(offTimeInSeconds/60);
                             }
-                            else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) )
+                            else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) )
                             {
                                 timeToTimeIn = currentLMGroup->getLastControlSent();
                                 CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)previousGearObject;
@@ -3420,7 +3420,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             dout << CtiTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
-                    else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
+                    else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
                     {
                         LONG gearStartRawState = currentGearObject->getMethodRateCount();
                         if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
@@ -3435,7 +3435,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                         setLastControlSent(CtiTime());
                         currentLMGroup->setLastControlSent(CtiTime());
                     }
-                    else if( string_equal(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
+                    else if( ciStringEqual(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
                     {
                         // Its not controlling so a stop method doesn't much matter, does it?
                     }
@@ -3505,13 +3505,13 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
         }
     }
     string tempMethodStopType = currentGearObject->getMethodStopType();
-    if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
+    if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
     {
         restoreGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
     }
-    else if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
-             string_equal(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
-             string_equal(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+    else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
+             ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
+             ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
     {
         terminateGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
     }
@@ -3639,7 +3639,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
             updateStandardControlActiveState(numberOfActiveGroups);
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
             long refresh_rate = currentGearObject->getMethodRate();
             long shed_time = currentGearObject->getMethodPeriod();
@@ -3749,9 +3749,9 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 }
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                 string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
-                 string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
+                 ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                 ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
         {
             LONG percent = currentGearObject->getMethodRate();
             LONG period = currentGearObject->getMethodPeriod();
@@ -3788,7 +3788,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         cycleCount = currentGearObject->getMethodRateCount();
                         // For limited count down we might change this!
                         bool adjust_counts = true;
-                        if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType) )   // We only want to reduce the count when we know when control is ending
+                        if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::CountDownMethodOptionType) )   // We only want to reduce the count when we know when control is ending
                         {
                             // this is only true with manual and timed control
                             // xxx adjust for end of control window also!!! not just manual timed!
@@ -3854,7 +3854,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 // group constraints will adjust counts down...!?
                             }
                         }
-                        else if( string_equal(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )
+                        else if( ciStringEqual(cycleCountDownType,CtiLMProgramDirectGear::LimitedCountDownMethodOptionType ) )
                         {
                             adjust_counts = false;
                             LONG cycleLength = period * cycleCount;
@@ -3884,8 +3884,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             {
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                                if( (string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                                     string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
+                                if( (ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                     ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
                                     (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
@@ -3894,8 +3894,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
-                                        string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
+                                    if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                        ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
@@ -3951,7 +3951,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 dout << CtiTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
         {
             DOUBLE kw = currentGearObject->getKWReduction();
             LONG percent = currentGearObject->getMethodRate();
@@ -3989,7 +3989,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         cycleCount = currentGearObject->getMethodRateCount();
                         // For limited count down we might change this!
                         bool adjust_counts = true;
-                        if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )   // We only want to reduce the count when we know when control is ending
+                        if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )   // We only want to reduce the count when we know when control is ending
                         {
                             // this is only true with manual and timed control
                             // xxx adjust for end of control window also!!! not just manual timed!
@@ -4055,7 +4055,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 // group constraints will adjust counts down...!?
                             }
                         }
-                        else if( string_equal(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )
+                        else if( ciStringEqual(cycleCountDownType, CtiLMProgramDirectGear::LimitedCountDownMethodOptionType) )
                         {
                             adjust_counts = false;
                             LONG cycleLength = period * cycleCount;
@@ -4086,7 +4086,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             {
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                                if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) &&
+                                if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) &&
                                     (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
@@ -4095,7 +4095,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
+                                    if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not Target Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
@@ -4151,7 +4151,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 dout << CtiTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) )
         {
             int percent = currentGearObject->getMethodRate();
             int period = currentGearObject->getMethodPeriod();
@@ -4218,7 +4218,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             }
 
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) )
         {
             LONG sendRate = currentGearObject->getMethodRate();
             LONG shedTime = currentGearObject->getMethodPeriod();
@@ -4300,12 +4300,12 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod ) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod ) )
         {
             /*CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method isn't supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;*/
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
         {
           /*double dummyVariable; BUMP_COMMAND_REMOVED
             bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, dummyVariable, true);
@@ -4314,8 +4314,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }*/
         }
-        else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
-                 string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) )
+        else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                 ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) )
         {
             //we don't refresh set point commands or no control gears
         }
@@ -4438,18 +4438,18 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     }
                 }
                 else
-                if( string_equal(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                    string_equal(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
-                    string_equal(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
-                    string_equal(tempControlMethod,CtiLMProgramDirectGear::TargetCycleMethod ) )
+                if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
+                    ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                    ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
+                    ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::TargetCycleMethod ) )
                 {
-                    if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
+                    if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                     {
                         restoreGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                     }
-                    else if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
-                             string_equal(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
-                             string_equal(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+                    else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
+                             ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
+                             ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                     {
                         terminateGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                     }
@@ -4459,13 +4459,13 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         dout << CtiTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-                else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::TimeRefreshMethod) ||
-                         string_equal(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod) ||
-                         string_equal(tempControlMethod,CtiLMProgramDirectGear::RotationMethod) ||
-                         string_equal(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
-                         string_equal(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+                else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::TimeRefreshMethod) ||
+                         ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod) ||
+                         ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::RotationMethod) ||
+                         ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                         ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                 {
-                    if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType) ||
+                    if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType) ||
                         /* fugly.  Only manually active programs can ramp out.  If this program is actually controlling
                            automatically then we cannot current ramp out!  If that is the case and the program has a restore
                            ramp out type then just treat it as a restore. dang. The same thing for is done for time-in v */
@@ -4476,8 +4476,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     {
                         restoreGroup(secondsFrom1901, currentLMGroup, multiPilMsg);
                     }
-                    else if( string_equal(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType) ||
-                             string_equal(tempMethodStopType,"Time-In") ||
+                    else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType) ||
+                             ciStringEqual(tempMethodStopType,"Time-In") ||
                              /* fugly.  Only manually active programs can ramp out.  If this program is actually controlling
                                 automatically then we cannot current ramp out!
                                 ramp out type then just treat it as a time-in. dang. The same thing for is done for restore ^ */
@@ -4494,14 +4494,14 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         //setLastControlSent(CtiTime());
                         //currentLMGroup->setLastControlSent(CtiTime());
                         CtiTime timeToTimeIn = gInvalidCtiTime;//put in a bogus time stamp
-                        if( string_equal(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod) )
+                        if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
                             LONG offTimeInSeconds = currentGearObject->getMethodPeriod() * (currentGearObject->getMethodRate() / 100.0);
                             timeToTimeIn.addMinutes(offTimeInSeconds/60);
                         }
-                        else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
-                                 string_equal(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+                        else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                                 ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
                             CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)currentGearObject;
@@ -4523,10 +4523,10 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         currentLMGroup->setControlCompleteTime(timeToTimeIn);
                     }
                     else if( !currentLMGroup->getIsRampingOut() &&
-                             (string_equal(tempMethodStopType,CtiLMProgramDirectGear::RampOutRandomStopType ) ||
-                              string_equal(tempMethodStopType,CtiLMProgramDirectGear::RampOutFIFOStopType ) ||
-                              string_equal(tempMethodStopType,CtiLMProgramDirectGear::RampOutRandomRestoreStopType ) ||
-                              string_equal(tempMethodStopType,CtiLMProgramDirectGear::RampOutFIFORestoreStopType )) )
+                             (ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RampOutRandomStopType ) ||
+                              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RampOutFIFOStopType ) ||
+                              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RampOutRandomRestoreStopType ) ||
+                              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RampOutFIFORestoreStopType )) )
                     {
                         currentLMGroup->setIsRampingIn(false);
                         currentLMGroup->setIsRampingOut(true);
@@ -4548,7 +4548,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         dout << CtiTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-                else if( string_equal(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
+                else if( ciStringEqual(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
                 {
                     if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
                     {
@@ -4562,7 +4562,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     setLastControlSent(CtiTime());
                     currentLMGroup->setLastControlSent(CtiTime());
                 }
-                else if( string_equal(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
+                else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod ) )
                 {
                     // Its not controlling so a stop method doesn't much matter, does it?
                 }

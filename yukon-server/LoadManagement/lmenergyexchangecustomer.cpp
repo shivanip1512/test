@@ -73,7 +73,7 @@ BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(LONG offerid) const
     {
         if( ((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getOfferId() == offerid )
         {
-            if( string_equal(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
+            if( ciStringEqual(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
             {
                 returnBoolean = TRUE;
                 break;

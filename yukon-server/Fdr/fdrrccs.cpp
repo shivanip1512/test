@@ -312,15 +312,15 @@ int CtiFDR_Rccs::resolvePairNumber(string &aPair)
 {
     int retVal = 0;
 
-    if (string_equal(aPair,string (RCCS_PAIR_ONE)))
+    if (ciStringEqual(aPair,string (RCCS_PAIR_ONE)))
         retVal = 1;
-    else if (string_equal(aPair,string (RCCS_PAIR_TWO)))
+    else if (ciStringEqual(aPair,string (RCCS_PAIR_TWO)))
         retVal = 2;
-    else if (string_equal(aPair,string (RCCS_PAIR_THREE)))
+    else if (ciStringEqual(aPair,string (RCCS_PAIR_THREE)))
         retVal = 3;
-    else if (string_equal(aPair,string (RCCS_PAIR_FOUR)))
+    else if (ciStringEqual(aPair,string (RCCS_PAIR_FOUR)))
         retVal = 4;
-    else if (string_equal(aPair,string (RCCS_STANDALONE)))
+    else if (ciStringEqual(aPair,string (RCCS_STANDALONE)))
         retVal = 1;
 
 
@@ -544,7 +544,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             for (int z = 0; z < connEntries; z++)
             {
                 // if the names match
-                if(string_equal(getConnectionList()[z]->getName(),destinationName))
+                if(ciStringEqual(getConnectionList()[z]->getName(),destinationName))
                 {
                     foundFlag = true;
                 }
@@ -630,7 +630,7 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
             for (int y = 0; y < connEntries; y++)
             {
                 // if the names match
-                if(string_equal(getConnectionList()[y]->getName(),destinationName))
+                if(ciStringEqual(getConnectionList()[y]->getName(),destinationName))
                 {
                     getConnectionList()[y]->setLinkStatusID(linkID);
                     getConnectionList()[y]->sendLinkState (FDR_CONNECTED);
@@ -882,8 +882,8 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
     pointName.resize(20,' ');
 
     // check for our special device names
-    if (string_equal(deviceName,string (RCCSDEVICEPRIMARY))
-        || string_equal(deviceName,string (RCCSDEVICESTANDBY)))
+    if (ciStringEqual(deviceName,string (RCCSDEVICEPRIMARY))
+        || ciStringEqual(deviceName,string (RCCSDEVICESTANDBY)))
     {
 
 //        {
@@ -893,7 +893,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 
 
         //we've got a primary, check his status
-        if (string_equal(pointName,string (RCCSPOINTMASTER)))
+        if (ciStringEqual(pointName,string (RCCSPOINTMASTER)))
         {
 
             setAuthorizationFlag (atoi(temp.c_str()), TRUE);

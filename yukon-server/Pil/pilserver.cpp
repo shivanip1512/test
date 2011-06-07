@@ -2155,7 +2155,7 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
 
     if( !gConfigParms.isTrue(PIL_OMIT_COMMAND_LOGGING) )   // Set this to true if you want to skip the excessive logs from pil.
     {
-        bool name_none  = !pReqOrig->getUser().empty() && (string_equal(pReqOrig->getUser(), "none") || string_equal(pReqOrig->getUser(), "(none)"));
+        bool name_none  = !pReqOrig->getUser().empty() && (ciStringEqual(pReqOrig->getUser(), "none") || ciStringEqual(pReqOrig->getUser(), "(none)"));
         bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue(PIL_LOG_UNKNOWN_USERS) );
 
         if(Dev && user_valid &&

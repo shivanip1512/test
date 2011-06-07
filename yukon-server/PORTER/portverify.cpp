@@ -517,7 +517,7 @@ void CtiPorterVerification::loadAssociations(void)
                 //  only add this association if we're to verify using it...  otherwise, ignore it and move on
                 //    generally, all associations on a transmitter will be either all on or all off, but
                 //    this allows for some flexibility
-                if(!string_equal(tmp_disable,"y"))
+                if(!ciStringEqual(tmp_disable,"y"))
                 {
                     _associations.insert(std::make_pair(tmp_transmitter, tmp_association));
                 }

@@ -1279,8 +1279,8 @@ bool CtiPendingOpThread::loadICControlMap()
             CtiTableLMControlHistory dynC;
             dynC.DecodeDatabaseReader(rdr);
 
-            if(string_equal(dynC.getLoadedActiveRestore(),LMAR_DISPATCH_SHUTDOWN) ||
-               string_equal(dynC.getLoadedActiveRestore(),LMAR_NEWCONTROL))
+            if(ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_DISPATCH_SHUTDOWN) ||
+               ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_NEWCONTROL))
             {
                 if( now >= dynC.getStopTime() )  // This control completed during dispatch's shutdown.
                 {
@@ -1317,7 +1317,7 @@ bool CtiPendingOpThread::loadICControlMap()
 
                 cleanShutdown = true;           // Shutdown was clean we do not need to recover from lmctrlhist.
             }
-            else if( string_equal(dynC.getLoadedActiveRestore(),LMAR_LOGTIMER) )
+            else if( ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_LOGTIMER) )
             {
                 if( now >= dynC.getStopTime() )  // This control completed during dispatch's shutdown.
                 {
@@ -1353,15 +1353,15 @@ bool CtiPendingOpThread::loadICControlMap()
             }
             else if(!cleanShutdown && allControlsCompleted)
             {
-                if(!(string_equal(dynC.getLoadedActiveRestore(),LMAR_MANUAL_RESTORE) ||
-                     string_equal(dynC.getLoadedActiveRestore(),LMAR_TIMED_RESTORE)))
+                if(!(ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_MANUAL_RESTORE) ||
+                     ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_TIMED_RESTORE)))
                 {
                     allControlsCompleted = false;       // All controls in the list were not completed.
                 }
             }
 
-            if( string_equal(dynC.getLoadedActiveRestore(),LMAR_MANUAL_RESTORE) ||
-                 string_equal(dynC.getLoadedActiveRestore(),LMAR_TIMED_RESTORE) )
+            if( ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_MANUAL_RESTORE) ||
+                 ciStringEqual(dynC.getLoadedActiveRestore(),LMAR_TIMED_RESTORE) )
             {
                 dynC.setActiveRestore(dynC.getLoadedActiveRestore());       // This is a completed control!
             }

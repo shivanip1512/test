@@ -522,9 +522,9 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE 
 --------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::calculateProjectedValue()
 {
-    if( !string_equal(getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) )
+    if( !ciStringEqual(getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) )
     {
-        if( string_equal(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
+        if( ciStringEqual(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
         {
             while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )//trim excess pointvalues
             {

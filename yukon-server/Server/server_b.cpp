@@ -275,7 +275,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else  // Client wants to hear from us?
                 {
-                    if( !string_equal(getMyServerName(),Cmd->getSource()) )
+                    if( !ciStringEqual(getMyServerName(),Cmd->getSource()) )
                         pConn->WriteConnQue(Cmd->replicateMessage());
                 }
 

@@ -54,7 +54,7 @@ void TimeOfDayStrategy::restoreParameters( const std::string &name, const std::s
         {
             TimeOfDay & tod = iter->second;
 
-            if (string_equal(type, "WeekDay"))
+            if (ciStringEqual(type, "WeekDay"))
             {
                 tod.weekdayPercent = newValue;
             }
@@ -69,7 +69,7 @@ void TimeOfDayStrategy::restoreParameters( const std::string &name, const std::s
             
             tod.timeOffset = timeOffset;
 
-            if (string_equal(type, "WeekDay"))
+            if (ciStringEqual(type, "WeekDay"))
             {
                 tod.weekdayPercent = newValue;
                 tod.weekendPercent = 0.0;

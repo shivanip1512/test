@@ -1944,8 +1944,8 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                 }
 
                 /*
-            if( !options || (options && ( string_equal(options->getValueFromKey(DemandMetersToScan), "all")
-                          || string_equal(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+            if( !options || (options && ( ciStringEqual(options->getValueFromKey(DemandMetersToScan), "all")
+                          || ciStringEqual(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
             {*/
                 if( hasPulseInputs() )
                 {
@@ -1974,8 +1974,8 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                 }
             }
 
-            /*if( !options || (options && ( string_equal(options->getValueFromKey(DemandMetersToScan), "all")
-                          || string_equal(options->getValueFromKey(DemandMetersToScan), "ied"))) )
+            /*if( !options || (options && ( ciStringEqual(options->getValueFromKey(DemandMetersToScan), "all")
+                          || ciStringEqual(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {*/
             if( hasIedInputs() )
             {

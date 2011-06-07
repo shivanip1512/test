@@ -1321,7 +1321,7 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
         ret_val = false;
     }
 
-    if( currentGearObject != NULL && string_equal(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
+    if( currentGearObject != NULL && ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
     {
         string result = "Latching method currently in use, you cannot change from latching method.";
         _results.push_back(result);

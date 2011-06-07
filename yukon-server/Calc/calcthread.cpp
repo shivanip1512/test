@@ -1397,7 +1397,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
         return;
     }
 
-    if( string_equal(operationType, "Get Interval Minutes") || string_equal(operationType, "Get Point Limit") )
+    if( ciStringEqual(operationType, "Get Interval Minutes") || ciStringEqual(operationType, "Get Point Limit") )
     {
         pointID = 0;
     }

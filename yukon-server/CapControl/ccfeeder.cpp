@@ -1502,7 +1502,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
         }
 
         if (!currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-            string_equal(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+            ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
             correctControlStatus && !currentCapBank->getIgnoreFlag())
         {
             //Before anything, make sure this bank will not push past a threshold.
@@ -1622,7 +1622,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[i];
 
             if (!currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-                string_equal(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                ciStringEqual(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
                 (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail))
             {
@@ -2295,15 +2295,15 @@ BOOL CtiCCFeeder::isControlPoint(LONG pointid)
 {
     BOOL retVal = FALSE;
 
-    if (string_equal(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (string_equal(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
+        if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
             getCurrentVoltLoadPointId() == pointid )
             retVal = TRUE;
-        else if (string_equal(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
+        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
             getCurrentVarLoadPointId() == pointid)
             retVal = TRUE;
-        else if (string_equal(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
+        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
                  (getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid) )
             retVal = TRUE;
         else
@@ -2321,12 +2321,12 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
         return;
     }
 
-    if (string_equal(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (string_equal(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
+        if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (string_equal(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)||
-                 string_equal(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
+        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)||
+                 ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
             controlVvalue = getCurrentVarLoadPointValue();
         else
         {
@@ -2385,7 +2385,7 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
         return;
     }
 
-    if (string_equal(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         controlWvalue = getCurrentWattLoadPointValue();
         if (getStrategy()->getControlInterval() > 0)
@@ -2458,15 +2458,15 @@ void CtiCCFeeder::checkForAndReorderFeeder()
 void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag)
 {
 
-    if( string_equal(controlMethod, ControlStrategy::IndividualFeederControlMethod ))
+    if( ciStringEqual(controlMethod, ControlStrategy::IndividualFeederControlMethod ))
     {
         string feederControlUnits = controlUnits;
-        if (!string_equal(getStrategy()->getStrategyName(),"(none)"))
+        if (!ciStringEqual(getStrategy()->getStrategyName(),"(none)"))
         {
             feederControlUnits = getStrategy()->getControlUnits();
         }
-        if (string_equal(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
-            string_equal(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit ))
+        if (ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
+            ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit ))
         {
             DOUBLE setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
@@ -2479,7 +2479,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
             DOUBLE leadLevel = (peakTimeFlag?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
             DOUBLE setpoint = (lagLevel + leadLevel)/2;
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
-            if( string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) )
+            if( ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) )
             {
                 setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
             }
@@ -2510,18 +2510,18 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
     BOOL maxOpsDisableFlag = getStrategy()->getMaxOperationDisableFlag();
     string feederControlUnits = controlUnits;
-    if (!string_equal(getStrategy()->getStrategyName(),"(none)"))
+    if (!ciStringEqual(getStrategy()->getStrategyName(),"(none)"))
     {
         feederControlUnits = getStrategy()->getControlUnits();
         maxOpsDisableFlag = getStrategy()->getMaxOperationDisableFlag();
     }
-    if( string_equal(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
-       string_equal(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit) )
+    if( ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
+       ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit) )
         setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
 
     //Integration Control Point setting...
     setIWControl(getCurrentWattLoadPointValue());
-    if (string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit))
+    if (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit))
         setIVControl(getCurrentVoltLoadPointValue());
     else
         setIVControl(getCurrentVarLoadPointValue());
@@ -2541,7 +2541,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
         }
      //resetting integration total...
-        if (string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit))
+        if (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit))
             setIVControlTot(getCurrentVoltLoadPointValue());
         else
             setIVControlTot(getCurrentVarLoadPointValue());
@@ -2561,34 +2561,34 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     checkMaxDailyOpCountExceeded(pointChanges);
 
     bool arePointsNormalQuality = ( getCurrentVarPointQuality() == NormalQuality &&
-                         ( string_equal(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ? getCurrentWattPointQuality() == NormalQuality :
-                         ( string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltPointQuality() == NormalQuality : getCurrentVarPointQuality()  == NormalQuality) ) );
+                         ( ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ? getCurrentWattPointQuality() == NormalQuality :
+                         ( ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltPointQuality() == NormalQuality : getCurrentVarPointQuality()  == NormalQuality) ) );
 
     if( !getDisableFlag() &&
         !getWaiveControlFlag() &&
         ( !_IGNORE_NOT_NORMAL_FLAG || arePointsNormalQuality ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() ) )
     {
-        if( (string_equal(feederControlUnits, ControlStrategy::KVarControlUnit) &&
+        if( (ciStringEqual(feederControlUnits, ControlStrategy::KVarControlUnit) &&
              getCurrentVarLoadPointId() > 0) ||
-            (string_equal(feederControlUnits, ControlStrategy::VoltsControlUnit) &&
+            (ciStringEqual(feederControlUnits, ControlStrategy::VoltsControlUnit) &&
              getCurrentVarLoadPointId() > 0 && getCurrentVoltLoadPointId() > 0 ) )
         {
-            if( (string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) &&
+            if( (ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) &&
                 (getIVControl() > lagLevel || getIVControl() < leadLevel )) ||
-                (string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
+                (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
                 (getIVControl() < lagLevel || getIVControl() > leadLevel) ) )
             {
 
                 try
                 {
-                    if( ( string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) &&
+                    if( ( ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) &&
                           lagLevel < getIVControl() ) ||
-                        ( string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
+                        ( ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
                           lagLevel > getIVControl() ) )
                     {
                         //if( _CC_DEBUG )
-                        if( string_equal(feederControlUnits, ControlStrategy::KVarControlUnit) )
+                        if( ciStringEqual(feederControlUnits, ControlStrategy::KVarControlUnit) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPaoName().data() << endl;
@@ -2602,7 +2602,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
 
-                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(),!(string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit)));
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(),!(ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit)));
 
                         if( capBank != NULL &&
                             capBank->getRecloseDelay() > 0 &&
@@ -2619,13 +2619,13 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         }
                         else
                         {
-                            //DOUBLE controlValue = (string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                            //DOUBLE controlValue = (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             string text = createTextString(ControlStrategy::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
                             request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                             if( request == NULL )
                             {
-                                if(  string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) )
+                                if(  ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) )
                                     createCannotControlBankText("Decrease Var", "Close", ccEvents);
                                 else
                                     createCannotControlBankText("Increase Volt", "Close", ccEvents);
@@ -2637,13 +2637,13 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
                     }
-                    else if (( string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) &&
+                    else if (( ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) &&
                           getIVControl() < leadLevel ) ||
-                        ( string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
+                        ( ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
                           getIVControl() > leadLevel ) )
                     {
                         //if( _CC_DEBUG )
-                        if( string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) )
+                        if( ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPaoName().data() << endl;
@@ -2657,15 +2657,15 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
 
-                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !(string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit)));
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !(ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit)));
 
-                        //DOUBLE controlValue = (string_equal(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        //DOUBLE controlValue = (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         string text = createTextString(ControlStrategy::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
                         request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                         if( request == NULL )
                         {
-                            if(  string_equal(feederControlUnits,ControlStrategy::KVarControlUnit) )
+                            if(  ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) )
                                     createCannotControlBankText("Increase Var", "Open", ccEvents);
                                 else
                                     createCannotControlBankText("Decrease Volt", "Open", ccEvents);
@@ -2704,8 +2704,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 }
             }
         }
-        else if( (string_equal(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
-                 string_equal(feederControlUnits,ControlStrategy::PFactorKWKQControlUnit) )
+        else if( (ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
+                 ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKQControlUnit) )
                  && getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 &&
@@ -2718,7 +2718,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPaoName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), string_equal(feederControlUnits,ControlStrategy::KVarControlUnit));
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit));
                 if( capBank != NULL )
                 {
                     if( capBank->getRecloseDelay() > 0 &&
@@ -2767,7 +2767,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPaoName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), string_equal(feederControlUnits,ControlStrategy::KVarControlUnit));
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit));
                 if( capBank != NULL )
                 {
                     DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
@@ -4243,7 +4243,7 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
     else
     {
         //check capbank reclose delay here...
-        DOUBLE controlValue = (string_equal(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+        DOUBLE controlValue = (ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
         string text = createTextString(getStrategy()->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
         bool flipFlag = FALSE;
         if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
@@ -4477,7 +4477,7 @@ bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
             if (bank->getControlStatus() == CtiCCCapBank::OpenPending ||
                 bank->getControlStatus() == CtiCCCapBank::ClosePending )
             {
-                if (string_equal(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
+                if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                 {
                     bankId = currentCapBank->getPaoId();
                     setLastCapBankControlledDeviceId(bankId);
@@ -5434,7 +5434,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
                             {
-                                DOUBLE controlValue = (!string_equal(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                 request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -5497,7 +5497,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
-                                        DOUBLE controlValue = (!string_equal(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                         request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -5562,7 +5562,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Open))
                             {
-                                DOUBLE controlValue = (!string_equal(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                 request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -5619,7 +5619,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
-                                        DOUBLE controlValue = (!string_equal(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                         request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -6870,17 +6870,17 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
             break;
 
     }
-    if (string_equal(getParentControlUnits(),ControlStrategy::VoltsControlUnit))
+    if (ciStringEqual(getParentControlUnits(),ControlStrategy::VoltsControlUnit))
     {
-        if (string_equal(controlMethod,ControlStrategy::SubstationBusControlMethod))
+        if (ciStringEqual(controlMethod,ControlStrategy::SubstationBusControlMethod))
             text += "SubBus-Volt: ";
-        else if (string_equal(controlMethod,ControlStrategy::BusOptimizedFeederControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::BusOptimizedFeederControlMethod))
             text += "BusOp-Volt: ";
-        else if (string_equal(controlMethod,ControlStrategy::IndividualFeederControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::IndividualFeederControlMethod))
             text += "IndvFdr-Volt: ";
-        else if (string_equal(controlMethod,ControlStrategy::ManualOnlyControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::ManualOnlyControlMethod))
             text += "Manual-Volt: ";
-        else if (string_equal(controlMethod,ControlStrategy::TimeOfDayControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::TimeOfDayControlMethod))
             text += "TimeOfDay-Volt: ";
         else
             text += "No Method Defined? Volt: ";
@@ -6888,11 +6888,11 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
         text += "/Var: ";
         text += doubleToString(monitorValue, getDecimalPlaces());
     }
-    else if (string_equal(getParentControlUnits(), ControlStrategy::KVarControlUnit) ||
-             string_equal(getParentControlUnits(), ControlStrategy::PFactorKWKVarControlUnit) ||
-             string_equal(getParentControlUnits(), ControlStrategy::PFactorKWKQControlUnit))
+    else if (ciStringEqual(getParentControlUnits(), ControlStrategy::KVarControlUnit) ||
+             ciStringEqual(getParentControlUnits(), ControlStrategy::PFactorKWKVarControlUnit) ||
+             ciStringEqual(getParentControlUnits(), ControlStrategy::PFactorKWKQControlUnit))
     {
-        if (string_equal(controlMethod,ControlStrategy::SubstationBusControlMethod))
+        if (ciStringEqual(controlMethod,ControlStrategy::SubstationBusControlMethod))
         {
             text += "SubBus-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
@@ -6915,7 +6915,7 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
                 text += doubleToString(monitorValue, getDecimalPlaces());
         }
 
-        else if (string_equal(controlMethod,ControlStrategy::BusOptimizedFeederControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::BusOptimizedFeederControlMethod))
         {
             text += "BusOp-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
@@ -6932,7 +6932,7 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
                 text += doubleToString(monitorValue, getDecimalPlaces());
 
         }
-        else if (string_equal(controlMethod,ControlStrategy::IndividualFeederControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::IndividualFeederControlMethod))
         {
             text += "IndvFdr-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
@@ -6948,14 +6948,14 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
             else
                 text += doubleToString(monitorValue, getDecimalPlaces());
         }
-        else if (string_equal(controlMethod,ControlStrategy::ManualOnlyControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::ManualOnlyControlMethod))
         {
             text += "Manual-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
             text += "/Var: ";
             text += doubleToString(monitorValue, getDecimalPlaces());
         }
-        else if (string_equal(controlMethod,ControlStrategy::TimeOfDayControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::TimeOfDayControlMethod))
         {
             text += "TimeOfDay-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
@@ -6970,17 +6970,17 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
             text += doubleToString(monitorValue, getDecimalPlaces());
         }
     }
-    else if (string_equal(getParentControlUnits(), ControlStrategy::MultiVoltControlUnit))
+    else if (ciStringEqual(getParentControlUnits(), ControlStrategy::MultiVoltControlUnit))
     {
-        if (string_equal(controlMethod, ControlStrategy::SubstationBusControlMethod))
+        if (ciStringEqual(controlMethod, ControlStrategy::SubstationBusControlMethod))
             text += "SubBus-MultiVolt: ";
-        else if (string_equal(controlMethod, ControlStrategy::BusOptimizedFeederControlMethod))
+        else if (ciStringEqual(controlMethod, ControlStrategy::BusOptimizedFeederControlMethod))
             text += "BusOp-MultiVolt: ";
-        else if (string_equal(controlMethod, ControlStrategy::IndividualFeederControlMethod))
+        else if (ciStringEqual(controlMethod, ControlStrategy::IndividualFeederControlMethod))
             text += "IndvFdr-MultiVolt: ";
-        else if (string_equal(controlMethod, ControlStrategy::ManualOnlyControlMethod))
+        else if (ciStringEqual(controlMethod, ControlStrategy::ManualOnlyControlMethod))
             text += "Manual-MultiVolt: ";
-        else if (string_equal(controlMethod,ControlStrategy::TimeOfDayControlMethod))
+        else if (ciStringEqual(controlMethod,ControlStrategy::TimeOfDayControlMethod))
             text += "TimeOfDay-MultiVolt: ";
         else
             text += "No Method Defined? MultiVolt: ";
@@ -6988,7 +6988,7 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
         text += "/Var: ";
         text += doubleToString(monitorValue, getDecimalPlaces());
     }
-    if (string_equal(getParentControlUnits(),ControlStrategy::IntegratedVoltVarControlUnit))
+    if (ciStringEqual(getParentControlUnits(),ControlStrategy::IntegratedVoltVarControlUnit))
     {
         text += "IVVC: ";
         text += doubleToString(controlValue, getDecimalPlaces());
@@ -6997,7 +6997,7 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
     }
     else
     {
-        if (string_equal(controlMethod,ControlStrategy::TimeOfDayControlMethod))
+        if (ciStringEqual(controlMethod,ControlStrategy::TimeOfDayControlMethod))
         {
             text += "TimeOfDay-Var: ";
             text += doubleToString(controlValue, getDecimalPlaces());
@@ -7098,7 +7098,7 @@ bool CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
     CtiTime timeNow = CtiTime();
     string feederControlUnits = controlUnits;
 
-    if (!string_equal(getStrategy()->getStrategyName(),"(none)"))
+    if (!ciStringEqual(getStrategy()->getStrategyName(),"(none)"))
     {
         feederControlUnits = getStrategy()->getControlUnits();
     }
@@ -7107,7 +7107,7 @@ bool CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
     {
         if (getStrategy()->getLikeDayFallBack())
         {
-            if ( string_equal(feederControlUnits, ControlStrategy::VoltsControlUnit))
+            if ( ciStringEqual(feederControlUnits, ControlStrategy::VoltsControlUnit))
             {
                  if ((getCurrentVoltLoadPointId() && getCurrentVarLoadPointId()) &&
                      (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
@@ -7116,7 +7116,7 @@ bool CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
                      retVal = true;
                 }
             }
-            else if ( string_equal(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit))
+            else if ( ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit))
             {
                  if ((getCurrentWattLoadPointId() && getCurrentVarLoadPointId()) &&
                      (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||

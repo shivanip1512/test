@@ -141,7 +141,7 @@ bool isTranslationNameEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 
     for (int x=0; x < aPoint->getDestinationList().size(); x++)
     {
-        if (string_equal(aPoint->getDestinationList()[x].getTranslation(),name))
+        if (ciStringEqual(aPoint->getDestinationList()[x].getTranslation(),name))
             return true;
     }
     return false;
@@ -263,7 +263,7 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                             // now we have a name
                             if ( !tempString2.empty() )
                             {
-                                if (string_equal(tempString2,aClientName))
+                                if (ciStringEqual(tempString2,aClientName))
                                 {
                                     retID = translationPoint->getPointID();
 

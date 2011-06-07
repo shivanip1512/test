@@ -224,7 +224,7 @@ int CtiFDR_TextExport::readConfig( void )
     tempStr = getCparmValueAsString(KEY_APPEND_FILE);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"true"))
+        if (ciStringEqual(tempStr,"true"))
         {
             setAppendToFile(true);
         }
@@ -233,7 +233,7 @@ int CtiFDR_TextExport::readConfig( void )
     _format = formatOne;
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"survalent"))
+        if (ciStringEqual(tempStr,"survalent"))
         {
             _format = survalent;
         }

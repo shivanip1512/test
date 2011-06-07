@@ -64,12 +64,12 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
 
 bool SEPCycleGear::stopControl(CtiLMGroupPtr currentLMGroup)
 {
-    if( string_equal(getMethodStopType(),CtiLMProgramDirectGear::RestoreStopType ) )
+    if( ciStringEqual(getMethodStopType(),CtiLMProgramDirectGear::RestoreStopType ) )
     {
         currentLMGroup->sendStopControl(true);
     }
-    else if( string_equal(getMethodStopType(),CtiLMProgramDirectGear::StopCycleStopType ) ||
-             string_equal(getMethodStopType(),CtiLMProgramDirectGear::TimeInStopType ) )
+    else if( ciStringEqual(getMethodStopType(),CtiLMProgramDirectGear::StopCycleStopType ) ||
+             ciStringEqual(getMethodStopType(),CtiLMProgramDirectGear::TimeInStopType ) )
     {
         currentLMGroup->sendStopControl(false);
     }

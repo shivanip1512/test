@@ -83,7 +83,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                 // Using a "magic string for now" This Should be an enum/const string reference when more types are added.
                 // MCT_410_BASE came from the deviceDefinition.xml file.
-                if (string_equal(broadcastType,"MCT_410_BASE"))
+                if (ciStringEqual(broadcastType,"MCT_410_BASE"))
                 {
                     if( Cti::Devices::Mct410Device::buildPhaseDetectOutMessage(parse, OutMessage) )
                     {

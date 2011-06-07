@@ -1760,15 +1760,15 @@ void CtiCCSubstationBusStore::handleAMFMChanges(Cti::RowReader& rdr)
 string translateCBCModelToControllerType(string& cbc_model)
 {
     string returnString = "(none)";
-    if( string_equal(cbc_model,"CBC5010") )
+    if( ciStringEqual(cbc_model,"CBC5010") )
     {
         returnString = "CTI Paging";
     }
-    else if( string_equal(cbc_model,"CBC3010") )
+    else if( ciStringEqual(cbc_model,"CBC3010") )
     {
         returnString = "CTI DLC";
     }
-    else if( string_equal(cbc_model,"CBC2010") )
+    else if( ciStringEqual(cbc_model,"CBC2010") )
     {
         returnString = "CTI FM";
     }
@@ -1896,10 +1896,10 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                                     }
                                 }
-                                currentCapBank->setOperationalState(string_equal(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
+                                currentCapBank->setOperationalState(ciStringEqual(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
                                 updateCapBankFlag = true;
                             }
-                            if( (bool)currentCapBank->getDisableFlag() != (string_equal(cap_disable_flag,m3iAMFMDisabledString)) )
+                            if( (bool)currentCapBank->getDisableFlag() != (ciStringEqual(cap_disable_flag,m3iAMFMDisabledString)) )
                             {
                                 {
                                     char tempchar[64] = "";
@@ -1920,10 +1920,10 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                                     }
                                 }
-                                currentCapBank->setDisableFlag(string_equal(cap_disable_flag,m3iAMFMDisabledString));
+                                currentCapBank->setDisableFlag(ciStringEqual(cap_disable_flag,m3iAMFMDisabledString));
                                 updateCapBankFlag = true;
                             }
-                            if( string_equal(currentCapBank->getControllerType(),translateCBCModelToControllerType(cbc_model)) )
+                            if( ciStringEqual(currentCapBank->getControllerType(),translateCBCModelToControllerType(cbc_model)) )
                             {
                                 {
                                     char tempchar[64] = "";
@@ -1947,7 +1947,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
                                 updateCapBankFlag = true;
                             }
-                            if( string_equal(currentCapBank->getPaoDescription(),location) )
+                            if( ciStringEqual(currentCapBank->getPaoDescription(),location) )
                             {
                                 {
                                     char tempchar[64] = "";
@@ -2192,9 +2192,9 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
                         if( (capMapId = atol(currentCapBank->getMapLocationId().c_str() )) == capid )
                         {
                             std::transform(enableddisabled.begin(),enableddisabled.end(),enableddisabled.begin(), ::toupper);
-                          if( (bool)currentCapBank->getDisableFlag() != (string_equal(enableddisabled,m3iAMFMDisabledString)) )
+                          if( (bool)currentCapBank->getDisableFlag() != (ciStringEqual(enableddisabled,m3iAMFMDisabledString)) )
                             {
-                                currentCapBank->setDisableFlag(string_equal(enableddisabled,m3iAMFMDisabledString));
+                                currentCapBank->setDisableFlag(ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                                 UpdateCapBankDisableFlagInDB(currentCapBank);
                                 currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                                 {
@@ -2257,9 +2257,9 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& f
                     {
                         std::transform(enableddisabled.begin(),enableddisabled.end(),enableddisabled.begin(), ::toupper);
 
-                        if( (bool)currentFeeder->getDisableFlag() != (string_equal(enableddisabled,m3iAMFMDisabledString)) )
+                        if( (bool)currentFeeder->getDisableFlag() != (ciStringEqual(enableddisabled,m3iAMFMDisabledString)) )
                         {
-                            currentFeeder->setDisableFlag(string_equal(enableddisabled,m3iAMFMDisabledString));
+                            currentFeeder->setDisableFlag(ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                             UpdateFeederDisableFlagInDB(currentFeeder);
                             currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                             {
@@ -2520,7 +2520,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    if( string_equal(amfm_interface,m3iAMFMInterfaceString) )
+    if( ciStringEqual(amfm_interface,m3iAMFMInterfaceString) )
     {
         int refreshrate = 3600;
         string amFmDbDll = "none";
@@ -3779,7 +3779,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 
                                                      currentCCSubstationBus->setStrategy(strategyID);
 
-                                                     if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                                                     if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                                      {
                                                          currentCCSubstationBus->figureNextCheckTime();
                                                      }
@@ -4041,7 +4041,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                                                  currentCCSubstationBus->setStrategy(strategyID);
 
-                                                 if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                                                 if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                                  {
                                                      currentCCSubstationBus->figureNextCheckTime();
                                                  }
@@ -5760,7 +5760,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                  cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
                              }
 
-                             if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                             if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                              {
                                  currentCCSubstationBus->figureNextCheckTime();
                              }
@@ -5867,7 +5867,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                  {
                                      cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
                                  }
-                                 if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                                 if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                  {
                                      currentCCSubstationBus->figureNextCheckTime();
                                  }
@@ -5897,9 +5897,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         if (paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId()) != paobject_subbus_map->end())
                         {
                             dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
-                            if (string_equal(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                string_equal(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                string_equal(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+                                ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                                ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                             {
                                 if (dualBus->getCurrentVarLoadPointId() > 0)
                                 {
@@ -5913,7 +5913,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                     dout << "   Alternate Sub: "<<dualBus->getPaoName()<<" does not have a VAR Point ID attached."<< endl;
                                 }
                             }
-                            else if(string_equal(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
+                            else if(ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
                             {
                                 if (dualBus->getCurrentVoltLoadPointId() > 0)
                                 {
@@ -7040,7 +7040,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 currentCCCapBank->setParentId(feederid);
                 CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(feederid)->second;
 
-                if (!string_equal(currentCCCapBank->getOperationalState(),CtiCCCapBank::UninstalledState))
+                if (!ciStringEqual(currentCCCapBank->getOperationalState(),CtiCCCapBank::UninstalledState))
                 {
                     currentCCFeeder->getCCCapBanks().insert(currentCCCapBank);
                     capbank_feeder_map->insert(make_pair(deviceid,feederid));
@@ -7541,7 +7541,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                         break;
                     }
 
-                    if(string_equal(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
+                    if(ciStringEqual(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
                     {
                         //Get all banks on SubBus all Feeders.
                         CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
@@ -8393,13 +8393,13 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
                 if (tempSub != NULL)
                 {
-                    if (string_equal(tempSub->getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit))
+                    if (ciStringEqual(tempSub->getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit))
                     {
                         LONG pointid = subToDelete->getCurrentVarLoadPointId();
                         _pointid_subbus_map.erase(pointid);
                         tempSub->getPointIds()->remove(pointid);
                     }
-                    else if (!string_equal(tempSub->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit))
+                    else if (!ciStringEqual(tempSub->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit))
                     {
                         LONG pointid = subToDelete->getCurrentVoltLoadPointId();
                         _pointid_subbus_map.erase(pointid);
@@ -9205,8 +9205,8 @@ void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(BOOL se
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
             BOOL peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
-            if (string_equal(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod)  &&
-                !(string_equal(currentFeeder->getStrategy()->getStrategyName(),"(none)"))  &&
+            if (ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod)  &&
+                !(ciStringEqual(currentFeeder->getStrategy()->getStrategyName(),"(none)"))  &&
                 (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
             {
                 currentFeeder->isPeakTime(currentDateTime);
@@ -10741,7 +10741,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                 if (capId != NULL)
                     cap = findCapBankByPAObjectID(capId);
 
-                if (string_equal(statisticType, "Monthly")  && cap != NULL &&
+                if (ciStringEqual(statisticType, "Monthly")  && cap != NULL &&
                     start > oneMonthAgo)
                 {
                     cap->getConfirmationStats().setMonthlyCommCount(attempts);
@@ -10749,14 +10749,14 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                     successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
                     cap->getConfirmationStats().setMonthlyCommSuccessPercent(successPercent);
                 }
-                else if (string_equal(statisticType, "Weekly") && cap != NULL )
+                else if (ciStringEqual(statisticType, "Weekly") && cap != NULL )
                 {
                     cap->getConfirmationStats().setWeeklyCommCount(attempts);
                     cap->getConfirmationStats().setWeeklyCommFail(errorTotal);
                     successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
                     cap->getConfirmationStats().setWeeklyCommSuccessPercent(successPercent);
                 }
-                else if (string_equal(statisticType, "Daily") && cap != NULL &&
+                else if (ciStringEqual(statisticType, "Daily") && cap != NULL &&
                          start > yesterday)
                 {
                     cap->getConfirmationStats().setDailyCommCount(attempts);
@@ -11059,7 +11059,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
                             {
                                 currentCCSubstationBus->setStrategy(strategyID);
 
-                                if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                 {
                                     currentCCSubstationBus->figureNextCheckTime();
                                 }
@@ -11100,7 +11100,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
                             {
                                 currentCCSubstationBus->setStrategy(strategyID);
 
-                                if (string_equal(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                 {
                                     currentCCSubstationBus->figureNextCheckTime();
                                 }

@@ -1207,8 +1207,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         currentTrigger->setPointValue(value);
                     }
     
-                    if( (!(string_equal(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType)) && !string_equal(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
-                        !(string_equal(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType)) ) 
+                    if( (!(ciStringEqual(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType)) && !ciStringEqual(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
+                        !(ciStringEqual(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType)) ) 
                     {
                         if( quality != NonUpdatedQuality && isNewData )
                         {
@@ -1239,7 +1239,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             }
                         }
                     }
-                    else if( !(string_equal(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType)))//make the projected value equal to the real value
+                    else if( !(ciStringEqual(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType)))//make the projected value equal to the real value
                     {
                         currentTrigger->setProjectedPointValue(value);
                     }

@@ -208,7 +208,7 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
     #endif
     mHash_itr2 itr = mHash.find(key);
 
-    if( (itr != mHash.end()) && string_equal((*itr).second->getValue(),isEqualThisValue) )
+    if( (itr != mHash.end()) && ciStringEqual((*itr).second->getValue(),isEqualThisValue) )
         return true;
     else
         return false;
@@ -222,11 +222,11 @@ bool CtiConfigParameters::isTrue(const string &key, bool defaultval)
     static string falsestr = "false";
     if( defaultval == true )
     {
-        retVal = string_equal( getValueAsString(key, truestr), truestr );
+        retVal = ciStringEqual( getValueAsString(key, truestr), truestr );
     }
     else if( defaultval == false )
     {
-        retVal = string_equal( getValueAsString(key, falsestr), truestr );
+        retVal = ciStringEqual( getValueAsString(key, falsestr), truestr );
     }
     return retVal;
 }

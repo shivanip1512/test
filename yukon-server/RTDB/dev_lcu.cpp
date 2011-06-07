@@ -2259,7 +2259,7 @@ INT CtiDeviceLCU::getProtocolWrap() const
 
     if(gConfigParms.isOpt("LCU_PROTOCOLWRAP"))
     {
-        if( string_equal(gConfigParms.getValueAsString("LCU_PROTOCOLWRAP"),"idlc") )
+        if( ciStringEqual(gConfigParms.getValueAsString("LCU_PROTOCOLWRAP"),"idlc") )
         {
             protocol = ProtocolWrapIDLC;
         }

@@ -84,21 +84,38 @@ BOOST_AUTO_TEST_CASE(test_delete_assoc_container)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
+BOOST_AUTO_TEST_CASE(test_ciStringEqual)
 {
-    BOOST_CHECK(string_equal("cat", "cat"));
-    BOOST_CHECK(string_equal("Cat", "cat"));
-    BOOST_CHECK(string_equal("cAt", "cat"));
-    BOOST_CHECK(string_equal("CAt", "cat"));
-    BOOST_CHECK(string_equal("caT", "cat"));
-    BOOST_CHECK(string_equal("CaT", "cat"));
-    BOOST_CHECK(string_equal("cAT", "cat"));
+    BOOST_CHECK(ciStringEqual("cat", "cat"));
+    BOOST_CHECK(ciStringEqual("Cat", "cat"));
+    BOOST_CHECK(ciStringEqual("cAt", "cat"));
+    BOOST_CHECK(ciStringEqual("CAt", "cat"));
+    BOOST_CHECK(ciStringEqual("caT", "cat"));
+    BOOST_CHECK(ciStringEqual("CaT", "cat"));
+    BOOST_CHECK(ciStringEqual("cAT", "cat"));
 
-    BOOST_CHECK( !string_equal("CAT", "catt"));
-    BOOST_CHECK( !string_equal("cat", "ca"));
+    BOOST_CHECK( !ciStringEqual("CAT", "catt"));
+    BOOST_CHECK( !ciStringEqual("cat", "ca"));
 
-    BOOST_CHECK( !string_equal("", "CAT"));
-    BOOST_CHECK( !string_equal("CAT", ""));
+    BOOST_CHECK( !ciStringEqual("", "CAT"));
+    BOOST_CHECK( !ciStringEqual("CAT", ""));
+}
+
+BOOST_AUTO_TEST_CASE(test_StringEqual)
+{
+    BOOST_CHECK(StringEqual("cat", "cat"));
+    BOOST_CHECK( !StringEqual("Cat", "cat"));
+    BOOST_CHECK( !StringEqual("cAt", "cat"));
+    BOOST_CHECK( !StringEqual("CAt", "cat"));
+    BOOST_CHECK( !StringEqual("caT", "cat"));
+    BOOST_CHECK( !StringEqual("CaT", "cat"));
+    BOOST_CHECK( !StringEqual("cAT", "cat"));
+
+    BOOST_CHECK( !StringEqual("CAT", "catt"));
+    BOOST_CHECK( !StringEqual("cat", "ca"));
+
+    BOOST_CHECK( !StringEqual("", "CAT"));
+    BOOST_CHECK( !StringEqual("CAT", ""));
 }
 
 BOOST_AUTO_TEST_CASE(test_stringContainsIgnoreCase)

@@ -809,7 +809,7 @@ int CtiFDR_TextImport::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"false"))
+        if (ciStringEqual(tempStr,"false"))
         {
             setDeleteFileAfterImport (false);
         }
@@ -819,7 +819,7 @@ int CtiFDR_TextImport::readConfig( void )
     tempStr = getCparmValueAsString(KEY_RENAME_SAVE_FILE);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"true"))
+        if (ciStringEqual(tempStr,"true"))
         {
             setRenameSaveFileAfterImport (true);
         }

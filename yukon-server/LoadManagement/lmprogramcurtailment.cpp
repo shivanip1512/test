@@ -662,11 +662,11 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
         emailMsg->setSubject(getHeading());
 
         string emailBody;
-        if( string_equal(getRunStatus(), CtiLMProgramCurtailment::CanceledRunStatus) )
+        if( ciStringEqual(getRunStatus(), CtiLMProgramCurtailment::CanceledRunStatus) )
         {
             emailBody = getCanceledMsg();
         }
-        else if( string_equal(getRunStatus(), CtiLMProgramCurtailment::StoppedEarlyRunStatus) )
+        else if( ciStringEqual(getRunStatus(), CtiLMProgramCurtailment::StoppedEarlyRunStatus) )
         {
             emailBody = getStoppedEarlyMsg();
         }

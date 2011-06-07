@@ -538,16 +538,16 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
 
-    if (string_equal(pointType, dnpPointStatusString))
+    if (ciStringEqual(pointType, dnpPointStatusString))
     {
         dnpId.PointType = StatusPointType;
     }
-    else if (string_equal(pointType, dnpPointAnalogString) ||
-             string_equal(pointType, dnpPointCalcAnalogString))
+    else if (ciStringEqual(pointType, dnpPointAnalogString) ||
+             ciStringEqual(pointType, dnpPointCalcAnalogString))
     {
         dnpId.PointType = AnalogPointType;
     }
-    else if (string_equal(pointType, dnpPointCounterString))
+    else if (ciStringEqual(pointType, dnpPointCounterString))
     {
         dnpId.PointType = PulseAccumulatorPointType;
     }

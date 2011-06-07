@@ -3824,7 +3824,7 @@ CtiServer::ptr_type CtiVanGogh::getPILConnection()
         {
             Mgr = itr->second;
 
-            if(string_equal(Mgr->getClientName(), PIL_REGISTRATION_NAME))
+            if(ciStringEqual(Mgr->getClientName(), PIL_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the PIL.
             }
@@ -3850,7 +3850,7 @@ CtiServer::ptr_type CtiVanGogh::getScannerConnection()
         {
             Mgr = itr->second;
 
-            if(string_equal(Mgr->getClientName(), SCANNER_REGISTRATION_NAME))
+            if(ciStringEqual(Mgr->getClientName(), SCANNER_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the SCANNER.
             }
@@ -4952,7 +4952,7 @@ bool CtiVanGogh::isDeviceGroupType(const LONG devid)
             {
                 // dliteit should be an iterator which represents the lite device now!
                 CtiDeviceBaseLite &dLite = *dliteit;
-                bret = string_equal(dLite.getClass(), "group");
+                bret = ciStringEqual(dLite.getClass(), "group");
             }
         }
         catch(...)
@@ -4975,7 +4975,7 @@ bool CtiVanGogh::isDeviceGroupType(const CtiDeviceBaseLite *device)
     {
         try
         {
-            bret = string_equal(device->getClass(), "group");
+            bret = ciStringEqual(device->getClass(), "group");
         }
         catch(...)
         {

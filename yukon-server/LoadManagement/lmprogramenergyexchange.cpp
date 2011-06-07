@@ -280,7 +280,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 
         if( currentOfferRevision != NULL )
         {
-            if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ScheduledRunStatus ) )
+            if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ScheduledRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getNotificationDateTime() )
                 {
@@ -296,7 +296,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     }
                 }
             }
-            else if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::OpenRunStatus ) )
+            else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::OpenRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
                 {
@@ -312,7 +312,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     }
                 }
             }
-            else if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ClosingRunStatus ) )
+            else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ClosingRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
                 {
@@ -328,7 +328,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     }
                 }
             }
-            else if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus ) )
+            else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus ) )
             {
                 if( currentDateTime >= CtiTime(currentOffer->getOfferDate().date(),currentOfferRevision->getFirstCurtailHour(),0,0)  )
                 {
@@ -344,7 +344,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     }
                 }
             }
-            else if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus ) )
+            else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus ) )
             {
                 if( currentDateTime >= CtiTime(currentOffer->getOfferDate().date(),currentOfferRevision->getLastCurtailHour(),0,0)  )
                 {
@@ -360,8 +360,8 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     }
                 }
             }
-            else if( string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CompletedRunStatus ) ||
-                     string_equal(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CanceledRunStatus ) )
+            else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CompletedRunStatus ) ||
+                     ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CanceledRunStatus ) )
             {
                 numberOfCompletedOrCanceledOffers++;
             }

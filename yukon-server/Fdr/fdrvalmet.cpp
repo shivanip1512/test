@@ -311,7 +311,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESYNC_UPDATE);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"false"))
+        if (ciStringEqual(tempStr,"false"))
         {
             setUpdatePCTimeFlag (false);
         }

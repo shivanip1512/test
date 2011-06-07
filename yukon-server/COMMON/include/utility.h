@@ -218,12 +218,23 @@ inline bool ci_equal(char ch1, char ch2)
 /**
  * Case Insensitive comparison
  */
-inline bool string_equal(const std::string& str1, const std::string& str2)
+inline bool ciStringEqual(const std::string& str1, const std::string& str2)
 {
     if( str1.size() != str2.size() )
         return false;
     else
         return std::equal(str1.begin(), str1.end(), str2.begin(), ci_equal);
+}
+
+/**
+ * Case Sensitive comparison
+ */
+inline bool StringEqual(const std::string& str1, const std::string& str2)
+{
+    if( str1.size() != str2.size() )
+        return false;
+    else
+        return std::equal(str1.begin(), str1.end(), str2.begin());
 }
 
 inline int stringContainsIgnoreCase(const std::string& str, const std::string& frag)

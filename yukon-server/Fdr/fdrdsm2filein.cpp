@@ -278,9 +278,9 @@ USHORT CtiFDR_Dsm2Filein::ForeignToYukonQuality (string aQuality)
 {
     USHORT Quality = NonUpdatedQuality;
 
-    if (string_equal(aQuality,"N"))
+    if (ciStringEqual(aQuality,"N"))
         Quality = NormalQuality;
-    if (string_equal(aQuality,"M"))
+    if (ciStringEqual(aQuality,"M"))
         Quality = ManualQuality;
 
     return(Quality);
@@ -781,7 +781,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr,"false"))
+        if (ciStringEqual(tempStr,"false"))
         {
             setDeleteFileAfterImport (false);
         }
@@ -791,7 +791,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     tempStr = getCparmValueAsString(KEY_USE_SYSTEM_TIME);
     if (tempStr.length() > 0)
     {
-        if (string_equal(tempStr, "true"))
+        if (ciStringEqual(tempStr, "true"))
         {
             setUseSystemTime (true);
         }
