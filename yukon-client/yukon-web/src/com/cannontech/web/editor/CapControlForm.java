@@ -972,8 +972,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         FacesContext facesContext = FacesContext.getCurrentInstance();
         
         final CBCWizardModel wizard = (CBCWizardModel) getWizData();
-        final String bankName = wizard.getName();
-        if(org.apache.commons.lang.StringUtils.isBlank(bankName)) {
+        final String name = wizard.getName();
+        if(org.apache.commons.lang.StringUtils.isBlank(name)) {
             facesMsg.setDetail("A name must be specified for this object.");
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             facesContext.addMessage("cti_db_add", facesMsg);
@@ -997,11 +997,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
                         int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
-                        int tempItemId = capControlCreationService.create(type, bankName, disabled, portId);
+                        int tempItemId = capControlCreationService.create(type, name, disabled, portId);
                         capbankControllerDao.assignController(tempItemId, controllerId);
                         itemId = tempItemId;
                     } else {
-                        itemId = capControlCreationService.create(type, bankName, disabled, portId);
+                        itemId = capControlCreationService.create(type, name, disabled, portId);
                     }
                 }
             });
@@ -1023,7 +1023,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
             if (isCapBankAndNested) {
                 String cbcName = wizard.getNestedWizard().getName();
-                if (bankName.equalsIgnoreCase(cbcName)) {
+                if (name.equalsIgnoreCase(cbcName)) {
                     facesMsg.setDetail("ERROR - Cannot create new Capacitor Bank and CBC with the same name. " + e.getMessage());
                 }
             }
