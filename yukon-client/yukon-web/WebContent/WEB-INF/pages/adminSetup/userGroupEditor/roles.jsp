@@ -17,7 +17,7 @@
     <form:form action="/spring/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="groupId" value="${groupId}">
-        <table class="nameValueTable naturalWidth">                
+        <table class="nameValueTable naturalWidth">
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
                 <tr>
                     <td class="name"><label for="${prop.extra.yukonRoleProperty}"><i:inline key="${prop.extra.key}"/>:</label></td>
@@ -40,4 +40,12 @@
           <cti:button key="cancel" name="cancel" type="submit"/>
 <%--        </tags:csrfTokenRequest> --%>
     </form:form>
+    
+    <div class="pointingPopup_container" id="descriptionPopup" style="display:none;">
+        <div class="pointingPopup_chevron ov pr">
+        </div>
+        <div class="pointingPopup_content" id="descriptionPopup_content">
+        </div>
+    </div>
+    
 </cti:standardPage>

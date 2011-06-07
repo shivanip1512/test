@@ -357,18 +357,20 @@ Event.observe(window, 'load', function() {
         var blurAndInitial = function() {
             var defaultField = inputField.up('span').next('input');
             if ($F(inputField) == $F(defaultField) || $F(inputField) == "") {
-                inputField.addClassName('usingDefaultValue');
+                inputField.removeClassName('usingNonDefaultValue');
                 inputField.value = $F(defaultField);
+            } else {
+                inputField.addClassName('usingNonDefaultValue');
             }
-            inputField.up('tr').removeClassName('childHasFocus');
+            $('descriptionPopup').hide();
         };
         Event.observe(inputField, "focus", function(event) {
+            showPointingPopup(event);
             var defaultField = inputField.up('span').next('input');
             if ($F(inputField) == $F(defaultField)) {
                 inputField.value = "";
             }
-            inputField.removeClassName('usingDefaultValue');
-            inputField.up('tr').addClassName('childHasFocus');
+            inputField.removeClassName('usingNonDefaultValue');
         });
         Event.observe(inputField, "blur", blurAndInitial);
         blurAndInitial();
@@ -379,21 +381,33 @@ Event.observe(window, 'load', function() {
         var blurAndInitial = function() {
             var defaultField = inputField.up('span').next('input');
             if ($F(inputField) == $F(defaultField)) {
-                inputField.addClassName('usingDefaultValue');
+                inputField.removeClassName('usingNonDefaultValue');
             } else {
-                inputField.removeClassName('usingDefaultValue');
+                inputField.addClassName('usingNonDefaultValue');
             }
+            $('descriptionPopup').hide();
         };
         Event.observe(inputField, "change", blurAndInitial);
         Event.observe(inputField, "focus", function(event) {
-            inputField.up('tr').addClassName('childHasFocus');
-            inputField.removeClassName('usingDefaultValue');
+            showPointingPopup(event);
+            inputField.removeClassName('usingNonDefaultValue');
         });
         Event.observe(inputField, "blur", function(event) {
-            inputField.up('tr').removeClassName('childHasFocus');
             blurAndInitial();
         });
         blurAndInitial();
     });
 
 });
+
+function showPointingPopup(event) {
+    var target = Event.element(event);
+    var offsets = target.cumulativeOffset();
+    var popupLeft = offsets.left + target.getDimensions().width + 2;
+    var left = popupLeft + 'px';
+    var top = (offsets.top -20) + 'px';
+    
+    $('descriptionPopup').setStyle({left:left, top:top});
+    $('descriptionPopup_content').innerHTML = target.up().next('span.focusedFieldDescription').innerHTML;
+    $('descriptionPopup').show();
+}

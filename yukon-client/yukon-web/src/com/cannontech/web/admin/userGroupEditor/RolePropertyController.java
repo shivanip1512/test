@@ -1,5 +1,7 @@
 package com.cannontech.web.admin.userGroupEditor;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -78,10 +80,23 @@ public class RolePropertyController {
     }
 
     private void setupModelMap(YukonUserContext context, ModelMap map, LiteYukonGroup liteYukonGroup, YukonRole role) {
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper = helperLookup.get(role);
+        
+        Comparator<MappedPropertiesHelper.MappableProperty<DescriptiveRoleProperty, ?>> comparator = new Comparator<MappedPropertiesHelper.MappableProperty<DescriptiveRoleProperty, ?>>() {
+            
+            @Override
+            public int compare(MappedPropertiesHelper.MappableProperty<DescriptiveRoleProperty, ?> o1, MappedPropertiesHelper.MappableProperty<DescriptiveRoleProperty, ?> o2) {
+                String o1Text = messageSourceAccessor.getMessage(o1.getExtra().getKey());
+                String o2Text = messageSourceAccessor.getMessage(o2.getExtra().getKey());
+                return o1Text.compareToIgnoreCase(o2Text);
+            }
+        };
+        
+        Collections.sort(mappedPropertiesHelper.getMappableProperties(), comparator);
+        
         map.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
         map.addAttribute("groupName", liteYukonGroup.getGroupName());
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         map.addAttribute("roleName", messageSourceAccessor.getMessage(role.getFormatKey()));
         map.addAttribute("roleId", role.getRoleId());
         map.addAttribute("groupId", liteYukonGroup.getGroupID());

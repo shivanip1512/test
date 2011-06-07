@@ -1323,17 +1323,12 @@ div.boxContainer .boxContainer_titleBar img {
     vertical-align: top;
 }
 
-.usingDefaultValue {
-    color: #ccc;
+.usingNonDefaultValue {
+    color: #0066CC;
 }
 
 .focusedFieldDescription {
     display: none;
-}
-
-.childHasFocus .focusedFieldDescription {
-    display: inline;
-    font-size: .8em;
 }
 
 .csrfPasswordPrompt {
