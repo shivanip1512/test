@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -31,7 +32,14 @@ public class OperationsSetupTag extends YukonTagSupport {
         boolean isEcOperator = energyCompanyService.isOperator(user);
         boolean hasMultiSpeak = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, user);
         boolean hasUserGroupEditor = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, user);
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        String energyCompanyName = null;
+        try
+        {
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+            energyCompanyName = energyCompany.getName();
+        }catch (EmptyResultDataAccessException e){
+            energyCompanyName = "";
+        }
 
         boolean showSystemAdmin = false;
         if ((superUser || isEcOperator)
@@ -41,7 +49,7 @@ public class OperationsSetupTag extends YukonTagSupport {
         }
         
         getJspContext().setAttribute("showSystemAdmin", showSystemAdmin);
-        getJspContext().setAttribute("energyCompany", energyCompany);
+        getJspContext().setAttribute("energyCompanyName", energyCompanyName);
     }
     
     @Autowired

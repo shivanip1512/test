@@ -21,6 +21,7 @@ import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -335,9 +336,15 @@ public class StandardMenuRenderer implements MenuRenderer {
             String companyName = cache.getEnergyCompany(energyCompanyId).getParent().getName();
             logoutLink = createLink("yukon.web.menu.backToEc", "", companyName);
         } else {
-            LiteYukonUser user = userContext.getYukonUser();
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            logoutLink = createLink("yukon.web.menu.logout",null,energyCompany.getName());
+            String logoutTooltip = null;
+            try{
+                LiteYukonUser user = userContext.getYukonUser();
+                YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+                logoutTooltip = energyCompany.getName();
+            }catch(EmptyResultDataAccessException e){
+                logoutTooltip = "of Yukon";
+            }
+            logoutLink = createLink("yukon.web.menu.logout",null,logoutTooltip);
         }
         
         logoutLink.setHref(buildUrl("/servlet/LoginController?ACTION=LOGOUT"));
