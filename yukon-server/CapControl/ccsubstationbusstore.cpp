@@ -4440,6 +4440,18 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 if (currentCCSubstation->getPaoId() == currentSubstationId)
                 {
                      currentCCSubstation->setDynamicData(rdr);
+                     CtiCCAreaPtr currentSA = NULL;
+                     if (substationId > 0)
+                        currentSA = findAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
+                     else
+                     {
+                         if (paobject_area_map->find(currentCCSubstation->getSaEnabledId()) != paobject_area_map->end())
+                             currentSA = paobject_area_map->find(currentCCSubstation->getSaEnabledId())->second;
+                     }
+                     if (!currentSA)
+                     {
+                         currentCCSubstation->setSaEnabledId(0);
+                     }
                 }
 
             }
@@ -5087,20 +5099,9 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {
     CtiCCSpecialPtr spAreaToUpdate = NULL;
-
-    if (areaId > 0)
-    {
-        spAreaToUpdate = findSpecialAreaByPAObjectID(areaId);
-    }
-
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
-        if (spAreaToUpdate != NULL)
-        {
-            deleteSpecialArea(areaId);
-        }
-
         CtiTime currentDateTime;
         {
             static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
@@ -5111,17 +5112,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if( areaId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND YP.paobjectid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
+            rdr.setCommandText(sqlNoID);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5159,17 +5150,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
              Cti::Database::DatabaseConnection connection;
              Cti::Database::DatabaseReader rdr(connection);
 
-             if( areaId > 0 )
-             {
-                 static const string sqlID = string(sqlNoID + " AND SSA.paobjectid = ?");
-                 rdr.setCommandText(sqlID);
-                 rdr << areaId;
-             }
-             else
-             {
-                 rdr.setCommandText(sqlNoID);
-             }
-
+             rdr.setCommandText(sqlNoID);
              rdr.execute();
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5200,10 +5181,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
 
 
                      CtiCCSpecialPtr currentCCSpArea = NULL;
-                     if (areaId > 0)
-                         currentCCSpArea = findSpecialAreaByPAObjectID(currentAreaId);
-                     else
-                         currentCCSpArea = paobject_specialarea_map->find(currentAreaId)->second;
+                     currentCCSpArea = paobject_specialarea_map->find(currentAreaId)->second;
 
                      if (currentCCSpArea != NULL)
                      {
@@ -5227,17 +5205,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
              Cti::Database::DatabaseConnection connection;
              Cti::Database::DatabaseReader rdr(connection);
 
-             if( areaId > 0 )
-             {
-                 static const string sqlID = string(sqlNoID + " AND HSA.paobjectid = ?");
-                 rdr.setCommandText(sqlID);
-                 rdr << areaId;
-             }
-             else
-             {
-                 rdr.setCommandText(sqlNoID);
-             }
-
+             rdr.setCommandText(sqlNoID);
              rdr.execute();
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5288,17 +5256,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if( areaId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND DSA.areaid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
+            rdr.setCommandText(sqlNoID);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5331,17 +5289,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if( areaId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND CSA.areaid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
+            rdr.setCommandText(sqlNoID);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5401,62 +5349,6 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
                 }
             }
          }
-        if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
-        {
-            static const string sql = "SELECT SAA.substationbusid, SAA.areaid, SAA.displayorder "
-                                      "FROM ccsubspecialareaassignment SAA WHERE SAA.areaid = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
-
-            rdr << areaId;
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            long currentSubId, currentSpAreaId;
-            while ( rdr() )
-            {
-                rdr["substationbusid"] >> currentSubId;
-                rdr["areaid"] >> currentSpAreaId;
-
-                //add substationbusids to special area list...;
-                reloadSubstationFromDatabase(currentSubId,&_paobject_substation_map,
-                                       &_paobject_area_map, &_paobject_specialarea_map,
-                                             &_pointid_station_map, &_substation_area_map,
-                                       &_substation_specialarea_map, _ccSubstations );
-
-                CtiCCSpecialPtr currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
-                if( currentCCSpArea != NULL )
-                {
-                    if (!currentCCSpArea->getDisableFlag())
-                    {
-                         CtiCCSubstationPtr currentCCStation = findSubstationByPAObjectID(currentSubId);
-                         if (currentCCStation != NULL)
-                         {
-                             if (!currentCCStation->getSaEnabledFlag())
-                             {
-                                 currentCCStation->setSaEnabledFlag(TRUE);
-                                 currentCCStation->setSaEnabledId(currentSpAreaId);
-                             }
-                         }
-                    }
-                }
-            }
-            reloadOperationStatsFromDatabase(areaId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
-                                             &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
-
-            cascadeStrategySettingsToChildren(areaId, 0, 0);
-        }
-        //_reregisterforpoints = TRUE;
     }
     catch(...)
     {
@@ -8178,16 +8070,18 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 station = findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {
+                    if (station->getSaEnabledId() > 0)
+                    {
+                        continue;
+                    }
                     PaoIdList::iterator iterBus = station->getCCSubIds()->begin();
                     while (iterBus  != station->getCCSubIds()->end())
                     {
                         subBusId = *iterBus;
-                        //_subbus_substation_map.erase(subBusId);
                         deleteSubBus(subBusId);
                         iterBus = station->getCCSubIds()->erase(iterBus);
                     }
                 }
-                //_substation_area_map.erase(stationId);
                 deleteSubstation(stationId);
                 iter = areaToDelete->getSubStationList()->erase(iter);
             }
@@ -8273,22 +8167,19 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            LONG stationId;
-            LONG subBusId;
-            PaoIdList::const_iterator iter = spAreaToDelete->getSubstationIds()->begin();
-            while (iter != spAreaToDelete->getSubstationIds()->end())
+            ChildToParentMultiMap::const_iterator iter = _substation_specialarea_map.begin();
+            while (iter != _substation_specialarea_map.end())
             {
-                stationId = *iter;
-                CtiCCSubstationPtr station = NULL;
-                if (_paobject_substation_map.find(stationId) != _paobject_substation_map.end())
-                    station = _paobject_substation_map.find(stationId)->second;
-                if ( station != NULL)
-                {
-                    station->setSaEnabledFlag(FALSE);
-                }
-                _substation_specialarea_map.erase(stationId);
-                iter++;
+               CtiCCSubstationPtr station = findSubstationByPAObjectID(iter->first);
+               if (station != NULL && station->getSaEnabledId() == areaId)
+               {
+                   station->setSaEnabledId(0);
+                   station->setSaEnabledFlag(FALSE);
+               }
+               iter++;
             }
+
+            _substation_specialarea_map.erase(areaId);
 
             try
             {
@@ -9022,54 +8913,10 @@ void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAct
 bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
-    bool forceFullReload = false;
-    if (reloadAction == ChangeTypeDelete)
-    {
-        deleteSpecialArea(reloadId);
-
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId))->execute();
-
-        msgSubsBitMask = CtiCCSubstationsMsg::AllSubsSent;
-        msgBitMask  = CtiCCSubstationBusMsg::AllSubBusesSent;;
-    }
-    else  // ChangeTypeAdd, ChangeTypeUpdate
-    {
-        CtiCCSpecialPtr tempSpArea = findSpecialAreaByPAObjectID(reloadId);
-        // update list b4 reload, to capture stations that may have been removed from special area.
-
-        if (tempSpArea != NULL && tempSpArea->getSubstationIds()->size() > 1)
-        {
-
-            deleteSpecialArea(reloadId); //this forces substation flags to saEnabled = false;
-            setValid(false);
-            _reloadList.clear();
-            forceFullReload = TRUE;
-         }
-         else
-         {
-             PaoIdList myList;
-
-             if (tempSpArea != NULL)
-             {
-                 myList.clear();
-                 for (PaoIdList::iterator it = tempSpArea->getSubstationIds()->begin(); it != tempSpArea->getSubstationIds()->end(); it++)
-                 {
-                     myList.push_back(*it);
-                 }
-             }
-             reloadSpecialAreaFromDatabase(reloadId, &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
-             tempSpArea = findSpecialAreaByPAObjectID(reloadId);
-             // update list b4 reload, to capture stations that may have been added to special area.
-             if (tempSpArea != NULL)
-             {
-                 updateModifiedStationsAndBusesSets(&myList,msgBitMask, msgSubsBitMask,
-                                                     modifiedSubsSet,  modifiedStationsSet);
-                 updateModifiedStationsAndBusesSets(tempSpArea->getSubstationIds(),msgBitMask, msgSubsBitMask,
-                                                     modifiedSubsSet,  modifiedStationsSet);
-             }
-         }
-    }
-    return forceFullReload;
+    deleteSpecialArea(reloadId);
+    setValid(false);
+    _reloadList.clear();
+    return true;
 }
 
 
