@@ -1,5 +1,6 @@
 package com.cannontech.capcontrol.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,16 +11,18 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
+import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
+import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneDto;
-import com.cannontech.capcontrol.model.ZoneGangDto;
+import com.cannontech.capcontrol.model.ZoneGang;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
-import com.cannontech.capcontrol.model.ZoneSinglePhaseDto;
-import com.cannontech.capcontrol.model.ZoneThreePhaseDto;
+import com.cannontech.capcontrol.model.ZoneSinglePhase;
+import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -38,40 +41,33 @@ public class ZoneServiceImpl implements ZoneService {
     
     @Override
     @Transactional
-    public boolean saveZone(ZoneDto zoneDto) {
+    public boolean saveZone(AbstractZone abstractZone) {
         DbChangeType dbChangeType = DbChangeType.UPDATE;
         
-        if(zoneDto.getZoneId() == null) {
+        if(abstractZone.getZoneId() == null) {
             //We are creating a new zone.
             dbChangeType = DbChangeType.ADD;
             
             //If we are creating this as the root. Make sure one is not already on the subbus.
-            if (zoneDto.getParentId() == null) {
-                Zone rootZone = zoneDao.findParentZoneByBusId(zoneDto.getSubstationBusId());
+            if (abstractZone.getParentId() == null) {
+                Zone rootZone = zoneDao.findParentZoneByBusId(abstractZone.getSubstationBusId());
                 if (rootZone != null) {
                     throw new RootZoneExistsException();
                 }
             }
         }
         
-        Zone zone = new Zone();
-        zone.setId(zoneDto.getZoneId());
-        zone.setName(zoneDto.getName());
-        zone.setParentId(zoneDto.getParentId());
-        zone.setRegulators(zoneDto.getRegulators());
-        zone.setSubstationBusId(zoneDto.getSubstationBusId());
-        zone.setGraphStartPosition(zoneDto.getGraphStartPosition());
-        zone.setZoneType(zoneDto.getZoneType());
+        Zone zone = getNewZoneFromAbstractZone(abstractZone);
         
         zoneDao.save(zone);
         //Sets the new Id if this was an insert.
-        zoneDto.setZoneId(zone.getId());
+        abstractZone.setZoneId(zone.getId());
         
-        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
-        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
+        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(abstractZone);
+        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(abstractZone);
         
-        zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
-        zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
+        zoneDao.updateCapBankToZoneMapping(abstractZone.getZoneId(), banksToZone);
+        zoneDao.updatePointToZoneMapping(abstractZone.getZoneId(), pointsToZone);
         
         sendZoneChangeDbMessage(zone.getId(),dbChangeType);
         return true;
@@ -85,7 +81,7 @@ public class ZoneServiceImpl implements ZoneService {
         return true;
     }
     
-    private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(ZoneDto zoneDto) {
+    private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(AbstractZone zoneDto) {
     	List<CapBankToZoneMapping> banks = Lists.newArrayList();
         for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
         	int bankId = bankRow.getId();
@@ -98,7 +94,7 @@ public class ZoneServiceImpl implements ZoneService {
         return banks;
     }
     
-    private List<PointToZoneMapping> getPointToZoneMappingByDto(ZoneDto zoneDto) {
+    private List<PointToZoneMapping> getPointToZoneMappingByDto(AbstractZone zoneDto) {
     	List<PointToZoneMapping> points = Lists.newArrayList();
         for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
         	int  pointId = pointRow.getId();
@@ -118,30 +114,48 @@ public class ZoneServiceImpl implements ZoneService {
         return zones;
     }
     
-    private List<ZoneDto> getZoneDtoListFromZones(List<Zone> zones) {
-        List<ZoneDto> zoneDtoList = Lists.newArrayList();
+    private List<AbstractZone> getZoneDtoListFromZones(List<Zone> zones) {
+        List<AbstractZone> zoneDtoList = Lists.newArrayList();
         for (Zone zone: zones) {
-            ZoneDto zoneDto = null;
+            AbstractZone zoneDto = null;
             if (zone.getZoneType() == ZoneType.GANG_OPERATED) {
-                zoneDto = new ZoneGangDto(zone);
+                zoneDto = new ZoneGang(zone);
             } else if (zone.getZoneType() == ZoneType.SINGLE_PHASE) {
-                zoneDto = new ZoneSinglePhaseDto(zone);
+                zoneDto = new ZoneSinglePhase(zone);
             } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
-                zoneDto = new ZoneThreePhaseDto(zone);
+                zoneDto = new ZoneThreePhase(zone);
             }
             zoneDtoList.add(zoneDto);
         }
         return zoneDtoList;
     }
+
+    private Zone getNewZoneFromAbstractZone(AbstractZone abstractZone) {
+        Zone zone = new Zone();
+        zone.setId(abstractZone.getZoneId());
+        zone.setName(abstractZone.getName());
+        zone.setParentId(abstractZone.getParentId());
+
+        if (abstractZone instanceof AbstractZoneThreePhase) {
+            zone.setRegulators(((AbstractZoneThreePhase)abstractZone).getRegulators());
+        } else {
+            zone.setRegulators(Lists.newArrayList(Collections.singleton(((AbstractZoneNotThreePhase)abstractZone).getRegulator())));
+        }
+
+        zone.setSubstationBusId(abstractZone.getSubstationBusId());
+        zone.setGraphStartPosition(abstractZone.getGraphStartPosition());
+        zone.setZoneType(abstractZone.getZoneType());
+        return zone;
+    }
     
     @Override
     public ZoneHierarchy getZoneHierarchyBySubBusId(int subbusId) {
         //Find parent zone and build lookup map
-        ZoneDto root = null;
+        AbstractZone root = null;
         List<Zone> zones = getZonesBySubBusId(subbusId);
-        List<ZoneDto> zoneDtoList = getZoneDtoListFromZones(zones);
-        Multimap<Integer, ZoneDto> childOfLookup = ArrayListMultimap.create();
-        for (ZoneDto zoneDto : zoneDtoList) {
+        List<AbstractZone> zoneDtoList = getZoneDtoListFromZones(zones);
+        Multimap<Integer, AbstractZone> childOfLookup = ArrayListMultimap.create();
+        for (AbstractZone zoneDto : zoneDtoList) {
             if (zoneDto.getParentId() == null) {
                 root = zoneDto;
             } else {
@@ -160,11 +174,11 @@ public class ZoneServiceImpl implements ZoneService {
         return hierarchy;
     }
 
-    private void setChildHierarchy(ZoneHierarchy hierarchy, Integer rootId, Multimap<Integer, ZoneDto> childOfLookup) {       
+    private void setChildHierarchy(ZoneHierarchy hierarchy, Integer rootId, Multimap<Integer, AbstractZone> childOfLookup) {       
         List<ZoneHierarchy> childZones = Lists.newArrayList();
         
-        Iterable<ZoneDto> childGroups = childOfLookup.get(rootId);
-        for (ZoneDto zoneDto : childGroups) {
+        Iterable<AbstractZone> childGroups = childOfLookup.get(rootId);
+        for (AbstractZone zoneDto : childGroups) {
             ZoneHierarchy childHierarchy = new ZoneHierarchy();
             childHierarchy.setZone(zoneDto);
             

@@ -8,7 +8,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.capcontrol.model.ZoneDto;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.enums.Phase;
 
@@ -22,7 +22,7 @@ public interface ZoneService {
      * @param zoneDto
      * @return
      */
-    public boolean saveZone(ZoneDto zoneDto);
+    public boolean saveZone(AbstractZone zoneDto);
     public boolean deleteZone(int zoneId);
     
     public List<Zone> getZonesBySubBusId(int subbusId);

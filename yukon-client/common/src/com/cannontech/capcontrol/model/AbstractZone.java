@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.pao.ZoneType;
 
-public abstract class ZoneDto {
+public abstract class AbstractZone {
     
     private String name;
     private Integer zoneId;
@@ -16,11 +16,11 @@ public abstract class ZoneDto {
     private List<ZoneAssignmentCapBankRow> bankAssignments = LazyList.ofInstance(ZoneAssignmentCapBankRow.class);
     private List<ZoneAssignmentPointRow> pointAssignments = LazyList.ofInstance(ZoneAssignmentPointRow.class);
     
-    public ZoneDto() {
+    public AbstractZone() {
         super();
     }
     
-    public ZoneDto(Zone zone) {
+    public AbstractZone(Zone zone) {
         this.name = zone.getName();
         this.zoneId = zone.getId();
         this.parentId = zone.getParentId();
@@ -85,24 +85,4 @@ public abstract class ZoneDto {
 	}
 
     public abstract ZoneType getZoneType();
-
-    public abstract ZoneRegulator getRegulator();
-
-    public abstract void setRegulator(ZoneRegulator regulator);
-
-    public abstract List<ZoneRegulator> getRegulators();
-
-    public abstract void setRegulators(List<ZoneRegulator> regulators);
-
-    public abstract ZoneRegulator getRegulatorA();
-
-    public abstract void setRegulatorA(ZoneRegulator regulatorA);
-
-    public abstract ZoneRegulator getRegulatorB();
-
-    public abstract void setRegulatorB(ZoneRegulator regulatorB);
-
-    public abstract ZoneRegulator getRegulatorC();
-
-    public abstract void setRegulatorC(ZoneRegulator regulatorC);
 }

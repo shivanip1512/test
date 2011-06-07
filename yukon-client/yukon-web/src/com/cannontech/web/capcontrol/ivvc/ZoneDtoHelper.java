@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneDto;
-import com.cannontech.capcontrol.model.ZoneGangDto;
-import com.cannontech.capcontrol.model.ZoneSinglePhaseDto;
-import com.cannontech.capcontrol.model.ZoneThreePhaseDto;
+import com.cannontech.capcontrol.model.ZoneGang;
+import com.cannontech.capcontrol.model.ZoneSinglePhase;
+import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -31,41 +31,41 @@ public class ZoneDtoHelper {
     private PointDao pointDao;
     private FilterCacheFactory filterCacheFactory;
     
-    public ZoneDto getNewZoneDtoFromZoneType(ZoneType zoneType) {
-        ZoneDto zoneDto = null;
+    public AbstractZone getAbstractZoneFromZoneType(ZoneType zoneType) {
+        AbstractZone zoneDto = null;
         switch(zoneType) {
             case GANG_OPERATED: {
-                zoneDto = new ZoneGangDto();
+                zoneDto = new ZoneGang();
                 break;
             } 
             case SINGLE_PHASE: {                        
-                zoneDto = new ZoneSinglePhaseDto();
+                zoneDto = new ZoneSinglePhase();
                 break;
             }
             case THREE_PHASE: {
-                zoneDto = new ZoneThreePhaseDto();
+                zoneDto = new ZoneThreePhase();
                 break;
             }
         }
         return zoneDto;
     }
     
-    public ZoneDto getZoneDtoFromZoneId(int zoneId, LiteYukonUser user) {
+    public AbstractZone getAbstractZoneFromZoneId(int zoneId, LiteYukonUser user) {
         Zone zone = zoneService.getZoneById(zoneId);
-        ZoneDto zoneDto = getZoneDtoFromZone(zone, user);
+        AbstractZone zoneDto = getAbstractZoneFromZone(zone, user);
         return zoneDto;
     }
     
-    public ZoneDto getZoneDtoFromZone(Zone zone, LiteYukonUser user) {
+    public AbstractZone getAbstractZoneFromZone(Zone zone, LiteYukonUser user) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
-        ZoneDto zoneDto = null;
+        AbstractZone zoneDto = null;
         if (zone.getZoneType() == ZoneType.GANG_OPERATED) {
-            zoneDto = new ZoneGangDto(zone);
+            zoneDto = new ZoneGang(zone);
         } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
-            zoneDto = new ZoneThreePhaseDto(zone);
+            zoneDto = new ZoneThreePhase(zone);
         } else if (zone.getZoneType() == ZoneType.SINGLE_PHASE) {
-            zoneDto = new ZoneSinglePhaseDto(zone);
+            zoneDto = new ZoneSinglePhase(zone);
         }
         
         //Add Bank Assignments

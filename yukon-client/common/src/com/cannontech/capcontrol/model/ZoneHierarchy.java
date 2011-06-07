@@ -8,15 +8,15 @@ import com.google.common.collect.Lists;
 /**
  * A class to allow the easy traversing of the a zone hierarchy from top down.
  */
-public class ZoneHierarchy implements NavigableHierarchy<ZoneDto> {
-    private ZoneDto zone = null;
+public class ZoneHierarchy implements NavigableHierarchy<AbstractZone> {
+    private AbstractZone zone = null;
     private List<ZoneHierarchy> childZones = Lists.newArrayList();
         
-    public ZoneDto getZone() {
+    public AbstractZone getZone() {
         return zone;
     }
     
-    public void setZone(ZoneDto zone) {
+    public void setZone(AbstractZone zone) {
         this.zone = zone;
     }
     
@@ -30,7 +30,7 @@ public class ZoneHierarchy implements NavigableHierarchy<ZoneDto> {
     }
     
     @Override
-    public ZoneDto getNode() {
+    public AbstractZone getNode() {
         return zone;
     }
 }

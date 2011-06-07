@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
+import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
+import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneDto;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -125,13 +127,13 @@ public class ZoneWizardController {
             model.addAttribute("parentZoneName", creatingAsRootString);
         }
 
-        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZone(zone, userContext.getYukonUser());
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZone(zone, userContext.getYukonUser());
         setupZoneCreation(model, userContext.getYukonUser(), zoneDto);
         
         return "ivvc/zoneWizardDetails.jsp";
     }
 
-    private void setupZoneCreation(ModelMap model, LiteYukonUser user, ZoneDto zoneDto) {
+    private void setupZoneCreation(ModelMap model, LiteYukonUser user, AbstractZone zoneDto) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
         model.addAttribute("subBusName", subBus.getCcName());
@@ -143,10 +145,7 @@ public class ZoneWizardController {
         
         addZoneEnums(model);
 
-        boolean phaseUneditable = false;
-        if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
-            phaseUneditable = true;
-        }
+        boolean phaseUneditable = isPhaseUneditable(zoneDto.getZoneType());
         model.addAttribute("phaseUneditable", phaseUneditable);
 
         model.addAttribute("mode", PageEditMode.CREATE.name());
@@ -164,7 +163,7 @@ public class ZoneWizardController {
     @RequestMapping
     public String createZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                              YukonUserContext userContext, ZoneType zoneType) {
-        ZoneDto zoneDto = zoneDtoHelper.getNewZoneDtoFromZoneType(zoneType);
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneType(zoneType);
         BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
 
         boolean noErrors = true;
@@ -199,41 +198,42 @@ public class ZoneWizardController {
     
     private void setupZoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        ZoneDto zoneDto = zoneDtoHelper.getZoneDtoFromZoneId(zoneId, user);
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
 
         SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
-        
-        if (zoneDto.getZoneType() == ZoneType.GANG_OPERATED || zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
-            VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(0).getRegulatorId());
+
+        if (zoneDto instanceof AbstractZoneNotThreePhase) {
+            VoltageRegulatorFlags regulatorFlags =
+                cache.getVoltageRegulatorFlags(((AbstractZoneNotThreePhase) zoneDto).getRegulator().getRegulatorId());
             model.addAttribute("regulatorName", regulatorFlags.getCcName());
-        } else if (zoneDto.getZoneType() == ZoneType.THREE_PHASE) {
-            VoltageRegulatorFlags regulatorFlagsPhaseA = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(0).getRegulatorId()); //wrong. fix. later.
-            VoltageRegulatorFlags regulatorFlagsPhaseB = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(1).getRegulatorId()); //wrong. fix. later.
-            VoltageRegulatorFlags regulatorFlagsPhaseC = cache.getVoltageRegulatorFlags(zoneDto.getRegulators().get(2).getRegulatorId()); //wrong. fix. later.
+        } else {
+            AbstractZoneThreePhase abstractZoneThreePhase = (AbstractZoneThreePhase) zoneDto;
+            VoltageRegulatorFlags regulatorFlagsPhaseA =
+                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorA().getRegulatorId());
+            VoltageRegulatorFlags regulatorFlagsPhaseB =
+                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorB().getRegulatorId());
+            VoltageRegulatorFlags regulatorFlagsPhaseC =
+                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorC().getRegulatorId());
             model.addAttribute("regulatorNamePhaseA", regulatorFlagsPhaseA.getCcName());
             model.addAttribute("regulatorNamePhaseB", regulatorFlagsPhaseB.getCcName());
             model.addAttribute("regulatorNamePhaseC", regulatorFlagsPhaseC.getCcName());
         }
-        
+
         model.addAttribute("zoneDto", zoneDto);
 
         Integer parentId = zoneDto.getParentId();
-        String parentName = "---";
         if (parentId != null) {
-            Zone parentZone = zoneService.getZoneById(parentId);
-            parentName = parentZone.getName();
+            Zone parent = zoneService.getZoneById(parentId);
+            AbstractZone parentZone = zoneDtoHelper.getAbstractZoneFromZone(parent, user);
+            model.addAttribute("parentZone", parentZone);
         }
-        model.addAttribute("parentZoneName", parentName);
 
         List<Phase> phases = getPhasesForZone(zoneDto);
         model.addAttribute("phases", phases);
         
         addZoneEnums(model);
 
-        boolean phaseUneditable = false;
-        if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
-            phaseUneditable = true;
-        }
+        boolean phaseUneditable = isPhaseUneditable(zoneDto.getZoneType());
         model.addAttribute("phaseUneditable", phaseUneditable);
 
         model.addAttribute("subBusName", subBus.getCcName());
@@ -248,10 +248,10 @@ public class ZoneWizardController {
         return zoneTypes;
     }
 
-    private List<Phase> getPhasesForZone(ZoneDto zoneDto) {
+    private List<Phase> getPhasesForZone(AbstractZone zoneDto) {
         List<Phase> phases = Lists.newArrayListWithCapacity(3);
         if (zoneDto.getZoneType() == ZoneType.SINGLE_PHASE) {
-            Phase phase = zoneDto.getRegulator().getPhase();
+            Phase phase = ((AbstractZoneNotThreePhase)zoneDto).getRegulator().getPhase();
             phases.add(phase);
         } else {
             phases.addAll(Lists.newArrayList(Phase.A, Phase.B, Phase.C));
@@ -303,13 +303,20 @@ public class ZoneWizardController {
     	
     	return remainingPointAssignments;
     }
-    
+
+    private boolean isPhaseUneditable(ZoneType zoneType) {
+        if (zoneType == ZoneType.SINGLE_PHASE) {
+            return true;
+        }
+        return false;
+    }
+
     @RequestMapping
     public String updateZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                              YukonUserContext userContext, ZoneType zoneType, 
                              Integer[] banksToRemove, Integer[] pointsToRemove) {
 
-        ZoneDto zoneDto = zoneDtoHelper.getNewZoneDtoFromZoneType(zoneType);
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneType(zoneType);
         BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
 
         boolean noErrors = true;
@@ -363,7 +370,7 @@ public class ZoneWizardController {
         }
     }
 
-    private boolean saveZone(ZoneDto zoneDto, BindingResult bindingResult, FlashScope flashScope) {
+    private boolean saveZone(AbstractZone zoneDto, BindingResult bindingResult, FlashScope flashScope) {
         zoneDtoValidator.validate(zoneDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return false;
@@ -423,10 +430,7 @@ public class ZoneWizardController {
         List<Phase> phases = getPhasesForZoneTypeAndPhase(type, regPhase);
         modelMap.addAttribute("phases", phases);
         
-        boolean phaseUneditable = false;
-        if (type == ZoneType.SINGLE_PHASE) {
-            phaseUneditable = true;
-        }
+        boolean phaseUneditable = isPhaseUneditable(type);
         modelMap.addAttribute("phaseUneditable", phaseUneditable);
         
         return "ivvc/addZoneVoltagePointRow.jsp";
