@@ -120,9 +120,9 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     @Transactional
-    public void deleteDevice(int deviceId, InventoryIdentifier id) {
-        zigbeeDeviceDao.deleteZigbeeUtilPro(deviceId);
-        deviceDao.removeDevice(new SimpleDevice(deviceId, PaoType.ZIGBEEUTILPRO));
+    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier id) {
+        zigbeeDeviceDao.deleteZigbeeUtilPro(pao.getPaoId());
+        deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
     @Autowired

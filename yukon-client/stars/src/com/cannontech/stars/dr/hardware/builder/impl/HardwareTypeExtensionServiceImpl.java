@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.google.common.collect.ImmutableMap;
@@ -36,12 +37,12 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
-    public void deleteDevice(int deviceId, InventoryIdentifier id) {
-        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(id.getHardwareType());
+    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
         
         if (hardwareBuilder == null) return;
         
-        hardwareBuilder.deleteDevice(deviceId, id);
+        hardwareBuilder.deleteDevice(pao, inventoryId);
     }
     
     @Override

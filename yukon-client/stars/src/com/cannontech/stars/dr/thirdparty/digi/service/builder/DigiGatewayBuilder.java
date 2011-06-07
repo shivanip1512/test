@@ -88,9 +88,9 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     @Transactional
-    public void deleteDevice(int deviceId, InventoryIdentifier id) {
-        gatewayDeviceDao.deleteDigiGateway(deviceId);
-        deviceDao.removeDevice(new SimpleDevice(deviceId, PaoType.DIGIGATEWAY));
+    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        gatewayDeviceDao.deleteDigiGateway(pao.getPaoId());
+        deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
     @Override

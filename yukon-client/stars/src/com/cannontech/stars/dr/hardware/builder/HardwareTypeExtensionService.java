@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.builder;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 
 /**
@@ -26,7 +27,7 @@ public interface HardwareTypeExtensionService {
     /**
      * Call to delete any extra data the ExtensionService is responsible for.
      */
-    public void deleteDevice(int deviceId, InventoryIdentifier id);
+    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId);
     
     /**
      * Fill in any extra parameters.

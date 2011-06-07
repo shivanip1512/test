@@ -19,7 +19,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -53,7 +52,6 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
@@ -522,7 +520,6 @@ public final class PaoDaoImpl implements PaoDao {
     }
     
     
-    @SuppressWarnings("unchecked")
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
         String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";
         List<LiteYukonPAObject> paoList = this.jdbcOps.query(

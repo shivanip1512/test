@@ -12,8 +12,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -61,6 +63,7 @@ public class HardwareServiceImpl implements HardwareService {
     private OptOutEventDao optOutEventDao;
     private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
     private InventoryDao inventoryDao;
+    private PaoDao paoDao;
     
     @Override
     @Transactional
@@ -107,15 +110,15 @@ public class HardwareServiceImpl implements HardwareService {
             InventoryManagerUtil.deleteInventory( liteInventoryBase, yukonEnergyCompany, deleteMCT);
             
             // Give the Extension service a chance to clean up its tables
-            hardwareTypeExtensionService.deleteDevice(liteInventoryBase.getDeviceID(), id);
+            YukonPao pao = paoDao.getYukonPao(liteInventoryBase.getDeviceID());
+            hardwareTypeExtensionService.deleteDevice(pao.getPaoIdentifier(), id);
             
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
         } else {
             /* Just remove it from the account and put it back in general inventory */
             Date removeDate = new Date();
-            LiteStarsEnergyCompany liteStarsEnergyCompany = 
-                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             int hwEventEntryId = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
             int uninstallActionId = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
             
@@ -216,6 +219,11 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
     
 }
