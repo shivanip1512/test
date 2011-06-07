@@ -246,7 +246,7 @@
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     </bean>
     
-    <bean id="plcAddressRangeService" class="com.cannontech.device.range.impl.PlcAddressRangeServiceImpl"/>
+    <bean id="dlcAddressRangeService" class="com.cannontech.device.range.impl.DlcAddressRangeServiceImpl"/>
     
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
     </bean>

@@ -201,6 +201,9 @@
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
         <tags>
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
+            	<value>0-2147483647</value>	<!-- unsigned int (positive values only) -->
+            </tag>
             <tag name="DEVICE_ICON_TYPE">
                 <value>electric</value>
             </tag>
@@ -883,8 +886,8 @@
         </attributes>
         <tags>
             <tag name="DEVICE_CONFIGURATION_470"/>
-            <tag name="PLC_ADDRESS_RANGE">
-            	<value>510001-594000</value>
+            <tag name="DLC_ADDRESS_RANGE">
+            	<value>510001-560000</value>
             </tag>
         </tags>
     </pao>
@@ -1279,8 +1282,8 @@
         </attributes>
         <tags>
             <tag name="DEVICE_CONFIGURATION_430"/>
-            <tag name="PLC_ADDRESS_RANGE">
-            	<value>620000-620199, 620200-700000</value>
+            <tag name="DLC_ADDRESS_RANGE">
+            	<value>620000-620199, 620200-700000, 701001-799999</value>
             </tag>
         </tags>
    </pao>
@@ -1353,6 +1356,11 @@
     </pao>
     <pao id="MCT420CL" inherits="MCT_420_BASE, REVERSE_POWER"> <!-- This doesn't support a disconnect collar either -->
         <displayName>MCT-420CL</displayName>
+        <tags>
+            <tag name="DLC_ADDRESS_RANGE">
+            	<value>1600001-2796201</value>
+            </tag>
+        </tags>
     </pao>
     <pao id="MCT420CLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-420CLD</displayName>
@@ -1817,7 +1825,7 @@
     <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410IL</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE">
             	<value>700001-700900,
             			1000001-1398100,            			
             			1398102-1600000</value>
@@ -1827,7 +1835,7 @@
     <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410CL</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE">
             	<value>310000-313555,
             			313600-314499,
             			314500-499999,
@@ -1842,7 +1850,7 @@
     <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
         <displayName>MCT-410FL</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE">
             	<value>3797700-3996927</value>
             </tag>
         </tags>
@@ -3142,7 +3150,7 @@
         <displayName>MCT Broadcast</displayName>
         <displayGroup>MCT</displayGroup>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>1-4096</value>
             </tag>
         </tags>
@@ -3607,7 +3615,7 @@
     <pao id="CCU710A" inherits="TRANSMITTER_BASE">
         <displayName>CCU-710A</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-127</value>
             </tag>
         </tags>
@@ -3615,7 +3623,7 @@
     <pao id="CCU711" inherits="TRANSMITTER_BASE">
         <displayName>CCU-711</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-126</value>
             </tag>
         </tags>
@@ -3623,7 +3631,7 @@
     <pao id="CCU721" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>CCU-721</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-126</value>
             </tag>
         </tags>
@@ -3771,7 +3779,7 @@
     <pao id="REPEATER" inherits="REPEATER_BASE">
         <displayName>REPEATER 900</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>464-4302,
             			4190464-4194302</value> <!-- 4190464-4194302 is the range for RPT901 -->
             </tag>
@@ -3780,18 +3788,23 @@
     <pao id="REPEATER_902" inherits="REPEATER_BASE">
         <displayName>REPEATER 902</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>800450-809900</value>
             </tag>
         </tags>
     </pao>
     <pao id="REPEATER_800" inherits="REPEATER_BASE">
         <displayName>REPEATER 800</displayName>
+        <tags>
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
+            	<value>800000-800436</value>
+            </tag>
+		</tags>
     </pao>
     <pao id="REPEATER_850" inherits="REPEATER_BASE">
         <displayName>REPEATER 850</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>560001-590000</value>
             </tag>
         </tags>
@@ -3799,7 +3812,7 @@
     <pao id="REPEATER_801" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 801</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>809901-809980,
             			4181952-4182952,
             			4182953-4183952
@@ -3810,7 +3823,7 @@
     <pao id="REPEATER_921" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 921</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>464-4302</value>
             </tag>
         </tags>
@@ -3818,7 +3831,7 @@
     <pao id="RTC" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>RTC</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-15</value>
             </tag>
         </tags>
@@ -3826,7 +3839,7 @@
     <pao id="SERIES_5_LMI" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>RTU-LMI</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-127</value>
             </tag>
         </tags>
@@ -4831,7 +4844,7 @@
         <displayName>RTU-WELCO</displayName>
         <changeGroup>rtu</changeGroup>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-127</value>
             </tag>
         </tags>
@@ -4839,7 +4852,7 @@
     <pao id="RTM" inherits="RTU_BASE">
         <displayName>RTM</displayName>
         <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE">
             	<value>0-15</value>
             </tag>
         </tags>
@@ -5190,11 +5203,11 @@
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
         <changeGroup>cap</changeGroup>
-        <!--  <tags>
-            <tag name="PLC_ADDRESS_RANGE">
+		<tags>
+            <tag name="DLC_ADDRESS_RANGE">
             	<value>700000001-701000000</value>
             </tag>
-        </tags>-->	<!-- legacy has 0-999999999 -->
+        </tags>	<!-- legacy has 0-999999999 -->
     </pao>
     
     <pao id="CBC_7010" inherits="CBC_1WAY_BASE">

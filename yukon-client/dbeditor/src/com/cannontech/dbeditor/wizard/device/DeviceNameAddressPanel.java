@@ -39,7 +39,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
-import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -60,8 +60,8 @@ public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataI
     
     private JCheckBox createPointsCheck = null;
     
-    private PlcAddressRangeService plcAddressRangeService = 
-        YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
+    private DlcAddressRangeService dlcAddressRangeService = 
+        YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
 
 /**
  * Constructor
@@ -575,9 +575,8 @@ public boolean isInputValid()
 	}
 
 	int address = Integer.parseInt( getAddress());
-	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
-	PaoType paoType = PaoType.getForId(deviceType);
-    IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
+	PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+    IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
 	if (!range.isWithinRange(address)) {
 		setErrorString("Invalid address. Device address range: " + range);
 		getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );

@@ -40,7 +40,8 @@ public enum PaoTag {
     LM_SCENARIO("LM Scenario"),
     DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
     SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
-    PLC_ADDRESS_RANGE("PLC Address Range", stringType()),
+    DLC_ADDRESS_RANGE_ENFORCE("DLC Address Range Enforced", stringType()),	// range used for validation, may be mfg address or other(field length, for example).
+    DLC_ADDRESS_RANGE("DLC Address Range", stringType()),	// range used for display info, should be limited to mfg addresses
 	DUMMY_LONG_TAG("for internal testing", longType()), 
 	WATER_METER_DETAIL_DISPLAYABLE("Water Detail Displayable"), // can be removed when we add a real tag that uses long
 	;

@@ -327,7 +327,7 @@ public class PaoDefinitionDaoImplTest {
     @Test
     public void testGetSupportedTags() {
         PaoType mct370 = PaoType.MCT370;
-        ImmutableSet<PaoTag> expectedTags = ImmutableSet.of(PaoTag.PLC_ADDRESS_RANGE, 
+        ImmutableSet<PaoTag> expectedTags = ImmutableSet.of(PaoTag.DLC_ADDRESS_RANGE_ENFORCE,
                                                             PaoTag.DUMMY_LONG_TAG,
                                                             PaoTag.STARS_ACCOUNT_ATTACHABLE_METER,
                                                             PaoTag.PORTER_COMMAND_REQUESTS, 
@@ -350,9 +350,9 @@ public class PaoDefinitionDaoImplTest {
             expectedDefinitions.add(paoDefinition);
         }
         
-        Set<PaoDefinition> paosThatSupportTag = dao.getPaosThatSupportTag(PaoTag.PLC_ADDRESS_RANGE);
+        Set<PaoDefinition> paosThatSupportTag = dao.getPaosThatSupportTag(PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
         assertEquals(expectedDefinitions, paosThatSupportTag);
-        Set<PaoType> paoTypesThatSupportTag = dao.getPaoTypesThatSupportTag(PaoTag.PLC_ADDRESS_RANGE);
+        Set<PaoType> paoTypesThatSupportTag = dao.getPaoTypesThatSupportTag(PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
         assertEquals(expectedTypes, paoTypesThatSupportTag);
         
     }
@@ -391,7 +391,7 @@ public class PaoDefinitionDaoImplTest {
     
     @Test
     public void testGetValueForTag() {
-        String valueForTagString1 = dao.getValueForTagString(PaoType.MCT370, PaoTag.PLC_ADDRESS_RANGE);
+        String valueForTagString1 = dao.getValueForTagString(PaoType.MCT370, PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
         assertEquals("1-5", valueForTagString1);
         long valueForTagLong1 = dao.getValueForTagLong(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
         assertEquals(8251709l, valueForTagLong1);
@@ -400,7 +400,7 @@ public class PaoDefinitionDaoImplTest {
         
         // should not work
         try {
-            dao.getValueForTagLong(PaoType.MCT370, PaoTag.PLC_ADDRESS_RANGE);
+            dao.getValueForTagLong(PaoType.MCT370, PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
             fail("should not be compatible get long");
         } catch(Exception e) {}
         

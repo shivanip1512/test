@@ -112,7 +112,7 @@ This file contains default pao and point information for all of the paos in Yuko
             </attribute>
         </attributes>      
         <tags>
-            <tag name="PLC_ADDRESS_RANGE" supports="true">
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE" supports="true">
                 <value>1-5</value>
             </tag>
             <tag name="DUMMY_LONG_TAG">

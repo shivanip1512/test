@@ -50,7 +50,6 @@ import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -58,8 +57,7 @@ import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.device.range.IntegerRange;
-import com.cannontech.device.range.PlcAddressRangeService;
+import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
@@ -244,7 +242,7 @@ public void runImport(List<ImportData> imps) {
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
     RoleDao roleDao = (RoleDao) YukonSpringHook.getBean("roleDao");
-	PlcAddressRangeService plcAddressRangeService = YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
+	DlcAddressRangeService dlcAddressRangeService = YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
 	
     StoredDeviceGroup alternateGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
     StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
@@ -343,8 +341,7 @@ public void runImport(List<ImportData> imps) {
         
         /*Address range check for 400 series*/
     	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
-        IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
-    	if (!range.isWithinRange(Integer.valueOf(address))) {
+    	if (!dlcAddressRangeService.isValidAddress(paoType, Integer.parseInt(address))) {
     		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
     		log.error(logMsgPrefix + error);
     		errorMsg.add(error);
@@ -510,7 +507,7 @@ public void runImport(List<ImportData> imps) {
                 }
                 
                 //update device groups if they changed
-                SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), PAOGroups.getDeviceType(yukonPaobject.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), PaoType.getForDbString(yukonPaobject.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
@@ -576,7 +573,7 @@ public void runImport(List<ImportData> imps) {
              */
             if(routeID.intValue() == -12) {
                 if (routeIDsFromSub.size() > 0) {
-                    current400Series.getDeviceRoutes().setRouteID((Integer)routeIDsFromSub.get(0));
+                    current400Series.getDeviceRoutes().setRouteID(routeIDsFromSub.get(0));
                 }
             }
             else
@@ -602,7 +599,7 @@ public void runImport(List<ImportData> imps) {
                 dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
                 log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 
-                SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PaoType.getForDbString(current400Series.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
@@ -953,7 +950,7 @@ public void messageReceived(MessageEvent e) {
     }
 }
 
-public Set getPorterMessageIDs() {
+public Set<Long> getPorterMessageIDs() {
     return porterMessageIDs;
 }
 
@@ -961,7 +958,7 @@ public void setPorterMessageIDs(Set<Long> porterMessageIDs) {
     this.porterMessageIDs = porterMessageIDs;
 }
 
-public List getCmdMultipleRouteList() {
+public List<Request> getCmdMultipleRouteList() {
     return cmdMultipleRouteList;
 }
 

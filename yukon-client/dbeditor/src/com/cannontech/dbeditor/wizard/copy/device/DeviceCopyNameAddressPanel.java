@@ -54,8 +54,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
+import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
-import com.cannontech.device.range.PlcAddressRangeService;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
  
@@ -71,8 +71,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 	private javax.swing.JTextField ivjJTextFieldMeterNumber = null;
    	private DeviceBase deviceBase = null;
    	private JLabel jLabelErrorMessage = null;
-   	private PlcAddressRangeService plcAddressRangeService = 
-   	    YukonSpringHook.getBean("plcAddressRangeService", PlcAddressRangeService.class);
+   	private DlcAddressRangeService dlcAddressRangeService = 
+   	    YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
    	
    	private static final Logger log = YukonLogManager.getLogger(DeviceCopyNameAddressPanel.class);
 
@@ -666,9 +666,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			try 
 			{
 		      	int addy = Integer.parseInt(getAddressTextField().getText());
-		      	int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
-		      	PaoType paoType = PaoType.getForId(deviceType);
-		      	IntegerRange range = plcAddressRangeService.getAddressRangeForDevice(paoType);
+		      	PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
+		      	IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
 		      	if (!range.isWithinRange(addy)) {
 		        	setErrorString("Invalid address. Device address range: " + range);
 		
