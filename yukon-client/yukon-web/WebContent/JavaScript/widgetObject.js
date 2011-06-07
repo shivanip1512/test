@@ -102,6 +102,18 @@ JsWidgetObject.prototype = {
     $(this.container).getElementsBySelector('input').invoke('enable');
   },
   
+  doPeriodicRefresh: function(cmd, newParams, period, container) {
+      var useContainer = container;
+      if (container == undefined || container == '') {
+          useContainer = this.container;
+      }
+      oldParams = this.getWidgetParameters();
+      oldParams.update(newParams);
+      
+      var url = "/spring/widget/" + this.shortName + "/" + cmd;
+      new Ajax.PeriodicalUpdater(useContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this), 'frequency': period});
+  },
+  
   /**
    * @returns   {Hash}
    */
@@ -153,6 +165,6 @@ JsWidgetObject.prototype = {
 	    var url = "/spring/widget/" + this.shortName + "/" + cmd;
 
 	    openSimpleDialog(dialogId, url, key, oldParams, width, height);
-
   }
+
 };

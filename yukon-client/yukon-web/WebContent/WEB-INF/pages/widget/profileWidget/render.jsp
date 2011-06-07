@@ -6,7 +6,6 @@
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <script type="text/javascript"> 
-
     var scanningUpdater = null;
     
     function toggleChanPopup(popupDivName) {
@@ -27,20 +26,24 @@
         $('newToggleVal').value = newToggleVal;
         ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
     }
-    
 </script>
-
 
 <%-- CHANNEL SCANNING --%>
 <c:if test="${not empty toggleErrorMsg}">
     <div style="font-weight:bold;color:#BB0000">${toggleErrorMsg}</div>
     <br>
 </c:if>
-<div id="${widgetParameters.widgetId}_channelScanning"></div>
-<script type="text/javascript"> 
-    scanningUpdater = new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 90});
-</script>
 
+<c:set var="channelScanDiv" value="${widgetParameters.widgetId}_channelScanning"/>
+<div id="${channelScanDiv}"></div>
+<script>
+    var refreshCmd = 'refreshChannelScanningInfo';
+    var refreshParams = {'deviceId':${deviceId}};
+    var refreshPeriod = 90;
+    scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
+                                                                     refreshParams, refreshPeriod,
+                                                                     '${channelScanDiv}');
+</script>
 
 <%--PAST PROFILES, don't display if the device does not support --%>
 <cti:checkRole role="operator.MeteringRole.ROLEID">

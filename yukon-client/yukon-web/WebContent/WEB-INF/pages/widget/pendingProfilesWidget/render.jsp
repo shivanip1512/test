@@ -14,12 +14,10 @@
 <script type="text/javascript">
     
     // REFRESHER
-    var refreshUrl = '/spring/widget/pendingProfilesWidget/refreshPending';
-    var refreshParams = $H({
-        'deviceId': ${deviceId}
-    });
-    
-    var refresher = new Ajax.PeriodicalUpdater('${divId}', refreshUrl, {method: 'post', frequency: 6, parameters: refreshParams, evalScripts: true});
+    var refreshCmd = 'refreshPending';
+    var refreshParams = {'deviceId':${deviceId}, 'evalScripts': true};
+    var refreshPeriod = 6;
+    var refresher = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd, refreshParams, refreshPeriod);
     
     // CANCEL FUNCTION
     function cancelLoadProfile(requestId){
@@ -32,22 +30,14 @@
         });
         
         new Ajax.Updater('${divId}',stopUrl, {
-          
           'parameters': stopParams,
-          
           'evalScripts': true,
-          
           'onSuccess': function(response) {
                        },
-          
           'onException': function(response) {
                        }
         });
-        
-    }
-    
-    
-    
+    }   
 </script>
 
 <%-- INITIALLY INCLUDE ONGOING JSP --%>    
