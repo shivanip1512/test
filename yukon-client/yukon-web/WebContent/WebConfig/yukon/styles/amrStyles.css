@@ -70,10 +70,10 @@ div.resultBarInterval {
     height: 100%;
 }
 
-.dataPresent {
+.DATA_PRESENT {
     background-color: #228855;
 }
 
-.dataAvailable {
+.DATA_MISSING {
     background: white;
 }

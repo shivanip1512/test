@@ -21,7 +21,7 @@
 
 <entry key="yukon.common.dateFormatting.parserImplementation">MDY</entry>
 
-<entry key="yukon.common.dateFormatting.intervalSeparator"> to </entry>
+<entry key="yukon.common.dateFormatting.intervalSeparator">&#160;to&#160;</entry>
 
 <entry key="yukon.common.timeFormatter">/JavaScript/timeFormatter.js</entry>
 

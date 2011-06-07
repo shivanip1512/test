@@ -17,7 +17,7 @@
     <entry key="yukon.web.modules.amr.analysisResults.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.amr.analysisResults.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.analysisResults.holes">Holes</entry>
-    <entry key="yukon.web.modules.amr.analysisResults.timeline">Timeline</entry>
+    <entry key="yukon.web.modules.amr.analysisResults.timeline">Timeline ({0} intervals)</entry>
     
     <entry key="yukon.web.modules.amr.analysisResults.read.imageUrl">/WebConfig/yukon/Icons/control_play_blue.gif</entry>
     <entry key="yukon.web.modules.amr.analysisResults.read.label">Read All Devices</entry>

@@ -19,16 +19,11 @@
             
             <c:when test="${empty nextPixel or nextPixel.readType != pixel.readType}">
 
-                <c:if test="${pixel.readType == 'DATA_PRESENT'}">
-                    <c:set var="intervalClass" value="dataPresent"/>
-                </c:if>
-                <c:if test="${pixel.readType == 'DATA_MISSING'}">
-                    <c:set var="intervalClass" value="dataAvailable"/>
-                </c:if>
+                <c:set var="intervalClass" value="${pixel.readType}"/>
                 
                 <cti:formatInterval var="title" start="${start}" end="${pixel.end}" type="DATEHM"/>
                 
-                <div name="${intervalClass}" class="resultBarInterval ${intervalClass}" style="width:${colorWidth}px;" title="${title}"></div>
+                <div class="resultBarInterval ${intervalClass}" style="width:${colorWidth}px;" title="${title}"></div>
                 
                 <c:if test="${not empty nextPixel}">
                     <c:set var="start" value="${nextPixel.start}"/>

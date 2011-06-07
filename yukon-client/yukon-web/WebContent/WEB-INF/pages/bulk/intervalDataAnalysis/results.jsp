@@ -90,7 +90,7 @@
                 <th><i:inline key=".deviceName"/></th>
                 <th><i:inline key=".deviceType"/></th>
                 <th><i:inline key=".holes"/></th>
-                <th><i:inline key=".timeline"/> (${intervals} intervals)</th>
+                <th><i:inline key=".timeline" arguments="${intervals}"/></th>
             </tr>
         
             <c:forEach items="${result.searchResult.resultList}" var="row">
