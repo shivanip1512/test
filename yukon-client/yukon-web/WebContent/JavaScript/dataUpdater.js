@@ -181,7 +181,7 @@ function cannonDataUpdateRegistration(callback, identifierMap) {
 function cannonDataUpdateEventRegistration(callback, identifier) {
 	var didIt = false;
 	var callbackWrapper = function(data) {
-		if (!didIt && data['boolean'] == 'true') {
+		if (!didIt && data.get('boolean') == 'true') {
 			didIt = true;
 		    callback();
 		}
