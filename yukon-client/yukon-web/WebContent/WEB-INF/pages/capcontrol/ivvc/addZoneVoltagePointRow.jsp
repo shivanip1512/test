@@ -11,13 +11,21 @@
 	<td><input type="hidden" value="${row.id}" name="${row.type}Assignments[${index}].id"/>${row.name}</td>
 	<td>${row.device}</td>
     <td>
-        <select name="${row.type}Assignments[${index}].phase">
-            <c:forEach var="phase" items="${phases}">
-                <option value="${phase}">
-                    <i:inline key="${phase}" />
-                </option>
-            </c:forEach>
-        </select>
+        <c:choose>
+            <c:when test="${phaseUneditable}">
+                <input type="hidden" name="${row.type}Assignments[${index}].phase" value="${phases[0]}"/>
+                <i:inline key="${phases[0]}" />
+            </c:when>
+            <c:otherwise>
+                <select name="${row.type}Assignments[${index}].phase">
+                    <c:forEach var="phase" items="${phases}">
+                        <option value="${phase}">
+                            <i:inline key="${phase}" />
+                        </option>
+                    </c:forEach>
+                </select>
+            </c:otherwise>
+        </c:choose>
     </td>
 	<td><input name="${row.type}Assignments[${index}].graphPositionOffset" size="1" value="${index+1}"/></td>
 	<td><input name="${row.type}Assignments[${index}].distance" size="3" value="0"/></td>

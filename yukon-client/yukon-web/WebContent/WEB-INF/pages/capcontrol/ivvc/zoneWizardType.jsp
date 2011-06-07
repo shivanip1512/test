@@ -10,13 +10,13 @@
 
 <script type="text/javascript">
     GANG_OPERATED_option = function() {
-        $('phaseSelector').hide();
+        $('phaseSelector').addClassName('dn');
     }
     THREE_PHASE_option = function() {
-        $('phaseSelector').hide();
+        $('phaseSelector').addClassName('dn');
     }
     SINGLE_PHASE_option = function() {
-        $('phaseSelector').show();
+        $('phaseSelector').removeClassName('dn');
     }
 
     backToParentSelect = function() {
@@ -42,13 +42,13 @@
             </form:select>
         </tags:nameValue2>
         
-        <c:set var="phaseRowStyle" value="display:none;"/>
+        <c:set var="phaseRowStyle" value="dn"/>
         <c:if test="${fn:length(availableZonePhases) == 1 ||
                     zone.zoneType == singlePhase}">
             <c:set var="phaseRowStyle" value=""/>
         </c:if>
 
-        <tags:nameValue2 rowId="phaseSelector" nameKey=".label.zonePhase" rowStyle="${phaseRowStyle}">
+        <tags:nameValue2 rowId="phaseSelector" nameKey=".label.zonePhase" rowClass="${phaseRowStyle}">
             <form:select path="regulators[0].phase">
                 <c:forEach var="phase" items="${availableZonePhases}">
                     <form:option value="${phase}">

@@ -7,14 +7,12 @@
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
 <%@ attribute name="rowId" rtexprvalue="true" %>
-<%@ attribute name="rowClass" %>
-<%@ attribute name="rowStyle" rtexprvalue="true" %>
+<%@ attribute name="rowClass" rtexprvalue="true" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
-            <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>
-            <c:if test="${!empty rowStyle}"> style="${rowStyle}"</c:if>>
+            <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
 			<td class="name" style="white-space:nowrap;">
 			
 				<c:set var="colonSuffix" value=":"/>

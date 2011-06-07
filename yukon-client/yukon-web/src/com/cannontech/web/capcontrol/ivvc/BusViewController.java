@@ -66,15 +66,15 @@ public class BusViewController {
     
     @RequestMapping
     public String chart(ModelMap model, FlashScope flash, YukonUserContext userContext, int subBusId) {
+        boolean missingVoltageAttribute = false;
         try {
             VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
-            
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
         } catch (IllegalUseOfAttribute e) {
-//            flash.setError(new YukonMessageSourceResolvable(
-//            "yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.missingVoltageAttribute"));
+            missingVoltageAttribute = true;
         }
+        model.addAttribute("missingVoltageAttribute", missingVoltageAttribute);
         
         return "ivvc/flatnessGraphLine.jsp";
     }

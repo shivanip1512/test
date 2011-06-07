@@ -112,7 +112,11 @@
     </legend>
     
     <strings>
-        <no_data><cti:msg2 key=".strings.noData"/></no_data>
+        <c:set var="noDataKey" value=".strings.noData"/>
+        <c:if test="${missingVoltageAttribute}">
+            <c:set var="noDataKey" value=".missingVoltageAttribute"/>
+        </c:if>
+        <no_data><cti:msg2 key="${noDataKey}"/></no_data>
     </strings>
 
     <labels>

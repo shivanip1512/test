@@ -118,7 +118,7 @@
                         <th class="zoneName"><i:inline key=".zoneList.name" /></th>
                         <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
                         <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
-                        <th class="zoneActions"><i:inline key="modules.capcontrol.actions"/></th>
+                        <th class="rightActionColumn"><i:inline key="modules.capcontrol.actions"/></th>
                     </tr>
     				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}" styleClass="zoneHierarchy">
     					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
@@ -156,15 +156,15 @@
                             <td class="lastOperation">
                                 <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"/>
                             </td>
-                            <td class="zoneActions">
+                            <td class="rightActionColumn">
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
-                                        <a href="javascript:showZoneEditorWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+                                        <cti:button key="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
                                         <cti:button id="delete_${zone.zoneId}" key="remove" renderMode="image" href="${zoneDeleteUrl}"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:img key="disabledEdit"/> 
-                                        <cti:img key="disabledRemove"/>
+                                        <cti:button key="disabledEdit" renderMode="image" disabled="true"/>
+                                        <cti:button key="disabledRemove" renderMode="image" disabled="true"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

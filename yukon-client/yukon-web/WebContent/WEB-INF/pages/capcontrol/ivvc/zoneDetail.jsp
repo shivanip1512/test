@@ -125,7 +125,7 @@
     					<th></th>
     					<th><i:inline key=".details.table.name"/></th>
                         <th><i:inline key=".details.table.type"/></th>
-    					<th><i:inline key=".details.table.actions"/></th>
+    					<th class="rightActionColumn"><i:inline key=".details.table.actions"/></th>
     				</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.zone"/></B></td>
@@ -137,15 +137,13 @@
                                 <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
                             </spring:escapeBody>
                         </td>
-						<td>
+						<td class="rightActionColumn">
 							<c:choose>
 								<c:when test="${hasEditingRole}">
-									<a href="javascript:showZoneWizard('${zoneEditorUrl}');">
-										<cti:img key="edit"/>
-									</a>
+                                    <cti:button key="edit" renderMode="image" onclick="javascript:showZoneWizard('${zoneEditorUrl}');"/> 
 								</c:when>
 								<c:otherwise>
-									<cti:img key="disabledEdit"/>
+									<cti:button key="disabledEdit" renderMode="image" disabled="true"/>
 								</c:otherwise>
 							</c:choose>
                         </td>
@@ -161,12 +159,13 @@
         							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseA}</spring:escapeBody>
         						</td>
                                 <td>
-                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                    </spring:escapeBody>
                                 </td>
-        						<td>
-        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseA}" class="tierIconLink">
-                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                                    </a>
+        						<td class="rightActionColumn">
+                                    <cti:button key="edit" renderMode="image" 
+                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseA}"/>
                                 </td>
         					</tr>
         					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
@@ -178,12 +177,13 @@
         							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseB}</spring:escapeBody>
         						</td>
                                 <td>
-                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                    </spring:escapeBody>
                                 </td>
-        						<td>
-        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseB}" class="tierIconLink">
-                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                                    </a>
+        						<td class="rightActionColumn">
+        							<cti:button key="edit" renderMode="image" 
+                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseB}" />
                                 </td>
         					</tr>
         					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
@@ -195,12 +195,13 @@
         							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseC}</spring:escapeBody>
         						</td>
                                 <td>
-                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                    </spring:escapeBody>
                                 </td>
-        						<td>
-        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseC}" class="tierIconLink">
-                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                                    </a>
+        						<td class="rightActionColumn">
+        							<cti:button key="edit" renderMode="image" 
+                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseC}" />
                                 </td>
         					</tr>
                         </c:when>
@@ -214,12 +215,13 @@
                                     <spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
                                 </td>
                                 <td>
-                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                    </spring:escapeBody>
                                 </td>
-                                <td>
-                                    <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
-                                        <img alt="Edit" class="tierImg" src="${editInfoImage}">
-                                    </a>
+                                <td class="rightActionColumn">
+                                    <cti:button key="edit" renderMode="image" 
+                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" />
                                 </td>
                             </tr>
                         </c:when>
@@ -231,12 +233,13 @@
         							<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
         						</td>
                                 <td>
-                                    <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/></spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                    </spring:escapeBody>
                                 </td>
-        						<td>
-        							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
-                                    	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                                    </a>
+        						<td class="rightActionColumn">
+        							<cti:button key="edit" renderMode="image" 
+                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" />
                                 </td>
         					</tr>
                         </c:otherwise>
@@ -244,7 +247,7 @@
                 </table>
 			</tags:boxContainer2>
 			<br>
-			<tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true">			
+			<tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">			
                 <c:choose>
                     <c:when test="${zoneDto.zoneType == threePhase}">
                         <table class="compactResultsTable">
@@ -255,115 +258,136 @@
                             </tr>
                             <tr>
                                 <td>
-                    				<div>
-                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                                    <ul class="buttonStack">
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="scan" 
+                                                onclick="executeCommand('${regulatorIdPhaseA}',
                     													'${scanCommandHolder.cmdId}',
                     													'${scanCommandHolder.commandName}',
                     													'${regulatorAType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseA}',
-                    													'${tapUpCommandHolder.cmdId}',
-                    													'${tapUpCommandHolder.commandName}',
-                    													'${regulatorAType}',
-                    													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="up" 
+                                                onclick="executeCommand('${regulatorIdPhaseA}',
+                                                                        '${tapUpCommandHolder.cmdId}',
+                                                                        '${tapUpCommandHolder.commandName}',
+                                                                        '${regulatorAType}',
+                                                                        'false');"/>
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="down" 
+                                                onclick="executeCommand('${regulatorIdPhaseA}',
                     													'${tapDownCommandHolder.cmdId}',
                     													'${tapDownCommandHolder.commandName}',
                     													'${regulatorAType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="enable" 
+                                                onclick="executeCommand('${regulatorIdPhaseA}',
                     													'${enableRemoteCommandHolder.cmdId}',
                     													'${enableRemoteCommandHolder.commandName}',
                     													'${regulatorAType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseA}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="disable" 
+                                                onclick="executeCommand('${regulatorIdPhaseA}',
                     													'${disableRemoteCommandHolder.cmdId}',
                     													'${disableRemoteCommandHolder.commandName}',
                     													'${regulatorAType}',
                     													'false');"/>
-                    				</div>
+                        				</li>
+                                    </ul>
                                 </td>
                                 <td>
-                    				<div>
-                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                                    <ul class="buttonStack">
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="scan" 
+                                                onclick="executeCommand('${regulatorIdPhaseB}',
                     													'${scanCommandHolder.cmdId}',
                     													'${scanCommandHolder.commandName}',
                     													'${regulatorBType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="up" 
+                                                onclick="executeCommand('${regulatorIdPhaseB}',
                     													'${tapUpCommandHolder.cmdId}',
                     													'${tapUpCommandHolder.commandName}',
                     													'${regulatorBType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="down" 
+                                                onclick="executeCommand('${regulatorIdPhaseB}',
                     													'${tapDownCommandHolder.cmdId}',
                     													'${tapDownCommandHolder.commandName}',
                     													'${regulatorBType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="enable" 
+                                                onclick="executeCommand('${regulatorIdPhaseB}',
                     													'${enableRemoteCommandHolder.cmdId}',
                     													'${enableRemoteCommandHolder.commandName}',
                     													'${regulatorBType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseB}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="disable" 
+                                                onclick="executeCommand('${regulatorIdPhaseB}',
                     													'${disableRemoteCommandHolder.cmdId}',
                     													'${disableRemoteCommandHolder.commandName}',
                     													'${regulatorBType}',
                     													'false');"/>
-                    				</div>
+                        				</li>
+                                    </ul>
                                 </td>
                                 <td>
-                    				<div>
-                    					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                                    <ul class="buttonStack">
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="scan" 
+                                                onclick="executeCommand('${regulatorIdPhaseC}',
                     													'${scanCommandHolder.cmdId}',
                     													'${scanCommandHolder.commandName}',
                     													'${regulatorCType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="up" 
+                                                onclick="executeCommand('${regulatorIdPhaseC}',
                     													'${tapUpCommandHolder.cmdId}',
                     													'${tapUpCommandHolder.commandName}',
                     													'${regulatorCType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="down" 
+                                                onclick="executeCommand('${regulatorIdPhaseC}',
                     													'${tapDownCommandHolder.cmdId}',
                     													'${tapDownCommandHolder.commandName}',
                     													'${regulatorCType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="enable" 
+                                                onclick="executeCommand('${regulatorIdPhaseC}',
                     													'${enableRemoteCommandHolder.cmdId}',
                     													'${enableRemoteCommandHolder.commandName}',
                     													'${regulatorCType}',
                     													'false');"/>
-                    				</div>
-                    				<div>
-                    					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorIdPhaseC}',
+                        				</li>
+                        				<li>
+                        					<cti:button renderMode="labeledImage" key="disable" 
+                                                onclick="executeCommand('${regulatorIdPhaseC}',
                     													'${disableRemoteCommandHolder.cmdId}',
                     													'${disableRemoteCommandHolder.commandName}',
                     													'${regulatorCType}',
                     													'false');"/>
-                    				</div>
+                        				</li>
+                                    </ul>
                                 </td>
                             </tr>
                         </table>
@@ -376,39 +400,44 @@
                             <tr>
                                 <td>
                                     <div>
-                                        <cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
-                                                                        '${scanCommandHolder.cmdId}',
-                                                                        '${scanCommandHolder.commandName}',
-                                                                        '${regulatorType}',
-                                                                        'false');"/>
+                                        <cti:button renderMode="labeledImage" key="scan" 
+                                            onclick="executeCommand('${regulatorId}',
+                                                                    '${scanCommandHolder.cmdId}',
+                                                                    '${scanCommandHolder.commandName}',
+                                                                    '${regulatorType}',
+                                                                    'false');"/>
                                     </div>
                                     <div>
-                                        <cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
-                                                                        '${tapUpCommandHolder.cmdId}',
-                                                                        '${tapUpCommandHolder.commandName}',
-                                                                        '${regulatorType}',
-                                                                        'false');"/>
+                                        <cti:button renderMode="labeledImage" key="up" 
+                                            onclick="executeCommand('${regulatorId}',
+                                                                    '${tapUpCommandHolder.cmdId}',
+                                                                    '${tapUpCommandHolder.commandName}',
+                                                                    '${regulatorType}',
+                                                                    'false');"/>
                                     </div>
                                     <div>
-                                        <cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
-                                                                        '${tapDownCommandHolder.cmdId}',
-                                                                        '${tapDownCommandHolder.commandName}',
-                                                                        '${regulatorType}',
-                                                                        'false');"/>
+                                        <cti:button renderMode="labeledImage" key="down" 
+                                            onclick="executeCommand('${regulatorId}',
+                                                                    '${tapDownCommandHolder.cmdId}',
+                                                                    '${tapDownCommandHolder.commandName}',
+                                                                    '${regulatorType}',
+                                                                    'false');"/>
                                     </div>
                                     <div>
-                                        <cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
-                                                                        '${enableRemoteCommandHolder.cmdId}',
-                                                                        '${enableRemoteCommandHolder.commandName}',
-                                                                        '${regulatorType}',
-                                                                        'false');"/>
+                                        <cti:button renderMode="labeledImage" key="enable" 
+                                            onclick="executeCommand('${regulatorId}',
+                                                                    '${enableRemoteCommandHolder.cmdId}',
+                                                                    '${enableRemoteCommandHolder.commandName}',
+                                                                    '${regulatorType}',
+                                                                    'false');"/>
                                     </div>
                                     <div>
-                                        <cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
-                                                                        '${disableRemoteCommandHolder.cmdId}',
-                                                                        '${disableRemoteCommandHolder.commandName}',
-                                                                        '${regulatorType}',
-                                                                        'false');"/>
+                                        <cti:button renderMode="labeledImage" key="disable" 
+                                            onclick="executeCommand('${regulatorId}',
+                                                                    '${disableRemoteCommandHolder.cmdId}',
+                                                                    '${disableRemoteCommandHolder.commandName}',
+                                                                    '${regulatorType}',
+                                                                    'false');"/>
                                     </div>
                                 </td>
                             </tr>
@@ -416,39 +445,44 @@
                     </c:when>
                     <c:otherwise>
                         <div>
-                            <cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
-                                                            '${scanCommandHolder.cmdId}',
-                                                            '${scanCommandHolder.commandName}',
-                                                            '${regulatorType}',
-                                                            'false');"/>
+                            <cti:button renderMode="labeledImage" key="scan" 
+                                onclick="executeCommand('${regulatorId}',
+                                                        '${scanCommandHolder.cmdId}',
+                                                        '${scanCommandHolder.commandName}',
+                                                        '${regulatorType}',
+                                                        'false');"/>
                         </div>
                         <div>
-                            <cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
-                                                            '${tapUpCommandHolder.cmdId}',
-                                                            '${tapUpCommandHolder.commandName}',
-                                                            '${regulatorType}',
-                                                            'false');"/>
+                            <cti:button renderMode="labeledImage" key="up" 
+                                onclick="executeCommand('${regulatorId}',
+                                                        '${tapUpCommandHolder.cmdId}',
+                                                        '${tapUpCommandHolder.commandName}',
+                                                        '${regulatorType}',
+                                                        'false');"/>
                         </div>
                         <div>
-                            <cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
-                                                            '${tapDownCommandHolder.cmdId}',
-                                                            '${tapDownCommandHolder.commandName}',
-                                                            '${regulatorType}',
-                                                            'false');"/>
+                            <cti:button renderMode="labeledImage" key="down" 
+                                onclick="executeCommand('${regulatorId}',
+                                                        '${tapDownCommandHolder.cmdId}',
+                                                        '${tapDownCommandHolder.commandName}',
+                                                        '${regulatorType}',
+                                                        'false');"/>
                         </div>
                         <div>
-                            <cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
-                                                            '${enableRemoteCommandHolder.cmdId}',
-                                                            '${enableRemoteCommandHolder.commandName}',
-                                                            '${regulatorType}',
-                                                            'false');"/>
+                            <cti:button renderMode="labeledImage" key="enable" 
+                                onclick="executeCommand('${regulatorId}',
+                                                        '${enableRemoteCommandHolder.cmdId}',
+                                                        '${enableRemoteCommandHolder.commandName}',
+                                                        '${regulatorType}',
+                                                        'false');"/>
                         </div>
                         <div>
-                            <cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
-                                                            '${disableRemoteCommandHolder.cmdId}',
-                                                            '${disableRemoteCommandHolder.commandName}',
-                                                            '${regulatorType}',
-                                                            'false');"/>
+                            <cti:button renderMode="labeledImage" key="disable" 
+                                onclick="executeCommand('${regulatorId}',
+                                                        '${disableRemoteCommandHolder.cmdId}',
+                                                        '${disableRemoteCommandHolder.commandName}',
+                                                        '${regulatorType}',
+                                                        'false');"/>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -495,7 +529,9 @@
                                     
                                     <c:forEach var="point" items="${regulatorPointMappings}">
                                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                            <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
+                                            <td><spring:escapeBody htmlEscape="true">
+                                                ${point.attribute.description}
+                                            </spring:escapeBody></td>
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${point.pointId > 0}">
@@ -535,7 +571,9 @@
         		            
         		            <c:forEach var="point" items="${regulatorPointMappings}">
         		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-        		                    <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
+        		                    <td><spring:escapeBody htmlEscape="true">
+                                        ${point.attribute.description}
+                                    </spring:escapeBody></td>
         		                    <td>
         		                        <c:choose>
         		                            <c:when test="${point.pointId > 0}">
@@ -606,7 +644,8 @@
                     so.write("${uniqueId}");
 		        </script>
                 
-                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
+                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" 
+                    largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
                 
 			</tags:boxContainer2>
 			
@@ -624,13 +663,21 @@
 		            <c:forEach var="capBank" items="${capBankList}">
 		                <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 		                    <td>
-		                    	<c:if test="${capBank.notAssignedToZone}"><span class="strongWarningMessage">*</span></c:if>
-		                    	<spring:escapeBody htmlEscape="true">${capBank.controlDevice.paoName}</spring:escapeBody>
+		                    	<c:if test="${capBank.notAssignedToZone}">
+                                    <span class="strongWarningMessage">*</span>
+                                </c:if>
+		                    	<spring:escapeBody htmlEscape="true">
+                                    ${capBank.controlDevice.paoName}
+                                </spring:escapeBody>
 		                    </td>
-		                    <td><spring:escapeBody htmlEscape="true">${capBank.capBankDevice.ccName}</spring:escapeBody></td>
+		                    <td><spring:escapeBody htmlEscape="true">
+                                ${capBank.capBankDevice.ccName}
+                            </spring:escapeBody></td>
 		                    <td>
-		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS_COLOR">
-    					       		<cti:capControlValue paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS"/>
+		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" 
+                                    type="CAPBANK" format="CB_STATUS_COLOR">
+    					       		<cti:capControlValue paoId="${capBank.capBankDevice.ccId}" 
+                                        type="CAPBANK" format="CB_STATUS"/>
                         		</cti:capBankStateColor>
                         	</td>
 		                    <td>

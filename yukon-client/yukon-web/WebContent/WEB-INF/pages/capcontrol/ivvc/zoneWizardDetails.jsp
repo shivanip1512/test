@@ -14,8 +14,10 @@
     </c:if>
 
     regPhase = null;
-    <c:if test="${!empty zoneDto.regulator.phase}">
-        regPhase = '${zoneDto.regulator.phase}';
+    <c:if test="${zoneDto.zoneType !=  threePhase}">
+        <c:if test="${!empty zoneDto.regulator.phase}">
+            regPhase = '${zoneDto.regulator.phase}';
+        </c:if>
     </c:if>
 
     addBankHandler = function (selectedPaoInfo) {
@@ -146,7 +148,14 @@
         <%-- Zone Type --%>
         <tags:nameValue2 nameKey=".label.zoneType">
             <span class="disabledRow">
-                <i:inline key="${zoneDto.zoneType}"/>
+                <c:choose>
+                    <c:when test="${zoneDto.zoneType == singlePhase}">
+                        <i:inline key="${zoneDto.zoneType}"/>:&nbsp<i:inline key="${zoneDto.regulator.phase}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <i:inline key="${zoneDto.zoneType}"/>
+                    </c:otherwise>
+                </c:choose>
             </span>
         </tags:nameValue2>
 
@@ -158,7 +167,15 @@
                         <spring:escapeBody htmlEscape="true"><i:inline key="yukon.web.defaults.dashes"/></spring:escapeBody>
                     </c:when>
                     <c:otherwise>
-                        <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/></spring:escapeBody>
+                        <c:choose>
+                            <c:when test="${parentZone.zoneType == singlePhase}">
+                                <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/>: 
+                                <i:inline key="${parentZone.regulator.phase}"/></spring:escapeBody>
+                            </c:when>
+                            <c:otherwise>
+                                <spring:escapeBody htmlEscape="true">${parentZone.name} - <i:inline key="${parentZone.zoneType}"/></spring:escapeBody>
+                            </c:otherwise>
+                        </c:choose>
                     </c:otherwise>
                 </c:choose>
             </span>
@@ -380,13 +397,21 @@
             							<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
             						</td>
                                     <td>
-                                        <form:select path="pointAssignments[${status.index}].phase">
-                                            <c:forEach var="phase" items="${phases}">
-                                                <form:option value="${phase}">
-                                                    <i:inline key="${phase}" />
-                                                </form:option>
-                                            </c:forEach>
-                                        </form:select>
+                                        <c:choose>
+                                            <c:when test="${phaseUneditable}">
+                                                <form:hidden path="pointAssignments[${status.index}].phase"/>
+                                                <i:inline key="${zoneDto.regulator.phase}" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <form:select path="pointAssignments[${status.index}].phase">
+                                                    <c:forEach var="phase" items="${phases}">
+                                                        <form:option value="${phase}">
+                                                            <i:inline key="${phase}" />
+                                                        </form:option>
+                                                    </c:forEach>
+                                                </form:select>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
             						<td>
             							<tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>

@@ -37,7 +37,7 @@ public class DefineCollectableVoltageRegulatorMessage extends DefineCollectableC
         return CTI_VOLTAGE_REGULATOR_MESSAGE_ID;
     }
 
-    public Class getJavaClass() {
+    public Class<VoltageRegulatorFlagMessage> getJavaClass() {
         return VoltageRegulatorFlagMessage.class;
     }
 

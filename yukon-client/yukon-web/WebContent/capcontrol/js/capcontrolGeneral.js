@@ -437,7 +437,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
     
     function setTapIcon(tapIcon, mode, div, tapTooltip) {
-        if (tapIcon == 'NONE') {
+        if (tapIcon == 'NONE' || tapIcon == 'NONE_RECENT') {
             showTapDefault(div, tapTooltip);
         } else if (tapIcon == 'RAISE_TAP') {
             if (mode == 'WarningLocal') {
@@ -523,44 +523,13 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function hideAll() {
-        divPhaseA.down('.tapLower').hide();
-        divPhaseA.down('.tapLowerWarning').hide();
-        divPhaseA.down('.tapRaise').hide();
-        divPhaseA.down('.tapRaiseWarning').hide();
-        divPhaseA.down('.tapLowerRecent').hide();
-        divPhaseA.down('.tapLowerRecentWarning').hide();
-        divPhaseA.down('.tapRaiseRecent').hide();
-        divPhaseA.down('.tapRaiseRecentWarning').hide();
-        divPhaseA.down('.tapDefault').hide();
-        divPhaseA.down('.regulatorModeRemote').hide();
-        divPhaseA.down('.regulatorModeLocal').hide();
-        divPhaseA.down('.regulatorModeLocalWarning').hide();
-        
-        divPhaseB.down('.tapLower').hide();
-        divPhaseB.down('.tapLowerWarning').hide();
-        divPhaseB.down('.tapRaise').hide();
-        divPhaseB.down('.tapRaiseWarning').hide();
-        divPhaseB.down('.tapLowerRecent').hide();
-        divPhaseB.down('.tapLowerRecentWarning').hide();
-        divPhaseB.down('.tapRaiseRecent').hide();
-        divPhaseB.down('.tapRaiseRecentWarning').hide();
-        divPhaseB.down('.tapDefault').hide();
-        divPhaseB.down('.regulatorModeRemote').hide();
-        divPhaseB.down('.regulatorModeLocal').hide();
-        divPhaseB.down('.regulatorModeLocalWarning').hide();
-
-        divPhaseC.down('.tapLower').hide();
-        divPhaseC.down('.tapLowerWarning').hide();
-        divPhaseC.down('.tapRaise').hide();
-        divPhaseC.down('.tapRaiseWarning').hide();
-        divPhaseC.down('.tapLowerRecent').hide();
-        divPhaseC.down('.tapLowerRecentWarning').hide();
-        divPhaseC.down('.tapRaiseRecent').hide();
-        divPhaseC.down('.tapRaiseRecentWarning').hide();
-        divPhaseC.down('.tapDefault').hide();
-        divPhaseC.down('.regulatorModeRemote').hide();
-        divPhaseC.down('.regulatorModeLocal').hide();
-        divPhaseC.down('.regulatorModeLocalWarning').hide();
+        var phaseContainers = tapContainer.childElements();
+        phaseContainers.each(function(phaseContainer) {
+            var phaseElements = phaseContainer.childElements();
+            phaseElements.each(function(phaseElement) {
+                phaseElement.hide();
+            });
+        });
     }
 }
 

@@ -72,7 +72,6 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVar</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kw">kW</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.title">Voltage Profile</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.missingVoltageAttribute">Missing voltage attribute on regulator</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.title">Delete Zone</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
 	
@@ -136,6 +135,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.regulator.SINGLE_PHASE">Phase Operated</entry>
     
 	<!-- Voltage Profile graphs (used on both BusView and ZoneDetail )-->
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.missingVoltageAttribute">Missing voltage point on regulator</entry>
     <!-- If any of these below are left blank, then amchart's default value will be used instead -->
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphLabel">Voltage Profile</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.yAxisLabel">Volts</entry>
