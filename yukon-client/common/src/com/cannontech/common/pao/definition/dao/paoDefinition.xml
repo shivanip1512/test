@@ -5298,11 +5298,6 @@
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage" />
-            </attribute>
-        </attributes>
     </pao>
     
     <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">
@@ -5695,6 +5690,11 @@
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point = "Voltage" />            
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="CBC_7020" inherits="CBC_702X_BASE">
@@ -5783,13 +5783,6 @@
                 <unitofmeasure value="Percent"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="5">
-                <init>true</init>
-                <name>Firmware Version</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="7">
                 <init>true</init>
                 <name>Temperature</name>
@@ -5815,6 +5808,13 @@
                 <init>true</init>
                 <name>Last Control Reason</name>
                 <multiplier value="0.1"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="9999">
+                <init>true</init>
+                <name>Firmware Version</name>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
@@ -5910,6 +5910,11 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point = "Line Voltage" />            
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="CBC_8020" inherits="CBC_802X_BASE">
