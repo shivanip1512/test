@@ -216,9 +216,9 @@ void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
 {
     CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), "Integrity Scan" ) );
 
-    std::string commandString = "scan integrity " + CtiNumStr( point.getPaoId() );
+    std::string commandString("scan integrity");
 
-    CtiRequestMsg *request = createPorterRequestMsg( point.getPointId(), commandString );
+    CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
     request->setSOE(5);
 
     CtiCapController::getInstance()->manualCapBankControl( request );

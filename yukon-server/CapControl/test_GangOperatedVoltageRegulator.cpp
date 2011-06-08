@@ -139,11 +139,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success)
     BOOST_CHECK_NO_THROW( regulator->executeIntegrityScan() );
 
 
-    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
     
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'VoltageY' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
@@ -151,15 +151,14 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success)
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
     
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
     
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
     
-    BOOST_CHECK_EQUAL( 2203, requestMsg->DeviceId() );  // ID of the 'VoltageY' LitePoint
-    BOOST_CHECK_EQUAL( "scan integrity 1001",
-                       requestMsg->CommandString() );   // PaoID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
     
     
     BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
@@ -196,11 +195,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
     BOOST_CHECK_NO_THROW( regulator->executeTapUpOperation() );
 
 
-    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
     
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
     
     BOOST_CHECK_EQUAL( 3100, signalMsg->getId() );     // ID of the 'TapUp' LitePoint
     BOOST_CHECK_EQUAL( "Raise Tap Position", signalMsg->getText() );
@@ -208,22 +207,22 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1003, requestMsg->DeviceId() );  // PaoID of the 'TapUp' LitePoint
     BOOST_CHECK_EQUAL( "control close select pointid 3100",
                        requestMsg->CommandString() );   // ID of the 'TapUp' LitePoint
 
 
-    BOOST_CHECK_EQUAL( 1, capController.eventMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
     CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiCCEventLogMsg *>(0) != eventMsg );
+    BOOST_REQUIRE( eventMsg );
 
     BOOST_CHECK_EQUAL( 19, eventMsg->getEventType() );      // 19 is a 'Tap' event ID
     BOOST_CHECK_EQUAL( "Raise Tap Position", eventMsg->getText() );
@@ -260,11 +259,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
     BOOST_CHECK_NO_THROW( regulator->executeTapDownOperation() );
 
 
-    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
     
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
     
     BOOST_CHECK_EQUAL( 3101, signalMsg->getId() );     // ID of the 'TapDown' LitePoint
     BOOST_CHECK_EQUAL( "Lower Tap Position", signalMsg->getText() );
@@ -272,22 +271,22 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1004, requestMsg->DeviceId() );  // PaoID of the 'TapDown' LitePoint
     BOOST_CHECK_EQUAL( "control close select pointid 3101",
                        requestMsg->CommandString() );   // ID of the 'TapDown' LitePoint
 
 
-    BOOST_CHECK_EQUAL( 1, capController.eventMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
     CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiCCEventLogMsg *>(0) != eventMsg );
+    BOOST_REQUIRE( eventMsg );
 
     BOOST_CHECK_EQUAL( 19, eventMsg->getEventType() );      // 19 is a 'Tap' event ID
     BOOST_CHECK_EQUAL( "Lower Tap Position", eventMsg->getText() );
@@ -325,11 +324,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
     BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
     
 
-    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
@@ -337,11 +336,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog 1 123",
@@ -382,11 +381,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
     BOOST_CHECK_NO_THROW( regulator->executeDisableKeepAlive() );
     
 
-    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
@@ -394,11 +393,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog 1 0",
@@ -440,11 +439,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
     BOOST_CHECK_NO_THROW( regulator->executeEnableRemoteControl() );
 
 
-    BOOST_CHECK_EQUAL( 2, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Enable Remote Control", signalMsg->getText() );
@@ -454,7 +453,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
 
     signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
@@ -462,11 +461,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog 1 123",
@@ -507,11 +506,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
     BOOST_CHECK_NO_THROW( regulator->executeDisableRemoteControl() );
 
 
-    BOOST_CHECK_EQUAL( 2, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
     CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Disable Remote Control", signalMsg->getText() );
@@ -521,7 +520,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
 
     signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
 
-    BOOST_REQUIRE( static_cast<CtiSignalMsg *>(0) != signalMsg );
+    BOOST_REQUIRE( signalMsg );
 
     BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
@@ -529,11 +528,11 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
                        signalMsg->getAdditionalInfo() );        
 
 
-    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
     CtiRequestMsg * requestMsg = capController.requestMessages.front();
 
-    BOOST_REQUIRE( static_cast<CtiRequestMsg *>(0) != requestMsg );
+    BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog 1 0",
