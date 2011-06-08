@@ -11,8 +11,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty({YukonRoleProperty.ADMIN_LM_USER_ASSIGN})
 public class UserEditorController extends MultiActionController {
 
     private YukonUserDao yukonUserDao;
@@ -20,18 +23,6 @@ public class UserEditorController extends MultiActionController {
 
     public UserEditorController() {
         super();
-    }
-
-    public YukonUserDao getYukonUserDao() {
-        return yukonUserDao;
-    }
-
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
     }
 
     public ModelAndView editUser(HttpServletRequest request, HttpServletResponse response)
@@ -62,4 +53,12 @@ public class UserEditorController extends MultiActionController {
         authenticationService.removeAuthenticationThrottle(user.getUsername());
         return mav;
     }    
+    
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
+    
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 }
