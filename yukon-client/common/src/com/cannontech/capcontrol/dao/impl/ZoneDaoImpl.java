@@ -129,7 +129,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             
             ccEvent.setText(rs.getString("Text"));
             ccEvent.setDateTime(rs.getDate("DateTime"));
-            
+            ccEvent.setDeviceName(rs.getString("PaoName"));
             return ccEvent;
         }
     };
@@ -444,16 +444,17 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT * FROM ( ");
-        sql.append("  SELECT EV.Text, EV.DateTime, ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
+        sql.append("  SELECT EV.Text, EV.DateTime, EVU.PaoName, ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
         sql.append("  FROM CcEventLog EV");
-        sql.append("  WHERE EV.LogId IN ( ");
-        sql.append("    SELECT LogId");
-        sql.append("    FROM CcEventLog");
+        sql.append("  JOIN ( ");
+        sql.append("    SELECT LogId, YP.PaoName");
+        sql.append("    FROM CcEventLog EL, YukonPaObject YP");
         sql.append("    WHERE (EventType").eq(CcEventType.IvvcCommStatus);
         sql.append("      AND SubId").eq(subBusId);
+        sql.append("      AND YP.PaObjectid").eq(subBusId);
         sql.append("    )");
         sql.append("    UNION");
-        sql.append("    SELECT LogId");
+        sql.append("    SELECT LogId, PAO.PaoName");
         sql.append("    FROM CCEventLog EV2");
         sql.append("    JOIN Point P ON EV2.PointId = P.PointId AND EV2.EventType").in(bankEventTypes);
         sql.append("    JOIN YukonPAObject PAO ON P.PAObjectId = PAO.PAObjectId");
@@ -463,11 +464,12 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sql.append("      WHERE ZoneId").eq(zoneId);
         sql.append("    )");
         sql.append("    UNION");
-        sql.append("    SELECT LogId");
+        sql.append("    SELECT LogId, PAO.PaoName");
         sql.append("    FROM CCEventLog EV3");
-        sql.append("    JOIN ZoneRegulator ZR ON EV3.RegulatorId = ZR.RegulatorId AND EV3.EventType").eq(CcEventType.IvvcTapOperation);        
+        sql.append("    JOIN ZoneRegulator ZR ON EV3.RegulatorId = ZR.RegulatorId AND EV3.EventType").eq(CcEventType.IvvcTapOperation);  
+        sql.append("    JOIN YukonPAObject PAO ON EV3.RegulatorId = PAO.PAObjectId");
         sql.append("    WHERE ZR.ZoneId").eq(zoneId);
-        sql.append("  )");
+        sql.append("  ) EVU on EVU.LogId = EV.LogId");
         sql.append(") numberedRows");
         sql.append("WHERE numberedRows.rn").lte(rowLimit);
         sql.append("ORDER BY numberedRows.DateTime desc");

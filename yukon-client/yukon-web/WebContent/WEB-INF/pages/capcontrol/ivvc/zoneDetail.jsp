@@ -515,13 +515,15 @@
 						<div class="historyContainer">
 							<table class="compactResultsTable ">
 								<tr>
-									<th><i:inline key=".ivvcEvents.description"/></th>
+									<th><i:inline key=".ivvcEvents.deviceName"/></th>
+                                    <th><i:inline key=".ivvcEvents.description"/></th>
 									<th><i:inline key=".attributes.timestamp"/></th>
 								</tr>
 					            <c:forEach var="ccEvent" items="${events}">
 									<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-										<td><spring:escapeBody htmlEscape="true">${ccEvent.text}</spring:escapeBody></td>
-										<td><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
+										<td><spring:escapeBody htmlEscape="true">${ccEvent.deviceName}</spring:escapeBody></td>
+                                        <td><spring:escapeBody htmlEscape="true">${ccEvent.text}</spring:escapeBody></td>
+                                        <td><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
 									</tr>
 					            </c:forEach>
 							</table>
