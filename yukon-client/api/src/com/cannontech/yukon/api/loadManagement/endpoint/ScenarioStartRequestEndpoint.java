@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -38,6 +40,8 @@ public class ScenarioStartRequestEndpoint {
     private String startTimeExpressionStr = "/y:scenarioStartRequest/y:startDateTime";
     private String stopTimeExpressionStr = "/y:scenarioStartRequest/y:stopDateTime";
     private String waitForResponseExpressionStr = "/y:scenarioStartRequest/y:waitForResponse";
+    
+    private Logger log = YukonLogManager.getLogger(ScenarioStartRequestEndpoint.class);
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -92,6 +96,10 @@ public class ScenarioStartRequestEndpoint {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
             resp.addContent(fe);
             return resp;
+        } catch (Exception e) {
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "OtherException", "An exception has been caught.");
+            resp.addContent(fe);
+            log.error(e.getMessage(), e);
         }
         
         // build response

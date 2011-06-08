@@ -23,6 +23,10 @@ public interface ProgramService {
     
     public LMProgramBase getProgramForPao(YukonPao from);
     
+    /**
+     * Finds the LMProgramBase object from a Pao. Will throw if the client
+     * connection is not valid or if there is no program found for the given pao.
+     */
     public LMProgramBase getProgramForPaoSafe(YukonPao from);
     
     public DatedObject<LMProgramBase> findDatedProgram(int programId);

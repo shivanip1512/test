@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -36,6 +38,8 @@ public class ProgramStopRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private String programNameExpressionStr = "/y:programStopRequest/y:programName";
     private String stopTimeExpressionStr = "/y:programStopRequest/y:stopDateTime";
+    
+    private static Logger log = YukonLogManager.getLogger(ProgramStopRequestEndpoint.class);
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -84,6 +88,10 @@ public class ProgramStopRequestEndpoint {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
             resp.addContent(fe);
             return resp;
+        } catch (Exception e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "OtherException", "An exception has been caught.");
+            resp.addContent(fe);
+            log.error(e.getMessage(), e);
         }
         
         // build response

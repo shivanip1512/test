@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -79,6 +81,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     private List<? extends String> strategyNames;
     private List<? extends String> strategiesToExcludeInReport;
+    
+    private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 	
 	@Override
 	public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
@@ -174,6 +178,11 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 errorObject = mspObjectDao.getErrorObject(null, 
                       mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
                       "LoadManagementEvent", "control", liteYukonUser.getUsername());
+            }  catch (Exception e) {
+                errorObject = mspObjectDao.getErrorObject(null, 
+                      mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                      "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                log.error(e.getMessage(), e);
             }
         }
         return errorObject;
