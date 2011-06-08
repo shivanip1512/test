@@ -7820,3 +7820,84 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
     return ret_val;
 }
 
+
+void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+
+    std::string commandName("Voltage Regulator ");
+
+    try
+    {
+        VoltageRegulatorManager::SharedPtr  regulator
+            = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
+
+        switch ( command )
+        {
+            case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+            {
+                commandName += "Integrity Scan";
+                regulator->executeIntegrityScan();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+            {
+                commandName += "Remote Control Enable";
+                regulator->executeEnableRemoteControl();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+            {
+                commandName += "Remote Control Disable";
+                regulator->executeDisableRemoteControl();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+            {
+                commandName += "Raise Tap Position";
+                regulator->executeTapUpOperation();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+            {
+                commandName += "Lower Tap Position";
+                regulator->executeTapDownOperation();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
+            {
+                commandName += "Enable Keep Alive";
+                regulator->executeEnableKeepAlive();
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
+            {
+                commandName += "Disable Keep Alive";
+                regulator->executeDisableKeepAlive();
+                break;
+            }
+            default:
+            {
+                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                 dout << CtiTime() << " - Voltage Regulator Command not implemented: " << command << endl;
+            }
+            break;
+        }
+    }
+    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - " << commandName << " command failed.\n"
+             << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+    }
+    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - " << commandName << " command failed.\n"
+             << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+    }
+}
+
