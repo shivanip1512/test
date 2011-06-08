@@ -30,19 +30,19 @@
 
 	<b>
 	<c:choose>
-		<c:when test="${results.hitCount == 0}">
-        <i:inline key=".noResultsForFilter" arguments="${filterByString}"/>  
+		<c:when test="${meterSearchResults.hitCount == 0}">
+            <i:inline key=".noResultsForFilter" arguments="${filterByString}"/>  
 		</c:when>
 		<c:otherwise>
-				<i:inline key=".filter"/> 
-				<c:choose>
-					<c:when test="${empty filterByString}">
-						<i:inline key=".showAll"/>
-					</c:when>
-					<c:otherwise>
-						${filterByString}
-					</c:otherwise>
-				</c:choose>
+			<i:inline key=".filter"/> 
+			<c:choose>
+				<c:when test="${empty filterByString}">
+					<i:inline key=".showAll"/>
+				</c:when>
+				<c:otherwise>
+					${filterByString}
+				</c:otherwise>
+			</c:choose>
 		</c:otherwise>
 	</c:choose>
 	</b>
@@ -52,9 +52,8 @@
     <cti:msg2 var="editFilters" key="yukon.web.modules.amr.meterSearchResults.editFilters"/>
     <tags:hideReveal title="${editFilters}" showInitially="true" slide="true">
     <form id="filterForm" action="/spring/meter/search">
-        <input type="hidden" name="Filter" value="true" />
-        <input type="hidden" name="startIndex" value="${results.startIndex}" />
-        <input type="hidden" name="count" value="${results.count}" />
+        <input type="hidden" name="startIndex" value="${meterSearchResults.startIndex}" />
+        <input type="hidden" name="itemsPerPage" value="${meterSearchResults.count}" />
         <input type="hidden" name="orderBy" value="${orderBy.field}" />
         <c:if test="${orderBy.descending}">
             <input type="hidden" name="descending" value="true"/>
@@ -62,12 +61,15 @@
         
         <div>
 	        <c:forEach var="filter" items="${filterByList}">
-	            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">${filter.name}:&nbsp;<input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}"></input></div>
+	            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">
+                    ${filter.name}:&nbsp;
+                    <input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" />
+                </div>
 	        </c:forEach>
         </div>
         <div style="clear:both"></div>
         <br>
-        <cti:button key="filter" type="submit"/>
+        <cti:button key="filter" name="true" value="true" type="submit"/>
         <cti:button key="showAll" onclick="javascript:clearFilter()"/>
     </form>
     </tags:hideReveal>
@@ -162,7 +164,7 @@
 
                 <c:if test="${empty meterSearchResults.resultList}">
                     <tr>
-                        <td colspan="5">noResults</td>
+                        <td colspan="5"><i:inline key=".noResults"/></td>
                     </tr>
                 </c:if>
                 

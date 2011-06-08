@@ -80,22 +80,23 @@ public class MeterController extends MultiActionController {
     }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    throws ServletException {
 
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         request.getSession().setAttribute("searchResults",
                                           url + ((urlParams != null) ? "?" + urlParams : ""));
-
+        
+        // Get the search result count
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        
         // Get the search start index
-        int startIndex = ServletRequestUtils.getIntParameter(request, "startIndex", 0);
+        int page = ServletRequestUtils.getIntParameter(request, "page", 1);
+        int startIndex = (page - 1) * itemsPerPage;
         if (request.getParameter("Filter") != null) {
             startIndex = 0;
         }
-
-        // Get the search result count
-        int count = ServletRequestUtils.getIntParameter(request, "count", 25);
         
         boolean isQuickSearch = request.getParameter("Quick Search") != null;
         MeterSearchField defaultField = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
@@ -117,7 +118,7 @@ public class MeterController extends MultiActionController {
 
         // Perform the search
         SearchResult<Meter> meterSearchResults = 
-            meterSearchService.search(queryFilter, orderBy, startIndex, count);
+            meterSearchService.search(queryFilter, orderBy, startIndex, itemsPerPage);
 
         ModelAndView mav;
         // Redirect to device home page if only one result is found
