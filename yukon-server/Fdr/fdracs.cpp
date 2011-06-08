@@ -589,7 +589,6 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                     break;
                 }
 
-            case CalculatedStatusPointType:
             case StatusPointType:
                 {
                     /****************************
