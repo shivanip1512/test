@@ -65,6 +65,8 @@
         <cti:msg var="readConfigDescription" key="yukon.common.device.bulk.collectionActions.readConfigDescription"/>
         <cti:msg var="verifyConfigLabel" key="yukon.common.device.bulk.collectionActions.verifyConfigLabel"/>
         <cti:msg var="verifyConfigDescription" key="yukon.common.device.bulk.collectionActions.verifyConfigDescription"/>
+        <cti:msg var="dataAnalysisLabel" key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel"/>
+        <cti:msg var="dataAnalysisDiscription" key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription"/>
         
         <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
             <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
@@ -166,6 +168,9 @@
                         <%-- DEVICE REPORT --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
                             action="/spring/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
+                        <%-- DATA ANALYSIS --%>
+                        <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
+                            action="/spring/bulk/archiveDataAnalysis/home" deviceCollection="${deviceCollection}"/>
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>

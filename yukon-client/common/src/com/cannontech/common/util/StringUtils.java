@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -224,5 +225,17 @@ public final class StringUtils {
     
     public static String stripNone (String value) {
         return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
+    }
+    
+    public static String intListToCommaDelimitedString(List<Integer> intList) {
+        StringBuffer buffer = new StringBuffer();
+        Iterator<Integer> iterator = intList.iterator();
+        while(iterator.hasNext()) {
+            buffer.append(iterator.next().toString());
+            if(iterator.hasNext()) {
+                buffer.append(",");
+            }
+        }
+        return buffer.toString();
     }
 }

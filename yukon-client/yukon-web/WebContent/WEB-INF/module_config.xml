@@ -426,6 +426,12 @@
                 
             </pages>
         </page>
+        <page name="analysisHome" type="BASIC">
+            <menu>meters</menu>
+        </page>
+        <page name="analysisProgress" type="DETAIL">
+            <menu>meters</menu>
+        </page>
         <page name="analysisResults" type="BASIC">
             <menu>meters</menu>
         </page>

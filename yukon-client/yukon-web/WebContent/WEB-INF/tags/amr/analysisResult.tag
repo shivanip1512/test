@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<%@ attribute name="data" required="true" type="com.cannontech.web.bulk.model.DeviceArchiveData"%>
+<%@ attribute name="data" required="true" type="com.cannontech.common.bulk.model.DeviceArchiveData"%>
 <%@ attribute name="width" required="true" description="The width of the bar in pixels"%>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="resultBar_${data.id.paoId}"/>

@@ -222,6 +222,15 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20, excludeDisabledPaos);
     }
     
+    public int getMaxChangeId() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT MAX(ChangeId)");
+        sql.append("FROM RawPointHistory");
+        int maxChangeId = yukonTemplate.queryForInt(sql);
+        
+        return maxChangeId;
+    }
+    
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> loadValuesForGeneratorFactory(
             SqlFragmentGeneratorFactory sqlGeneratorFactory,
             Iterable<? extends YukonPao> paos, Attribute attribute, int valuePerPaoHint,

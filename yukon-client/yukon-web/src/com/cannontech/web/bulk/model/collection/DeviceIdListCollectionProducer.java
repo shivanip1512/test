@@ -17,6 +17,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -26,7 +27,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
 /**
- * Implementation of DeviceCollectionProducer for an address range
+ * Implementation of DeviceCollectionProducer for an id list
  */
 public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
 
@@ -41,17 +42,23 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
     }
-
-    public DeviceCollection createDeviceCollection(HttpServletRequest request)
-            throws ServletRequestBindingException {
-
-        final String ids = ServletRequestUtils.getStringParameter(request,
-                                                                  getSupportedType().getParameterName("ids"));
+    
+    public DeviceCollection createDeviceCollection(final List<Integer> idList) {
+        final String ids = StringUtils.intListToCommaDelimitedString(idList);
         
+        return createDeviceCollection(idList, ids);
+    }
+    
+    public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {
+        final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
         
+        return createDeviceCollection(idList, ids);
+    }
+    
+    private DeviceCollection createDeviceCollection(final List<Integer> idList, final String ids) {
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
-        Validate.isTrue(!containsSystemDevice, "cannont create DeviceCollection that contains the system device");
+        Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
 
         return new ListBasedDeviceCollection() {
 
@@ -86,7 +93,6 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.idList");
             }
-
         };
     }
 }

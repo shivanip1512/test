@@ -2,6 +2,7 @@ package com.cannontech.web.bulk.model;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
+import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.search.SearchResult;
 
 public class ArchiveAnalysisResult {

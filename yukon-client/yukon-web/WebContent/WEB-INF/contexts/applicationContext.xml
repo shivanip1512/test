@@ -1420,7 +1420,10 @@
         <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
     <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
-
+    
+    <bean id="archiveDataAnalysisService" class="com.cannontech.web.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
+    <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
+    
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>
 
@@ -1438,7 +1441,9 @@
             </list>
         </property>
     </bean>
-
+    
+    <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
+    
     <bean id="deviceCollectionDeviceGroupHelper" class="com.cannontech.web.group.DeviceCollectionDeviceGroupHelper">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />

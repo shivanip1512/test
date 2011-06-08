@@ -68,7 +68,11 @@
     <entry key="yukon.common.point.attribute.TOU_RATE_C_USAGE">Tou Rate C Usage</entry> 
     <entry key="yukon.common.point.attribute.TOU_RATE_D_USAGE">Tou Rate D Usage</entry> 
     <entry key="yukon.common.point.attribute.USAGE">Usage Reading</entry> 
-    <entry key="yukon.common.point.attribute.VOLTAGE">Voltage</entry> 
+    <entry key="yukon.common.point.attribute.VOLTAGE">Voltage</entry>
+    <entry key="yukon.common.point.attribute.VOLTAGE_X">Voltage X</entry>
+    <entry key="yukon.common.point.attribute.VOLTAGE_Y">Voltage Y</entry>
+    <entry key="yukon.common.point.attribute.TERMINATE">Terminate</entry>
+    <entry key="yukon.common.point.attribute.AUTO_BLOCK_ENABLE">Auto Block Enable</entry> 
     <entry key="yukon.common.point.attribute.VOLTAGE_PROFILE">Voltage Profile</entry>
     <entry key="yukon.common.point.attribute.WATER_USAGE">Water Usage Reading</entry>
     <entry key="yukon.common.point.attribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>

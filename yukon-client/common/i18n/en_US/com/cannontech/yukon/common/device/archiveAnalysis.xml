@@ -3,7 +3,40 @@
 <properties>
 
     <!-- TODO Create a real module for this? -->
-    <entry key="yukon.web.modules.amr.analysisResults.pageName">Interval Data Analysis Results</entry>
+    
+    <!-- ANALYSIS HOME -->
+    <entry key="yukon.web.modules.amr.analysisHome.pageName">Archive Data Analysis</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.pageDescription">Analysis</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.header">Analysis</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.noteLabel">Note: </entry>
+    <entry key="yukon.web.modules.amr.analysisHome.noteText">Some attributes may not be supported by all selected devices.</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.startDateLabel">Start Date</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.stopDateLabel">Stop Date</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.intervalLabel">Interval</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.attributeLabel">Attribute</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.empty"></entry>
+    <entry key="yukon.web.modules.amr.analysisHome.excludeBadQualitiesLabel">Exclude Bad Qualities</entry>
+    <entry key="yukon.web.modules.amr.analysisHome.submitButton.label">Analyze</entry>
+    
+    <!-- ANALYSIS PROGRESS -->
+    <entry key="yukon.web.modules.amr.analysisProgress.pageName">Archive Data Analysis Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.pageDescription">Analysis Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.header">Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.noteLabel"></entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.noteText"></entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.interval">Interval</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.pointQuality">Point Quality</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.excludeBadQualities">Exclude Bad Qualities</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.acceptBadQualities">Accept Bad Qualities</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.progressLabel">Progress - Collecting data from archive</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.successLabel">Successfully Analyzed:</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.failLabel">Failed to Analyze:</entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.viewResultsButton.label">View Results</entry>
+    
+    <!-- ANALYSIS RESULTS -->
+    <entry key="yukon.web.modules.amr.analysisResults.pageName">Archive Data Analysis Results</entry>
     <entry key="yukon.web.modules.amr.analysisResults.pageDescription">Results</entry>
     <entry key="yukon.web.modules.amr.analysisResults.analysisInfo.title">Analysis Parameters</entry>
     <entry key="yukon.web.modules.amr.analysisResults.actions.title">Actions</entry>

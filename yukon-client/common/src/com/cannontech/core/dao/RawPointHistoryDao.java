@@ -185,7 +185,12 @@ public interface RawPointHistoryDao {
     * @param changeId
     */
    public void deleteValue(int changeId);
-
+   
+   /**
+    * Get the largest changeId currently in RawPointHistory
+    */
+   public int getMaxChangeId();
+   
    public static class AdjacentPointValues {
        private PointValueHolder preceding;
        private PointValueHolder succeeding;

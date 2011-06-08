@@ -336,7 +336,12 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
 			throw new UnsupportedOperationException("Method not implemented");
 		}
-
+		
+		@Override
+		public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId) {
+		    throw new UnsupportedOperationException("Method not implemented");
+		}
+		
         @Override
         public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass) {
             throw new UnsupportedOperationException("Method not implemented");

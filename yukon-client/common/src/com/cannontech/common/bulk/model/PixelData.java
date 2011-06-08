@@ -1,4 +1,5 @@
-package com.cannontech.web.bulk.model;
+package com.cannontech.common.bulk.model;
+
 
 public class PixelData {
     private boolean hasTransition = false;

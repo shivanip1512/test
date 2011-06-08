@@ -11,6 +11,7 @@ public enum BackgroundProcessTypeEnum {
     REMOVE_POINTS("Remove Points", "removePoints"),
     UPDATE_POINTS("Update Points", "updatePoints"),
     ASSIGN_CONFIG("Assign Config", "assignConfig"),
+    ARCHIVE_DATA_ANALYSIS("Archive Data Analysis", "archiveDataAnalysis"),
     ;
     
     private String title;

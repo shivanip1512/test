@@ -102,6 +102,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel">Data Analysis</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription">View a report detailing archived reads.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigLabel">Assign Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigDescription">Assign a config to a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendConfigLabel">Send Config</entry>

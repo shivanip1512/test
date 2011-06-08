@@ -52,6 +52,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
@@ -519,6 +520,11 @@ public final class PaoDaoImpl implements PaoDao {
     	return template.query(sqlGenerator, paoIds, new YukonPaoRowMapper());
     }
     
+    @Override
+    public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId) {
+        List<PaoIdentifier> listOfOne = getPaoIdentifiersForPaoIds(Lists.newArrayList(paoId));
+        return listOfOne.get(0);
+    }
     
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
         String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";

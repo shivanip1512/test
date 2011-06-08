@@ -269,5 +269,10 @@
       <sequence name="thermostatEventHistory">
         <table name="ThermostatEventHistory" identitycolumn="EventId"/>
       </sequence>
+      <sequence name="archiveDataAnalysis">
+        <table name="ArchiveDataAnalysis" identitycolumn="ArchiveId"/>
+        <table name="ArchiveDataAnalysisSlots" identitycolumn="SlotId"/>
+        <table name="ArchiveDataAnalysisSlotValues" identitycolumn="SlotValueId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -8,14 +8,14 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.model.Analysis;
+import com.cannontech.common.bulk.model.ArchiveData;
+import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.bulk.model.PixelData;
+import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
-import com.cannontech.web.bulk.model.ArchiveData;
-import com.cannontech.web.bulk.model.DeviceArchiveData;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
-import com.cannontech.web.bulk.model.PixelData;
-import com.cannontech.web.bulk.model.ReadType;
 import com.google.common.collect.Lists;
 
 public class AdaResultsHelper {
@@ -70,7 +70,7 @@ public class AdaResultsHelper {
                         pixelIndex++;
                     }
                 } else {
-                    // Inteval ended after pixel end
+                    // Interval ended after pixel end
                     if (pixelIndex + 1 == pixels.size()) {
                         // We are in the last the last pixel, just include it here
                         ReadType currentPixelReadType = currentPixel.getReadType();

@@ -145,7 +145,9 @@ public interface PaoDao {
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
     
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
-
+    
+    public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId);
+    
     /**
      * Returns true if the name is availabe for the pao type's pao class and pao category
      * @param paoName
