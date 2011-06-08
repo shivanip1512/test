@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 
@@ -38,18 +39,17 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
 
     private static final long serialVersionUID = -3413404735483505763L;
     
-    private JLabel heatingOffsetLabel = null;
-    private JLabel coolingOffsetLabel = null;
-    private JLabel heatingUnitsLabel = null;
-    private JLabel coolingUnitsLabel = null;
+    private JLabel offsetAmountLabel = null;
+    private JLabel offsetUnitsLabel = null;
     private JLabel criticalityLabel = null;
     private JLabel howToStopLabel = null;
     private JLabel controlPercentLabel = null;
     private JButton temperatureUnitsButton = null;
     private JCheckBox checkBoxRampIn = null;
     private JCheckBox checkBoxRampOut = null;
-    private JCSpinField heatingOffsetSpinField = null;
-    private JCSpinField coolingOffsetSpinField = null;
+    private JCheckBox checkBoxHeatingMode = null;
+    private JCheckBox checkBoxCoolingMode = null;
+    private JCSpinField offsetAmountSpinField = null;
     private JCSpinField criticalitySpinField = null;
     private JComboBox ivjJComboBoxHowToStop = null;
     private JCSpinField percentReductionSpinField = null;
@@ -89,65 +89,35 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     }
 
     //Panel Labels
-    private JLabel getJLabelHeatingOffset() {
-        if (heatingOffsetLabel == null) {
-            heatingOffsetLabel = new JLabel();
-            heatingOffsetLabel.setName("JLabelHeatingOffset");
-            heatingOffsetLabel.setAlignmentY(TOP_ALIGNMENT);
-            heatingOffsetLabel.setText("Heating Offset:");
-            heatingOffsetLabel.setFont(new Font("dialog", 0, 12));
-            heatingOffsetLabel.setMaximumSize(new Dimension(143, 14));
-            heatingOffsetLabel.setPreferredSize(new Dimension(143, 14));
-            heatingOffsetLabel.setMinimumSize(new Dimension(143, 14));
-            heatingOffsetLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-            heatingOffsetLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    private JLabel getJLabelOffsetAmount() {
+        if (offsetAmountLabel == null) {
+            offsetAmountLabel = new JLabel();
+            offsetAmountLabel.setName("JLabelOffsetAmount");
+            offsetAmountLabel.setAlignmentY(TOP_ALIGNMENT);
+            offsetAmountLabel.setText("Heating Offset:");
+            offsetAmountLabel.setFont(new Font("dialog", 0, 12));
+            offsetAmountLabel.setMaximumSize(new Dimension(143, 14));
+            offsetAmountLabel.setPreferredSize(new Dimension(143, 14));
+            offsetAmountLabel.setMinimumSize(new Dimension(143, 14));
+            offsetAmountLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+            offsetAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         }
-        return heatingOffsetLabel;
-    }
-    private JLabel getJLabelHeatingUnits() {
-        if (heatingUnitsLabel == null) {
-            heatingUnitsLabel = new JLabel();
-            heatingUnitsLabel.setName("JLabelHeatingUnits");
-            heatingUnitsLabel.setAlignmentY(TOP_ALIGNMENT);
-            heatingUnitsLabel.setFont(new Font("dialog", 0, 12));
-            heatingUnitsLabel.setMaximumSize(new Dimension(25, 14));
-            heatingUnitsLabel.setPreferredSize(new Dimension(25, 14));
-            heatingUnitsLabel.setMinimumSize(new Dimension(25, 14));
-            heatingUnitsLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-            heatingUnitsLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        }
-        return heatingUnitsLabel;
+        return offsetAmountLabel;
     }
     
-    private JLabel getJLabelCoolingOffset() {
-        if (coolingOffsetLabel == null) {
-            coolingOffsetLabel = new JLabel();
-            coolingOffsetLabel.setName("JLabelCoolingOffset");
-            coolingOffsetLabel.setAlignmentY(TOP_ALIGNMENT);
-            coolingOffsetLabel.setText("Cooling Offset:");
-            coolingOffsetLabel.setFont(new Font("dialog", 0, 12));
-            coolingOffsetLabel.setMaximumSize(new Dimension(143, 14));
-            coolingOffsetLabel.setPreferredSize(new Dimension(143, 14));
-            coolingOffsetLabel.setMinimumSize(new Dimension(143, 14));
-            coolingOffsetLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-            coolingOffsetLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    private JLabel getJLabelOffsetUnits() {
+        if (offsetUnitsLabel == null) {
+            offsetUnitsLabel = new JLabel();
+            offsetUnitsLabel.setName("JLabelOffsetUnits");
+            offsetUnitsLabel.setAlignmentY(TOP_ALIGNMENT);
+            offsetUnitsLabel.setFont(new Font("dialog", 0, 12));
+            offsetUnitsLabel.setMaximumSize(new Dimension(25, 14));
+            offsetUnitsLabel.setPreferredSize(new Dimension(25, 14));
+            offsetUnitsLabel.setMinimumSize(new Dimension(25, 14));
+            offsetUnitsLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+            offsetUnitsLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         }
-        return coolingOffsetLabel;
-    }    
-    
-    private JLabel getJLabelCoolingUnits() {
-        if (coolingUnitsLabel == null) {
-            coolingUnitsLabel = new JLabel();
-            coolingUnitsLabel.setName("JLabelCoolingUnits");
-            coolingUnitsLabel.setAlignmentY(TOP_ALIGNMENT);
-            coolingUnitsLabel.setFont(new Font("dialog", 0, 12));
-            coolingUnitsLabel.setMaximumSize(new Dimension(25, 14));
-            coolingUnitsLabel.setPreferredSize(new Dimension(25, 14));
-            coolingUnitsLabel.setMinimumSize(new Dimension(25, 14));
-            coolingUnitsLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-            coolingUnitsLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        }   
-        return coolingUnitsLabel;
+        return offsetUnitsLabel;
     }
     
     private JLabel getJLabelCriticality() {
@@ -347,22 +317,42 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         return checkBoxRampOut;
     }
     
-    private JCSpinField getJCSpinFieldHeatingOffset() 
+    private JCheckBox getCheckBoxHeatingMode() {
+        if (checkBoxHeatingMode == null) {
+            checkBoxHeatingMode = new JCheckBox();
+            checkBoxHeatingMode.setText("Heating Mode");
+            checkBoxHeatingMode.setPreferredSize(new Dimension(100, 23));
+            checkBoxHeatingMode.setSelected(true);
+        }
+        return checkBoxHeatingMode;
+    }
+    
+    private JCheckBox getCheckBoxCoolingMode() {
+        if (checkBoxCoolingMode == null) {
+            checkBoxCoolingMode = new JCheckBox();
+            checkBoxCoolingMode.setText("Cooling Mode");
+            checkBoxCoolingMode.setPreferredSize(new Dimension(165, 23));
+            checkBoxCoolingMode.setSelected(false);
+        }
+        return checkBoxCoolingMode;
+    }
+    
+    private JCSpinField getJCSpinFieldOffsetAmount() 
     {
-        if (heatingOffsetSpinField == null) {
+        if (offsetAmountSpinField == null) {
             try {
-                heatingOffsetSpinField = new JCSpinField();
-                heatingOffsetSpinField.setName("JCSpinFieldHeatingOffset");
-                heatingOffsetSpinField.setPreferredSize(new Dimension(48, 20));
-                heatingOffsetSpinField.setAlignmentX(LEFT_ALIGNMENT);
-                heatingOffsetSpinField.setAlignmentY(TOP_ALIGNMENT);
-                heatingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
-                heatingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
+                offsetAmountSpinField = new JCSpinField();
+                offsetAmountSpinField.setName("JCSpinFieldOffsetAmount");
+                offsetAmountSpinField.setPreferredSize(new Dimension(48, 20));
+                offsetAmountSpinField.setAlignmentX(LEFT_ALIGNMENT);
+                offsetAmountSpinField.setAlignmentY(TOP_ALIGNMENT);
+                offsetAmountSpinField.setMaximumSize(new Dimension(50, 20));
+                offsetAmountSpinField.setMinimumSize(new Dimension(48, 20));
                 JCDoubleValidator validator =
                     new JCDoubleValidator(null, 0.0, SepTemperatureOffsetGear.MAX_FAHRENHEIT, 0.1, "##.#", false, false, false, null, 0.0);
                 validator.setEditPattern("#0.0");
 
-                heatingOffsetSpinField.setDataProperties(new DataProperties(validator, 
+                offsetAmountSpinField.setDataProperties(new DataProperties(validator, 
                                                                             new MutableValueModel(java.lang.Double.class, new Double(0.0)),
                                                                             new JCInvalidInfo(true, 2, 
                                                                                               new Color(0, 0, 0, 255),
@@ -374,34 +364,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                     handleException(ivjExc);
             }
         }
-        return heatingOffsetSpinField;
-    }
-    
-    private JCSpinField getJCSpinFieldCoolingOffset() 
-    {
-        if (coolingOffsetSpinField == null) {
-            try {
-                coolingOffsetSpinField = new JCSpinField();
-                coolingOffsetSpinField.setName("JCSpinFieldCoolingOffset");
-                coolingOffsetSpinField.setPreferredSize(new Dimension(48, 20));
-                coolingOffsetSpinField.setAlignmentX(LEFT_ALIGNMENT);
-                coolingOffsetSpinField.setAlignmentY(TOP_ALIGNMENT);
-                coolingOffsetSpinField.setMaximumSize(new Dimension(50, 20));
-                coolingOffsetSpinField.setMinimumSize(new Dimension(48, 20));
-                JCDoubleValidator validator =
-                    new JCDoubleValidator(null, 0.0, SepTemperatureOffsetGear.MAX_FAHRENHEIT, 0.1, "##.#", false, false, false, null, 0.0);
-                validator.setEditPattern("#0.0");
-
-                coolingOffsetSpinField.setDataProperties(new DataProperties(validator, 
-                                                                            new MutableValueModel(Double.class, 0.0),
-                                                                            new JCInvalidInfo(true, 2, 
-                                                                                              new Color(0, 0, 0, 255),
-                                                                                              new Color(255, 255, 255, 255))));
-            } catch (Throwable ivjExc) {
-                    handleException(ivjExc);
-            }
-        }
-        return coolingOffsetSpinField;
+        return offsetAmountSpinField;
     }
     
     private JCSpinField getJCSpinFieldCriticality() {
@@ -708,8 +671,13 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
        
-        gear.setHeatingOffset(toDouble(getJCSpinFieldHeatingOffset().getValue()));
-        gear.setCoolingOffset(toDouble(getJCSpinFieldCoolingOffset().getValue()));
+        if (getCheckBoxHeatingMode().isSelected()) {
+            gear.setHeatingOffset(toDouble(getJCSpinFieldOffsetAmount().getValue()));
+            gear.setCoolingOffset(0.0);
+        } else if (getCheckBoxCoolingMode().isSelected()) {
+            gear.setHeatingOffset(0.0);
+            gear.setCoolingOffset(toDouble(getJCSpinFieldOffsetAmount().getValue()));
+        }
         
         gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
         if (getJComboBoxHowToStop().getSelectedItem() != null) {
@@ -748,7 +716,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getJCSpinFieldChangeDuration().addValueListener(this);
         getJCSpinFieldChangePriority().addValueListener(this);
         getJCSpinFieldChangeTriggerNumber().addValueListener(this);
-        getJCSpinFieldHeatingOffset().addValueListener(this);
+        getJCSpinFieldOffsetAmount().addValueListener(this);
         getJCSpinFieldPercentReduction().addValueListener(this);
         getJComboBoxWhenChange().addActionListener(this);
         getJComboBoxHowToStop().addActionListener(this);
@@ -757,7 +725,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getCheckBoxRampOut().addActionListener(this);
         getJButtonTemperatureUnits().addActionListener(this);
         
-        heatingOffsetSpinField.addValueListener(new JCValueListener() {
+        offsetAmountSpinField.addValueListener(new JCValueListener() {
             @Override
             public void valueChanging(JCValueEvent arg0) {
                 if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT))
@@ -766,24 +734,18 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
                     arg0.setNewValue(SepTemperatureOffsetGear.MAX_CELSIUS);
             }
             @Override
-            public void valueChanged(JCValueEvent arg0) {
-                if (toDouble(arg0.getNewValue()) != 0.0) 
-                    getJCSpinFieldCoolingOffset().setValue(0.0);
+            public void valueChanged(JCValueEvent arg0) { }
+        });
+        
+        checkBoxHeatingMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                setHeatingMode();
             }
         });
         
-        coolingOffsetSpinField.addValueListener(new JCValueListener() {
-            @Override
-            public void valueChanging(JCValueEvent arg0) {
-                if(getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT))
-                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
-                else if(!getIsFahrenheit() && (toDouble(arg0.getNewValue()) > SepTemperatureOffsetGear.MAX_CELSIUS))
-                    arg0.setNewValue(SepTemperatureOffsetGear.MAX_CELSIUS);
-            }
-            @Override
-            public void valueChanged(JCValueEvent arg0) {
-                if (toDouble(arg0.getNewValue()) != 0.0)
-                    getJCSpinFieldHeatingOffset().setValue(0.0);
+        checkBoxCoolingMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                setCoolingMode();
             }
         });
     }
@@ -794,13 +756,12 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     
             GridBagConstraints constraintJCheckBoxRampIn = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampOut = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxHeatingMode = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxCoolingMode = new GridBagConstraints();
             GridBagConstraints constraintJButtonTemperatureUnits = new GridBagConstraints();
-            GridBagConstraints constraintJLabelHeatingOffset = new GridBagConstraints();
-            GridBagConstraints constraintJCSpinFieldHeatingOffset = new GridBagConstraints();
-            GridBagConstraints constraintJLabelHeatingUnits = new GridBagConstraints();
-            GridBagConstraints constraintJLabelCoolingOffset = new GridBagConstraints();
-            GridBagConstraints constraintJCSpinFieldCoolingOffset= new GridBagConstraints();
-            GridBagConstraints constraintJLabelCoolingUnits = new GridBagConstraints();
+            GridBagConstraints constraintJLabelOffsetAmount = new GridBagConstraints();
+            GridBagConstraints constraintJCSpinFieldOffsetAmount = new GridBagConstraints();
+            GridBagConstraints constraintJLabelOffsetUnits = new GridBagConstraints();
             GridBagConstraints constraintJLabelCriticality = new GridBagConstraints();
             GridBagConstraints constraintJCSpinFieldCriticality = new GridBagConstraints();
             GridBagConstraints constraintJLabelHowToStop = new GridBagConstraints();
@@ -821,41 +782,38 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             constraintJCheckBoxRampOut.gridy = 2;
             constraintJCheckBoxRampOut.gridx = 1;
             
+            constraintJCheckBoxHeatingMode.insets = new Insets(0, 30, 15, 0);
+            constraintJCheckBoxHeatingMode.gridwidth = 1;
+            constraintJCheckBoxHeatingMode.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxHeatingMode.gridy = 3;
+            constraintJCheckBoxHeatingMode.gridx = 1;
+    
+            constraintJCheckBoxCoolingMode.insets = new Insets(0, 130, 15, 0);
+            constraintJCheckBoxCoolingMode.gridwidth = 3;
+            constraintJCheckBoxCoolingMode.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxCoolingMode.gridy = 3;
+            constraintJCheckBoxCoolingMode.gridx = 1;
+            
             constraintJButtonTemperatureUnits.insets = new Insets(10, 0, 0, 10);
             constraintJButtonTemperatureUnits.anchor = GridBagConstraints.NORTHEAST;
             constraintJButtonTemperatureUnits.gridy = 1;
             constraintJButtonTemperatureUnits.gridheight = 2;
             constraintJButtonTemperatureUnits.gridx = 3;
             
-            constraintJLabelHeatingOffset.insets = new Insets(0, 0, 3, 0);
-            constraintJLabelHeatingOffset.anchor = GridBagConstraints.WEST;
-            constraintJLabelHeatingOffset.gridy = 4;
-            constraintJLabelHeatingOffset.gridx = 1;
+            constraintJLabelOffsetAmount.insets = new Insets(0, 0, 3, 0);
+            constraintJLabelOffsetAmount.anchor = GridBagConstraints.WEST;
+            constraintJLabelOffsetAmount.gridy = 4;
+            constraintJLabelOffsetAmount.gridx = 1;
             
-            constraintJCSpinFieldHeatingOffset.insets = new Insets(0, 5, 3, 0);
-            constraintJCSpinFieldHeatingOffset.anchor = GridBagConstraints.WEST;
-            constraintJCSpinFieldHeatingOffset.gridy = 4;
-            constraintJCSpinFieldHeatingOffset.gridx = 2;
+            constraintJCSpinFieldOffsetAmount.insets = new Insets(0, 5, 3, 0);
+            constraintJCSpinFieldOffsetAmount.anchor = GridBagConstraints.WEST;
+            constraintJCSpinFieldOffsetAmount.gridy = 4;
+            constraintJCSpinFieldOffsetAmount.gridx = 2;
             
-            constraintJLabelHeatingUnits.insets = new Insets(0,4,3,0);
-            constraintJLabelHeatingUnits.anchor = GridBagConstraints.WEST;
-            constraintJLabelHeatingUnits.gridy = 4;
-            constraintJLabelHeatingUnits.gridx = 3;
-            
-            constraintJLabelCoolingOffset.insets = new Insets(0, 0, 15, 0);
-            constraintJLabelCoolingOffset.anchor = GridBagConstraints.WEST;
-            constraintJLabelCoolingOffset.gridy = 5;
-            constraintJLabelCoolingOffset.gridx = 1;
-            
-            constraintJCSpinFieldCoolingOffset.insets = new Insets(0, 5, 15, 0);
-            constraintJCSpinFieldCoolingOffset.anchor = GridBagConstraints.WEST;
-            constraintJCSpinFieldCoolingOffset.gridy = 5;
-            constraintJCSpinFieldCoolingOffset.gridx = 2;
-            
-            constraintJLabelCoolingUnits.insets = new Insets(0, 4, 15, 0);
-            constraintJLabelCoolingUnits.anchor = GridBagConstraints.WEST;
-            constraintJLabelCoolingUnits.gridy = 5;
-            constraintJLabelCoolingUnits.gridx = 3;
+            constraintJLabelOffsetUnits.insets = new Insets(0,4,3,0);
+            constraintJLabelOffsetUnits.anchor = GridBagConstraints.WEST;
+            constraintJLabelOffsetUnits.gridy = 4;
+            constraintJLabelOffsetUnits.gridx = 3;
             
             constraintJLabelCriticality.insets = new Insets(0, 0, 3, 0);
             constraintJLabelCriticality.anchor = GridBagConstraints.WEST;
@@ -897,14 +855,12 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             setLayout(new GridBagLayout());
             this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
             this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
+            this.add(getCheckBoxHeatingMode(), constraintJCheckBoxHeatingMode);
+            this.add(getCheckBoxCoolingMode(), constraintJCheckBoxCoolingMode);
             this.add(getJButtonTemperatureUnits(), constraintJButtonTemperatureUnits);
-            this.add(getJButtonTemperatureUnits(), constraintJButtonTemperatureUnits);
-            this.add(getJLabelHeatingOffset(), constraintJLabelHeatingOffset);
-            this.add(getJCSpinFieldHeatingOffset(), constraintJCSpinFieldHeatingOffset);
-            this.add(getJLabelHeatingUnits(), constraintJLabelHeatingUnits);
-            this.add(getJLabelCoolingOffset(), constraintJLabelCoolingOffset);
-            this.add(getJCSpinFieldCoolingOffset(), constraintJCSpinFieldCoolingOffset);
-            this.add(getJLabelCoolingUnits(), constraintJLabelCoolingUnits);
+            this.add(getJLabelOffsetAmount(), constraintJLabelOffsetAmount);
+            this.add(getJCSpinFieldOffsetAmount(), constraintJCSpinFieldOffsetAmount);
+            this.add(getJLabelOffsetUnits(), constraintJLabelOffsetUnits);
             this.add(getJLabelCriticality(), constraintJLabelCriticality);
             this.add(getJCSpinFieldCriticality(), constraintJCSpinFieldCriticality);
             this.add(getJLabelHowToStop(), constraintJLabelHowToStop);
@@ -980,33 +936,23 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     public void setTemperatureUnits(char temperatureUnit) {
         if (temperatureUnit == 'C') {
             setIsFahrenheit(false);
-            getJLabelHeatingUnits().setText("°C");
-            getJLabelCoolingUnits().setText("°C");
-            ((JCDoubleValidator) getJCSpinFieldHeatingOffset().getValidator()).setMax(SepTemperatureOffsetGear.MAX_CELSIUS);
-            ((JCDoubleValidator) getJCSpinFieldCoolingOffset().getValidator()).setMax(SepTemperatureOffsetGear.MAX_CELSIUS);
+            getJLabelOffsetUnits().setText("°C");
+            ((JCDoubleValidator) getJCSpinFieldOffsetAmount().getValidator()).setMax(SepTemperatureOffsetGear.MAX_CELSIUS);
             
-            if (toDouble(getJCSpinFieldHeatingOffset().getValue()) > SepTemperatureOffsetGear.MAX_CELSIUS)
-                getJCSpinFieldHeatingOffset().setValue(SepTemperatureOffsetGear.MAX_CELSIUS);
-            if (toDouble(getJCSpinFieldCoolingOffset().getValue()) > SepTemperatureOffsetGear.MAX_CELSIUS)
-                getJCSpinFieldCoolingOffset().setValue(SepTemperatureOffsetGear.MAX_CELSIUS);
+            if (toDouble(getJCSpinFieldOffsetAmount().getValue()) > SepTemperatureOffsetGear.MAX_CELSIUS)
+                getJCSpinFieldOffsetAmount().setValue(SepTemperatureOffsetGear.MAX_CELSIUS);
             
-            getJCSpinFieldHeatingOffset().revalidate();
-            getJCSpinFieldCoolingOffset().revalidate();
+            getJCSpinFieldOffsetAmount().revalidate();
         } else {
             setIsFahrenheit(true);
-            getJLabelHeatingUnits().setText("°F");
-            getJLabelCoolingUnits().setText("°F");
+            getJLabelOffsetUnits().setText("°F");
             
-            ((JCDoubleValidator) getJCSpinFieldHeatingOffset().getValidator()).setMax(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
-            ((JCDoubleValidator) getJCSpinFieldCoolingOffset().getValidator()).setMax(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
+            ((JCDoubleValidator) getJCSpinFieldOffsetAmount().getValidator()).setMax(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
             
-            if (toDouble(getJCSpinFieldHeatingOffset().getValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT)
-                getJCSpinFieldHeatingOffset().setValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
-            if (toDouble(getJCSpinFieldCoolingOffset().getValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT)
-                getJCSpinFieldCoolingOffset().setValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
+            if (toDouble(getJCSpinFieldOffsetAmount().getValue()) > SepTemperatureOffsetGear.MAX_FAHRENHEIT)
+                getJCSpinFieldOffsetAmount().setValue(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
             
-            getJCSpinFieldHeatingOffset().revalidate();
-            getJCSpinFieldCoolingOffset().revalidate();
+            getJCSpinFieldOffsetAmount().revalidate();
         }
     }
     
@@ -1036,8 +982,18 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
         
-        getJCSpinFieldHeatingOffset().setValue((Double) gear.getHeatingOffset());
-        getJCSpinFieldCoolingOffset().setValue((Double) gear.getCoolingOffset());
+        Double heatingOffset = gear.getHeatingOffset();
+        Double coolingOffset = gear.getCoolingOffset();
+
+        if (heatingOffset != 0.0 && coolingOffset == 0.0) {
+            getJCSpinFieldOffsetAmount().setValue(heatingOffset);
+            setHeatingMode();
+        } else if (heatingOffset == 0.0 && coolingOffset != 0.0) {
+            getJCSpinFieldOffsetAmount().setValue(coolingOffset);
+            setCoolingMode();
+        } else {
+            throw new RuntimeException(this.getClass().toString() + ": Illegal database values: Heating and cooling offsets cannot both be nonzero");
+        }
         
         if  (gear.getSettings().charAt(1) == 'C' )
             setTemperatureUnits( 'C' );
@@ -1055,9 +1011,17 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
     }
-
-    public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        this.fireInputUpdate();
+    
+    public void setCoolingMode() {
+        getCheckBoxHeatingMode().setSelected(false);
+        getCheckBoxCoolingMode().setSelected(true);
+        getJLabelOffsetAmount().setText("Cooling Offset:");
+    }
+    
+    public void setHeatingMode() {
+        getCheckBoxHeatingMode().setSelected(true);
+        getCheckBoxCoolingMode().setSelected(false);
+        getJLabelOffsetAmount().setText("Heating Offset:");
     }
 
     public void setIsFahrenheit(Boolean isFahrenheit) {
@@ -1068,4 +1032,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         return isFahrenheit;
     }
     
+    public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
+        this.fireInputUpdate();
+    }
 }

@@ -45,8 +45,7 @@ public class SepTemperatureOffsetGear extends com.cannontech.database.db.device.
         setMethodPeriod(criticality);
     }
     
-    //Store heating & cooling offset values as integers that represent tenths of a degree.
-    //Motivated by need to store a single decimal point floating value in an int database field.
+    //Offset values saved as ints representing tenths of a degree.
     public void setHeatingOffset(double offset) {
         setValueTa((int)(offset * 10));
     }
