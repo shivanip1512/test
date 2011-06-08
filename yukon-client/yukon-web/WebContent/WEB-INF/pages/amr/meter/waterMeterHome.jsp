@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 
-<cti:standardPage module="amr" page="meterDetail">
+<cti:standardPage module="amr" page="meterDetail.water">
 
 	<div style="float: right;">
 		<amr:searchResultsLink></amr:searchResultsLink>

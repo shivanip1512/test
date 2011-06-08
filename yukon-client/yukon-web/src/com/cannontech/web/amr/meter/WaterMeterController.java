@@ -126,8 +126,4 @@ public class WaterMeterController {
         this.paoDefinitionDao = paoDefinitionDao;
     }
     
-//    @Autowired
-//    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
-//        this.mspMeterSearchService = mspMeterSearchService;
-//    }
 }

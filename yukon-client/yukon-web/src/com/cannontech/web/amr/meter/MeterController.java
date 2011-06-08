@@ -182,20 +182,8 @@ public class MeterController extends MultiActionController {
         boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
         mav.addObject("outageSupported", outageSupported);
 
-        // account information widget
-        // if it is NONE, do a check for vendorId and proceed as if they actually had MULTISPEAK value set
-        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, user);
-        if (cisDetailWidgetEnabled) {
-        	CisDetailRolePropertyEnum cisDetailRoleProperty = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, user);
-	        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
-	        if (cisInfoWidgetName == null) {
-	        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();
-	        	if (vendorId > 0) {
-	        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
-	        	}
-	        }
-	        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
-        }
+        String cisInfoWidgetName = getCisInfoWidgetName(user);
+        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
@@ -236,6 +224,27 @@ public class MeterController extends MultiActionController {
         }
 
         return mav;
+    }
+
+    /**
+     * This method returns the cisInfoWidgetName for the user.  If it is NONE, it will use the venderId
+     * and proceed as if they actually had the MULTISPEAK value set.
+     */
+    private String getCisInfoWidgetName(LiteYukonUser liteYukonUser) {
+        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, liteYukonUser);
+        if (cisDetailWidgetEnabled) {
+        	CisDetailRolePropertyEnum cisDetailRoleProperty = 
+        	    rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, liteYukonUser);
+	        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
+	        if (cisInfoWidgetName == null) {
+	        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, liteYukonUser)).intValue();
+	        	if (vendorId > 0) {
+	        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
+	        	}
+	        }
+	        return cisInfoWidgetName;
+        }
+        return null;
     }
 
     public ModelAndView touPreviousReadings(HttpServletRequest request,

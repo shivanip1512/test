@@ -44,9 +44,9 @@ public final class UnitMeasureDaoImpl implements UnitMeasureDao {
             
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT UM.UoMId, UM.UoMName, UM.CalcType, UM.LongName");
-            sql.append("FROM UM");
+            sql.append("FROM UnitMeasure UM");
             sql.append("  JOIN PointUnit PU ON UM.UoMId = PU.UoMId");
-            sql.append("where pu.pointid").eq(pointId);
+            sql.append("WHERE PU.PointId").eq(pointId);
             
             LiteUnitMeasure lum = yukonJdbcOperations.queryForObject(sql, liteUnitMeasureRowMapper);
             return lum;

@@ -205,7 +205,7 @@
             	<value>0-2147483647</value>	<!-- unsigned int (positive values only) -->
             </tag>
             <tag name="DEVICE_ICON_TYPE">
-                <value>electric</value>
+                <value>electric_meter</value>
             </tag>
             <tag name="METER_DETAIL_DISPLAYABLE" />
             <tag name="STARS_ACCOUNT_ATTACHABLE_METER" />
@@ -4529,7 +4529,7 @@
         </attributes>
         <tags>
             <tag name="DEVICE_ICON_TYPE">
-                <value>electric</value>
+                <value>electric_meter</value>
             </tag>
             <tag name="METER_DETAIL_DISPLAYABLE"/>
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
@@ -4767,7 +4767,7 @@
         </attributes>
         <tags>
             <tag name="DEVICE_ICON_TYPE">
-                <value>water</value>
+                <value>water_meter</value>
             </tag>
             <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
         </tags>

@@ -367,7 +367,7 @@
                 <page name="meterSearchResults" type="BASIC">
                     <menu>meters</menu>
                     <pages>
-                        <page name="meterDetail" type="DETAIL">
+                        <page name="meterDetail.electric" type="DETAIL">
                             <menu>meters</menu>
                             <labelArgument>${deviceName}</labelArgument>
                             <link>/spring/meter/home?deviceId=${deviceId}</link>
@@ -394,6 +394,11 @@
                                     <menu>meters</menu>
                                 </page>
                             </pages>
+                        </page>
+                        <page name="meterDetail.water" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${deviceName}</labelArgument>
+                            <link>/spring/meter/water/home?deviceId=${deviceId}</link>
                         </page>
                     </pages>
                 </page>

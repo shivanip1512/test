@@ -25,24 +25,20 @@
                     <ct:attributeValue device="${device}" attribute="${attribute}" />
 				</ct:nameValue>
 
-                <c:if test="${not empty previousReadingsAttribute}">
-                    <c:if test="${attribute == previousReadingsAttribute}">
-                        <cti:msg2 var="previousUsage" key=".previousUsage" />
-                        <ct:nameValue name="${previousUsage}">
-                            <select
-                                onChange="${widgetParameters.widgetId}_usageSelection()"
+                <c:if test="${attribute == previousReadingsAttribute}">
+                    <cti:msg2 var="previousUsage" key=".previousUsage" />
+                    <ct:nameValue name="${previousUsage}">
+                        <select onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
-                                <jsp:include page="${previousReadingOptionsUrl}" />
-                            </select>
-                        </ct:nameValue>
+                           <jsp:include page="${previousReadingOptionsUrl}" />
+                        </select>
+                    </ct:nameValue>
     
-                        <cti:msg2 var="totalConsumption" key=".totalConsumption" />
-                        <ct:nameValue name="${totalConsumption}">
-                            <div id="${widgetParameters.widgetId}_totalConsumption"></div>
-                        </ct:nameValue>
-                    </c:if>
+                    <cti:msg2 var="totalConsumption" key=".totalConsumption" />
+                    <ct:nameValue name="${totalConsumption}">
+                        <div id="${widgetParameters.widgetId}_totalConsumption"></div>
+                    </ct:nameValue>
                 </c:if>
-
                 
             </c:otherwise>
         </c:choose>
