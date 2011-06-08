@@ -7,15 +7,32 @@
 
 #include "logger.h"
 
+#include "boost/cstdint.hpp"
+
 using namespace std;
+using boost::uint8_t;
+using boost::uint16_t;
+using boost::uint32_t;
 
 namespace Cti       {
 namespace Protocols {
 
-unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, const string device_name, pointlist_t &point_list )
+GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data, const unsigned last_seq, const string device_name )
 {
-    unsigned len, cid, seq, devt, devr, ser, crc;
-    bool crc_included, ack_required;
+    decoded_packet result;
+
+    pointlist_t &point_list   = result.points;
+
+    unsigned  len;
+    uint16_t &cid      = result.cid;
+    uint16_t &seq      = result.seq;
+    uint16_t &devt     = result.devt;
+    uint8_t  &devr     = result.devr;
+    uint32_t &ser      = result.ser;
+    uint16_t  crc;
+
+    bool  crc_included;
+    bool &ack_required = result.ack_required;
 
     crc_included = p_data[2] & 0x80;
     ack_required = p_data[2] & 0x40;
@@ -1194,7 +1211,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
         }
     }
 
-    return seq;
+    return result;
 }
 
 
@@ -2697,6 +2714,51 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
             }
         }
     }
+}
+
+
+template<typename T>
+void GpuffProtocol::serialize(vector<unsigned char> &dst, const T src )
+{
+    size_t pos = sizeof(T);
+
+    const unsigned char *src_ptr = reinterpret_cast<const unsigned char *>(&src);
+
+    while( pos )
+    {
+        // MSB conversion
+        dst.push_back(src_ptr[--pos]);
+    }
+}
+
+
+vector<unsigned char> GpuffProtocol::generateAck(decoded_packet p)
+{
+    vector<unsigned char> result;
+
+    const uint16_t strt = 0xa596;
+
+    const uint16_t flg_len = 0x840d;  //  CRC included, ACK bit set, 13 byte message (17 minus STRT and FLG/LEN)
+
+    serialize(result, strt);
+
+    serialize(result, flg_len);
+
+    serialize(result, p.cid);
+
+    serialize(result, p.seq);
+
+    serialize(result, p.devt);
+
+    serialize(result, p.devr);
+
+    serialize(result, p.ser);
+
+    const uint16_t crc = CCITT16CRC(0, &result.front(), result.size(), false);
+
+    serialize(result, crc);
+
+    return result;
 }
 
 

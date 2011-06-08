@@ -26,6 +26,9 @@ private:
         HeaderLength = 13
     };
 
+    template<typename T>
+    static void serialize(vector<unsigned char> &dst, const T src );
+
 protected:
 
     static void add_to_csv_summary( std::string &keys, std::string &values, std::string key, bool     value );
@@ -83,10 +86,23 @@ public:
         GVARx_Analog_BER               =  101,
     };
 
+    struct decoded_packet
+    {
+        pointlist_t points;
+        bool ack_required;
+        boost::uint16_t seq;
+        boost::uint16_t devt;
+        boost::uint8_t  devr;
+        boost::uint32_t ser;
+        boost::uint16_t cid;
+    };
+
     static void describeFrame(unsigned char *p_data, int p_len, int len, bool crc_included, bool ack_required, int devt, int ser);
 
     //int generate( CtiXfer &xfer );
-    static unsigned decode( const unsigned char *p_data, unsigned last_seq, const std::string device_name, pointlist_t &point_list );
+    static decoded_packet decode( const unsigned char *p_data, unsigned last_seq, const std::string device_name );
+
+    static vector<unsigned char> generateAck(decoded_packet p);
 
     static bool isPacketValid( const unsigned char *buf, const size_t len );
 

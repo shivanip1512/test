@@ -6,6 +6,7 @@
 #include "unsolicited_handler.h"
 
 #include "prot_gpuff.h"
+#include "pt_numeric.h"
 
 #include "portglob.h"
 #include "dev_dnp.h"
@@ -1045,21 +1046,34 @@ void UnsolicitedHandler::processGpuffInbound(device_record &dr)
     vector<CtiPointDataMsg *> points;
 
     unsigned last_seq = dr.device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Sequence);
-    unsigned seq      = GpuffProtocol::decode(p->data, last_seq, dr.device->getName(), points);
 
-    if( seq != last_seq )
+    GpuffProtocol::decoded_packet packet = GpuffProtocol::decode(p->data, last_seq, dr.device->getName());
+
+    if( packet.seq != last_seq )
     {
         //  consumes the contents of points
-        sendDevicePointsFromProtocol(points, dr.device, VanGoghConnection);
+        sendDevicePointsFromProtocol(packet.points, dr.device, VanGoghConnection);
 
-        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Sequence, seq);  // Save the current sequence.
+        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Sequence, packet.seq);  // Save the current sequence.
+
+        if( packet.ack_required )
+        {
+            vector<unsigned char> response = GpuffProtocol::generateAck(packet);
+
+            dr.xfer.setOutBuffer(&response.front());
+            dr.xfer.setOutCount(response.size());
+
+            int status = sendOutbound(dr);
+
+            traceOutbound(dr, status);
+        }
     }
     else
     {
-        delete_container(points);
+        delete_container(packet.points);
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " GPUFF device " << dr.device->getName() << " sequence number " << seq << " already processed." << endl;
+        dout << CtiTime() << " GPUFF device " << dr.device->getName() << " sequence number " << packet.seq << " already processed." << endl;
     }
 
     delete p->data;
@@ -1082,6 +1096,13 @@ void UnsolicitedHandler::sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> 
 
         if( p )
         {
+            if( p->isNumeric() )
+            {
+                CtiPointNumeric *n = (CtiPointNumeric *)p.get();
+
+                pd->setValue(n->computeValueForUOM(pd->getValue()));
+            }
+
             pd->setId(p->getID());
 
             m->insert(pd);
