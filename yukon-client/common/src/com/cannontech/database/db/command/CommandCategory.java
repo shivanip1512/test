@@ -8,7 +8,6 @@ package com.cannontech.database.db.command;
 
 import java.util.ArrayList;
 
-import com.cannontech.capcontrol.CBCUtils;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 
@@ -375,7 +374,7 @@ public class CommandCategory
 		{
 			CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( CBCUtils.isCapBankController(paoType) )
+				if( DeviceTypesFuncs.isCapBankController(paoType.getDeviceTypeId()) )
 					CAT_CBC_BASE_DEVTYPES.add(paoType);
 			}
 			CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
@@ -389,7 +388,7 @@ public class CommandCategory
         {
             CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-                if( CBCUtils.isCBCOneWay(paoType) )
+                if( DeviceTypesFuncs.isCBCOneWay(paoType.getDeviceTypeId()) )
                     CAT_CBC_BASE_DEVTYPES.add(paoType);
             }
             CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
@@ -403,7 +402,7 @@ public class CommandCategory
         {
             CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-                if( CBCUtils.isCBCTwoWay(paoType) )
+                if( DeviceTypesFuncs.isCBCTwoWay(paoType.getDeviceTypeId()) )
                     CAT_CBC_BASE_DEVTYPES.add(paoType);
             }
             CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);

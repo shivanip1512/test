@@ -1,6 +1,5 @@
 package com.cannontech.database.model;
 
-import com.cannontech.capcontrol.CBCUtils;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
@@ -35,7 +34,7 @@ public CapBankControllerModel( boolean showPointNodes)
  */
 public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( CBCUtils.isCapBankController(paoType)
+	return( DeviceTypesFuncs.isCapBankController(paoType.getDeviceTypeId())
 			  && paoClass == PaoClass.CAPCONTROL
 			  && paoCategory == PaoCategory.DEVICE );
 }
