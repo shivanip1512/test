@@ -183,6 +183,16 @@ void CtiCCCommandExecutor::execute()
         sendLocalControl();
         break;
 
+    case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+    case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
+        sendVoltageRegulatorCommands( _command->getCommand() );
+        break;
+
     case CtiCCCommand::SYNC_CBC_CAPBANK_STATE:
         syncCbcAndCapBankStates();
         break;
