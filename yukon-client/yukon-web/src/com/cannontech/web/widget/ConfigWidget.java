@@ -60,8 +60,10 @@ public class ConfigWidget extends WidgetControllerBase {
         ConfigurationType type = ConfigurationType.MCT410;
         if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)) {
             type = ConfigurationType.MCT470;
-        }else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)) {
+        } else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)) {
             type = ConfigurationType.MCT430;
+        } else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_420)) {
+            type = ConfigurationType.MCT420;
         }
         List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
         mav.addObject("existingConfigs", existingConfigs);

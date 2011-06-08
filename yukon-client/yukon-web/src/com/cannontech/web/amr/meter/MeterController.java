@@ -222,7 +222,8 @@ public class MeterController extends MultiActionController {
         mav.addObject("voltageSupported", voltageSupported);
         
         boolean configSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430) ||
-                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470);
+                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470) ||
+                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_420);
         mav.addObject("configSupported", configSupported);
         
         if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {

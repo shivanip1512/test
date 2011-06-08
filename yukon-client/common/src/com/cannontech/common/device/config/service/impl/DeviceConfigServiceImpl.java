@@ -59,7 +59,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
         for(SimpleDevice device : deviceCollection.getDeviceList()){
             if(!paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)
-                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)) {
+                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)
+                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_420)) {
                 unsupportedDevices.add(device);
             }else{
                 supportedDevices.add(device);
@@ -113,7 +114,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
             if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)
-                    || paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)) {
+                    || paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)
+                    || paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_420)) {
                 VerifyResult verifyResult = new VerifyResult(meter);
                 verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
                 result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
