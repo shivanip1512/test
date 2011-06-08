@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
 

@@ -1,7 +1,7 @@
 package com.cannontech.common.device.service;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CommandCompletionCallbackAdapter<T> implements

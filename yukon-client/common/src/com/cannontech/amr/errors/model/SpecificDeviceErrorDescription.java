@@ -1,8 +1,7 @@
-package com.cannontech.common.device.commands.impl;
+package com.cannontech.amr.errors.model;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 
-//TODO Move me to a new package
 public class SpecificDeviceErrorDescription {
 
     private final DeviceErrorDescription errorDescription;

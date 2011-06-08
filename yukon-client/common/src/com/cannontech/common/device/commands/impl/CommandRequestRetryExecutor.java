@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;

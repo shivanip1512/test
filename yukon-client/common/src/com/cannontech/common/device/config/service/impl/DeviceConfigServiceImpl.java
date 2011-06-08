@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -22,7 +23,6 @@ import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;

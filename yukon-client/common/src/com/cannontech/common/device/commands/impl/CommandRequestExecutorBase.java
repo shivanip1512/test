@@ -28,6 +28,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;

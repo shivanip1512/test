@@ -2,8 +2,8 @@ package com.cannontech.common.device.commands;
 
 import java.util.List;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.core.dynamic.PointValueHolder;

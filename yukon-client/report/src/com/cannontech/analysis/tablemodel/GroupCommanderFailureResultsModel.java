@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.PaoDao;

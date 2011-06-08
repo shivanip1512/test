@@ -20,6 +20,7 @@ import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -28,7 +29,6 @@ import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;

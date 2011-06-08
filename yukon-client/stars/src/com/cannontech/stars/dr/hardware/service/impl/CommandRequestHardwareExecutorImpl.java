@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -13,7 +14,6 @@ import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;

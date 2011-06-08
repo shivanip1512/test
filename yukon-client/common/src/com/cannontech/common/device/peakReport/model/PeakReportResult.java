@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 
 public class PeakReportResult {
 

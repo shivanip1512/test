@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.pao.PaoType;

@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;

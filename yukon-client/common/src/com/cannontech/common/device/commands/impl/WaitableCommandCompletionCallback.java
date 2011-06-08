@@ -6,6 +6,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 

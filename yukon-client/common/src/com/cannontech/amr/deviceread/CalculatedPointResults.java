@@ -2,7 +2,7 @@ package com.cannontech.amr.deviceread;
 
 import java.util.List;
 
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CalculatedPointResults {

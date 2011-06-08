@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cannontech.common.device.commands.impl.SpecificDeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
