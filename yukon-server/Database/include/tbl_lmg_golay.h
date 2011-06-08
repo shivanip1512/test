@@ -70,7 +70,7 @@ protected:
     LONG _lmGroupId;
     LONG _routeId;
 
-    string _operationalAddress;
+    std::string _operationalAddress;
     int _nominalTimeout;        // Switch is hardcoded to be off for this duration in seconds!
     int _virtualTimeout;        // Group is desired to control for this duration in seconds.  If these are not equal multiple control messages must be sent to make it occur (master cycle-like)
 
@@ -84,19 +84,19 @@ public:
 
     LONG getLmGroupId() const;
     LONG getRouteId() const;
-    string getOperationalAddress() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    std::string getOperationalAddress() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     int getFunction() const;
     int getNominalTimeout() const;
     int getVirtualTimeout() const;
 
     CtiTableGolayGroup& setLmGroupId(LONG newVal);
     CtiTableGolayGroup& setRouteId(LONG newVal);
-    CtiTableGolayGroup& setOperationalAddress(string newVal);
+    CtiTableGolayGroup& setOperationalAddress(std::string newVal);
     CtiTableGolayGroup& setFunction(int newVal);          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     CtiTableGolayGroup& setNominalTimeout(int newVal);
     CtiTableGolayGroup& setVirtualTimeout(int newVal);
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

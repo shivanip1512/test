@@ -103,7 +103,6 @@
 #include "fdrlodestarinfo.h"
 #include "rtdb.h"
 #include <list>
-using std::list;
 
 class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRTDB< CtiFDRPoint >
 {
@@ -112,7 +111,7 @@ class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRT
 public:
     // constructors and destructors
     //CtiFDR_LodeStarImportBase();
-    CtiFDR_LodeStarImportBase(string &aInterface);
+    CtiFDR_LodeStarImportBase(std::string &aInterface);
 
     virtual ~CtiFDR_LodeStarImportBase();
     virtual BOOL    init( void );
@@ -121,25 +120,25 @@ public:
 
     typedef MapIterator CTIFdrLodeStarIterator;
 
-    virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
-    virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;
+    virtual std::vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
+    virtual std::vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;
 
-    virtual string getCustomerIdentifier(void)=0;
-    virtual CtiTime    getlodeStarStartTime(void)=0;
-    virtual CtiTime    getlodeStarStopTime(void)=0;
-    virtual long       getlodeStarSecsPerInterval(void) = 0;
-    virtual long       getlodeStarPointId(void) = 0;
-    virtual void       reinitialize(void) = 0;
-    virtual bool decodeFirstHeaderRecord(string& aLine, int fileIndex) = 0;
-    virtual bool decodeSecondHeaderRecord(string& aLine) = 0;
-    virtual bool decodeThirdHeaderRecord(string& aLine) = 0;
-    virtual bool decodeFourthHeaderRecord(string& aLine) = 0;
-    virtual bool decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual std::string getCustomerIdentifier(void)=0;
+    virtual CtiTime     getlodeStarStartTime(void)=0;
+    virtual CtiTime     getlodeStarStopTime(void)=0;
+    virtual long        getlodeStarSecsPerInterval(void) = 0;
+    virtual long        getlodeStarPointId(void) = 0;
+    virtual void        reinitialize(void) = 0;
+    virtual bool        decodeFirstHeaderRecord(std::string& aLine, int fileIndex) = 0;
+    virtual bool        decodeSecondHeaderRecord(std::string& aLine) = 0;
+    virtual bool        decodeThirdHeaderRecord(std::string& aLine) = 0;
+    virtual bool        decodeFourthHeaderRecord(std::string& aLine) = 0;
+    virtual bool        decodeDataRecord(std::string& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual const CHAR * getKeyInterval() = 0;
     virtual const CHAR * getKeyFilename() = 0;
     virtual const CHAR * getKeyImportDrivePath() = 0;
-    virtual const string& getFileImportBaseDrivePath() = 0;
-    virtual const string& setFileImportBaseDrivePath(string importBase) = 0;
+    virtual const std::string& getFileImportBaseDrivePath() = 0;
+    virtual const std::string& setFileImportBaseDrivePath(std::string importBase) = 0;
 
     virtual const CHAR * getKeyDBReloadRate() = 0;
     virtual const CHAR * getKeyQueueFlushRate() = 0;
@@ -152,10 +151,10 @@ public:
     int readConfig( void );
 
     const char * getIntervalKey();
-    USHORT ForeignToYukonQuality (string aQuality);
-    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
+    USHORT ForeignToYukonQuality (std::string aQuality);
+    CtiTime ForeignToYukonTime (std::string aTime, CHAR aDstFlag);
 
-    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier, string FileName);
+    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, std::list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, std::string savedCustomerIdentifier, std::string FileName);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);
@@ -163,7 +162,7 @@ public:
     bool shouldRenameSaveFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setRenameSaveFileAfterImport (bool aFlag);
 
-    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
+    bool validateAndDecodeLine( std::string &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);

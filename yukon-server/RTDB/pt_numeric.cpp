@@ -18,6 +18,9 @@
 #include "tbl_pt_unit.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiPointNumeric::CtiPointNumeric() :
 _rateOfChange(-1)
 {

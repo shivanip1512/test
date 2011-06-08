@@ -67,18 +67,15 @@
 #include "utility.h"
 
 
-using std::endl;
-
-
 class IM_EX_CTIBASE CtiLogger : public CtiThread
 {
 public:
 
-    CtiLogger(const string& file = "", bool to_stdout = true);
+    CtiLogger(const std::string& file = "", bool to_stdout = true);
     virtual ~CtiLogger();
 
-    CtiLogger& setOutputPath(const string& path);
-    CtiLogger& setOutputFile(const string& file);
+    CtiLogger& setOutputPath(const std::string& path);
+    CtiLogger& setOutputFile(const std::string& file);
     CtiLogger& setOwnerInfo(const compileinfo_t &ownerinfo);
     CtiLogger& setWriteInterval(long millis);
     CtiLogger& setToStdOut(bool to_stdout);
@@ -110,7 +107,7 @@ public:
     std::ostream& operator<<(double n);
     std::ostream& operator<<(long double n);
     std::ostream& operator<<(void * n);
-    std::ostream& operator<<(const string& s);
+    std::ostream& operator<<(const std::string& s);
     std::ostream& operator<<(const CtiTime &r);
 
     char fill(char cfill);
@@ -123,23 +120,23 @@ public:
 protected:
     void run();
 
-    static string   scrub(string filename);
+    static std::string   scrub(std::string filename);
     static unsigned secondsUntilMidnight(const tm &tm_now);
-    static bool     fileDateMatches(const string &filename, const unsigned month);
+    static bool     fileDateMatches(const std::string &filename, const unsigned month);
 
-    string dayFilename(const unsigned day_of_month);
+    std::string dayFilename(const unsigned day_of_month);
 
 private:
     char    _fill;
 
-    string  _path, _base_filename, _today_filename;
+    std::string  _path, _base_filename, _today_filename;
     time_t  _next_logfile_check;
 
     bool    _first_output;
 
     CtiTime _running_since;
 
-    string  _project, _version;
+    std::string  _project, _version;
 
     volatile long _write_interval;
     volatile bool _std_out;

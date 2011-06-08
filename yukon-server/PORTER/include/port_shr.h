@@ -49,7 +49,7 @@ protected:
 
    bool _sequenceFailReported;
    UINT _requestCount;                          // counts outstanding requests.  > 1 indicates a problem.
-   shared_ptr< CtiPort > _port;                 // The port on which this share exists.
+   boost::shared_ptr< CtiPort > _port;                 // The port on which this share exists.
 
    CTINEXUS _returnNexus;                       // returnNexus is formed as the "client" side of a socket to internalNexus (server side)
                                                 // both are formed in this class.  returnNexus is passed into porter via the outmessage through queues,
@@ -57,12 +57,12 @@ protected:
    CTINEXUS _internalNexus;                     // internalNexus is the "server" side of the internal nexus from port_shr and porter proper.
    INT      _internalPort;                      // internal port for porter to share communicaitons.  Used to return IMs from port control.  It's number does not matter.
 
-   map<unsigned char, unsigned char> _ccuError;
+   std::map<unsigned char, unsigned char> _ccuError;
 
    virtual void inThread( void ) = 0;
    virtual void outThread( void ) = 0;
 
-   string getIDString() const;
+   std::string getIDString() const;
 
    unsigned getDebugLevel(unsigned mask=0xffffffff);
 
@@ -80,12 +80,12 @@ private:
    CtiPortShare(const CtiPortShare& aRef)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
    }
 
 public:
 
-   CtiPortShare(shared_ptr< CtiPort > myPort, INT listenPort);
+   CtiPortShare(boost::shared_ptr< CtiPort > myPort, INT listenPort);
    virtual ~CtiPortShare();
 
    UINT getRequestCount() const;
@@ -96,11 +96,11 @@ public:
 
    virtual void interruptBlockingAPI();
 
-   shared_ptr< CtiPort > getPort();
+   boost::shared_ptr< CtiPort > getPort();
 
    static USHORT ProcessEventCode(USHORT EventCode);
 
-   void createNexus(string nexusName);
+   void createNexus(std::string nexusName);
    void connectNexus();
 
    CTINEXUS* getReturnNexus() { return &_returnNexus; }

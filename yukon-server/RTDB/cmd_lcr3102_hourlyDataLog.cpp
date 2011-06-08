@@ -4,6 +4,9 @@
 
 #include "dsm2err.h"
 
+using std::string;
+using std::vector;
+
 namespace Cti {
 namespace Devices {
 namespace Commands {

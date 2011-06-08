@@ -21,7 +21,7 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
 
     public:
         // constructors and destructors
-        CtiFDRScadaServer(string &);
+        CtiFDRScadaServer(std::string &);
         virtual ~CtiFDRScadaServer();
 
         virtual int processMessageFromForeignSystem(

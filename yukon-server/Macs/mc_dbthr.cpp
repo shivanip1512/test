@@ -1,6 +1,8 @@
 #include "yukon.h"
 #include "mc_dbthr.h"
 
+using std::endl;
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   mc_dbthr

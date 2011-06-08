@@ -120,12 +120,12 @@ private:
     void processDeviceSingleInbound(device_record &dr);
 
     void trace( void );
-    string describeDevice( const device_record &dr ) const;
+    std::string describeDevice( const device_record &dr ) const;
 
     bool sendResults(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
     void sendResult(device_record *dr);
 
-    static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
+    static void sendDevicePointsFromProtocol(std::vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
     CtiPortSPtr _port;
     CtiLogger   _portLog;
@@ -159,7 +159,7 @@ private:
 
 protected:
 
-    virtual string describePort( void ) const = 0;
+    virtual std::string describePort( void ) const = 0;
 
     virtual bool setupPort( void ) = 0;
     virtual bool manageConnections( void ) = 0;
@@ -190,7 +190,7 @@ protected:
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 
-    virtual string ip_to_string(u_long ip) const = 0;
+    virtual std::string ip_to_string(u_long ip) const = 0;
 
 public:
 

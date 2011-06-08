@@ -102,7 +102,7 @@ public:
     CtiTime scheduleRepeatInterval(const CtiTime& now, const CtiTime& start,
                                   CtiMCSchedule& sched);
 
-    void getEvents(const CtiTime& now, set< ScheduledEvent >& events);
+    void getEvents(const CtiTime& now, std::set< ScheduledEvent >& events);
 
 
     void initEvents(const CtiTime& now);
@@ -119,13 +119,13 @@ public:
    void dumpEventQueue() const
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Dumping macs event queue" << endl;
+        dout << CtiTime() << " Dumping macs event queue" << std::endl;
 
         for( int i = 0; i < _event_deque.size(); i++ )
         {
-            dout << CtiTime() << " id:   " << _event_deque[i].sched_id << endl;
-            dout << CtiTime() << " type:  " << _event_deque[i].event_type << endl;
-            dout << CtiTime() << " timestamp:  " << _event_deque[i].timestamp << endl;
+            dout << CtiTime() << " id:   " << _event_deque[i].sched_id << std::endl;
+            dout << CtiTime() << " type:  " << _event_deque[i].event_type << std::endl;
+            dout << CtiTime() << " timestamp:  " << _event_deque[i].timestamp << std::endl;
         }
 }
 
@@ -172,7 +172,7 @@ private:
    
     // turns string in 'HH:MM:SS'
     // into the hour, minute, second components
-    bool parseTimeString(const string& time_str, unsigned int& hour,
+    bool parseTimeString(const std::string& time_str, unsigned int& hour,
                          unsigned int& minute, unsigned int& second) const;
 
 

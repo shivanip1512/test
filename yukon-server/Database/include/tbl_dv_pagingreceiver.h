@@ -52,6 +52,6 @@ public:
 
     LONG getDeviceID() const;
 
-    static string getTableName();
+    static std::string getTableName();
 };
 

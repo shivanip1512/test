@@ -13,8 +13,6 @@
 #include <queue>
 #include <stack>
 
-using std::stack;
-
 template < class T >
 class CtiPtrDeque{
 
@@ -104,7 +102,7 @@ template< class T >
 class CtiStack{
 
     private:
-        stack<T> s;
+        std::stack<T> s;
     public:
         CtiStack(){
         }

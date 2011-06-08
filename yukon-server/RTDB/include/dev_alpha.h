@@ -170,7 +170,7 @@ protected:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         return *this;
@@ -180,7 +180,7 @@ protected:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
     }
 
@@ -220,7 +220,7 @@ public:
 
 
     // general generate functions
-    INT   generateCommandTerminate( CtiXfer  &Transfer, list< CtiMessage* > &traceList );
+    INT   generateCommandTerminate( CtiXfer  &Transfer, std::list< CtiMessage* > &traceList );
 
     // general decode routines
 
@@ -233,26 +233,26 @@ public:
     virtual INT GeneralScan(CtiRequestMsg              *pReq,
                             CtiCommandParser           &parse,
                             OUTMESS                   *&OutMessage,
-                            list< CtiMessage* >  &vgList,
-                            list< CtiMessage* >  &retList,
-                            list< OUTMESS* >     &outList,
+                            std::list< CtiMessage* >  &vgList,
+                            std::list< CtiMessage* >  &retList,
+                            std::list< OUTMESS* >     &outList,
                             INT                         ScanPriority=MAXPRIORITY-4);
 
     virtual INT ResultDecode(INMESS                    *InMessage,
                              CtiTime                    &TimeNow,
-                             list< CtiMessage* > &vgList,
-                             list< CtiMessage* > &retList,
-                             list< OUTMESS* >    &outList);
+                             std::list< CtiMessage* > &vgList,
+                             std::list< CtiMessage* > &retList,
+                             std::list< OUTMESS* >    &outList);
     virtual INT ErrorDecode(const INMESS        &InMessage,
                             const CtiTime        TimeNow,
-                            list< CtiMessage* > &retList);
+                            std::list< CtiMessage* > &retList);
 
     // all defined in dev_alpha.cpp
-    virtual INT generateCommand          (CtiXfer &Transfer, list< CtiMessage* > &traceList);
-    virtual INT generateCommandHandshake (CtiXfer &Transfer, list< CtiMessage* > &traceList);
+    virtual INT generateCommand          (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+    virtual INT generateCommandHandshake (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
 
-    virtual INT decodeResponse          (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
-    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+    virtual INT decodeResponse          (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
     virtual INT freeDataBins();
 
 
@@ -262,7 +262,7 @@ public:
                                                CtiTime        aTime,
                                                CtiReturnMsg *aReturnMsg,
                                                USHORT        aIntervalType=0,
-                                               string     aValReport=string());
+                                               std::string     aValReport=std::string());
 
 
     virtual BOOL insertPointIntoReturnMsg (CtiMessage   *aDataPoint,

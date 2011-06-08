@@ -30,28 +30,27 @@
 #include <string>
 #include "dlldefs.h"
 #include "fdr.h"
-using std::string;
 
 
 class IM_EX_FDRBASE CtiFDR_LodeStarInfoTable 
 {
 public:
-    CtiFDR_LodeStarInfoTable(string &aDrivePath, string &aFileName,string &aFolderName);
+    CtiFDR_LodeStarInfoTable(std::string &aDrivePath, std::string &aFileName,std::string &aFolderName);
     ~CtiFDR_LodeStarInfoTable();
     CtiFDR_LodeStarInfoTable& operator=( const CtiFDR_LodeStarInfoTable &other );
-    string & getLodeStarDrivePath(void);
-    string getLodeStarDrivePath(void) const;
-    string & getLodeStarFileName(void);
-    string getLodeStarFileName(void) const;
-    string & getLodeStarFolderName(void);
-    string getLodeStarFolderName(void) const;
-    CtiFDR_LodeStarInfoTable& setLodeStarDrivePath(string aDrivePath);
-    CtiFDR_LodeStarInfoTable& setLodeStarFileName(string aFileName);
-    CtiFDR_LodeStarInfoTable& setLodeStarFolderName(string aFolderName);
+    std::string & getLodeStarDrivePath(void);
+    std::string getLodeStarDrivePath(void) const;
+    std::string & getLodeStarFileName(void);
+    std::string getLodeStarFileName(void) const;
+    std::string & getLodeStarFolderName(void);
+    std::string getLodeStarFolderName(void) const;
+    CtiFDR_LodeStarInfoTable& setLodeStarDrivePath(std::string aDrivePath);
+    CtiFDR_LodeStarInfoTable& setLodeStarFileName(std::string aFileName);
+    CtiFDR_LodeStarInfoTable& setLodeStarFolderName(std::string aFolderName);
 private:
-    string _lodeStarDrivePath;
-    string _lodeStarFileName;
-    string _lodeStarFolderName;
+    std::string _lodeStarDrivePath;
+    std::string _lodeStarFileName;
+    std::string _lodeStarFolderName;
 
 };
 

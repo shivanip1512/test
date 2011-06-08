@@ -18,6 +18,8 @@
 #include "logger.h"
 #include "dbaccess.h"
 
+using std::endl;
+
 RWDEFINE_COLLECTABLE( CtiLMGroupSA205OR105, CTILMGROUPSA205OR105_ID )
 
 /*---------------------------------------------------------------------------

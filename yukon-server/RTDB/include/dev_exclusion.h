@@ -88,14 +88,8 @@
 #include <windows.h>
 #include <vector>
 #include <queue>
-using std::vector;
-using std::pair;
-using std::queue;
-
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
-
 #include "dlldefs.h"
 #include "mutex.h"
 #include "tbl_paoexclusion.h"
@@ -104,14 +98,14 @@ using boost::shared_ptr;
 
 class CtiDeviceExclusion;
 
-typedef shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
+typedef boost::shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
 
 class IM_EX_DEVDB CtiDeviceExclusion
 {
 public:
 
-    typedef vector< CtiTablePaoExclusion > exclusions;
-    typedef vector< pair< unsigned long, CtiTime > > prohibitions;
+    typedef std::vector< CtiTablePaoExclusion > exclusions;
+    typedef std::vector< std::pair< unsigned long, CtiTime > > prohibitions;
 
 protected:
 

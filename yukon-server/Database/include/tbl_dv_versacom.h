@@ -89,7 +89,7 @@ public:
    LONG  getRouteID() const;
    CtiTableVersacomLoadGroup& setRouteID( const LONG a_routeID );
 
-   static string getTableName();
+   static std::string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual bool Insert();

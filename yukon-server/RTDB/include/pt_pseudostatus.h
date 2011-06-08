@@ -57,13 +57,13 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
-      string rwsTemp;
+      std::string rwsTemp;
       Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
 
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+          dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
       }
       _pointStatus.DecodeDatabaseReader(rdr);
    }

@@ -76,6 +76,8 @@ extern CtiRouteManager RouteManager;
 
 #define ROUTESINMACRO 30
 
+using std::endl;
+
 /* Type For Route Macro Database */
 typedef struct _ROUTEMACRO {
     CHAR RouteMacroName[STANDNAMLEN];   // user given macro route name

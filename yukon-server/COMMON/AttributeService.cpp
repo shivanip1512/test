@@ -10,6 +10,7 @@
 
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using std::string;
 
 AttributeService::AttributeService()
 {

@@ -7,6 +7,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup() :
 _controlBits((size_t)7, (char)0),      // 7 zeros
 _restoreBits((size_t)7, (char)0),      // 7 zeros

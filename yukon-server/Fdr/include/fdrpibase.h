@@ -59,9 +59,9 @@ protected:
   // this will give us 30 seconds per primary node connection retry.
   static const int UpdatesPerRetry = 24;
 
-  std::vector<string> _serverNodeNames;
-  string _serverUsername;
-  string _serverPassword;
+  std::vector<std::string> _serverNodeNames;
+  std::string _serverUsername;
+  std::string _serverPassword;
 
   int _currentNodeIndex;
   int _connectionFailureCount;
@@ -87,7 +87,7 @@ protected:
 
   bool serverNodeLogin();
 
-  int getPiPointIdFromTag(const string& tagName, PiPointId& piId);
+  int getPiPointIdFromTag(const std::string& tagName, PiPointId& piId);
 
   void handlePiUpdate(const PiPointInfo info,
                     const float rval,

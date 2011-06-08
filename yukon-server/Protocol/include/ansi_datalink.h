@@ -1,45 +1,7 @@
 
+#pragma once
 #pragma warning( disable : 4786)
-#ifndef __ANSI_DATALINK_H__
-#define __ANSI_DATALINK_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   ansi_datalink
-*
-* Class:
-* Date:   6/20/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
-*    History: 
-      $Log: ansi_datalink.h,v $
-      Revision 1.9  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.8  2005/02/10 23:23:58  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.7  2005/01/03 23:07:15  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.6  2004/12/10 21:58:42  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.5  2004/09/30 21:37:19  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.4  2003/04/25 15:13:45  dsutton
-      Update of the base protocol pieces taking into account the manufacturer
-      tables, etc.  New starting point
-
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "dllbase.h"
 #include "xfer.h"
 
@@ -167,4 +129,3 @@ class IM_EX_PROT CtiANSIDatalink
 
  };
 
-#endif // #ifndef __ANSI_DATALINK_H__

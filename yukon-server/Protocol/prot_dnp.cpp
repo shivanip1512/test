@@ -14,6 +14,9 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_time.h"
 
+using std::endl;
+using std::string;
+
 namespace Cti       {
 namespace Protocol  {
 

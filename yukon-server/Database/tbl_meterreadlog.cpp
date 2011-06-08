@@ -20,6 +20,8 @@
 #include "ctitime.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
 
 void CtiTableMeterReadLog::Insert()
 {

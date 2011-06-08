@@ -55,9 +55,6 @@
 #define MCCMD_DEBUG_INIT       0x00000001
 #define MCCMD_DEBUG_PILREQUEST 0x00000002
 
-using std::map;
-using std::string;
-
 extern unsigned gMccmdDebugLevel;
 
 #ifdef __cplusplus
@@ -69,7 +66,7 @@ struct MACS_Return_Data
 {
     CtiTime time;
     int     status;
-    string  deviceName; // Stores the device names for requests whose status resulted in IDNF.
+    std::string  deviceName; // Stores the device names for requests whose status resulted in IDNF.
 };
 
 typedef std::map< long, MACS_Return_Data, std::less<long> > PILReturnMap;
@@ -110,7 +107,7 @@ static int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, c
 
 static int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int importCommandFile(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
-static bool FileAppendAndDelete(const string &toFileName, const string &fromFileName);
+static bool FileAppendAndDelete(const std::string &toFileName, const std::string &fromFileName);
 
 /* Determines if the given time is a holiday */
 /* takes a time parameters in seconds and an int which is the holiday schedule id */
@@ -148,40 +145,40 @@ static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc,
 
 //MORE............
 
-static int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line);
-static int DoTwoWayRequest(Tcl_Interp* interp, string& cmd_line);
+static int DoOneWayRequest(Tcl_Interp* interp, std::string& cmd_line);
+static int DoTwoWayRequest(Tcl_Interp* interp, std::string& cmd_line);
 
-static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way);
+static int DoRequest(Tcl_Interp* interp, std::string& cmd_line, long timeout, bool two_way);
 
 static void HandleReturnMessage(CtiReturnMsg* msg,
                 PILReturnMap& good_map,
                 PILReturnMap& bad_map,
                 PILReturnMap& device_map,
-                std::vector<string>& bad_names,
+                std::vector<std::string>& bad_names,
                 std::deque<CtiTableMeterReadLog>& queueStatus);
 
 static void HandleMessage(RWCollectable* msg,
               PILReturnMap& good_map,
               PILReturnMap& bad_map,
               PILReturnMap& device_map,
-              std::vector<string>& bad_names);
+              std::vector<std::string>& bad_names);
 
 static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId);
 
 /* Retrieves the id of a notification group given its name */
-static long GetNotificationGroupID( const string& name );
+static long GetNotificationGroupID( const std::string& name );
 
 /* Retrive the name/id of a device */
-static void GetDeviceName(long deviceID, string& name);
-static long GetDeviceID(const string& name);
+static void GetDeviceName(long deviceID, std::string& name);
+static long GetDeviceID(const std::string& name);
 
 /* Strips out the select list part of the command and builds up
    a set of n select name commands from it, which are returned
    in sel_set as RWCollectableStrings. The original cmd is modified
    to remove the original select statement */
-static void StripSelectListCmd(string& cmd, RWSet& sel_set);
+static void StripSelectListCmd(std::string& cmd, RWSet& sel_set);
 
-static void BuildRequestSet(Tcl_Interp* interp, string& cmd, RWSet& req_set);
+static void BuildRequestSet(Tcl_Interp* interp, std::string& cmd, RWSet& req_set);
 /* Nothing below here should be called from within this dll unless you have a good
    pretty good reason */
 
@@ -209,7 +206,7 @@ static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<
    PIL for incoming messages and places them in the appropriate queue */
 static void _MessageThrFunc();
 
-void AppendToString(string& str, int argc, char* argv[]);
+void AppendToString(std::string& str, int argc, char* argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
 void DumpRequestMessage(CtiRequestMsg& msg);
 

@@ -22,6 +22,10 @@
 
 extern ULONG _LM_DEBUG;
 
+using std::endl;
+using boost::shared_ptr;
+using boost::weak_ptr;
+
 
 /*---------------------------------------------------------------------------
     Constructor

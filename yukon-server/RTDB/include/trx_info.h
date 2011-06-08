@@ -100,7 +100,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
         }
         return *this;
@@ -146,7 +146,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
         }
 
@@ -158,7 +158,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
         }
 

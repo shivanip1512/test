@@ -35,7 +35,7 @@ class CtiTableRoute : public CtiMemDBObject
 protected:
 
    LONG        RouteID;
-   string   Name;
+   std::string   Name;
    INT         Type;
 
 
@@ -44,30 +44,30 @@ public:
    typedef CtiMemDBObject Inherited;
 
    CtiTableRoute();
-   CtiTableRoute(LONG &aRoute, string aStr, INT aType);
+   CtiTableRoute(LONG &aRoute, std::string aStr, INT aType);
    CtiTableRoute(const CtiTableRoute& aRef);
    virtual ~CtiTableRoute();
 
    CtiTableRoute& operator=(const CtiTableRoute& aRef);
    void DumpData();
 
-   static string& getSQLColumns(string &str);
-   static string& getSQLTables(string &str);
-   static string& getSQLConditions(string &str);
+   static std::string& getSQLColumns(std::string &str);
+   static std::string& getSQLTables(std::string &str);
+   static std::string& getSQLConditions(std::string &str);
 
-   static void getSQL(string &Columns, string &Tables, string &Conditions);
+   static void getSQL(std::string &Columns, std::string &Tables, std::string &Conditions);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   virtual string getTableName() const;
+   virtual std::string getTableName() const;
 
    INT  getType() const;
 
    CtiTableRoute& setType( const INT aType );
 
-   string  getName() const;
+   std::string  getName() const;
 
-   CtiTableRoute& setName( const string aName );
+   CtiTableRoute& setName( const std::string aName );
    LONG  getID() const;
    LONG  getRouteID() const;
 

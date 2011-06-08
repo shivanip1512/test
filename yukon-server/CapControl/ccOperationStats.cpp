@@ -26,6 +26,8 @@
 #include "database_writer.h"
 
 using namespace capcontrol;
+using std::string;
+using std::endl;
 
 extern ULONG _CC_DEBUG;
 

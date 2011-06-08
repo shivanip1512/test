@@ -26,6 +26,8 @@
 #include "cmdparse.h"
 #include "ctistring.h"
 
+using std::string;
+
 using boost::unit_test_framework::test_suite;
 
 BOOST_AUTO_TEST_CASE(testString)

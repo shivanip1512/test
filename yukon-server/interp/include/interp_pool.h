@@ -23,9 +23,6 @@
 
 #include "interp.h"
 
-using std::string;
-using std::set;
-
 class IM_EX_INTERP CtiInterpreterPool
 {
 public:
@@ -33,7 +30,7 @@ public:
     CtiInterpreterPool();
     virtual ~CtiInterpreterPool();
 
-    void evalOnInit(const string& command);
+    void evalOnInit(const std::string& command);
 
     CtiInterpreter* acquireInterpreter();
     void releaseInterpreter(CtiInterpreter* interp);
@@ -49,10 +46,10 @@ private:
     // Used to protect the interpreter sets
     CtiMutex _mux;
 
-    set< CtiInterpreter* > _available_interps;
-    set< CtiInterpreter* > _active_interps;
+    std::set< CtiInterpreter* > _available_interps;
+    std::set< CtiInterpreter* > _active_interps;
     
-    string _init_cmd;
+    std::string _init_cmd;
 
     CtiInterpreter* createInterpreter();
 };

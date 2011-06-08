@@ -30,8 +30,8 @@ protected:
    CtiTime      _startDateTime;          //
    int         _controlDuration;        // Length of control in seconds! Negative means LATCHED control.
    int         _reductionRatio;         // percentage of time the control is in effect. Defaults to 100% of controlDuration.
-   string   _controlType;            //
-   string   _activeRestore;          // Indicates whether group will time-in or a message is required.
+   std::string   _controlType;            //
+   std::string   _activeRestore;          // Indicates whether group will time-in or a message is required.
    double      _reductionValue;         // kW reduction on this group.
    int         _controlPriority;        // 0=highest priority. higher = lower priority. In Expresscom, 3 = lowest priority
    int         _associationKey;
@@ -80,11 +80,11 @@ public:
    int getReductionRatio() const;
    CtiLMControlHistoryMsg& setReductionRatio(const int redrat);
 
-   const string& getControlType() const;
-   CtiLMControlHistoryMsg& setControlType(const string& string);
+   const std::string& getControlType() const;
+   CtiLMControlHistoryMsg& setControlType(const std::string& string);
 
-   const string& getActiveRestore() const;
-   CtiLMControlHistoryMsg& setActiveRestore(const string& string);
+   const std::string& getActiveRestore() const;
+   CtiLMControlHistoryMsg& setActiveRestore(const std::string& string);
 
    double getReductionValue() const;
    CtiLMControlHistoryMsg& setReductionValue( const double value );

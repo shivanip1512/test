@@ -78,7 +78,7 @@ public:
 
    void                 DecodeDatabaseReader(Cti::RowReader &rdr);
    void                 dump() const;
-   static string     getTableName();
+   static std::string     getTableName();
 };
 
 #endif // #ifndef __TBL_PT_UNIT_H__

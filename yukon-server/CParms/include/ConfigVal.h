@@ -7,23 +7,21 @@
 #include <rw/rstream.h>
 #include <string>
 
-using std::string;
-
 class CtiConfigValue
 {
 private:
-   string Value;
+   std::string Value;
 public:
 
    CtiConfigValue();
-   CtiConfigValue(const string& val);
+   CtiConfigValue(const std::string& val);
    ~CtiConfigValue() {}
 
    CtiConfigValue& operator=(const CtiConfigValue& key);
 
    int ReturnStringOpt (char *opt, int len);
 
-   const string&  getValue()    { return Value; }
+   const std::string&  getValue()    { return Value; }
 
 };
 

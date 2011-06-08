@@ -57,14 +57,14 @@ public:
    CtiPortDirect& setLocalSerial(const CtiTablePortLocalSerial& aRef);
 
    virtual bool      isViable();
-   virtual string getPhysicalPort() const;
+   virtual std::string getPhysicalPort() const;
 
    virtual HANDLE  getHandle() const;
    virtual HANDLE& getHandle();
    virtual HANDLE* getHandlePtr();
    CtiPortDirect& setHandle(const HANDLE& hdl);
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
@@ -98,8 +98,8 @@ public:
    virtual INT inClear();
    virtual INT outClear();
 
-   virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
-   virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
+   virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
+   virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
 
    INT readIDLCHeader(CtiXfer& Xfer, unsigned long *bytesRead, bool suppressEcho);
 

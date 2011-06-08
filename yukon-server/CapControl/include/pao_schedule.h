@@ -33,14 +33,14 @@ public:
     CtiPAOSchedule(Cti::RowReader& rdr);
 
     long getScheduleId() const;
-    const string& getScheduleName() const;
+    const std::string& getScheduleName() const;
     const CtiTime& getNextRunTime() const;
     const CtiTime& getLastRunTime() const;
     long getIntervalRate() const;
     bool isDisabled();
 
     void setScheduleId(long schedId);
-    void setScheduleName(const string& schedName);
+    void setScheduleName(const std::string& schedName);
     void setNextRunTime(const CtiTime& nextTime);
     void setLastRunTime(const CtiTime& lastTime);
     void setIntervalRate(long intervalRate);
@@ -61,11 +61,11 @@ private:
     BOOL _dirty;
 
     long         _scheduleId;
-    string    _scheduleName;
-    CtiTime _nextRunTime;
-    CtiTime _lastRunTime;
-    long _intervalRate; //in seconds!
-    bool _disabledFlag;                    
+    std::string  _scheduleName;
+    CtiTime      _nextRunTime;
+    CtiTime      _lastRunTime;
+    long         _intervalRate; //in seconds!
+    bool         _disabledFlag;                    
 
     
 };

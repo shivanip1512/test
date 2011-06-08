@@ -28,15 +28,12 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-using std::set;
-using std::vector;
-
 class IM_EX_CTIYUKONDB CtiTableNotificationGroup
 {
 protected:
 
    LONG                 _notificationGroupID;
-   string               _groupName;
+   std::string          _groupName;
    BOOL                 _groupDisabled;
    bool                 _isDirty;
 
@@ -57,13 +54,13 @@ public:
    size_t   entries() const;
 
    LONG getGroupID() const;
-   string getGroupName() const;
+   std::string getGroupName() const;
    BOOL isDisabled() const;
-   vector<int> getRecipientVector();
+   std::vector<int> getRecipientVector();
 
 
    CtiTableNotificationGroup& setGroupID( const LONG &aRef );
-   CtiTableNotificationGroup& setGroupName( const string &aStr );
+   CtiTableNotificationGroup& setGroupName( const std::string &aStr );
    CtiTableNotificationGroup& setDisabled( const BOOL b = TRUE );
    CtiTableNotificationGroup& setDirty( bool dirt );
 
@@ -71,7 +68,7 @@ public:
 
    void dump() const;
 
-   static string getTableName();
+   static std::string getTableName();
    virtual bool Restore();
 
    virtual void DecodeDatabaseReader(Cti::RowReader& rdr);

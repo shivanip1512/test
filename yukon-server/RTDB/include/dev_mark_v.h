@@ -88,42 +88,42 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
+                           std::list< CtiMessage* >  &vgList,
+                           std::list< CtiMessage* >  &retList,
+                           std::list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT LoadProfileScan(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                    *&OutMessage,
-                              list< CtiMessage* >  &vgList,
-                              list< CtiMessage* >  &retList,
-                              list< OUTMESS* >     &outList,
+                              std::list< CtiMessage* >  &vgList,
+                              std::list< CtiMessage* >  &retList,
+                              std::list< OUTMESS* >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                    *&OutMessage,
-                              list< CtiMessage* >  &vgList,
-                              list< CtiMessage* >  &retList,
-                              list< OUTMESS* >     &outList,
+                              std::list< CtiMessage* >  &vgList,
+                              std::list< CtiMessage* >  &retList,
+                              std::list< OUTMESS* >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            list< CtiMessage* > &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList);
+                            std::list< CtiMessage* > &vgList,
+                            std::list< CtiMessage* > &retList,
+                            std::list< OUTMESS* >    &outList);
 
    virtual INT ErrorDecode(const INMESS      &InMessage,
                            const CtiTime      TimeNow,
-                           list<CtiMessage*> &retList);
+                           std::list<CtiMessage*> &retList);
 
    int decodeResultScan( INMESS                    *InMessage,
                           CtiTime                    &TimeNow,
-                          list< CtiMessage* > &vgList,
-                          list< CtiMessage* > &retList,
-                          vector<CtiTransdataData *> transVector );
+                          std::list< CtiMessage* > &vgList,
+                          std::list< CtiMessage* > &retList,
+                          std::vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int sendCommResult( INMESS *InMessage );
@@ -132,9 +132,9 @@ public:
    int getChannelOffset( int index );
 
    CtiProtocolTransdata & getTransdataProtocol( void );
-   CtiTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
+   CtiTime getMsgTime( int timeID, int dateID, std::vector<CtiTransdataData *> transVector );
 
-   CtiPointDataMsg* fillPDMsg( vector<CtiTransdataData *> transVector,
+   CtiPointDataMsg* fillPDMsg( std::vector<CtiTransdataData *> transVector,
                                CtiPointSPtr point,
                                int index,
                                int timeID,

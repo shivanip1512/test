@@ -4,8 +4,6 @@
 
 #include <queue>
 
-using std::queue;
-
 #include <rw/thr/mutex.h>
 #include <rw/thr/guard.h>
 #include <rw/thr/thrfunc.h>
@@ -39,8 +37,8 @@ public:
     };
 
 private:
-    queue<T *> _inbox;
-    queue<T *> _outbox;
+    std::queue<T *> _inbox;
+    std::queue<T *> _outbox;
 
     RWMutexLock _inboxMux;
     RWMutexLock _outboxMux;

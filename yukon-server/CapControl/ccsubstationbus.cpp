@@ -25,6 +25,7 @@
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointIdList;
+using std::endl;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;

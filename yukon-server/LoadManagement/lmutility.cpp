@@ -10,6 +10,8 @@
 
 #include <sstream>
 
+using std::string;
+
 /*
 *   This is WALLCLOCK time - an offset of 14400 (+4 hours) is ALWAYS 4am.  This function
 *    ignores any effect of a DST gain or loss of an hour.

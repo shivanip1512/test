@@ -21,6 +21,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableVersacomRoute::CtiTableVersacomRoute() :
     RouteID(0),
     UtilityID(0),

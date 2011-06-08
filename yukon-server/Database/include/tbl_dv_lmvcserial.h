@@ -81,7 +81,7 @@ public:
    LONG  getRouteID() const;
    CtiTableLMGroupVersacomSerial& setRouteID( const LONG a_routeID );
 
-   static string getTableName();
+   static std::string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

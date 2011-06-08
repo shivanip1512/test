@@ -19,7 +19,6 @@
 #pragma warning( disable : 4786)
 #include <windows.h>
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include "pt_dyn_base.h"
 #include "tbl_pt_alarm.h"
@@ -78,6 +77,6 @@ public:
    bool isConditionActive(int alarm_condition) const;
 };
 
-typedef shared_ptr< CtiDynamicPointDispatch > CtiDynamicPointDispatchSPtr;
+typedef boost::shared_ptr< CtiDynamicPointDispatch > CtiDynamicPointDispatchSPtr;
 
 #endif // #ifndef __PT_DYN_DISPATCH_H__

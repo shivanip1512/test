@@ -15,6 +15,7 @@
 #include "ccutil.h"
 #include "pointdefs.h"
  
+using std::string;
 
 extern ULONG _MSG_PRIORITY;
 namespace Cti           {

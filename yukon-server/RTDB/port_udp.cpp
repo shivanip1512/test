@@ -3,6 +3,8 @@
 #include "logger.h"
 #include "port_udp.h"
 
+using std::string;
+using std::endl;
 
 namespace Cti   {
 namespace Ports {

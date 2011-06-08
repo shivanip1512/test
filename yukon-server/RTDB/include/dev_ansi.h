@@ -21,40 +21,40 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
+                           std::list< CtiMessage* >  &vgList,
+                           std::list< CtiMessage* >  &retList,
+                           std::list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT executeLoopback(CtiRequestMsg *pReq, 
                            CtiCommandParser &parse, 
                            OUTMESS *&OutMessage, 
-                           list<CtiMessage*>&vgList, 
-                           list<CtiMessage*>&retList, 
-                           list<OUTMESS*>&outList);
+                           std::list<CtiMessage*>&vgList, 
+                           std::list<CtiMessage*>&retList, 
+                           std::list<OUTMESS*>&outList);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
-                    list< CtiMessage* > &vgList,
-                    list< CtiMessage* > &retList,
-                    list< OUTMESS* > &outList,
+                    std::list< CtiMessage* > &vgList,
+                    std::list< CtiMessage* > &retList,
+                    std::list< OUTMESS* > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            list< CtiMessage* > &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList);
+                            std::list< CtiMessage* > &vgList,
+                            std::list< CtiMessage* > &retList,
+                            std::list< OUTMESS* >    &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
-                       list< CtiMessage* >  &vgList,
-                       list< CtiMessage* >  &retList,
-                       list< OUTMESS* >     &outList );
+                       std::list< CtiMessage* >  &vgList,
+                       std::list< CtiMessage* >  &retList,
+                       std::list< OUTMESS* >     &outList );
 
-   virtual void processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag );
+   virtual void processDispatchReturnMessage( std::list< CtiReturnMsg* > &retList, UINT archiveFlag );
    virtual unsigned long updateLastLpTime();
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void ) = 0;
@@ -74,10 +74,10 @@ public:
 
 private:
 
-    void createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList);
-    void createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp,unsigned int archiveFlag, list< CtiReturnMsg* > &retList);
+    void createLoadProfilePointData(CtiPointAnalogSPtr pPoint, std::list< CtiReturnMsg* > &retList);
+    void createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp,unsigned int archiveFlag, std::list< CtiReturnMsg* > &retList);
 
-    string _result_string;
+    std::string _result_string;
 
     unsigned long _lastLPTime;
 };

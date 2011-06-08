@@ -26,14 +26,13 @@
 #include <process.h>
 
 #include <iostream>
-using std::iostream;
 
 #ifdef UNICODE
     #define _tcout wcout
     #define _tostream wostream
 #else
-    #define _tcout cout
-    #define _tostream ostream
+    #define _tcout std::cout
+    #define _tostream std::ostream
 #endif
 
 #include <TCHAR.h>

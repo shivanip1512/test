@@ -48,7 +48,7 @@ protected:
    CtiTime         _time;
    unsigned       _millis;
 
-   string      _str;
+   std::string      _str;
 
 private:
 
@@ -66,7 +66,7 @@ public:
                    double    value       = 0.0,
                    unsigned  quality     = NormalQuality,
                    CtiPointType_t type   = StatusPointType,
-                   string     valReport  = string(),
+                   std::string     valReport  = std::string(),
                    unsigned  tags        = 0,
                    unsigned  attrib      = 0,
                    unsigned  limit       = 0,
@@ -87,8 +87,8 @@ public:
    long  getId() const;
    CtiPointDataMsg& setId( const long a_id );
 
-   const string& getString() const;
-   CtiPointDataMsg& setString(const string& string_value);
+   const std::string& getString() const;
+   CtiPointDataMsg& setString(const std::string& string_value);
 
    CtiPointType_t getType() const;
    CtiPointDataMsg& setType(CtiPointType_t type);

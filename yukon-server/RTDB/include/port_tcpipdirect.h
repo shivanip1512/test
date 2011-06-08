@@ -52,9 +52,9 @@ public:
    virtual ~CtiPortTCPIPDirect();
 
    INT           getIPPort()    const;
-   const string &getIPAddress() const;
+   const std::string &getIPAddress() const;
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
@@ -68,8 +68,8 @@ public:
    virtual INT disconnect(CtiDeviceSPtr Device, INT trace);
    virtual BOOL connected();
 
-   virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
-   virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
+   virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
+   virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
 
    virtual INT inClear() const;
    virtual INT outClear() const;
@@ -85,6 +85,6 @@ public:
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
 };
 
-typedef shared_ptr< CtiPortTCPIPDirect > CtiPortTCPIPDirectSPtr;
+typedef boost::shared_ptr< CtiPortTCPIPDirect > CtiPortTCPIPDirectSPtr;
 
 #endif // #ifndef __PORT_TCPIP_H__

@@ -19,7 +19,8 @@
 #include "ion_value_structarray.h"
 #include "ion_value_struct.h"
 
-
+using std::vector;
+using std::endl;
 
 CtiIONStructArray::CtiIONStructArray( ) :
     CtiIONValue(ValueType_StructArray),

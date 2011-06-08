@@ -5,6 +5,7 @@
 #include "msg_cmd.h"
 #include "collectable.h"
 
+using std::string;
 
 DispatchConnection::DispatchConnection()
 {

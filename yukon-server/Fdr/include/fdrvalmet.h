@@ -216,7 +216,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
 
         virtual int readConfig( void );
 
@@ -241,12 +241,12 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         int         ForeignToYukonStatus (USHORT aStatus);
         CtiTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
 
-        string   YukonToForeignTime (CtiTime aTimeStamp);
+        std::string   YukonToForeignTime (CtiTime aTimeStamp);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 
         virtual void signalReloadList();
-        virtual void signalPointRemoved(string &pointName);
+        virtual void signalPointRemoved(std::string &pointName);
 
         bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex);
 
@@ -256,7 +256,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
                 Valmet_Indeterminate=3};
 
         private:
-            std::map<string,int> nameToPointId;
+            std::map<std::string,int> nameToPointId;
 
 };
 

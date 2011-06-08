@@ -13,6 +13,8 @@ using boost::unit_test_framework::test_suite;
 
 using Cti::byte_buffer;
 
+using std::vector;
+
 struct Test_FdrDnpSlave : CtiFDRDnpSlave
 {
     using CtiFDRDnpSlave::translateSinglePoint;

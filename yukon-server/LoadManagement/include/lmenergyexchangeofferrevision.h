@@ -41,15 +41,15 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
     const CtiTime& getActionDateTime() const;
     const CtiTime& getNotificationDateTime() const;
     const CtiTime& getOfferExpirationDateTime() const;
-    const string& getAdditionalInfo() const;
-    vector<CtiLMEnergyExchangeHourlyOffer*>& getLMEnergyExchangeHourlyOffers();
+    const std::string& getAdditionalInfo() const;
+    std::vector<CtiLMEnergyExchangeHourlyOffer*>& getLMEnergyExchangeHourlyOffers();
 
     CtiLMEnergyExchangeOfferRevision& setOfferId(LONG offid);
     CtiLMEnergyExchangeOfferRevision& setRevisionNumber(LONG revnum);
     CtiLMEnergyExchangeOfferRevision& setActionDateTime(const CtiTime& actiontime);
     CtiLMEnergyExchangeOfferRevision& setNotificationDateTime(const CtiTime& notifytime);
     CtiLMEnergyExchangeOfferRevision& setOfferExpirationDateTime(const CtiTime& expirationtime);
-    CtiLMEnergyExchangeOfferRevision& setAdditionalInfo(const string& additional);
+    CtiLMEnergyExchangeOfferRevision& setAdditionalInfo(const std::string& additional);
 
     CtiLMEnergyExchangeOfferRevision* replicate() const;
 
@@ -84,9 +84,9 @@ private:
     CtiTime _actiondatetime;
     CtiTime _notificationdatetime;
     CtiTime _offerexpirationdatetime;
-    string _additionalinfo;
+    std::string _additionalinfo;
 
-    vector<CtiLMEnergyExchangeHourlyOffer*> _lmenergyexchangehourlyoffers;
+    std::vector<CtiLMEnergyExchangeHourlyOffer*> _lmenergyexchangehourlyoffers;
 };
 #endif
 

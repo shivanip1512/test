@@ -33,9 +33,9 @@ class IM_EX_PRTDB CtiPortPoolDialout : public CtiPort
 {
 protected:
 
-    typedef vector< CtiPortSPtr > CtiPortPoolVector;
+    typedef std::vector< CtiPortSPtr > CtiPortPoolVector;
 
-    vector< long >          _portids;
+    std::vector< long >          _portids;
     CtiPortPoolVector       _ports;
 
 private:
@@ -62,14 +62,14 @@ public:
     {
     }
 
-    static string getSQLCoreStatement();
-    static string getSQLPooledPortsStatement();
+    static std::string getSQLCoreStatement();
+    static std::string getSQLPooledPortsStatement();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
-    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
-    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
+    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
+    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
 
     virtual size_t addPort(CtiPortSPtr port);
 

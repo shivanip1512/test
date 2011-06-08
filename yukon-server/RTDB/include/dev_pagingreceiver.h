@@ -34,32 +34,32 @@ private:
     typedef CtiDeviceRemote Inherited;
 
     CtiTableDevicePagingReceiver                        _tbl;
-    queue< CtiVerificationBase * >                      _verification_objects;
+    std::queue< CtiVerificationBase * >                      _verification_objects;
     static const std::vector<const char*>                    _commandVector;
     std::vector<const char*>::const_iterator                 _cmdVectorIterator;
 
-    bool                _hadHeader;//set to true if last loop we had a header and no footer.
-    int                 _retryCount;
-    ptime               _retryTime;
+    bool                        _hadHeader;//set to true if last loop we had a header and no footer.
+    int                         _retryCount;
+    boost::posix_time::ptime     _retryTime;
 
 protected:
 
     BYTE                          _outBuffer[100];
     BYTE                          _inBuffer[DEV_PAGERRECEIVE_IN_BUFFER_SIZE];
-    string                        _messageString;//needs to be initialized
+    std::string                        _messageString;//needs to be initialized
     ULONG                         _inCountActual;
     int                           _capcodeCount;
 public:
 
-    static vector<const char*> initCommandVector();
+    static std::vector<const char*> initCommandVector();
     CtiDevicePagingReceiver();
     CtiDevicePagingReceiver(const CtiDevicePagingReceiver& aRef);
     virtual ~CtiDevicePagingReceiver();
     int recvCommRequest(OUTMESS *OutMessage);
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
     virtual int sendCommResult(INMESS *InMessage);
     bool isTransactionComplete();
 
@@ -67,7 +67,7 @@ public:
 
    int decode(CtiXfer &xfer, int commReturnValue);
    int generate(CtiXfer &xfer);
-   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
    enum CommandState
    {
@@ -103,8 +103,8 @@ private:
     void resetStates(bool initial = false);
     void setCurrentState(StateMachine newCurrentState);
     void setPreviousState(StateMachine newPreviousState);
-    string getFormattedHexCapcodeNumber(int number);
-    string getFormattedFrequency();
+    std::string getFormattedHexCapcodeNumber(int number);
+    std::string getFormattedFrequency();
 
     static const char *_change_mode;
     static const char *_read;

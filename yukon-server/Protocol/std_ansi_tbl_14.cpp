@@ -42,6 +42,8 @@
 #include "logger.h"
 #include "std_ansi_tbl_14.h"
 
+using std::string;
+using std::endl;
 //=========================================================================================================================================
 //wow... what a mess this is
 //allocate however many data_records we have (from table 11)

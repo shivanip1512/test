@@ -14,7 +14,7 @@ class PortLogger : public boost::noncopyable
 private:
 
     CtiLogger &_logger;
-    string     _uid;
+    std::string _uid;
 
     inline void prefix();
     static std::string formatIOBytes(const bytes &buf);

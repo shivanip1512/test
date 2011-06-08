@@ -1,5 +1,4 @@
-#ifndef __CtiAPPLIST_H__
-#define __CtiAPPLIST_H__
+#pragma once
 
 #include <rw/collect.h>
 
@@ -41,5 +40,4 @@ public:
    };
 };
 
-#endif         // #ifndef __CtiAPPLIST__
 

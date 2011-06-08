@@ -5,6 +5,9 @@
 #include "logger.h"
 #include "utility.h"
 
+using std::endl;
+using std::string;
+
 /*
     CapControl CParms
 */

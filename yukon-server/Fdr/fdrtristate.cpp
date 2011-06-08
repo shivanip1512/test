@@ -123,6 +123,9 @@
 #include "guard.h"
 #include "fdrtristate.h"
 
+using std::string;
+using std::endl;
+
 CtiFDR_Tristate * tristateInterface;
 
 const CHAR * CtiFDR_Tristate::KEY_PORT_NUMBER = "FDR_TRISTATE_PORT_NUMBER";

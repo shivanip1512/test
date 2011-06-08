@@ -104,15 +104,15 @@ public:
    bool getRawSlidingDemandFlag( void );
    bool getRawThermalDemandFlag( void );
 
-   string getResolvedConstantsSelector( void );
-   string getResolvedNoOffsetFlag( void );
-   string getResolvedSetOnePresentFlag( void );
-   string getResolvedSetTwoPresentFlag( void );
-   string getResolvedPFExcludeFlag( void );
-   string getResolvedResetExcludeFlag( void );
-   string getResolvedBlockDemandFlag( void );
-   string getResolvedSlidingDemandFlag( void );
-   string getResolvedThermalDemandFlag( void );
+   std::string getResolvedConstantsSelector( void );
+   std::string getResolvedNoOffsetFlag( void );
+   std::string getResolvedSetOnePresentFlag( void );
+   std::string getResolvedSetTwoPresentFlag( void );
+   std::string getResolvedPFExcludeFlag( void );
+   std::string getResolvedResetExcludeFlag( void );
+   std::string getResolvedBlockDemandFlag( void );
+   std::string getResolvedSlidingDemandFlag( void );
+   std::string getResolvedThermalDemandFlag( void );
 
    CtiAnsiTable11( );
    CtiAnsiTable11( BYTE *dataBlob );
@@ -121,7 +121,7 @@ public:
 
    void generateResultPiece( BYTE **dataBlob );
    void decodeResultPiece( BYTE **dataBlob );
-   void printResult(const string& deviceName);
+   void printResult(const std::string& deviceName);
 
 
 private:

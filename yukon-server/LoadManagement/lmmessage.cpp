@@ -17,6 +17,8 @@
 #include <time.h>
 
 using std::vector;
+using std::string;
+using std::endl;
 
 /*===========================================================================
     CtiLMMessage

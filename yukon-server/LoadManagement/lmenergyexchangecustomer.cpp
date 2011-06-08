@@ -22,6 +22,8 @@
 #include "resolvers.h"
 #include "utility.h"
 
+using std::vector;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomer, CTILMENERGYEXCHANGECUSTOMER_ID )

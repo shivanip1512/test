@@ -68,13 +68,13 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     LONG getTriggerId() const;
     LONG getPAOId() const;
     LONG getTriggerNumber() const;
-    const string& getTriggerType() const;
+    const std::string& getTriggerType() const;
     LONG getPointId() const;
     DOUBLE getPointValue() const;
     const CtiTime& getLastPointValueTimestamp() const;
     LONG getNormalState() const;
     DOUBLE getThreshold() const;
-    const string& getProjectionType() const;
+    const std::string& getProjectionType() const;
     LONG getProjectionPoints() const;
     LONG getProjectAheadDuration() const;
     LONG getThresholdKickPercent() const;
@@ -89,13 +89,13 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     CtiLMControlAreaTrigger& setTriggerId(LONG trigger_id);
     CtiLMControlAreaTrigger& setPAOId(LONG paoid);
     CtiLMControlAreaTrigger& setTriggerNumber(LONG trignum);
-    CtiLMControlAreaTrigger& setTriggerType(const string& trigtype);
+    CtiLMControlAreaTrigger& setTriggerType(const std::string& trigtype);
     CtiLMControlAreaTrigger& setPointId(LONG pntid);
     CtiLMControlAreaTrigger& setPointValue(DOUBLE pntval);
     CtiLMControlAreaTrigger& setLastPointValueTimestamp(const CtiTime& lastvaltime);
     CtiLMControlAreaTrigger& setNormalState(LONG normalst);
     CtiLMControlAreaTrigger& setThreshold(DOUBLE threshold);
-    CtiLMControlAreaTrigger& setProjectionType(const string& projtype);
+    CtiLMControlAreaTrigger& setProjectionType(const std::string& projtype);
     CtiLMControlAreaTrigger& setProjectionPoints(LONG projpoints);
     CtiLMControlAreaTrigger& setProjectAheadDuration(LONG projaheaddur);
     CtiLMControlAreaTrigger& setThresholdKickPercent(LONG threskickpercent);
@@ -125,12 +125,12 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     /* Static Members */
 
     //Possible trigger types
-    static const string ThresholdTriggerType;
-    static const string ThresholdPointTriggerType;
-    static const string StatusTriggerType;
+    static const std::string ThresholdTriggerType;
+    static const std::string ThresholdPointTriggerType;
+    static const std::string StatusTriggerType;
 
-    static const string NoneProjectionType;
-    static const string LSFProjectionType;
+    static const std::string NoneProjectionType;
+    static const std::string LSFProjectionType;
 
 private:
 
@@ -138,13 +138,13 @@ private:
     LONG _trigger_id;
     LONG _paoid;
     LONG _triggernumber;
-    string _triggertype;
+    std::string _triggertype;
     LONG _pointid;
     DOUBLE _pointvalue;
     CtiTime _lastpointvaluetimestamp;
     LONG _normalstate;
     DOUBLE _threshold;
-    string _projectiontype;
+    std::string _projectiontype;
     LONG _projectionpoints;
     LONG _projectaheadduration;
     LONG _thresholdkickpercent;

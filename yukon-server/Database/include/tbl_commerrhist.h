@@ -24,9 +24,9 @@ protected:
    LONG           _soeTag;
    LONG           _errorType;
    LONG           _errorNumber;
-   string      _command;
-   string      _outMessage;
-   string      _inMessage;
+   std::string      _command;
+   std::string      _outMessage;
+   std::string      _inMessage;
 
 public:
 
@@ -37,9 +37,9 @@ public:
                             LONG             soe      = 0,
                             LONG             type     = 0,
                             LONG             number   = 0,
-                            const string& cmd      = string("none"),
-                            const string& out      = string("none"),
-                            const string& in       = string("none"),
+                            const std::string& cmd      = std::string("none"),
+                            const std::string& out      = std::string("none"),
+                            const std::string& in       = std::string("none"),
                             LONG             ceid     = CommErrorHistoryIdGen());
 
    CtiTableCommErrorHistory(const CtiTableCommErrorHistory& aRef);
@@ -67,16 +67,16 @@ public:
    LONG getErrorNumber() const;
    CtiTableCommErrorHistory& setErrorNumber( const LONG en );
 
-   const string& getCommand() const;
-   CtiTableCommErrorHistory& setCommand( const string &str );
+   const std::string& getCommand() const;
+   CtiTableCommErrorHistory& setCommand( const std::string &str );
 
-   const string& getOutMessage() const;
-   CtiTableCommErrorHistory& setOutMessage( const string &str );
+   const std::string& getOutMessage() const;
+   CtiTableCommErrorHistory& setOutMessage( const std::string &str );
 
-   const string& getInMessage() const;
-   CtiTableCommErrorHistory& setInMessage( const string &str );
+   const std::string& getInMessage() const;
+   CtiTableCommErrorHistory& setInMessage( const std::string &str );
 
-   static string getTableName();
+   static std::string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual bool Insert();

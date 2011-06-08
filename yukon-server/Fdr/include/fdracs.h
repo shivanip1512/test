@@ -270,7 +270,7 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
 
         virtual int readConfig( void );
 
@@ -292,13 +292,13 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
         virtual int processControlMessage(CHAR *data);
         virtual int processTimeSyncMessage(CHAR *data);
 
-        string   ForeignToYukonId (USHORT remote, CHAR category, USHORT point);
+        std::string   ForeignToYukonId (USHORT remote, CHAR category, USHORT point);
         USHORT      ForeignToYukonQuality (USHORT aQuality);
         int         ForeignToYukonStatus (USHORT aStatus);
         CtiTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
 
-        string   YukonToForeignTime (CtiTime aTimeStamp);
-        int         YukonToForeignId (string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
+        std::string   YukonToForeignTime (CtiTime aTimeStamp);
+        int         YukonToForeignId (std::string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 

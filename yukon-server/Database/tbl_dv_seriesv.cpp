@@ -20,6 +20,9 @@
 #include "dllbase.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceSeriesV::CtiTableDeviceSeriesV() :
     _device_id(0),
     _save_history(false),

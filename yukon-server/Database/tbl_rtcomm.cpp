@@ -20,6 +20,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableCommRoute::CtiTableCommRoute(const LONG dID, const bool aDef) :
 _routeID(-1),
 DeviceID(dID),

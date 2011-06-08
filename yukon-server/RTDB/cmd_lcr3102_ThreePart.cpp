@@ -32,7 +32,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
     }
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
 {
     if( _state == State_Reading )
     {

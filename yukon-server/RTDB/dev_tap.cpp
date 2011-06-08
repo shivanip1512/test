@@ -34,6 +34,7 @@
 #include "dev_tap.h"
 
 using namespace std;
+using namespace boost::posix_time;
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 

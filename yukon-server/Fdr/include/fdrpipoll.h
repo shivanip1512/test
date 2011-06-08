@@ -19,17 +19,17 @@ class IM_EX_FDRPIBASEAPI CtiFDRPiPoll : public CtiFDRPiBase
 {
 private:  
   typedef struct {
-    vector<PiPointId> pointList;
-    vector<PiPointInfo> infoList;
-    vector<float> rvalList;
-    vector<int32> istatList;
-    vector<int32> timeList;
-    vector<int32> errorList;
+    std::vector<PiPointId> pointList;
+    std::vector<PiPointInfo> infoList;
+    std::vector<float> rvalList;
+    std::vector<int32> istatList;
+    std::vector<int32> timeList;
+    std::vector<int32> errorList;
     time_t nextUpdate;
 
   } PollInfo;
 
-  typedef map<unsigned int, PollInfo> PollDataList;
+  typedef std::map<unsigned int, PollInfo> PollDataList;
 
 public:
 

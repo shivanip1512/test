@@ -38,6 +38,9 @@
 #include "logger.h"
 #include "guard.h"
 
+using std::string;
+using std::endl;
+using std::list;
 
 INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,

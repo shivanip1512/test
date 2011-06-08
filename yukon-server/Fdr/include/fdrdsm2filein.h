@@ -120,13 +120,13 @@ public:
                            DOUBLE aValue,
                            CtiTime aTimestamp,
                            int aQuality,
-                           string aTranslationName,
+                           std::string aTranslationName,
                            CtiMessage **aRetMsg);
-    USHORT ForeignToYukonQuality (string aQuality);
-    CtiTime ForeignToYukonTime (string aTime);
+    USHORT ForeignToYukonQuality (std::string aQuality);
+    CtiTime ForeignToYukonTime (std::string aTime);
 
-    bool processFunctionOne (string &aLine, CtiMessage **aRetMsg);
-    bool processFunctionTwo (string &aLine, CtiMessage **aRetMsg);
+    bool processFunctionOne (std::string &aLine, CtiMessage **aRetMsg);
+    bool processFunctionTwo (std::string &aLine, CtiMessage **aRetMsg);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_Dsm2Filein &setDeleteFileAfterImport (bool aFlag);
@@ -134,7 +134,7 @@ public:
     bool useSystemTime() const;
     CtiFDR_Dsm2Filein &setUseSystemTime (bool aFlag);
 
-    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
+    bool validateAndDecodeLine( std::string &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);

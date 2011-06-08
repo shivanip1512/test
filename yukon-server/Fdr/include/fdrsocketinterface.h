@@ -38,7 +38,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRSocketInterface(string & interfaceType, int aPort=0, int aWindow = 120);
+        CtiFDRSocketInterface(std::string & interfaceType, int aPort=0, int aWindow = 120);
 
         virtual ~CtiFDRSocketInterface();
 
@@ -51,8 +51,8 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPortNumber () const;
         CtiFDRSocketInterface& setPortNumber(int aPort);
 
-        string getIpMask();
-        void setIpMask(const string& ipMask);
+        std::string getIpMask();
+        void setIpMask(const std::string& ipMask);
 
         int  getLinkTimeout () const;
         CtiFDRSocketInterface& setLinkTimeout(int aLinkTimeout);
@@ -65,10 +65,10 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPointTimeVariation () const;
         CtiFDRSocketInterface& setPointTimeVariation(int aTime);
 
-        virtual bool loadList(string &aDirection, CtiFDRPointList &aList) = 0;
+        virtual bool loadList(std::string &aDirection, CtiFDRPointList &aList) = 0;
         virtual CHAR *buildForeignSystemHeartbeatMsg (void) = 0;
         virtual INT getMessageSize(CHAR *data)=0;
-        virtual string decodeClientName(CHAR *data)=0;
+        virtual std::string decodeClientName(CHAR *data)=0;
         virtual int  sendAllPoints(void);
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )=0;
@@ -96,7 +96,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         CtiMutex                    iListenerMux;
         CtiFDRSocketConnection      *iListener;
 
-        string _ipMask;
+        std::string _ipMask;
 
         /********************************
         * added for Progress energy to run RCCS and Yukon on the same machine

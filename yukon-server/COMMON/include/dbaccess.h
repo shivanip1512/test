@@ -24,8 +24,8 @@ namespace Cti
 
 //various database connection options
 IM_EX_CTIBASE
-void setDatabaseParams(const string& dbDll, const string& dbName,
-                       const string& dbUser, const string& dbPassword );
+void setDatabaseParams(const std::string& dbDll, const std::string& dbName,
+                       const std::string& dbUser, const std::string& dbPassword );
 
 // returns a SAConnection if successful and connection is valid, returns NULL if not.
 IM_EX_CTIBASE SAConnection*  getNewConnection();

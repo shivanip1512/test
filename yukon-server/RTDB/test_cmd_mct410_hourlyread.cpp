@@ -6,6 +6,7 @@
 
 using Cti::Devices::Commands::Mct410HourlyReadCommand;
 using Cti::Devices::Commands::DlcCommand;
+using std::string;
 
 struct expected_pointdata
 {

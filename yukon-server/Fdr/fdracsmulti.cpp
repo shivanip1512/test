@@ -31,6 +31,8 @@
 // this class header
 #include "fdracsmulti.h"
 
+using std::string;
+using std::endl;
 
 /** local definitions **/
 

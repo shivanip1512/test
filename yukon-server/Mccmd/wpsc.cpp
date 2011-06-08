@@ -20,6 +20,10 @@ int gFMConfigRouteID        = -1;
 int gFMConfigSerialLow[10]; //     = -1;
 int gFMConfigSerialHigh[10];  //   = -1;
 
+using std::iostream;
+using std::string;
+using std::endl;
+
 /*-----------------------------------------------------------------------------
     DecodeCFDATAFile
 

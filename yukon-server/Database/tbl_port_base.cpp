@@ -19,6 +19,8 @@
 #include "logger.h"
 
 using std::transform;
+using std::string;
+using std::endl;
 
 CtiTablePortBase::CtiTablePortBase() :
 _protocol(ProtocolWrapNone),

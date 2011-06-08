@@ -127,6 +127,8 @@
 #include "guard.h"
 #include "fdrstec.h"
 
+using std::string;
+using std::endl;
 
 CtiFDR_STEC * stecInterface;
 

@@ -31,7 +31,7 @@ protected:
   LONG _contactID;
   LONG _notificationCategoryID;
   bool _disabled;
-  string _notification; // email address would appear hear
+  std::string _notification; // email address would appear hear
   bool _dirty;
 
 private:
@@ -60,15 +60,15 @@ public:
   BOOL isDisabled() const;
   CtiTableContactNotification& setDisabled(BOOL disabled);
 
-  const string& getNotification() const;
-  CtiTableContactNotification& setNotification(const string& notif);
+  const std::string& getNotification() const;
+  CtiTableContactNotification& setNotification(const std::string& notif);
 
   CtiTableContactNotification& setDirty( bool dirt );
   bool isDirty() const;
 
   void dump() const;
 
-  static string getTableName();
+  static std::string getTableName();
   virtual bool Restore();
 
   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);

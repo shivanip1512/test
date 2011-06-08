@@ -37,6 +37,6 @@ public:
    CtiTableDeviceDirectComm& setDeviceID( const LONG did);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   static string getTableName();
+   static std::string getTableName();
 };
 

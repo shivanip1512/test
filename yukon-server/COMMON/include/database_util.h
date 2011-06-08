@@ -20,10 +20,10 @@ bool executeDbCommand(T& databaseCommand, bool printDebug = false)
 {
     if (printDebug)
     {
-        string loggedSQLstring = databaseCommand.asString();
+        std::string loggedSQLstring = databaseCommand.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << std::endl;
         }
     }
 

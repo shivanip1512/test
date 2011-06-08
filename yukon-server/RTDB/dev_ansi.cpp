@@ -9,6 +9,9 @@
 #include "ctitime.h"
 
 using namespace Cti::Protocols::Ansi;
+using std::string;
+using std::list;
+using std::endl;
 
 bool isUnintializedTimeAndValue(double value, double time);
 //=========================================================================================================================================

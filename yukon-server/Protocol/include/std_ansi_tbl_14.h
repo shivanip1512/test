@@ -79,7 +79,7 @@ public:
    CtiAnsiTable14( BYTE *dataBlob, int dataCtrlLen, int numDataCtrlEntries );
    virtual ~CtiAnsiTable14();
    CtiAnsiTable14& operator=(const CtiAnsiTable14& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    void decodeResultPiece( BYTE **dataBlob );
    void generateResultPiece( BYTE **dataBlob );

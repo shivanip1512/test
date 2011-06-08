@@ -167,6 +167,9 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+using std::endl;
+using std::pair;
+using std::string;
 
 #include <boost/regex.hpp>
 

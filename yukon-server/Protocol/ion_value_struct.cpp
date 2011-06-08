@@ -22,6 +22,7 @@
 
 using std::mem_fun;
 using std::count_if;
+using std::endl;
 
 CtiIONStruct::CtiIONStruct( StructTypes structType, unsigned long numElements ) :
     CtiIONValue(ValueType_Struct),

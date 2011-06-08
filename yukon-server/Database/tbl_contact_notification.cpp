@@ -26,6 +26,9 @@
 #include "tbl_contact_notification.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTableContactNotification::CtiTableContactNotification(LONG id) :
   _contactNotifID(id),
   _contactID(0),

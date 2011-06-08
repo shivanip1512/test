@@ -14,7 +14,7 @@ private:
     CtiDeviceManager*     _devMgr;
     ConfigDeviceMap       _deviceConfig;
 
-    bool insertValueIntoConfig(Cti::Config::DeviceConfigSPtr config, const string &value, const string &valueid);
+    bool insertValueIntoConfig(Cti::Config::DeviceConfigSPtr config, const std::string &value, const std::string &valueid);
 
     void loadData(long ID = 0);
     void loadConfigs(long ID = 0);
@@ -32,7 +32,7 @@ public:
     ~CtiConfigManager();
 
     void initialize(CtiDeviceManager &mgr);
-    void processDBUpdate(LONG identifer, string category, string objectType, int updateType);
+    void processDBUpdate(LONG identifer, std::string category, std::string objectType, int updateType);
 
     Cti::Config::DeviceConfigSPtr getDeviceConfigFromID(long configID);
 };

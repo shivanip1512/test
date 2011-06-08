@@ -139,7 +139,7 @@ private:
             bytes data;
 
             EmetconWordB b_word;
-            vector<EmetconWordC> c_words;
+            std::vector<EmetconWordC> c_words;
 
         } request;
 
@@ -370,15 +370,15 @@ private:
 
     error_t validateCrc             (const bytes &message) const;
 
-    string describeRequest       (const idlc_request &request) const;
-    string describeGeneralRequest(const request_info &info)    const;
+    std::string describeRequest       (const idlc_request &request) const;
+    std::string describeGeneralRequest(const request_info &info)    const;
 
     error_t processRequest       (const idlc_request &request, idlc_reply &reply);
     error_t processGeneralRequest(const idlc_request &request, idlc_reply &reply);
 
-    string describeReply         (const idlc_reply   &reply)      const;
-    string describeGeneralReply  (const reply_info   &reply_info) const;
-    string describeStatuses      (const status_info  &statuses)   const;
+    std::string describeReply         (const idlc_reply   &reply)      const;
+    std::string describeGeneralReply  (const reply_info   &reply_info) const;
+    std::string describeStatuses      (const status_info  &statuses)   const;
 
     error_t sendReply(Comms &comms, const idlc_reply &reply) const;
 

@@ -45,6 +45,8 @@
 #include "logger.h"
 #include "regression.h"
 
+using std::endl;
+
 CtiRegression::CtiRegression(int depth) :
     _regDepth(depth), _minDepth(depth)
 { }

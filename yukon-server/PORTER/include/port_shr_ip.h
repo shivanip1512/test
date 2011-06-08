@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_shr_ip
-*
-* Class:  CtiPortShareIP
-* Date:   8/6/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/04 20:31:48 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_SHR_IP_H__
-#define __PORT_SHR_IP_H__
+#pragma once
 #pragma warning( disable : 4786)
 
 
@@ -50,7 +33,7 @@ private:
 
 public:
 
-   CtiPortShareIP(shared_ptr< CtiPort > myPort, INT listenPort);
+   CtiPortShareIP(CtiPortSPtr myPort, INT listenPort);
    virtual ~CtiPortShareIP();
 
    int getIPPort() const;
@@ -67,4 +50,4 @@ public:
    int outThreadValidateNexus();
 
 };
-#endif // #ifndef __PORT_SHR_IP_H__
+

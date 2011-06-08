@@ -79,7 +79,7 @@ public:
 
    void dump() const;
 
-   static string getTableName();
+   static std::string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 

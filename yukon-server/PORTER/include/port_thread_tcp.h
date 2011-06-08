@@ -23,7 +23,7 @@ private:
 
     void loadDeviceTcpProperties(const std::set<long> &device_ids);
 
-    static u_long resolveIp(const string &ip);
+    static u_long resolveIp(const std::string &ip);
 
     Connections::SocketAddress getDeviceAddress( const long device_id ) const;
 

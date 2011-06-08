@@ -35,7 +35,7 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRFtpInterface(string &interfaceType);
+        CtiFDRFtpInterface(std::string &interfaceType);
 
         virtual ~CtiFDRFtpInterface();
 
@@ -60,29 +60,29 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         HINTERNET iSessionHandle;
         HINTERNET iInitialHandle;
 
-        string & getIPAddress();
-        string  getIPAddress() const;
-        CtiFDRFtpInterface &setIPAddress (string aIP);
+        std::string & getIPAddress();
+        std::string  getIPAddress() const;
+        CtiFDRFtpInterface &setIPAddress (std::string aIP);
 
-        string & getPassword();
-        string  getPassword() const;
-        CtiFDRFtpInterface &setPassword (string aPassword);
+        std::string & getPassword();
+        std::string  getPassword() const;
+        CtiFDRFtpInterface &setPassword (std::string aPassword);
 
-        string & getLogin();
-        string  getLogin() const;
-        CtiFDRFtpInterface &setLogin (string aLogin);
+        std::string & getLogin();
+        std::string  getLogin() const;
+        CtiFDRFtpInterface &setLogin (std::string aLogin);
 
-        string & getServerFileName();
-        string  getServerFileName() const;
-        CtiFDRFtpInterface &setServerFileName (string aFile);
+        std::string & getServerFileName();
+        std::string  getServerFileName() const;
+        CtiFDRFtpInterface &setServerFileName (std::string aFile);
 
-        string & getFTPDirectory();
-        string  getFTPDirectory() const;
-        CtiFDRFtpInterface &setFTPDirectory (string aDir);
+        std::string & getFTPDirectory();
+        std::string  getFTPDirectory() const;
+        CtiFDRFtpInterface &setFTPDirectory (std::string aDir);
 
-        string & getLocalFileName();
-        string  getLocalFileName() const;
-        CtiFDRFtpInterface &setLocalFileName (string aFile);
+        std::string & getLocalFileName();
+        std::string  getLocalFileName() const;
+        CtiFDRFtpInterface &setLocalFileName (std::string aFile);
 
         int getPort() const;
         CtiFDRFtpInterface &setPort (int aPort);
@@ -110,12 +110,12 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         int                iDownloadInterval;
         long               iLinkStatusID;
 
-        string      iIPAddress;
-        string      iPassword;
-        string      iLogin;
-        string      iServerFileName;
-        string      iLocalFileName;
-        string      iFTPDirectory;
+        std::string      iIPAddress;
+        std::string      iPassword;
+        std::string      iLogin;
+        std::string      iServerFileName;
+        std::string      iLocalFileName;
+        std::string      iFTPDirectory;
 };
 
 #endif  //  #ifndef __FDRFTPINTERFACE_H__

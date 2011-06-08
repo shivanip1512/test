@@ -2,6 +2,9 @@
 #include "msg_server_resp.h"
 #include "logger.h"
 
+using std::endl;
+using std::string;
+
 RWDEFINE_COLLECTABLE( CtiServerResponseMsg, MSG_SERVER_RESPONSE );
 
 CtiServerResponseMsg::CtiServerResponseMsg(const CtiServerResponseMsg& resp)

@@ -30,14 +30,14 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
              Client_Multiple
         } FDRConnectionType;
 
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
                                              CtiFDRServerConnection *aInBoundConnection,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
                                              SOCKET aInBound,
                                              SOCKET aOutBound,
                                              FDRConnectionType aType,
@@ -49,16 +49,16 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         USHORT getPortNumber () const;
         CtiFDRSocketLayer& setPortNumber (INT aPortNumber);
 
-        string getIpMask();
-        void setIpMask(const string& ipMask);
+        std::string getIpMask();
+        void setIpMask(const std::string& ipMask);
 
         USHORT getConnectPortNumber () const;
         HEV & getConnectionSem ();
         CtiFDRSocketLayer& setConnectionSem (HEV aSem);
 
-        string       &   getName(void);
-        string          getName(void) const;
-        CtiFDRSocketLayer& setName (string aName);
+        std::string       &   getName(void);
+        std::string        getName(void) const;
+        CtiFDRSocketLayer& setName (std::string aName);
 
         CtiFDRSocketConnection::FDRConnectionStatus getInBoundConnectionStatus() const;
         CtiFDRSocketLayer& setInBoundConnectionStatus (CtiFDRSocketConnection::FDRConnectionStatus aStatus);
@@ -79,7 +79,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
 
         // convience functions used to get from layer to interface
         int getMessageSize(CHAR *data);
-        string decodeClientName(CHAR *data);
+        std::string decodeClientName(CHAR *data);
         int processMessageFromForeignSystem (CHAR *data);
         bool sendMessageToForeignSys ( CtiMessage *aMessage );
         CHAR *buildForeignSystemHeartbeatMsg (void);
@@ -110,7 +110,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         void threadFunctionConnectionStatus( void );
 
     private:
-        string               iName;
+        std::string            iName;
         CtiFDRSocketInterface  *iParent;
 
         CtiFDRServerConnection  *iInBoundConnection;

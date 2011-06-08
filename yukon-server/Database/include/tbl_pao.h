@@ -9,17 +9,17 @@ class IM_EX_CTIYUKONDB CtiTblPAO : public CtiMemDBObject
 
 protected:
 
-    LONG        _paObjectID;
-    string      _category;
-    INT         _class;
-    string      _classStr;
-    string      _name;
-    INT         _type;
-    string      _typeStr;
-    string      _description;
-    string      _paostatistics;
+    LONG             _paObjectID;
+    std::string      _category;
+    INT              _class;
+    std::string      _classStr;
+    std::string      _name;
+    INT              _type;
+    std::string      _typeStr;
+    std::string      _description;
+    std::string      _paostatistics;
 
-    bool        _disableFlag;
+    bool             _disableFlag;
 
 public:
 
@@ -37,43 +37,43 @@ public:
     LONG getID() const;
     CtiTblPAO& setID( LONG paoid );
 
-    string getCategory() const;
-    string& getCategory();
-    CtiTblPAO& setCategory(const string &catStr);
+    std::string getCategory() const;
+    std::string& getCategory();
+    CtiTblPAO& setCategory(const std::string &catStr);
 
     INT getClass() const;
     INT& getClass();
     CtiTblPAO& setClass(const INT &clsStr);
 
-    const string& getClassStr() const;
-    CtiTblPAO& setClassStr(const string& classStr);
+    const std::string& getClassStr() const;
+    CtiTblPAO& setClassStr(const std::string& classStr);
 
-    string getName() const;
-    string& getName();
-    CtiTblPAO& setName(const string &nmStr);
+    std::string getName() const;
+    std::string& getName();
+    CtiTblPAO& setName(const std::string &nmStr);
 
     INT getType() const;
     CtiTblPAO& setType(const INT &tpStr);
 
-    const string& getTypeStr() const;
-    CtiTblPAO& setTypeStr(const string& typeStr);
+    const std::string& getTypeStr() const;
+    CtiTblPAO& setTypeStr(const std::string& typeStr);
 
-    string getDescription() const;
-    string& getDescription();
-    CtiTblPAO& setDescription(const string &desStr);
+    std::string getDescription() const;
+    std::string& getDescription();
+    CtiTblPAO& setDescription(const std::string &desStr);
 
-    string getDisableFlagStr() const;
+    std::string getDisableFlagStr() const;
 
     bool isInhibited() const;
     CtiTblPAO& setDisableFlag(const bool flag);
-    CtiTblPAO& setDisableFlagStr(const string& flag);
+    CtiTblPAO& setDisableFlagStr(const std::string& flag);
 
     void resetDisableFlag(bool b = FALSE);
 
-    string getStatisticsStr() const;
-    CtiTblPAO& setStatisticsStr(const string& );
+    std::string getStatisticsStr() const;
+    CtiTblPAO& setStatisticsStr(const std::string& );
 
-    static string getTableName();
+    static std::string getTableName();
 
     bool Update();
     bool Insert();

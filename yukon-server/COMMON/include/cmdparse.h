@@ -8,22 +8,18 @@
 #include "dlldefs.h"
 #include "parsevalue.h"
 
-
-using std::string;
-using std::map;
-
 struct simple_hash
 {
-   unsigned long operator()(const string& x) const { return x.length() * (long)x[0]; }
+   unsigned long operator()(const std::string& x) const { return x.length() * (long)x[0]; }
 };
 
 class IM_EX_CTIBASE CtiCommandParser
 {
 protected:
-   string                  _cmdString;
-   std::list< string >   _actionItems;
+   std::string                              _cmdString;
+   std::list< std::string >                 _actionItems;
 
-   map< string, CtiParseValue > _cmd;
+   std::map< std::string, CtiParseValue >   _cmd;
 
    UINT     _flags,
             _command;
@@ -31,53 +27,53 @@ protected:
 
 private:
 
-    void    doParse(const string &Cmd);
-    void    doParseGetValue (const string &CmdStr);
-    void    doParsePutValue (const string &CmdStr);
-    void    doParseGetStatus(const string &CmdStr);
-    void    doParsePutStatus(const string &CmdStr);
-    void    doParseControl  (const string &CmdStr);
-    void    doParseGetConfig(const string &CmdStr);
-    void    doParsePutConfig(const string &CmdStr);
-    void    doParseScan     (const string &CmdStr);
+    void    doParse(const std::string &Cmd);
+    void    doParseGetValue (const std::string &CmdStr);
+    void    doParsePutValue (const std::string &CmdStr);
+    void    doParseGetStatus(const std::string &CmdStr);
+    void    doParsePutStatus(const std::string &CmdStr);
+    void    doParseControl  (const std::string &CmdStr);
+    void    doParseGetConfig(const std::string &CmdStr);
+    void    doParsePutConfig(const std::string &CmdStr);
+    void    doParseScan     (const std::string &CmdStr);
 
-    void    doParseGetValueExpresscom(const string &CmdStr);
-    void    doParsePutConfigVersacom (const string &CmdStr);
-    void    doParsePutConfigEmetcon  (const string &CmdStr);
-    void    doParsePutStatusVersacom (const string &CmdStr);
-    void    doParsePutStatusFisherP  (const string &CmdStr);
-    void    doParsePutStatusEmetcon  (const string &CmdStr);
-    void    resolveProtocolType(const string &CmdStr);
-    void    doParseExpresscomAddressing(const string &CmdStr);
+    void    doParseGetValueExpresscom(const std::string &CmdStr);
+    void    doParsePutConfigVersacom (const std::string &CmdStr);
+    void    doParsePutConfigEmetcon  (const std::string &CmdStr);
+    void    doParsePutStatusVersacom (const std::string &CmdStr);
+    void    doParsePutStatusFisherP  (const std::string &CmdStr);
+    void    doParsePutStatusEmetcon  (const std::string &CmdStr);
+    void    resolveProtocolType(const std::string &CmdStr);
+    void    doParseExpresscomAddressing(const std::string &CmdStr);
 
-    void    doParseControlExpresscom  (const string &CmdStr);
-    void    doParseControlExpresscomCriticalPeakPricing(const string &_CmdStr);
-    void    doParsePutConfigExpresscom(const string &CmdStr);
-    void    doParsePutStatusExpresscom(const string &CmdStr);
+    void    doParseControlExpresscom  (const std::string &CmdStr);
+    void    doParseControlExpresscomCriticalPeakPricing(const std::string &_CmdStr);
+    void    doParsePutConfigExpresscom(const std::string &CmdStr);
+    void    doParsePutStatusExpresscom(const std::string &CmdStr);
 
-    void    doParseControlSA  (const string &CmdStr);
-    void    doParsePutConfigSA(const string &CmdStr);
-    void    doParsePutConfigUtilityUsage(const string &_CmdStr);
-    void    doParsePutConfigThermostatSchedule(const string &CmdStr);
+    void    doParseControlSA  (const std::string &CmdStr);
+    void    doParsePutConfigSA(const std::string &CmdStr);
+    void    doParsePutConfigUtilityUsage(const std::string &_CmdStr);
+    void    doParsePutConfigThermostatSchedule(const std::string &CmdStr);
 
-    INT     convertTimeInputToSeconds(const string& inStr) const;
-    INT     isTokenThermostatScheduleDOW(string &token);
+    INT     convertTimeInputToSeconds(const std::string& inStr) const;
+    INT     isTokenThermostatScheduleDOW(std::string &token);
     void    doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, INT &key);
 
-    void    doParsePutConfigCBC(const string &CmdStr);
+    void    doParsePutConfigCBC(const std::string &CmdStr);
 
     void    setFlags(UINT flags);
     void    setCommand(UINT command);
 
-    typedef std::map< string, CtiParseValue > map_type;
-    typedef std::map< string, CtiParseValue >::const_iterator  map_itr_type;
+    typedef std::map< std::string, CtiParseValue > map_type;
+    typedef std::map< std::string, CtiParseValue >::const_iterator  map_itr_type;
 
     map_type    getMap() const    { return _cmd; }
 
 
 public:
 
-   CtiCommandParser(const string str);
+   CtiCommandParser(const std::string str);
 
    CtiCommandParser(const CtiCommandParser& aRef);
 
@@ -87,9 +83,9 @@ public:
 
    void Dump();
 
-   const string& getCommandStr() const;
+   const std::string& getCommandStr() const;
 
-   bool isEqual(const string &cmdStr) const;
+   bool isEqual(const std::string &cmdStr) const;
 
    int      getControlled() const;
    bool     isControlled()  const;
@@ -100,22 +96,22 @@ public:
 
    UINT   getFlags()   const;
    UINT   getOffset()  const;
-   bool   isKeyValid(const string &key) const;
-   INT    getiValue (const string &key, INT valifnotfound = INT_MIN) const;
-   double getdValue (const string &key, double valifnotfound = 0.0) const;
-   string getsValue (const string &key) const;
+   bool   isKeyValid(const std::string &key) const;
+   INT    getiValue (const std::string &key, INT valifnotfound = INT_MIN) const;
+   double getdValue (const std::string &key, double valifnotfound = 0.0) const;
+   std::string getsValue (const std::string &key) const;
    // Should only be called externally, sets externally changed flag
-   CtiCommandParser& setValue(const string &key, INT val);
+   CtiCommandParser& setValue(const std::string &key, INT val);
    // Should only be called externally, sets externally changed flag
-   CtiCommandParser& setValue(const string &key, double val);
+   CtiCommandParser& setValue(const std::string &key, double val);
    // Should only be called externally, sets externally changed flag
-   CtiCommandParser& setValue(const string &key, string val);
+   CtiCommandParser& setValue(const std::string &key, std::string val);
 
-   const std::list< string >& getActionItems() const;
+   const std::list< std::string >& getActionItems() const;
 
    void parse();
 
-   string asString();
+   std::string asString();
 };
 
 

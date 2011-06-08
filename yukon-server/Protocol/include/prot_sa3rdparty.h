@@ -101,8 +101,6 @@
 #include "prot_base.h"
 #include "protocol_sa.h"        // Telvent provided sa library.
 
-using std::pair;
-
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
@@ -173,8 +171,8 @@ public:
     CtiProtocolSA3rdParty& setShed( bool val );
     CtiProtocolSA3rdParty& setFunction( int val );
     CtiProtocolSA3rdParty& setCode205( int val );
-    CtiProtocolSA3rdParty& setCodeGolay( string val );
-    CtiProtocolSA3rdParty& setCodeSADigital( string val );
+    CtiProtocolSA3rdParty& setCodeGolay( std::string val );
+    CtiProtocolSA3rdParty& setCodeSADigital( std::string val );
     CtiProtocolSA3rdParty& setSwitchTimeout( int val );
     CtiProtocolSA3rdParty& setCycleTime( int val );
     CtiProtocolSA3rdParty& setRepeats( int val );
@@ -182,7 +180,7 @@ public:
     CtiProtocolSA3rdParty& setDelayTxTime( int val );
     CtiProtocolSA3rdParty& setMaxTxTime( int val );
 
-    void copyMessage(string &str) const;
+    void copyMessage(std::string &str) const;
 
     void getBuffer(BYTE *dest, ULONG &len) const;
     void appendVariableLengthTimeSlot(int transmitter,BYTE *dest,ULONG &len, BYTE dlyToTx = 0, BYTE maxTx = 0, BYTE lbtMode = 0);
@@ -203,17 +201,17 @@ public:
     static INT TMSlen (UCHAR *abuf, INT *len);
     static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 
-    static pair< unsigned long, unsigned > parseGolayAddress(unsigned long code);
-    static pair< unsigned long, unsigned > parseGolayAddress(const string &golay_code);
+    static std::pair< unsigned long, unsigned > parseGolayAddress(unsigned long code);
+    static std::pair< unsigned long, unsigned > parseGolayAddress(const std::string &golay_code);
 
-    static string asString(const CtiSAData &sa);
-    static string strategyAsString(const CtiSAData &sa);
-    static string functionAsString(const CtiSAData &sa);
-    static pair< int, int > computeSnCTime(const int swTimeout, const int cycleTime);
-    static pair< int, int > computeSWnCTTime(const int sTime, const int cTime, bool gt105 = false);
+    static std::string asString(const CtiSAData &sa);
+    static std::string strategyAsString(const CtiSAData &sa);
+    static std::string functionAsString(const CtiSAData &sa);
+    static std::pair< int, int > computeSnCTime(const int swTimeout, const int cycleTime);
+    static std::pair< int, int > computeSWnCTTime(const int sTime, const int cTime, bool gt105 = false);
 
-    static string asString(const SA_CODE &sa);
-    static string asString(const X205CMD &cmd);
+    static std::string asString(const SA_CODE &sa);
+    static std::string asString(const X205CMD &cmd);
 
 };
 

@@ -48,14 +48,14 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       int         _dbReloadInterval;
       int         _panicNumber;
 
-      string   _path;
-      string   _appName;
-      string   _apiVersion;
+      std::string   _path;
+      std::string   _appName;
+      std::string   _apiVersion;
 
       CtiTime     _reloadTimer;
       CtiTime     _reportTimer;
 
-      vector< CtiTelegyrGroup >  _groupList;
+      std::vector< CtiTelegyrGroup >  _groupList;
 
       typedef CtiFDRInterface Inherited;
 
@@ -80,8 +80,8 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       bool needsConnection();
       CtiFDRTelegyr & setConnected( bool conn );
 
-      string getPath( void );
-      CtiFDRTelegyr & setPath( string inPath );
+      std::string getPath( void );
+      CtiFDRTelegyr & setPath( std::string inPath );
 
       static const CHAR * TBLNAME_TELEGYR_GROUPS;
       static const CHAR * KEY_HI_REASONABILITY_FILTER;
@@ -130,7 +130,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void receivedDigital( int arraySize, int group_num, int group_type, int first, int last, int result[] );
       void receivedCounter( int arraySize, int group_num, int group_type, int first, int last, int result[] );
 
-      string decipherReason( int transmissionReason );
+      std::string decipherReason( int transmissionReason );
       USHORT getQuality( SYS_DEP_INFO );
       bool isReloadTime( void );
       void threadFunctionGetDataFromTelegyr( void );

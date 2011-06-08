@@ -21,9 +21,6 @@
 #include <map>
 #include <vector>
 #include <queue>
-using std::vector;
-using std::map;
-using std::queue;
 
 #include "boost/crc.hpp"
 using boost::crc_16_type;
@@ -60,7 +57,7 @@ private:
     bool           _configRead;
 
     bool           _deadbandsSent;
-    map<int, int>  _deadbands;
+    std::map<int, int>  _deadbands;
 
     int _analog_min, _analog_max,
         _status_min, _status_max,
@@ -228,8 +225,8 @@ private:
         CtiPointType_t type;
     };
 
-    queue< seriesv_pointdata > _collected_points;
-    queue< seriesv_pointdata > _returned_points;
+    std::queue< seriesv_pointdata > _collected_points;
+    std::queue< seriesv_pointdata > _returned_points;
 
 #pragma pack(pop)
 
@@ -251,7 +248,7 @@ public:
     void setCommand( SeriesVCommand cmd );
     void setCommandControl( SeriesVCommand cmd, unsigned control_offset, unsigned control_parameter );
 
-    void setDeadbands( const vector<unsigned> &points, const vector<unsigned> &deadbands );
+    void setDeadbands( const std::vector<unsigned> &points, const std::vector<unsigned> &deadbands );
     void setAnalogPoints    ( int min, int max );
     void setStatusPoints    ( int min, int max );
     void setAccumPoints     ( int min, int max );

@@ -7,8 +7,6 @@
 
 #include <rw/collect.h>
 
-using std::string;
-
 #include "dlldefs.h"
 #include "message.h"
 

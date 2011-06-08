@@ -10,6 +10,9 @@
 #include "database_writer.h"
 
 using std::transform;
+using std::map;
+using std::string;
+using std::endl;
 
 CtiTblPAO::CtiTblPAO() :
     _paObjectID(-1),

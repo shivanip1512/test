@@ -17,15 +17,15 @@ class IM_EX_CTIYUKONDB CtiTableDeviceTapPaging : public CtiMemDBObject
 protected:
 
    LONG           _deviceID;
-   string      _pagerNumber;                    // a.k.a. CAPCODE
+   std::string    _pagerNumber;                    // a.k.a. CAPCODE
 
-   string    _senderID;
-   string    _securityCode;
-   string    _postPath;
+   std::string    _senderID;
+   std::string    _securityCode;
+   std::string    _postPath;
 
 public:
 
-   CtiTableDeviceTapPaging(string pn = string());
+   CtiTableDeviceTapPaging(std::string pn = std::string());
 
    CtiTableDeviceTapPaging(const CtiTableDeviceTapPaging& aRef);
 
@@ -33,19 +33,19 @@ public:
 
    CtiTableDeviceTapPaging& operator=(const CtiTableDeviceTapPaging& aRef);
 
-   string                  getPagerNumber() const;
-   string&                 getPagerNumber();
-   CtiTableDeviceTapPaging&   setPagerNumber(const string &aStr);
+   std::string                  getPagerNumber() const;
+   std::string&                 getPagerNumber();
+   CtiTableDeviceTapPaging&     setPagerNumber(const std::string &aStr);
 
-   string                  getSenderID() const;
-   string                  getSecurityCode() const;
-   string                  getPOSTPath() const;
+   std::string                  getSenderID() const;
+   std::string                  getSecurityCode() const;
+   std::string                  getPOSTPath() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    LONG getDeviceID() const;
    CtiTableDeviceTapPaging& setDeviceID(const LONG did);
 
-   static string getTableName();
+   static std::string getTableName();
 };
 

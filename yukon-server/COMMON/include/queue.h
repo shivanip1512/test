@@ -19,8 +19,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/xtime.hpp>
 
-using std::string;
-
 
 // Template Queuing class
 // This now uses class C as the sorting operator, and guarantees fifo and priority operation
@@ -73,7 +71,7 @@ private:
     typedef boost::timed_mutex::scoped_timed_lock lock_t;
 
     queue_t      *_col;
-    string        _name;
+    std::string   _name;
     unsigned int  _insertValue;
 
     boost::xtime xt_eot;
@@ -127,7 +125,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -142,7 +140,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -156,7 +154,7 @@ public:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ") q.size() " << getCollection().size() << endl;
+                            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ") q.size() " << getCollection().size() << std::endl;
                         }
                         resetCollection();     // Dump the queue?
                     }
@@ -167,7 +165,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
             resetCollection();     // Dump the queue?
         }
     }
@@ -191,7 +189,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
         }
 
         return pval;
@@ -233,7 +231,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
         }
         return pval;
     }
@@ -258,7 +256,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;}
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
         }
 
         return putWasDone;
@@ -306,12 +304,12 @@ public:
         getCollection().clear();
     }
 
-    string getName() const
+    std::string getName() const
     {
         return _name;
     }
 
-    CtiQueue< T, C > & setName(const string &str)
+    CtiQueue< T, C > & setName(const std::string &str)
     {
         _name = str;
         return *this;
@@ -368,7 +366,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -380,7 +378,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -391,7 +389,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
         }
 
@@ -416,7 +414,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
         }
     }
@@ -434,7 +432,7 @@ private:
 
     typedef boost::timed_mutex::scoped_timed_lock lock_t;
 
-    string       _name;
+    std::string       _name;
 
     struct boost::xtime xt_eot;
 
@@ -448,7 +446,7 @@ private:
         }
         catch(...)
         {
-            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
     }
 
@@ -481,7 +479,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
     }
 
@@ -501,7 +499,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         return pval;
@@ -543,7 +541,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
         return pval;
     }
@@ -564,7 +562,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         return putWasDone;
@@ -587,12 +585,12 @@ public:
         resetCollection();
     }
 
-    string getName() const
+    std::string getName() const
     {
         return _name;
     }
 
-    CtiFIFOQueue< T > & setName(const string &str)
+    CtiFIFOQueue< T > & setName(const std::string &str)
     {
         _name = str;
         return *this;

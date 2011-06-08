@@ -19,6 +19,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableMacroRoute::CtiTableMacroRoute(LONG routeId, INT routeOrder) :
     RouteID(0),
     _singleRouteID(0),

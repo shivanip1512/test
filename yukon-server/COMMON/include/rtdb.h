@@ -44,15 +44,12 @@
 #include "hashkey.h"
 #include "utility.h"
 #include "string_utility.h"
-using std::list;
-using std::map;
+
 /*
  *  These are the Configuration Parameters for the Port Real Time Database
  */
 
 #include "dllbase.h"
-
-using std::equal_to;
 
 
 template <class K>
@@ -69,9 +66,9 @@ private:
 protected:
 
    // This is a keyed Mapping which does not allow duplicates!
-   map<long, T* > Map;
+   std::map<long, T* > Map;
 
-   list< T* > _orphans;
+   std::list< T* >     _orphans;
 
    int _dberrorcode;
 
@@ -178,8 +175,8 @@ public:
    {
        int count = 0;
 
-       list< long >       deleteKeys;
-       list< T* >    deleteObjs;
+       std::list< long >       deleteKeys;
+       std::list< T* >         deleteObjs;
 
        MapIterator mapitr = Map.begin();
        T   *pdev = 0;
@@ -218,7 +215,7 @@ public:
       return Map.size();
    }
 
-   map<long , T* > & getMap()      { return Map; }
+   std::map<long , T* > & getMap()      { return Map; }
    CtiMutex &      getMux()       { return _classMutex; }
 
    int getErrorCode() const { return _dberrorcode; };

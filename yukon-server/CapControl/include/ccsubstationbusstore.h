@@ -371,7 +371,7 @@ public:
     void removeFromOrphanList(long ccId);
 
 
-    list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
+    std::list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     CapBankList getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
     CapBankList getUnexpecteedUnsolicitedList() {return _unexpectedUnsolicited;};
     CapBankList getRejectedControlCapBankList() {return _rejectedCapBanks;};
@@ -623,9 +623,9 @@ private:
     CapBankList _unexpectedUnsolicited;
     CapBankList _rejectedCapBanks;
 
-    list <CC_DBRELOAD_INFO> _reloadList;
-    Cti::CapControl::PaoIdList _orphanedCapBanks;
-    Cti::CapControl::PaoIdList _orphanedFeeders;
+    std::list <CC_DBRELOAD_INFO> _reloadList;
+    Cti::CapControl::PaoIdList   _orphanedCapBanks;
+    Cti::CapControl::PaoIdList   _orphanedFeeders;
 
     CapBankIdToKvarMap _maxKvarMap;
 

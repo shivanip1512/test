@@ -172,6 +172,11 @@
 #include "utility.h"
 
 using std::transform;
+using std::list;
+using std::string;
+using std::endl;
+using std::vector;
+
 // Constructors, Destructor, and Operators
 CtiFDR_LodeStarImportBase::CtiFDR_LodeStarImportBase(string &aInterface)
 : CtiFDRTextFileBase(aInterface)

@@ -22,6 +22,10 @@
 #include "dllbase.h"
 #include "port_direct.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
 {
     return _localSerial;

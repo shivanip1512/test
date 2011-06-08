@@ -3,7 +3,6 @@
 #define __CTI_LOGIC_H__
 
 #include <string>
-using std::string;
 
 #include <tcl.h>
 

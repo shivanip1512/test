@@ -64,7 +64,7 @@ public:
 
    CtiTableEmetconLoadGroup& setDeviceID( const LONG did );
 
-   static string getTableName();
+   static std::string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

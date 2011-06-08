@@ -33,15 +33,12 @@
 #include "tbl_lmprogramhistory.h"
 #include "database_connection.h"
 
-using std::set;
-using std::vector;
-using boost::shared_ptr;
 class CtiLMProgramDirect;
 
 #if VSLICK_TAG_WORKAROUND
 typedef CtiLMProgramDirect * CtiLMProgramDirectSPtr;
 #else
-typedef shared_ptr< CtiLMProgramDirect > CtiLMProgramDirectSPtr;
+typedef boost::shared_ptr< CtiLMProgramDirect > CtiLMProgramDirectSPtr;
 #endif
 
 class CtiLMProgramDirect : public CtiLMProgramBase
@@ -59,10 +56,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     LONG getNotifyActiveOffset() const;
     LONG getNotifyInactiveOffset() const;
-    const string& getMessageSubject() const;
-    const string& getMessageHeader() const;
-    const string& getMessageFooter() const;
-    const string& getAdditionalInfo() const;
+    const std::string& getMessageSubject() const;
+    const std::string& getMessageHeader() const;
+    const std::string& getMessageFooter() const;
+    const std::string& getAdditionalInfo() const;
     LONG getTriggerOffset() const;
     LONG getTriggerRestoreOffset() const;
 	
@@ -79,18 +76,18 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool getIsRampingIn();
     bool getIsRampingOut();
     
-    vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
+    std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
     CtiLMGroupVec& getLMProgramDirectGroups();
         
-    set<CtiLMProgramDirectSPtr>& getMasterPrograms();
-    set<CtiLMProgramDirectSPtr>& getSubordinatePrograms();
+    std::set<CtiLMProgramDirectSPtr>& getMasterPrograms();
+    std::set<CtiLMProgramDirectSPtr>& getSubordinatePrograms();
     
-    vector<int>&  getNotificationGroupIDs();
+    std::vector<int>&  getNotificationGroupIDs();
 
-    CtiLMProgramDirect& setMessageSubject(const string& subject);
-    CtiLMProgramDirect& setMessageHeader(const string& header);
-    CtiLMProgramDirect& setMessageFooter(const string& footer);
-    CtiLMProgramDirect& setAdditionalInfo(const string& additional);
+    CtiLMProgramDirect& setMessageSubject(const std::string& subject);
+    CtiLMProgramDirect& setMessageHeader(const std::string& header);
+    CtiLMProgramDirect& setMessageFooter(const std::string& footer);
+    CtiLMProgramDirect& setAdditionalInfo(const std::string& additional);
     CtiLMProgramDirect& setTriggerOffset(LONG trigger_offst);
     CtiLMProgramDirect& setTriggerRestoreOffset(LONG restore_offst);
     
@@ -115,8 +112,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
     
-    BOOL maintainProgramControl(LONG currentPriority, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
-    BOOL hasGearChanged(LONG currentPriority,         vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
+    BOOL maintainProgramControl(LONG currentPriority, std::vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
+    BOOL hasGearChanged(LONG currentPriority,         std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
     DOUBLE updateProgramControlForGearChange(ULONG secondsFrom1901, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -135,7 +132,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL wasControlActivatedByStatusTrigger();   
 
     virtual CtiLMProgramBaseSPtr replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);    
@@ -157,8 +154,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     void scheduleStartNotification(const CtiTime& start_time);
     void scheduleStopNotification(const CtiTime& stop_time);
 
-    virtual void setLastUser(const string& user);
-    virtual void setChangeReason(const string& reason);
+    virtual void setLastUser(const std::string& user);
+    virtual void setChangeReason(const std::string& reason);
 	
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -183,12 +180,12 @@ private:
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
 
-    string _message_subject;
-    string _message_header;
-    string _message_footer;
-    string _additionalinfo;
-    string _last_user;
-    string _change_reason;
+    std::string _message_subject;
+    std::string _message_header;
+    std::string _message_footer;
+    std::string _additionalinfo;
+    std::string _last_user;
+    std::string _change_reason;
     LONG _trigger_offset;
     LONG _trigger_restore_offset;
 	
@@ -208,13 +205,13 @@ private:
     //When the dynamic data was last saved
     CtiTime  _dynamictimestamp;
     
-    vector<CtiLMProgramDirectGear*> _lmprogramdirectgears;
+    std::vector<CtiLMProgramDirectGear*> _lmprogramdirectgears;
     CtiLMGroupVec  _lmprogramdirectgroups;
 
-    set<CtiLMProgramDirectSPtr> _master_programs;
-    set<CtiLMProgramDirectSPtr> _subordinate_programs;
+    std::set<CtiLMProgramDirectSPtr> _master_programs;
+    std::set<CtiLMProgramDirectSPtr> _subordinate_programs;
                                      
-    vector<int> _notificationgroupids;
+    std::vector<int> _notificationgroupids;
 
     unsigned long _curLogID;
 
@@ -234,8 +231,8 @@ private:
     bool isAStopState(int state);
     unsigned long getCurrentHistLogId();
     void setCurrentHistLogId(unsigned long logID);
-    string getAndClearChangeReason();
-    string getLastUser();
+    std::string getAndClearChangeReason();
+    std::string getLastUser();
     
     void restore(Cti::RowReader &rdr);
 };

@@ -27,7 +27,7 @@ public:
     {
     };
 
-    virtual void refresh(LONG paoID = 0, string category = string(""), string devicetype = string(""));
+    virtual void refresh(LONG paoID = 0, std::string category = std::string(""), std::string devicetype = std::string(""));
 };
 
 }

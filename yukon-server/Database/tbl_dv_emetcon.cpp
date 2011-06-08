@@ -6,6 +6,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableEmetconLoadGroup::CtiTableEmetconLoadGroup() :
 _deviceID(-1),
 _silver(0),

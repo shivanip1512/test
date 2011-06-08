@@ -14,6 +14,9 @@
 // this class header
 #include "fdrscadahelper.h"
 
+using std::string;
+using std::endl;
+
 static bool checkStatusType(CtiPointType_t type);
 static bool checkValueType(CtiPointType_t type);
 

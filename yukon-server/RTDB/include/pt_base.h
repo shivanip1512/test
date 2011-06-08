@@ -20,13 +20,9 @@
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 #include "boost/weak_ptr.hpp"
-using boost::shared_ptr;
-using boost::weak_ptr;
 #include "dbmemobject.h"
 #include "dlldefs.h"
 #include "resolvers.h"
-
-
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "pointtypes.h"
@@ -63,7 +59,7 @@ public:
 
    CtiPointBase& operator=(const CtiPointBase& aRef);
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    void DecodeAttributeDatabaseReader(Cti::RowReader &rdr);
@@ -77,7 +73,7 @@ public:
    LONG            getPointID() const;
    LONG            getID() const;
 
-   string          getName() const;
+   std::string          getName() const;
    LONG            getDeviceID() const;
 
    //string          getLogicalGroup() const;
@@ -125,8 +121,8 @@ void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt);
 
 typedef CtiPointBase CtiPoint;
 
-typedef shared_ptr< CtiPointBase > CtiPointSPtr;
-typedef weak_ptr< CtiPointBase > CtiPointWPtr;
+typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;
+typedef boost::weak_ptr< CtiPointBase > CtiPointWPtr;
 
 
 #endif // #ifndef __PT_BASE_H__

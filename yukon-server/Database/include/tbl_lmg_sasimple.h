@@ -44,7 +44,7 @@ protected:
     LONG        _lmGroupId;
     LONG        _routeId;
 
-    string   _operationalAddress;
+    std::string   _operationalAddress;
     int         _nominalTimeout;        // Switch is hardcoded to be off for this duration in seconds!
     int         _virtualTimeout;        // Group is desired to control for this duration in seconds.  If these are not equal multiple control messages must be sent to make it occur (master cycle-like)
     int         _function;
@@ -61,8 +61,8 @@ public:
 
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
-    string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    string getGolayOperationalAddress() const;
+    std::string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    std::string getGolayOperationalAddress() const;
     int getFunction( bool control ) const;
     int getNominalTimeout( void ) const;
     int getVirtualTimeout( void ) const;
@@ -71,12 +71,12 @@ public:
 
     CtiTableSASimpleGroup& setLmGroupId( LONG newVal );
     CtiTableSASimpleGroup& setRouteId( LONG newVal );
-    CtiTableSASimpleGroup& setOperationalAddress( string newVal );
+    CtiTableSASimpleGroup& setOperationalAddress( std::string newVal );
     CtiTableSASimpleGroup& setFunction( int newVal );          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     CtiTableSASimpleGroup& setNominalTimeout( int newVal );
     CtiTableSASimpleGroup& setVirtualTimeout( int newVal );
 
-    static string getTableName( void );
+    static std::string getTableName( void );
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

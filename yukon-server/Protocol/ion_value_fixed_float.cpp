@@ -15,6 +15,7 @@
 
 #include "ion_value_fixed_float.h"
 
+using std::endl;
 
 CtiIONFloat::CtiIONFloat( float initialValue ) :
     CtiIONValueFixed(Fixed_Float),

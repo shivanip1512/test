@@ -32,13 +32,13 @@ class IM_EX_CTIYUKONDB CtiTableDeviceMCTIEDPort : public CtiMemDBObject
 {
 protected:
 
-    LONG      _deviceID;
-    string _password;
-    INT       _connectedIED,
-              _iedScanRate,
-              _defaultDataClass,
-              _defaultDataOffset,
-              _realTimeScan;
+    LONG        _deviceID;
+    std::string _password;
+    INT         _connectedIED,
+                _iedScanRate,
+                _defaultDataClass,
+                _defaultDataOffset,
+                _realTimeScan;
 
 private:
 
@@ -67,9 +67,9 @@ public:
     int                      &getIEDType();
     CtiTableDeviceMCTIEDPort  setIEDType(IEDTypes type);
 
-    string                 getPassword() const;
-    string                &getPassword();
-    CtiTableDeviceMCTIEDPort  setPassword(string &password);
+    std::string                 getPassword() const;
+    std::string                &getPassword();
+    CtiTableDeviceMCTIEDPort  setPassword(std::string &password);
 
     int                       getIEDScanRate() const;
     int                      &getIEDScanRate();
@@ -89,7 +89,7 @@ public:
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual bool Insert();
     virtual bool Update();

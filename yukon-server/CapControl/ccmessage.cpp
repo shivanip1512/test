@@ -17,6 +17,7 @@
 #include <time.h>
 #include "utility.h"
 
+using std::endl;
 
 extern ULONG _CC_DEBUG;
 /*===========================================================================

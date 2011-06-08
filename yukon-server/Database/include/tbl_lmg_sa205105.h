@@ -44,8 +44,8 @@ protected:
     LONG        _lmGroupId;
     LONG        _routeId;
 
-    string   _operationalAddress;
-    string   _loadNumber;
+    std::string   _operationalAddress;
+    std::string   _loadNumber;
 
 private:
 
@@ -59,15 +59,15 @@ public:
 
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
-    string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    string getLoadNumber( void ) const;
+    std::string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    std::string getLoadNumber( void ) const;
     int getFunction( bool shed ) const;
 
     CtiTableSA205105Group& setLmGroupId( LONG newVal );
     CtiTableSA205105Group& setRouteId( LONG newVal );
-    CtiTableSA205105Group& setOperationalAddress( string newVal );
-    CtiTableSA205105Group& setLoadNumber( string newVal );
-    static string getTableName( void );
+    CtiTableSA205105Group& setOperationalAddress( std::string newVal );
+    CtiTableSA205105Group& setLoadNumber( std::string newVal );
+    static std::string getTableName( void );
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

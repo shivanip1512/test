@@ -18,7 +18,15 @@
 #include "verification_objects.h"
 #include "ctidbgmem.h"
 
-
+using std::string;
+using std::queue;
+using std::map;
+using std::binary_function;
+using std::deque;
+using std::pair;
+using std::make_pair;
+using namespace boost::posix_time;
+using boost::gregorian::date;
 
 const string CtiVerificationBase::String_CodeStatus_Sent       = "sent";
 const string CtiVerificationBase::String_CodeStatus_Success    = "success";

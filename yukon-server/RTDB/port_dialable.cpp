@@ -16,6 +16,7 @@
 
 #include "port_dialable.h"
 
+using std::string;
 
 INT CtiPortDialable::disconnect(CtiDeviceSPtr Device, INT trace)
 {

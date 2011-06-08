@@ -83,7 +83,7 @@ protected:
     int _hierarchy;         // 1 bit
 
     int _function;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    string _addressUsage;      // Identifies which addressing components to use.
+    std::string _addressUsage;      // Identifies which addressing components to use.
 
 
 private:
@@ -111,7 +111,7 @@ public:
     int getRateMember() const;        // 4 bits
     int getHierarchy() const;         // 1 bit
     int getFunction() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    string  getAddressUsage() const;
+    std::string  getAddressUsage() const;
 
     CtiTableSA305LoadGroup& setLmGroupId(LONG newVal);
     CtiTableSA305LoadGroup& setRouteId(LONG newVal);
@@ -124,9 +124,9 @@ public:
     CtiTableSA305LoadGroup& setRateMember(int newVal);        // 4 bits
     CtiTableSA305LoadGroup& setHierarchy(int newVal);         // 1 bit
     CtiTableSA305LoadGroup& setFunction(int newVal);          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    CtiTableSA305LoadGroup& setAddressUsage(string  newVal);      //
+    CtiTableSA305LoadGroup& setAddressUsage(std::string  newVal);      //
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

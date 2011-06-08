@@ -33,7 +33,7 @@
 #include "dev_base.h"
 using boost::weak_ptr;
 
-static const string GROUP_CONTROL_EXPIRATION = "STANDARD_CONTROL_EXPIRATION";
+static const std::string GROUP_CONTROL_EXPIRATION = "STANDARD_CONTROL_EXPIRATION";
 class CtiDeviceGroupBase;
 typedef shared_ptr< CtiDeviceGroupBase > CtiDeviceGroupBaseSPtr;
 typedef weak_ptr< CtiDeviceGroupBase > CtiDeviceGroupBaseWPtr;
@@ -49,7 +49,7 @@ private:
 protected:
 
     INT _isShed;
-    string _lastCommand;
+    std::string _lastCommand;
 
 public:
 
@@ -82,11 +82,11 @@ public:
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     }
 
-    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList)
+    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, std::list< CtiMessage* > &vgList)
     {
         CtiTime now;
-        string prevLastAction = _lastCommand;    // Save a temp copy.
-        _lastCommand = string();                 // Blank it!
+        std::string prevLastAction = _lastCommand;    // Save a temp copy.
+        _lastCommand = std::string();                 // Blank it!
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will
@@ -96,12 +96,12 @@ public:
         {
             int offset = 0;
             bool reducelogs = gConfigParms.isTrue("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG");
-            for(std::list< string >::const_iterator itr = parse.getActionItems().begin();
+            for(std::list< std::string >::const_iterator itr = parse.getActionItems().begin();
                  itr != parse.getActionItems().end();
                  ++itr )
             {
-                string actn = *itr;
-                string desc = getDescription(parse);
+                std::string actn = *itr;
+                std::string desc = getDescription(parse);
 
                 if(offset > 0) _lastCommand += " / ";
                 _lastCommand += actn;
@@ -121,7 +121,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string(""), int controlPriority = 0 )
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, std::list< CtiMessage* >  &vgList, std::string cmd = std::string(""), int controlPriority = 0 )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
@@ -153,7 +153,7 @@ public:
         vgList.push_back(pMulti);
     }
 
-    string getLastCommand() const
+    std::string getLastCommand() const
     {
         return _lastCommand;
     }
@@ -166,44 +166,44 @@ public:
 
     // Takes in a command string and removes the data from it that can change (countdown, ect..)
     // Dispatch does a direct comparison of text so it needs to consider these commands to be identical
-    string removeCommandDynamicText(string command)
+    std::string removeCommandDynamicText(std::string command)
     {
-        string match = " count";
+        std::string match = " count";
         int begin, end;
-        if( (begin = command.find(match)) != string::npos )
+        if( (begin = command.find(match)) != std::string::npos )
         {
             //control xcom cycle 50 count 8 period 30 truecycle
 
             //We start at the " " after count and look for the number
             end = command.find_first_not_of(" ", begin + match.length());
 
-            if( end != string::npos )
+            if( end != std::string::npos )
             {
                 //Here we start at the number (8) and try to find a " "
                 end = command.find_first_of(" ", end);
             }
 
-            if( end != string::npos )
+            if( end != std::string::npos )
             {
                 command.erase(begin, end - begin);
             }
         }
 
         match = " bump stage";
-        if( (begin = command.find(match)) != string::npos )
+        if( (begin = command.find(match)) != std::string::npos )
         {
             //control xcom cycle 50 count 8 period 30 truecycle
 
             //We start at the " " after count and look for the number
             end = command.find_first_not_of(" ", begin + match.length());
 
-            if( end != string::npos )
+            if( end != std::string::npos )
             {
                 //Here we start at the number (8) and try to find a " "
                 end = command.find_first_of(" ", end);
             }
 
-            if( end != string::npos )
+            if( end != std::string::npos )
             {
                 command.erase(begin, end - begin);
             }

@@ -21,6 +21,9 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+using std::string;
+using std::endl;
+
 /*
 
 From: winsvc.h

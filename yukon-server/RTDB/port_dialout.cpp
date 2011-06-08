@@ -21,6 +21,11 @@
 #include "logger.h"
 #include "port_dialout.h"
 
+using std::iostream;
+using std::pair;  
+using std::endl;
+using std::string;  
+
 CtiPortDialout::CtiPortDialout()
 {
 }

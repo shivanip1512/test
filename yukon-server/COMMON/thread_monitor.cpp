@@ -22,6 +22,8 @@
 #define TEN_MINUTES_IN_SECONDS 10*60
 using std::pair;
 using std::map;
+using std::endl;
+using namespace boost::posix_time;
 
 /*********************************************************************************************
         Example usage of thread_monitor.

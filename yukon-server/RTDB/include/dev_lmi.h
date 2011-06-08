@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_lmi
-*
-* Class:  CtiDeviceLMI
-* Date:   2004-feb-02
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_LMI_H__
-#define __DEV_LMI_H__
+#pragma once
 #pragma warning( disable : 4786 )
 
 #include "dev_remote.h"
@@ -45,23 +28,23 @@ public:
     CtiDeviceLMI();
     virtual ~CtiDeviceLMI();
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     int decode(CtiXfer &xfer, int status);
     void sendDispatchResults(CtiConnection &vg_connection);
-    void getVerificationObjects(queue< CtiVerificationBase * > &vq);
+    void getVerificationObjects(std::queue< CtiVerificationBase * > &vq);
 
-    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 3);
-    INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 3);
+    INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &Now, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-    void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info );
+    void processInboundData(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, std::list<CtiPointDataMsg*> &points, string &info );
 
     bool hasExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
@@ -91,5 +74,3 @@ public:
     LONG deviceMaxCommunicationTime() const;
 };
 
-
-#endif // #ifndef __DEV_LMI_H__

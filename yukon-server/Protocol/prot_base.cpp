@@ -23,7 +23,7 @@ bool Interface::errorCondition       ( void ) const {   return false;   }
 void Interface::getInboundPoints ( pointlist_t  &point_list )   {  };
 void Interface::getInboundStrings( stringlist_t &string_list )  {  };
 
-void Interface::setName( const string &name )
+void Interface::setName( const std::string &name )
 {
     _name = name;
 }

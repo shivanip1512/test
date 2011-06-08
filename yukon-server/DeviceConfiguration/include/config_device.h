@@ -29,19 +29,19 @@ private:
     ConfigValueMap _configurationValues;
 
     long _id;
-    string _name;
-    string _type;
+    std::string _name;
+    std::string _type;
 public:
 
-    DeviceConfig( long ID, string& name, string& type);
+    DeviceConfig( long ID, std::string& name, std::string& type);
     ~DeviceConfig();
 
     bool getValue(std::string key, std::string& value);
-    string getValueFromKey(std::string key);
+    std::string getValueFromKey(std::string key);
     bool getLongValue(std::string key, long& value);
     long getLongValueFromKey(std::string key);
     double getFloatValueFromKey(std::string key);
-    bool checkValues(string stringArray[], unsigned int arrayLen);
+    bool checkValues(std::string stringArray[], unsigned int arrayLen);
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;

@@ -6,6 +6,9 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceCarrier::CtiTableDeviceCarrier() :
 _deviceID(-1),
 _address(-1)

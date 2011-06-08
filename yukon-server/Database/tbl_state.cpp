@@ -22,6 +22,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 LONG CtiTableState::getStateGroupID() const
 {
 

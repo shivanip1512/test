@@ -38,20 +38,20 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     virtual ~CtiLMProgramEnergyExchange();
 
     LONG getMinNotifyTime() const;
-    const string& getHeading() const;
-    const string& getMessageHeader() const;
-    const string& getMessageFooter() const;
-    const string& getCanceledMsg() const;
-    const string& getStoppedEarlyMsg() const;
+    const std::string& getHeading() const;
+    const std::string& getMessageHeader() const;
+    const std::string& getMessageFooter() const;
+    const std::string& getCanceledMsg() const;
+    const std::string& getStoppedEarlyMsg() const;
     std::vector<CtiLMEnergyExchangeOffer*>& getLMEnergyExchangeOffers();
     std::vector<CtiLMEnergyExchangeCustomer*>& getLMEnergyExchangeCustomers();
 
     CtiLMProgramEnergyExchange& setMinNotifyTime(LONG notifytime);
-    CtiLMProgramEnergyExchange& setHeading(const string& head);
-    CtiLMProgramEnergyExchange& setMessageHeader(const string& msgheader);
-    CtiLMProgramEnergyExchange& setMessageFooter(const string& msgfooter);
-    CtiLMProgramEnergyExchange& setCanceledMsg(const string& canceled);
-    CtiLMProgramEnergyExchange& setStoppedEarlyMsg(const string& stoppedearly);
+    CtiLMProgramEnergyExchange& setHeading(const std::string& head);
+    CtiLMProgramEnergyExchange& setMessageHeader(const std::string& msgheader);
+    CtiLMProgramEnergyExchange& setMessageFooter(const std::string& msgfooter);
+    CtiLMProgramEnergyExchange& setCanceledMsg(const std::string& canceled);
+    CtiLMProgramEnergyExchange& setStoppedEarlyMsg(const std::string& stoppedearly);
 
     BOOL isOfferWithId(LONG offerid);
     BOOL isOfferRevisionOpen(LONG offerID, LONG revisionNumber);
@@ -63,7 +63,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void dumpDynamicData(CtiTime& currentDateTime);
 
     virtual CtiLMProgramBaseSPtr replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
@@ -84,11 +84,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
 private:
 
     LONG _minnotifytime;
-    string _heading;
-    string _messageheader;
-    string _messagefooter;
-    string _canceledmsg;
-    string _stoppedearlymsg;
+    std::string _heading;
+    std::string _messageheader;
+    std::string _messagefooter;
+    std::string _canceledmsg;
+    std::string _stoppedearlymsg;
 
     std::vector<CtiLMEnergyExchangeOffer*>     _lmenergyexchangeoffers;
     std::vector<CtiLMEnergyExchangeCustomer*>  _lmenergyexchangecustomers;
@@ -99,7 +99,7 @@ private:
 #if VSLICK_TAG_WORKAROUND
 typedef CtiLMProgramEnergyExchange * CtiLMProgramEnergyExchangeSPtr;
 #else
-typedef shared_ptr< CtiLMProgramEnergyExchange > CtiLMProgramEnergyExchangeSPtr;
+typedef boost::shared_ptr< CtiLMProgramEnergyExchange > CtiLMProgramEnergyExchangeSPtr;
 #endif
 
 #endif

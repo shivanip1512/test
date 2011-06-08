@@ -32,7 +32,7 @@ class PointResponseDatabaseDao : public PointResponseDao
         bool performDatabaseOperation(Cti::Database::DatabaseReader& reader, std::vector<PointResponse>& pointResponses);
         void buildPointResponseFromReader(Cti::Database::DatabaseReader& reader, std::vector<PointResponse>& pointResponses);
 
-        static const string _selectSql;
+        static const std::string _selectSql;
 };
 
 }

@@ -17,6 +17,8 @@
 #include "queent.h"
 #include "queue.h"
 
+using std::string;
+using std::endl;
 
 void main(int argc, char **argv)
 {

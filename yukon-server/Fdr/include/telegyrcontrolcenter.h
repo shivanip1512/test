@@ -22,26 +22,26 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
       int getChannelID( void );
       CtiTelegyrControlCenter &setChannelID( int idIn );
 
-      string getOperator( void );
-      CtiTelegyrControlCenter &setOperator( string opIn );
+      std::string getOperator( void );
+      CtiTelegyrControlCenter &setOperator( std::string opIn );
 
-      string getPassword( void ) const;
-      CtiTelegyrControlCenter &setPassword( string passIn );
+      std::string getPassword( void ) const;
+      CtiTelegyrControlCenter &setPassword( std::string passIn );
 
-      string getSysName( void ) const;
-      CtiTelegyrControlCenter &setSysName( string sysIn );
+      std::string getSysName( void ) const;
+      CtiTelegyrControlCenter &setSysName( std::string sysIn );
 
       int getAccess();
       CtiTelegyrControlCenter &setAccess( int accessIn );
 
-      string getGroupValid( void ) const;
-      CtiTelegyrControlCenter &setGroupValid( string validIn );
+      std::string getGroupValid( void ) const;
+      CtiTelegyrControlCenter &setGroupValid( std::string validIn );
 
-      string getSysType( void ) const;
-      CtiTelegyrControlCenter &setSysType( string typeIn );
+      std::string getSysType( void ) const;
+      CtiTelegyrControlCenter &setSysType( std::string typeIn );
 
-      vector< CtiTelegyrGroup > getTelegyrGroupList( void ) const;
-      vector< CtiTelegyrGroup > &getTelegyrGroupList( void );
+      std::vector< CtiTelegyrGroup > getTelegyrGroupList( void ) const;
+      std::vector< CtiTelegyrGroup > &getTelegyrGroupList( void );
 
       void deleteTelegyrGroupList( void );
 
@@ -55,16 +55,16 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
    private:
 
       //this is a vector of groups with a vector of pointnames for each
-      vector< CtiTelegyrGroup >           _telegyrGroupList;
+      std::vector< CtiTelegyrGroup >           _telegyrGroupList;
 
       int                                 _channelID;
       int                                 _access;
 
-      string                           _operatorName;
-      string                           _password;
-      string                           _systemName;
-      string                           _groupValid;
-      string                           _systemType;
+      std::string                           _operatorName;
+      std::string                           _password;
+      std::string                           _systemName;
+      std::string                           _groupValid;
+      std::string                           _systemType;
 
       CtiMutex                            _mux;
 };

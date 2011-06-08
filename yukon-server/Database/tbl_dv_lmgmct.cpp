@@ -21,6 +21,9 @@
 #include "dllbase.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTableLMGroupMCT::CtiTableLMGroupMCT() :
 _address(0),
 _relays(0),

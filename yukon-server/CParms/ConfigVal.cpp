@@ -5,6 +5,8 @@
 
 #include "configval.h"
 
+using std::string;
+
 CtiConfigValue::CtiConfigValue() : Value()
 {;}
 

@@ -37,6 +37,9 @@
 #include "logger.h"
 #include "std_ansi_tbl_25.h"
 
+using std::string;
+using std::endl;
+
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable25::CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,

@@ -9,6 +9,7 @@
 using boost::unit_test_framework::test_suite;
 
 using Cti::Devices::Mct420Device;
+using std::string;
 
 struct test_Mct420Device : Mct420Device
 {

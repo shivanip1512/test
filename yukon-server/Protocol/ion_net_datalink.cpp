@@ -20,6 +20,8 @@
 
 #include "numstr.h"
 
+using std::endl;
+
 CtiIONDatalinkLayer::CtiIONDatalinkLayer( ) :
     _currentInputFrame(0),
     _currentOutputFrame(0),

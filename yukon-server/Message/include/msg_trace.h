@@ -33,7 +33,7 @@ protected:
 
     bool _end;
     INT _attributes;        // FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED default
-    string _trace;
+    std::string _trace;
 
 private:
 
@@ -49,11 +49,11 @@ public:
     CtiTraceMsg& operator=(const CtiTraceMsg& aRef);
 
     INT getAttributes() const;
-    string getTrace() const;
-    string& getTrace();
+    std::string getTrace() const;
+    std::string& getTrace();
 
     CtiTraceMsg& setAttributes(const INT& attr);
-    CtiTraceMsg& setTrace(const string& str);
+    CtiTraceMsg& setTrace(const std::string& str);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);

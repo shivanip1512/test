@@ -33,8 +33,8 @@ class IM_EX_CONFIG Base
 {
     friend class CtiConfigManager;
 protected:
-    virtual int getProtectedResolvedKey(string key);
-    virtual bool setProtectedValueWithKey(const string &value, const int key);
+    virtual int getProtectedResolvedKey(std::string key);
+    virtual bool setProtectedValueWithKey(const std::string &value, const int key);
 
 private:
 
@@ -46,7 +46,7 @@ public:
 //    string getID();
     virtual CtiConfig_type getType();
 
-    virtual string getOutputStrings();
+    virtual std::string getOutputStrings();
 /*    virtual int getResolvedKey(Rstring key);
     virtual string getValueFromKey(const int key);
     virtual long getLongValueFromKey(const int key);

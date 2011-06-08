@@ -16,8 +16,8 @@ class IM_EX_FDRBASE CtiFDRManager
 
     public:
         // constructors, destructor
-        CtiFDRManager(const string & InterfaceName);
-        CtiFDRManager(const string & InterfaceName, string & aWhereSelectStr);
+        CtiFDRManager(const std::string & InterfaceName);
+        CtiFDRManager(const std::string & InterfaceName, std::string & aWhereSelectStr);
 
         virtual ~CtiFDRManager();
 
@@ -33,11 +33,11 @@ class IM_EX_FDRBASE CtiFDRManager
         lock & getLock();
         ptr_type find(bool (*testFun)(ptr_type&, void*),void* d);
 
-        string       getInterfaceName();
-        CtiFDRManager & setInterfaceName(string &);
+        std::string       getInterfaceName();
+        CtiFDRManager & setInterfaceName(std::string &);
 
-        string       getWhereSelectStr();
-        CtiFDRManager & setWhereSelectStr(string &);
+        std::string       getWhereSelectStr();
+        CtiFDRManager & setWhereSelectStr(std::string &);
 
         bool loadPointList(void);
         bool loadPoint(long pointId, CtiFDRPointSPtr & point);
@@ -74,8 +74,8 @@ class IM_EX_FDRBASE CtiFDRManager
         bool getPointsFromDB(const std::stringstream &ss, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
 
         // private data
-        string   iInterfaceName;
-        string   iWhereSelectStr;
+        std::string   iInterfaceName;
+        std::string   iWhereSelectStr;
         CtiSmartMap<CtiFDRPoint> pointMap;
 
 };

@@ -35,7 +35,7 @@ private:
 
 protected:
 
-   queue< CtiVerificationBase * >  _verification_objects;
+   std::queue< CtiVerificationBase * >  _verification_objects;
 
    BYTE                          _outBuffer[505];
    BYTE                          _inBuffer[100];
@@ -57,14 +57,14 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,
                           OUTMESS                        *&OutMessage,
-                          list< CtiMessage* >      &vgList,
-                          list< CtiMessage* >      &retList,
-                          list< OUTMESS* >         &outList);
+                          std::list< CtiMessage* >      &vgList,
+                          std::list< CtiMessage* >      &retList,
+                          std::list< OUTMESS* >         &outList);
    virtual int sendCommResult(INMESS *InMessage);
 
    bool isTransactionComplete();
 
-   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
    enum CommandState
    {
@@ -127,16 +127,16 @@ private:
     static const char *_command_quit;
     static const char *_char_cr_lf;
 
-    string getLoginName();
-    string getLoginPass();
-    string getLevelNumber();
-    string getAlertNumber();
-    string getCoverageNumber();
-    string getCallerID();
-    string getHoldTime();
-    string getSubject();
-    string getPagePass();
-    string getPageNumber();
+    std::string getLoginName();
+    std::string getLoginPass();
+    std::string getLevelNumber();
+    std::string getAlertNumber();
+    std::string getCoverageNumber();
+    std::string getCallerID();
+    std::string getHoldTime();
+    std::string getSubject();
+    std::string getPagePass();
+    std::string getPageNumber();
 };
 /*
 #define CHAR_CR         0x0D

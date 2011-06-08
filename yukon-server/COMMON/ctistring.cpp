@@ -2,6 +2,8 @@
 #include "ctistring.h"
 #include "utility.h"
 
+using std::string;
+
 int CtiString::compareTo(const string&s) const{
     return string::compare(s);
 }

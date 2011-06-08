@@ -8,6 +8,7 @@
 using boost::unit_test_framework::test_suite;
 
 using Cti::Devices::Mct470Device;
+using std::list;
 
 struct test_Mct470Device : Mct470Device
 {

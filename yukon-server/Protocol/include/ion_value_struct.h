@@ -20,7 +20,6 @@
 
 
 #include <vector>
-using std::vector;
 
 #include "ion_value.h"
 
@@ -32,7 +31,7 @@ class CtiIONStruct : public CtiIONValue
 
 private:
 
-    typedef vector< CtiIONValue * > ion_value_vector;
+    typedef std::vector< CtiIONValue * > ion_value_vector;
     ion_value_vector _structElements;
 
     StructTypes _structType;

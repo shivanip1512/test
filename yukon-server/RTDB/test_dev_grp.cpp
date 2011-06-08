@@ -32,6 +32,7 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test Device Group Base"
 using boost::unit_test_framework::test_suite;
+using std::string;
 
 BOOST_AUTO_TEST_CASE(test_dev_group_dynamic_text)
 {

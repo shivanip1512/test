@@ -20,6 +20,8 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 
+using std::string;
+
 extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------

@@ -23,10 +23,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
-
-
-
 #include "tbl_rtmacro.h"
 #include "rte_base.h"
 #include "cmdparse.h"
@@ -39,7 +35,7 @@ protected:
 
    // All I really do is hint at REAL Routes.... Which had better exist somewhere else.. I think.
    RWTValOrderedVector< CtiTableMacroRoute >  RouteList;
-   RWTValOrderedVector< shared_ptr< CtiRoute > >  RoutePtrList;    // Not responsible for these route pointer's memory...
+   RWTValOrderedVector< boost::shared_ptr< CtiRoute > >  RoutePtrList;    // Not responsible for these route pointer's memory...
 
    mutable CtiMutex _routeListMux;
 
@@ -50,7 +46,7 @@ public:
    typedef CtiRouteBase Inherited;
 
    typedef RWTValOrderedVector< CtiTableMacroRoute > CtiRouteList_t;
-   typedef RWTValOrderedVector< shared_ptr< CtiRoute > > CtiRoutePtrList_t;
+   typedef RWTValOrderedVector< boost::shared_ptr< CtiRoute > > CtiRoutePtrList_t;
 
    CtiRouteMacro();
    CtiRouteMacro(const CtiRouteMacro& aRef);
@@ -73,9 +69,9 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+                              std::list< CtiMessage* >      &vgList,
+                              std::list< CtiMessage* >      &retList,
+                              std::list< OUTMESS* >         &outList);
 
    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
 

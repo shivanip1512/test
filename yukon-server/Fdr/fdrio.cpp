@@ -2,6 +2,9 @@
 
 #include "fdrio.h"
 
+using std::queue;
+using std::endl;
+
 template <class T> 
 void CtiFDRIO<T>::startIO( void )
 {

@@ -80,8 +80,6 @@
 #define __DEV_RTC_H__
 
 #include <list>
-using std::list;
-
 #include "dev_remote.h"
 #include "queue.h"
 #include "tbl_dv_rtc.h"
@@ -96,11 +94,11 @@ private:
 
     static ULONG messageDuration(int groupType);
 
-    queue< CtiVerificationBase * > _verification_objects;
+    std::queue< CtiVerificationBase * > _verification_objects;
 
 public:
 
-    typedef list< pair< CtiTime, CtiOutMessage* > > CtiRepeatCol;
+    typedef std::list< std::pair< CtiTime, CtiOutMessage* > > CtiRepeatCol;
 
 protected:
 
@@ -122,10 +120,10 @@ public:
 
     const CtiTableDeviceRTC& getRTCTable() const;
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     virtual LONG getAddress() const;
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     unsigned queuedWorkCount() const;
@@ -137,15 +135,15 @@ public:
 
     INT queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
 
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
 
     INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
-    void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
 };
 #endif // #ifndef __DEV_RTC_H__

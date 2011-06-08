@@ -54,7 +54,7 @@ class IM_EX_PROT CtiTransdataTracker
       CtiTransdataTracker();
       ~CtiTransdataTracker();
 
-      void setXfer( CtiXfer &xfer, string dataOut, int bytesIn, bool block, ULONG time );
+      void setXfer( CtiXfer &xfer, std::string dataOut, int bytesIn, bool block, ULONG time );
       bool logOn( CtiXfer &xfer );
       bool billing( CtiXfer &xfer );
       bool loadProfile( CtiXfer &xfer );
@@ -71,7 +71,7 @@ class IM_EX_PROT CtiTransdataTracker
       bool grabChannels( BYTE *data, int bytes );
       bool grabFormat( BYTE *data, int bytes );
       bool grabTime( BYTE *data, int bytes );
-      void injectData( string str );
+      void injectData( std::string str );
       void setNextState( void );
       void reset( void );
       void setLastLPTime( ULONG lpTime );
@@ -84,7 +84,7 @@ class IM_EX_PROT CtiTransdataTracker
       int calcLPRecs( void );
       int countChannels( void );
       int calcPackets( int recs );
-      string formatRecNums( int recs );
+      std::string formatRecNums( int recs );
       CtiTime timeAdjust( CtiTime meter );
 
    protected:
@@ -177,8 +177,8 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _enter;
       const char *const    _ems;
 
-      string            _password;
-      string            _tempSent;
+      std::string            _password;
+      std::string            _tempSent;
 
       bool                 _waiting;
       bool                 _moveAlong;

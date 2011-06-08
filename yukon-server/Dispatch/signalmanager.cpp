@@ -28,6 +28,9 @@
 
 using std::pair;
 using std::make_pair;
+using std::string;
+using std::endl;
+
 extern string AlarmTagsToString(UINT tags);
 extern string& TrimAlarmTagText(string &text);
 

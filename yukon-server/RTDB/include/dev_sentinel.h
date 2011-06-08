@@ -20,31 +20,31 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
+                           std::list< CtiMessage* >  &vgList,
+                           std::list< CtiMessage* >  &retList,
+                           std::list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
-                    list< CtiMessage* > &vgList,
-                    list< CtiMessage* > &retList,
-                    list< OUTMESS* > &outList,
+                    std::list< CtiMessage* > &vgList,
+                    std::list< CtiMessage* > &retList,
+                    std::list< OUTMESS* > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            list< CtiMessage* > &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList);
+                            std::list< CtiMessage* > &vgList,
+                            std::list< CtiMessage* > &retList,
+                            std::list< OUTMESS* >    &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
-                       list< CtiMessage* >  &vgList,
-                       list< CtiMessage* >  &retList,
-                       list< OUTMESS* >     &outList );
+                       std::list< CtiMessage* >  &vgList,
+                       std::list< CtiMessage* >  &retList,
+                       std::list< OUTMESS* >     &outList );
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
@@ -62,7 +62,7 @@ public:
 private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
 
-    string _result_string;
+    std::string _result_string;
 
     unsigned long _lastLPTime;
 };

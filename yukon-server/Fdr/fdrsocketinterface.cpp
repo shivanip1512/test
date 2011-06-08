@@ -92,6 +92,8 @@
 #include "fdrsocketconnection.h"
 #include "fdrsocketinterface.h"
 
+using std::string;
+using std::endl;
 
 CtiFDRSocketInterface::CtiFDRSocketInterface(string & interfaceType, int aPortNumber, int aWindow)
 : CtiFDRInterface(interfaceType),

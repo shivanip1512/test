@@ -58,7 +58,7 @@ public:
    CtiAnsiTable32( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 widthDispSources );
    virtual ~CtiAnsiTable32();
    CtiAnsiTable32& operator=(const CtiAnsiTable32& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    UINT8 getDisplaySources(int sourceIndex, int widthIndex);
 

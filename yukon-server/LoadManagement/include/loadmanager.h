@@ -76,11 +76,11 @@ private:
 	
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
-    void registerForPoints(const vector<CtiLMControlArea*>& controlAreas);
+    void registerForPoints(const std::vector<CtiLMControlArea*>& controlAreas);
     void parseMessage( RWCollectable *message, ULONG secondsFrom1901 );
     void pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 );
-    void porterReturnMsg( long deviceId, string commandString, int status, string resultString, ULONG secondsFrom1901 );
-    void signalMsg( long pointID, unsigned tags, string text, string additional, ULONG secondsFrom1901 );
+    void porterReturnMsg( long deviceId, std::string commandString, int status, std::string resultString, ULONG secondsFrom1901 );
+    void signalMsg( long pointID, unsigned tags, std::string text, std::string additional, ULONG secondsFrom1901 );
 
     void loadControlLoopCParms();
     

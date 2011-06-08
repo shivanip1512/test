@@ -39,6 +39,9 @@
 #define DEBUG_THREAD           0x00000100
 #define DEBUG_NO_INPUT         0x00000200
 
+using std::string;
+using std::endl;
+using std::set;
 
 #define FILELINE     " " << __FILE__ << " (" << __LINE__ << ")"
 

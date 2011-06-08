@@ -100,7 +100,7 @@ public:
 
    CtiAnsiTable63& operator=(const CtiAnsiTable63& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
    UINT16 getNbrValidBlocks(int setNbr);

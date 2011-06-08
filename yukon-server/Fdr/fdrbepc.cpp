@@ -111,6 +111,7 @@
 #include "utility.h"
 
 using std::string;
+using std::endl;
 
 CtiFDR_BEPC * textExportInterface;
 

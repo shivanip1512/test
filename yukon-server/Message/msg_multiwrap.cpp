@@ -1,6 +1,8 @@
 #include "yukon.h"
 #include "logger.h"
 
+using std::endl;
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   msg_multiwrap
@@ -46,7 +48,7 @@ CtiMultiMsg* CtiMultiWrapper::getMulti()
    catch(...)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
    }
 
    return _pMulti;

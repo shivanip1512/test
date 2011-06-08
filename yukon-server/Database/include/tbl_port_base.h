@@ -41,7 +41,7 @@ protected:
 
     INT _performanceThreshold;
 
-    string _sharedPortType;
+    std::string _sharedPortType;
     INT _sharedSocketNumber;
 
 private:
@@ -67,8 +67,8 @@ private:
     bool isPerformanceAlarm() const;
     void setPerformanceAlarm(bool b = true);
 
-    void setSharedPortType(string str);
-    string getSharedPortType() const;
+    void setSharedPortType(std::string str);
+    std::string getSharedPortType() const;
     INT getSharedSocketNumber() const;
     void setSharedSocketNumber(INT sockNum);
 
@@ -78,7 +78,7 @@ private:
     INT& getPerformanceThreshold();
     CtiTablePortBase& setPerformanceThreshold( const INT aPerformanceThreshold );
 
-    static string getTableName();
+    static std::string getTableName();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual void DumpData();
 };

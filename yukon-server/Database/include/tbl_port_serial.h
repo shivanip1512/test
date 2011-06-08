@@ -26,7 +26,7 @@ class IM_EX_CTIYUKONDB CtiTablePortLocalSerial : public CtiMemDBObject
 {
 protected:
 
-   string     _physicalPort;              // in struct [6];
+   std::string     _physicalPort;              // in struct [6];
 
 private:
 
@@ -39,10 +39,10 @@ public:
 
    CtiTablePortLocalSerial& operator=(const CtiTablePortLocalSerial& aRef);
 
-   string getPhysicalPort() const;
-   string& getPhysicalPort();
+   std::string getPhysicalPort() const;
+   std::string& getPhysicalPort();
 
-   CtiTablePortLocalSerial& setPhysicalPort(const string& str );
+   CtiTablePortLocalSerial& setPhysicalPort(const std::string& str );
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_PORT_SERIAL_H__

@@ -22,13 +22,13 @@ protected:
    unsigned short       _inertia;
    int                  _destinationAddress; //The tnpp devices address
    int                  _originAddress;
-   string            _identifierFormat;
-   string            _pagerProtocol;
-   string            _dataFormat;
-   string            _channel;
-   string            _zone;
-   string            _functionCode;
-   string            _pagerID;
+   std::string            _identifierFormat;
+   std::string            _pagerProtocol;
+   std::string            _dataFormat;
+   std::string            _channel;
+   std::string            _zone;
+   std::string            _functionCode;
+   std::string            _pagerID;
 
 public:
 
@@ -44,16 +44,16 @@ public:
     unsigned short getInertia() const;
     int getDestinationAddress() const; //The tnpp devices address
     int getOriginAddress() const; //The tnpp devices address
-    string getIdentifierFormat();
-    string getPagerProtocol();
-    string getPagerDataFormat();
-    string getChannel();
-    string getZone();
-    string getFunctionCode();
-    string getPagerID();
+    std::string getIdentifierFormat();
+    std::string getPagerProtocol();
+    std::string getPagerDataFormat();
+    std::string getChannel();
+    std::string getZone();
+    std::string getFunctionCode();
+    std::string getPagerID();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    static string getTableName();
+    static std::string getTableName();
 };
 

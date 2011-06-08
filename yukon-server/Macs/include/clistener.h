@@ -70,7 +70,7 @@ public:
     // be put into this queue.. a little hackish but oh well
     void setQueue(CtiQueue< CtiMessage, std::greater<CtiMessage> >* queue );
 
-    friend ostream& operator<<( ostream& ostrm, CtiMCClientListener& listener );
+    friend std::ostream& operator<<( std::ostream& ostrm, CtiMCClientListener& listener );
 
 protected:
 

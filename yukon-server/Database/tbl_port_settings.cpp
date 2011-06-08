@@ -18,6 +18,9 @@
 #include "tbl_port_settings.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePortSettings::CtiTablePortSettings() :
 _baudRate(0),
 _cdWait(0),

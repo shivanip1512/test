@@ -89,7 +89,7 @@ public:
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
-   static string getTableName();
+   static std::string getTableName();
 
 };
 #endif // #ifndef __TBL_STATS_H__

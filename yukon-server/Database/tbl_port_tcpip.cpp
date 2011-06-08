@@ -18,6 +18,9 @@
 #include "tbl_port_tcpip.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
     _ipPort(1000),
     _portID(0)

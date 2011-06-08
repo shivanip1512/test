@@ -18,6 +18,6 @@
 
 
 DLLEXPORT void      ReloadStateNames(void);
-DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue);
+DLLEXPORT std::string ResolveStateName(LONG grpid, LONG rawValue);
 
 #endif // #ifndef __DLLYUKON_H__

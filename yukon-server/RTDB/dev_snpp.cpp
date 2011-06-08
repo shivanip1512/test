@@ -34,6 +34,12 @@
 #include "verification_objects.h"
 #include "dev_snpp.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::queue;
+using namespace boost::posix_time;
+
 const char *CtiDeviceSnppPagingTerminal::_command_login       = "logi";
 const char *CtiDeviceSnppPagingTerminal::_command_page        = "page";
 const char *CtiDeviceSnppPagingTerminal::_command_level       = "leve";

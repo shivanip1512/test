@@ -16,6 +16,8 @@
 #include "tbl_unitmeasure.h"
 #include "logger.h"
 
+using std::endl;
+
 CtiTableUnitMeasure::CtiTableUnitMeasure() :
    _calcType(0)
 {

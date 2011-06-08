@@ -32,7 +32,7 @@
 
 // forward class declarations
 
-typedef list<CtiFDRPoint*>  FDRIdMapList;
+typedef std::list<CtiFDRPoint*>  FDRIdMapList;
 class IM_EX_FDRBASE CtiFDRProtectedIdMapList 
 {                                    
 

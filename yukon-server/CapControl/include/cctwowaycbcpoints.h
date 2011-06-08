@@ -23,14 +23,14 @@ class CtiCCTwoWayPoints
 public:
 
 
-    CtiCCTwoWayPoints(long paoid, string paotype);
+    CtiCCTwoWayPoints(long paoid, std::string paotype);
     CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
 
     virtual ~CtiCCTwoWayPoints();
 
     LONG getPAOId() const;
 
-    string getLastControlText() ;
+    std::string getLastControlText() ;
     CtiCCTwoWayPoints& setPAOId(LONG paoId);
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
@@ -80,7 +80,7 @@ private:
     bool isTimestampNew(LONG pointID, CtiTime timestamp);
 
     LONG _paoid;
-    string _paotype;
+    std::string _paotype;
 
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;

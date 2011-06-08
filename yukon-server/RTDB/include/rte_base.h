@@ -19,8 +19,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
-
 
 #include "dsm2.h"
 #include "dbmemobject.h"
@@ -33,9 +31,6 @@ using boost::shared_ptr;
 #include "yukon.h"
 #include "string_utility.h"
 #include <list>
-
-using std::list;
-
 
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
@@ -69,7 +64,7 @@ public:
             Inherited::operator=(aRef);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
 
         }
@@ -99,7 +94,7 @@ public:
         _tblComm.DecodeDatabaseReader(rdr);
     }
 
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
     {
         return NoExecuteRequestMethod;
     }
@@ -117,7 +112,7 @@ public:
 
 
     LONG getRouteID() const;
-    string getName() const;
+    std::string getName() const;
     INT getType() const;
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
@@ -125,7 +120,7 @@ public:
 };
 
 inline LONG CtiRouteBase::getRouteID() const { return _tblPAO.getID(); }
-inline string CtiRouteBase::getName() const { return _tblPAO.getName(); }
+inline std::string CtiRouteBase::getName() const { return _tblPAO.getName(); }
 inline INT CtiRouteBase::getType() const { return _tblPAO.getType(); }
 inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { return false; }
 
@@ -133,7 +128,7 @@ inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { r
 typedef CtiRouteBase CtiRoute;
 
 
-typedef shared_ptr< CtiRouteBase > CtiRouteSPtr;
+typedef boost::shared_ptr< CtiRouteBase > CtiRouteSPtr;
 
 
 #endif // #ifndef __RTE_BASE_H__

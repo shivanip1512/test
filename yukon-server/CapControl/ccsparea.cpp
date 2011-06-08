@@ -32,6 +32,8 @@
 #include "ccConfirmationStats.h"
 #include "database_writer.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )

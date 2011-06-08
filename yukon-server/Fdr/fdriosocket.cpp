@@ -2,6 +2,9 @@
 
 #include "fdriosocket.h"
 
+using std::iostream;
+using std::endl;
+
 template <class T>
 CtiFDRIOSocket<T>::~CtiFDRIOSocket( )
 {   

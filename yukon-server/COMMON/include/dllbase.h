@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllbase
-*
-* Date:   10/13/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.37.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:50 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DLLBASE_H__
-#define __DLLBASE_H__
+#pragma once
 #pragma warning( disable : 4786)
 
 #if !defined (NOMINMAX)
@@ -31,9 +17,6 @@
 #include "cticalls.h"
 #include "dsm2.h"
 #include "dlldefs.h"
-
-using std::string;
-using std::set;
 
 // Used with "DB_DEBUGLEVEL"
 #define DEBUGLEVEL_LUDICROUS        0x00000001
@@ -70,10 +53,10 @@ typedef boost::char_separator<char> Separator;
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
 
-IM_EX_CTIBASE extern string      VanGoghMachine;
-IM_EX_CTIBASE extern string      NotificationMachine;
-IM_EX_CTIBASE extern int         NotificationPort;
-IM_EX_CTIBASE extern string      gLogDirectory;
+IM_EX_CTIBASE extern std::string      VanGoghMachine;
+IM_EX_CTIBASE extern std::string      NotificationMachine;
+IM_EX_CTIBASE extern int              NotificationPort;
+IM_EX_CTIBASE extern std::string      gLogDirectory;
 
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions
@@ -83,7 +66,7 @@ IM_EX_CTIBASE extern int            Double;                       // EMETCON Dou
 IM_EX_CTIBASE extern int            useVersacomTypeFourControl;   // Jeesh if you can't figure this out...
 IM_EX_CTIBASE extern int            gMaxDBConnectionCount;        // Maximum number of DB connections to allow to remain open.
 
-IM_EX_CTIBASE extern int            ModemConnectionTimeout;      // Modem Connection Timeout in seconds (60 def.)
+IM_EX_CTIBASE extern int            ModemConnectionTimeout;       // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE extern bool           gDNPVerbose;
 IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern bool           gDNPOfflineNonUpdated;
@@ -91,12 +74,11 @@ IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
 IM_EX_CTIBASE extern unsigned char  gMCT400SeriesSPID;
 IM_EX_CTIBASE extern short          gSimulatePorts;
-IM_EX_CTIBASE extern set<long>      gSimulatedPorts;
-IM_EX_CTIBASE extern set<long>      gScanForceDevices;
+IM_EX_CTIBASE extern std::set<long> gSimulatedPorts;
+IM_EX_CTIBASE extern std::set<long> gScanForceDevices;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);
 IM_EX_CTIBASE bool         isDebugLudicrous(void);
 IM_EX_CTIBASE INT          isForeignCcuPort(INT portid);
 
-#endif // #ifndef __DLLBASE_H__

@@ -15,10 +15,15 @@
 #include "lmutility.h"
 #include "database_writer.h"
 
+using std::transform;
+using std::string;
+using std::endl;
+using std::set;
+
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_PROGRAM_LIST;
 
-using std::transform;
+
 
 /*---------------------------------------------------------------------------
     Constructors

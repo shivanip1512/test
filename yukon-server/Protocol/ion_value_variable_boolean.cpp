@@ -17,6 +17,7 @@
 
 #include "ion_value_variable_boolean.h"
 
+using std::endl;
 
 CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueVariable(Variable_Boolean),

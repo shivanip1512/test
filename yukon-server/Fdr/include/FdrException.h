@@ -1,14 +1,12 @@
 #include <iostream>
 #include <exception>
 
-using namespace std;
-
-class FdrException: public exception
+class FdrException: public std::exception
 {
 
 };
 
-class FdrDatabaseException: public exception
+class FdrDatabaseException: public std::exception
 {
 
 };

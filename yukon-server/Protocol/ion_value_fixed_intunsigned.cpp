@@ -19,6 +19,7 @@
 
 #include "logger.h"
 
+using std::endl;
 
 CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_UnsignedInt),

@@ -29,20 +29,20 @@ class IM_EX_MSG CtiNotifEmailAttachmentMsg : public CtiMessage
 {
 private:
 
-   string   _fileName;
+   std::string   _fileName;
 
 public:
 
    RWDECLARE_COLLECTABLE( CtiNotifEmailAttachmentMsg );
 
-   CtiNotifEmailAttachmentMsg( string fileName );
+   CtiNotifEmailAttachmentMsg( std::string fileName );
    CtiNotifEmailAttachmentMsg();
    virtual ~CtiNotifEmailAttachmentMsg();
    virtual void dump() const;
    void saveGuts( RWvostream &aStream ) const;
    void restoreGuts( RWvistream& aStream );
-   const string &getFileName( void ) const;
-   void setFileName( string name );
+   const std::string &getFileName( void ) const;
+   void setFileName( std::string name );
    int getLength( void );
    void setLength( int len );
    CtiMessage* replicateMessage() const;

@@ -30,7 +30,6 @@
 #define XCEL_H
 
 #include <iostream>
-using std::iostream;
 
 #include <rw/collstr.h>
 
@@ -38,9 +37,9 @@ using std::iostream;
 #include "guard.h"
 #include "types.h"
 
-bool DecodePMSIFile(const string& file, std::vector<RWCollectableString*>* results);
-static bool isValidPMSILine( char* line, char &command, string &serialNum, string &programming);
-static char * getEntry (char* InBuffer, string &OutBuffer);
+bool DecodePMSIFile(const std::string& file, std::vector<RWCollectableString*>* results);
+static bool isValidPMSILine( char* line, char &command, std::string &serialNum, std::string &programming);
+static char * getEntry (char* InBuffer, std::string &OutBuffer);
 
 
 #endif

@@ -19,6 +19,7 @@
 
 #include "ion_datastream.h"
 
+using std::endl;
 
 CtiIONDataStream::CtiIONDataStream( unsigned char *buf, unsigned long len )
 {

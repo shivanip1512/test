@@ -30,6 +30,8 @@
 
 using namespace Cti;
 using namespace Ports;
+using std::string;
+using std::endl;
 
 DLLEXPORT CtiPort* PortFactory(Cti::RowReader &rdr)
 {

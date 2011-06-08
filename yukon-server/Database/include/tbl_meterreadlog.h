@@ -75,7 +75,7 @@ public:
 
    virtual void Insert();
    virtual void Insert(Cti::Database::DatabaseConnection &conn);
-   virtual string getTableName() const;
+   virtual std::string getTableName() const;
 
    virtual void DecodeDatabaseReader( Cti::RowReader& rdr );
 

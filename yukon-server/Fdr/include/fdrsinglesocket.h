@@ -198,7 +198,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
 
     public:
         // constructors and destructors
-        CtiFDRSingleSocket(string &);
+        CtiFDRSingleSocket(std::string &);
 
         virtual ~CtiFDRSingleSocket();
 
@@ -209,9 +209,9 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual int processMessageFromForeignSystem (CHAR *data);
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
 
-        virtual bool loadList(string &aDirection,  CtiFDRPointList &aList);
+        virtual bool loadList(std::string &aDirection,  CtiFDRPointList &aList);
 
         virtual BOOL    init( void );
         virtual BOOL    run( void );
@@ -227,7 +227,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         virtual void signalReloadList();
-        virtual void signalPointRemoved(string &pointName);
+        virtual void signalPointRemoved(std::string &pointName);
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

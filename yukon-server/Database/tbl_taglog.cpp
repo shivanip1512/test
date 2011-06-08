@@ -7,6 +7,8 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
 
 int CtiTableTagLog::_maxInstanceId = 0;
 int CtiTableTagLog::_nextLogId = 0;

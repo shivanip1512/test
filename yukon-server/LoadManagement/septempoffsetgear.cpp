@@ -82,7 +82,7 @@ bool SEPTemperatureOffsetGear::stopControl(CtiLMGroupPtr currentLMGroup)
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Invalid current gear method stop type: " << getMethodStopType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Invalid current gear method stop type: " << getMethodStopType() << " in: " << __FILE__ << " at:" << __LINE__ << std::endl;
         return false;
     }
 

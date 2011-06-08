@@ -15,7 +15,6 @@
 
 
 #include <vector>
-using std::vector;
 
 #include "ion_value.h"
 #include "ion_value_fixed.h"
@@ -30,7 +29,7 @@ private:
 
     void parseByteStream( unsigned char *buf, unsigned long len );
 
-    typedef vector<CtiIONValue *> DSVector;
+    typedef std::vector<CtiIONValue *> DSVector;
     typedef DSVector::iterator       DSIterator;
     typedef DSVector::const_iterator DSConstIterator;
 

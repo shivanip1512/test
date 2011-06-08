@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_analog
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PT_ANALOG_H__
-#define __PT_ANALOG_H__
+#pragma once
 #pragma warning( disable : 4786)
 
 #include <limits.h>
@@ -58,14 +44,15 @@ public:
    CtiTablePointAnalog     getPointAnalog() const      { return _pointAnalog; }
    CtiTablePointAnalog&    getPointAnalog()            { return _pointAnalog; }
 
-   static string getSQLCoreStatement()
+   static std::string getSQLCoreStatement()
    {
-      static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
-                                    "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
-                                    "PT.archiveinterval, UNT.uomid, UNT.decimalplaces, UNT.decimaldigits, UM.calctype, "
-                                    "ALG.multiplier, ALG.dataoffset, ALG.deadband "
-                                 "FROM Point PT, PointUnit UNT, UnitMeasure UM, PointAnalog ALG "
-                                 "WHERE PT.pointid = UNT.pointid AND UNT.uomid = UM.uomid AND PT.pointid = ALG.pointid";
+      static const std::string sql =  
+         "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+            "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+            "PT.archiveinterval, UNT.uomid, UNT.decimalplaces, UNT.decimaldigits, UM.calctype, "
+            "ALG.multiplier, ALG.dataoffset, ALG.deadband "
+         "FROM Point PT, PointUnit UNT, UnitMeasure UM, PointAnalog ALG "
+         "WHERE PT.pointid = UNT.pointid AND UNT.uomid = UM.uomid AND PT.pointid = ALG.pointid";
 
       return sql;
    }
@@ -75,7 +62,7 @@ public:
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+         dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
       }
 
       Inherited::DecodeDatabaseReader(rdr);
@@ -117,5 +104,4 @@ typedef CtiPointAnalog CtiPointAnalogOutput;//Someday CtiPointAnalogOutput may b
 
 typedef shared_ptr< CtiPointAnalog > CtiPointAnalogSPtr;
 
-#endif // #ifndef __PT_ANALOG_H__
 

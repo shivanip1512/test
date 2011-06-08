@@ -22,10 +22,6 @@
 #include <map>
 #include <set>
 #include <utility>
-using std::set;
-using std::map;
-using std::vector;
-
 
 #include "dlldefs.h"
 #include "msg_tag.h"
@@ -58,7 +54,7 @@ protected:
 
     CtiFIFOQueue< CtiTableTagLog >            _tagLogQueue;
     // This is a vector of the rows in the dynamic table which need to be Deleted.
-    vector< int > _dynamicLogRemovals;
+    std::vector< int > _dynamicLogRemovals;
 
     TagTblDynamicMap_t _dynTagLogMap;
     TagTblMap_t _staticTagTableMap;     // Holds STATIC tag information frmo the table called "Tags"

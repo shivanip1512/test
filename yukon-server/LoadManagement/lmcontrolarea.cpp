@@ -24,6 +24,10 @@
 #include "database_writer.h"
 
 using std::transform;
+using std::string;
+using std::endl;
+using std::vector;
+using std::set;
 
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;

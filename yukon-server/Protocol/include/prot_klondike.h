@@ -51,7 +51,7 @@ private:
 
     enum CommandCode;
 
-    struct command_state_map_t : public std::map<Command, vector<CommandCode> >
+    struct command_state_map_t : public std::map<Command, std::vector<CommandCode> >
     {
         command_state_map_t();
     };
@@ -316,7 +316,7 @@ private:
         unsigned char bus;
     };
 
-    typedef list<route_entry_t> route_list_t;
+    typedef std::list<route_entry_t> route_list_t;
 
     route_list_t _routes;
 
@@ -348,7 +348,7 @@ public:
     Errors errorCode() const;
 
     // --  these functions may be called at any time by another thread, meaning that their data must be muxed
-    string describeCurrentStatus(void) const;
+    std::string describeCurrentStatus(void) const;
 
     bool hasQueuedWork()  const;
     bool addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);

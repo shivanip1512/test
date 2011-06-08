@@ -6,6 +6,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceTnpp::CtiTableDeviceTnpp() :
     _inertia(2),
     _destinationAddress(0),

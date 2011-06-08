@@ -28,19 +28,19 @@ private:
 
 protected:
 
-    static string printable_time(unsigned long seconds);
-    static string printable_date(unsigned long seconds);
-    static string printable_date(const CtiDate &dt);
+    static std::string printable_time(unsigned long seconds);
+    static std::string printable_date(unsigned long seconds);
+    static std::string printable_date(const CtiDate &dt);
 
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
-    void createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6]);
+    void createTOUDayScheduleString(std::string &schedule, long (&times)[5], long (&rates)[6]);
 
     struct error_details
     {
         PointQuality_t quality;
-        string description;
+        std::string description;
 
-        error_details(string d, PointQuality_t q) :
+        error_details(std::string d, PointQuality_t q) :
             description(d),
             quality(q)
         {

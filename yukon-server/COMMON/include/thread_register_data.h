@@ -30,10 +30,6 @@
 
 #include <functional>
 
-using boost::shared_ptr;
-
-using std::string;
-
 class IM_EX_CTIBASE CtiThreadRegData
 {
 public:
@@ -48,7 +44,7 @@ public:
    typedef void (*behaviourFuncPtr)( void *p );
 
    CtiThreadRegData( int id = 0,
-                      string name = "default",
+                      std::string name = "default",
                       Behaviours type = None,
                       int tickle_freq_sec = 0,
                       behaviourFuncPtr ptr = 0,
@@ -58,8 +54,8 @@ public:
 
    bool operator<( const CtiThreadRegData& y ) const;   //just for the queue, me thinks
 
-   string getName( void );
-   void setName( const string in );
+   std::string getName( void );
+   void setName( const std::string in );
 
    int getId( void );
    void setId( const int &in );
@@ -73,8 +69,8 @@ public:
    ULONG getTickleFreq( void );
    void setTickleFreq( ULONG seconds_between_tickles );
 
-   ptime getTickledTime( void );
-   void setTickledTime( ptime in );
+   boost::posix_time::ptime getTickledTime( void );
+   void setTickledTime( boost::posix_time::ptime in );
 
    behaviourFuncPtr getActionFunc( void );
    void setActionFunc( behaviourFuncPtr in );
@@ -100,17 +96,17 @@ private:
 
 //   CtiThreadRegData();
 
-   bool                 _reported;
-   bool                 _critical;//is it critical or not (default true)
-   bool                 _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
-   ptime                _tickledTime;
-   int                  _unreportedCount;
-   int                  _unreportedFilter;
+   bool                     _reported;
+   bool                     _critical;//is it critical or not (default true)
+   bool                     _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
+   boost::posix_time::ptime _tickledTime;
+   int                      _unreportedCount;
+   int                      _unreportedFilter;
 
    //
    //registeration: must haves
    //
-   string               _name;
+   std::string          _name;
    int                  _id;
    Behaviours           _behaviourType;
    ULONG                _tickleFreq;
@@ -140,6 +136,6 @@ namespace std
 };
 
 
-typedef shared_ptr< CtiThreadRegData > CtiThreadRegDataSPtr;
+typedef boost::shared_ptr< CtiThreadRegData > CtiThreadRegDataSPtr;
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__

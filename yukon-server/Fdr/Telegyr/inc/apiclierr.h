@@ -1,47 +1,4 @@
-/******************************************************************************
-        Filename: $RCSfile: apiclierr.h,v $
-        Revision: $Revision: 1.1 $
-        Author:   $Author: eschmit $
-        Date:     $Date: 2002/07/15 14:04:34 $
-*******************************************************************************
-$Log: apiclierr.h,v $
-Revision 1.1  2002/07/15 14:04:34  eschmit
-Telegyr stuff added
-
-Revision 1.9  2001/02/09 07:18:39  wurmlih
-New errorcode APIERR_NOT_UNP_TAG
-
-Revision 1.8  2000/12/19 14:47:57  imhoff
-merged changes for new API-UEA functions
-
- * Added new tag error codes.
- *
- * DDF: API Extensions for Tags
- * Added tag error codes.
- *
- * DDF: API Extension for Alarms List
- * DDF: API Extension for Display request
- * Added Alarms List entry and Display Request items
-
-Revision 1.7  2000/07/04 08:50:08  imhoff
-changes for new API functions (TG8000_SMR_FI_00038.doc)
-
-Revision 1.6  2000/02/24 14:46:33  imhoff
-intr. APIERR_INV_AOR
-
-Revision 1.5  2000/02/16 12:05:42  imhoff
-APIERR_CTL_PRE_OP added
-
-Revision 1.4  1999/05/12 14:42:33  imhoff
-murged with 7.2 system revision 1.22
-
-*******************************************************************************/
-/*
-    API library Error Codes to Client
-*/
-
-#ifndef APICLIERR_H
-#define APICLIERR_H
+#pragma once
 
 #define API_NORMAL                  	1
 #define APIERR_NOTOK			-1
@@ -226,4 +183,3 @@ murged with 7.2 system revision 1.22
 
 #define APIERR_VALUE_OUT_OF_RANGE	3800
 
-#endif /* APICLIERR_H */

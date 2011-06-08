@@ -26,6 +26,10 @@
 #include "prot_versacom.h"
 #include "numstr.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 CtiRouteVersacom::CtiRouteVersacom() {}
 
 CtiRouteVersacom::CtiRouteVersacom(const CtiRouteVersacom& aRef)

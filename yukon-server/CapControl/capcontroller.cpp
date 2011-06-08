@@ -46,6 +46,7 @@ extern BOOL  _AUTO_VOLT_REDUCTION;
 extern LONG  _VOLT_REDUCTION_SYSTEM_POINTID;
 
 using Cti::ThreadStatusKeeper;
+using std::endl;
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 

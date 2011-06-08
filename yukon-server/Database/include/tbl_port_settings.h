@@ -26,9 +26,9 @@ class IM_EX_CTIYUKONDB CtiTablePortSettings : public CtiMemDBObject
 {
 protected:
 
-   INT         _baudRate;           // Comm channel bps
-   ULONG       _cdWait;             // CD Wait time in ms
-   string   _lineSettings;       // Bits, Parity, Stop bits
+   INT           _baudRate;           // Comm channel bps
+   ULONG         _cdWait;             // CD Wait time in ms
+   std::string   _lineSettings;       // Bits, Parity, Stop bits
 
 private:
 
@@ -48,9 +48,9 @@ public:
    ULONG&                  getCDWait();
    CtiTablePortSettings&   setCDWait(const INT w);
 
-   string               getLineSettings() const;
-   string&              getLineSettings();
-   CtiTablePortSettings&   setLineSettings(const string str);
+   std::string               getLineSettings() const;
+   std::string&              getLineSettings();
+   CtiTablePortSettings&     setLineSettings(const std::string str);
 
    INT getBits() const;
    INT getParity() const;

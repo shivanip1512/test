@@ -115,23 +115,23 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
     public:
         // constructors and destructors
-        CtiFDR_Inet(string aName=string ("INET"));
+        CtiFDR_Inet(std::string aName=std::string ("INET"));
 
         virtual ~CtiFDR_Inet();
 
         virtual int processMessageFromForeignSystem (CHAR *data);
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
         virtual bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
 
         virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
-        string & getSourceName();
-        string  getSourceName() const;
-        CtiFDR_Inet &setSourceName (string &aName);
+        std::string & getSourceName();
+        std::string  getSourceName() const;
+        CtiFDR_Inet &setSourceName (std::string &aName);
 
         // end getters and setters
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
@@ -167,11 +167,11 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
         virtual bool loadTranslationLists(void);
         virtual bool loadClientList(void);
-        bool loadList(string &aDirection, CtiFDRPointList &aList);
+        bool loadList(std::string &aDirection, CtiFDRPointList &aList);
 
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
-        int   findConnectionByNameInList(string aName);
+        int   findConnectionByNameInList(std::string aName);
         int   findClientInList(SOCKADDR_IN aAddr);
         virtual bool  findAndInitializeClients( void );
 
@@ -182,27 +182,27 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         USHORT      YukonToForeignQuality (USHORT aQuality);
         int         processValueMessage(InetInterface_t *data);
 
-        vector< CtiFDRSocketLayer *>& getConnectionList ();
-        vector< CtiFDRSocketLayer *> getConnectionList () const;
+        std::vector< CtiFDRSocketLayer *>& getConnectionList ();
+        std::vector< CtiFDRSocketLayer *> getConnectionList () const;
         CtiMutex & getConnectionMux ();
 
-        vector< string >& getClientList ();
-        vector< string > getClientList () const;
+        std::vector< std::string >& getClientList ();
+        std::vector< std::string > getClientList () const;
         CtiMutex & getClientListMux ();
 
     private:
         //translateSingle Point
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
-        string                   iSourceName;
+        std::string                   iSourceName;
 
         HEV                         iClientConnectionSemaphore;
 
         // need getters and setters for these guys
-        vector< CtiFDRSocketLayer * > iConnectionList;
+        std::vector< CtiFDRSocketLayer * > iConnectionList;
         CtiMutex                    iConnectionListMux;
 
-        vector< string > iClientList;
+        std::vector< std::string > iClientList;
         CtiMutex                    iClientListMux;
 
 

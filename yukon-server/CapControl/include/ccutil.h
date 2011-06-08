@@ -22,8 +22,8 @@ enum CapControlType
     VoltageRegulatorType
 };
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user);
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString);
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString, const std::string& user);
 bool isQualityOk(unsigned quality);
 
 class MissingPointAttribute : public std::exception
@@ -31,7 +31,7 @@ class MissingPointAttribute : public std::exception
 
 public:
 
-    MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag = true);
+    MissingPointAttribute(const long ID, const PointAttribute & attribute, std::string paoType, bool complainFlag = true);
 
     virtual const char * what( ) const;
     const bool complain( ) const;

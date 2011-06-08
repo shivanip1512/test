@@ -49,16 +49,16 @@ public:
    INT assembleVersacomRequest(CtiRequestMsg                  *pReq,
                                CtiCommandParser               &parse,
                                OUTMESS                        *OutMessage,
-                               list< CtiMessage* >      &vgList,
-                               list< CtiMessage* >      &retList,
-                               list< OUTMESS* >         &outList);
+                               std::list< CtiMessage* >      &vgList,
+                               std::list< CtiMessage* >      &retList,
+                               std::list< OUTMESS* >         &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+                              std::list< CtiMessage* >      &vgList,
+                              std::list< CtiMessage* >      &retList,
+                              std::list< OUTMESS* >         &outList);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DecodeVersacomDatabaseReader(Cti::RowReader &rdr);

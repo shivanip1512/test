@@ -55,6 +55,9 @@ Things to note about telegyr learned the hard way...
 // this class header
 #include "fdrtelegyr.h"
 
+using std::string;
+using std::endl;
+
 /** local definitions **/
 #define FDR_TELEGYR_VERSION   "2.1.5"
 #define PRIORITY              1         //only 1 is supported at this point

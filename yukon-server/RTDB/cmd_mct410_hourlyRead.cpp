@@ -6,6 +6,8 @@
 #include "ctidate.h"
 #include "dsm2err.h"
 
+using std::vector;
+
 namespace Cti {
 namespace Devices {
 namespace Commands {

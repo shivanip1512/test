@@ -18,6 +18,7 @@
 
 #include "ion_value_variable_fixedarray.h"
 
+using std::endl;
 
 CtiIONFixedArray::CtiIONFixedArray( ) :
     CtiIONValueVariable(Variable_FixedArray),

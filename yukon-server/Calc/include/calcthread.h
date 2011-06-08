@@ -23,8 +23,6 @@
 #include "thread_register_data.h"
 //
 
-using std::string;
-
 class CtiCalculateThread
 {
 public:
@@ -52,7 +50,7 @@ private:
         int usedDays;
         int percent;
         long holidays;
-        string excludedWeekDays;
+        std::string excludedWeekDays;
     };
     typedef std::pair<long, double> PointValuePair;
     typedef std::vector<double> HourlyValues;
@@ -121,8 +119,8 @@ public:
     int outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
     //Bad?
-    RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
-    *getPointDependencyIterator( void )                         {   return CTIDBG_new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
+    RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >
+    *getPointDependencyIterator( void )                         {   return CTIDBG_new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
 
     void startThreads(  );
     void joinThreads(  );

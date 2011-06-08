@@ -107,7 +107,7 @@ public:
     int readConfig( void );
     bool sendMessageToForeignSys ( CtiMessage *aMessage );
 
-    string YukonToForeignTime (CtiTime aTime);
+    std::string YukonToForeignTime (CtiTime aTime);
     CHAR YukonToForeignQuality (USHORT aQuality);
     CHAR YukonToForeignDST (bool aFlag);
 
@@ -129,7 +129,7 @@ public:
 private:
     RWThreadFunction _threadWriteToFile;
     bool _appendFlag;
-    std::map<string,string> coopIdToFileName;
+    std::map<std::string,std::string> coopIdToFileName;
 };
 
 #endif

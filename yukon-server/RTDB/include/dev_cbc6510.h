@@ -40,9 +40,9 @@ public:
 
     Cbc6510Device& operator=(const Cbc6510Device& aRef);
 
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
 
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 };
 
 }

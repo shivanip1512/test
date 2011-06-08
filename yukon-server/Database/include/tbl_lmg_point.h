@@ -66,7 +66,7 @@ protected:
     LONG _controlPoint;
     LONG _controlStartRawState;
 
-    string _rawstate[2];             // These are the state strings.
+    std::string _rawstate[2];             // These are the state strings.
 
 private:
 
@@ -80,10 +80,10 @@ public:
     LONG getControlDevice() const;
     LONG getControlPoint() const;
     LONG getControlStartRawState() const;
-    string getControlStartString() const;
-    string getControlStopString() const;
+    std::string getControlStartString() const;
+    std::string getControlStopString() const;
 
-    static string getTableName( void );
+    static std::string getTableName( void );
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

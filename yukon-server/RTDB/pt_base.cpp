@@ -17,6 +17,8 @@
 #include "tbl_pt_alarm.h"
 #include "logger.h"
 
+using std::string;
+
 CtiPointBase::~CtiPointBase()
 {
 }

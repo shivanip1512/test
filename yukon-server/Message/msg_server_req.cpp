@@ -2,6 +2,8 @@
 #include "msg_server_req.h"
 #include "logger.h"
 
+using std::endl;
+
 RWDEFINE_COLLECTABLE( CtiServerRequestMsg, MSG_SERVER_REQUEST );
 
 CtiServerRequestMsg::CtiServerRequestMsg(const CtiServerRequestMsg& req)

@@ -167,7 +167,7 @@ public:
 
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
-    string getInternalIndications( void ) const;
+    std::string getInternalIndications( void ) const;
 
     enum FunctionCode
     {

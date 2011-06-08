@@ -25,8 +25,6 @@
 
 #include <windows.h>
 #include <iostream>
-using std::iostream;
-
 
 #include "dsm2.h"
 #include "port_base.h"

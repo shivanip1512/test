@@ -19,6 +19,8 @@
 #include "logger.h"
 #include "loadmanager.h"
 
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupPoint, CTILMGROUPPOINT_ID )

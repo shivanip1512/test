@@ -1,18 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangehourlyoffer.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMEnergyExchangeHourlyOffer
-
-        Initial Date:  5/14/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMENERGYEXCHANGEHOURLYOFFERIMPL_H
-#define CTILMENERGYEXCHANGEHOURLYOFFERIMPL_H
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -21,7 +8,6 @@
 
 #include "observe.h"
 #include "row_reader.h"
-using std::vector;
 
 class CtiLMEnergyExchangeHourlyOffer : public RWCollectable
 {
@@ -80,5 +66,5 @@ private:
     DOUBLE _price;
     DOUBLE _amountrequested;
 };
-#endif
+
 

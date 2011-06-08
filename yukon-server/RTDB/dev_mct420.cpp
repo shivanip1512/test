@@ -7,6 +7,10 @@
 
 using namespace Cti::Devices::Commands;
 using Cti::Protocols::EmetconProtocol;
+using std::string;
+using std::endl;
+using std::list;
+using std::vector;
 
 namespace Cti {
 namespace Devices {

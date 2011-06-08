@@ -1,5 +1,7 @@
 #include "yukon.h"
 
+using std::endl;
+
 /**
  * File:   livedatatypes
  *

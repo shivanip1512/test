@@ -32,7 +32,6 @@
     #include <windows.h>
 #endif
 
-using std::vector;
 
 class IM_EX_PROT CtiProtocolExpresscom
 {
@@ -164,11 +163,11 @@ protected:
 
 private:
 
-    vector< BYTE > _message;                // This is the baby...
+    std::vector< BYTE > _message;                // This is the baby...
     int _messageCount;
     unsigned short _CRC;
     void incrementMessageCount();
-    vector<int> _lengths;                   //Every time a message is added, this records the length of the message vector
+    std::vector<int> _lengths;                   //Every time a message is added, this records the length of the message vector
 
     void addressMessage();
     void terminateMessage();
@@ -255,20 +254,20 @@ private:
     INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT updateUtilityUsage(CtiCommandParser &parse);
     INT updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
-                                  BOOL currencyInCents, string optionalString);
+                                  BOOL currencyInCents, std::string optionalString);
     INT compareRSSI();
     INT commandInitiator(BYTE commandId);
     INT configurePriceTierCommand(BYTE priceTier);
-    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str);
+    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, std::string str);
     INT disableContractorMode(bool enableFlag);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
-    INT rawconfiguration(string str);
-    INT rawmaintenance(string str);
+    INT rawconfiguration(std::string str);
+    INT rawmaintenance(std::string str);
     INT maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
     INT service(BYTE action);
     INT service(UINT loadMask, bool activate = true);
     INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
-    INT data(string str, BYTE configByte);
+    INT data(std::string str, BYTE configByte);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 

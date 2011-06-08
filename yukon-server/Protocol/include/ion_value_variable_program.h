@@ -15,7 +15,6 @@
 
 
 #include <vector>
-using std::vector;
 
 #include "ion_value_variable.h"
 
@@ -27,7 +26,7 @@ class CtiIONProgram : public CtiIONValueVariable
 {
 private:
 
-    vector< CtiIONStatement * > _statements;
+    std::vector< CtiIONStatement * > _statements;
 
 protected:
 

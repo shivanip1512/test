@@ -18,6 +18,9 @@
 #include "resolvers.h"
 #include "tbl_dv_expresscom.h"
 
+using std::string;
+using std::endl;
+
 CtiTableExpresscomLoadGroup::CtiTableExpresscomLoadGroup() :
 _lmGroupId(-1),
 _routeId(-1),

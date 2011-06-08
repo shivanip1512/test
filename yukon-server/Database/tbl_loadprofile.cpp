@@ -21,6 +21,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
     _deviceID(-1),
     _lastIntervalDemandRate(INT_MAX),

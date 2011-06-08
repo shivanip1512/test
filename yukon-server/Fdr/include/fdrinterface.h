@@ -42,7 +42,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 {
     public:
         // constructors and destructors
-        CtiFDRInterface(string & interfaceType);
+        CtiFDRInterface(std::string & interfaceType);
 
         virtual ~CtiFDRInterface( void );
 
@@ -50,19 +50,19 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual bool        sendMessageToForeignSys ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch   ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch   ( CtiMessage *aMessage );
-        bool                logEvent( const string &logDesc,
-                                      const string &logMsg,
+        bool                logEvent( const std::string &logDesc,
+                                      const std::string &logMsg,
                                       bool aSendImmediatelyFlag=false );
-        CtiCommandMsg* createAnalogOutputMessage(long pointId, string translationName, double value);
+        CtiCommandMsg* createAnalogOutputMessage(long pointId, std::string translationName, double value);
 
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
 
         INT                 reRegisterWithDispatch(void);
-        string              getCparmValueAsString(string key);
+        std::string              getCparmValueAsString(std::string key);
 
-        CtiFDRInterface &   setInterfaceName(string & aInterfaceName);
-        string       &   getInterfaceName(void);
+        CtiFDRInterface &   setInterfaceName(std::string & aInterfaceName);
+        std::string       &   getInterfaceName(void);
 
         int                 getReloadRate () const;
         CtiFDRInterface&    setReloadRate (INT aRate);
@@ -114,10 +114,10 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRPointList & getReceiveFromList ();
         CtiFDRInterface& setReceiveFromList (CtiFDRPointList & aList);
 
-        bool findTranslationNameInList(string aTranslationName, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
+        bool findTranslationNameInList(std::string aTranslationName, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool findPointIdInList(long aPointId, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool updatePointByIdInList(CtiFDRPointList &aList, CtiPointDataMsg *aMessage);
-        long getClientLinkStatusID(string &aClientName);
+        long getClientLinkStatusID(std::string &aClientName);
         virtual void setCurrentClientLinkStates();
 
         BOOL connectWithDispatch(void);
@@ -146,14 +146,14 @@ class IM_EX_FDRBASE CtiFDRInterface
         void threadFunctionReloadDb( void );
         void threadFunctionConnectToDispatch( void );
 
-        void printLists(string title, int pid);
+        void printLists(std::string title, int pid);
 
         static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
 
     private:
-        string           iInterfaceName;
-        string           iDispatchMachine;
+        std::string           iInterfaceName;
+        std::string           iDispatchMachine;
 
         FDRDbReloadReason   iDbReloadReason;
         ULONG               iDebugLevel;

@@ -9,6 +9,8 @@
 #include "database_reader.h"
 #include "ZoneLoader.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 

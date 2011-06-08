@@ -66,9 +66,6 @@
 #include "logger.h"
 #include "mutex.h"
 
-using std::ostream;
-using std::less;
-
 class CtiMCConnection : public CtiObservable
 {
 public:

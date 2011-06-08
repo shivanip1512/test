@@ -13,16 +13,13 @@
 
 #include "ConstraintViolation.h"
 
-using std::vector;
-using std::string;
-
 class CtiLMProgramConstraintChecker
 {
 public:
 
     CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901);
 
-    const vector<ConstraintViolation>& getViolations();
+    const std::vector<ConstraintViolation>& getViolations();
     void clearViolations();
 
     void dumpViolations();
@@ -55,12 +52,12 @@ public:
     CtiLMProgramConstraintChecker* getInstance();
 private:
 
-    ULONG estimateGroupControlTime(CtiLMGroupBase& lm_group, CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
+    ULONG estimateGroupControlTime(CtiLMGroupBase& lm_group, CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, std::vector<std::string>* results = 0);
 
     CtiLMProgramDirect& _lm_program;
     ULONG _seconds_from_1901;
-    vector<string> _results;
-    vector<ConstraintViolation> _constraintViolations;
+    std::vector<std::string> _results;
+    std::vector<ConstraintViolation> _constraintViolations;
 };
 
 class CtiLMGroupConstraintChecker
@@ -69,7 +66,7 @@ public:
 
     CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, ULONG control_start_from_1901); 
 
-    const vector<string>& getViolations();
+    const std::vector<std::string>& getViolations();
     void clearViolations();
 
     void dumpViolations();
@@ -97,7 +94,7 @@ private:
     CtiLMGroupPtr& _lm_group;
     ULONG _seconds_from_1901;
     
-    vector<string> _results;
-    vector<ConstraintViolation> _constraintViolations;
+    std::vector<std::string> _results;
+    std::vector<ConstraintViolation> _constraintViolations;
 };
 #endif

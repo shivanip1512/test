@@ -14,17 +14,11 @@
 #define DECODETEXTCMDFILE_H
 
 #include <iostream>
-using std::iostream;
-
 #include <rw/collstr.h>
-
 #include "logger.h"
 #include "guard.h"
 #include "types.h"
 #include "rwutil.h"
-
-using std::string;
-using std::vector;
 
 #define TEXT_CMD_FILE_LOG_FAIL   1
 #define TEXT_CMD_FILE_COMMAND_LIST_INVALID 2
@@ -38,13 +32,13 @@ using std::vector;
 
 
 
-int decodeTextCommandFile(const string& fileName, int aCommandLimit, int aProtocolFlag, std::vector<RWCollectableString*>* commandList);
-int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableString*>* commandList);
-static bool getToken (char** InBuffer, string &OutBuffer);
-static bool outputLogFile (vector<string> &aLog);
-static bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &aCmdVector);
-static bool decodeDsm2Lines( string &function, string &route,string &serialNum,string &cmd,RWCollectableString* programming);
-bool validateAndDecodeLine( string & line, int aProtocolFlag, RWCollectableString* programming, string aFileName);
+int decodeTextCommandFile(const std::string& fileName, int aCommandLimit, int aProtocolFlag, std::vector<RWCollectableString*>* commandList);
+int decodeDSM2VconfigFile(const std::string& fileName, std::vector<RWCollectableString*>* commandList);
+static bool getToken (char** InBuffer, std::string &OutBuffer);
+static bool outputLogFile (std::vector<std::string> &aLog);
+static bool outputCommandFile (const std::string &aFileName, int aLineCnt, std::vector<std::string> &aCmdVector);
+static bool decodeDsm2Lines( std::string &function, std::string &route,std::string &serialNum,std::string &cmd,RWCollectableString* programming);
+bool validateAndDecodeLine( std::string & line, int aProtocolFlag, RWCollectableString* programming, std::string aFileName);
 
 
 #endif

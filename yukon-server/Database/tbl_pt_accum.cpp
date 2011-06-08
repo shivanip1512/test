@@ -19,6 +19,9 @@
 #include "tbl_pt_accum.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePointAccumulator& CtiTablePointAccumulator::operator=(const CtiTablePointAccumulator& aRef)
 {
    if(this != &aRef)

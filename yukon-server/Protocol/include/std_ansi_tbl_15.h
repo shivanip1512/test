@@ -173,7 +173,7 @@ public:
    CtiAnsiTable15& operator=(const CtiAnsiTable15& aRef);
 
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
    bool getSet1AppliedFlag(int index );
    bool getSet2AppliedFlag(int index );

@@ -21,6 +21,8 @@
 #include "database_writer.h"
 
 using std::transform;
+using std::string;
+using std::endl;
 
 static long CurrentLMProgramHistoryId = 0;
 static long CurrentLMGearHistoryId    = 0;

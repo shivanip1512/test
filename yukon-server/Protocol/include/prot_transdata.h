@@ -31,7 +31,6 @@
 #include "transdata_data.h"
 #include "xfer.h"
 #include "dllbase.h"
-using std::vector;
 
 class IM_EX_PROT CtiProtocolTransdata
 {
@@ -58,7 +57,7 @@ class IM_EX_PROT CtiProtocolTransdata
       int recvOutbound( OUTMESS *OutMessage );
 
       bool isTransactionComplete( void ) const;
-      void injectData( string str );
+      void injectData( std::string str );
       void reinitalize( void );
       void destroy( void );
       void setCommand( int cmd, bool lp );
@@ -72,7 +71,7 @@ class IM_EX_PROT CtiProtocolTransdata
       bool getDidProcess( void );
       CtiTime getLastLoadProfileTime( void );
 
-      vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
+      std::vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
 

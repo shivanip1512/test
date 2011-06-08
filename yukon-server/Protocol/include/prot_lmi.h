@@ -2,8 +2,6 @@
 
 #include <map>
 #include <vector>
-using std::map;
-using std::vector;
 
 #include "dllbase.h"
 #include "dlldefs.h"
@@ -42,10 +40,10 @@ private:
     unsigned _start_code, _stop_code;
 
     //crc_ccitt_type _crc;
-    queue< CtiOutMessage * > _codes;
-    queue< CtiVerificationBase * > _verification_objects;
-    queue< unsigned int > _retrieved_codes;
-    queue< unsigned int > _returned_codes;
+    std::queue< CtiOutMessage * > _codes;
+    std::queue< CtiVerificationBase * > _verification_objects;
+    std::queue< unsigned int > _retrieved_codes;
+    std::queue< unsigned int > _returned_codes;
 
     pointlist_t _lmi_statuses;
 
@@ -217,7 +215,7 @@ public:
 
     void setAddress(unsigned char address);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
-    void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
+    void setDeadbands(const std::vector<unsigned> &points, const std::vector<unsigned> &deadbands);
     void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, unsigned startcode, unsigned stopcode);
 
     LMICommand getCommand() const;
@@ -227,13 +225,13 @@ public:
     int recvCommResult (INMESS   *InMessage,  std::list< OUTMESS* > &outList);
 
     bool hasInboundData();
-    void getInboundData(std::list< CtiPointDataMsg* > &pointList, string &info);
+    void getInboundData(std::list< CtiPointDataMsg* > &pointList, std::string &info);
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest(OUTMESS *OutMessage);
     int sendCommResult (INMESS  *InMessage);
 
-    void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     void getStatuses(pointlist_t &points);
 
     void   queueCode(CtiOutMessage *om);

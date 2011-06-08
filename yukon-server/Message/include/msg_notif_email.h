@@ -30,18 +30,16 @@
 
 #include <rw/ordcltn.h>
 
-using std::string;
-
 class IM_EX_MSG CtiNotifEmailMsg : public CtiMessage
 {
 private:
 
    int                                          _notifGroupID;
-   string                                       _to;
-   string                                       _subject;
-   string                                       _body;
-   string                                       _toCC;
-   string                                       _toBCC;
+   std::string                                       _to;
+   std::string                                       _subject;
+   std::string                                       _body;
+   std::string                                       _toCC;
+   std::string                                       _toBCC;
    std::vector<CtiNotifEmailAttachmentMsg*>      _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
@@ -61,19 +59,19 @@ public:
    virtual void dump() const;
 
    CtiMessage* replicateMessage() const;
-   void setAttachment( string file );
+   void setAttachment( std::string file );
    int getNotifGroupId( void );
    void setNotifGroupId( int );
-   string getTo( void );
-   void setTo( string );
-   string getSubject( void );
-   void setSubject( string );
-   string getBody( void );
-   void setBody( string );
-   string getToCC( void );
-   void setToCC( string );
-   string getToBCC( void );
-   void setToBCC( string );
+   std::string getTo( void );
+   void setTo( std::string );
+   std::string getSubject( void );
+   void setSubject( std::string );
+   std::string getBody( void );
+   void setBody( std::string );
+   std::string getToCC( void );
+   void setToCC( std::string );
+   std::string getToBCC( void );
+   void setToBCC( std::string );
    std::vector<CtiNotifEmailAttachmentMsg*>& getAttachments( void );
 
 protected:
@@ -90,11 +88,11 @@ class IM_EX_MSG CtiCustomerNotifEmailMsg : public CtiMessage
 private:
 
    int                           _customerID;
-   string                     _to;
-   string                     _subject;
-   string                     _body;
-   string                     _toCC;
-   string                     _toBCC;
+   std::string                     _to;
+   std::string                     _subject;
+   std::string                     _body;
+   std::string                     _toCC;
+   std::string                     _toBCC;
    RWOrdered                     _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
@@ -114,19 +112,19 @@ public:
    virtual void dump() const;
 
    CtiMessage* replicateMessage() const;
-   void setAttachment( string file );
+   void setAttachment( std::string file );
    int getCustomerId( void );
    void setCustomerId( int );
-   string getTo( void );
-   void setTo( string );
-   string getSubject( void );
-   void setSubject( string );
-   string getBody( void );
-   void setBody( string );
-   string getToCC( void );
-   void setToCC( string );
-   string getToBCC( void );
-   void setToBCC( string );
+   std::string getTo( void );
+   void setTo( std::string );
+   std::string getSubject( void );
+   void setSubject( std::string );
+   std::string getBody( void );
+   void setBody( std::string );
+   std::string getToCC( void );
+   void setToCC( std::string );
+   std::string getToBCC( void );
+   void setToBCC( std::string );
    RWOrdered& getAttachments( void );
 
 protected:

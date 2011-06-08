@@ -55,7 +55,7 @@ public:
         double         value;
         PointQuality_t quality;
         bool           freeze_bit;
-        string         description;
+        std::string         description;
     };
 
     typedef std::pair<OUTMESS *, INMESS *> queued_result_t;
@@ -72,7 +72,7 @@ protected:
 
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates
 
-    vector<CtiTableDeviceWindow> _windowVector;
+    std::vector<CtiTableDeviceWindow> _windowVector;
 
     /*
      *  Dynamic data used by scannables...
@@ -97,13 +97,13 @@ protected:
 
     virtual INT  SubmitRetry(const INMESS &InMessage,
                              const CtiTime TimeNow,
-                             list< CtiMessage * > &vgList,
-                             list< CtiMessage * > &retList,
-                             list< OUTMESS * > &outList);
+                             std::list< CtiMessage * > &vgList,
+                             std::list< CtiMessage * > &retList,
+                             std::list< OUTMESS * > &outList);
 
 private:
 
-    typedef map< int, bool > ScanFlagsPending_t;
+    typedef std::map< int, bool > ScanFlagsPending_t;
     mutable ScanFlagsPending_t _pending_map;       // Scantype, bool pendingState
 
     ULONG getTardyTime(int scantype) const;
@@ -128,7 +128,7 @@ private:
         }
     };
 
-    typedef map<channelWithID, int > MessageCount_t;
+    typedef std::map<channelWithID, int > MessageCount_t;
     MessageCount_t _messageCount;
     CtiTime _lastExpirationCheckTime;
 
@@ -181,25 +181,25 @@ public:
     virtual bool isTransactionComplete();
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 
-    virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
-    virtual void getQueuedResults(vector<queued_result_t> &results);
+    virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
+    virtual void getQueuedResults(std::vector<queued_result_t> &results);
 
     virtual INT  ProcessResult(INMESS*,
                                CtiTime&,
-                               list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList);
+                               std::list< CtiMessage* > &vgList,
+                               std::list< CtiMessage* > &retList,
+                               std::list< OUTMESS* > &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );
     void           validateScanTimes(bool force = false);
 
     INT         doDeviceInit(void);
-    INT         initiateGeneralScan    (list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_General);
-    INT         initiateIntegrityScan  (list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Integrity);
-    INT         initiateAccumulatorScan(list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Accumulator);
+    INT         initiateGeneralScan    (std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_General);
+    INT         initiateIntegrityScan  (std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Integrity);
+    INT         initiateAccumulatorScan(std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Accumulator);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_LoadProfile);
+    INT         initiateLoadProfileScan(std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
     BOOL isWindowOpen(CtiTime &aNow=CtiTime(), CtiTime &opensAt = CtiTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;
@@ -235,12 +235,12 @@ public:
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
-    virtual bool hasLongScanRate(const string &cmd) const;
+    virtual bool hasLongScanRate(const std::string &cmd) const;
 
     CtiTime peekDispatchTime() const;
 
     CtiTime getNextWindowOpen() const;
-    static int desolveScanRateType( const string &cmd );
+    static int desolveScanRateType( const std::string &cmd );
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
     int getGroupMessageCount(long userID, long comID);
@@ -250,5 +250,5 @@ public:
 };
 
 
-typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
+typedef boost::shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
 

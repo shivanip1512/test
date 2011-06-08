@@ -19,6 +19,7 @@
 
 #include "ion_net_application.h"
 
+using std::endl;
 
 CtiIONApplicationLayer::CtiIONApplicationLayer( )
 {

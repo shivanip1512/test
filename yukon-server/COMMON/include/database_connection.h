@@ -8,7 +8,7 @@ class SAConnection;
 namespace Cti {
 namespace Database {
 
-typedef set<long> id_set;
+typedef std::set<long> id_set;
 typedef id_set::const_iterator id_set_itr;
 
 class IM_EX_CTIBASE DatabaseConnection

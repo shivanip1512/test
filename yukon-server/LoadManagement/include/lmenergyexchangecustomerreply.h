@@ -24,8 +24,6 @@
 #include "lmenergyexchangehourlycustomer.h"
 #include "row_reader.h"
 
-using std::vector;
-
 class CtiLMEnergyExchangeCustomerReply : public RWCollectable
 {
 
@@ -41,24 +39,24 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
     
     LONG getCustomerId() const;
     LONG getOfferId() const;
-    const string& getAcceptStatus() const;
+    const std::string& getAcceptStatus() const;
     const CtiTime& getAcceptDateTime() const;
     LONG getRevisionNumber() const;
-    const string& getIPAddressOfAcceptUser() const;
-    const string& getUserIdName() const;
-    const string& getNameOfAcceptPerson() const;
-    const string& getEnergyExchangeNotes() const;
-    vector<CtiLMEnergyExchangeHourlyCustomer*>& getLMEnergyExchangeHourlyCustomers();
+    const std::string& getIPAddressOfAcceptUser() const;
+    const std::string& getUserIdName() const;
+    const std::string& getNameOfAcceptPerson() const;
+    const std::string& getEnergyExchangeNotes() const;
+    std::vector<CtiLMEnergyExchangeHourlyCustomer*>& getLMEnergyExchangeHourlyCustomers();
 
     CtiLMEnergyExchangeCustomerReply& setCustomerId(LONG custid);
     CtiLMEnergyExchangeCustomerReply& setOfferId(LONG offid);
-    CtiLMEnergyExchangeCustomerReply& setAcceptStatus(const string& accstatus);
+    CtiLMEnergyExchangeCustomerReply& setAcceptStatus(const std::string& accstatus);
     CtiLMEnergyExchangeCustomerReply& setAcceptDateTime(const CtiTime& acctime);
     CtiLMEnergyExchangeCustomerReply& setRevisionNumber(LONG revnumber);
-    CtiLMEnergyExchangeCustomerReply& setIPAddressOfAcceptUser(const string& ipaddress);
-    CtiLMEnergyExchangeCustomerReply& setUserIdName(const string& username);
-    CtiLMEnergyExchangeCustomerReply& setNameOfAcceptPerson(const string& nameaccperson);
-    CtiLMEnergyExchangeCustomerReply& setEnergyExchangeNotes(const string& exchangenotes);
+    CtiLMEnergyExchangeCustomerReply& setIPAddressOfAcceptUser(const std::string& ipaddress);
+    CtiLMEnergyExchangeCustomerReply& setUserIdName(const std::string& username);
+    CtiLMEnergyExchangeCustomerReply& setNameOfAcceptPerson(const std::string& nameaccperson);
+    CtiLMEnergyExchangeCustomerReply& setEnergyExchangeNotes(const std::string& exchangenotes);
 
     CtiLMEnergyExchangeCustomerReply* replicate() const;
 
@@ -79,9 +77,9 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
     // Static Members
 
     // Possible accept statuses
-    static const string NoResponseAcceptStatus;
-    static const string AcceptedAcceptStatus;
-    static const string DeclinedAcceptStatus;
+    static const std::string NoResponseAcceptStatus;
+    static const std::string AcceptedAcceptStatus;
+    static const std::string DeclinedAcceptStatus;
 
 protected:
 
@@ -91,15 +89,15 @@ private:
 
     LONG _customerid;
     LONG _offerid;
-    string _acceptstatus;
+    std::string _acceptstatus;
     CtiTime _acceptdatetime;
     LONG _revisionnumber;
-    string _ipaddressofacceptuser;
-    string _useridname;
-    string _nameofacceptperson;
-    string _energyexchangenotes;
+    std::string _ipaddressofacceptuser;
+    std::string _useridname;
+    std::string _nameofacceptperson;
+    std::string _energyexchangenotes;
 
-    vector<CtiLMEnergyExchangeHourlyCustomer*> _lmenergyexchangehourlycustomers;
+    std::vector<CtiLMEnergyExchangeHourlyCustomer*> _lmenergyexchangehourlycustomers;
 };
 #endif
 

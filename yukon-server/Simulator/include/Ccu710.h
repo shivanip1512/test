@@ -126,14 +126,14 @@ private:
 
         bytes loopback_response;
 
-        string description;
+        std::string description;
     };
 
     struct reply_t
     {
         bytes message;
 
-        string description;
+        std::string description;
     };
 
     enum Strategies

@@ -34,6 +34,10 @@
 #include "guard.h"
 #include "utility.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 /*
  * Command Char, Command Name, Sent bytes (less CRC), Rec. Bytes (less CRC)
  */

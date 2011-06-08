@@ -27,7 +27,7 @@
 * Phase two of RWTPtrSlist replacement.
 *
 * Revision 1.4  2006/02/24 00:19:13  tspar
-* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+* First Series of replacements of RWTPtrSlist to list. Scanner, Pil, Porter.
 *
 * Revision 1.3  2005/12/20 17:20:29  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
@@ -73,12 +73,12 @@ public:
     CtiTableSASimpleGroup& getLoadGroup();
     CtiDeviceGroupSADigital& setLoadGroup(const CtiTableSASimpleGroup& aRef);
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     virtual LONG getRouteID();
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
 };
 #endif // #ifndef __DEV_GRP_SADIGITAL_H__

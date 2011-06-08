@@ -31,7 +31,7 @@ public:
 
    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 
-   virtual string getSQLCoreStatement() const;
+   virtual std::string getSQLCoreStatement() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

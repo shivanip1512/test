@@ -28,7 +28,7 @@ public:
 
     virtual bool Insert();
     virtual bool UpdateStopTime();
-    virtual string getTableName();
+    virtual std::string getTableName();
 
 
     long getScheduleId() const;

@@ -26,12 +26,12 @@ class CtiFDRSocketServer;
 class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnection
 {
     public:
-        CtiFDRClientServerConnection(const string& connectionName,
+        CtiFDRClientServerConnection(const std::string& connectionName,
                                      SOCKET theSocket,
                                      CtiFDRSocketServer *aParent);
         ~CtiFDRClientServerConnection();
 
-        typedef string Destination;
+        typedef std::string Destination;
 
         Destination getName() const;
         void setName(Destination serverName);
@@ -85,7 +85,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
 
         bool _connectionFailed;
         bool _isRegistered;
-        string _connectionName;
+        std::string _connectionName;
         int _connectionNumber;
         static int _nextConnectionNumber;
 
@@ -93,7 +93,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         HANDLE _stillAliveEvent;
 
         long _linkId;
-        string _linkName;
+        std::string _linkName;
 
     public:
         // exception class

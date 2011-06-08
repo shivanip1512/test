@@ -18,6 +18,10 @@
 #include "logger.h"
 #include "port_dialin.h"
 
+using std::iostream;
+using std::endl;
+using std::string;
+
 CtiPortDialin::CtiPortDialin()
 {}
 

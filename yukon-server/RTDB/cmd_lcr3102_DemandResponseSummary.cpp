@@ -13,7 +13,7 @@ Lcr3102DemandResponseSummaryCommand::Lcr3102DemandResponseSummaryCommand() :
 {
 }
 
-DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
 {
     const unsigned char drSummary_info = getValueFromBits(payload, 48, 8);
   

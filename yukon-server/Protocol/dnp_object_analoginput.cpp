@@ -5,6 +5,8 @@
 
 #include <boost/cstdint.hpp>
 
+
+using std::endl;
 using boost::int16_t;
 using boost::int32_t;
 

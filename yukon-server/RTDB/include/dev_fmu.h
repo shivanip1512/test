@@ -42,9 +42,6 @@
 #define __DEV_FMU_H__
 
 #include <queue>
-
-using std::queue;
-
 #include "dev_ied.h"
 #include "queue.h"
 #include "verification_objects.h"
@@ -62,7 +59,7 @@ class IM_EX_DEVDB CtiDeviceFMU : public CtiDeviceIED
 private:
 
     typedef CtiDeviceIED Inherited;
-    typedef vector< string * > stringlist_t;
+    typedef std::vector< std::string * > stringlist_t;
 
     CtiOutMessage _outbound;
     unsigned char _inbound[256];
@@ -127,7 +124,7 @@ private:
     unsigned long  _in_expected, _in_actual, _in_remaining;
     int _code_len, _codes_received;
     bool _endOfTransactionFlag;
-    string _rawData;
+    std::string _rawData;
     stringlist_t _stringList;
 
     bool checkMessageCRC();
@@ -152,7 +149,7 @@ private:
         MaxErrors = 3
     };
 
-    queue< CtiVerificationBase * > _verification_objects;
+    std::queue< CtiVerificationBase * > _verification_objects;
 
 protected:
 
@@ -163,11 +160,11 @@ public:
     ~CtiDeviceFMU();
     virtual LONG getAddress() const;
 
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
 
     int recvCommRequest(OUTMESS *OutMessage);
     int sendCommResult(INMESS *InMessage);
@@ -175,7 +172,7 @@ public:
     int generate(CtiXfer &xfer);
     int decode(CtiXfer &xfer, int status);
 
-    void getVerificationObjects(queue<CtiVerificationBase *> &work_queue);
+    void getVerificationObjects(std::queue<CtiVerificationBase *> &work_queue);
 
     bool isTransactionComplete();
 

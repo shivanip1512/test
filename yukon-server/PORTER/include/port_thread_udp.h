@@ -70,7 +70,7 @@ private:
     void setDeviceIp  ( const long device_id, const u_long ip );
     void setDevicePort( const long device_id, const u_short port );
 
-    static u_long string_to_ip(string ip_string);
+    static u_long string_to_ip(std::string ip_string);
 
     static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_long ip, u_short port );
 

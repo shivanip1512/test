@@ -46,7 +46,7 @@ public:
     _regressionPtId(0)
     {}
 
-    CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag );
+    CtiCalc( long pointId, const std::string &updateType, int updateInterval, const std::string &qualityFlag );
 
     ~CtiCalc( )  
     {  
@@ -58,7 +58,7 @@ public:
     int      getUpdateInterval( ) const;
     long     getRegressionComponentId() const;
     int      getComponentCount();
-    set<long> getComponentIDList();
+    std::set<long> getComponentIDList();
     long findDemandAvgComponentPointId();
 
     long getPointId( void )  

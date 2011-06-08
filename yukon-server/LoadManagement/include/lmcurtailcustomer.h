@@ -39,22 +39,22 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     
     BOOL getRequireAck() const;
     LONG getCurtailReferenceId() const;
-    const string& getAcknowledgeStatus() const;
+    const std::string& getAcknowledgeStatus() const;
     const CtiTime& getAckDateTime() const;
-    const string& getIPAddressOfAckUser() const;
-    const string& getUserIdName() const;
-    const string& getNameOfAckPerson() const;
-    const string& getCurtailmentNotes() const;
+    const std::string& getIPAddressOfAckUser() const;
+    const std::string& getUserIdName() const;
+    const std::string& getNameOfAckPerson() const;
+    const std::string& getCurtailmentNotes() const;
     BOOL getAckLateFlag() const;
 
     CtiLMCurtailCustomer& setRequireAck(BOOL reqack);
     CtiLMCurtailCustomer& setCurtailReferenceId(LONG refid);
-    CtiLMCurtailCustomer& setAcknowledgeStatus(const string& ackstatus);
+    CtiLMCurtailCustomer& setAcknowledgeStatus(const std::string& ackstatus);
     CtiLMCurtailCustomer& setAckDateTime(const CtiTime& acktime);
-    CtiLMCurtailCustomer& setIPAddressOfAckUser(const string& ipaddress);
-    CtiLMCurtailCustomer& setUserIdName(const string& username);
-    CtiLMCurtailCustomer& setNameOfAckPerson(const string& nameackperson);
-    CtiLMCurtailCustomer& setCurtailmentNotes(const string& curtailnotes);
+    CtiLMCurtailCustomer& setIPAddressOfAckUser(const std::string& ipaddress);
+    CtiLMCurtailCustomer& setUserIdName(const std::string& username);
+    CtiLMCurtailCustomer& setNameOfAckPerson(const std::string& nameackperson);
+    CtiLMCurtailCustomer& setCurtailmentNotes(const std::string& curtailnotes);
     CtiLMCurtailCustomer& setAckLateFlag(BOOL acklate);
 
     CtiLMCurtailCustomer* replicate() const;
@@ -73,10 +73,10 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     // Static Members
 
     // Possible acknowledge statuses
-    static const string UnAcknowledgedAckStatus;
-    static const string AcknowledgedAckStatus;
-    static const string NotRequiredAckStatus;
-    static const string VerbalAckStatus;
+    static const std::string UnAcknowledgedAckStatus;
+    static const std::string AcknowledgedAckStatus;
+    static const std::string NotRequiredAckStatus;
+    static const std::string VerbalAckStatus;
 
 protected:
 
@@ -86,12 +86,12 @@ private:
 
     BOOL _requireack;
     LONG _curtailreferenceid;
-    string _acknowledgestatus;
+    std::string _acknowledgestatus;
     CtiTime _ackdatetime;
-    string _ipaddressofackuser;
-    string _useridname;
-    string _nameofackperson;
-    string _curtailmentnotes;
+    std::string _ipaddressofackuser;
+    std::string _useridname;
+    std::string _nameofackperson;
+    std::string _curtailmentnotes;
     BOOL _acklateflag;
 
     void updateLMCurtailCustomerActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);

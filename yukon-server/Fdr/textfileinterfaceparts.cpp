@@ -65,6 +65,7 @@
 #include "guard.h"
 #include "TextFileInterfaceParts.h"
 
+using std::string;
 
 // Constructors, Destructor, and Operators
 CtiFDRTextFileInterfaceParts::CtiFDRTextFileInterfaceParts(string &aFileName, string &aPath, int aInterval)

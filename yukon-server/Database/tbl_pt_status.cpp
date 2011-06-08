@@ -18,6 +18,9 @@
 #include "resolvers.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 static const string zeroControl = "control open";
 static const string oneControl = "control close";
 

@@ -17,6 +17,7 @@
 
 #include "ion_value_fixed_char.h"
 
+using std::endl;
 
 CtiIONChar::CtiIONChar( unsigned char initialValue ) :
     CtiIONValueFixed(Fixed_Char),

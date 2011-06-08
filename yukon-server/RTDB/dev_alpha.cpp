@@ -80,6 +80,8 @@
 
 #include "utility.h"
 
+using std::endl;
+using std::list;
 
 CtiDeviceAlpha::CtiDeviceAlpha(BYTE         *dataPtr,
                                BYTE          *lpPtr,

@@ -38,7 +38,7 @@
 class IM_EX_FDRBASE CtiFDRPointIdMap
 {
     public:    
-        CtiFDRPointIdMap( long pointID = 0, string & translateName = string(), string & destinationName = string(), FDRDbReloadReason aReason=NotReloaded);
+        CtiFDRPointIdMap( long pointID = 0, std::string & translateName = std::string(), std::string & destinationName = std::string(), FDRDbReloadReason aReason=NotReloaded);
         ~CtiFDRPointIdMap();
 
         BOOL operator==( const CtiFDRPointIdMap &other ) const;
@@ -49,11 +49,11 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         long                getPointID( void ) const;
         CtiFDRPointIdMap &  setPointID(const long aPointID);
 
-        string           getTranslateName() const;
-        CtiFDRPointIdMap &  setTranslateName(const string & aName);
+        std::string         getTranslateName() const;
+        CtiFDRPointIdMap &  setTranslateName(const std::string & aName);
 
-        string           getDestinationName() const;
-        CtiFDRPointIdMap &  setDestinationName(const string & aName);
+        std::string         getDestinationName() const;
+        CtiFDRPointIdMap &  setDestinationName(const std::string & aName);
 
         double              getMultiplier( void ) const;
         CtiFDRPointIdMap &  setMultiplier( const double aMultiplier );
@@ -64,13 +64,13 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         bool                isControllable( void ) const;
         CtiFDRPointIdMap &  setControllable( const bool aFlag=true );
 
-        CtiTime              getLastTimeStamp ( void ) const;
+        CtiTime             getLastTimeStamp ( void ) const;
         CtiFDRPointIdMap &  setLastTimeStamp ( const CtiTime & aTime );
         
         FDRDbReloadReason   getReasonForReload( void ) const;
         CtiFDRPointIdMap &  setReasonForReload(FDRDbReloadReason aReason=DbChange);
 
-        CtiPointType_t getPointType() const;        
+        CtiPointType_t     getPointType() const;        
         CtiFDRPointIdMap & setPointType(CtiPointType_t aType);
 
     protected:    
@@ -78,16 +78,16 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         // private data
         long            iPointID;
         CtiPointType_t  iPointType;
-        string       iTranslateName;
+        std::string     iTranslateName;
         double          iMultiplier;
         double          iOffset;
-        CtiTime          iLastTimeStamp;
+        CtiTime         iLastTimeStamp;
 
         // this should be in class of its own but time constraints call DLS
-        string       iDestinationName;
+        std::string        iDestinationName;
         FDRDbReloadReason  iReasonForReload;
-        bool            iControllable;
-};
+        bool               iControllable;
+}; 
 
 #endif  //  #ifndef __FDRPOINTIDMAP_H__
 

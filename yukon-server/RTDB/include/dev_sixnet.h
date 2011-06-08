@@ -92,8 +92,8 @@ class CSxlField
 {
 public:
 
-   typedef set< CtiSxlFieldHistory > FIELDHISTORY;
-   typedef pair< FIELDHISTORY::iterator, bool > FIELDHISTORYPAIR;
+   typedef std::set< CtiSxlFieldHistory > FIELDHISTORY;
+   typedef std::pair< FIELDHISTORY::iterator, bool > FIELDHISTORYPAIR;
 
    CSxlField()
    {
@@ -104,7 +104,7 @@ public:
       _history.clear();
    }
 
-   int processData(uchar *rec, vector< CtiSxlRecord > & _recordData, UINT interval);
+   int processData(uchar *rec, std::vector< CtiSxlRecord > & _recordData, UINT interval);
 
    bool operator==(const CSxlField& aRef) const
    {
@@ -161,9 +161,9 @@ private:
 
 public:
 
-   typedef vector< CtiSxlRecord >   DATACOLLECTION;
-   typedef set< CSxlField >         FIELDCOLLECTION;
-   typedef pair< FIELDCOLLECTION::iterator, bool > FIELDCOLLECTIONPAIR;
+   typedef std::vector< CtiSxlRecord >   DATACOLLECTION;
+   typedef std::set< CSxlField >         FIELDCOLLECTION;
+   typedef std::pair< FIELDCOLLECTION::iterator, bool > FIELDCOLLECTIONPAIR;
 
    enum
    {
@@ -195,7 +195,7 @@ public:
 
 protected:
 
-   string _logfileName;
+   std::string _logfileName;
    UCHAR* _txBuffer;
    UCHAR* _rxBuffer;
 
@@ -303,14 +303,14 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand    (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *);
    virtual INT freeDataBins ();
@@ -320,14 +320,14 @@ public:
    void setupGetRecord(CtiXfer &Transfer);
    void checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfer);
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority);
-   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList,  list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-   virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
+   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority);
+   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList,  std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 
-   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
 };
 #endif // #ifndef __DEV_SIXNET_H__

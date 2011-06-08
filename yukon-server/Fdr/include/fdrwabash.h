@@ -27,8 +27,6 @@
 #include "fdrinterface.h"
 #include "string.h"
 
-using std::string;
-
 class __declspec(dllexport) FDRWabash : public CtiFDRInterface
 {
         typedef CtiFDRInterface Inherited;
@@ -50,19 +48,19 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
         int processMessageFromForeignSystem( char* );//should never be called.
 
         //getter's and setter's
-        string getFilename();
-        string getPath();
-        void setFilename( string );
-        void setPath( string );
+        std::string getFilename();
+        std::string getPath();
+        void setFilename( std::string );
+        void setPath( std::string );
 
         static const char * KEY_DB_RELOAD;
         static const char * KEY_INITIAL_LOAD;
 
     private:
-        bool writeDataToFile( string cmd );
+        bool writeDataToFile( std::string cmd );
 
-        string _fileName;
-        string _path;
+        std::string _fileName;
+        std::string _path;
         bool   _writeInitialLoad;
 
 };

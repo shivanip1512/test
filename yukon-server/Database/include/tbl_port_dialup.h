@@ -36,11 +36,11 @@ class IM_EX_CTIYUKONDB CtiTablePortDialup : public CtiMemDBObject
 protected:
 
    // PortDialupModem
-   LONG           _portID;
-   string      _modemType;
-   string      _modemInitString;           // in struct [MODEMINITLENGTH];
-   string      _prefixString;              // Pre Dial        - FIX FIX FIX
-   string      _suffixString;              // Post Dial       - FIX FIX FIX
+   LONG             _portID;
+   std::string      _modemType;
+   std::string      _modemInitString;           // in struct [MODEMINITLENGTH];
+   std::string      _prefixString;              // Pre Dial        - FIX FIX FIX
+   std::string      _suffixString;              // Post Dial       - FIX FIX FIX
 
 private:
 
@@ -54,25 +54,25 @@ public:
 
    CtiTablePortDialup& operator=(const CtiTablePortDialup& aRef);
 
-   string                     getModemType() const;
-   string&                    getModemType();
-   CtiTablePortDialup&           setModemType(const string& str);
+   std::string                     getModemType() const;
+   std::string&                    getModemType();
+   CtiTablePortDialup&             setModemType(const std::string& str);
 
-   string                     getModemInitString() const;
-   string&                    getModemInitString();
-   CtiTablePortDialup&           setModemInitString(const string& str);
+   std::string                     getModemInitString() const;
+   std::string&                    getModemInitString();
+   CtiTablePortDialup&             setModemInitString(const std::string& str);
 
-   string                     getPrefixString() const;
-   string&                    getPrefixString();
-   CtiTablePortDialup&           setPrefixString(const string& str);
+   std::string                     getPrefixString() const;
+   std::string&                    getPrefixString();
+   CtiTablePortDialup&             setPrefixString(const std::string& str);
 
-   string                     getSuffixString() const;
-   string&                    getSuffixString();
-   CtiTablePortDialup&           setSuffixString(const string& str);
+   std::string                     getSuffixString() const;
+   std::string&                    getSuffixString();
+   CtiTablePortDialup&             setSuffixString(const std::string& str);
 
-   static string              getTableName();
+   static std::string              getTableName();
 
-   static string getSQLCoreStatement();
+   static std::string              getSQLCoreStatement();
 
    LONG                          getPortID() const;
    CtiTablePortDialup&           setPortID( const LONG ptid );

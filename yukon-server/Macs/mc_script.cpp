@@ -1,6 +1,8 @@
 #include "yukon.h"
 #include "mc_script.h"
 
+using std::string;
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   mc_script

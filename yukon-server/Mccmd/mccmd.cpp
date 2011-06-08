@@ -57,6 +57,10 @@
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
+using std::string;
+using std::endl;
+using std::vector;
+
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 

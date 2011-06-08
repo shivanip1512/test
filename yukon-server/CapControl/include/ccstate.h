@@ -19,11 +19,11 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 
     virtual ~CtiCCState();
 
-    const string& getText() const;
+    const std::string& getText() const;
     LONG getForegroundColor() const;
     LONG getBackgroundColor() const;
 
-    CtiCCState& setText(const string& text);
+    CtiCCState& setText(const std::string& text);
     CtiCCState& setForegroundColor(LONG foregroundcolor);
     CtiCCState& setBackgroundColor(LONG backgroundcolor);
 
@@ -37,9 +37,9 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 
 private:
 
-    string _text;
-    LONG _foregroundcolor;
-    LONG _backgroundcolor;
+    std::string _text;
+    LONG        _foregroundcolor;
+    LONG        _backgroundcolor;
 
     void restore(Cti::RowReader& rdr);
 };

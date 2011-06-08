@@ -61,8 +61,8 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         ULONG           getScanRateSeconds() const;
         void            setScanRateSeconds(const ULONG mySeconds);
 
-        string       getAnalogServiceName() const;
-        string       getStatusServiceName() const;
+        std::string       getAnalogServiceName() const;
+        std::string       getStatusServiceName() const;
 
         ConnectState    getAnalogServiceState() const;
         CtiFDRCygnet &  setAnalogServiceState(const ConnectState myCState);
@@ -107,8 +107,8 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
 
     private:
         ULONG               iScanRateSeconds;
-        string           iAnalogServiceName;
-        string           iStatusServiceName;
+        std::string           iAnalogServiceName;
+        std::string           iStatusServiceName;
         ConnectState        iAnalogServiceState;
         ConnectState        iStatusServiceState;
         double              iHiReasonabilityFilter;

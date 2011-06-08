@@ -27,10 +27,6 @@
 #include "thread.h"
 #include "thread_register_data.h"
 
-using std::map;
-using std::less;
-
-
 class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 {
 
@@ -54,7 +50,7 @@ public:
        Dead
    };
 
-   string getString();
+   std::string getString();
 
    enum PointOffsets
    {
@@ -91,18 +87,18 @@ private:
    void processQueue( void );
    void processExpired( void );
    void processExtraCommands( void );
-   string now( void );
-   string timeString( ptime in );
+   std::string now( void );
+   std::string timeString( boost::posix_time::ptime in );
    void messageOut( const char *fmt, ... );
 
    State _currentState;//status point!
 
-   mutable CtiMutex                                         _monitorMux;
-   mutable CtiMutex                                         _vectorMux;//for the pointID list
-   CtiQueue < CtiThreadRegData, less< CtiThreadRegData > >  _queue;
-   ThreadData                                               _threadData;
-   PointIDList                                              _pointIDList;
-   string                                                   _output;
+   mutable CtiMutex                                              _monitorMux;
+   mutable CtiMutex                                              _vectorMux;//for the pointID list
+   CtiQueue < CtiThreadRegData, std::less< CtiThreadRegData > >  _queue;
+   ThreadData                                                    _threadData;
+   PointIDList                                                   _pointIDList;
+   std::string                                                   _output;
 
 };
 

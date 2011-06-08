@@ -2,6 +2,8 @@
 #include "sepcyclegear.h"
 #include "logger.h"
 
+using std::endl;
+
 SEPCycleGear::SEPCycleGear(Cti::RowReader &rdr)
 {
     restore(rdr);

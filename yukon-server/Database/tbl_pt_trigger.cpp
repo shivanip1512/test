@@ -15,6 +15,9 @@
 #include "tbl_pt_trigger.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePointTrigger::CtiTablePointTrigger() :
     _pointID(0),
     _triggerID(0),

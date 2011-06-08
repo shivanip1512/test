@@ -70,5 +70,5 @@ extern IM_EX_PORTGLOB bool          gIgnoreTCU5X00QueFull;
 extern CtiSyncDefStruct             PorterSyncs[];
 extern IM_EX_PORTGLOB CTINEXUS      PorterListenNexus;
 
-extern IM_EX_PORTGLOB string        gDelayDatFile;
+extern IM_EX_PORTGLOB std::string        gDelayDatFile;
 

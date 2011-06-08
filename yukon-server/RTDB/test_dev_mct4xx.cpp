@@ -6,6 +6,7 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 using Cti::Devices::Mct4xxDevice;
+using std::list;
 
 struct test_Mct4xxDevice : Mct4xxDevice
 {

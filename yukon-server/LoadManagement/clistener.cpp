@@ -21,6 +21,9 @@
 
 #include <rw/toolpro/inetaddr.h>
 
+using std::endl;
+using std::string;
+
 extern ULONG _LM_DEBUG;
 
 CtiLMClientListener* CtiLMClientListener::_instance = NULL;

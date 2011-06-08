@@ -23,11 +23,6 @@
 #include <iostream>
 #include <string.h>
 
-
-using std::ostream;
-using std::string;
-
-
 #define EVENTLOG 0x0001                 // send log to the logger
 #define AUDIBLEALARM 0x0002             // this is creates a audible tone only
 #define ACKAUDIBLEALARM 0x0004          // this is Acknowleges an audible tone only
@@ -45,10 +40,10 @@ class SYSTEMLOGMESS
 public:
     ULONG TimeStamp;
     USHORT StatusFlag;                      // bit 1 logged on logger, bit 16 DST
-    string DeviceName;
-    string PointName;                    // this can be a point name or route name
-    string LogMessage1;                   // first log it point name is used
-    string LogMessage2;                   // first log it point name is used
+    std::string DeviceName;
+    std::string PointName;                    // this can be a point name or route name
+    std::string LogMessage1;                   // first log it point name is used
+    std::string LogMessage2;                   // first log it point name is used
     USHORT EventType;                       // type of logged event
     CHAR EventLable[5];                     // event label for logging only use 3 char
     USHORT Originator;                      // who logged the event
@@ -60,13 +55,13 @@ public:
 };
 
 /* Prototypes from ELOG_CLI.C */
-IM_EX_CTIBASE ostream& operator<<( ostream& ostrm, SYSTEMLOGMESS &sl );
+IM_EX_CTIBASE std::ostream& operator<<( std::ostream& ostrm, SYSTEMLOGMESS &sl );
 
 int IM_EX_CTIBASE LogEvent (SYSTEMLOGMESS *);
 IM_EX_CTIBASE int SendTextToLogger (PCHAR Source,
                                     PCHAR Message = NULL,
-                                    const string& majorName = string(""),
-                                    const string& minorName = string(""));
+                                    const std::string& majorName = std::string(""),
+                                    const std::string& minorName = std::string(""));
 
 #endif      // #ifndef ELOGGER_H
 

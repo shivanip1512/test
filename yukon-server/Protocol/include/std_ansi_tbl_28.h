@@ -60,7 +60,7 @@ public:
                          bool timeRemainingFlag, int format1, int format2, int timefmt, bool lsbDataOrder = true );
    virtual ~CtiAnsiTable28();
    CtiAnsiTable28& operator=(const CtiAnsiTable28& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    double getPresentDemand(int index );
    double getPresentValue(int index );

@@ -26,14 +26,14 @@ public:
    virtual ~UdpPort() {};
 
    INT           getIPPort()    const;
-   const string &getIPAddress() const;
+   const std::string &getIPAddress() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   const string &getEncodingKey()  const;
-   const string &getEncodingType() const;
+   const std::string &getEncodingKey()  const;
+   const std::string &getEncodingType() const;
 
-   virtual INT inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, list<CtiMessage *> &traceList)
+   virtual INT inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
    {
        return 0;
    }
@@ -41,7 +41,7 @@ public:
    {
        return 0;
    }
-   virtual INT outMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, list<CtiMessage *> &traceList)
+   virtual INT outMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
    {
        return 0;
    }
@@ -51,7 +51,7 @@ public:
    }
 };
 
-typedef shared_ptr< UdpPort > UdpPortSPtr;
+typedef boost::shared_ptr< UdpPort > UdpPortSPtr;
 
 }
 }

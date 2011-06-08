@@ -15,6 +15,10 @@
 #include "ctidate.h"
 
 using Cti::Protocols::EmetconProtocol;
+using std::string;
+using std::endl;
+using std::list;
+using std::set;
 
 namespace Cti {
 namespace Devices {

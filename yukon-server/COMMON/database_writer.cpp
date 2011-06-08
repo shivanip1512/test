@@ -7,6 +7,8 @@
 
 using namespace Cti::Database;
 using Cti::RowWriter;
+using std::endl;
+using std::string;
 
 DatabaseWriter::DatabaseWriter(Cti::Database::DatabaseConnection &conn, const std::string &command) :
     _command(conn)

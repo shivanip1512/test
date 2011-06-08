@@ -130,7 +130,7 @@ public:
 
    CtiAnsiTable52& operator=(const CtiAnsiTable52& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
    CtiTime getClkCldrTime();

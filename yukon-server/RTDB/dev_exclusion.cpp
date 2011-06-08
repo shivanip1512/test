@@ -79,6 +79,7 @@
 #include "utility.h"
 
 using std::make_pair;
+using std::endl;
 
 CtiDeviceExclusion::CtiDeviceExclusion(LONG id) :
 _deviceId(id),

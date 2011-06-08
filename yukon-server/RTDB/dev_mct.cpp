@@ -27,6 +27,11 @@
 
 #include "cmd_dlc.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::pair;
+
 using Cti::Protocols::EmetconProtocol;
 
 using namespace Cti::Devices::Commands;

@@ -72,6 +72,9 @@
 #include "logger.h"
 #include "tbl_dv_rtc.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceRTC::CtiTableDeviceRTC() :
     _deviceID(-1),
     _rtcAddress(0),

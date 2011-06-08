@@ -1,6 +1,8 @@
 #include "yukon.h"
 #include "msg_notif_lmcontrol.h"
 
+using std::vector;
+
 RWDEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
 
 CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _notif_type(0), _program_id(-1)

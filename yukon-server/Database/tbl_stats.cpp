@@ -20,6 +20,9 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceStatistics::CtiTableDeviceStatistics() :
 _deviceID(-1),
 Type(StatTypeInvalid),

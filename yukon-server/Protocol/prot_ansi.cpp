@@ -104,6 +104,9 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
+using std::endl;
+using std::string;
+using std::list;
 
 using namespace Cti::Protocols::Ansi;
 const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLERANCE";

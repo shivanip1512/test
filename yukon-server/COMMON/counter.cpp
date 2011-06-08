@@ -17,6 +17,8 @@
 #include "yukon.h"
 #include "counter.h"
 
+using std::map;
+
 void CtiCounter::inc( int index, int bump )
 {
     CtiLockGuard<CtiMutex> guard(_counterMapMux);

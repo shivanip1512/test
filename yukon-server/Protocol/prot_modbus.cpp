@@ -6,6 +6,10 @@
 #include "numstr.h"
 #include "prot_modbus.h"
 
+
+using std::endl;
+using std::string;
+
 namespace Cti {
 namespace Protocols {
 

@@ -26,6 +26,8 @@
 #include "database_writer.h"
 
 using std::vector;
+using std::string;
+using std::endl;
 
 extern ULONG _LM_DEBUG;
 

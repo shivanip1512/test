@@ -1,18 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangeoffer.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiLMEnergyExchangeOffer
-
-        Initial Date:  5/14/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTILMENERGYEXCHANGEOFFERIMPL_H
-#define CTILMENERGYEXCHANGEOFFERIMPL_H
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -39,13 +26,13 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
 
     LONG getPAOId() const;
     LONG getOfferId() const;
-    const string& getRunStatus() const;
+    const std::string& getRunStatus() const;
     const CtiTime& getOfferDate() const;
     std::vector<CtiLMEnergyExchangeOfferRevision*>& getLMEnergyExchangeOfferRevisions();
 
     CtiLMEnergyExchangeOffer& setPAOId(LONG paoid);
     CtiLMEnergyExchangeOffer& setOfferId(LONG offid);
-    CtiLMEnergyExchangeOffer& setRunStatus(const string& runstat);
+    CtiLMEnergyExchangeOffer& setRunStatus(const std::string& runstat);
     CtiLMEnergyExchangeOffer& setOfferDate(const CtiTime& offdate);
 
     void addLMEnergyExchangeProgramOfferTable();
@@ -70,28 +57,24 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     // Static Members
 
     // Possible run statuses
-    static const string NullRunStatus;
-    static const string ScheduledRunStatus;
-    static const string OpenRunStatus;
-    static const string ClosingRunStatus;
-    static const string CurtailmentPendingRunStatus;
-    static const string CurtailmentActiveRunStatus;
-    static const string CompletedRunStatus;
-    static const string CanceledRunStatus;
-    //static const string ActiveRunStatus;
-    //static const string StoppedEarlyRunStatus;
-    //static const string CompletedRunStatus;
+    static const std::string NullRunStatus;
+    static const std::string ScheduledRunStatus;
+    static const std::string OpenRunStatus;
+    static const std::string ClosingRunStatus;
+    static const std::string CurtailmentPendingRunStatus;
+    static const std::string CurtailmentActiveRunStatus;
+    static const std::string CompletedRunStatus;
+    static const std::string CanceledRunStatus;
 
 private:
 
     LONG _paoid;
     LONG _offerid;
-    string _runstatus;
+    std::string _runstatus;
     CtiTime _offerdate;
 
     std::vector<CtiLMEnergyExchangeOfferRevision*> _lmenergyexchangeofferrevisions;
 
     void restore(Cti::RowReader &rdr);
 };
-#endif
 

@@ -42,12 +42,12 @@ private:
     ptType               _componentType;
     opType               _operationType;
     double               _constantValue;
-    string               _functionName;
+    std::string          _functionName;
     CtiCalc              *_calcpoint;
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
 
-    double               _doFunction( string &, bool &validCalc );
+    double               _doFunction( std::string &, bool &validCalc );
     void                 primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &pointTime, int number);
 
 protected:
@@ -61,8 +61,8 @@ public:
     _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
     {};
 
-    CtiCalcComponent( const string &componentType, long componentPointId, const string &operationType,
-                      double constantValue, const string &functionName );
+    CtiCalcComponent( const std::string &componentType, long componentPointId, const std::string &operationType,
+                      double constantValue, const std::string &functionName );
 
     CtiCalcComponent( CtiCalcComponent const &copyFrom ) :
     _componentType(constant), _operationType(multiplication), _constantValue(0.0), _functionName(""),
@@ -77,7 +77,7 @@ public:
         _calcpoint = parent;
     };
 
-    const string& getFunctionName() {return _functionName;};
+    const std::string& getFunctionName() {return _functionName;};
     long getComponentPointId() {return _componentPointId;};
     
     BOOL isValid( void )  {  return _valid;};

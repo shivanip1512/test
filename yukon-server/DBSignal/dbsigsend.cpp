@@ -3,6 +3,8 @@
 #include "dllbase.h"
 #include "tbl_signal.h"
 
+using std::string;
+
 void main(int argc, char** argv)
 {
 

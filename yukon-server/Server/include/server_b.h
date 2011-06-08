@@ -26,10 +26,6 @@
 #include <iostream>
 #include <functional>
 
-using std::iostream;
-using std::equal_to;
-
-
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
@@ -106,7 +102,7 @@ public:
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients = NULL);
 
-   virtual string getMyServerName() const;
+   virtual std::string getMyServerName() const;
 
    virtual void  shutdown();
    void          terminate();

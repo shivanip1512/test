@@ -20,6 +20,8 @@
 
 #include "dev_base_lite.h"
 
+using std::string;
+
 CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
 _deviceID(id),
 _portID(0),

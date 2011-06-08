@@ -30,7 +30,7 @@ protected:
     CtiPort             *_superPort;           // This is how we know who owns us...
 
     BOOL                _shouldDisconnect;
-    string           _dialedUpNumber;
+    std::string           _dialedUpNumber;
 
     CtiHayesModem       _modem;
 
@@ -49,9 +49,9 @@ public:
     CtiHayesModem& getModem();
     CtiPortDialable& setSuperPort(CtiPort *port);
 
-    string getDialedUpNumber() const;
-    string& getDialedUpNumber();
-    CtiPortDialable& setDialedUpNumber(const string &str);
+    std::string getDialedUpNumber() const;
+    std::string& getDialedUpNumber();
+    CtiPortDialable& setDialedUpNumber(const std::string &str);
 
     virtual BOOL shouldDisconnect() const;
     virtual void setShouldDisconnect(BOOL b = TRUE);
@@ -69,7 +69,7 @@ public:
     CtiTablePortDialup& getTablePortDialup();
     CtiPortDialable& setTablePortDialup(const CtiTablePortDialup& aRef);
 
-    static string getSQLCoreStatement();
+    static std::string getSQLCoreStatement();
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 

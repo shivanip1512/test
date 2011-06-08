@@ -7,6 +7,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceIED::CtiTableDeviceIED() :
 _deviceID(-1),
 _slaveAddress(0)

@@ -196,8 +196,8 @@ inline RWCString string2RWCString(const std::string &str){
     return RWCString(str.c_str());
 }
 
-inline string RW2String( const RWCString &str ){
-        return string(str.data());
+inline std::string RW2String( const RWCString &str ){
+        return std::string(str.data());
 }
 typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
 typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;

@@ -32,6 +32,7 @@
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using namespace boost::posix_time;
 
 extern CtiPortManager PortManager;
 

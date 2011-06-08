@@ -310,7 +310,7 @@ private:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         return *this;
@@ -320,7 +320,7 @@ private:
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
     }
 
@@ -364,20 +364,20 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT generateCommand    (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT generateCommandSelectMeter( CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT generateCommandScan (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT generateCommandLoadProfile (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT generateCommandSelectMeter( CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
 
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseScan (CtiXfer  &Transfer,INT commReturnValue, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseSelectMeter ( CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );
-   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer,INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseScan (CtiXfer  &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseSelectMeter ( CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList );
+   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
@@ -386,15 +386,15 @@ public:
 
    virtual INT decodeResultScan ( INMESS *InMessage,
                           CtiTime &TimeNow,
-                          list< CtiMessage* >   &vgList,
-                          list< CtiMessage* > &retList,
-                          list< OUTMESS* > &outList);
+                          std::list< CtiMessage* >   &vgList,
+                          std::list< CtiMessage* > &retList,
+                          std::list< OUTMESS* > &outList);
 
    virtual INT decodeResultLoadProfile ( INMESS *InMessage,
                                  CtiTime &TimeNow,
-                                 list< CtiMessage* >   &vgList,
-                                 list< CtiMessage* > &retList,
-                                 list< OUTMESS* > &outList);
+                                 std::list< CtiMessage* >   &vgList,
+                                 std::list< CtiMessage* > &retList,
+                                 std::list< OUTMESS* > &outList);
 
    INT decodeResultMMConfig (VectronMMConfig_t *config);
    INT decodeResultRealTime (VectronRealTimeRegister_t *localTimeDate);

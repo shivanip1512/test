@@ -12,6 +12,13 @@
 
 #include "verification_objects.h"
 
+using std::endl;
+using std::list;
+using std::vector;
+using std::string;
+using std::queue;
+using std::pair;
+using namespace boost::posix_time;
 
 CtiProtocolLMI::CtiProtocolLMI() :
     _transmitter_power_time(0),

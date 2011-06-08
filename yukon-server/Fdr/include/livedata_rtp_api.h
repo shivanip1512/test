@@ -120,7 +120,7 @@ public:
 
   class LiveDataException : std::exception {
   public:
-    LiveDataException(std::string errMsg) : exception("LiveDataException") {}
+    LiveDataException(std::string errMsg) : std::exception("LiveDataException") {}
   };
 
 protected:

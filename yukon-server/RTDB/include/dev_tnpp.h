@@ -36,7 +36,7 @@ private:
 
 protected:
 
-   queue< CtiVerificationBase * >  _verification_objects;
+   std::queue< CtiVerificationBase * >  _verification_objects;
    CtiTableDeviceTnpp              _table;
 
    BYTE                            _outBuffer[505];
@@ -56,19 +56,19 @@ public:
 
    int recvCommRequest( OUTMESS *OutMessage );
 
-   virtual string getSQLCoreStatement() const;
+   virtual std::string getSQLCoreStatement() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,
                           OUTMESS                        *&OutMessage,
-                          list< CtiMessage* >      &vgList,
-                          list< CtiMessage* >      &retList,
-                          list< OUTMESS* >         &outList);
+                          std::list< CtiMessage* >      &vgList,
+                          std::list< CtiMessage* >      &retList,
+                          std::list< OUTMESS* >         &outList);
 
    bool isTransactionComplete();
 
-   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
    int sendCommResult(INMESS *InMessage);
 
    enum CommandState
@@ -97,9 +97,9 @@ public:
 
    };
 
-   static string getBaseFromEncodedGolayCapcode(string &capcode);
-   static int getFunctionfromEncodedGolayCapcode(string &capcode);
-   static string createEncodedCapcodeFromBaseAndFunction(string &golayString, int function);
+   static std::string getBaseFromEncodedGolayCapcode(std::string &capcode);
+   static int getFunctionfromEncodedGolayCapcode(std::string &capcode);
+   static std::string createEncodedCapcodeFromBaseAndFunction(std::string &golayString, int function);
 
    //below enums???
 protected:
@@ -117,14 +117,14 @@ private:
    void resetStates();
    void setCurrentState(StateMachine newCurrentState);
    void setPreviousState(StateMachine newPreviousState);
-   string getSerialNumber();
-   string getPagerProtocol();
-   string getPagerDataFormat();
-   string getFunctionCode();
-   string getGolayCapcode();
+   std::string getSerialNumber();
+   std::string getPagerProtocol();
+   std::string getPagerDataFormat();
+   std::string getFunctionCode();
+   std::string getGolayCapcode();
 
    int getExtendedFunctionCapcode(int a);//returns capcode for TNPP
-   string getExtendedFunctionCode();//returns actual function code
+   std::string getExtendedFunctionCode();//returns actual function code
 
    unsigned int crc16( const unsigned char *data, int length );
 

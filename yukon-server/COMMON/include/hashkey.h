@@ -8,14 +8,12 @@
 #include <string>
 #include "hash_functions.h"
 
-using std::string;
-
 class CtiHashKey
 {
 private:
 
    bool              _bIDBased;
-   string         _hashStr;
+   std::string       _hashStr;
    unsigned long     ID;
 
 
@@ -27,7 +25,7 @@ public:
       ID(MyId)
    {}
 
-   CtiHashKey(const string str) :
+   CtiHashKey(const std::string str) :
       _bIDBased(false),
       _hashStr(str)
    {
@@ -80,8 +78,8 @@ public:
       return *this;
    }
 
-   string      getHashStr() const                    { return _hashStr; }
-   CtiHashKey&    setHashStr(const string &aStr)
+   std::string      getHashStr() const                    { return _hashStr; }
+   CtiHashKey&    setHashStr(const std::string &aStr)
    {
       _hashStr = aStr;
       return *this;

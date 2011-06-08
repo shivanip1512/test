@@ -205,6 +205,8 @@
 
 using std::vector;
 using std::list;
+using std::string;
+using std::endl;
 
 CtiFDR_TextImport * textImportInterface;
 

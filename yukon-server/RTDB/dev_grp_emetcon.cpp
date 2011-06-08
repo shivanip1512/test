@@ -32,6 +32,9 @@
 
 #include "numstr.h"
 
+using std::string;
+using std::endl;
+using std::list;
 
 VOID ParserToAStruct(CtiCommandParser &parse, ASTRUCT *ASt)
 {

@@ -44,13 +44,13 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+                              std::list< CtiMessage* >      &vgList,
+                              std::list< CtiMessage* >      &retList,
+                              std::list< OUTMESS* >         &outList);
 
-   virtual string getDescription(const CtiCommandParser &parse) const;
+   virtual std::string getDescription(const CtiCommandParser &parse) const;
 
-   virtual INT  ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+   virtual INT  ProcessResult(INMESS*, CtiTime&, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
 };
 #endif // #ifndef __DEV_SYSTEM_H__

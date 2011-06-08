@@ -16,8 +16,6 @@
 
 #include "dlldefs.h"
 
-using std::cout;
-
 class CtiConnectionManager;
 class CtiServer;
 
@@ -26,11 +24,11 @@ class IM_EX_CTIBASE CtiQueueEnt
 private:
    int                     priority_;
    int                     tag_;
-   CtiTime                  entrytime_;
+   CtiTime                 entrytime_;
 
    RWThreadId              mycreator_;
 
-   string               DataString;
+   std::string             DataString;
    CtiConnectionManager   *ReplyTo;            // Maintained only across queue calls...
 
 public:
@@ -61,8 +59,8 @@ public:
    void                    setManager( CtiConnectionManager *  RT );
    CtiConnectionManager*   getManager( );
 
-   const string &       getString();
-   void                 setString(const string &str);
+   const std::string &       getString();
+   void                 setString(const std::string &str);
 
    int      getTag() const;
    int      getPriority() const;

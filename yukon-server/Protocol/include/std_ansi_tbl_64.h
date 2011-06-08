@@ -185,7 +185,7 @@ public:
 
    CtiAnsiTable64& operator=(const CtiAnsiTable64& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
    void printIntervalFmtRecord(INT_FMT1_RCD intData);

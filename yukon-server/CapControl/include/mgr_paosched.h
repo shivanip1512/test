@@ -37,7 +37,7 @@ public:
     void mainLoop();
     void doResetThr();
     
-    bool checkSchedules(const CtiTime& currentTime, list<CtiPAOSchedule*> &schedules);
+    bool checkSchedules(const CtiTime& currentTime, std::list<CtiPAOSchedule*> &schedules);
     void addSchedule(const CtiPAOSchedule &sched);
     bool updateSchedule(const CtiPAOSchedule &sched);
     bool deleteSchedule(long schedId);
@@ -47,7 +47,7 @@ public:
     bool updateEvent(long eventId, const CtiPAOEvent &event);
     bool deleteEvent(long eventId);
     bool findEvent(long id, CtiPAOEvent &event);
-    bool getEventsBySchedId(long id, list<CtiPAOEvent*> &events);
+    bool getEventsBySchedId(long id, std::list<CtiPAOEvent*> &events);
 
     void refreshSchedulesFromDB();
     void refreshEventsFromDB();
@@ -57,10 +57,10 @@ public:
     void setValid(bool valid);
 
     void updateRunTimes(CtiPAOSchedule *schedule);
-    void updateDataBaseSchedules(list<CtiPAOSchedule*> &schedules);
+    void updateDataBaseSchedules(std::list<CtiPAOSchedule*> &schedules);
     void runScheduledEvent(CtiPAOEvent *event);
-    int parseEvent(const string& command, int &strategy, long &secsSinceLastOperation);
-    string longToString(LONG val);
+    int parseEvent(const std::string& command, int &strategy, long &secsSinceLastOperation);
+    std::string longToString(LONG val);
 
 
 private:
@@ -72,8 +72,8 @@ private:
     RWThread _scheduleThread;
     RWThread _resetThr;
 
-    list <CtiPAOSchedule*> _schedules;
-    list <CtiPAOEvent*>    _events;
+    std::list <CtiPAOSchedule*> _schedules;
+    std::list <CtiPAOEvent*>    _events;
 
     bool _valid;      
     bool _initialCapControlStartUp;

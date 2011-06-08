@@ -89,8 +89,8 @@ public:
     CtiMCUpdateSchedule& setSchedule(const CtiMCSchedule& sched);
 
     // tcl script file, set to 0 length if there is none
-    const string& getScript() const;
-    CtiMCUpdateSchedule& setScript(const string& script);
+    const std::string& getScript() const;
+    CtiMCUpdateSchedule& setScript(const std::string& script);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
@@ -98,7 +98,7 @@ public:
 private:
 
     CtiMCSchedule  _schedule;
-    string _script;
+    std::string _script;
 };
 
 /*
@@ -124,8 +124,8 @@ public:
     CtiMCAddSchedule& setSchedule(const CtiMCSchedule& sched);
 
     // tcl script file, set to 0 length if there is none
-    const string& getScript() const;
-    CtiMCAddSchedule& setScript(const string& script);
+    const std::string& getScript() const;
+    CtiMCAddSchedule& setScript(const std::string& script);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
@@ -133,7 +133,7 @@ public:
 private:
 
     CtiMCSchedule  _schedule;
-    string _script;
+    std::string _script;
 };
 
 /*
@@ -226,14 +226,14 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
-    const string& getScriptName() const;
-    CtiMCRetrieveScript& setScriptName(const string& script_name);
+    const std::string& getScriptName() const;
+    CtiMCRetrieveScript& setScriptName(const std::string& script_name);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
 private:
 
-    string _name;
+    std::string _name;
 };
 
 class CtiMCVerifyScript : public CtiMessage
@@ -251,15 +251,15 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
-    const string& getScriptName() const;
-    CtiMCVerifyScript& setScriptName(const string& script_name);
+    const std::string& getScriptName() const;
+    CtiMCVerifyScript& setScriptName(const std::string& script_name);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
 
 private:
 
-    string _name;
+    std::string _name;
 
 };
 
@@ -338,10 +338,10 @@ public:
 
     //value of 0 refers to no schedule
     long getID() const;
-    const string& getInfo() const;
+    const std::string& getInfo() const;
 
     CtiMCInfo& setID(long id);
-    CtiMCInfo& setInfo(const string& info);
+    CtiMCInfo& setInfo(const std::string& info);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
@@ -349,6 +349,6 @@ public:
 private:
 
     long _id;
-    string _info;
+    std::string _info;
 };
 #endif

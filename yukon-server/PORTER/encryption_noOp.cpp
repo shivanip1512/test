@@ -5,6 +5,8 @@
 
 #include "encryption_noOp.h"
 
+using std::vector;
+
 NoOpEncryption::NoOpEncryption()
 {
 

@@ -70,7 +70,7 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   static string getTableName();
+   static std::string getTableName();
 
    LONG getDeviceID() const;
    CtiTableDeviceAddress& setDeviceID(const LONG did);

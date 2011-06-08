@@ -17,6 +17,7 @@
 
 #include "logger.h"
 
+using std::endl;
 
 CtiIONTime::CtiIONTime( unsigned char *buf, unsigned long len ) :
     CtiIONValueFixed(Fixed_Time)

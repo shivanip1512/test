@@ -118,6 +118,9 @@
 #include "numstr.h"
 #include "utility.h"
 
+using std::endl;
+using std::list;
+
 CtiDeviceGroupSA305::CtiDeviceGroupSA305() :
 _lastSACommandType(SA305_DI_Control)
 {

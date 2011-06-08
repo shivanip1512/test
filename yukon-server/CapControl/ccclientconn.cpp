@@ -22,6 +22,8 @@
 #include "utility.h"
 #include "thread_monitor.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 /*---------------------------------------------------------------------------

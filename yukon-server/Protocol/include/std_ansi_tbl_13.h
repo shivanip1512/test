@@ -89,7 +89,7 @@ public:
    CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
    virtual ~CtiAnsiTable13();
    CtiAnsiTable13& operator=(const CtiAnsiTable13& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    void decodeResultPiece( BYTE **dataBlob );
    void generateResultPiece( BYTE **dataBlob );

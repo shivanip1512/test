@@ -102,7 +102,7 @@ public:
     CtiTableExpresscomLoadGroup& setLoadMask(BYTE load);
     BOOL useRelay(const INT r) const;
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

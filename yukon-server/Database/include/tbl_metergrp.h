@@ -19,8 +19,8 @@ class IM_EX_CTIYUKONDB CtiTableDeviceMeterGroup : public CtiMemDBObject
 {
 protected:
 
-   LONG     _deviceID;
-   string   _meterNumber;
+   LONG          _deviceID;
+   std::string   _meterNumber;
 
    long getDeviceID() const;
 
@@ -34,8 +34,8 @@ public:
 
    CtiTableDeviceMeterGroup& operator=(const CtiTableDeviceMeterGroup& aRef);
 
-   string getMeterNumber() const;
-   CtiTableDeviceMeterGroup& setMeterNumber( const string &mNum );
+   std::string getMeterNumber() const;
+   CtiTableDeviceMeterGroup& setMeterNumber( const std::string &mNum );
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

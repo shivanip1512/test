@@ -111,7 +111,7 @@ public:
     int readConfig( void );
     bool sendMessageToForeignSys ( CtiMessage *aMessage );
 
-    string YukonToForeignTime (CtiTime aTime);
+    std::string YukonToForeignTime (CtiTime aTime);
     CHAR YukonToForeignQuality (USHORT aQuality);
     CHAR YukonToForeignDST (bool aFlag);
 

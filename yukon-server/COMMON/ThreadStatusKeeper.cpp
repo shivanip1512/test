@@ -4,6 +4,8 @@
 
 #include "thread_monitor.h"
 
+using std::endl;
+
 namespace Cti {
 
 ThreadStatusKeeper::ThreadStatusKeeper(const std::string &threadName) :

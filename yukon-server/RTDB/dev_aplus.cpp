@@ -95,6 +95,9 @@
 #include "guard.h"
 #include "ctidate.h"
 
+using std::list;
+using std::string;
+using std::endl;
 
 
 CTI_alpha_func   APlusFunctions[] = {

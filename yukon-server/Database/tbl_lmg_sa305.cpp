@@ -47,6 +47,9 @@
 #include "logger.h"
 #include "tbl_lmg_sa305.h"
 
+using std::string;
+using std::endl;
+
 CtiTableSA305LoadGroup::CtiTableSA305LoadGroup() :
     _lmGroupId(0),
     _routeId(0),

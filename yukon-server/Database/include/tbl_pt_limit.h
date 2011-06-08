@@ -72,8 +72,8 @@ public:
    INT    getLimitDuration() const;
    LONG   getPointID()       const;
 
-   static string getTableName();
-   static void getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds = std::set<long>());
+   static std::string getTableName();
+   static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds = std::set<long>());
    void dump() const;
 };
 #endif // #ifndef __TBL_PT_LIMIT_H__

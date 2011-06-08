@@ -12,7 +12,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRSocketServer(string &);
+        CtiFDRSocketServer(std::string &);
 
         virtual ~CtiFDRSocketServer();
 
@@ -71,7 +71,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
                                                unsigned int& bufferSize) = 0;
 
     private:
-        bool loadList(string& aDirection,  CtiFDRPointList& aList);
+        bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
 
         RWThreadFunction  _threadConnection;
         void threadFunctionConnection(void);
@@ -90,7 +90,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int _timestampReasonabilityWindow;
         int _linkTimeout;
 
-        string direction;
+        std::string direction;
         HANDLE _shutdownEvent;
 };
 

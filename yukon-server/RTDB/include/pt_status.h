@@ -11,8 +11,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
-
 #include "dlldefs.h"
 #include "pt_base.h"
 #include "tbl_pt_status.h"
@@ -38,7 +36,7 @@ public:
    CtiTablePointStatus  getPointStatus() const;
    CtiTablePointStatus& getPointStatus();
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DumpData();
@@ -65,7 +63,7 @@ public:
 
 typedef CtiPointStatus CtiPointCalculatedStatus;
 
-typedef shared_ptr< CtiPointStatus > CtiPointStatusSPtr;
+typedef boost::shared_ptr< CtiPointStatus > CtiPointStatusSPtr;
 
 
 #endif // #ifndef __PT_STATUS_H__

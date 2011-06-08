@@ -23,6 +23,8 @@
 #include "database_reader.h"
 
 using std::transform;
+using std::string;
+using std::endl;
 
 CtiTblPAOLite::CtiTblPAOLite() :
     _paObjectID(-1),

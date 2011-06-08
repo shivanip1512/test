@@ -28,7 +28,7 @@ private:
     unsigned long    _last_complaint;
 
     Command              _command;
-    vector<output_point> _command_parameters;
+    std::vector<output_point> _command_parameters;
 
     DNP::ApplicationLayer::object_block_queue _object_blocks;
 
@@ -44,8 +44,8 @@ private:
     std::map<unsigned, unsigned> _point_count;
 
     void recordPoints(int group, const pointlist_t &points);
-    string pointSummary(unsigned points);
-    string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
+    std::string pointSummary(unsigned points);
+    std::string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
     enum
     {
@@ -68,7 +68,7 @@ protected:
 
     DNP::ApplicationLayer& getApplicationLayer();
     Command getCommand();
-    void addStringResults(string *s);
+    void addStringResults(std::string *s);
 
 public:
 
@@ -170,7 +170,7 @@ class IM_EX_PROT DNPSlaveInterface : public DNPInterface
     struct input_point;
 
     typedef DNPInterface Inherited;
-    vector<input_point> _input_point_list;
+    std::vector<input_point> _input_point_list;
     void addObjectBlock(DNP::ObjectBlock *objBlock);
 
 public:

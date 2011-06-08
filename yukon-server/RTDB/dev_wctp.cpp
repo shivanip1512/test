@@ -32,6 +32,12 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::queue;
+using namespace boost::posix_time;
+
 XERCES_CPP_NAMESPACE_USE
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);

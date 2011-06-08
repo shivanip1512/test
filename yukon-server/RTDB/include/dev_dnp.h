@@ -43,13 +43,13 @@ private:
         Protocol::DNPInterface::Command      protocol_command;
         Protocol::DNPInterface::output_point protocol_parameter;
         pseudo_info pseudo_info;
-        string      user;
+        std::string      user;
     };
 
     info_struct _porter_info;
     info_struct _pil_info;  //  only used for the call to sendCommRequest(), unreliable after - DO NOT USE FOR DECODES
 
-    typedef map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
+    typedef std::map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
 
     dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
 
@@ -75,15 +75,15 @@ public:
 
     DnpDevice& operator=(const DnpDevice& aRef);
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     LONG getAddress() const;
     LONG getMasterAddress() const;
 
-    int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
     int recvCommRequest( OUTMESS *OutMessage );
 
     void initUnsolicited();
@@ -92,15 +92,15 @@ public:
     int  sendCommResult(INMESS *InMessage);
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     virtual bool clearedForScan( int scantype );
 
-    virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
 };
 
 }

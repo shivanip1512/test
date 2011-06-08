@@ -21,8 +21,6 @@
 
 #include "lmgroupbase.h"
 
-using std::vector;
-
 class CtiLMGroupMacro : public CtiLMGroupBase
 {
 public:
@@ -32,8 +30,8 @@ public:
 
     virtual ~CtiLMGroupMacro();
 
-    const vector< CtiLMGroupBase* > getChildren() const;
-    void setChildren(const vector<CtiLMGroupBase*>& children);
+    const std::vector< CtiLMGroupBase* > getChildren() const;
+    void setChildren(const std::vector<CtiLMGroupBase*>& children);
     
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const { return 0; }
@@ -43,7 +41,7 @@ public:
 
 private:
 
-    vector< CtiLMGroupBase* > _children;
+    std::vector< CtiLMGroupBase* > _children;
 
 protected:
     

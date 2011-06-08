@@ -29,9 +29,9 @@ protected:
    CtiTime      _dateTime;           // .
    int         _errorType;          // .
    long        _errorNumber;        // .
-   string   _command;            // .
-   string   _outMessage;         // .
-   string   _inMessage;          // .
+   std::string   _command;            // .
+   std::string   _outMessage;         // .
+   std::string   _inMessage;          // .
 
 private:
 
@@ -45,9 +45,9 @@ public:
                           long       paoid      = 0,
                           int        type       = 0,
                           long       errornum   = 0,
-                          string  command    = string(),
-                          string  outmess    = string(),
-                          string  inmess     = string(),
+                          std::string  command    = std::string(),
+                          std::string  outmess    = std::string(),
+                          std::string  inmess     = std::string(),
                           int        pri        = 7,
                           CtiTime     time       = CtiTime(),
                           long       ceid       = 0
@@ -73,13 +73,13 @@ public:
    long  getErrorNumber() const;
    CtiCommErrorHistoryMsg& setErrorNumber( const long number );
 
-   const string& getCommand() const;
+   const std::string& getCommand() const;
    CtiCommErrorHistoryMsg& setCommand(const string& string);
 
-   const string& getOutMessage() const;
+   const std::string& getOutMessage() const;
    CtiCommErrorHistoryMsg& setOutMessage(const string& string);
 
-   const string& getInMessage() const;
+   const std::string& getInMessage() const;
    CtiCommErrorHistoryMsg& setInMessage(const string& string);
 
    virtual void saveGuts(RWvostream &aStream) const;

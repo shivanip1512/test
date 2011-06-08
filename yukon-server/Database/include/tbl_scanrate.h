@@ -78,15 +78,15 @@ public:
    BOOL getUpdated() const;
    CtiTableDeviceScanRate& setUpdated( const BOOL aBool );
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
-   static string addIDSQLClause(const Cti::Database::id_set &paoids);
+   static std::string addIDSQLClause(const Cti::Database::id_set &paoids);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
 
-   static string getTableName();
+   static std::string getTableName();
 
 };
 #endif // #ifndef __TBL_SCANRATE_H__

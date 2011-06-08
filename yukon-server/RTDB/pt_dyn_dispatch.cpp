@@ -17,6 +17,7 @@
 #include "pt_dyn_dispatch.h"
 #include "logger.h"
 
+using boost::shared_ptr;
 
 CtiDynamicPointDispatch::CtiDynamicPointDispatch(LONG id, double initialValue, INT qual) :
 _conditionActive(0),

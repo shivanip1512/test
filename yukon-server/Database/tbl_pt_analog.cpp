@@ -18,6 +18,8 @@
 #include "tbl_pt_analog.h"
 #include "logger.h"
 
+using std::endl;
+
 CtiTablePointAnalog& CtiTablePointAnalog::operator=(const CtiTablePointAnalog& aRef)
 {
    if(this != &aRef)

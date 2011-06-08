@@ -39,6 +39,7 @@
 #include "std_ansi_tbl_11.h"
 
 using std::endl;
+using std::string;
 
 const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_GAS_AGA3 = "GAS_CONSTANTS_AGA3";
 const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_GAS_AGA7 = "GAS_CONSTANTS_AGA7";

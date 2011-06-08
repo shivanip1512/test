@@ -116,6 +116,9 @@
 
 #include "utility.h"
 
+using std::string;
+using std::endl;
+
 /** local definitions **/
 const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";

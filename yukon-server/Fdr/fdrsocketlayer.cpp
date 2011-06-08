@@ -10,6 +10,9 @@
 #include "fdrsocketconnection.h"
 #include "fdrsocketlayer.h"
 
+using std::string;
+using std::endl;
+
 /************************************************************************
 * Function Name: CtiFDRInterface::getInterfaceName()
 *

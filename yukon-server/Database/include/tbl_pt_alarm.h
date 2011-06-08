@@ -85,7 +85,7 @@ public:
 protected:
 
    CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmCategory      ( const string str );
+   CtiTablePointAlarming& setAlarmCategory      ( const std::string str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
    CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
    CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
@@ -104,8 +104,8 @@ private:
    BOOL        _notifyOnClear;
    UINT        _notificationGroupID;
 
-   static UINT resolveExcludeStates( string &str );
-   static UINT resolveAutoAcknowledgeStates( string &str );
+   static UINT resolveExcludeStates( std::string &str );
+   static UINT resolveAutoAcknowledgeStates( std::string &str );
 
 public:
 
@@ -118,9 +118,9 @@ public:
 
    bool operator<(const CtiTablePointAlarming &rhs) const;
 
-   static string getTableName();
+   static std::string getTableName();
 
-   static void getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds);
+   static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds);
    virtual UINT getAlarmCategory(const INT offset)  const;
    virtual UINT getExcludeNotifyStates()            const;
    virtual UINT getAutoAckStates()                  const;

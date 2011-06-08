@@ -18,6 +18,9 @@
 #include "tbl_port_dialup.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePortDialup::CtiTablePortDialup() :
 _portID(0),
 _modemType("Unknown"),

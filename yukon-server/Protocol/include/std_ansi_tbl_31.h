@@ -62,7 +62,7 @@ public:
    CtiAnsiTable31( BYTE *dataBlob );
    virtual ~CtiAnsiTable31();
    CtiAnsiTable31& operator=(const CtiAnsiTable31& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    UINT16 getNbrDispSources( );
    UINT8  getWidthDispSources( );

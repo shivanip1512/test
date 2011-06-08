@@ -105,7 +105,7 @@ public:
 
    CtiAnsiTable51& operator=(const CtiAnsiTable51& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
 };

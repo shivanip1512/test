@@ -31,7 +31,9 @@
 #include "dllbase.h"
 #include "utility.h"
 
+using std::ostream;
 using std::vector;
+using std::endl;
 
 #include <rw/toolpro/inetaddr.h>
 

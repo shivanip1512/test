@@ -10,6 +10,7 @@ extern ULONG _CC_DEBUG;
 extern double _IVVC_DEFAULT_DELTA;
 
 using std::vector;
+using std::string;
 using namespace Cti::Database;
 
 namespace Cti {

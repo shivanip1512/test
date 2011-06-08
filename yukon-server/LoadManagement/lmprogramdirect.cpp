@@ -46,6 +46,11 @@
 
 #include <rw/ordcltn.h>
 
+using std::string;
+using std::endl;
+using std::vector;
+using std::set;
+
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 

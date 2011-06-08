@@ -27,10 +27,6 @@
 #include "guard.h"
 #include "logger.h"
 
-using std::map;
-using std::multimap;
-using std::less;
-
 class IM_EX_HOLIDAYDB CtiHolidayManager
 {
 public:
@@ -50,7 +46,7 @@ private:
         int year; // could be -1
     };
 
-    typedef std::multimap<long,holiday,less<long> > hSchedMap;
+    typedef std::multimap<long,holiday,std::less<long> > hSchedMap;
 
     hSchedMap _hsched_map;
 
@@ -60,7 +56,7 @@ private:
     CtiHolidayManager();
     ~CtiHolidayManager() { };
 
-    static const string holidaysql;
+    static const std::string holidaysql;
 };
 #endif
 

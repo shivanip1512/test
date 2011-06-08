@@ -11,9 +11,6 @@
 #include "database_connection.h"
 #include "rwutil.h"
 
-using std::map;
-using std::string;
-
 class IM_EX_CTIYUKONDB CtiTableStaticPaoInfo : public CtiMemDBObject
 {
 public:
@@ -34,14 +31,14 @@ public:
 
 protected:
 
-    static const string _key_rds_ip_address;
-    static const string _key_rds_ip_port;
-    static const string _key_rds_site_address;
-    static const string _key_rds_encoder_address;
-    static const string _key_rds_transmit_speed;
-    static const string _key_rds_group_type;
+    static const std::string _key_rds_ip_address;
+    static const std::string _key_rds_ip_port;
+    static const std::string _key_rds_site_address;
+    static const std::string _key_rds_encoder_address;
+    static const std::string _key_rds_transmit_speed;
+    static const std::string _key_rds_group_type;
 
-    typedef map<PaoInfoKeys,             const string *> key_map_t;
+    typedef std::map<PaoInfoKeys,const std::string *> key_map_t;
 
     static const key_map_t   _key_map;
 
@@ -51,9 +48,9 @@ protected:
     long             _pao_id;
 
     PaoInfoKeys   _key;
-    string _value;
+    std::string   _value;
 
-    static const string _empty_string;
+    static const std::string _empty_string;
 
 private:
 
@@ -72,20 +69,20 @@ public:
 
     bool hasRow() const;
 
-    static string getSQLCoreStatement();
+    static std::string getSQLCoreStatement();
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     long             getPaoID()       const;
     long             getEntryID()     const;
     PaoInfoKeys      getKey()         const;
-    string           getValue()       const;
+    std::string      getValue()       const;
 
     void             getValue(int           &destination) const;
     void             getValue(long          &destination) const;
     void             getValue(unsigned long &destination) const;
     void             getValue(double        &destination) const;
-    void             getValue(string        &destination) const;
+    void             getValue(std::string   &destination) const;
 
     virtual void dump();
 };

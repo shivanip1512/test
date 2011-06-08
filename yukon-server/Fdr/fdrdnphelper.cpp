@@ -15,6 +15,7 @@
 // this class header
 #include "fdrdnphelper.h"
 
+using std::endl;
 
 template<typename T>
 CtiFDRDNPHelper<T>::CtiFDRDNPHelper(CtiFDRSocketServer* parent)

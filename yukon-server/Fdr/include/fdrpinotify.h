@@ -17,7 +17,7 @@
 class IM_EX_FDRPIBASEAPI CtiFDRPiNotify : public CtiFDRPiBase
 {
 
-  typedef multimap<PiPointId, PiPointInfo> PiPointMap;
+  typedef std::multimap<PiPointId, PiPointInfo> PiPointMap;
 
 public:
 
@@ -43,11 +43,11 @@ protected:
 
 private:
   PiPointMap _pointMap;
-  vector<PiPointId> _registerList;
+  std::vector<PiPointId> _registerList;
 
-  vector<PiPointId> _pointList;
-  vector<float> _rvalList;
-  vector<int32> _istatList;
-  vector<int32> _timeList;
+  std::vector<PiPointId> _pointList;
+  std::vector<float>     _rvalList;
+  std::vector<int32>     _istatList;
+  std::vector<int32>     _timeList;
 
 };

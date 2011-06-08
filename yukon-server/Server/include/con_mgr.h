@@ -39,7 +39,7 @@ protected:
       unsigned       ClientQuestionable : 1;
    };
 
-   string         ClientName;
+   std::string         ClientName;
    int               ClientAppId;
 
    int              _serverRequestId;
@@ -48,8 +48,8 @@ protected:
       ClientRegistered(FALSE),
       ClientName("DEFAULT")
    {
-      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << endl;
-      std::cout << "**** Connection Manager!!! *****" << endl;
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << std::endl;
+      std::cout << "**** Connection Manager!!! *****" << std::endl;
    }
 
    virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
@@ -57,7 +57,7 @@ public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( const INT &Port, const string &HostMachine, Que_t *inQ = NULL );
+   CtiConnectionManager( const INT &Port, const std::string &HostMachine, Que_t *inQ = NULL );
 
    CtiConnectionManager(CtiExchange *xchg, Que_t *inQ = NULL);
 
@@ -65,8 +65,8 @@ public:
    int         getClientAppId() const;//              { return ClientAppId; }
    int         setClientAppId(int id);//       { return ClientAppId = id; }
 
-   string   getClientName() const;//               { return ClientName; }
-   void        setClientName(string str);
+   std::string   getClientName() const;//               { return ClientName; }
+   void        setClientName(std::string str);
    RWBoolean   getClientUnique() const;//             { return RWBoolean(ClientUnique);  }
    void        setClientUnique(RWBoolean b = TRUE);// { ClientUnique = RWBoolean(b);     }
 
@@ -85,7 +85,7 @@ public:
    int getRequestId() const;
    void setRequestId(int rid);
 
-   int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, string payload_string = string() );
+   int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, std::string payload_string = std::string() );
 };
 
 #endif      // #ifndef __CON_MGR_H__

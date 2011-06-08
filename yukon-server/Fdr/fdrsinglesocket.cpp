@@ -103,6 +103,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // this class header
 #include "fdrsinglesocket.h"
 
+using std::string;
+using std::endl;
+
 // Constructors, Destructor, and Operators
 CtiFDRSingleSocket::CtiFDRSingleSocket(string &name)
 : CtiFDRSocketInterface(name),

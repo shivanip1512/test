@@ -15,7 +15,7 @@
 
 #include "ion_value_struct_types.h"
 
-
+using std::vector;
 CtiIONLogRecord::CtiIONLogRecord( ) :
     CtiIONStruct(StructType_LogRecord, 0)
 {

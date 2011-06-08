@@ -17,9 +17,12 @@
 #define GROUP_RAMPING_OUT 0x00000002
 
 using std::transform;
+using std::vector;
+using std::string;
+using std::endl;
 
 extern ULONG _LM_DEBUG;
-extern set<long> _CHANGED_GROUP_LIST;
+extern std::set<long> _CHANGED_GROUP_LIST;
 
 /*---------------------------------------------------------------------------
     Constructors

@@ -55,7 +55,7 @@ public:
     typedef struct
     {
         INT grpid;
-        string name;
+        std::string name;
     } CtiA2DTranslation_t;
 
 private:
@@ -110,7 +110,7 @@ private:
     void updateDynTagsForSignalMsg( CtiPointSPtr point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
-    bool ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi);
+    bool ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &Multi);
 
     void bumpDeviceFromAlternateRate(CtiPointSPtr pPoint);
     void bumpDeviceToAlternateRate(CtiPointSPtr pPoint);
@@ -232,20 +232,20 @@ public:
     void  loadAlarmToDestinationTranslation();
 
     INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp);
-    string getAlarmStateName( INT alarm );
+    std::string getAlarmStateName( INT alarm );
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
-    virtual string getMyServerName() const;
+    virtual std::string getMyServerName() const;
     virtual int   clientRegistration(CtiServer::ptr_type CM);
     virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
-    string resolveDeviceNameByPaoId(const LONG PAOId);
-    string resolveDeviceName(const CtiPointSPtr &aPoint);
-    string resolveDeviceObjectType(const LONG devid);
-    string resolveDeviceDescription(LONG PAO);
+    std::string resolveDeviceNameByPaoId(const LONG PAOId);
+    std::string resolveDeviceName(const CtiPointSPtr &aPoint);
+    std::string resolveDeviceObjectType(const LONG devid);
+    std::string resolveDeviceDescription(LONG PAO);
     bool isDeviceIdValid(const LONG devid);
     bool isDeviceGroupType(const LONG devid);
     bool isDeviceGroupType(const CtiDeviceBaseLite *device);
@@ -259,15 +259,15 @@ public:
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
-    void writeMessageToClient(const CtiMessage *pReq, string clientName);
+    void writeMessageToClient(const CtiMessage *pReq, std::string clientName);
     bool writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *Cmd );
     void writeAnalogOutputMessageToPIL(long deviceid, long pointid, long value, const CtiCommandMsg *Cmd);
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
 
-    INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList);
-    INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList);
-    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, string user = string("System"));
+    INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
+    INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
+    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, std::string user = std::string("System"));
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, bool activate);

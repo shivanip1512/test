@@ -27,6 +27,7 @@
 #include "ion_value_structarray.h"
 #include "ion_value_variable.h"
 
+using std::endl;
 
 CtiIONValue::CtiIONValue( ValueTypes valueType ) :
     _valid(false),

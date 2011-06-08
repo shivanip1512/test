@@ -24,6 +24,7 @@
 #include "ion_value_fixed_intunsigned.h"
 #include "ion_value_fixed_time.h"
 
+using std::endl;
 
 CtiIONValueFixed::CtiIONValueFixed( FixedTypes fixedType ) :
     CtiIONValue(ValueType_Fixed)

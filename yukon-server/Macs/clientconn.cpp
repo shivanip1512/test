@@ -28,6 +28,10 @@
 #include "clientconn.h"
 #include "ctibase.h"
 
+using std::ostream;
+using std::less;
+using std::endl;
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/

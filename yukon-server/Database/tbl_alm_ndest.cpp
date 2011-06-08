@@ -22,6 +22,9 @@
 #include "tbl_alm_ndest.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTableNotificationDestination::~CtiTableNotificationDestination()
 {
 

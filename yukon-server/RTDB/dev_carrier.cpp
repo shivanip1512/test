@@ -2,6 +2,9 @@
 
 #include "dev_carrier.h"
 
+using std::string;
+using std::endl;
+
 namespace Cti {
 namespace Devices {
 

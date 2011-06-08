@@ -20,6 +20,9 @@
 
 #include "utility.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceMCTIEDPort::CtiTableDeviceMCTIEDPort() :
 _deviceID(-1),
 _iedScanRate(-1),

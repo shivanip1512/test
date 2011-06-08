@@ -18,6 +18,9 @@
 #include "row_reader.h"
 #include "database_writer.h"
 
+using std::endl;
+using std::string;
+
 extern ULONG _CC_DEBUG;
  
 

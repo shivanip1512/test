@@ -1,6 +1,8 @@
 #include "yukon.h"
 #include "pointstore.h"
 
+using std::endl;
+
 RWDEFINE_NAMED_COLLECTABLE(CtiPointStoreElement,"CtiPointStoreElement")
 
 CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType )

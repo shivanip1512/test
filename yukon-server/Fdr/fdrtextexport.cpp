@@ -18,6 +18,9 @@
 #include "fdrtextexport.h"
 #include "utility.h"
 
+using std::string;
+using std::endl;
+
 CtiFDR_TextExport * textExportInterface;
 
 const CHAR * CtiFDR_TextExport::KEY_INTERVAL = "FDR_TEXTEXPORT_INTERVAL";

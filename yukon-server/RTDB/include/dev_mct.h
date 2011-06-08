@@ -94,7 +94,7 @@ protected:
         }
     };
 
-    typedef set<read_key_info_t> read_key_store_t;
+    typedef std::set<read_key_info_t> read_key_store_t;
 
     static const read_key_store_t _emptyReadKeyStore;
     virtual const read_key_store_t &getReadKeyStore(void) const;
@@ -189,7 +189,7 @@ protected:
     int  checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, std::string &error_string );
     bool hasVariableDemandRate( int type, int sspec );
     bool isLoadProfile( int type );
-    string sspecIsFrom( int sspec );
+    std::string sspecIsFrom( int sspec );
     void resetMCTScansPending( void );
 
     //  scanner-side functions
@@ -233,7 +233,7 @@ public:
     virtual ULONG calcNextLPScanTime( void );
     ULONG         getNextLPScanTime ( void );
 
-    string getDescription( const CtiCommandParser &parse ) const;
+    std::string getDescription( const CtiCommandParser &parse ) const;
 
     virtual LONG getDemandInterval();
 
@@ -242,7 +242,7 @@ public:
     virtual INT IntegrityScan  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4 );
     virtual INT LoadProfileScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 9 );
 
-    void setConfigData( const string &configName, int configType, const string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
+    void setConfigData( const std::string &configName, int configType, const std::string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
 
     void setExpectedFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
     int  getNextFreeze( void ) const;

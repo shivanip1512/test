@@ -187,6 +187,8 @@
 #include "guard.h"
 #include "fdrftpinterface.h"
 
+using std::string;
+using std::endl;
 
 
 // Constructors, Destructor, and Operators

@@ -30,6 +30,9 @@
 #include "numstr.h"
 #include "cparms.h"
 
+using std::list;
+using std::string;
+using std::endl;
 
 int CtiDeviceCBC::_cbcTries;
 

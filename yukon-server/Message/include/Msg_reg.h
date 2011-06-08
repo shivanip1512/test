@@ -27,7 +27,7 @@ class IM_EX_MSG CtiRegistrationMsg : public CtiMessage
 {
 private:
 
-   string      _appName;
+   std::string      _appName;
    int            _appId;
    int            _appIsUnique;
 
@@ -40,7 +40,7 @@ public:
    typedef CtiMessage Inherited;
 
    CtiRegistrationMsg();
-   CtiRegistrationMsg(string str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
+   CtiRegistrationMsg(std::string str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
    CtiRegistrationMsg(const CtiRegistrationMsg &aRef);
    virtual ~CtiRegistrationMsg();
    // Assignement operator
@@ -51,9 +51,9 @@ public:
    virtual CtiMessage* replicateMessage() const;
 
 
-   string   getAppName() const;
-   string&  getAppName();
-   void        setAppName(string str);
+   std::string   getAppName() const;
+   std::string&  getAppName();
+   void        setAppName(std::string str);
 
    int         getAppId() const;
    void        setAppID(int id);

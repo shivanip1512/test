@@ -1,24 +1,7 @@
 
 #pragma warning( disable : 4786)
-#ifndef __TBL_STATE_H__
-#define __TBL_STATE_H__
+#pragma once
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_state
-*
-* Class:  CtiTableState
-* Date:   12/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_state.h-arc  $
-* REVISION     :  $Revision: 1.4.24.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
@@ -34,10 +17,7 @@ protected:
    LONG           _pointID;
    LONG           _stateGroupID;
    LONG           _rawState;
-   string      _text;
-
-   // LONG _foreColor;
-   // LONG _bkgColor
+   std::string    _text;
 
 private:
     mutable CtiMutex _classMutex;
@@ -54,13 +34,13 @@ public:
    LONG getRawState() const;
    CtiTableState& setRawState( const LONG id );
 
-   const string& getText() const;
-   CtiTableState& setText( const string &str );
+   const std::string& getText() const;
+   CtiTableState& setText( const std::string &str );
 
    LONG getPointID();
    CtiTableState& setPointID( const LONG ptid );
 
-   static string getTableName();
+   static std::string getTableName();
    virtual bool Restore();
 
    virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
@@ -71,4 +51,3 @@ public:
 
    void dump() const;
 };
-#endif // #ifndef __TBL_STATE_H__

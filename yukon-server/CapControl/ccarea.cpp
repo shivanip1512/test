@@ -17,6 +17,8 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 using Cti::CapControl::PaoIdList;

@@ -43,7 +43,7 @@ class IM_EX_PROT CtiTransdataApplication
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
       bool isTransactionComplete( void );
-      void injectData( string str );
+      void injectData( std::string str );
       void setNextState( void );
       void destroy( void );
       void reinitalize( void );

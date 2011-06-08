@@ -5,6 +5,9 @@
 #include "date_utility.h"
 #include "ctitokenizer.h"
 
+using std::string;
+using std::endl;
+using std::list;
 using Cti::Protocols::EmetconProtocol;
 using namespace Cti::Devices::Commands;
 

@@ -18,6 +18,8 @@
 
 #include "fdrlodestarinfo.h"
 
+using std::string;
+
 CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(string &aDrivePath, string &aFileName,
                                                    string &aFolderName)
 : _lodeStarDrivePath(aDrivePath),

@@ -235,6 +235,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // this class header
 #include "fdrinet.h"
 
+using std::string;
+using std::endl;
+
 /** global used to start the interface by c functions **/
 CtiFDR_Inet * inetInterface;
 

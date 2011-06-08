@@ -15,6 +15,9 @@
 #include "cparms.h"
 
 using Cti::Protocols::EmetconProtocol;
+using std::string;
+using std::endl;
+using std::list;
 
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
 

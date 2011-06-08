@@ -36,10 +36,10 @@ protected:
 
    // PortTerminalServer
    LONG _portID;
-   string _ipAddress;
+   std::string _ipAddress;
    INT _ipPort;
-   string _encodingKey;
-   string _encodingType;
+   std::string _encodingKey;
+   std::string _encodingType;
 
 private:
 
@@ -56,17 +56,17 @@ public:
    INT getIPPort() const;
    void setIPPort(const INT i);
 
-   const string &getIPAddress() const;
-   void setIPAddress(const string &str);
+   const std::string &getIPAddress() const;
+   void setIPAddress(const std::string &str);
 
-   const string & getEncodingKey() const;
-   void setEncodingKey(const string& encodingKey);
+   const std::string & getEncodingKey() const;
+   void setEncodingKey(const std::string& encodingKey);
 
-   const string & getEncodingType() const;
-   void setEncodingType(const string& encodingType);
+   const std::string & getEncodingType() const;
+   void setEncodingType(const std::string& encodingType);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   static string getTableName();
+   static std::string getTableName();
 
 };
 #endif // #ifndef __TBL_PORT_TCPIP_H__

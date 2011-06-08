@@ -16,6 +16,9 @@
 #include "tbl_pt_control.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePointControl& CtiTablePointControl::operator=(const CtiTablePointControl& aRef)
 {
    if(this != &aRef)

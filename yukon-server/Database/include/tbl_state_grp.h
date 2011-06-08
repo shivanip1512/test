@@ -20,8 +20,6 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include <set>
-using std::set;
-
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
@@ -37,12 +35,12 @@ class IM_EX_CTIYUKONDB CtiTableStateGroup
 {
 public:
 
-   typedef set< CtiTableState > CtiStateSet_t;
+   typedef std::set< CtiTableState > CtiStateSet_t;
 
 protected:
 
    LONG           _stateGroupID;
-   string      _name;
+   std::string      _name;
 
    CtiMutex       _stateMux;
    CtiStateSet_t  _stateSet;
@@ -57,16 +55,16 @@ public:
 
    CtiTableStateGroup& operator=(const CtiTableStateGroup& aRef);
    LONG getStateGroupID() const;
-   const string& getName() const;
+   const std::string& getName() const;
    const CtiStateSet_t& getStateSet() const;
 
    CtiTableStateGroup& setStateGroupID( const LONG id );
-   CtiTableStateGroup& setName( const string &str );
+   CtiTableStateGroup& setName( const std::string &str );
    CtiTableStateGroup& setStateSet( const CtiStateSet_t& aSet );
 
-   string getRawState(LONG rawValue);
+   std::string getRawState(LONG rawValue);
 
-   static string getTableName();
+   static std::string getTableName();
    virtual bool Restore();
 
    virtual void DecodeDatabaseReader(Cti::RowReader& rdr);

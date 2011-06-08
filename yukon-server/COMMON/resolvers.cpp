@@ -10,6 +10,7 @@
 
 using std::transform;
 using std::endl;
+using std::string;
 
 
 INT resolveRouteType( const string& _rwsTemp)

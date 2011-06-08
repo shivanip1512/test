@@ -40,7 +40,7 @@ protected:
 
 public:
 
-    CtiIONLogRecord( vector< CtiIONValue * > structValues );
+    CtiIONLogRecord( std::vector< CtiIONValue * > structValues );
     CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
                      CtiIONTime        *timestamp,
                      CtiIONStruct      *logValues );
@@ -70,7 +70,7 @@ protected:
 
 public:
 
-    CtiIONAlarm( vector< CtiIONValue * > structValues );
+    CtiIONAlarm( std::vector< CtiIONValue * > structValues );
     CtiIONAlarm( CtiIONUnsignedInt *effectHandle,
                  CtiIONUnsignedInt *transitions,
                  CtiIONUnsignedInt *priority );
@@ -96,7 +96,7 @@ protected:
 
 public:
 
-    CtiIONEvent( vector< CtiIONValue * > structValues );
+    CtiIONEvent( std::vector< CtiIONValue * > structValues );
     CtiIONEvent( CtiIONUnsignedInt *priority,
                  CtiIONUnsignedInt *eventState,
                  CtiIONUnsignedInt *causeHandle,
@@ -135,7 +135,7 @@ protected:
 
 public:
 
-    CtiIONRange( vector< CtiIONValue * > structValues );
+    CtiIONRange( std::vector< CtiIONValue * > structValues );
     CtiIONRange( CtiIONUnsignedInt *rangeStart,
                  CtiIONUnsignedInt *rangeEnd );
 
@@ -159,7 +159,7 @@ protected:
 
 public:
 
-    CtiIONList( vector< CtiIONValue * > structValues );
+    CtiIONList( std::vector< CtiIONValue * > structValues );
 
 /*    CtiIONValue *operator[]( unsigned long index )  { return getArrayElement( index ); };*/
 };
@@ -177,7 +177,7 @@ protected:
 
 public:
 
-    CtiIONException( vector< CtiIONValue * > structValues );
+    CtiIONException( std::vector< CtiIONValue * > structValues );
     CtiIONException( CtiIONValue *v1, CtiIONValue *v2, CtiIONValue *v3 );
 
     CtiIONException( CtiIONUnsignedInt *exceptionCode,
@@ -205,7 +205,7 @@ protected:
 
 public:
 
-    CtiIONWaveform( vector< CtiIONValue * > structValues );
+    CtiIONWaveform( std::vector< CtiIONValue * > structValues );
 /*    CtiIONWaveform( CtiIONNumeric *samplingFrequency,
                     CtiIONNumeric *offset,
                     CtiIONNumeric *scale );
@@ -233,7 +233,7 @@ protected:
 
 public:
 
-    CtiIONDate( vector< CtiIONValue * > structValues );
+    CtiIONDate( std::vector< CtiIONValue * > structValues );
     CtiIONDate( CtiIONUnsignedInt *year,
                 CtiIONUnsignedInt *month,
                 CtiIONUnsignedInt *dayOfTheMonth );
@@ -259,7 +259,7 @@ protected:
 
 public:
 
-    CtiIONCalendar( vector< CtiIONValue * > structValues );
+    CtiIONCalendar( std::vector< CtiIONValue * > structValues );
     CtiIONCalendar( CtiIONDate             *startDate,
                     CtiIONUnsignedIntArray *listOfDays );
 
@@ -283,7 +283,7 @@ protected:
 
 public:
 
-    CtiIONProfile( vector< CtiIONValue * > structValues );
+    CtiIONProfile( std::vector< CtiIONValue * > structValues );
     CtiIONProfile( CtiIONUnsignedIntArray *indexTable,
                    CtiIONUnsignedIntArray *activityList );
 
@@ -306,7 +306,7 @@ protected:
 
 public:
 
-    CtiIONStringArray( vector< CtiIONValue * > structValues );
+    CtiIONStringArray( std::vector< CtiIONValue * > structValues );
 
 };
 

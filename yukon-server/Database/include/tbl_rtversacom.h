@@ -77,11 +77,11 @@ public:
    LONG getRouteID() const;
    CtiTableVersacomRoute& setRouteID( const LONG rid );
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   static string getTableName();
+   static std::string getTableName();
 
    INT  getSPID() const;
    INT  getGeo() const;

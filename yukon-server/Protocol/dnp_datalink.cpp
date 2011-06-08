@@ -6,6 +6,9 @@
 #include "prot_dnp.h"
 #include "dnp_datalink.h"
 
+using std::endl;
+using std::vector;
+
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {

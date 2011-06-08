@@ -71,7 +71,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         bool isAMaster(int aID);
         CtiFDR_Rccs& setAuthorizationFlag(int aID,bool aFlag);
         int processValueMessage(InetInterface_t *data);
-        int resolvePairNumber(string &);
+        int resolvePairNumber(std::string &);
 
         static const CHAR * KEY_CONNECT_PORT_NUMBER;
 
@@ -85,7 +85,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
 
     private:
         int                         iAuthorizationFlags;
-        string                   iBatchMarkerName;
+        std::string                 iBatchMarkerName;
         bool                        iStandalone;
 };
 

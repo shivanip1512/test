@@ -8,24 +8,22 @@
 
 #include <string>
 
-using std::string;
-
 class CtiConfigKey
 {
 private:
-   string   Key;
+   std::string   Key;
 
 public:
 
    CtiConfigKey();
-   CtiConfigKey(const string& key);
+   CtiConfigKey(const std::string& key);
    ~CtiConfigKey() {}
 
    
    CtiConfigKey& operator=(const CtiConfigKey& key);
 
-   string   getKey() const { return Key; }
-   string&   getKey()        { return Key; }
+   std::string   getKey() const { return Key; }
+   std::string&   getKey()        { return Key; }
 };
 
 #endif //#ifndef  __CONFIGKEY_H__

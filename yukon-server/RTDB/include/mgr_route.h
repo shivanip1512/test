@@ -50,7 +50,7 @@ public:
 
     void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
     ptr_type getEqual( LONG rid );
-    ptr_type getEqualByName( string &rname );
+    ptr_type getEqualByName( std::string &rname );
 
     spiterator begin();
     spiterator end();
@@ -63,7 +63,7 @@ public:
     }
 
     bool empty() const;
-    bool buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMessage* > &retList, vector< CtiDeviceRepeaterRole > & roleVector );
+    bool buildRoleVector( long id, CtiRequestMsg& Req, std::list< CtiMessage* > &retList, std::vector< CtiDeviceRepeaterRole > & roleVector );
 
     bool isRepeaterRelevantToRoute( long repeater_id, long route_id ) const;
 };

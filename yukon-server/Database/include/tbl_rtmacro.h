@@ -84,9 +84,9 @@ public:
 
    RWBoolean operator==(const CtiTableMacroRoute& t2);
 
-   static string getTableName();
+   static std::string getTableName();
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

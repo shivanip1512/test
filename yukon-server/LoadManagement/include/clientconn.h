@@ -31,17 +31,13 @@
 
 #include "ctdpcptrq.h"
 
-using std::vector;
-using boost::shared_ptr;
-using boost::weak_ptr;
-
 class CtiLMConnection;
 
-typedef shared_ptr<CtiLMConnection> CtiLMConnectionPtr;
-typedef vector<CtiLMConnectionPtr> CtiLMConnectionVec;
+typedef boost::shared_ptr<CtiLMConnection> CtiLMConnectionPtr;
+typedef std::vector<CtiLMConnectionPtr> CtiLMConnectionVec;
 typedef CtiLMConnectionVec::iterator CtiLMConnectionIter;
 
-typedef weak_ptr<CtiLMConnection> CtiLMConnectionWeakPtr;
+typedef boost::weak_ptr<CtiLMConnection> CtiLMConnectionWeakPtr;
 
 class CtiLMConnection
 {

@@ -45,20 +45,20 @@ public:
 
     CtiTableMCSchedule();
     CtiTableMCSchedule(long sched_id,                       
-                       const string& category_name,                       
+                       const std::string& category_name,                       
                        long h_sched_id,
-                       const string& cmd_file,
-                       const string& state,
-                       const string& start_policy,
-                       const string& stop_policy,
+                       const std::string& cmd_file,
+                       const std::string& state,
+                       const std::string& start_policy,
+                       const std::string& stop_policy,
                        const CtiTime& last_run_time,
-                       const string& last_run_status,
+                       const std::string& last_run_status,
                        int start_day,
                        int start_month,
                        int start_year,
-                       const string& start_time,
-                       const string& stop_time,
-                       const string& valid_week_days,
+                       const std::string& start_time,
+                       const std::string& stop_time,
+                       const std::string& valid_week_days,
                        int duration,
                        const CtiTime& manual_start_time,
                        const CtiTime& manual_stop_time,
@@ -74,42 +74,42 @@ public:
     bool Delete();
 
     long getScheduleID() const;
-    const string& getCategoryName() const;
+    const std::string& getCategoryName() const;
     long getHolidayScheduleID() const;
-    const string& getCommandFile() const;
-    const string& getCurrentState() const;
-    const string& getStartPolicy() const;
-    const string& getStopPolicy() const;
+    const std::string& getCommandFile() const;
+    const std::string& getCurrentState() const;
+    const std::string& getStartPolicy() const;
+    const std::string& getStopPolicy() const;
     const CtiTime& getLastRunTime() const;
-    const string& getLastRunStatus() const;
+    const std::string& getLastRunStatus() const;
     int getStartDay() const;
     int getStartMonth() const;
     int getStartYear() const;
-    const string& getStartTime() const;
-    const string& getStopTime() const;
-    const string& getValidWeekDays() const;
+    const std::string& getStartTime() const;
+    const std::string& getStopTime() const;
+    const std::string& getValidWeekDays() const;
     int getDuration() const;
     const CtiTime& getManualStartTime() const;
     const CtiTime& getManualStopTime() const;
     int getTemplateType() const;
 
     CtiTableMCSchedule& setScheduleID(long sched_id);
-    CtiTableMCSchedule& setScheduleName(const string& schedule_name);
-    CtiTableMCSchedule& setCategoryName(const string& category_name);
-    CtiTableMCSchedule& setScheduleType(const string& sched_type);
+    CtiTableMCSchedule& setScheduleName(const std::string& schedule_name);
+    CtiTableMCSchedule& setCategoryName(const std::string& category_name);
+    CtiTableMCSchedule& setScheduleType(const std::string& sched_type);
     CtiTableMCSchedule& setHolidayScheduleID(long holiday_sched_id);
-    CtiTableMCSchedule& setCommandFile(const string& cmd_file);
-    CtiTableMCSchedule& setCurrentState(const string& state);
-    CtiTableMCSchedule& setStartPolicy(const string& start_policy);
-    CtiTableMCSchedule& setStopPolicy(const string& stop_policy);
+    CtiTableMCSchedule& setCommandFile(const std::string& cmd_file);
+    CtiTableMCSchedule& setCurrentState(const std::string& state);
+    CtiTableMCSchedule& setStartPolicy(const std::string& start_policy);
+    CtiTableMCSchedule& setStopPolicy(const std::string& stop_policy);
     CtiTableMCSchedule& setLastRunTime(const CtiTime& last_run_time);
-    CtiTableMCSchedule& setLastRunStatus(const string& last_run_status);
+    CtiTableMCSchedule& setLastRunStatus(const std::string& last_run_status);
     CtiTableMCSchedule& setStartDay(int start_day);
     CtiTableMCSchedule& setStartMonth(int start_month);
     CtiTableMCSchedule& setStartYear(int start_year);
-    CtiTableMCSchedule& setStartTime(const string& start_time);
-    CtiTableMCSchedule& setStopTime(const string& stop_time);
-    CtiTableMCSchedule& setValidWeekDays(const string& valid_week_days);
+    CtiTableMCSchedule& setStartTime(const std::string& start_time);
+    CtiTableMCSchedule& setStopTime(const std::string& stop_time);
+    CtiTableMCSchedule& setValidWeekDays(const std::string& valid_week_days);
     CtiTableMCSchedule& setDuration(int duration);
     CtiTableMCSchedule& setManualStartTime(const CtiTime& manual_start_time);
     CtiTableMCSchedule& setManualStopTime(const CtiTime& manual_stop_time);
@@ -122,22 +122,22 @@ private:
     static const char* _table_name;
 
     long            _schedule_id;
-    string          _schedule_name;
-    string          _category_name;
-    string          _schedule_type;
+    std::string          _schedule_name;
+    std::string          _category_name;
+    std::string          _schedule_type;
     long            _holiday_schedule_id;
-    string          _command_file;
-    string          _current_state;
-    string          _start_policy;
-    string          _stop_policy;
+    std::string          _command_file;
+    std::string          _current_state;
+    std::string          _start_policy;
+    std::string          _stop_policy;
     CtiTime          _last_run_time;
-    string          _last_run_status;
+    std::string          _last_run_status;
     int             _start_day;
     int             _start_month;
     int             _start_year;
-    string          _start_time;  // in HH:MM:SS format
-    string          _stop_time;
-    string          _valid_week_days; // XXXXXXXZ where X = Y,N, Z = E,F,N
+    std::string          _start_time;  // in HH:MM:SS format
+    std::string          _stop_time;
+    std::string          _valid_week_days; // XXXXXXXZ where X = Y,N, Z = E,F,N
                              // Y = yes on that day, N = no on that day
                              // E = holiday exclusion,
     int             _duration;

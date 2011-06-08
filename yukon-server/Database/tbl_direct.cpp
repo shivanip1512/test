@@ -49,7 +49,7 @@ void CtiTableDeviceDirectComm::DecodeDatabaseReader(Cti::RowReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     rdr["deviceid"] >> _deviceID;
@@ -62,7 +62,7 @@ LONG CtiTableDeviceDirectComm::getDeviceID() const
     return _deviceID;
 }
 
-string CtiTableDeviceDirectComm::getTableName()
+std::string CtiTableDeviceDirectComm::getTableName()
 {
     return "DeviceDirectCommSettings";
 }

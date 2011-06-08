@@ -45,14 +45,14 @@ private:
 
 protected:
 
-   queue< CtiVerificationBase * >  _verification_objects;
+   std::queue< CtiVerificationBase * >  _verification_objects;
    UINT                          _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR                          _pagePrefix;   // Used to fake the TAPTERM into thining it is a new message (a-d)
    UINT                          _pageLength;
    CHAR                          *_pageBuffer;
    OUTMESS                       *_outMessage;
 
-   string                     _inStr;
+   std::string                     _inStr;
 
 public:
 
@@ -88,30 +88,30 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+                              std::list< CtiMessage* >      &vgList,
+                              std::list< CtiMessage* >      &retList,
+                              std::list< OUTMESS* >         &outList);
 
-   string getDescription(const CtiCommandParser & parse) const;
+   std::string getDescription(const CtiCommandParser & parse) const;
 
-   virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
-   virtual INT generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual INT generateCommandHandshake(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommand(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 
-   INT traceOut(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
+   INT traceOut(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
 
-   INT printChar( string &Str, CHAR Char );
+   INT printChar( std::string &Str, CHAR Char );
    bool devicePacingExceeded();
    bool blockedByPageRate() const;
    bool allowPrefix() const;
@@ -120,7 +120,7 @@ public:
 
    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
 
-   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
 };
 

@@ -25,17 +25,17 @@ private:
     long    _programID;
     long    _gearID;
     long    _action; // Stored in database as a string
-    string  _programName;
-    string  _reason;
-    string  _user;
-    string  _gearName;
+    std::string  _programName;
+    std::string  _reason;
+    std::string  _user;
+    std::string  _gearName;
     CtiTime _time;
 
     CtiTableLMProgramHistory() {};
 
     void validateData();
 
-    string getStrFromAction(long action);
+    std::string getStrFromAction(long action);
 
     static long getNextGearHistId();
 public:
@@ -48,7 +48,7 @@ public:
     };
 
     CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
-                             string programName, string reason, string user, string gearName,
+                             std::string programName, std::string reason, std::string user, std::string gearName,
                              CtiTime time);
     
     CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef);

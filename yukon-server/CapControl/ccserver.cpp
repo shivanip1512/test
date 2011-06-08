@@ -16,6 +16,8 @@
 #include "logger.h"
 #include "configparms.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 //The singleton instance of the server                                       

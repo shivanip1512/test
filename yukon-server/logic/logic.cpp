@@ -9,6 +9,9 @@
 #include "pointdefs.h"
 #include "ctinexus.h"
 
+using std::string;
+using std::endl;
+
 CtiConnection* gDispatchConnection = 0;
 
 int Logic_Init(Tcl_Interp* interp) {

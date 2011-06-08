@@ -18,12 +18,12 @@ class IM_EX_CTIYUKONDB CtiTableDeviceDialup : public CtiMemDBObject
 
 protected:
 
-    LONG        _deviceID;
-    string   PhoneNumber;
-    INT         MinConnectTime;
-    INT         MaxConnectTime;
-    string   LineSettings;
-    INT         BaudRate;
+    LONG          _deviceID;
+    std::string   PhoneNumber;
+    INT           MinConnectTime;
+    INT           MaxConnectTime;
+    std::string   LineSettings;
+    INT           BaudRate;
 
 public:
 
@@ -42,18 +42,18 @@ public:
     INT  getBaudRate() const;
     CtiTableDeviceDialup& setBaudRate(INT i);
 
-    string getPhoneNumber() const;
-    void setPhoneNumber(const string &str);
+    std::string getPhoneNumber() const;
+    void setPhoneNumber(const std::string &str);
 
-    string getLineSettings() const;
-    void setLineSettings(const string &lstr);
+    std::string getLineSettings() const;
+    void setLineSettings(const std::string &lstr);
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     LONG getDeviceID() const;
     CtiTableDeviceDialup& setDeviceID( const LONG did);
 
-    static string getTableName();
+    static std::string getTableName();
 
     INT getStopBits() const;
     INT getParity() const;

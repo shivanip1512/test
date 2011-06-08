@@ -6,6 +6,7 @@
 #include "utility.h"
 #include "porter.h"
 
+using std::endl;
 
 namespace Cti {
 namespace Protocols {

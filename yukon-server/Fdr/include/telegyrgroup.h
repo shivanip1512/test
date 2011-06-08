@@ -44,11 +44,11 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
         virtual ~CtiTelegyrGroup();
         CtiTelegyrGroup& operator=( const CtiTelegyrGroup &other );
 
-        string getGroupName( void ) const;
-        CtiTelegyrGroup& setGroupName( string aGroupName );
+        std::string getGroupName( void ) const;
+        CtiTelegyrGroup& setGroupName( std::string aGroupName );
 
-        string getGroupType( void ) const;
-        CtiTelegyrGroup& setGroupType( string aGroupType );
+        std::string getGroupType( void ) const;
+        CtiTelegyrGroup& setGroupType( std::string aGroupType );
 
         int getInterval( void );
         CtiTelegyrGroup& setInterval( int interval );
@@ -56,18 +56,18 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
         int getGroupID( void );
         CtiTelegyrGroup& setGroupID( int groupID );
 
-        vector< CtiFDRPoint > getPointList( void ) const;
-        vector< CtiFDRPoint > & getPointList( void );
+        std::vector< CtiFDRPoint > getPointList( void ) const;
+        std::vector< CtiFDRPoint > & getPointList( void );
 
     private:
 
-        string             _groupName;
-        string             _groupType;
+        std::string             _groupName;
+        std::string             _groupType;
 
         int                   _interval;
         int                   _groupID;
 
-        vector< CtiFDRPoint > _pointList;
+        std::vector< CtiFDRPoint > _pointList;
 };
 
 #endif // #ifndef __TELEGYRGROUP_H__

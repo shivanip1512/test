@@ -5,6 +5,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 //Name of the database table
 const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
 

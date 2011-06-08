@@ -41,10 +41,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/bind.hpp>
 
-using std::string;
-using std::istream;
-using boost::shared_ptr;
-
 class StringMessageContainer;
 
 class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
@@ -70,8 +66,8 @@ class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
         virtual BOOL stop( void );
 
         StringMessageContainer generateMessage( Boost_char_tokenizer& tokens );
-        std::list<std::string> readInFile( istream & io );
-        std::list<StringMessageContainer> processData( std::list<string>& stringList );
+        std::list<std::string> readInFile( std::istream & io );
+        std::list<StringMessageContainer> processData( std::list<std::string>& stringList );
 
         static const CHAR * KEY_PORT_NUMBER;
         static const CHAR * KEY_TRIES;
@@ -91,13 +87,13 @@ class __declspec(dllexport) StringMessageContainer
         StringMessageContainer();
         ~StringMessageContainer();
         void setMessage( CtiMessage* m );
-        void setName( string n );
-        string getName();
-        shared_ptr<CtiMessage> getMessage();
+        void setName( std::string n );
+        std::string getName();
+        boost::shared_ptr<CtiMessage> getMessage();
     
     private:
-        shared_ptr<CtiMessage> msg;
-        string      name;
+        boost::shared_ptr<CtiMessage> msg;
+        std::string      name;
 };
 #endif
 

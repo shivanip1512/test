@@ -41,7 +41,9 @@
 
 #define DEBUG_PRINT_DECODE 0
 
-// DLLIMPORT extern CtiConnection VanGoghConnection;
+using std::string;
+using std::endl;
+using std::list;
 
 CtiDeviceWelco::CtiDeviceWelco() :
 _deadbandsSent(0)

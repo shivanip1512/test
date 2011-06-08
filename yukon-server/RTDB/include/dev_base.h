@@ -101,8 +101,8 @@ public:
     void purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key);
     void purgeStaticPaoInfo();
 
-    typedef vector< CtiTablePaoExclusion > exclusions;
-    typedef vector< pair< unsigned long, CtiTime > > prohibitions;
+    typedef std::vector< CtiTablePaoExclusion > exclusions;
+    typedef std::vector< std::pair< unsigned long, CtiTime > > prohibitions;
 
     CtiDeviceBase();
     CtiDeviceBase(const CtiDeviceBase& aRef);
@@ -120,7 +120,7 @@ public:
     //  name hiding allows us to take this over from tbl_pao_lite
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     virtual void decodeParameters(Cti::RowReader &rdr);
     virtual void clearParameters();
@@ -131,15 +131,15 @@ public:
      *  These are basically set up to allow this to FAIL if the child class doesn't redefine them.
      */
 
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
 
     virtual LONG getPortID() const;
     virtual LONG getAddress() const;
     virtual LONG getMasterAddress() const;
     virtual INT  getPostDelay() const;
 
-    virtual string getPassword() const;
-    virtual string getPhoneNumber() const;
+    virtual std::string getPassword() const;
+    virtual std::string getPhoneNumber() const;
     virtual LONG getMinConnectTime() const;
     virtual LONG getMaxConnectTime() const;
 
@@ -151,7 +151,7 @@ public:
 
 
     virtual ULONG getUniqueIdentifier() const;
-    virtual bool hasLongScanRate(const string &cmd) const;
+    virtual bool hasLongScanRate(const std::string &cmd) const;
 
 
     /*
@@ -167,7 +167,7 @@ public:
     INT         ReportError(INT mess);
 
     /* Properly defined by the device types themselves... */
-    virtual void deviceInitialization(list< CtiRequestMsg * > &request_list);
+    virtual void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
     virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
     virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
     virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 12);
@@ -189,16 +189,16 @@ public:
     BOOL              getLogOnNeeded() const;
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
 
-    virtual void getDevicePoints(vector<CtiPointSPtr> &points) const;
+    virtual void getDevicePoints(std::vector<CtiPointSPtr> &points) const;
     virtual CtiPointSPtr getDevicePointEqual(INT id);
-    virtual CtiPointSPtr getDevicePointEqualByName(string pname);
+    virtual CtiPointSPtr getDevicePointEqualByName(std::string pname);
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
     virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);
 
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!
     virtual bool hasTrxInfo() const;
     virtual CtiTransmitterInfo* initTrxInfo(); // Porter side info to setup transmitter device bookkeeping!
-    virtual string getPutConfigAssignment(UINT modifier = 0);
+    virtual std::string getPutConfigAssignment(UINT modifier = 0);
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 
@@ -230,14 +230,14 @@ public:
 
     bool hasDynamicInfo(PaoInfoKeys k) const;
     bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
-    bool setDynamicInfo(PaoInfoKeys k, const string        &value);
+    bool setDynamicInfo(PaoInfoKeys k, const std::string        &value);
     bool setDynamicInfo(PaoInfoKeys k, const int           &value);
     bool setDynamicInfo(PaoInfoKeys k, const unsigned int  &value);
     bool setDynamicInfo(PaoInfoKeys k, const long          &value);
     bool setDynamicInfo(PaoInfoKeys k, const unsigned long &value);
     bool setDynamicInfo(PaoInfoKeys k, const double        &value);
     bool setDynamicInfo(PaoInfoKeys k, const CtiTime       &value);
-    bool getDynamicInfo(PaoInfoKeys k, string        &destination) const;
+    bool getDynamicInfo(PaoInfoKeys k, std::string        &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, int           &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, unsigned int  &destination) const;
     bool getDynamicInfo(PaoInfoKeys k, long          &destination) const;
@@ -247,11 +247,11 @@ public:
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     long getDynamicInfo(PaoInfoKeys k) const;
 
-    bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id);
+    bool getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id);
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);
-    bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, string &destination) const;
+    bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, std::string &destination) const;
     bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &destination) const;
     long getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
 
@@ -328,14 +328,14 @@ public:
 };
 
 inline bool   CtiDeviceBase::isDialup() const                   { return false; }
-inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
+inline std::string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
 inline bool   CtiDeviceBase::isMeter() const                    { return false;}
 inline LONG   CtiDeviceBase::getPortID() const                  { return -1;}
 inline LONG   CtiDeviceBase::getAddress() const                 { return -1;}
 inline LONG   CtiDeviceBase::getMasterAddress() const           { return -1;}
 inline INT    CtiDeviceBase::getPostDelay() const               { return 0;}
-inline string CtiDeviceBase::getPassword() const                { return string();}
-inline string CtiDeviceBase::getPhoneNumber() const             { return string();}
+inline std::string CtiDeviceBase::getPassword() const           { return std::string();}
+inline std::string CtiDeviceBase::getPhoneNumber() const        { return std::string();}
 inline LONG   CtiDeviceBase::getRouteID() const                 { return -1;}
 inline LONG   CtiDeviceBase::getDemandInterval()                { return LONG_MAX;}
 inline Cti::Protocol::Interface *CtiDeviceBase::getProtocol()   { return NULL;}

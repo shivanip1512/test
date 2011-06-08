@@ -17,6 +17,10 @@
 #include "cparms.h"
 #include "port_pool_out.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 int CtiPortPoolDialout::_poolDebugLevel = 0;
 
 INT CtiPortPoolDialout::openPort(INT rate, INT bits, INT parity, INT stopbits)

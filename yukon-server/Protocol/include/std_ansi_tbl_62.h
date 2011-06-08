@@ -117,7 +117,7 @@ public:
 
    CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
 

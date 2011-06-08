@@ -34,6 +34,8 @@
 #include "portglob.h"
 #include "utility.h"
 
+using std::endl;
+
 CtiSyncDefStruct PorterSyncs[] = {
    { CtiEventType, TRUE , FALSE, "CtiTimeSyncEvent"},
    { CtiEventType, TRUE , FALSE, "CtiQueueEvent"},

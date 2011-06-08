@@ -29,6 +29,11 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::vector;
+
 CtiRouteManager::CtiRouteManager() {}
 
 CtiRouteManager::~CtiRouteManager()

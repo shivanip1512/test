@@ -2,6 +2,8 @@
 #include "dev_paging.h"
 
 using namespace Cti::Devices;
+using std::string;
+using std::endl;
 
 DevicePaging::DevicePaging()
 {

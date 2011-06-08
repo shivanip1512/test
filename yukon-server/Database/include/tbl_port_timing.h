@@ -57,6 +57,6 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   static string getTableName();
+   static std::string getTableName();
 };
 #endif // #ifndef __TBL_PORT_TIMING_H__

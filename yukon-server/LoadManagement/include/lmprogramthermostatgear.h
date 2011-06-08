@@ -33,7 +33,7 @@ public:
 
     virtual ~CtiLMProgramThermoStatGear();
     
-    const string& getSettings() const;
+    const std::string& getSettings() const;
     LONG getMinValue() const;
     LONG getMaxValue() const;
     LONG getPrecoolTemp() const;
@@ -64,7 +64,7 @@ protected:
 
 private:
 
-    string _settings;
+    std::string _settings;
     LONG _minvalue;
     LONG _maxvalue;
     LONG _valueb;

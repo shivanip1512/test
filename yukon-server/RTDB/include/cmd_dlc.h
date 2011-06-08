@@ -94,7 +94,7 @@ public:
 
         CtiPointType_t type;
         unsigned offset;
-        string name;
+        std::string name;
         CtiTime time;
     };
 

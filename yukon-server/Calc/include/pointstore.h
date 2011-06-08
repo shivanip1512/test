@@ -252,7 +252,7 @@ protected:
 };
 
 
-class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
+class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >
 {
 public:
     static CtiPointStore *getInstance();

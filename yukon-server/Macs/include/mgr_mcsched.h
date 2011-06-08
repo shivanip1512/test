@@ -41,21 +41,21 @@ public:
     virtual bool deleteSchedule(long sched_id);
 
     CtiMCSchedule* findSchedule(long id);
-    long getID(const string& name);
+    long getID(const std::string& name);
 
 private:
 
     // Schedules are moved here before they are deleted
     // from the database
-    set< CtiMCSchedule* > _schedules_to_delete;
+    std::set< CtiMCSchedule* > _schedules_to_delete;
 
     bool retrieveSimpleSchedules(
-        map
+        std::map
         < long, CtiMCSchedule* >&
         sched_map );
 
     bool retrieveScriptedSchedules(
-        map
+        std::map
         < long, CtiMCSchedule* >&
         sched_map );
 

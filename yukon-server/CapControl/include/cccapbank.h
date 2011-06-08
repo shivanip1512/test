@@ -89,15 +89,15 @@ public:
     LONG getMaxDailyOps() const;
     LONG getCurrentDailyOperations() const;
     BOOL getMaxOpsDisableFlag() const;
-    const string& getOperationalState() const;
-    const string& getControllerType() const;
+    const std::string& getOperationalState() const;
+    const std::string& getControllerType() const;
     LONG getControlDeviceId() const;
     LONG getControlPointId() const;
-    const string& getControlDeviceType() const;
+    const std::string& getControlDeviceType() const;
     LONG getBankSize() const;
-    const string& getTypeOfSwitch() const;
-    const string& getSwitchManufacture() const;
-    const string& getMapLocationId() const;
+    const std::string& getTypeOfSwitch() const;
+    const std::string& getSwitchManufacture() const;
+    const std::string& getMapLocationId() const;
     LONG getRecloseDelay() const;
     FLOAT getControlOrder() const;
     FLOAT getTripOrder() const;
@@ -130,21 +130,21 @@ public:
 
     BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
-    const string& getIpAddress() const;
+    const std::string& getIpAddress() const;
     LONG getReportedCBCLastControlReason() const;
     LONG getReportedCBCState() const;
     const CtiTime& getReportedCBCStateTime() const;
     BOOL getIgnoreFlag() const;
     LONG getIgnoredReason() const;
-    const string& getBeforeVarsString() const;
-    const string& getAfterVarsString() const;
-    const string& getPercentChangeString() const;
+    const std::string& getBeforeVarsString() const;
+    const std::string& getAfterVarsString() const;
+    const std::string& getPercentChangeString() const;
     BOOL getSendAllCommandFlag() const;
     const CtiTime& getIgnoreReasonTimeUpdated() const;
     const CtiTime& getIgnoreIndicatorTimeUpdated() const;
     const CtiTime& getUnsolicitedChangeTimeUpdated() const;
     BOOL getUnsolicitedPendingFlag() const;
-    const string&  getPartialPhaseInfo() const;
+    const std::string&  getPartialPhaseInfo() const;
     LONG getActionId() const;
 
 
@@ -160,17 +160,17 @@ public:
     CtiCCCapBank& setMaxDailyOperation(LONG maxdailyops);
     CtiCCCapBank& setCurrentDailyOperations(LONG operations);
     CtiCCCapBank& setMaxOpsDisableFlag(BOOL maxopsdisable);
-    CtiCCCapBank& setDeviceClass(const string& deviceclass);
-    CtiCCCapBank& setOperationalState(const string& operational);
+    CtiCCCapBank& setDeviceClass(const std::string& deviceclass);
+    CtiCCCapBank& setOperationalState(const std::string& operational);
     CtiCCCapBank& setOperationalState(int value);
-    CtiCCCapBank& setControllerType(const string& controllertype);
+    CtiCCCapBank& setControllerType(const std::string& controllertype);
     CtiCCCapBank& setControlDeviceId(LONG controldevice);
     CtiCCCapBank& setControlPointId(LONG controlpoint);
-    CtiCCCapBank& setControlDeviceType(const string& controlDeviceType);
+    CtiCCCapBank& setControlDeviceType(const std::string& controlDeviceType);
     CtiCCCapBank& setBankSize(LONG size);
-    CtiCCCapBank& setTypeOfSwitch(const string& switchtype);
-    CtiCCCapBank& setSwitchManufacture(const string& manufacture);
-    CtiCCCapBank& setMapLocationId(const string& maplocation);
+    CtiCCCapBank& setTypeOfSwitch(const std::string& switchtype);
+    CtiCCCapBank& setSwitchManufacture(const std::string& manufacture);
+    CtiCCCapBank& setMapLocationId(const std::string& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(FLOAT order);
     CtiCCCapBank& setTripOrder(FLOAT order);
@@ -197,7 +197,7 @@ public:
     CtiCCCapBank& setControlStatusCommFailFlag(BOOL flag);
     CtiCCCapBank& setControlStatusNoControlFlag(BOOL flag);
     CtiCCCapBank& setControlStatusUnSolicitedFlag(BOOL flag);
-    CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo = "(none)");
+    CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality, std::string partialPhaseInfo = "(none)");
     CtiCCCapBank& setReEnableOvUvFlag(BOOL flag);
     CtiCCCapBank& setLocalControlFlag(BOOL localControlFlag);
     CtiCCCapBank& setControlRecentlySentFlag(BOOL flag);
@@ -211,16 +211,16 @@ public:
     CtiCCCapBank& setReportedCBCStateTime(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreFlag(BOOL flag);
     CtiCCCapBank& setIgnoredReason(LONG value);
-    CtiCCCapBank& setBeforeVarsString(const string& before);
-    CtiCCCapBank& setAfterVarsString(const string& after);
-    CtiCCCapBank& setPercentChangeString(const string& percent);
+    CtiCCCapBank& setBeforeVarsString(const std::string& before);
+    CtiCCCapBank& setAfterVarsString(const std::string& after);
+    CtiCCCapBank& setPercentChangeString(const std::string& percent);
     CtiCCCapBank& setSendAllCommandFlag(BOOL flag);
     CtiCCCapBank& setIgnoreReasonCounter(INT counter);
     CtiCCCapBank& setIgnoreReasonTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedPendingFlag(BOOL flag);
-    CtiCCCapBank& setPartialPhaseInfo(const string& info);
+    CtiCCCapBank& setPartialPhaseInfo(const std::string& info);
     CtiCCCapBank& setActionId(LONG actionId);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
@@ -228,11 +228,11 @@ public:
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
     BOOL updateVerificationState(void);
 
-    string getControlStatusQualityString();
-    string getIgnoreReasonText() const;
+    std::string getControlStatusQualityString();
+    std::string getIgnoreReasonText() const;
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(std::set<long>& pointAddMsg);
-    string getControlStatusText() const;
+    std::string getControlStatusText() const;
     BOOL isPendingStatus();
     BOOL isFailedStatus();
     BOOL isQuestionableStatus();
@@ -286,10 +286,10 @@ public:
     /* Static Members */
 
     //Possible operational states
-    static const string SwitchedOperationalState;
-    static const string FixedOperationalState;
-    static const string UninstalledState;
-    static const string StandAloneState;
+    static const std::string SwitchedOperationalState;
+    static const std::string FixedOperationalState;
+    static const std::string UninstalledState;
+    static const std::string StandAloneState;
 
     //Possible states
     static const int Open;
@@ -312,7 +312,7 @@ public:
 
 private:
 
-    const string& convertOperationalState( int num );
+    const std::string& convertOperationalState( int num );
 
     LONG _parentId; //feederId
     BOOL _alarminhibitflag;
@@ -320,15 +320,15 @@ private:
     LONG _maxdailyops;
     LONG _currentdailyoperations;
     BOOL _maxopsdisableflag;
-    string _operationalstate;
-    string _controllertype;
+    std::string _operationalstate;
+    std::string _controllertype;
     LONG _controldeviceid;
     LONG _controlpointid;
-    string _controlDeviceType;
+    std::string _controlDeviceType;
     LONG _banksize;
-    string _typeofswitch;
-    string _switchmanufacture;
-    string _maplocationid;
+    std::string _typeofswitch;
+    std::string _switchmanufacture;
+    std::string _maplocationid;
     LONG _reclosedelay;
     FLOAT _controlorder;
     FLOAT _triporder;
@@ -345,7 +345,7 @@ private:
     float _originaltriporder;
 
     //verification info
-    string _additionalFlags;
+    std::string _additionalFlags;
     LONG _verificationControlStatus;
     int _vCtrlIndex; //1,2, or 3
     BOOL _retryFlag;
@@ -373,18 +373,18 @@ private:
     BOOL _unsolicitedPendingFlag;
 
     CtiCCTwoWayPoints* _twoWayPoints;
-    string _ipAddress;
+    std::string _ipAddress;
     LONG _udpPortNumber;
     LONG _reportedCBCLastControlReason;
     LONG _reportedCBCState;
     CtiTime _reportedCBCStateTime;
-    string _partialPhaseInfo;
+    std::string _partialPhaseInfo;
 
     BOOL _ignoreFlag;
     LONG _ignoreReason;
-    string _sBeforeVars;
-    string _sAfterVars;
-    string _sPercentChange;
+    std::string _sBeforeVars;
+    std::string _sAfterVars;
+    std::string _sPercentChange;
     LONG _controlStatusQuality;
 
     BOOL _sendAllCommandFlag;

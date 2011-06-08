@@ -75,6 +75,8 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 
+using std::string;
+using std::endl;
 
 // Constructors, Destructor, and Operators
 CtiFDRTextFileBase::CtiFDRTextFileBase(string &aInterface)

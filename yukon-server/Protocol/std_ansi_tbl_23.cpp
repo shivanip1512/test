@@ -55,6 +55,9 @@
 #include "ctidate.h"
 #include "std_ansi_tbl_23.h"
 
+using std::endl;
+using std::string;
+
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable23::CtiAnsiTable23( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,

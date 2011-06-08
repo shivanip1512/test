@@ -3,6 +3,9 @@
 #include "tbl_rtrepeater.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 void CtiTableRepeaterRoute::DumpData()
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);

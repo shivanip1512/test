@@ -21,7 +21,6 @@
 #include <rw/thr/monitor.h>
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include <map>
 #include "dlldefs.h"
@@ -57,10 +56,10 @@ public:
     float  getFloatProperty() const;
     int    getIntProperty  () const;
 
-    static string getSQLCoreStatement();
+    static std::string getSQLCoreStatement();
 
     void          dump() const;
-    static string getTableName();
+    static std::string getTableName();
 
     enum
     {
@@ -77,6 +76,6 @@ public:
     };
 };
 
-typedef shared_ptr< CtiTablePointProperty > CtiTablePointPropertySPtr;
+typedef boost::shared_ptr< CtiTablePointProperty > CtiTablePointPropertySPtr;
 
 #endif // #ifndef __TBL_PT_PROPERTY_H__

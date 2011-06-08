@@ -11,6 +11,8 @@ namespace Cti    {
 namespace Porter {
 namespace Connections {
 
+using std::string;
+using std::endl;
 
 TcpSocketStream::TcpSocketStream(const SocketStream &other) :
     SocketStream(other)

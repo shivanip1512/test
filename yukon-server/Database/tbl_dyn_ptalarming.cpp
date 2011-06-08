@@ -11,6 +11,8 @@
 #define DEFAULT_DESCRIPTIONLENGTH   120
 #define DEFAULT_USERLENGTH          64
 
+using std::string;
+using std::endl;
 
 CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming() :
     _tags(0),

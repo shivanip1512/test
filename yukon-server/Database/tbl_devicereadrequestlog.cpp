@@ -7,6 +7,8 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+
 CtiTblDeviceReadRequestLog::CtiTblDeviceReadRequestLog( long requestLogId, long requestId, string& cmd_line, CtiTime& start, CtiTime& stop, long jobId) :
 _requestLogId(requestLogId),
 _requestId(requestId),
@@ -130,7 +132,7 @@ bool CtiTblDeviceReadRequestLog::Insert()
 
 bool CtiTblDeviceReadRequestLog::Update()
 {
-    static const std::string sql = "update " + getTableName() +
+    static const string sql = "update " + getTableName() +
                                    " set "
                                         "requestid = ?, "
                                         "command = ?, "

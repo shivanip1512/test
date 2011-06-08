@@ -6,6 +6,10 @@
 #include "database_writer.h"
 #include "database_reader.h"
 
+
+using std::string;
+using std::endl;
+
 void CtiTableRawPointHistory::Insert()
 {
     Cti::Database::DatabaseConnection   conn;

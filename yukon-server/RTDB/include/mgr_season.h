@@ -26,10 +26,6 @@
 #include "guard.h"
 #include "logger.h"
 
-using std::map;
-using std::multimap;
-using std::string;
-
 class IM_EX_SEASONDB CtiSeasonManager
 {
 public:
@@ -57,7 +53,7 @@ private:
     CtiSeasonManager();
     ~CtiSeasonManager() { };
 
-    static const string _season_sql;
+    static const std::string _season_sql;
 };
 #endif
 

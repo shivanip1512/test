@@ -87,6 +87,9 @@
 #include "row_reader.h"
 
 using namespace Cti::Devices;
+using std::string;
+using std::endl;
+
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 {

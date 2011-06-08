@@ -5,6 +5,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDevicePagingReceiver::CtiTableDevicePagingReceiver() :
 _frequency(0),
 _capcode1(0), _capcode2(0),

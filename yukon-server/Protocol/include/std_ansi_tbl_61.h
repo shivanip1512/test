@@ -124,7 +124,7 @@ public:
 
    CtiAnsiTable61& operator=(const CtiAnsiTable61& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
    void printLPDataSetInfo( int set, int offset );
    LP_DATA_SET * getLPDataSetInfo();

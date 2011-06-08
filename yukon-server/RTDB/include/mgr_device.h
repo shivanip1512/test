@@ -23,7 +23,7 @@ public:
     typedef coll_type::spiterator       spiterator;
     typedef coll_type::insert_pair      insert_pair;
 
-    typedef map<long, int> device_priorities_t;
+    typedef std::map<long, int> device_priorities_t;
 
 private:
 
@@ -36,9 +36,9 @@ private:
     coll_type        _portExclusions;       // This is a map of the devices the port has added - when a DB reload occurs, it clears
                                             //   _exclusionMap, so these need to be retained and reinserted from a seperate list
 
-    typedef map<long, set<long> > port_devices_t;
-    typedef map<int,  set<long> > type_devices_t;
-    typedef map<long, device_priorities_t> port_device_priorities_t;
+    typedef std::map<long, std::set<long> > port_devices_t;
+    typedef std::map<int,  std::set<long> > type_devices_t;
+    typedef std::map<long, device_priorities_t> port_device_priorities_t;
 
     port_devices_t _portDevices;
     type_devices_t _typeDevices;
@@ -47,12 +47,12 @@ private:
 
     mutable Cti::readers_writer_lock_t _portDevicePrioritiesLock;
 
-    string createIdSqlClause  (const Cti::Database::id_set &paoids, const string table = "YP", const string attrib = "paobjectid");
-    string createTypeSqlClause(string type=string(), const bool include_type=true);
+    std::string createIdSqlClause  (const Cti::Database::id_set &paoids, const std::string table = "YP", const std::string attrib = "paobjectid");
+    std::string createTypeSqlClause(std::string type=std::string(), const bool include_type=true);
 
     bool refreshDevices(Cti::RowReader& rdr);
 
-    bool loadDeviceType(Cti::Database::id_set &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
+    bool loadDeviceType(Cti::Database::id_set &paoids, const std::string &device_name, const CtiDeviceBase &device, std::string type=std::string(), const bool include_type=true);
 
     void refreshExclusions     (Cti::Database::id_set &paoids);
     void refreshIONMeterGroups (Cti::Database::id_set &paoids);
@@ -99,7 +99,7 @@ public:
         return _smartMap.entries();
     }
 
-    virtual void refresh(LONG paoID = 0, string category = string(""), string devicetype = string(""));
+    virtual void refresh(LONG paoID = 0, std::string category = std::string(""), std::string devicetype = std::string(""));
     void refreshGroupHierarchy(LONG paoID = 0);
     bool refreshPointGroups(void);
     void writeDynamicPaoInfo(void);
@@ -107,19 +107,19 @@ public:
     void deleteList(void);
 
     ptr_type getDeviceByID(LONG Remote);
-    void     getDevicesByPortID(long portid, vector<ptr_type> &devices);
-    void     getDevicesByType  (int  type,   vector<ptr_type> &devices);
+    void     getDevicesByPortID(long portid, std::vector<ptr_type> &devices);
+    void     getDevicesByType  (int  type,   std::vector<ptr_type> &devices);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);
-    ptr_type RemoteGetEqualbyName (const string &RemoteName);
+    ptr_type RemoteGetEqualbyName (const std::string &RemoteName);
 
     bool containsType(int type);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d = NULL);
     ptr_type  find(bool (*findFun)(const long, const ptr_type &, void*), void* d = NULL);
 
-    int select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< ptr_type > &coll);
+    int select(bool (*selectFun)(const long, ptr_type, void*), void* d, std::vector< ptr_type > &coll);
 
     CtiDeviceManager &setDevicePrioritiesForPort(long portid, const device_priorities_t &device_priorities);
 

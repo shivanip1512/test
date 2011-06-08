@@ -7,8 +7,6 @@
 
 #include <rw/collect.h>
 
-using std::string;
-
 #include "dlldefs.h"
 #include "message.h"
 
@@ -36,7 +34,7 @@ public:
 
     CtiServerResponseMsg();
     CtiServerResponseMsg(const CtiServerResponseMsg& req);
-    CtiServerResponseMsg(int id, int status, string message);
+    CtiServerResponseMsg(int id, int status, std::string message);
     virtual ~CtiServerResponseMsg();
 
     CtiServerResponseMsg& operator=(const CtiServerResponseMsg& aRef);
@@ -47,8 +45,8 @@ public:
     int getStatus() const;
     CtiServerResponseMsg& setStatus(int status);
 
-    const string& getMessage() const;
-    CtiServerResponseMsg& setMessage(const string& message);
+    const std::string& getMessage() const;
+    CtiServerResponseMsg& setMessage(const std::string& message);
 
     CtiMessage* getPayload() const;
     CtiServerResponseMsg& setPayload(CtiMessage* payload);
@@ -63,7 +61,7 @@ public:
 protected:
     int _id;
     int _status;
-    string _message;
+    std::string _message;
 
     CtiMessage* _payload;
 };

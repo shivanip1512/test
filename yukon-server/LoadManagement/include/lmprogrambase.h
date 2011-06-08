@@ -21,7 +21,7 @@ class CtiLMProgramBase;
 #if VSLICK_TAG_WORKAROUND
 typedef CtiLMProgramBase * CtiLMProgramBaseSPtr;
 #else
-typedef shared_ptr< CtiLMProgramBase > CtiLMProgramBaseSPtr;
+typedef boost::shared_ptr< CtiLMProgramBase > CtiLMProgramBaseSPtr;
 #endif
 
 class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
@@ -39,19 +39,19 @@ public:
     virtual ~CtiLMProgramBase();
 
     LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
+    const std::string& getPAOCategory() const;
+    const std::string& getPAOClass() const;
+    const std::string& getPAOName() const;
     LONG getPAOType() const;
-    const string& getPAOTypeString() const;
-    const string& getPAODescription() const;
+    const std::string& getPAOTypeString() const;
+    const std::string& getPAODescription() const;
     BOOL getDisableFlag() const;
     int getStartPriority() const;
     int getStopPriority() const;
-    const string& getControlType() const;
+    const std::string& getControlType() const;
     LONG getConstraintID() const;
-    const string& getConstraintName() const;
-    const string& getAvailableWeekDays() const;
+    const std::string& getConstraintName() const;
+    const std::string& getAvailableWeekDays() const;
     LONG getMaxHoursDaily() const;
     LONG getMaxHoursMonthly() const;
     LONG getMaxHoursSeasonal() const;
@@ -72,17 +72,17 @@ public:
     std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows();
 
     CtiLMProgramBase& setPAOId(LONG id);
-    CtiLMProgramBase& setPAOCategory(const string& category);
-    CtiLMProgramBase& setPAOClass(const string& pclass);
-    CtiLMProgramBase& setPAOName(const string& name);
-    CtiLMProgramBase& setPAODescription(const string& description);
+    CtiLMProgramBase& setPAOCategory(const std::string& category);
+    CtiLMProgramBase& setPAOClass(const std::string& pclass);
+    CtiLMProgramBase& setPAOName(const std::string& name);
+    CtiLMProgramBase& setPAODescription(const std::string& description);
     CtiLMProgramBase& setDisableFlag(BOOL disable);
     CtiLMProgramBase& setStartPriority(int start_priority);
     CtiLMProgramBase& setStopPriority(int stop_priority);
-    CtiLMProgramBase& setControlType(const string& conttype);
+    CtiLMProgramBase& setControlType(const std::string& conttype);
     CtiLMProgramBase& setConstraintID(LONG constraintid);
-    CtiLMProgramBase& setConstraintName(const string& constraintname);
-    CtiLMProgramBase& setAvailableWeekDays(const string& availweekdays);
+    CtiLMProgramBase& setConstraintName(const std::string& constraintname);
+    CtiLMProgramBase& setAvailableWeekDays(const std::string& availweekdays);
     CtiLMProgramBase& setMaxHoursDaily(LONG daily);
     CtiLMProgramBase& setMaxHoursMonthly(LONG monthly);
     CtiLMProgramBase& setMaxHoursSeasonal(LONG seasonal);
@@ -111,7 +111,7 @@ public:
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void setControlArea(CtiLMControlArea *controlArea);
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBaseSPtr replicate() const = 0;
 
     virtual BOOL hasControlHoursAvailable() = 0;
@@ -124,8 +124,8 @@ public:
     virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
 
     virtual void setDirty(BOOL b=TRUE);
-    virtual void setChangeReason(const string& reason);
-    virtual void setLastUser(const string& user);
+    virtual void setChangeReason(const std::string& reason);
+    virtual void setLastUser(const std::string& user);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -139,9 +139,9 @@ public:
     // Static Members
 
     // Possible control types
-    static const string AutomaticType;
-    static const string ManualOnlyType;
-    static const string TimedType;
+    static const std::string AutomaticType;
+    static const std::string ManualOnlyType;
+    static const std::string TimedType;
 
     // Possible program states
     static const int InactiveState;
@@ -163,19 +163,19 @@ protected:
 private:
 
     LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
+    std::string _paocategory;
+    std::string _paoclass;
+    std::string _paoname;
     LONG _paoType;
-    string _paoTypeString;
-    string _paodescription;
+    std::string _paoTypeString;
+    std::string _paodescription;
     BOOL _disableflag;
     int _start_priority;
     int _stop_priority;
-    string _controltype;
+    std::string _controltype;
     LONG _constraintid;
-    string _constraintname;
-    string _availableweekdays;
+    std::string _constraintname;
+    std::string _availableweekdays;
     LONG _maxhoursdaily;
     LONG _maxhoursmonthly;
     LONG _maxhoursseasonal;

@@ -1,19 +1,5 @@
-#ifndef __CtiAPPLIST_H__
+#pragma once
 #pragma warning( disable : 4786)
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   applist
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/applist.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
 #define __CtiAPPLIST_H__
 
@@ -56,6 +42,4 @@ public:
       KEYNOTFOUND       // get failed because the key was not found
    };
 };
-
-#endif         // #ifndef __CtiAPPLIST__
 

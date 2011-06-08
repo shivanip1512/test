@@ -10,9 +10,6 @@
 
 #include "prot_base.h"
 
-using std::vector;
-using std::queue;
-
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
@@ -74,8 +71,8 @@ private:
 
     unsigned short _start;
 
-    typedef vector< const Object * > object_vector;
-    typedef vector< int >            index_vector;
+    typedef std::vector< const Object * > object_vector;
+    typedef std::vector< int >            index_vector;
     object_vector _objectList;
     index_vector  _objectIndices;
 

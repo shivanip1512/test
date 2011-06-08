@@ -22,6 +22,8 @@
 #include "ctitime.h"
 #include "thread_monitor.h"
 
+using std::endl;
+
 extern void refreshGlobalCParms();
 
 extern ULONG _CC_DEBUG;

@@ -6,6 +6,9 @@
 #include "lmsepcontrolmessage.h"
 #include "lmseprestoremessage.h"
 
+using std::string;
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( LMGroupDigiSEP, LMGROUPDIGISEP_ID )

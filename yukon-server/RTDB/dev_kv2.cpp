@@ -23,6 +23,10 @@
 
 using namespace Cti::Protocols::Ansi;
 
+using std::string;
+using std::endl;
+using std::list;
+
 //=========================================================================================================================================
 
 CtiDeviceKV2::CtiDeviceKV2() :

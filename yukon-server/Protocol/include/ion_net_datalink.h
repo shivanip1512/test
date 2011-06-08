@@ -112,7 +112,7 @@ private:
 
     unsigned char _inBuffer[250];
 
-    vector< ion_input_frame > _inputFrameVector;
+    std::vector< ion_input_frame > _inputFrameVector;
 
     unsigned char  *_data;
     int             _dataLength, _dataSent;

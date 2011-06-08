@@ -34,6 +34,8 @@
 
 #include "tbl_lmg_golay.h"
 
+using std::string;
+
 CtiTableGolayGroup::CtiTableGolayGroup() :
     _lmGroupId(0),
     _routeId(0),

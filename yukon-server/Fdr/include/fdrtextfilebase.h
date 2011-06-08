@@ -65,7 +65,7 @@ class IM_EX_FDRBASE CtiFDRTextFileBase : public CtiFDRInterface
 
 public:
     // constructors and destructors
-    CtiFDRTextFileBase(string &interfaceType); 
+    CtiFDRTextFileBase(std::string &interfaceType); 
 
     virtual ~CtiFDRTextFileBase();
 
@@ -76,13 +76,13 @@ public:
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
-    string & getFileName();
-    string  getFileName() const;
-    CtiFDRTextFileBase &setFileName (string aName);
+    std::string & getFileName();
+    std::string  getFileName() const;
+    CtiFDRTextFileBase &setFileName (std::string aName);
 
-    string & getDriveAndPath();
-    string  getDriveAndPath() const;
-    CtiFDRTextFileBase &setDriveAndPath (string aDriveAndPath);
+    std::string & getDriveAndPath();
+    std::string  getDriveAndPath() const;
+    CtiFDRTextFileBase &setDriveAndPath (std::string aDriveAndPath);
 
     int getInterval() const;
     CtiFDRTextFileBase &setInterval (int aInterval);

@@ -20,12 +20,6 @@
 
 #include <map>
 #include <queue>
-using std::map;
-using std::queue;
-using std::multimap;
-using std::less;
-using std::priority_queue;
-
 
 #include "queue.h"
 #include "thread.h"
@@ -61,16 +55,16 @@ private:
 
     receiver_map _receiver_work;
 
-    priority_queue< CtiVerificationWork *, pending_queue, CtiVerificationWork::later > _work_queue;
+    std::priority_queue< CtiVerificationWork *, pending_queue, CtiVerificationWork::later > _work_queue;
 
-    static const string _table_name;
+    static const std::string _table_name;
 
     void verificationThread(void);
     void loadAssociations(void);
     void processWorkQueue(bool purge=false);
     void writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn);
     void writeUnknown(const CtiVerificationReport &report);
-    void pruneEntries(const ptime::time_duration_type &earliest);
+    void pruneEntries(const boost::posix_time::ptime::time_duration_type &earliest);
 
     long logIDGen(bool force=false);
 
@@ -89,10 +83,10 @@ public:
         RELOAD = CtiThread::LAST
     };
 
-    static const string &getTableName();
+    static const std::string &getTableName();
 
     void push(CtiVerificationBase *e);                    //  the objects are consumed when submitted to the thread
-    void push(queue< CtiVerificationBase * > &entries);   //
+    void push(std::queue< CtiVerificationBase * > &entries);   //
 
     void run();
 

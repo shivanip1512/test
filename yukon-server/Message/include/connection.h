@@ -35,9 +35,6 @@
 #include "mutex.h"
 #include "queue.h"
 
-using std::string;
-
-
 class IM_EX_MSG CtiConnection
 {
 public:
@@ -47,7 +44,7 @@ public:
 
 protected:
 
-   string                   _name;
+   std::string              _name;
    CtiTime                  _birth;
 
    INT                      _termTime;
@@ -56,7 +53,7 @@ protected:
    CtiRegistrationMsg      *_regMsg;
    CtiPointRegistrationMsg *_ptRegMsg;
 
-   string                   _host;
+   std::string              _host;
    INT                      _port;
 
    CtiExchange             *_exchange;                     // Pointer so I can kill it dead at will...
@@ -107,11 +104,11 @@ public:
 
    // Don't want anyone to use this one....
    CtiConnection( );
-   CtiConnection( const INT &Port, const string &Host, Que_t *inQ = NULL, INT tt = 3);
+   CtiConnection( const INT &Port, const std::string &Host, Que_t *inQ = NULL, INT tt = 3);
    CtiConnection(CtiExchange *xchg, Que_t *inQ = NULL, INT tt = 3);
    virtual ~CtiConnection();
 
-   virtual void doConnect( const INT &Port, const string &Host, Que_t *inQ = NULL );
+   virtual void doConnect( const INT &Port, const std::string &Host, Que_t *inQ = NULL );
    virtual RWBoolean operator==(const CtiConnection& aRef) const;
    static unsigned hash(const CtiConnection& aRef);
    CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
@@ -119,7 +116,7 @@ public:
 
    void   Shutdown();
 
-   string getPeer() const;
+   std::string getPeer() const;
 
    INT ConnectPortal();
    INT ManageSocketError( RWSockErr& msg );
@@ -150,10 +147,10 @@ public:
    void  recordRegistration( CtiMessage *msg );
    void  recordPointRegistration( CtiMessage *msg );
 
-   string who();
+   std::string who();
 
-   string   getName() const;
-   CtiConnection& setName(const string &str);
+   std::string   getName() const;
+   CtiConnection& setName(const std::string &str);
 
    int outQueueCount() const;
    void restartConnection();

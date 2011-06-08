@@ -91,22 +91,22 @@ public:
     bool Delete();
 
     long getScheduleID() const;
-    const string getScheduleName() const;
-    const string& getCategoryName() const;
-    const string getScheduleType() const;
+    const std::string getScheduleName() const;
+    const std::string& getCategoryName() const;
+    const std::string getScheduleType() const;
     long getHolidayScheduleID() const;
-    const string& getCommandFile() const;
-    const string& getCurrentState() const;
-    const string& getStartPolicy() const;
-    const string& getStopPolicy() const;
+    const std::string& getCommandFile() const;
+    const std::string& getCurrentState() const;
+    const std::string& getStartPolicy() const;
+    const std::string& getStopPolicy() const;
     const CtiTime& getLastRunTime() const;
-    const string& getLastRunStatus() const;
+    const std::string& getLastRunStatus() const;
     int getStartDay() const;
     int getStartMonth() const;
     int getStartYear() const;
-    const string& getStartTime() const;
-    const string& getStopTime() const;
-    const string& getValidWeekDays() const;
+    const std::string& getStartTime() const;
+    const std::string& getStopTime() const;
+    const std::string& getValidWeekDays() const;
     int getDuration() const;
     const CtiTime& getManualStartTime() const;
     const CtiTime& getManualStopTime() const;
@@ -116,27 +116,27 @@ public:
 
     //Only simple schedules will return meaningfull info for these
     long getTargetPaoId() const;
-    const string& getStartCommand() const;
-    const string& getStopCommand() const;
+    const std::string& getStartCommand() const;
+    const std::string& getStopCommand() const;
     long getRepeatInterval() const;
 
     CtiMCSchedule& setScheduleID(long sched_id);
-    CtiMCSchedule& setScheduleName(const string& schedule_name);
-    CtiMCSchedule& setCategoryName(const string& category_name);
-    CtiMCSchedule& setScheduleType(const string& sched_type);
+    CtiMCSchedule& setScheduleName(const std::string& schedule_name);
+    CtiMCSchedule& setCategoryName(const std::string& category_name);
+    CtiMCSchedule& setScheduleType(const std::string& sched_type);
     CtiMCSchedule& setHolidayScheduleID(long holiday_sched_id);
-    CtiMCSchedule& setCommandFile(const string& cmd_file);
-    CtiMCSchedule& setCurrentState(const string& state);
-    CtiMCSchedule& setStartPolicy(const string& start_policy);
-    CtiMCSchedule& setStopPolicy(const string& stop_policy);
+    CtiMCSchedule& setCommandFile(const std::string& cmd_file);
+    CtiMCSchedule& setCurrentState(const std::string& state);
+    CtiMCSchedule& setStartPolicy(const std::string& start_policy);
+    CtiMCSchedule& setStopPolicy(const std::string& stop_policy);
     CtiMCSchedule& setLastRunTime(const CtiTime& last_run_time);
-    CtiMCSchedule& setLastRunStatus(const string& last_run_status);
+    CtiMCSchedule& setLastRunStatus(const std::string& last_run_status);
     CtiMCSchedule& setStartDay(int start_day);
     CtiMCSchedule& setStartMonth(int start_month);
     CtiMCSchedule& setStartYear(int start_year);
-    CtiMCSchedule& setStartTime(const string& start_time);
-    CtiMCSchedule& setStopTime(const string& stop_time);
-    CtiMCSchedule& setValidWeekDays(const string& valid_week_days);
+    CtiMCSchedule& setStartTime(const std::string& start_time);
+    CtiMCSchedule& setStopTime(const std::string& stop_time);
+    CtiMCSchedule& setValidWeekDays(const std::string& valid_week_days);
     CtiMCSchedule& setDuration(int duration);
     CtiMCSchedule& setManualStartTime(const CtiTime& manual_start_time);
     CtiMCSchedule& setManualStopTime(const CtiTime& manual_stop_time);
@@ -146,8 +146,8 @@ public:
 
     //Only simple schedules will return meaningfull info for these
     CtiMCSchedule& setTargetPaoID(const int target_id);
-    CtiMCSchedule& setStartCommand(const string& start_command);
-    CtiMCSchedule& setStopCommand(const string& stop_command);
+    CtiMCSchedule& setStartCommand(const std::string& start_command);
+    CtiMCSchedule& setStopCommand(const std::string& stop_command);
     CtiMCSchedule& setRepeatInterval(long repeat_interval);
 
     // CGP 022802 DBMEMOBJ lost his monitor.
@@ -160,7 +160,7 @@ public:
 
 //debug
     bool checkSchedule() const;
-    bool checkField(const string& fld, const string& msg) const;
+    bool checkField(const std::string& fld, const std::string& msg) const;
 
 protected:
 

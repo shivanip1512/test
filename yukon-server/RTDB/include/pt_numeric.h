@@ -47,7 +47,7 @@ public:
 
    CtiPointNumeric& operator=(const CtiPointNumeric& aRef);
    
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    INT getRateOfChange() const;

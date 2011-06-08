@@ -55,8 +55,8 @@ public:
     CtiInterpreter();
     virtual ~CtiInterpreter();
 
-    bool evaluate(const string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
-    bool evaluateFile(const string& file, bool block = true );
+    bool evaluate(const std::string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
+    bool evaluateFile(const std::string& file, bool block = true );
     void setScheduleId(long schedId);
 
     long getScheduleId();
@@ -90,7 +90,7 @@ private:
 
     long _scheduleId;
 
-    string _evalstring;
+    std::string _evalstring;
 
     static CtiCriticalSection _mutex;
 

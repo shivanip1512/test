@@ -22,6 +22,8 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+
 CtiTablePointHistory::CtiTablePointHistory() :
     PointID(0),
     Quality(0),

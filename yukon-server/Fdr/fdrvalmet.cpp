@@ -173,6 +173,9 @@
 // this class header
 #include "fdrvalmet.h"
 
+using std::string;
+using std::endl;
+
 /** local definitions **/
 
 /** global used to start the interface by c functions **/

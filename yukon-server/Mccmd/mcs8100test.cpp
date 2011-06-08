@@ -1,6 +1,9 @@
 #include "yukon.h"
 #include "wpsc.h"
 
+using std::string;
+using std::endl;
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   mcs8100test

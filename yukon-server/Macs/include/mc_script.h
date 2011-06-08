@@ -55,11 +55,11 @@ public:
     CtiMCScript();
     virtual ~CtiMCScript();
 
-    const string& getScriptName() const;
-    CtiMCScript& setScriptName(const string& name);
+    const std::string& getScriptName() const;
+    CtiMCScript& setScriptName(const std::string& name);
 
-    const string& getContents() const;
-    CtiMCScript& setContents(const string& contents);
+    const std::string& getContents() const;
+    CtiMCScript& setContents(const std::string& contents);
 
     // Reads and writes the contents respectively
     // read brings the contents into memory
@@ -72,15 +72,15 @@ public:
     virtual void restoreGuts(RWvistream &);
     virtual void saveGuts(RWvostream &) const;
 
-    static const string& getScriptPath();
-    static void setScriptPath(const string& path);
+    static const std::string& getScriptPath();
+    static void setScriptPath(const std::string& path);
 
 private:
 
-    static string _path;
+    static std::string _path;
     static const unsigned _io_buf_size;
 
-    string _name;
-    string _contents;
+    std::string _name;
+    std::string _contents;
 };
 #endif

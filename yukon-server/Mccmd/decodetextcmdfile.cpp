@@ -40,6 +40,11 @@ Function #  Comment in the file, will get moved to the exported file if needed
 #include "decodeTextCmdFile.h"
 #include "utility.h"
 
+using std::iostream;
+using std::string;
+using std::vector;
+using std::endl;
+
 /***************************
 *
 *  this function reads in the file and 

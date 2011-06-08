@@ -7,6 +7,9 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceDialup::CtiTableDeviceDialup() :
 _deviceID(-1),
 MinConnectTime(0),

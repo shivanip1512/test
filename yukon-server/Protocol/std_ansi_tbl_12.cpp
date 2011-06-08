@@ -44,8 +44,9 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_12.h"
-using std::endl;
 
+using std::endl;
+using std::string;
 
 const CHAR * CtiAnsiTable12::ANSI_UOM_WATTS = "Watts";
 const CHAR * CtiAnsiTable12::ANSI_UOM_VARS = "Vars";

@@ -10,6 +10,8 @@
 
 using Cti::Protocols::EmetconProtocol;
 using std::string;
+using std::endl;
+using std::list;
 
 namespace Cti {
 namespace Devices {

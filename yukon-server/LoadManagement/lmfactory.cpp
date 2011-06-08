@@ -22,6 +22,9 @@
 #include "lmgroupgolay.h"
 #include "lmgroupmacro.h"
 
+using std::string;
+using std::endl;
+
 CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
 {
     CtiLMGroupBase* lm_group = 0;

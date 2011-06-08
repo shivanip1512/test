@@ -25,8 +25,6 @@
 //#include "message.h"
 #include "thread.h"
 
-using std::string;
-
 typedef int (*fooptr)();//I want this moved down like it is in register_data
 
 class CtiThreadListener: public CtiThread
@@ -37,7 +35,7 @@ protected:
 private:
 
    void run( void );
-   void registerThread( string name, int id, fooptr shutdown, fooptr alt, ULONG freq );
+   void registerThread( std::string name, int id, fooptr shutdown, fooptr alt, ULONG freq );
 
 public:
 

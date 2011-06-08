@@ -82,7 +82,7 @@ public:
    double getEndDateTime();
    unsigned char getSeason();
 
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
 
 

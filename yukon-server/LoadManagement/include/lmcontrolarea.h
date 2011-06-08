@@ -32,14 +32,14 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     virtual void setDirty(BOOL b = TRUE);
 
     LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
+    const std::string& getPAOCategory() const;
+    const std::string& getPAOClass() const;
+    const std::string& getPAOName() const;
     LONG getPAOType() const;
-    const string& getPAOTypeString() const;
-    const string& getPAODescription() const;
+    const std::string& getPAOTypeString() const;
+    const std::string& getPAODescription() const;
     BOOL getDisableFlag() const;
-    const string& getDefOperationalState() const;
+    const std::string& getDefOperationalState() const;
     LONG getControlInterval() const;
     LONG getMinResponseTime() const;
     CtiTime getDefDailyStartTime(const CtiDate &defaultDate = CtiDate::now()) const;
@@ -56,18 +56,18 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     LONG getCurrentStopSecondsFromDayBegin() const;
     CtiTime getCurrentDailyStartTime(const CtiDate &defaultDate = CtiDate::now()) const;
     CtiTime getCurrentDailyStopTime(const CtiDate &defaultDate = CtiDate::now()) const;
-    vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
+    std::vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
     CtiLMControlAreaTrigger* getThresholdPointTrigger() const;
-    vector<CtiLMProgramBaseSPtr>& getLMPrograms();
+    std::vector<CtiLMProgramBaseSPtr>& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);
-    CtiLMControlArea& setPAOCategory(const string& category);
-    CtiLMControlArea& setPAOClass(const string& pclass);
-    CtiLMControlArea& setPAOName(const string& name);
-    CtiLMControlArea& setPAODescription(const string& description);
+    CtiLMControlArea& setPAOCategory(const std::string& category);
+    CtiLMControlArea& setPAOClass(const std::string& pclass);
+    CtiLMControlArea& setPAOName(const std::string& name);
+    CtiLMControlArea& setPAODescription(const std::string& description);
     CtiLMControlArea& setDisableFlag(BOOL disable);
-    CtiLMControlArea& setDefOperationalState(const string& opstate);
+    CtiLMControlArea& setDefOperationalState(const std::string& opstate);
     CtiLMControlArea& setControlInterval(LONG interval);
     CtiLMControlArea& setMinResponseTime(LONG response);
     CtiLMControlArea& setDefDailyStartTime(LONG start);
@@ -128,9 +128,9 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea* replicate() const;
 
     // Possible def operational states
-    static const string DefOpStateEnabled;
-    static const string DefOpStateDisabled;
-    static const string DefOpStateNone;
+    static const std::string DefOpStateEnabled;
+    static const std::string DefOpStateDisabled;
+    static const std::string DefOpStateNone;
 
     // Possible control area states
     static int InactiveState;
@@ -143,14 +143,14 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 private:
 
     LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
+    std::string _paocategory;
+    std::string _paoclass;
+    std::string _paoname;
     LONG _paoType;
-    string _paoTypeString;
-    string _paodescription;
+    std::string _paoTypeString;
+    std::string _paodescription;
     BOOL _disableflag;
-    string _defoperationalstate;
+    std::string _defoperationalstate;
     LONG _controlinterval;
     LONG _minresponsetime;
     LONG _defdailystarttime;
@@ -165,13 +165,13 @@ private:
     LONG _currentdailystarttime;
     LONG _currentdailystoptime;
 
-    vector<CtiLMControlAreaTrigger*> _lmcontrolareatriggers;
-    vector<CtiLMProgramBaseSPtr> _lmprograms;
+    std::vector<CtiLMControlAreaTrigger*> _lmcontrolareatriggers;
+    std::vector<CtiLMProgramBaseSPtr> _lmprograms;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
 
     void restore(Cti::RowReader &rdr);
-    string* getAutomaticallyStartedSignalString();
+    std::string* getAutomaticallyStartedSignalString();
 };
 

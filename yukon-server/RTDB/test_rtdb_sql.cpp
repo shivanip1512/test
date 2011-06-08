@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_sql_string)
 
         std::stringstream ss;
         long pntID = 0, paoID = 0;
-        vector<long> pointIds;
+        std::vector<long> pointIds;
 
         pointIds.push_back(4);
         pointIds.push_back(8);
@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(test_sql_string)
     
     ///// DATABASE READER CONFIGURATION AND OUTPUT
 
-        string sql = "SELECT JD.id, JD.phrase "
-                     "FROM Jordan JD";
+        std::string sql = "SELECT JD.id, JD.phrase "
+                          "FROM Jordan JD";
     
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);

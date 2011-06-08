@@ -247,18 +247,18 @@ class CurrentControl
 {
 public:
     ULONG getMPCFunction() const;
-    vector<string> getPendingGroups() const;
-    vector<string> getCompletedGroups() const;
+    std::vector<std::string> getPendingGroups() const;
+    std::vector<std::string> getCompletedGroups() const;
 
     unsigned getNumCompletedGroups() const;
     unsigned getNumPendingGroups() const;
 
-    int getCommandedState(const string& group_name) const;
+    int getCommandedState(const std::string& group_name) const;
     time_t getExpirationTime() const;
 
-    bool isGroupPending(const string& group_name) const;
+    bool isGroupPending(const std::string& group_name) const;
 
-    bool setGroupCompleted(const string& group_name);
+    bool setGroupCompleted(const std::string& group_name);
 
     static CurrentControl createCurrentControl(XA21LMMESS* lm_msg);
 
@@ -267,8 +267,8 @@ public:
 private:
     ULONG _mpc_function;
     time_t _expiration_time;
-    vector< pair<string, unsigned> > _pending_groups;
-    vector< pair<string, unsigned> > _completed_groups;
+    std::vector< std::pair<std::string, unsigned> > _pending_groups;
+    std::vector< std::pair<std::string, unsigned> > _completed_groups;
 };
 
 class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
@@ -285,15 +285,15 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
 
         virtual int readConfig( void );
 
         virtual int processRegistrationMessage(CHAR *data);
         virtual int processControlMessage(CHAR *data);
 
-    CHAR* buildMPCStatus(const CurrentControl& ctrl, const string& group_name);
-    CHAR* buildMPCUnsolicited(const string& group_name, unsigned state);
+    CHAR* buildMPCStatus(const CurrentControl& ctrl, const std::string& group_name);
+    CHAR* buildMPCUnsolicited(const std::string& group_name, unsigned state);
 
     void saveControl(XA21LMMESS* ctrl_msg);
     void cleanupCurrentControls();
@@ -314,7 +314,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
         static const CHAR * KEY_LINK_TIMEOUT;
 
-        string   YukonToForeignTime (CtiTime aTimeStamp);
+        std::string   YukonToForeignTime (CtiTime aTimeStamp);
         ULONG         YukonToForeignQuality (ULONG aQuality);
         ULONG         YukonToForeignStatus (ULONG aStatus);
     ULONG YukonToXA21Time(time_t time, bool is_dst, XA21TIME* xa21_time);
@@ -327,12 +327,12 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
 
 private:
 
-    int stripAreaCode(string& group_name);
+    int stripAreaCode(std::string& group_name);
 
     /* A new MPC control will create an entry in this vector
        Either all the groups have to switch to the correct
        state or the control must timeout to be removed from here */
-    vector<CurrentControl> _current_controls;
+    std::vector<CurrentControl> _current_controls;
     CtiCriticalSection _control_cs;
 };
 

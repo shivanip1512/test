@@ -25,6 +25,10 @@
 #include "boost/scoped_array.hpp"
 
 using namespace boost;
+using std::string;
+using std::endl;
+using std::list;
+using std::pair;
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),

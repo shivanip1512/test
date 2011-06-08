@@ -25,10 +25,6 @@
 #define SINGLE_SOCKET_DNP_DIRECT_OP    5
 #define SINGLE_SOCKET_DNP_DATALINK_REQ 100
 
-//namespace Cti
-//{
-
-using namespace Cti::Protocol;
 
 struct IM_EX_FDRBASE CtiDnpId
 {
@@ -110,9 +106,9 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
-        void dumpDNPMessage(const string direction, const char* data, unsigned int size);
+        void dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
 
-        DNPSlaveInterface  _dnpData;
+        Cti::Protocol::DNPSlaveInterface  _dnpData;
 
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;
@@ -126,18 +122,18 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         static const CHAR * KEY_LINK_TIMEOUT;
         static const CHAR * KEY_STALEDATA_TIMEOUT;
 
-        static const string dnpMasterId;
-        static const string dnpSlaveId;
-        static const string dnpPointType;
-        static const string dnpPointOffset;
-        static const string dnpPointStatusString;
-        static const string dnpPointAnalogString;
-        static const string dnpPointCalcAnalogString;
-        static const string dnpPointCounterString;
-        static const string dnpPointMultiplier;
+        static const std::string dnpMasterId;
+        static const std::string dnpSlaveId;
+        static const std::string dnpPointType;
+        static const std::string dnpPointOffset;
+        static const std::string dnpPointStatusString;
+        static const std::string dnpPointAnalogString;
+        static const std::string dnpPointCalcAnalogString;
+        static const std::string dnpPointCounterString;
+        static const std::string dnpPointMultiplier;
 
-        static const string CtiFdrDNPInMessageString;
-        static const string CtiFdrDNPOutMessageString;
+        static const std::string CtiFdrDNPInMessageString;
+        static const std::string CtiFdrDNPOutMessageString;
 
     public:
 

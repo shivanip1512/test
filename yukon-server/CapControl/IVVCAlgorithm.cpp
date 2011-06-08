@@ -28,6 +28,10 @@ using Cti::CapControl::Zone;
 using Cti::CapControl::PaoIdList;
 using Cti::CapControl::PointIdList;
 
+using std::string;
+using std::endl;
+using std::set;
+
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;

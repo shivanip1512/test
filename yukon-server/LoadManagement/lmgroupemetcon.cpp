@@ -19,6 +19,9 @@
 #include "logger.h"
 #include "loadmanager.h"
 
+using std::string;
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )

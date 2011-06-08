@@ -10,6 +10,8 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+using std::string;
+
 const int SECONDS_PER_MINUTE = 60;
 const int MINUTES_PER_HOUR = 60;
 

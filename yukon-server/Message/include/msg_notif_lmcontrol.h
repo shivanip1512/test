@@ -6,8 +6,6 @@
 #include "dlldefs.h"
 #include "message.h" 
 
-using std::vector;
-
 /*
  * CtiNotifLMControlMsg is used to tell the notification server
  * about a loadmanagement event that will happen or has happened.
@@ -22,17 +20,17 @@ public:
     enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING };
     
     CtiNotifLMControlMsg();
-    CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time);
+    CtiNotifLMControlMsg(const std::vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time);
     
     virtual ~CtiNotifLMControlMsg();
 
-    const vector<int>& getNotifGroupIDs() const;
+    const std::vector<int>& getNotifGroupIDs() const;
     int getNotifType() const;
     int getProgramID() const;
     const CtiTime& getStartTime() const;
     const CtiTime& getStopTime() const;
 
-    CtiNotifLMControlMsg& setNotifGroupIDs(const vector<int>& group_ids);
+    CtiNotifLMControlMsg& setNotifGroupIDs(const std::vector<int>& group_ids);
     CtiNotifLMControlMsg& setNotifType(int type);
     CtiNotifLMControlMsg& setProgramID(int program_id);
     CtiNotifLMControlMsg& setStartTime(const CtiTime& start_time);
@@ -43,7 +41,7 @@ public:
     virtual CtiMessage* replicateMessage() const;
 
 private:
-    vector<int> _notif_group_ids;
+    std::vector<int> _notif_group_ids;
     int _notif_type;
     int _program_id;
     CtiTime _start_time;

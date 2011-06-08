@@ -78,8 +78,8 @@ private:
    void processPointDynamicData   (LONG pntID, const std::set<long> &ids = std::set<long>());
    void refreshArchivalList       (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
 
-   void getDirtyRecordList(list<CtiTablePointDispatch> &updateList);
-   void writeRecordsToDB  (list<CtiTablePointDispatch> &updateList);
+   void getDirtyRecordList(std::list<CtiTablePointDispatch> &updateList);
+   void writeRecordsToDB  (std::list<CtiTablePointDispatch> &updateList);
    void removeOldDynamicData();
 
    CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;
@@ -132,7 +132,7 @@ public:
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatchSPtr &point);
    int  getProperty (LONG point, unsigned int property) const;
    bool hasProperty (LONG point, unsigned int property) const;
-   void getPointsWithProperty(unsigned int propertyID, vector<long> &points);
+   void getPointsWithProperty(unsigned int propertyID, std::vector<long> &points);
    //  I have the feeling that dynamic data and point properties should
    //    be smart pointers, since we're playing fast and loose with
    //    deletions and reloads

@@ -28,6 +28,7 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+using std::string;
 using boost::unit_test_framework::test_suite;
 
 BOOST_AUTO_TEST_CASE(test_ctidate_methods)

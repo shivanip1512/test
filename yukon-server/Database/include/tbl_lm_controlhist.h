@@ -33,31 +33,31 @@ protected:
 
     LONG        _lmControlHistID;
     LONG        _paoID;
-    CtiTime      _startDateTime;          // represents the time at which control was begun
-    CtiTime      _controlCompleteTime;    // represents the time at which control was last sent
-    CtiTime      _stopDateTime;           // represents the time at which the current log interval completed.
+    CtiTime     _startDateTime;          // represents the time at which control was begun
+    CtiTime     _controlCompleteTime;    // represents the time at which control was last sent
+    CtiTime     _stopDateTime;           // represents the time at which the current log interval completed.
     LONG        _soeTag;
     INT         _controlDuration;
-    string   _controlType;
+    std::string _controlType;
     LONG        _currentDailyTime;
     LONG        _currentMonthlyTime;
     LONG        _currentSeasonalTime;
     LONG        _currentAnnualTime;
-    mutable string   _activeRestore;
+    mutable std::string   _activeRestore;
     DOUBLE      _reductionValue;
     INT         _controlPriority;
 
     // Values below are note stored in the DB.
-    string   _defaultActiveRestore;
+    std::string  _defaultActiveRestore;
     CtiTime      _prevLogTime;            // Not stored, but used to determine relative positions of controls
     CtiTime      _prevStopReportTime;
-    int         _reductionRatio;         // Needed to compute the contribution of cycles
+    int          _reductionRatio;         // Needed to compute the contribution of cycles
 
 private:
 
     bool _isNewControl;
     static CtiMutex    _soeMux;
-    string   _loadedActiveRestore;
+    std::string        _loadedActiveRestore;
 
 public:
 
@@ -65,18 +65,18 @@ public:
 
     // CtiTableLMControlHistory();
 
-    CtiTableLMControlHistory(LONG             paoid   = 0,
-                             const CtiTime&    start   = CtiTime(),
-                             LONG             soe     = 0,
-                             INT              dur     = 0,
-                             const string& type    = string("Unavailable"),
-                             LONG             daily   = 0,
-                             LONG             month   = 0,
-                             LONG             season  = 0,
-                             LONG             annual  = 0,
-                             const string& restore = string(LMAR_NEWCONTROL),
-                             DOUBLE           reduce  = 0.0,
-                             LONG             lmchid  = 0L);
+    CtiTableLMControlHistory(LONG               paoid   = 0,
+                             const CtiTime&     start   = CtiTime(),
+                             LONG               soe     = 0,
+                             INT                dur     = 0,
+                             const std::string& type    = std::string("Unavailable"),
+                             LONG               daily   = 0,
+                             LONG               month   = 0,
+                             LONG               season  = 0,
+                             LONG               annual  = 0,
+                             const std::string& restore = std::string(LMAR_NEWCONTROL),
+                             DOUBLE             reduce  = 0.0,
+                             LONG               lmchid  = 0L);
 
     CtiTableLMControlHistory(const CtiTableLMControlHistory& aRef);
 
@@ -115,8 +115,8 @@ public:
     INT getControlPriority() const;
     CtiTableLMControlHistory& setControlPriority( const INT cd );
 
-    const string& getControlType() const;
-    CtiTableLMControlHistory& setControlType( const string& ct );
+    const std::string& getControlType() const;
+    CtiTableLMControlHistory& setControlType( const std::string& ct );
 
     LONG getCurrentDailyTime() const;
     CtiTableLMControlHistory& setCurrentDailyTime( const LONG dt );
@@ -130,13 +130,13 @@ public:
     LONG getCurrentAnnualTime() const;
     CtiTableLMControlHistory& setCurrentAnnualTime( const LONG at );
 
-    const string& getActiveRestore() const;
-    CtiTableLMControlHistory& setActiveRestore( const string& ar );
+    const std::string& getActiveRestore() const;
+    CtiTableLMControlHistory& setActiveRestore( const std::string& ar );
 
-    const string& getDefaultActiveRestore() const;
-    CtiTableLMControlHistory& setDefaultActiveRestore( const string& ar );
+    const std::string& getDefaultActiveRestore() const;
+    CtiTableLMControlHistory& setDefaultActiveRestore( const std::string& ar );
 
-    const string& getLoadedActiveRestore() const;
+    const std::string& getLoadedActiveRestore() const;
 
     DOUBLE getReductionValue() const;
     CtiTableLMControlHistory& setReductionValue( const DOUBLE rv );
@@ -150,8 +150,8 @@ public:
     CtiTableLMControlHistory& setNotNewControl( );
 
     static LONG getNextSOE();
-    static string getTableName();
-    static string getDynamicTableName();
+    static std::string getTableName();
+    static std::string getDynamicTableName();
 
     void DecodeControlTimes(Cti::RowReader &rdr);
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
@@ -166,10 +166,10 @@ public:
     static bool deleteOutstandingControls();
     static bool updateCompletedOutstandingControls();
  
-    static string getSQLCoreStatement();
-    static string getSQLCoreStatementIncomplete();
-    static string getSQLCoreStatementOutstanding();
-    static string getSQLCoreStatementDynamic();
+    static std::string getSQLCoreStatement();
+    static std::string getSQLCoreStatementIncomplete();
+    static std::string getSQLCoreStatementOutstanding();
+    static std::string getSQLCoreStatementDynamic();
 
     static void decodeDynamicControls(Cti::RowReader &rdr);
 

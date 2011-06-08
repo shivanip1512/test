@@ -36,6 +36,12 @@
 #include "verification_objects.h"
 #include "dev_tnpp.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::queue;
+using namespace boost::posix_time;
+
 const char *CtiDeviceTnppPagingTerminal::_SOH                 = "\x001";
 const char *CtiDeviceTnppPagingTerminal::_STX                 = "\x002";
 const char *CtiDeviceTnppPagingTerminal::_ETX                 = "\x003";

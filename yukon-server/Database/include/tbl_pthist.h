@@ -48,7 +48,7 @@ public:
     virtual CtiTablePointHistory& operator=(const CtiTablePointHistory&);
     virtual bool operator==(const CtiTablePointHistory&) const;
 
-    virtual string getTableName() const;
+    virtual std::string getTableName() const;
 
     virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 

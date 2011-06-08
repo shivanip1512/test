@@ -21,6 +21,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableCarrierRoute::CtiTableCarrierRoute(INT b, INT f, INT v, INT a) :
 _routeID(-1),
 Bus(b),

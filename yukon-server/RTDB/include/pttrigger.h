@@ -17,7 +17,6 @@
 #include "yukon.h"
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-//using boost::shared_ptr;
 
 #include "logger.h"
 #include "mgr_point.h"
@@ -28,7 +27,7 @@ typedef struct
     CtiTablePointTrigger dbTriggerData;
     DOUBLE lastTriggerValue;
 } PtVerifyTrigger;
-typedef shared_ptr< PtVerifyTrigger > PtVerifyTriggerSPtr;
+typedef boost::shared_ptr< PtVerifyTrigger > PtVerifyTriggerSPtr;
 
 class IM_EX_PNTDB CtiPointTriggerManager
 {

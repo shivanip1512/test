@@ -30,7 +30,7 @@ protected:
 
 private:
     bool _quit;
-    string _config_file;
+    std::string _config_file;
 };
 #endif
 

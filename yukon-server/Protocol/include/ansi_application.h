@@ -1,70 +1,6 @@
 
+#pragma once
 #pragma warning( disable : 4786)
-
-#ifndef __ANSI_APPLICATION_H__
-#define __ANSI_APPLICATION_H__
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   ansi_application
-*
-* Date:   6/20/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
-*    History:
-      $Log: ansi_application.h,v $
-      Revision 1.15  2008/04/25 21:45:14  mfisher
-      YUK-5743 isTransactionComplete() changes not propagated to all protocols
-      changed isTransactionComplete() to const
-
-      Revision 1.14  2005/12/20 17:19:58  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.13  2005/12/12 20:34:30  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.12.2.1  2005/12/12 19:51:02  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.12  2005/09/29 21:19:24  jrichter
-      Merged latest 3.1 changes to head.
-      Revision 1.10.2.2  2005/07/28 21:38:28  jliu
-      string done after merge 1
-
-      Revision 1.10.2.1  2005/07/27 19:28:01  alauinger
-      merged from the head 20050720
-
-      Revision 1.11  2005/06/16 19:18:00  jrichter
-      Sync ANSI code with 3.1 branch!
-
-      Revision 1.10  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.9  2005/02/10 23:23:58  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.8  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.7  2005/01/03 23:07:15  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.6  2004/12/10 21:58:42  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.5  2004/09/30 21:37:19  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.4  2003/04/25 15:13:45  dsutton
-      Update of the base protocol pieces taking into account the manufacturer
-      tables, etc.  New starting point
-
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
 #include "dllbase.h"
 #include "ansi_datalink.h"
@@ -209,12 +145,12 @@ class IM_EX_PROT CtiANSIApplication
     BYTE getAnsiDeviceType();
     void setFWVersionNumber(BYTE fwVersionNumber);
     BYTE getFWVersionNumber();
-    string getMeterTypeString();
+    std::string getMeterTypeString();
 
     int encryptDataMethod();
 
-    const string& getAnsiDeviceName() const;
-    void setAnsiDeviceName(const string& devName);
+    const std::string& getAnsiDeviceName() const;
+    void setAnsiDeviceName(const std::string& devName);
     void setLPBlockSize(long blockSize);
     bool getPartialProcessLPDataFlag();
     void setPartialProcessLPDataFlag(bool flag);
@@ -282,12 +218,10 @@ class IM_EX_PROT CtiANSIApplication
        BYTE _maxNbrPkts;
        BYTE _negBaudRate;
 
-       string _devName;
-       static const string KVmeter;
-       static const string KV2meter;
-       static const string SENTINELmeter;
+       std::string _devName;
+       static const std::string KVmeter;
+       static const std::string KV2meter;
+       static const std::string SENTINELmeter;
 
 };
 
-
-#endif // #ifndef __ANSI_APPLICATION_H__

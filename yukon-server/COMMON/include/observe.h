@@ -28,7 +28,6 @@
 #include "dlldefs.h"
 #include <list>
 #include "utility.h"
-using std::list;
 
 class CtiObservable;
 
@@ -69,7 +68,7 @@ public:
 protected:
     CtiObservable();
 
-    list< CtiObserver* > _observers;
+    std::list< CtiObserver* > _observers;
     BOOL _haschanged;
 
     BOOL _notifyenabled;

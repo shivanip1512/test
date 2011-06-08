@@ -18,7 +18,7 @@ class IM_EX_CTIYUKONDB CtiTableDeviceIED : public CtiMemDBObject
 protected:
 
    LONG           _deviceID;
-   string      _password;
+   std::string    _password;
    INT            _slaveAddress;
 
 public:
@@ -35,13 +35,13 @@ public:
    INT&                 getSlaveAddress();
    CtiTableDeviceIED    setSlaveAddress(INT &aInt);
 
-   string            getPassword() const;
-   string&           getPassword();
-   CtiTableDeviceIED    setPassword(string &aStr);
+   std::string            getPassword() const;
+   std::string&           getPassword();
+   CtiTableDeviceIED      setPassword(std::string &aStr);
 
    void DecodeDatabaseReader(const INT DeviceType, Cti::RowReader &rdr);
 
-   static string getTableName();
+   static std::string getTableName();
 
    LONG getDeviceID() const;
 

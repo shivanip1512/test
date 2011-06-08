@@ -66,14 +66,14 @@ private:
     virtual CtiTablePointDispatch& operator=(const CtiTablePointDispatch&);
     virtual bool operator==(const CtiTablePointDispatch&) const;
 
-    static string getTableName();
+    static std::string getTableName();
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
 
     virtual bool Restore();
 
-    static string getSQLCoreStatement(long id = 0);
+    static std::string getSQLCoreStatement(long id = 0);
     
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 

@@ -289,7 +289,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual string decodeClientName(CHAR *data);
+        virtual std::string decodeClientName(CHAR *data);
 
         virtual int readConfig( void );
 
@@ -312,7 +312,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
         static const CHAR * KEY_LINK_TIMEOUT;
 
-        string   YukonToForeignTime (CtiTime aTimeStamp);
+        std::string   YukonToForeignTime (CtiTime aTimeStamp);
         ULONG         YukonToForeignQuality (ULONG aQuality);
         ULONG         YukonToForeignStatus (ULONG aStatus);
 

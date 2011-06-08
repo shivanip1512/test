@@ -48,8 +48,8 @@ protected:
    INT               _controlOffset;
    INT               _closeTime1;
    INT               _closeTime2;
-   string            *_stateZeroControl;
-   string            *_stateOneControl;
+   std::string       *_stateZeroControl;
+   std::string       *_stateOneControl;
    INT               _commandTimeout;
 
 private:
@@ -69,8 +69,8 @@ public:
    INT getControlOffset() const;
    INT getCloseTime1() const;
    INT getCloseTime2() const;
-   const string& getStateZeroControl() const;
-   const string& getStateOneControl() const;
+   const std::string& getStateZeroControl() const;
+   const std::string& getStateOneControl() const;
    INT getCommandTimeout() const;
 
    BOOL isControlInhibited() const;
@@ -82,11 +82,11 @@ public:
    CtiTablePointStatus& setControlOffset(INT i);
    CtiTablePointStatus& setCloseTime1(INT i);
    CtiTablePointStatus& setCloseTime2(INT i);
-   CtiTablePointStatus& setStateZeroControl(const string& zero);
-   CtiTablePointStatus& setStateOneControl(const string& one);
+   CtiTablePointStatus& setStateZeroControl(const std::string& zero);
+   CtiTablePointStatus& setStateOneControl(const std::string& one);
    CtiTablePointStatus& setCommandTimeout(INT i);
 
-   static string getTableName();
+   static std::string getTableName();
 
    void DecodeDatabaseReader(Cti::RowReader &rdr);
    void dump() const;

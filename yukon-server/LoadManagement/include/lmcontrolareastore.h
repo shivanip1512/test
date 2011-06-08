@@ -62,16 +62,16 @@ class CtiLMSavedControlString
 {//equivalent to an inner class, only used for saving control strings
 
 public:
-    CtiLMSavedControlString(LONG paoId, const string& controlString);
+    CtiLMSavedControlString(LONG paoId, const std::string& controlString);
     CtiLMSavedControlString(const CtiLMSavedControlString& savedControlString);
 
     virtual ~CtiLMSavedControlString();
 
     LONG getPAOId() const;
-    const string& getControlString() const;
+    const std::string& getControlString() const;
 
     CtiLMSavedControlString& setPAOId(LONG paoId);
-    CtiLMSavedControlString& setControlString(const string& controlstr);
+    CtiLMSavedControlString& setControlString(const std::string& controlstr);
 
     CtiLMSavedControlString& operator=(const CtiLMSavedControlString& right);
 
@@ -80,7 +80,7 @@ public:
 
 private:
     LONG _paoId;
-    string _controlString;
+    std::string _controlString;
 };
 
 
@@ -88,11 +88,11 @@ class CtiLMControlAreaStore
 {
 public:   
 
-    vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
+    std::vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBaseSPtr& program = CtiLMProgramBaseSPtr(), CtiLMControlArea** controlArea = NULL);
     
     CtiLMGroupPtr             findGroupByPointID       (long point_id);
-    vector<CtiLMControlArea*> findControlAreasByPointID(long point_id);
+    std::vector<CtiLMControlArea*> findControlAreasByPointID(long point_id);
     
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
@@ -121,7 +121,7 @@ public:
     CtiLMProgramBaseSPtr getLMProgram(long programID);
     CtiLMControlArea* getLMControlArea(long controlAreaID);
 
-    static const string LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
+    static const std::string LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
 private:
 
@@ -136,12 +136,12 @@ private:
 
     bool checkMidnightDefaultsForReset();
 
-    vector<CtiLMControlArea*>* _controlAreas;
-    map< long, CtiLMGroupPtr > _point_group_map;
+    std::vector<CtiLMControlArea*>* _controlAreas;
+    std::map< long, CtiLMGroupPtr > _point_group_map;
     std::multimap<long, long > _point_control_area_map;
-    map< long, CtiLMGroupPtr > _all_group_map;
-    map< long, CtiLMProgramBaseSPtr > _all_program_map;
-    map< long, CtiLMControlArea*> _all_control_area_map;
+    std::map< long, CtiLMGroupPtr > _all_group_map;
+    std::map< long, CtiLMProgramBaseSPtr > _all_program_map;
+    std::map< long, CtiLMControlArea*> _all_control_area_map;
 
     RWThread _resetthr;
 

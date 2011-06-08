@@ -33,6 +33,10 @@
 #define DEBUG_PRINT_DECODE 0
 //extern CtiConnection VanGoghConnection;
 
+using std::string;
+using std::endl;
+using std::list;
+
 static char StatusPointNames50[][40] = {
    {"Local Operation   "},
    {"Alarm State       "},

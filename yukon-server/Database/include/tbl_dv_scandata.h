@@ -78,7 +78,7 @@ private:
    virtual bool Insert();
    virtual bool Restore();
    virtual bool Update();
-   virtual string getTableName() const;
+   virtual std::string getTableName() const;
 
    bool Update(Cti::Database::DatabaseConnection &conn);
 

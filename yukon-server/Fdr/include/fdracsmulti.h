@@ -206,8 +206,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         int         ForeignToYukonStatus (USHORT aStatus);
         CtiTime     ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
 
-        string      YukonToForeignTime (CtiTime aTimeStamp);
-        int         YukonToForeignId (string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
+        std::string      YukonToForeignTime (CtiTime aTimeStamp);
+        int         YukonToForeignId (std::string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 

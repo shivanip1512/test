@@ -43,7 +43,7 @@ public:
    CtiAnsiTable27( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues );
    virtual ~CtiAnsiTable27();
    CtiAnsiTable27& operator=(const CtiAnsiTable27& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
 
    unsigned char* getDemandSelect( );
    unsigned char* getValueSelect( );

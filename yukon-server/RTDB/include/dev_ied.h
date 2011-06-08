@@ -36,7 +36,7 @@
 
 class CtiPort;
 class CtiDeviceBase;
-static const string TAP_HANDSHAKE_CPARM = "TAP_HANDSHAKE_FAIL_COUNT";
+static const std::string TAP_HANDSHAKE_CPARM = "TAP_HANDSHAKE_FAIL_COUNT";
 
 class CtiDeviceIED : public CtiDeviceRemote
 {
@@ -238,16 +238,17 @@ public:
         return *this;
     }
 
-    virtual string getSQLCoreStatement() const
+    virtual std::string getSQLCoreStatement() const
     {
-        static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                         "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, "
-                                         "CS.portid, DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, "
-                                         "DUS.linesettings, DUS.baudrate, IED.password, IED.slaveaddress "
-                                       "FROM Device DV, DeviceIED IED, DeviceDirectCommSettings CS, YukonPAObject YP "
-                                         "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
-                                       "WHERE YP.paobjectid = IED.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                         "YP.paobjectid = CS.deviceid";
+        static const std::string sqlCore =  
+            "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+              "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, "
+              "CS.portid, DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, "
+              "DUS.linesettings, DUS.baudrate, IED.password, IED.slaveaddress "
+            "FROM Device DV, DeviceIED IED, DeviceDirectCommSettings CS, YukonPAObject YP "
+              "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+              "WHERE YP.paobjectid = IED.deviceid AND YP.paobjectid = DV.deviceid AND "
+              "YP.paobjectid = CS.deviceid";
 
         return sqlCore;
     }
@@ -259,7 +260,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         _ied.DecodeDatabaseReader(getType(), rdr);
@@ -273,14 +274,14 @@ public:
      *  A paired set which implements a state machine (before/do port work/after) in conjunction with
      *  the port's function out/inMess pair.
      */
-    virtual INT generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                        { return NoHandShakeMethod;}
-    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)     { return NoHandShakeMethod;}
+    virtual INT generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList)                        { return NoHandShakeMethod;}
+    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList)     { return NoHandShakeMethod;}
 
-    virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                       { return NoHandShakeMethod;}
-    virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)    { return NoHandShakeMethod;}
+    virtual INT generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList)                       { return NoHandShakeMethod;}
+    virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList)    { return NoHandShakeMethod;}
 
-    virtual INT generateCommand    (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                              { return NoGenerateCmdMethod;}
-    virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList)               { return NoDecodeResponseMethod;}
+    virtual INT generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList)                              { return NoGenerateCmdMethod;}
+    virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList)               { return NoDecodeResponseMethod;}
 
     virtual INT allocateDataBins (OUTMESS *)                                         { return MemoryError;}
     virtual INT freeDataBins ()                                                      { return MemoryError;}
@@ -305,9 +306,9 @@ public:
             if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
-                dout << "  Port has indicated a connected device swap. " << endl;
-                dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+                dout << "  Port has indicated a connected device swap. " << std::endl;
+                dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << std::endl;
             }
             setCurrentState(StateHandshakeComplete);
         }
@@ -390,7 +391,7 @@ public:
         return retVal;
     }
 
-    virtual string getPassword() const       { return getIED().getPassword(); }
+    virtual std::string getPassword() const       { return getIED().getPassword(); }
 
     int getHandshakesRemaining() const { return _handshakesRemaining; }
     void resetHandshakesRemaining() { _handshakesRemaining = gConfigParms.getValueAsInt(TAP_HANDSHAKE_CPARM, 3); }

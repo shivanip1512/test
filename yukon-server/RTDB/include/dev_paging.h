@@ -27,7 +27,7 @@ public:
 
    const CtiTableDeviceTapPaging& getPaging() const;
 
-   virtual string getSQLCoreStatement() const;
+   virtual std::string getSQLCoreStatement() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

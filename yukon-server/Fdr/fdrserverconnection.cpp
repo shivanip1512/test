@@ -9,6 +9,9 @@
 #include "fdrserverconnection.h"
 #include "fdrdebuglevel.h"
 
+using std::string;
+using std::endl;
+
 /*
 CtiFDRServerConnection::CtiFDRServerConnection(CtiFDRSocketLayer * aParent)
 :    Inherited(aParent)

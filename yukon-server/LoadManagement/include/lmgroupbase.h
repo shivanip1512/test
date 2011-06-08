@@ -18,11 +18,6 @@
 #include "row_reader.h"
 #include "database_connection.h"
 
-using std::vector;
-using std::string;
-using boost::shared_ptr;
-
-
 class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject
 {
 
@@ -34,12 +29,12 @@ public:
     virtual ~CtiLMGroupBase();
 
     virtual LONG getPAOId() const;
-    virtual const string& getPAOCategory() const;
-    virtual const string& getPAOClass() const;
-    virtual const string& getPAOName() const;
+    virtual const std::string& getPAOCategory() const;
+    virtual const std::string& getPAOClass() const;
+    virtual const std::string& getPAOName() const;
     LONG getPAOType() const;
-    const string& getPAOTypeString() const;
-    virtual const string& getPAODescription() const;
+    const std::string& getPAOTypeString() const;
+    virtual const std::string& getPAODescription() const;
     virtual BOOL getDisableFlag() const;
     virtual LONG getGroupOrder() const;
     virtual DOUBLE getKWCapacity() const;
@@ -68,13 +63,13 @@ public:
     virtual LONG getHoursSeasonalPointId() const;
     virtual LONG getHoursAnnuallyPointId() const;
     virtual LONG getControlStatusPointId() const;
-    virtual const string& getLastControlString() const;
+    virtual const std::string& getLastControlString() const;
 
     virtual CtiLMGroupBase& setPAOId(LONG id);
-    virtual CtiLMGroupBase& setPAOCategory(const string& category);
-    virtual CtiLMGroupBase& setPAOClass(const string& pclass);
-    virtual CtiLMGroupBase& setPAOName(const string& name);
-    virtual CtiLMGroupBase& setPAODescription(const string& description);
+    virtual CtiLMGroupBase& setPAOCategory(const std::string& category);
+    virtual CtiLMGroupBase& setPAOClass(const std::string& pclass);
+    virtual CtiLMGroupBase& setPAOName(const std::string& name);
+    virtual CtiLMGroupBase& setPAODescription(const std::string& description);
     virtual CtiLMGroupBase& setDisableFlag(BOOL disable);
     virtual CtiLMGroupBase& setGroupOrder(LONG order);
     virtual CtiLMGroupBase& setKWCapacity(DOUBLE kwcap);
@@ -105,7 +100,7 @@ public:
     virtual CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
     virtual CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
     virtual CtiLMGroupBase& setControlStatusPointId(LONG cntid);
-    virtual CtiLMGroupBase& setLastControlString(const string& controlstr);
+    virtual CtiLMGroupBase& setLastControlString(const std::string& controlstr);
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
@@ -114,12 +109,12 @@ public:
     virtual CtiRequestMsg* createLatchingRequestMsg(bool do_shed, int priority) const;
     virtual CtiCommandMsg* createLatchingCommandMsg(LONG rawState, int priority) const;
     virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime originalTime, const string& additionalInfo) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
+    virtual CtiRequestMsg* createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime originalTime, const std::string& additionalInfo) const;// in CtiLMGroupExpresscom
+    virtual CtiRequestMsg* createSetPointRequestMsg(std::string settings, LONG minValue, LONG maxValue,
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                     LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                     LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+    virtual CtiRequestMsg* createSetPointSimpleMsg(std::string settings, LONG minValue, LONG maxValue,
                                                     LONG precoolTemp, LONG random, float rampRate,
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
@@ -150,8 +145,8 @@ public:
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
     bool operator<(const CtiLMGroupBase& right) const;
 
-    string buildShedString(LONG shedTime) const;
-    string buildPeriodString(LONG periodTime) const;
+    std::string buildShedString(LONG shedTime) const;
+    std::string buildPeriodString(LONG periodTime) const;
 
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
@@ -174,12 +169,12 @@ private:
     void updateDailyOps();
 
     LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
+    std::string _paocategory;
+    std::string _paoclass;
+    std::string _paoname;
     LONG _paoType;
-    string _paoTypeString;
-    string _paodescription;
+    std::string _paoTypeString;
+    std::string _paodescription;
     BOOL _disableflag;
     LONG _grouporder;
     DOUBLE _kwcapacity;
@@ -210,12 +205,12 @@ private:
 
     //don't stream
     LONG _controlstatuspointid;
-    string _lastcontrolstring;
+    std::string _lastcontrolstring;
 
 };
 
-typedef shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
-typedef vector<CtiLMGroupPtr> CtiLMGroupVec;
+typedef boost::shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
+typedef std::vector<CtiLMGroupPtr> CtiLMGroupVec;
 typedef CtiLMGroupVec::iterator CtiLMGroupIter;
 typedef CtiLMGroupVec::const_iterator CtiLMGroupConstIter;
 

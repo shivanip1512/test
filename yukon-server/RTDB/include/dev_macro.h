@@ -26,8 +26,6 @@
 #include "yukon.h"
 #include <set>
 #include <vector>
-using std::set;
-using std::vector;
 
 class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceGroupBase // 2004/1/4 CGP // : public CtiDeviceBase
 {
@@ -35,9 +33,9 @@ private:
 
     typedef CtiDeviceGroupBase Inherited;
 
-    INT analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
     bool coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser &parse, BYTE *RippleMessage );
-    bool executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LONG > &executedRouteSet );
+    bool executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, std::set< LONG > &executedRouteSet );
 
 protected:
 
@@ -62,13 +60,13 @@ public:
 
     virtual LONG getRouteID() { return 0L; }
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    virtual INT processTrxID( int trx, list< CtiMessage* >  &vgList );
-    virtual INT initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList );
-    virtual string getDescription(const CtiCommandParser & parse) const;
+    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
+    virtual INT processTrxID( int trx, std::list< CtiMessage* >  &vgList );
+    virtual INT initTrxID( int trx, CtiCommandParser &parse, std::list< CtiMessage* >  &vgList );
+    virtual std::string getDescription(const CtiCommandParser & parse) const;
 };
 
 #endif // #ifndef __DEV_GRP_MACRO_H__

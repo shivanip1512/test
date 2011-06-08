@@ -18,6 +18,9 @@
 #include "tbl_port_serial.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePortLocalSerial::CtiTablePortLocalSerial()
 {}
 

@@ -60,23 +60,23 @@ class IM_EX_FDRBASE CtiFDRTextFileInterfaceParts
 {
     public:
         // constructors and destructors
-        CtiFDRTextFileInterfaceParts(string &aFileName=string ("yukon.txt"), string &aPath=string("\\yukon\\server\\import"), int aInterval=900); 
+        CtiFDRTextFileInterfaceParts(std::string &aFileName=std::string ("yukon.txt"), std::string &aPath=std::string("\\yukon\\server\\import"), int aInterval=900); 
         virtual ~CtiFDRTextFileInterfaceParts();
     
-        string & getFileName();
-        string  getFileName() const;
-        CtiFDRTextFileInterfaceParts &setFileName (string aName);
+        std::string & getFileName();
+        std::string  getFileName() const;
+        CtiFDRTextFileInterfaceParts &setFileName (std::string aName);
     
-        string & getDriveAndPath();
-        string  getDriveAndPath() const;
-        CtiFDRTextFileInterfaceParts &setDriveAndPath (string aDriveAndPath);
+        std::string & getDriveAndPath();
+        std::string  getDriveAndPath() const;
+        CtiFDRTextFileInterfaceParts &setDriveAndPath (std::string aDriveAndPath);
 
         int getInterval() const;
         CtiFDRTextFileInterfaceParts &setInterval (int aInterval);
     
     private:
-        string      _fileName;
-        string      _driveAndPath;
+        std::string      _fileName;
+        std::string      _driveAndPath;
         int            _interval;
 };
 

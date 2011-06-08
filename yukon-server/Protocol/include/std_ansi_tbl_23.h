@@ -127,7 +127,7 @@ public:
                          int f1, int f2, int timeformat, int tableNbr,  bool lsbDataOrder = true);
    virtual ~CtiAnsiTable23();
    CtiAnsiTable23& operator=(const CtiAnsiTable23& aRef);
-   void printResult( const string& deviceName );
+   void printResult( const std::string& deviceName );
    void printSummations( DATA_BLK_RCD data_block );
    void printDemands( DATA_BLK_RCD data_block );
    void printCoincidents( DATA_BLK_RCD data_block );

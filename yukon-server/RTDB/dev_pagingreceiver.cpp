@@ -42,6 +42,7 @@
 #include "dev_pagingreceiver.h"
 
 using namespace std;
+using namespace boost::posix_time;
 
 const char *CtiDevicePagingReceiver::_change_mode = "J2";
 const char *CtiDevicePagingReceiver::_read= "R";

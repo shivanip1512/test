@@ -9,6 +9,7 @@
 
 using Cti::Devices::Commands::Lcr3102DemandResponseSummaryCommand;
 using Cti::Devices::Commands::DlcCommand;
+using std::string;
 
 BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
 {

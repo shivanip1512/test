@@ -70,6 +70,6 @@ public:
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    static string getTableName();
+    static std::string getTableName();
 };
 #endif // #ifndef __TBL_DV_SERIESV_H__

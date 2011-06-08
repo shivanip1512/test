@@ -8,8 +8,6 @@
 #include "dlldefs.h"
 #include "message.h"
 
-using std::vector;
-
 /*
  * CtiNotifAlarmMsg is used to tell the notification server
  * that an alarm occurred and it should send out a notification
@@ -22,7 +20,7 @@ public:
     RWDECLARE_COLLECTABLE( CtiNotifAlarmMsg );
 
     CtiNotifAlarmMsg();
-    CtiNotifAlarmMsg(const vector<int>& group_ids,
+    CtiNotifAlarmMsg(const std::vector<int>& group_ids,
                      int category_id,
                      int point_id,
                      int condition,
@@ -33,7 +31,7 @@ public:
     
     virtual ~CtiNotifAlarmMsg();
 
-    const vector<int>& getNotifGroupIDs() const;    
+    const std::vector<int>& getNotifGroupIDs() const;    
     int getCategoryID() const;    
     int getPointID() const;
     int getCondition() const;
@@ -42,7 +40,7 @@ public:
     bool isAcknowledged() const;
     bool isAbnormal() const;
 
-    CtiNotifAlarmMsg& setNotifGroupIDs(const vector<int>& group_ids);    
+    CtiNotifAlarmMsg& setNotifGroupIDs(const std::vector<int>& group_ids);    
     CtiNotifAlarmMsg& setCategoryID(int category);
     CtiNotifAlarmMsg& setPointID(int point_id);
     CtiNotifAlarmMsg& setCondition(int condition);
@@ -59,7 +57,7 @@ public:
 
     
 private:
-    vector<int> _notif_group_ids;    
+    std::vector<int> _notif_group_ids;    
     int _category_id;
     int _point_id;
     int _condition;

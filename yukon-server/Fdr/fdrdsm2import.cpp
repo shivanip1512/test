@@ -125,6 +125,10 @@
 #include "fdrdsm2import.h"
 #include "utility.h"
 
+using std::list;
+using std::string;
+using std::endl;
+
 CtiFDR_Dsm2Import * dsm2Interface;
 
 const CHAR * CtiFDR_Dsm2Import::KEY_INTERVAL = "FDR_DSM2IMPORT_INTERVAL";

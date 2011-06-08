@@ -26,7 +26,6 @@
 
 #include <list>
 #include "utility.h"
-using std::list;
 
 
 class IM_EX_PROT CtiProtocolFisherPierceCBC
@@ -35,7 +34,7 @@ protected:
 
    INT      _last;
 
-   list< FPSTRUCT* >  _fst;
+   std::list< FPSTRUCT* >  _fst;
 
 
 private:

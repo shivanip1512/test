@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_stringContainsIgnoreCase)
 
 BOOST_AUTO_TEST_CASE(test_in_place_trim)
 {
-    string test;
+    std::string test;
 
     test = "   I am a space-padded string.  ";
 

@@ -10,6 +10,9 @@
 #include "logger.h"
 #include "ctidate.h"
 using std::transform;
+using std::string;
+using std::endl;
+using std::vector;
 //Boolean if debug messages are printed
 ULONG _LM_DEBUG = 0L;
 //Boolean if point enevts messages are created and sent to Dispatch

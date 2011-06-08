@@ -6,6 +6,8 @@
 #include "logger.h"
 #include "PointDataRequest.h"
 
+using std::endl;
+
 DispatchPointDataRequest::DispatchPointDataRequest() :
     _complete(false),
     _pointsSet(false)

@@ -119,12 +119,12 @@ private:
     bool loadCParms();
 
     // log an event with dispatch
-    void logEvent(const string& user, const string& text) const;
+    void logEvent(const std::string& user, const std::string& text) const;
 
     // execute a command on a tcl interpreter
-    void executeCommand(const string& command, long target = 0);
+    void executeCommand(const std::string& command, long target = 0);
 
-    void sendDBChange(const int& paoid, const string& user) const;
+    void sendDBChange(const int& paoid, const std::string& user) const;
 
     // start and stops scripts
     void executeScript(const CtiMCSchedule& sched);

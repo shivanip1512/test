@@ -17,7 +17,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-using boost::shared_ptr;
 
 #include "dlldefs.h"
 #include "logger.h"
@@ -58,9 +57,9 @@ public:
 
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
-                  dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << endl;
-                  dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                  dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+                  dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << std::endl;
+                  dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" <<std::endl;
                }
             }
          }
@@ -106,14 +105,15 @@ public:
    virtual void         setMultiplier(DOUBLE d)       { _pointAccumulator.setMultiplier(d);}
    virtual void         setDataOffset(DOUBLE d)       { _pointAccumulator.setDataOffset(d);}
 
-   static string getSQLCoreStatement()
+   static std::string getSQLCoreStatement()
    {
-      static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
-                                    "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
-                                    "PT.archiveinterval, PTU.uomid, PTU.decimalplaces, PTU.decimaldigits, UTM.calctype, "
-                                    "PAC.multiplier, PAC.dataoffset "
-                                 "FROM Point PT, PointUnit PTU, UnitMeasure UTM, PointAccumulator PAC "
-                                 "WHERE PT.pointid = PTU.pointid AND PTU.uomid = UTM.uomid AND PT.pointid = PAC.pointid";
+      static const std::string sql =
+         "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+           "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+           "PT.archiveinterval, PTU.uomid, PTU.decimalplaces, PTU.decimaldigits, UTM.calctype, "
+           "PAC.multiplier, PAC.dataoffset "
+         "FROM Point PT, PointUnit PTU, UnitMeasure UTM, PointAccumulator PAC "
+         "WHERE PT.pointid = PTU.pointid AND PTU.uomid = UTM.uomid AND PT.pointid = PAC.pointid";
 
       return sql;
    }
@@ -126,7 +126,7 @@ public:
           if(getDebugLevel() & DEBUGLEVEL_DATABASE)
           {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+             dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
           }
 
           _pointAccumulator.DecodeDatabaseReader(rdr);
@@ -135,7 +135,7 @@ public:
        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " cannot decode this rdr " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " " << getName() << " cannot decode this rdr " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
        }*/
    }
@@ -163,7 +163,7 @@ public:
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** MEMORY ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** MEMORY ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
          }
       }
@@ -171,6 +171,6 @@ public:
 
 };
 
-typedef shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;
+typedef boost::shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;
 
 #endif // #ifndef __PT_ACCUM_H__

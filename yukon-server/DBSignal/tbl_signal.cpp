@@ -10,6 +10,8 @@
 #define DEFAULT_DESCRIPTIONLENGTH   120
 #define DEFAULT_USERLENGTH          64
 
+using std::endl;
+
 CtiTableSignal::CtiTableSignal() :
     _logID(0),
     _pointID(0),

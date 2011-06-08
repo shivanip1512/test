@@ -7,7 +7,9 @@
 
 #define COLLECTABLE_CONFIGKEY 0x1234
 
-unsigned int str_hash(const std::string& str)
+using std::string;
+
+unsigned int str_hash(const string& str)
 {
 
    unsigned int hash = 5381;

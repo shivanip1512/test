@@ -21,8 +21,8 @@ class NoOpEncryption : public EncodingFilter
 
 		NoOpEncryption();
 
-		bool encode(const unsigned char* const plainText, long bufLen, vector<unsigned char>& cipher);
-		bool decode(const unsigned char* const cipher , long bufLen, vector<unsigned char>& plainText);
+		bool encode(const unsigned char* const plainText, long bufLen, std::vector<unsigned char>& cipher);
+		bool decode(const unsigned char* const cipher , long bufLen, std::vector<unsigned char>& plainText);
 };
 
 #endif

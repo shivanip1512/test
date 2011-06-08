@@ -29,10 +29,10 @@ protected:
    long        _id;                 // System point or point id this message is associated with.
    int         _logType;            // Identifies the signal type.
    unsigned    _signalCategory;     // Which alarm category should be addressed. Category one is an event class and not sent.
-   string   _text;               // What happened
-   string   _additional;         // Additional Info.  What is special about this happening?
+   std::string   _text;               // What happened
+   std::string   _additional;         // Additional Info.  What is special about this happening?
    unsigned    _tags;               // Alarm states;.. Bit field frome pointdefs.h
-   string   _user;               // Who caused this to happen?
+   std::string   _user;               // Who caused this to happen?
    unsigned    _signalMillis;       // Milliseconds for high-precision/SOE events
 
    int         _condition;          // This is the alarm condition represented by this message
@@ -54,11 +54,11 @@ public:
 
    CtiSignalMsg(long       pid    = 0,
                 int        soe    = 0,
-                string  text = "(none)",
-                string  addl= "(none)",
+                std::string  text = "(none)",
+                std::string  addl= "(none)",
                 int        lt     = GeneralLogType,
                 unsigned   cls    = SignalEvent,
-                string  usr = "(none)",
+                std::string  usr = "(none)",
                 unsigned   tag    = 0,
                 int        pri    = 7,
                 unsigned   millis = 0,
@@ -72,11 +72,11 @@ public:
    long  getId() const;
    CtiSignalMsg& setId( const long a_id );
 
-   const string& getText() const;
-   CtiSignalMsg& setText(const string& string);
+   const std::string& getText() const;
+   CtiSignalMsg& setText(const std::string& string);
 
-   const string& getAdditionalInfo() const;
-   CtiSignalMsg& setAdditionalInfo(const string& string);
+   const std::string& getAdditionalInfo() const;
+   CtiSignalMsg& setAdditionalInfo(const std::string& string);
 
    unsigned getSignalCategory() const;
    CtiSignalMsg& setSignalCategory(const unsigned cls);

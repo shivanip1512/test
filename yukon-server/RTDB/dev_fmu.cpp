@@ -58,6 +58,12 @@
 
 #define StartByte 0xE7
 
+using std::string;
+using std::endl;
+using std::list;
+using std::queue;
+using namespace boost::posix_time;
+
 CtiDeviceFMU::CtiDeviceFMU() :
     _state(State_Uninit),
     _sequence(SequenceUnknown),

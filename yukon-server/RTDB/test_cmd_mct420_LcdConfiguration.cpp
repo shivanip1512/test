@@ -8,6 +8,7 @@
 
 using Cti::Devices::Commands::Mct420LcdConfigurationCommand;
 using Cti::Devices::Commands::DlcCommand;
+using std::string;
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 

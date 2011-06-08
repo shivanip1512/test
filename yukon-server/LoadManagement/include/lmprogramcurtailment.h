@@ -24,8 +24,6 @@
 #include "observe.h"
 #include "database_connection.h"
 
-using std::vector;
-
 class CtiLMProgramCurtailment : public CtiLMProgramBase
 {
 
@@ -40,35 +38,35 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     virtual ~CtiLMProgramCurtailment();
 
     LONG getMinNotifyTime() const;
-    const string& getHeading() const;
-    const string& getMessageHeader() const;
-    const string& getMessageFooter() const;
+    const std::string& getHeading() const;
+    const std::string& getMessageHeader() const;
+    const std::string& getMessageFooter() const;
     LONG getAckTimeLimit() const;
-    const string& getCanceledMsg() const;
-    const string& getStoppedEarlyMsg() const;
+    const std::string& getCanceledMsg() const;
+    const std::string& getStoppedEarlyMsg() const;
     LONG getCurtailReferenceId() const;
     const CtiTime& getActionDateTime() const;
     const CtiTime& getNotificationDateTime() const;
     const CtiTime& getCurtailmentStartTime() const;
     const CtiTime& getCurtailmentStopTime() const;
-    const string& getRunStatus() const;
-    const string& getAdditionalInfo() const;
-    vector<CtiLMCurtailCustomer*>& getLMProgramCurtailmentCustomers();
+    const std::string& getRunStatus() const;
+    const std::string& getAdditionalInfo() const;
+    std::vector<CtiLMCurtailCustomer*>& getLMProgramCurtailmentCustomers();
 
     CtiLMProgramCurtailment& setMinNotifyTime(LONG notifytime);
-    CtiLMProgramCurtailment& setHeading(const string& head);
-    CtiLMProgramCurtailment& setMessageHeader(const string& msgheader);
-    CtiLMProgramCurtailment& setMessageFooter(const string& msgfooter);
+    CtiLMProgramCurtailment& setHeading(const std::string& head);
+    CtiLMProgramCurtailment& setMessageHeader(const std::string& msgheader);
+    CtiLMProgramCurtailment& setMessageFooter(const std::string& msgfooter);
     CtiLMProgramCurtailment& setAckTimeLimit(LONG timelimit);
-    CtiLMProgramCurtailment& setCanceledMsg(const string& canceled);
-    CtiLMProgramCurtailment& setStoppedEarlyMsg(const string& stoppedearly);
+    CtiLMProgramCurtailment& setCanceledMsg(const std::string& canceled);
+    CtiLMProgramCurtailment& setStoppedEarlyMsg(const std::string& stoppedearly);
     CtiLMProgramCurtailment& setCurtailReferenceId(LONG refid);
     CtiLMProgramCurtailment& setActionDateTime(const CtiTime& actiontime);
     CtiLMProgramCurtailment& setNotificationDateTime(const CtiTime& notificationtime);
     CtiLMProgramCurtailment& setCurtailmentStartTime(const CtiTime& starttime);
     CtiLMProgramCurtailment& setCurtailmentStopTime(const CtiTime& stoptime);
-    CtiLMProgramCurtailment& setRunStatus(const string& runstat);
-    CtiLMProgramCurtailment& setAdditionalInfo(const string& additional);
+    CtiLMProgramCurtailment& setRunStatus(const std::string& runstat);
+    CtiLMProgramCurtailment& setAdditionalInfo(const std::string& additional);
 
     //void restoreCurtailmentSpecificDatabaseEntries(Cti::RowReader &rdr);
     void notifyCustomers(CtiMultiMsg* multiDispatchMsg);
@@ -82,7 +80,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     virtual CtiLMProgramBaseSPtr replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
@@ -99,32 +97,32 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     // Static Members
 
     // Possible run statuses
-    static const string NullRunStatus;
-    static const string ScheduledRunStatus;
-    static const string NotifiedRunStatus;
-    static const string CanceledRunStatus;
-    static const string ActiveRunStatus;
-    static const string StoppedEarlyRunStatus;
-    static const string CompletedRunStatus;
+    static const std::string NullRunStatus;
+    static const std::string ScheduledRunStatus;
+    static const std::string NotifiedRunStatus;
+    static const std::string CanceledRunStatus;
+    static const std::string ActiveRunStatus;
+    static const std::string StoppedEarlyRunStatus;
+    static const std::string CompletedRunStatus;
 
 private:
 
     LONG _minnotifytime;
-    string _heading;
-    string _messageheader;
-    string _messagefooter;
+    std::string _heading;
+    std::string _messageheader;
+    std::string _messagefooter;
     LONG _acktimelimit;
-    string _canceledmsg;
-    string _stoppedearlymsg;
+    std::string _canceledmsg;
+    std::string _stoppedearlymsg;
     LONG _curtailreferenceid;
     CtiTime _actiondatetime;
     CtiTime _notificationdatetime;
     CtiTime _curtailmentstarttime;
     CtiTime _curtailmentstoptime;
-    string _runstatus;
-    string _additionalinfo;
+    std::string _runstatus;
+    std::string _additionalinfo;
 
-    vector<CtiLMCurtailCustomer*> _lmprogramcurtailmentcustomers;
+    std::vector<CtiLMCurtailCustomer*> _lmprogramcurtailmentcustomers;
 
     void restore(Cti::RowReader &rdr);
 };
@@ -132,7 +130,7 @@ private:
 #if VSLICK_TAG_WORKAROUND
 typedef CtiLMProgramCurtailment * CtiLMProgramCurtailmentSPtr;
 #else
-typedef shared_ptr< CtiLMProgramCurtailment > CtiLMProgramCurtailmentSPtr;
+typedef boost::shared_ptr< CtiLMProgramCurtailment > CtiLMProgramCurtailmentSPtr;
 #endif
 
 #endif

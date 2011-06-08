@@ -5,6 +5,8 @@
 #include "millisecond_timer.h"
 #include "portglob.h"
 
+using std::endl;
+
 namespace Cti {
 namespace Porter {
 

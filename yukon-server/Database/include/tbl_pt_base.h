@@ -1,24 +1,7 @@
 
 #pragma warning( disable : 4786)
-#ifndef __TBL_PT_BASE_H__
-#define __TBL_PT_BASE_H__
+#pragma once
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_base
-*
-* Class:  CtiTablePointBase
-* Date:   8/14/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_base.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/09/28 15:43:05 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "row_reader.h"
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -41,10 +24,9 @@ class IM_EX_CTIYUKONDB CtiTablePointBase : public CtiMemDBObject
 protected:
 
    LONG              _pointID;          // ID of the point, system unique
-   string         _name;             // _name of the point
+   std::string       _name;             // _name of the point
    CtiPointType_t    _type;             // Point _type
    LONG              _paObjectID;         // 9/14/2001
-   //string         _logicalGroup;     // Used primarily for reporting.
    LONG              _stateGroupID;      // ID of the State _name entry which applies to this point
    INT               _pointOffset;
    INT               _archiveType;      // What type of archival do I use?
@@ -73,7 +55,7 @@ public:
 
    CtiTablePointBase& operator=(const CtiTablePointBase& aRef);
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    void DecodeDatabaseReader(Cti::RowReader &rdr);
    void dump();
@@ -114,11 +96,8 @@ public:
    CtiTablePointBase& resetArchivePending(BOOL b = 0);
    BOOL isArchivePending() const;
 
-   string getName() const;
-   CtiTablePointBase& setName(string str);
-
-   //string getLogicalGroup() const;
-   //CtiTablePointBase& setLogicalGroup(string str);
+   std::string getName() const;
+   CtiTablePointBase& setName(std::string str);
 
    CtiPointType_t getType() const;
    CtiTablePointBase& setType(CtiPointType_t t);
@@ -140,4 +119,3 @@ public:
    static const int MASK_POINT_BASE_TAGS;
 
 };
-#endif // #ifndef __TBL_PT_BASE_H__

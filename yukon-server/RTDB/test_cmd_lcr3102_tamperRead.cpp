@@ -9,6 +9,7 @@
 
 using Cti::Devices::Commands::Lcr3102TamperReadCommand;
 using Cti::Devices::Commands::DlcCommand;
+using std::string;
 
 struct expected_pointdata
 {

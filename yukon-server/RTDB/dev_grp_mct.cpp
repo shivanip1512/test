@@ -20,6 +20,9 @@
 #include "numstr.h"
 #include "prot_emetcon.h"
 
+using std::string;
+using std::endl;
+using std::list;
 using Cti::Protocols::EmetconProtocol;
 
 

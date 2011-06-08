@@ -24,9 +24,9 @@ using boost::shared_ptr;
 
 #include "ctistring.h"
 
-typedef set<long>           DisableList;
-typedef set<long>::_Pairib  DisableListPair;
-typedef set<long>::iterator DisableListIterator;
+typedef std::set<long>           DisableList;
+typedef std::set<long>::_Pairib  DisableListPair;
+typedef std::set<long>::iterator DisableListIterator;
 
 class CtiDisabledEntry
 {

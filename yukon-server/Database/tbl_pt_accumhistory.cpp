@@ -5,6 +5,8 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::string;
+
 CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(LONG pid,
                                                                  ULONG prevpulsecount,
                                                                  ULONG pulsecount) :

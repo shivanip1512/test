@@ -36,12 +36,10 @@
 #include "types.h"
 #include "logger.h"
 
-using std::set;
-
 class IM_EX_CTIYUKONDB CtiTableDeviceWindow : public CtiMemDBObject
 {
 public:
-    typedef set< int > CtiWindowSet_t;
+    typedef std::set< int > CtiWindowSet_t;
 protected:
 
    LONG        _ID;
@@ -88,14 +86,14 @@ public:
 
     LONG calculateClose(LONG aOpen, LONG aDuration) const;
 
-   static string getSQLCoreStatement();
-   static string addIDSQLClause(const Cti::Database::id_set &paoids);
+   static std::string getSQLCoreStatement();
+   static std::string addIDSQLClause(const Cti::Database::id_set &paoids);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
 
-   static string getTableName();
+   static std::string getTableName();
 
    bool addSignaledRateActive(int rate) const;
    bool addSignaledRateSent(int rate) const;

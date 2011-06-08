@@ -19,6 +19,8 @@
 #include "resolvers.h"
 
 using std::transform;
+using std::string;
+using std::endl;
 
 CtiTableDeviceBase::CtiTableDeviceBase() :
     _alarmInhibit(false),

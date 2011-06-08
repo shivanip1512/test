@@ -24,9 +24,6 @@
 #include <iostream>
 #include <string>
 
-using std::string;
-
-
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include "ctitime.h"
@@ -53,12 +50,12 @@ class IM_EX_MSG CtiMessage : public RWCollectable
 {
 protected:
 
-   CtiTime  MessageTime;         // set to current during construction.
-   INT      MessagePriority;
-   int      _soe;             // An ID to group events.. Default to zero if not used
-   string   _usr;
-   int      _token;
-   string   _src;
+   CtiTime      MessageTime;         // set to current during construction.
+   INT          MessagePriority;
+   int          _soe;             // An ID to group events.. Default to zero if not used
+   std::string  _usr;
+   int          _token;
+   std::string  _src;
 
    /*
     *  Allows a message to mark its return path.. This is a bread crumb.
@@ -91,14 +88,14 @@ public:
 
    CtiTime getMessageTime() const;
    CtiMessage&   setMessageTime(const CtiTime &mTime);
-   const string& getUser() const;
-   CtiMessage&   setUser(const string& usr);
+   const std::string& getUser() const;
+   CtiMessage&   setUser(const std::string& usr);
 
    int getToken() const;
    CtiMessage& setToken(const int& tok);
 
-   const string& getSource() const;
-   CtiMessage&   setSource(const string& src);
+   const std::string& getSource() const;
+   CtiMessage&   setSource(const std::string& src);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
@@ -111,7 +108,7 @@ public:
    virtual void PreInsert();
 
    virtual void dump() const;
-   string typeString() const;
+   std::string typeString() const;
 
    virtual bool isValid();
 };

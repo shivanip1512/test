@@ -100,28 +100,28 @@ public:
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
-    virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const;
-    virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList ();
+    virtual std::vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const;
+    virtual std::vector< CtiFDR_LodeStarInfoTable > & getFileInfoList ();
 
     //virtual CtiFDR_EnhancedLodeStar& setFileInfoList  (CtiFDR_EnhancedLodeStar &aList);
     //virtual CtiFDR_EnhancedLodeStar& setFileInfoList (vector< CtiFDR_LodeStarInfoTable > &aList);
 
-    virtual string getCustomerIdentifier(void);
+    virtual std::string getCustomerIdentifier(void);
     virtual CtiTime    getlodeStarStartTime(void);
     virtual CtiTime    getlodeStarStopTime(void);
     virtual long       getlodeStarSecsPerInterval(void);
     virtual long       getlodeStarPointId(void);
     virtual void       reinitialize(void);
-    virtual bool decodeFirstHeaderRecord(string& aLine, int fileIndex);
-    virtual bool decodeSecondHeaderRecord(string& aLine);
-    virtual bool decodeThirdHeaderRecord(string& aLine);
-    virtual bool decodeFourthHeaderRecord(string& aLine);
-    virtual bool decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg);
+    virtual bool decodeFirstHeaderRecord(std::string& aLine, int fileIndex);
+    virtual bool decodeSecondHeaderRecord(std::string& aLine);
+    virtual bool decodeThirdHeaderRecord(std::string& aLine);
+    virtual bool decodeFourthHeaderRecord(std::string& aLine);
+    virtual bool decodeDataRecord(std::string& aLine, CtiMultiMsg* multiDispatchMsg);
     virtual const CHAR * getKeyInterval();
     virtual const CHAR * getKeyFilename();
     virtual const CHAR * getKeyImportDrivePath();
-    virtual const string& getFileImportBaseDrivePath();
-    virtual const string& setFileImportBaseDrivePath(string importBase);
+    virtual const std::string& getFileImportBaseDrivePath();
+    virtual const std::string& setFileImportBaseDrivePath(std::string importBase);
     virtual const CHAR * getKeyDBReloadRate();
     virtual const CHAR * getKeyQueueFlushRate();
     virtual const CHAR * getKeyDeleteFile();
@@ -129,7 +129,7 @@ public:
     virtual int getSubtractValue();
     virtual int getExpectedNumOfEntries();
 
-    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
+    CtiTime ForeignToYukonTime (std::string aTime, CHAR aDstFlag);
 
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
@@ -141,13 +141,13 @@ public:
 private:
 
     //information obtained from the first header record
-    string  _lsCustomerIdentifier;
+    std::string  _lsCustomerIdentifier;
     long        _pointId;   //determined from the Customer Identifier
     long        _lsChannel;
     CtiTime     _lsStartTime;
     CtiTime     _lsStopTime;
-    string  _lsDSTFlag;
-    string  _lsInvalidRecordFlag;
+    std::string  _lsDSTFlag;
+    std::string  _lsInvalidRecordFlag;
     double  _lsMeterStartReading;
     double  _lsMeterStopReading;
     double  _lsMeterMultiplier;
@@ -160,15 +160,15 @@ private:
     long    _lsTimeZone;
     double  _lsPopulation;
     double  _lsWeight;
-    string _lsDescriptor;
+    std::string _lsDescriptor;
     CtiTime     _lsTimeStamp;
-    string  _lsOrigin;
+    std::string  _lsOrigin;
 
-    string _fileImportBaseDrivePath;
+    std::string _fileImportBaseDrivePath;
 
     int _lsExpectedNumEntries;
 
-    vector <CtiFDR_LodeStarInfoTable> _fileInfoList;
+    std::vector <CtiFDR_LodeStarInfoTable> _fileInfoList;
 
 };
 

@@ -5,6 +5,9 @@
 #include "tbl_dv_scandata.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceScanData::CtiTableDeviceScanData(LONG did) :
 lastFreezeNumber(0),
 prevFreezeNumber(0),

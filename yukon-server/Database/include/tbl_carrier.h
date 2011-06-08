@@ -36,7 +36,7 @@ public:
    LONG getDeviceID() const;
    CtiTableDeviceCarrier& setDeviceID( const LONG did );
 
-   static string getTableName();
+   static std::string getTableName();
 
    bool isInitialized();
 

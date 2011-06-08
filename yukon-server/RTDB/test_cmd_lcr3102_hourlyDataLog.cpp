@@ -9,6 +9,7 @@
 
 using Cti::Devices::Commands::Lcr3102HourlyDataLogCommand;
 using Cti::Devices::Commands::DlcCommand;
+using std::string;
 
 struct test_Lcr3102HourlyDataLogCommand : Lcr3102HourlyDataLogCommand
 {

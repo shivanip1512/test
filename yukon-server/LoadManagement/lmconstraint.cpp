@@ -18,6 +18,8 @@
 extern ULONG _LM_DEBUG;
 
 using std::vector;
+using std::string;
+using std::endl;
 
 CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901)
 : _lm_program(lm_program), _seconds_from_1901(seconds_from_1901)

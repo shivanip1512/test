@@ -31,9 +31,9 @@ protected:
     long        _pointId;           // This is a pointid which may figure into the exclusion question.
     double      _value;             // This is a value which may relate to the point, or to the functionid.
     long        _functionId;        // function id represents the type of exclusion that is defined by this data set.
-    string   _funcName;          // a string which can represent a dynamicly loaded function (future)
+    std::string _funcName;          // a string which can represent a dynamicly loaded function (future)
     long        _funcRequeue;       // This value indicates the requeue behaviour to execute if excluded.
-    string   _funcParams;        // a string which can represent arguments to a function (to be parsed by that function)
+    std::string _funcParams;        // a string which can represent arguments to a function (to be parsed by that function)
 
     // This is the componentry of the _funcParams, i.f.f. the function is a Time Method
     int         _cycleTime;
@@ -51,7 +51,7 @@ public:
                          long pointid = 0,
                          double value = 0.0,
                          long function = ExFunctionInvalid,
-                         string str = string(),
+                         std::string str = std::string(),
                          long funcrequeue = 0);
 
     CtiTablePaoExclusion(const CtiTablePaoExclusion& aRef);
@@ -76,18 +76,18 @@ public:
     long getFunctionId() const;
     CtiTablePaoExclusion& setFunctionId(long val);
 
-    string getFunctionName() const;
-    CtiTablePaoExclusion& setFunctionName(string val);
+    std::string getFunctionName() const;
+    CtiTablePaoExclusion& setFunctionName(std::string val);
 
     long getFunctionRequeue() const;
     CtiTablePaoExclusion& setFunctionRequeue(long val);
 
-    string getFunctionParams() const;
-    CtiTablePaoExclusion& setFunctionParams(string val);
+    std::string getFunctionParams() const;
+    CtiTablePaoExclusion& setFunctionParams(std::string val);
 
-    static string getSQLCoreStatement(long id = 0);
+    static std::string getSQLCoreStatement(long id = 0);
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

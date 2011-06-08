@@ -18,7 +18,6 @@
 #include "ion_value_variable_program.h"
 
 
-
 CtiIONProgram::CtiIONProgram( ) :
     CtiIONValueVariable(Variable_Program)
 {

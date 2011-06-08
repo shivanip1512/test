@@ -80,7 +80,7 @@ protected:
 
     int _status;        // Modem status.
     int _delay_value;
-    string _match_string;
+    std::string _match_string;
     CHAR_PRINTER _character_printer;
 
 private:

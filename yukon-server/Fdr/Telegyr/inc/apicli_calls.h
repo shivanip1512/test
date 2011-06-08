@@ -1,31 +1,4 @@
-/******************************************************************************
-        Filename: $RCSfile: apicli_calls.h,v $
-        Revision: $Revision: 1.1 $
-        Author:   $Author: eschmit $
-        Date:     $Date: 2002/07/15 14:04:34 $
-*******************************************************************************
-$Log: apicli_calls.h,v $
-Revision 1.1  2002/07/15 14:04:34  eschmit
-Telegyr stuff added
-
-Revision 1.6  2000/12/19 14:44:38  imhoff
-merged changes for new API-UEA functions
-
-Revision 1.5  2000/07/04 08:48:17  imhoff
-changes for new API functions (TG8000_SMR_FI_00038.doc)
-
-Revision 1.4  1999/09/23 12:27:24  imhoff
-add api_add_control_center method ...
-
-*******************************************************************************/
-/*
- * --------------------------------------------------------------
- *   FUNCTION PROTOTYPE DEFINITIONS FOR API CLIENT APPLICATIONS 
- * --------------------------------------------------------------
-*/
-
-#ifndef __APICLI_CALLS
-#define __APICLI_CALLS
+#pragma once
 
 #include "api_call_display.h"
 
@@ -476,4 +449,3 @@ extern int api_call_display (
 		int window_num,      /* 1, 2, ..., 16 */
 		API_NEW_DSP  * display_info );
 
-#endif /* __APICLI_CALLS */

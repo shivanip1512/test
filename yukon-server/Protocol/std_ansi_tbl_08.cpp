@@ -38,6 +38,7 @@
 #include "std_ansi_tbl_08.h"
 #include "logger.h"
 using std::endl;
+using std::string;
 //=========================================================================================================================================
 //We've gotten all the data back from the device and we're going to fill up our table
 //Note: we have to use some of the pieces in this table to fill other pieces in this table..

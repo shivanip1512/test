@@ -27,6 +27,7 @@
 #include "logger.h"
 #include "guard.h"
 
+using std::string;
 
 /** local definitions **/
 

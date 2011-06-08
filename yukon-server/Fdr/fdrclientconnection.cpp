@@ -9,6 +9,9 @@
 #include "fdrclientconnection.h"
 #include "fdrdebuglevel.h"
 
+using std::string;
+using std::endl;
+
 CtiFDRClientConnection::CtiFDRClientConnection(SOCKADDR_IN aAddr, CtiFDRSocketLayer * aParent)
 :    Inherited(aParent,aAddr)
 {

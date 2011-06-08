@@ -32,6 +32,9 @@
 #include "guard.h"
 #include "utility.h"
 
+using std::string;
+using std::endl;
+
 /** local definitions **/
 const CHAR * CtiFDRManager::TBLNAME_FDRTRANSLATION =     "FDRTranslation";
 const CHAR * CtiFDRManager::COLNAME_FDRTRANSLATION =     "TRANSLATION";

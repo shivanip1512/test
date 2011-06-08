@@ -16,18 +16,18 @@ class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject
 {
 protected:
 
-    LONG _pointID;
-    UINT _alarmCondition;       // 0-31     Telling us which alarm this represents  Directly tied to point type & found in class CtiTablePointAlarming
-    UINT _categoryID;           // 0-255    Indicates AlarmCategory.AlarmCategoryID and ties over to Notification Group!
-    CtiTime _alarmTime;    // DateTime of the alarm.
-    string _action;
-    string _description;
+    LONG        _pointID;
+    UINT        _alarmCondition;       // 0-31     Telling us which alarm this represents  Directly tied to point type & found in class CtiTablePointAlarming
+    UINT        _categoryID;           // 0-255    Indicates AlarmCategory.AlarmCategoryID and ties over to Notification Group!
+    CtiTime     _alarmTime;            // DateTime of the alarm.
+    std::string _action;
+    std::string _description;
     UINT _tags;                 // Tags indicating ONLY Active (0x8000000) and/or Acknowledged (0x4000000) for this CONDITION
     UINT _logID;                // SystemLog row in where this alarm was written
 
-    INT         _soe;
-    INT         _logType;
-    string   _user;
+    INT          _soe;
+    INT          _logType;
+    std::string  _user;
 
 public:
 
@@ -38,14 +38,14 @@ public:
     CtiTableDynamicPointAlarming& operator=(const CtiTableDynamicPointAlarming& aRef);
     virtual int operator==(const CtiTableDynamicPointAlarming&) const;
 
-    static string getTableName();
+    static std::string getTableName();
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
 
     static bool Delete(long pointid, int alarm_condition);
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
@@ -63,11 +63,11 @@ public:
     CtiTime getAlarmDBTime() const;
     CtiTableDynamicPointAlarming& setAlarmDBTime(const CtiTime &rwt);
 
-    string         getAction() const;
-    CtiTableDynamicPointAlarming&   setAction(const string &str);
+    std::string         getAction() const;
+    CtiTableDynamicPointAlarming&   setAction(const std::string &str);
 
-    string         getDescription() const;
-    CtiTableDynamicPointAlarming&   setDescription(const string &str);
+    std::string         getDescription() const;
+    CtiTableDynamicPointAlarming&   setDescription(const std::string &str);
 
     UINT getTags() const;
     UINT setTags(UINT tags);
@@ -82,8 +82,8 @@ public:
     INT getLogType() const;
     CtiTableDynamicPointAlarming& setLogType(const INT &i);
 
-    string getUser() const;
-    CtiTableDynamicPointAlarming& setUser(const string &str);
+    std::string getUser() const;
+    CtiTableDynamicPointAlarming& setUser(const std::string &str);
 
     virtual void dump();
 };

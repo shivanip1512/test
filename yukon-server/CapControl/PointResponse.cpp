@@ -6,6 +6,8 @@
 
 #include <math.h>
 
+using std::endl;
+
 extern unsigned long _CC_DEBUG;
 
 namespace Cti {

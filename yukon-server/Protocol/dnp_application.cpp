@@ -7,6 +7,9 @@
 #include "logger.h"
 #include "numstr.h"
 
+using std::endl;
+using std::string;
+
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {

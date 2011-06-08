@@ -8,6 +8,8 @@
 #include "ctidate.h"
 #include "debug_timer.h"
 
+using std::endl;
+
 #define STATISTICS_REPORT_ON_MSGFLAGS  0x00000001
 #define STATISTICS_COMPENSATED_RESULTS 0x00000010
 #define STATISTICS_REPORT_ON_RESULTS   0x00000020

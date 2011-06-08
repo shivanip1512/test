@@ -34,6 +34,9 @@
 
 #include "utility.h"
 
+using std::string;
+using std::endl;
+using std::list;
 
 #define DEBUG_PRINT_DECODE 0
 

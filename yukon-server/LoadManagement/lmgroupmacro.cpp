@@ -18,6 +18,8 @@
 #include "logger.h"
 #include "loadmanager.h"
 
+using std::vector;
+
 extern ULONG _LM_DEBUG;
 
 

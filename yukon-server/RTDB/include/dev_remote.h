@@ -179,9 +179,9 @@ public:
         return val;
     }
 
-    virtual string getSQLCoreStatement() const
+    virtual std::string getSQLCoreStatement() const
     {
-        static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+        static const std::string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                          "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
                                          "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
                                          "DUS.baudrate "
@@ -201,7 +201,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         Direct.DecodeDatabaseReader(rdr);
@@ -213,7 +213,7 @@ public:
 
         if(!rdr["phonenumber"].isNull())
         {
-            string tempstr;
+            std::string tempstr;
             rdr["phonenumber"] >> tempstr;
 
             if(tempstr.length() > 1)
@@ -231,7 +231,7 @@ public:
                 if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;
+                    dout << CtiTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << std::endl;
                 }
             }
         }
@@ -248,7 +248,7 @@ public:
 
         if(pDialup)
         {
-            string num;
+            std::string num;
             CHAR ch[2] = {'\0', '\0'};
 
             for(int i = 0; i < pDialup->getPhoneNumber().length(); i++ )
@@ -256,7 +256,7 @@ public:
                 ch[0] = pDialup->getPhoneNumber()[(size_t)i];
 
                 if( ::isdigit(ch[0]) )
-                    num += string(ch);
+                    num += std::string(ch);
             }
 
             // Now get a standard CRC
@@ -270,9 +270,9 @@ public:
         return CSum;
     }
 
-    virtual string getPhoneNumber() const
+    virtual std::string getPhoneNumber() const
     {
-        string   rStr;
+        std::string   rStr;
         if(pDialup)
         {
             rStr = pDialup->getPhoneNumber();

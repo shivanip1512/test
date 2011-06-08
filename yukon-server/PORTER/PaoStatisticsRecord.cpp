@@ -7,6 +7,8 @@
 
 #include "dsm2err.h"  //  for GetErrorType, please fix me
 
+using std::endl;
+
 namespace Cti {
 namespace Porter {
 namespace Statistics {

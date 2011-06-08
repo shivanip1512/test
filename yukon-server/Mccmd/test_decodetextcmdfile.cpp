@@ -10,7 +10,8 @@
 #include <boost/test/unit_test.hpp>
 
 using boost::unit_test_framework::test_suite;
-
+using std::string;
+using std::endl;
 
 BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine)
 {

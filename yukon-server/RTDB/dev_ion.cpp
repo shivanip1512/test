@@ -42,6 +42,9 @@
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
+using std::string;
+using std::endl;
+using std::list;
 
 CtiDeviceION::CtiDeviceION() :
     _lastLPTime(0),

@@ -33,7 +33,7 @@ public:
     LiveDataTypes::Base    *liveDataType;
   };
 
-  typedef multimap<LDAddress, PointInfo> PointMap;
+  typedef std::multimap<LDAddress, PointInfo> PointMap;
 
 protected:
   // callback classes
@@ -62,18 +62,18 @@ public:
 
 protected:
 
-  string    _serverIpAddress;
+  std::string    _serverIpAddress;
   unsigned short _serverPort;
 
   struct PollInfo {
-    vector<LDAddress> addressList;
-    vector<PointInfo> infoList;
-    vector<unsigned long> lengthList;
+    std::vector<LDAddress> addressList;
+    std::vector<PointInfo> infoList;
+    std::vector<unsigned long> lengthList;
     time_t nextUpdate;
     unsigned int totalLength;
   };
 
-  typedef map<unsigned int, PollInfo> PollDataList;
+  typedef std::map<unsigned int, PollInfo> PollDataList;
   PollDataList _pollData;
 
   void startup();

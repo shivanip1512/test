@@ -8,6 +8,10 @@
 #include "dllyukon.h"
 #include "cparms.h"
 
+using std::string;
+using std::endl;
+using std::list;
+using std::queue;
 
 CtiDeviceLMI::CtiDeviceLMI() :
     _lastPreload(0UL)

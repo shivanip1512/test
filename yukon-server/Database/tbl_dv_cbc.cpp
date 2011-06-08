@@ -5,6 +5,9 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceCBC::CtiTableDeviceCBC() :
 _deviceID(-1),
 _serial(0),

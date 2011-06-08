@@ -5,6 +5,8 @@
 #include <SQLAPI.h>
 
 using namespace Cti::Database;
+using std::endl;
+using std::string;
 
 DatabaseConnection::DatabaseConnection()
 {

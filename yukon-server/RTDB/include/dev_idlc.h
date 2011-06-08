@@ -78,7 +78,7 @@ public:
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
 
             if(_trxInfo != NULL)
@@ -122,16 +122,17 @@ public:
         return _idlc.getPostDelay();
     }
 
-    virtual string getSQLCoreStatement() const
+    virtual std::string getSQLCoreStatement() const
     {
-        static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                         "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
-                                         "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
-                                         "DUS.baudrate, IDLC.address, IDLC.postcommwait, IDLC.ccuampusetype "
-                                       "FROM Device DV, DeviceIDLCRemote IDLC, DeviceDirectCommSettings CS, YukonPAObject YP "
-                                         "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
-                                       "WHERE YP.paobjectid = IDLC.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                         "YP.paobjectid = CS.deviceid";
+        static const std::string sqlCore =
+            "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+              "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+              "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+              "DUS.baudrate, IDLC.address, IDLC.postcommwait, IDLC.ccuampusetype "
+            "FROM Device DV, DeviceIDLCRemote IDLC, DeviceDirectCommSettings CS, YukonPAObject YP "
+              "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+            "WHERE YP.paobjectid = IDLC.deviceid AND YP.paobjectid = DV.deviceid AND "
+              "YP.paobjectid = CS.deviceid";
 
         return sqlCore;
     }
@@ -143,7 +144,7 @@ public:
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
         }
 
         _idlc.DecodeDatabaseReader(rdr);
@@ -175,7 +176,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
 
             delete _trxInfo;
@@ -215,12 +216,12 @@ public:
         if(getAddress() > 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << endl;
+            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << std::endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << endl;
+            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << std::endl;
         }
 
         return _trxInfo;

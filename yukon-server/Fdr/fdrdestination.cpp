@@ -9,6 +9,8 @@
 #include "guard.h"
 /** local definitions **/
 
+using std::string;
+
 CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, const string &translation, const string &destination)
 :   iTranslation(translation),
     iDestination(destination),

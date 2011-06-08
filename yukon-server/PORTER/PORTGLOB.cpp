@@ -26,6 +26,8 @@
 #include "porter.h"
 #include "portglob.h"
 
+using std::string;
+
 IM_EX_PORTGLOB HANDLE          hPorterEvents[NUMPORTEREVENTS];
 
 IM_EX_PORTGLOB USHORT          TraceFlag = {FALSE};

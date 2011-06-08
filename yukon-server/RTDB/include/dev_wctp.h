@@ -46,7 +46,7 @@ private:
 
     bool _sendFiller;
 
-    CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.  Used with CPARM: PAGING_BATCH_WINDOW
+    CtiTime  _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.  Used with CPARM: PAGING_BATCH_WINDOW
     int      _pagesPerMinute;        // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
     bool     _pacingReport;
 
@@ -54,14 +54,14 @@ private:
 
 protected:
 
-   queue< CtiVerificationBase * >  _verification_objects;
+   std::queue< CtiVerificationBase * >  _verification_objects;
    UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR                         _pagePrefix;   // Used to fake the WCTPTERM into thining it is a new message (a-d)
    UINT                         _pageLength;
    CHAR*                        _pageBuffer;
    OUTMESS                      *_outMessage;
 
-   string                    _inStr;
+   std::string                  _inStr;
 
    CHAR*                        _outBuffer;     // Use our own buffer because WCTP message could be as long as 1024 bytes
    CHAR*                        _inBuffer;
@@ -98,25 +98,25 @@ public:
    CHAR* getXMLBuffer();
    void  destroyBuffers();
 
-   virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+   virtual INT ExecuteRequest(CtiRequestMsg                 *pReq,
+                              CtiCommandParser              &parse,
+                              OUTMESS                       *&OutMessage,
+                              std::list< CtiMessage* >      &vgList,
+                              std::list< CtiMessage* >      &retList,
+                              std::list< OUTMESS* >         &outList);
 
-   string getDescription(const CtiCommandParser & parse) const;
+   std::string getDescription(const CtiCommandParser & parse) const;
 
-   virtual INT generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
-   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommand(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 
-   INT traceOut(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
+   INT traceOut(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
 
    CtiDeviceWctpTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;
@@ -127,7 +127,7 @@ public:
 
    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
 
-   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
 private:
 

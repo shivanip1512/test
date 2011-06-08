@@ -18,6 +18,8 @@
 #include "logger.h"
 #include "cparms.h"
 
+using std::endl;
+
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {

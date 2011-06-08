@@ -30,6 +30,10 @@
 #include "porter.h"
 #include "cmdparse.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 CtiDeviceGroupRipple::CtiDeviceGroupRipple() :
 _rsvp(0)
 {

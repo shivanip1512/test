@@ -17,6 +17,10 @@
 #include "dev_seriesv.h"
 #include "porter.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 Cti::Protocol::Interface *CtiDeviceSeriesV::getProtocol()
 {
     return (Cti::Protocol::Interface *)&_seriesv;

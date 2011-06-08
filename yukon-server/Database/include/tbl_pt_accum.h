@@ -59,7 +59,7 @@ public:
    DOUBLE getMultiplier() const;
    DOUBLE getDataOffset() const;
    LONG getPointID() const;
-   static string getTableName();
+   static std::string getTableName();
 
    CtiTablePointAccumulator& setMultiplier(DOUBLE d);
    CtiTablePointAccumulator& setDataOffset(DOUBLE d);

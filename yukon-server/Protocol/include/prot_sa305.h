@@ -69,8 +69,6 @@
 #include "dsm2.h"
 #include "pointtypes.h"
 
-using std::vector;
-
 class IM_EX_PROT CtiProtocolSA305
 {
 protected:
@@ -141,7 +139,7 @@ private:
     BYTE _rtcResponse;          // Should the RTC respond to commands?
 
 
-    vector< BYTE > _messageBits;  // Store it as bits.  Not sure if this will cost me in the long run...
+    std::vector< BYTE > _messageBits;  // Store it as bits.  Not sure if this will cost me in the long run...
     int _messageCount;
 
     void addBits(unsigned int src, int num=32);
@@ -168,9 +166,9 @@ private:
 
     static bool _noCRC;
 
-    string _bitStr;
+    std::string _bitStr;
 
-    static string _strategyStr[64];
+    static std::string _strategyStr[64];
 
 public:
 
@@ -261,8 +259,8 @@ public:
     CtiProtocolSA305& setTransmitterType( int trans );
     CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
 
-    string getBitString() const;
-    string  asString() const;
+    std::string getBitString() const;
+    std::string  asString() const;
 
 };
 #endif // #ifndef __PROT_SA305_H__

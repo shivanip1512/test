@@ -20,6 +20,9 @@
 #include "database_connection.h"
 #include "database_reader.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceScanRate::CtiTableDeviceScanRate() :
 _deviceID(-1),
 _scanGroup(0),

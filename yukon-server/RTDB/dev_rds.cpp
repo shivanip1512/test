@@ -3,6 +3,10 @@
 #include "tbl_static_paoinfo.h"
 #include "ctistring.h"
 
+using std::string;
+using std::endl;
+using std::list;
+
 namespace Cti       {
 namespace Devices    {
 

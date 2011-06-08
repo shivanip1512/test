@@ -134,6 +134,9 @@
 #include "guard.h"
 #include "fdrasciiimportbase.h"
 
+using std::string;
+using std::endl;
+using std::vector;
 
 // Constructors, Destructor, and Operators
 CtiFDRAsciiImportBase::CtiFDRAsciiImportBase(string &aInterface)

@@ -28,6 +28,9 @@
 #include "numstr.h"
 #include "ctistring.h"
 
+using std::endl;
+using std::list;
+
 CtiRouteExpresscom::CtiRouteExpresscom() {}
 
 CtiRouteExpresscom::CtiRouteExpresscom(const CtiRouteExpresscom& aRef)

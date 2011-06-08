@@ -145,13 +145,13 @@ private:
 
     long _lastConfigRequest;
 
-    void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
-    void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
-    int sendDNPConfigMessages(int startMCTID,  OutMessageList &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
+    void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, std::string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
+    void getBytesFromString(std::string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
+    int sendDNPConfigMessages(int startMCTID,  OutMessageList &outList, OUTMESS *&OutMessage, std::string &dataA, std::string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
     int setupRatioBytesBasedOnMeterType(int channel, double multiplier, double peakKwResolution, double lastIntervalDemandResolution, double lpResolution, unsigned int &ratio, unsigned int &kRatio);
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
-    string describeChannel(unsigned char channel_config) const;
+    std::string describeChannel(unsigned char channel_config) const;
 
     enum IED_Types
     {
@@ -166,10 +166,10 @@ private:
         IED_Type_GE_kV2c  = 0x08,
     };
 
-    static IED_Types resolveIEDType(const string &iedType);
-    static string    resolveIEDName(int bits);
-    static string    resolveDNPStatus(int status);
-    static long      resolveScheduleName(const string & scheduleName);
+    static IED_Types resolveIEDType(const std::string &iedType);
+    static std::string    resolveIEDName(int bits);
+    static std::string    resolveDNPStatus(int status);
+    static long      resolveScheduleName(const std::string & scheduleName);
 
 protected:
 
@@ -467,7 +467,7 @@ protected:
     INT decodeGetConfigModel        ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigIedDnpAddress( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    int decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg);
+    int decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const std::string &demand_name, const unsigned consumption_offset, const std::string &consumption_name, CtiReturnMsg *ReturnMsg);
 
     bool isPrecannedTableCurrent() const;
 

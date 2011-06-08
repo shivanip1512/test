@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+using std::string;
+
 RWDEFINE_COLLECTABLE( ConstraintViolation, CTILMCONSTRAINTVIOLATION_ID )
 
 ConstraintViolation::ConstraintViolation(CV_Type_Double error, double value) :

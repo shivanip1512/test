@@ -1,47 +1,6 @@
+#pragma once
 #pragma warning( disable : 4786)
-#ifndef __ANSI_BILLING_TABLE_H__
-#define __ANSI_BILLING_TABLE_H__
 
-/*---------------------------------------------------------------------------------*
-*
-* File:   ansi_billing_table
-*
-* Class:
-* Date:   10/28/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_billing_table..h-arc  $
-* REVISION     :  $Revision: 1.3.50.1 $
-* DATE         :  $Date: 2008/11/17 23:06:33 $
-*    History: 
-      $Log: ansi_billing_table.h,v $
-      Revision 1.3.50.1  2008/11/17 23:06:33  jmarks
-      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-      **************************************************************************************************************
-      Removed "CTITYPES.H" from every file in the project, so far there were no
-      known side-effects or even compile errors, however, they could still happen.
-
-      Also, made many other changes for compiling.
-
-      The project now apparently compiles until reching the database
-      subdirectory, however, I have seen cases where there is apparent
-      regressing and need to re-work things.
-
-      However, enough changes have happened, that I felt it was good to
-      committ.
-      **************************************************************************************************************
-      Possibly other misc. changes since last commit.
-      *******************************************************
-
-      Revision 1.3  2003/04/25 15:13:45  dsutton
-      Update of the base protocol pieces taking into account the manufacturer
-      tables, etc.  New starting point
-
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*----------------------------------------------------------------------------------*/
 #include "dlldefs.h"
 #include "dsm2.h"
 
@@ -138,6 +97,5 @@ public:
    CtiAnsiBillingTable& operator=(const CtiAnsiBillingTable& aRef);
 };
 
-#endif // #ifndef __ANSI_BILLING_TABLE_H__
 
 

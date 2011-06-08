@@ -6,6 +6,8 @@
 
 #include "port_udp.h"
 
+using std::string;
+
 namespace Cti {
 
 //These need to change if the database change. Match the client

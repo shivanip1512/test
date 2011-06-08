@@ -7,6 +7,8 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::string;
+
 CtiTblDeviceReadJobLog::CtiTblDeviceReadJobLog( long jobLogId, long scheduleId, CtiTime& start, CtiTime& stop) :
 _jobLogId(jobLogId),
 _scheduleId(scheduleId),

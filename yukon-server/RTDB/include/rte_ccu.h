@@ -44,35 +44,35 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg        *pReq,
                               CtiCommandParser     &parse,
                               OUTMESS             *&OutMessage,
-                              list< CtiMessage* >  &vgList,
-                              list< CtiMessage* >  &retList,
-                              list< OUTMESS* >     &outList);
+                              std::list< CtiMessage* >  &vgList,
+                              std::list< CtiMessage* >  &retList,
+                              std::list< OUTMESS* >     &outList);
 
    INT         assembleVersacomRequest  (CtiRequestMsg        *pReq,
                                          CtiCommandParser     &parse,
                                          OUTMESS              *OutMessage,
-                                         list< CtiMessage* >  &vgList,
-                                         list< CtiMessage* >  &retList,
-                                         list< OUTMESS* >     &outList);
+                                         std::list< CtiMessage* >  &vgList,
+                                         std::list< CtiMessage* >  &retList,
+                                         std::list< OUTMESS* >     &outList);
 
    INT         assembleExpresscomRequest(CtiRequestMsg        *pReq,
                                          CtiCommandParser     &parse,
                                          OUTMESS              *OutMessage,
-                                         list< CtiMessage* >  &vgList,
-                                         list< CtiMessage* >  &retList,
-                                         list< OUTMESS* >     &outList);
+                                         std::list< CtiMessage* >  &vgList,
+                                         std::list< CtiMessage* >  &retList,
+                                         std::list< OUTMESS* >     &outList);
 
    INT         assembleDLCRequest       (CtiCommandParser     &parse,
                                          OUTMESS             *&OutMessage,
-                                         list< CtiMessage* >  &vgList,
-                                         list< CtiMessage* >  &retList,
-                                         list< OUTMESS* >     &outList);
+                                         std::list< CtiMessage* >  &vgList,
+                                         std::list< CtiMessage* >  &retList,
+                                         std::list< OUTMESS* >     &outList);
 
    virtual INT  getBus() const;
    virtual INT  getCCUFixBits() const;
    virtual INT  getCCUVarBits() const;
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void addRepeater(const CtiTableRepeaterRoute &Rpt);

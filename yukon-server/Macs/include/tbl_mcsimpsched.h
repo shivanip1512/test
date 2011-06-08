@@ -44,22 +44,22 @@ class CtiTableMCSimpleSchedule
 public:
     CtiTableMCSimpleSchedule(   long schedule_id = 0,
                                 long target_id = 0,
-                                const string& start_command = "",
-                                const string& stop_command = "",
+                                const std::string& start_command = "",
+                                const std::string& stop_command = "",
                                 long repeat_interval = 0 );
 
     virtual ~CtiTableMCSimpleSchedule();
 
     long getScheduleID() const;
     long getTargetPaoId() const;
-    const string& getStartCommand() const;
-    const string& getStopCommand() const;
+    const std::string& getStartCommand() const;
+    const std::string& getStopCommand() const;
     long getRepeatInterval() const;
 
     CtiTableMCSimpleSchedule& setScheduleID(long schedule_id);
     CtiTableMCSimpleSchedule& setTargetPaoID(const int target_id);
-    CtiTableMCSimpleSchedule& setStartCommand(const string& start_command);
-    CtiTableMCSimpleSchedule& setStopCommand(const string& stop_command);
+    CtiTableMCSimpleSchedule& setStartCommand(const std::string& start_command);
+    CtiTableMCSimpleSchedule& setStopCommand(const std::string& stop_command);
     CtiTableMCSimpleSchedule& setRepeatInterval(long repeat_interval);
 
     bool DecodeDatabaseReader(Cti::RowReader &rdr);
@@ -77,8 +77,8 @@ private:
 
     long    _schedule_id;
     long    _target_id;
-    string  _start_command;
-    string  _stop_command;
+    std::string  _start_command;
+    std::string  _stop_command;
     long    _repeat_interval;
 };
 #endif

@@ -32,7 +32,7 @@ class IM_EX_CTIYUKONDB CtiTableTag : public CtiMemDBObject
 protected:
 
     int             _tagId;
-    string       _tagName;
+    std::string       _tagName;
     int             _tagLevel;
     bool            _inhibit;
     int             _colorId;
@@ -51,14 +51,14 @@ public:
 
     virtual int operator==(const CtiTableTag& aRef) const;
 
-    static string getTableName();
+    static std::string getTableName();
 
-    static string getSQLCoreStatement();
+    static std::string getSQLCoreStatement();
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     int getTagId() const;
     bool getInhibit() const;
-    string getTagName() const;
+    std::string getTagName() const;
 };
 #endif // #ifndef __TBL_TAG_H__

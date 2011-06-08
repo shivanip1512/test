@@ -24,15 +24,7 @@
 #include <string>
 #include <queue>
 
-
 #include "boost_time.h"
-using std::string;
-using std::queue;
-using std::map;
-using std::binary_function;
-using std::deque;
-using std::pair;
-using std::make_pair;
 
 //  the verification objects inherit from VerificationBase so that they can both be submitted to the same thread queue
 class IM_EX_CTIBASE CtiVerificationBase
@@ -51,24 +43,24 @@ private:
      */
     Protocol _protocol;
     Type     _type;
-    string   _code;
-    string   _command;
+    std::string   _code;
+    std::string   _command;
 
     CtiVerificationBase(const CtiVerificationBase& aRef);
 
 protected:
 
-    const ptime _birth;
+    const boost::posix_time::ptime _birth;
 
-    CtiVerificationBase(Type t, Protocol p, const string &command, const string &code);
+    CtiVerificationBase(Type t, Protocol p, const std::string &command, const std::string &code);
 
-    static const string String_CodeStatus_Sent;
-    static const string String_CodeStatus_Success;
-    static const string String_CodeStatus_Timeout;
-    static const string String_CodeStatus_Retry;
-    static const string String_CodeStatus_Fail;
-    static const string String_CodeStatus_Unexpected;
-    static const string String_CodeStatus_Invalid;
+    static const std::string String_CodeStatus_Sent;
+    static const std::string String_CodeStatus_Success;
+    static const std::string String_CodeStatus_Timeout;
+    static const std::string String_CodeStatus_Retry;
+    static const std::string String_CodeStatus_Fail;
+    static const std::string String_CodeStatus_Unexpected;
+    static const std::string String_CodeStatus_Invalid;
 
 public:
 
@@ -103,12 +95,12 @@ public:
         CodeStatus_Unexpected,
     };
 
-    Type          getType()     const   {  return _type;      };
-    Protocol      getProtocol() const   {  return _protocol;  };
-    const string &getCode()     const   {  return _code;      };
-    const string &getCommand()  const   {  return _command;   };
+    Type getType()                   const  {  return _type;      };
+    Protocol getProtocol()           const  {  return _protocol;  };
+    const std::string &getCode()     const  {  return _code;      };
+    const std::string &getCommand()  const  {  return _command;   };
 
-    static const string &getCodeStatusName(CodeStatus cs);
+    static const std::string &getCodeStatusName(CodeStatus cs);
 
     bool operator<(const CtiVerificationBase &rhs) const;
 };
@@ -119,18 +111,18 @@ class IM_EX_CTIBASE CtiVerificationReport : public CtiVerificationBase
 private:
 
     long  _receiver_id;
-    ptime _receipt_time;
+    boost::posix_time::ptime _receipt_time;
 
     CtiVerificationReport( const CtiVerificationReport& aRef );
 
 protected:
 public:
 
-    CtiVerificationReport(Protocol p, long id, const string &code, ptime time, const string &command=string("-"));
+    CtiVerificationReport(Protocol p, long id, const std::string &code, boost::posix_time::ptime time, const std::string &command=std::string("-"));
     virtual ~CtiVerificationReport();
 
-    long  getReceiverID()   const    {  return _receiver_id;   };
-    ptime getReceiptTime()  const    {  return _receipt_time;  };
+    long  getReceiverID()   const                       {  return _receiver_id;   };
+    boost::posix_time::ptime getReceiptTime()  const    {  return _receipt_time;  };
 };
 
 
@@ -138,16 +130,16 @@ class IM_EX_CTIBASE CtiVerificationWork : public CtiVerificationBase
 {
 private:
 
-    typedef map< long, bool >  expectation_map;
-    typedef map< long, ptime > receipt_map;
+    typedef std::map< long, bool >                     expectation_map;
+    typedef std::map< long, boost::posix_time::ptime > receipt_map;
 
     long _transmitter_id;
     bool _retry;
 
-    ptime::time_duration_type _patience;
-    ptime                     _expiration;
-    const CtiOutMessage _retry_om;
-    long                _sequence;
+    boost::posix_time::ptime::time_duration_type _patience;
+    boost::posix_time::ptime                     _expiration;
+    const CtiOutMessage                          _retry_om;
+    long                                         _sequence;
 
     CodeStatus _codeDisposition;
 
@@ -159,7 +151,7 @@ private:
 protected:
 public:
 
-    struct earlier : binary_function<const CtiVerificationWork *, const CtiVerificationWork *, bool>
+    struct earlier : std::binary_function <const CtiVerificationWork *, const CtiVerificationWork *, bool>
     {
         bool operator()(const CtiVerificationWork *lhs, const CtiVerificationWork *rhs) const
         {
@@ -174,7 +166,7 @@ public:
         }
     };
 
-    struct later : binary_function<const CtiVerificationWork *, const CtiVerificationWork *, bool>
+    struct later : std::binary_function<const CtiVerificationWork *, const CtiVerificationWork *, bool>
     {
         bool operator()(const CtiVerificationWork *lhs, const CtiVerificationWork *rhs) const
         {
@@ -189,13 +181,13 @@ public:
         }
     };
 
-    CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &command, const string &code, ptime::time_duration_type patience);  //  patience is how long we should wait for verification before logging a failure or retrying
+    CtiVerificationWork(Protocol p, const CtiOutMessage &om, const std::string &command, const std::string &code, boost::posix_time::ptime::time_duration_type patience);  //  patience is how long we should wait for verification before logging a failure or retrying
     virtual ~CtiVerificationWork();
 
-    long  getTransmitterID()    const   {  return _transmitter_id;  };
-    ptime getExpiration()       const   {  return _expiration;      };
-    long  getSequence()         const   {  return _sequence;        };
-    ptime getSubmissionTime()   const   {  return _birth;           };
+    long  getTransmitterID()                       const   {  return _transmitter_id;  };
+    boost::posix_time::ptime getExpiration()       const   {  return _expiration;      };
+    long  getSequence()                            const   {  return _sequence;        };
+    boost::posix_time::ptime getSubmissionTime()   const   {  return _birth;           };
 
     CtiOutMessage *getRetryOM() const;
     //string         getCommand() const   { return _command; }
@@ -206,8 +198,8 @@ public:
     CodeStatus processResult();
 
     CodeStatus getCodeStatus()   const  {  return _codeDisposition;    };
-    deque< long > getExpectations() const;
-    deque< pair< long, ptime > > getReceipts () const;
+    std::deque< long > getExpectations() const;
+    std::deque< std::pair< long, boost::posix_time::ptime > > getReceipts () const;
 };
 
 

@@ -36,7 +36,7 @@ protected:
 
     long _requestLogId;
     long _requestId;
-    string _command;
+    std::string _command;
     CtiTime _startTime;
     CtiTime _stopTime;
     long _readJobId;
@@ -47,7 +47,7 @@ public:
 
     CtiTblDeviceReadRequestLog( long requestLogId,
                                 long requestId,
-                                string& cmd_line,
+                                std::string& cmd_line,
                                 CtiTime& start,
                                 CtiTime& end,
                                 long jobId);
@@ -60,23 +60,23 @@ public:
 
     virtual bool Insert();
     virtual bool Update();
-    virtual string getTableName();
+    virtual std::string getTableName();
 
 
     long getRequestLogId() const;
     long getRequestId() const;
     long getReadJobId() const;
 
-    const string&   getCommand() const;
-    const CtiTime&  getStartTime() const;
-    const CtiTime&  getStopTime() const;
+    const std::string&   getCommand() const;
+    const CtiTime&       getStartTime() const;
+    const CtiTime&       getStopTime() const;
 
     CtiTblDeviceReadRequestLog& setRequestLogId( long requestLogId );
     CtiTblDeviceReadRequestLog& setRequestId( long requestLogId );
     CtiTblDeviceReadRequestLog& setReadJobId( long readJobId );
     CtiTblDeviceReadRequestLog& setStartTime( CtiTime& startTime );
     CtiTblDeviceReadRequestLog& setStopTime( CtiTime& stopTime );
-    CtiTblDeviceReadRequestLog& setCommand( string& cmd );
+    CtiTblDeviceReadRequestLog& setCommand( std::string& cmd );
 
 };
 

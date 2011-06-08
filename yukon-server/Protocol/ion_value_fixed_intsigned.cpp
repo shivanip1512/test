@@ -17,6 +17,7 @@
 
 #include "ion_value_fixed_intsigned.h"
 
+using std::endl;
 
 CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValueFixed(Fixed_SignedInt),

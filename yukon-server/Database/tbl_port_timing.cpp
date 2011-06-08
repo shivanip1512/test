@@ -18,6 +18,9 @@
 #include "tbl_port_timing.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePortTimings::CtiTablePortTimings()
 {
    for(int i = 0; i < LAST_DELAY; i++)

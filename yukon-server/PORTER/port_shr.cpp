@@ -25,6 +25,9 @@
 #include "cparms.h"
 #include "numstr.h"
 
+using std::string;
+using std::endl;
+
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _sequenceFailReported(false),
    _port(myPort),

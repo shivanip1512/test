@@ -6,6 +6,8 @@
 
 
 using namespace boost::gregorian;
+using std::endl;
+using std::string;
 
 const boost::gregorian::date CtiDate::StartOfTime = date(1970, 1, 1);
 const boost::gregorian::date CtiDate::EndOfTime = date(2036, 1, 1);

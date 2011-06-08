@@ -22,6 +22,9 @@
 #include "ctitokenizer.h"
 #include "numstr.h"
 
+using std::string;
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 #define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
 

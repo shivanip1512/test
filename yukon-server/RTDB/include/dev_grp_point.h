@@ -58,12 +58,12 @@ public:
     CtiDeviceGroupPoint& operator=(const CtiDeviceGroupPoint& aRef);
 
     INT generateRequest(CtiRequestMsg *pReq, CtiCommandParser &parse);
-    string getDescription(const CtiCommandParser & parse) const;
+    std::string getDescription(const CtiCommandParser & parse) const;
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     CtiTablePointGroup& getLoadGroup() { return _loadGroup; }
 

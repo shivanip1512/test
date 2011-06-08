@@ -80,7 +80,7 @@ public:
 
    CtiAnsiTable91& operator=(const CtiAnsiTable91& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
    int getBitRate();

@@ -19,6 +19,8 @@
 #include "logger.h"
 #include "ctilocalconnect.h"
 
+using std::endl;
+
 template <class Outbound, class Inbound>
 CtiLocalConnect<Outbound, Inbound>::~CtiLocalConnect()
 {

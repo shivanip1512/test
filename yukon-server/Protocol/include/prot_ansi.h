@@ -39,9 +39,6 @@
 
 #define FLOAT64
 
-using std::list;
-using std::endl;
-
 //converters
 //these aren't needed anymore
 
@@ -350,8 +347,8 @@ class IM_EX_PROT CtiProtocolANSI
 
     unsigned short getTotalWantedLPBlockInts();
 
-    const string& getAnsiDeviceName() const;
-    void setAnsiDeviceName(const string& devName);
+    const std::string& getAnsiDeviceName() const;
+    void setAnsiDeviceName(const std::string& devName);
 
     int proc09RemoteReset(UINT8 actionFlag);
     int proc22LoadProfileStartBlock( void );
@@ -385,8 +382,8 @@ class IM_EX_PROT CtiProtocolANSI
        void prepareApplicationLayer();
        void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
        unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
-       list< short > getStdTblsAvailable(void);
-       list < short > getMfgTblsAvailable(void);
+       std::list < short > getStdTblsAvailable(void);
+       std::list < short > getMfgTblsAvailable(void);
        bool isStdTableAvailableInMeter(short tableNbr);
        bool isMfgTableAvailableInMeter(short tableNbr);
 
@@ -445,7 +442,7 @@ class IM_EX_PROT CtiProtocolANSI
        ULONG *_lpTimes;
        UINT8 *_lpQuality;
 
-       string _ansiDevName;
+       std::string _ansiDevName;
 
      int _lpNbrLoadProfileChannels;
      int _lpNbrIntvlsLastBlock;
@@ -461,8 +458,8 @@ class IM_EX_PROT CtiProtocolANSI
      int _lpLastBlockSize;
 
      BOOL _ansiAbortOperation;
-     list < short > _stdTblsAvailable;
-     list < short > _mfgTblsAvailable;
+     std::list < short > _stdTblsAvailable;
+     std::list < short > _mfgTblsAvailable;
 
      bool _currentTableNotAvailableFlag;
      bool _requestingBatteryLifeFlag;

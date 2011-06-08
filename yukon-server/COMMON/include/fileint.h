@@ -24,8 +24,6 @@
 
 
 #include <iostream>
-using std::string;
-
 
 #include <rw/thr/mutex.h>
 #include <rw/thr/thread.h>
@@ -36,15 +34,15 @@ using std::string;
 class IM_EX_CTIBASE CtiFileInterface
 {
 public:
-    CtiFileInterface(const string& dirtowatch, const string& extension);
+    CtiFileInterface(const std::string& dirtowatch, const std::string& extension);
     virtual ~CtiFileInterface();
 
-    const string& getDirectory() const;
-    const string& getExtension() const;
+    const std::string& getDirectory() const;
+    const std::string& getExtension() const;
     bool getDeleteOnStart() const;
 
-    CtiFileInterface& setDirectory(const string& dir);
-    CtiFileInterface& setExtension(const string& ext);
+    CtiFileInterface& setDirectory(const std::string& dir);
+    CtiFileInterface& setExtension(const std::string& ext);
     CtiFileInterface& setDeleteOnStart(bool del);
 
     //start and stop don't necessarily need to be implemented in sub-classes
@@ -54,11 +52,11 @@ public:
     bool isValid() const;
 
 protected:
-    virtual void handleFile(const string& filename) = 0;
+    virtual void handleFile(const std::string& filename) = 0;
 
 private:
-    string _dir;
-    string _extension;
+    std::string _dir;
+    std::string _extension;
     bool      _delete_on_start;
 
     RWThread _watchthr;

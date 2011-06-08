@@ -84,14 +84,14 @@ public:
    virtual ~CtiAnsiTable01();
    CtiAnsiTable01& operator=(const CtiAnsiTable01& aRef);
 
-    string getRawManufacturer( void );
-    string getResolvedManufacturer( void );
-    string getRawModel( void );
-    string getResolvedModel( void );
-    string getRawSerialNumber( void );
-    string getResolvedSerialNumber( void );
+    std::string getRawManufacturer( void );
+    std::string getResolvedManufacturer( void );
+    std::string getRawModel( void );
+    std::string getResolvedModel( void );
+    std::string getRawSerialNumber( void );
+    std::string getResolvedSerialNumber( void );
 
-    void printResult(const string& deviceName );
+    void printResult(const std::string& deviceName );
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
 

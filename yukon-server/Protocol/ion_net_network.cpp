@@ -18,6 +18,8 @@
 
 #include "ion_net_network.h"
 
+using std::endl;
+
 CtiIONNetworkLayer::CtiIONNetworkLayer( ) :
     _ioState(Uninitialized),
     _valid(0),

@@ -23,8 +23,6 @@
 #include "guard.h"
 #include "mutex.h"
 
-using std::map;
-
 class IM_EX_CTIBASE CtiCounter
 {
 public:
@@ -43,7 +41,7 @@ public:
 
 private:
 
-    map< int, int > _counterMap;
+    std::map< int, int > _counterMap;
     mutable CtiMutex _counterMapMux;
 };
 

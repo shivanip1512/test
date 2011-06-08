@@ -35,19 +35,19 @@ public:
     virtual ~CtiLMCICustomerBase();
     
     LONG getCustomerId() const;
-    const string& getCompanyName() const;
+    const std::string& getCompanyName() const;
     DOUBLE getCustomerDemandLevel() const;
     DOUBLE getCurtailAmount() const;
-    const string& getCurtailmentAgreement() const;
-    const string& getTimeZone() const;
+    const std::string& getCurtailmentAgreement() const;
+    const std::string& getTimeZone() const;
     LONG getCustomerOrder() const;
 
     CtiLMCICustomerBase& setCustomerId(LONG id);
-    CtiLMCICustomerBase& setCompanyName(const string& name);
+    CtiLMCICustomerBase& setCompanyName(const std::string& name);
     CtiLMCICustomerBase& setCustomerDemandLevel(DOUBLE cdl);
     CtiLMCICustomerBase& setCurtailAmount(DOUBLE amount);
-    CtiLMCICustomerBase& setCurtailmentAgreement(const string& agreement);
-    CtiLMCICustomerBase& setTimeZone(const string& timezone);
+    CtiLMCICustomerBase& setCurtailmentAgreement(const std::string& agreement);
+    CtiLMCICustomerBase& setTimeZone(const std::string& timezone);
     CtiLMCICustomerBase& setCustomerOrder(LONG order);
 
     
@@ -71,11 +71,11 @@ protected:
 private:
 
     LONG _customerid;
-    string _companyname;
+    std::string _companyname;
     DOUBLE _customerdemandlevel;
     DOUBLE _curtailamount;
-    string _curtailmentagreement;
-    string _time_zone;
+    std::string _curtailmentagreement;
+    std::string _time_zone;
     LONG _customerorder;
 };
 #endif

@@ -21,8 +21,6 @@
 #include <map>
 #include <set>
 #include <utility>
-using std::map;
-using std::pair;
 
 #include "dlldefs.h"
 #include "msg_signal.h"
@@ -35,7 +33,7 @@ class IM_EX_CTIVANGOGH CtiSignalManager
 {
 public:
 
-    typedef map< pair< long, int >, CtiSignalMsg* > SigMgrMap_t;
+    typedef std::map< std::pair< long, int >, CtiSignalMsg* > SigMgrMap_t;
     typedef std::multimap< long, CtiSignalMsg* > PointSignalMap_t; // Calls that target a point need to be fast
 
 protected:

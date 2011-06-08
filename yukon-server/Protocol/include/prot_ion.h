@@ -23,7 +23,6 @@
 #include "pointtypes.h"
 
 #include <map>
-using std::map;
 #include "prot_base.h"
 
 #include "ion_datastream.h"
@@ -70,8 +69,8 @@ private:
                   _eventLogSearchPokePoint,
                   _eventLogSearchCounter;
 
-    typedef vector< unsigned long >             ion_handle_vector;
-    typedef map< unsigned long, unsigned long > ion_value_register_map;
+    typedef std::vector< unsigned long >             ion_handle_vector;
+    typedef std::map< unsigned long, unsigned long > ion_value_register_map;
 
     ion_handle_vector _setup_handles;
 
@@ -81,7 +80,7 @@ private:
                   _handleManagerDigitalOut;
 
     ion_handle_vector           _dataRecorderModules;
-    vector< ion_handle_vector > _dataRecorderSources;
+    std::vector< ion_handle_vector > _dataRecorderSources;
 
 
     ion_handle_vector       _digitalInModules;
@@ -106,16 +105,16 @@ private:
     };
 
     //  these are for temporary storage of data collected from the field device (on porter-side)
-    vector< ion_pointdata_struct > _collectedPointData;
-    vector< CtiIONLogArray * >     _collectedEventLogs;
+    std::vector< ion_pointdata_struct > _collectedPointData;
+    std::vector< CtiIONLogArray * >     _collectedEventLogs;
 
-    string _infoString;
+    std::string _infoString;
 
     //  these are for temporary storage of data returned in an InMessage (on PIL/Scanner-side)
-    vector< ion_pointdata_struct > _returnedPointData;
-    vector< CtiIONLogArray * >     _returnedEventLogs;
+    std::vector< ion_pointdata_struct > _returnedPointData;
+    std::vector< CtiIONLogArray * >     _returnedEventLogs;
 
-    string _returnedInfoString;
+    std::string _returnedInfoString;
 
     struct ion_result_descriptor_struct
     {

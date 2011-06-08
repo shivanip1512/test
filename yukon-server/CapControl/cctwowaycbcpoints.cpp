@@ -25,6 +25,9 @@
 #include "database_writer.h"
 #include "ccutil.h"
 
+using std::string;
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 using Cti::CapControl::MissingPointAttribute;
 

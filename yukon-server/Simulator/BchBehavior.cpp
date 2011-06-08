@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+using std::endl;
+
 namespace Cti {
 namespace Simulator{
 

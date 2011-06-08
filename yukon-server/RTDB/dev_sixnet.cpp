@@ -27,7 +27,10 @@
 #include "pt_accum.h"
 #include "utility.h"
 
-
+using std::string;
+using std::endl;
+using std::list;
+using std::vector;
 
 int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT interval)
 {

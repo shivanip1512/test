@@ -78,6 +78,6 @@ public:
    CtiTableCommRoute& setDefaultRoute( const bool aDefaultRoute );
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   static string getTableName();
+   static std::string getTableName();
 };
 #endif // #ifndef __TBL_RTCOMM_H__

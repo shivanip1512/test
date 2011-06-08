@@ -25,6 +25,7 @@
 #include "ccconfirmationstats.h"
 
 using namespace capcontrol;
+using std::endl;
 
 extern ULONG _CC_DEBUG;
 

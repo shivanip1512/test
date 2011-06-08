@@ -18,6 +18,9 @@
 #include "resolvers.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTablePointUnit::CtiTablePointUnit() :
 _logFrequency(INT_MAX),
 _unitID(0),

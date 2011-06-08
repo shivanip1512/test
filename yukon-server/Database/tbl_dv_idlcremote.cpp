@@ -5,6 +5,9 @@
 
 #include "tbl_dv_idlcremote.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceIDLC::CtiTableDeviceIDLC() :
 _deviceID(-1),
 _address(-1),

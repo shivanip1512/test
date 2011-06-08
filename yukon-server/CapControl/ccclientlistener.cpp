@@ -13,6 +13,8 @@
 
 #include <rw/toolpro/inetaddr.h>
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 using Cti::ThreadStatusKeeper;

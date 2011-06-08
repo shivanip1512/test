@@ -26,6 +26,9 @@
 #include "utility.h"
 #include "msg_pcreturn.h"
 
+using std::endl;
+using std::list;
+
 CtiRouteMacro::CtiRouteMacro()
 {
 }

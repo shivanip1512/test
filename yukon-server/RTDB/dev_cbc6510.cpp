@@ -18,6 +18,8 @@
 #include "numstr.h"
 #include "cparms.h"
 
+using std::string;
+using std::list;
 
 namespace Cti {
 namespace Devices {

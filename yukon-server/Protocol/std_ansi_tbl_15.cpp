@@ -41,6 +41,9 @@
 #include "logger.h"
 #include "std_ansi_tbl_15.h"
 
+
+using std::endl;
+using std::string;
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable15::CtiAnsiTable15( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,

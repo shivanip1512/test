@@ -21,7 +21,7 @@ class IM_EX_FDRBASE CtiFDRSimple : public CtiFDRInterface
 public:
 
   // constructors and destructors
-  CtiFDRSimple(string interfaceName);
+  CtiFDRSimple(std::string interfaceName);
   virtual ~CtiFDRSimple();
 
   virtual bool sendMessageToForeignSys( CtiMessage *aMessage );

@@ -26,8 +26,8 @@ public:
 
    CtiPILConnectionManager()
    {
-      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << endl;
-      std::cout << "**** Connection Manager!!! *****" << endl;
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << std::endl;
+      std::cout << "**** Connection Manager!!! *****" << std::endl;
    }
 
    CtiPILConnectionManager(CtiExchange *XChg, Que_t *MainQueue_) :

@@ -1,32 +1,4 @@
-/******************************************************************************
-        Filename: $RCSfile: apicli_get_list.h,v $
-        Revision: $Revision: 1.1 $
-        Author:   $Author: eschmit $
-        Date:     $Date: 2002/07/15 14:04:34 $
-*******************************************************************************
-$Log: apicli_get_list.h,v $
-Revision 1.1  2002/07/15 14:04:34  eschmit
-Telegyr stuff added
-
-Revision 1.8  2000/12/19 14:46:00  imhoff
-merged changes for new API-UEA functions
-
-Revision 1.7  2000/07/04 08:48:39  imhoff
-changes for new API functions (TG8000_SMR_FI_00038.doc)
-
-Revision 1.6  2000/04/26 13:27:20  imhoff
-define API_LIST_QUEUE_FILE for WIN32
-
-Revision 1.5  2000/01/13 14:44:22  imhoff
-dst_flag added
-
-Revision 1.4  1999/10/14 11:44:01  imhoff
-API_ALMEVT_MAX_MSGS and API_MAX_LIST_IN_QUEUE adapted
-
-*******************************************************************************/
-
-#ifndef INCLUDE_APICLI_GETLIST_H
-#define INCLUDE_APICLI_GETLIST_H
+#pragma once
 
 /******************************************************************************
 !
@@ -133,4 +105,3 @@ typedef struct APICLI_GET_LIST_
 	int              alarm_unacknowledged;
 } APICLI_GET_LIST;
 
-#endif /* INCLUDE_APICLI_GETLIST_H */

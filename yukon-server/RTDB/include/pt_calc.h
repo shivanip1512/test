@@ -30,11 +30,11 @@ private:
 
    INT         Order;         // Which calculation is this??
    LONG        PointID;       // Which _other_ point does this calc operate upon?
-   string   Operation;     // What is it that I am doing?
+   std::string   Operation;     // What is it that I am doing?
 
 public:
 
-   CtiPointCalculation(INT Ord = -1, LONG pid = -1, string str = string("NoOp") ) :
+   CtiPointCalculation(INT Ord = -1, LONG pid = -1, std::string str = std::string("NoOp") ) :
       Order(Ord),
       PointID(pid),
       Operation(str)
@@ -52,7 +52,7 @@ public:
 
    void           setOrder(INT i)                  { Order = i; }
    void           setPointID(LONG pid)             {PointID = pid; }
-   void           setOperation(const string s)  { Operation = s; }
+   void           setOperation(const std::string s)  { Operation = s; }
 };
 
 class IM_EX_PNTDB CtiPointCalculated : public CtiPointNumeric
@@ -109,7 +109,7 @@ public:
    virtual void DumpData()
    {
       Inherited::DumpData();       // get the base class handled
-      cout << " Update Frequency                         : " << UpdateFrequency << endl;
+      cout << " Update Frequency                         : " << UpdateFrequency << std::endl;
    }
 
 

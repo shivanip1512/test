@@ -25,13 +25,13 @@ protected:
     int             _pointId;           //
     int             _tagid;             // refers to id in tag table
 
-    string       _userName;          // VC(60)
-    string       _actionStr;         // VC(20)
-    string       _descriptionStr;    // VC(120)
+    std::string       _userName;          // VC(60)
+    std::string       _actionStr;         // VC(20)
+    std::string       _descriptionStr;    // VC(120)
 
     CtiTime    _tagtime;           // when was tag created
-    string       _referenceStr;      // job id, etc, user field
-    string       _taggedForStr;      // user field
+    std::string       _referenceStr;      // job id, etc, user field
+    std::string       _taggedForStr;      // user field
 
     static int _maxInstanceId;
     static int _nextLogId;
@@ -50,7 +50,7 @@ public:
     virtual int operator==(const CtiTableTagLog&) const;
     bool operator<(const CtiTableTagLog& aRef) const;
 
-    static string getTableName();
+    static std::string getTableName();
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
@@ -60,26 +60,26 @@ public:
     int getPointId() const;           //
     int getTagId() const;             // refers to id in tag table
 
-    string getUserName() const;          // VC(60)  Console user name
-    string getActionStr() const;         // VC(20)
-    string getDescriptionStr() const;    // VC(120)
+    std::string getUserName() const;          // VC(60)  Console user name
+    std::string getActionStr() const;         // VC(20)
+    std::string getDescriptionStr() const;    // VC(120)
 
     CtiTime getTagTime() const;        // when was tag created
-    string getReferenceStr() const;      // job id, etc, user field
-    string getTaggedForStr() const;
+    std::string getReferenceStr() const;      // job id, etc, user field
+    std::string getTaggedForStr() const;
 
     CtiTableTagLog& setLogId(int id);        // no two tags share the same one
     CtiTableTagLog& setInstanceId(int id);        // Matches the dynamictag entry.  Follows the life cycle of the tag.
     CtiTableTagLog& setPointId(int id);           //
     CtiTableTagLog& setTagId(int id);             // refers to id in tag table
 
-    CtiTableTagLog& setUserName(const string& str);          // VC(60)  Console user name
-    CtiTableTagLog& setActionStr(const string& str);         // VC(20)
-    CtiTableTagLog& setDescriptionStr(const string& str);    // VC(120)
+    CtiTableTagLog& setUserName(const std::string& str);          // VC(60)  Console user name
+    CtiTableTagLog& setActionStr(const std::string& str);         // VC(20)
+    CtiTableTagLog& setDescriptionStr(const std::string& str);    // VC(120)
 
     CtiTableTagLog& setTagTime(const CtiTime &dbdt);        // when was tag created
-    CtiTableTagLog& setReferenceStr(const string& str);      // job id, etc, user field
-    CtiTableTagLog& setTaggedForStr(const string& str);
+    CtiTableTagLog& setReferenceStr(const std::string& str);      // job id, etc, user field
+    CtiTableTagLog& setTaggedForStr(const std::string& str);
 
     static int getNextLogId();
     static int getLastNextLogId();

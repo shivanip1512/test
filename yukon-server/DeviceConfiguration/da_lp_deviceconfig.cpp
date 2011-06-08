@@ -7,6 +7,7 @@
 
 using namespace Cti;
 using namespace Cti::Config;
+using std::endl;
 
 const int DeviceConfigurationLoadProfileData::SecondsPerMinute = 60;
 

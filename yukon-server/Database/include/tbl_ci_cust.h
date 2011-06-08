@@ -37,12 +37,6 @@
 #include <set>
 #include <vector>
 
-using std::set;
-using std::vector;
-using std::iterator;
-
-
-
 class IM_EX_CTIYUKONDB CtiTableCICustomerBase
 {
 public:
@@ -54,7 +48,7 @@ public:
 protected:
 
    LONG        _id;
-   set< int > _contactNotificationIDs; // this customers contacts contactNotificationIDs *digest that*
+   std::set< int > _contactNotificationIDs; // this customers contacts contactNotificationIDs *digest that*
 
 private:
     mutable CtiMutex _classMutex;
@@ -75,12 +69,12 @@ public:
 
    INTSET getContactNotificationSet() const;
    CtiTableCICustomerBase& setContactNotificationSet(const INTSET& rhs);
-   vector<int> getContactNotificationVector() const;
+   std::vector<int> getContactNotificationVector() const;
 
    void dumpContactNotifications() const;
    void dump() const;
 
-   static string getTableName();
+   static std::string getTableName();
    virtual bool Restore();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

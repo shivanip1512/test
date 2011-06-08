@@ -17,6 +17,8 @@
 #include "ccstate.h"
 #include "logger.h"
 
+using std::endl;
+
 extern ULONG _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )

@@ -48,8 +48,6 @@
 #include "types.h"
 #include "std_ansi_tbl_base.h"
 
-using std::string;
-
 #pragma pack( push, 1)
 
 struct FORMAT_CONTROL_1
@@ -108,37 +106,37 @@ private:
 public:
 
     int getRawDataOrder( void );
-    string getResolvedDataOrder( void );
+    std::string getResolvedDataOrder( void );
     int getRawCharFormat( void );
-    string getResolvedCharFormat( void );
+    std::string getResolvedCharFormat( void );
     bool getRawMfgSerialNumberFlag( void );
-    string getResolvedMfgSerialNumberFlag( void );
+    std::string getResolvedMfgSerialNumberFlag( void );
     int getRawTimeFormat( void );
-    string getResolvedTimeFormat( void );
+    std::string getResolvedTimeFormat( void );
     int getRawDataAccess( void );
-    string getResolvedDataAccess( void );
+    std::string getResolvedDataAccess( void );
     bool getRawIdFormat( void );
-    string getResolvedIdFormat( void );
+    std::string getResolvedIdFormat( void );
     int getRawIntFormat( void );
-    string getResolvedIntFormat( void );
+    std::string getResolvedIntFormat( void );
     int getRawNIFormat1( void );
-    string getResolvedNIFormat1( void );
+    std::string getResolvedNIFormat1( void );
     int getRawNIFormat2( void );
-    string getResolvedNIFormat2( void );
+    std::string getResolvedNIFormat2( void );
     int getRawDeviceClass( void );
-    string getResolvedDeviceClass( void );
+    std::string getResolvedDeviceClass( void );
     int getRawNameplateType( void );
-    string getResolvedNameplateType( void );
+    std::string getResolvedNameplateType( void );
     int getRawDefaultSetUsed( void );
-    string getResolvedDefaultSetUsed( void );
+    std::string getResolvedDefaultSetUsed( void );
     int getRawMaxProcParmLength( void );
-    string getResolvedMaxProcParmLength( void );
+    std::string getResolvedMaxProcParmLength( void );
     int getRawMaxRespDataLen( void );
-    string getResolvedMaxRespDataLen( void );
+    std::string getResolvedMaxRespDataLen( void );
     int getRawStdVersionNo( void );
-    string getResolvedStdVersionNo( void );
+    std::string getResolvedStdVersionNo( void );
     int getRawStdRevisionNo( void );
-    string getResolvedStdRevisionNo( void );
+    std::string getResolvedStdRevisionNo( void );
 
     unsigned char * getStdTblsUsed(void);
     int getDimStdTblsUsed(void);
@@ -146,11 +144,11 @@ public:
     int getDimMfgTblsUsed(void);
 
 
-    string getNonIntegerFormat( int aFormat );
+    std::string getNonIntegerFormat( int aFormat );
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( const string& deviceName );
+    void printResult( const std::string& deviceName );
 
     CtiAnsiTable00( );
    CtiAnsiTable00( BYTE *dataBlob );

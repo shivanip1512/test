@@ -8,6 +8,8 @@
 
 #include <boost/test/auto_unit_test.hpp>
 
+using std::vector;
+
 class test_Transport : private Cti::Protocol::DNP::TransportLayer
 {
     typedef Cti::Protocol::DNP::TransportLayer Inherited;

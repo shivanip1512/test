@@ -18,6 +18,9 @@
 #include "tbl_route.h"
 #include "logger.h"
 
+using std::string;
+using std::endl;
+
 CtiTableDeviceRoute::CtiTableDeviceRoute() :
    RouteID(-1)
 {}

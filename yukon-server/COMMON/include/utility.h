@@ -2,24 +2,21 @@
 
 #include <string>
 #include <list>
-using std::list;
-using std::string;
+#include <iterator> // for std::iterator and std::output_iterator_tag
 
 #include "ctitime.h"
-
 #include "queues.h"
 #include "dlldefs.h"
 #include "numstr.h"
 
 #include <algorithm>
 #include <vector>
-using std::vector;
 
 class INMESS;
 class CtiOutMessage;
 class CtiMutex;
 
-#include <iterator> // for std::iterator and std::output_iterator_tag
+
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 
@@ -34,15 +31,15 @@ IM_EX_CTIBASE INT  CCEventActionIdGen(LONG capBankPointId);
 IM_EX_CTIBASE INT  CCEventLogIdGen();
 IM_EX_CTIBASE INT  CCEventSeqIdGen();
 IM_EX_CTIBASE INT  PAOIdGen();
-IM_EX_CTIBASE INT  SynchronizedIdGen(string name, int values_needed);
+IM_EX_CTIBASE INT  SynchronizedIdGen(std::string name, int values_needed);
 
 IM_EX_CTIBASE BOOL InEchoToOut(const INMESS &In, CtiOutMessage *Out);
 IM_EX_CTIBASE BOOL OutEchoToIN(const CtiOutMessage *Out, INMESS *In);
 
-IM_EX_CTIBASE string convertVersacomAddressToHumanForm(INT address);
+IM_EX_CTIBASE std::string convertVersacomAddressToHumanForm(INT address);
 IM_EX_CTIBASE INT    convertHumanFormAddressToVersacom(INT address);
 
-IM_EX_CTIBASE string& traceBuffer(string &str, BYTE *Message, ULONG Length);
+IM_EX_CTIBASE std::string& traceBuffer(std::string &str, BYTE *Message, ULONG Length);
 
 IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
 
@@ -135,7 +132,7 @@ IM_EX_CTIBASE int   generateTransmissionID();
 IM_EX_CTIBASE LONG  GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndControlOffset(int device, int offset);
-IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type);
+IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, std::string &type);
 IM_EX_CTIBASE void  GetPseudoPointIDs(std::vector<unsigned long> &pointIDs);
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
@@ -161,7 +158,7 @@ IM_EX_CTIBASE bool findRequestIDMatch(void *rid, void *d);
 IM_EX_CTIBASE bool findExpiredOutMessage(void *rid, void *d);
 IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
 
-IM_EX_CTIBASE string explainTags(const unsigned tags);
+IM_EX_CTIBASE std::string explainTags(const unsigned tags);
 
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length);
 
@@ -171,9 +168,9 @@ IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned c
 IM_EX_CTIBASE void testSA305CRC(char* testData);
 
 IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
-IM_EX_CTIBASE std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId);
-IM_EX_CTIBASE string getEncodingTypeForPort(long portId);
-IM_EX_CTIBASE string getEncodingKeyForPort(long portId);
+IM_EX_CTIBASE std::vector< std::vector<std::string> > getLmXmlParametersByGroupId(long groupId);
+IM_EX_CTIBASE std::string getEncodingTypeForPort(long portId);
+IM_EX_CTIBASE std::string getEncodingKeyForPort(long portId);
 
 //String Functions
 inline void CtiToLower( std::string& str)
@@ -185,25 +182,25 @@ inline void CtiToUpper( std::string& str)
     std::transform(str.begin(),str.end(),str.begin(),::toupper);
 }
 
-inline string trim_right ( std::string & source , std::string t = " ")
+inline std::string trim_right ( std::string & source , std::string t = " ")
 {
     std::string str = source;
     return source = str.erase ( str.find_last_not_of ( t ) + 1 ) ;
 }
 
-inline string trim_left ( std::string & source ,std::string t = " ")
+inline std::string trim_left ( std::string & source ,std::string t = " ")
 {
     std::string str = source;
     return source = str.erase ( 0 , source.find_first_not_of ( t ) ) ;
 }
 
-inline string trim ( std::string & source , std::string t = " ")
+inline std::string trim ( std::string & source , std::string t = " ")
 {
     std::string str = source;
     return source = trim_left ( trim_right ( str , t ) , t ) ;
 }
 
-inline string &in_place_trim(std::string &source, char trim_char = ' ')
+inline std::string &in_place_trim(std::string &source, char trim_char = ' ')
 {
     //  clever - the "+ 1" turns string::npos into 0 if nothing is found
     source.erase(source.find_last_not_of(trim_char) + 1);
@@ -245,14 +242,14 @@ inline int stringContainsIgnoreCase(const std::string& str, const std::string& f
         return 1;
 }
 
-inline string::size_type findStringIgnoreCase(const std::string &str, const std::string &sub)
+inline std::string::size_type findStringIgnoreCase(const std::string &str, const std::string &sub)
 {
     return stringContainsIgnoreCase(str, sub);
 }
 
-inline string char2string(char c)
+inline std::string char2string(char c)
 {
-    string s;
+    std::string s;
     s = c;
     return s;
 }

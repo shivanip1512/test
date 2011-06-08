@@ -1,56 +1,4 @@
-/******************************************************************************
-	Filename: $RCSfile: apiclidata.h,v $
-	Revision: $Revision: 1.1 $
-	Author:   $Author: eschmit $
-	Date:     $Date: 2002/07/15 14:04:34 $
-*******************************************************************************
-$Log: apiclidata.h,v $
-Revision 1.1  2002/07/15 14:04:34  eschmit
-Telegyr stuff added
-
-Revision 1.8  2000/12/19 14:50:02  imhoff
-merged changes for new API-UEA functions
-
- * DDF: API Extensions for Tags
- * Added structure APICLI_GET_TAG.
-
-Revision 1.7  2000/07/04 08:49:43  imhoff
-changes for new API functions (TG8000_SMR_FI_00038.doc)
-
-Revision 1.6  2000/04/07 09:07:42  imhoff
-intr. definition of RECSYSTEM
-
-Revision 1.5  1999/09/23 12:35:18  imhoff
-Added a spare alignment field in APICLI_TIME structure.
-
- * Revision 1.4  1999/05/12  14:40:09  imhoff
- * murged with 7.2 system revision 1.23
- *
-Revision 1.3  1999/01/13 00:30:20  danieler
-Updated based on V7.2 1.21 : Merged by bscott
-
-Revision 1.21  1998/11/12 16:14:33  danieler
-New alm&evt lists functionality.
-
-Revision 1.18  1998/09/17  12:57:52  heinzerb
-Modification for Common SCADA/DMS list server
-
-Revision 1.17  1998/09/16  15:12:32  heinzerb
-Modification for Common SCADA/DMS list server
-
-******************************************************************************/
-/*
-     This file defines the structures for all API data groups 
-     (derived from database related tables) to be used by and
-     returned to the Client.
-     It also contains others data types and structures used in
-     the client interface.
-*/
-
-
-#ifndef APICLIDATA_H
-#define APICLIDATA_H
-
+#pragma once
 
 #include "apicli_get_list.h"
 
@@ -299,5 +247,3 @@ typedef struct recsystem {
         int status;
 
         } RECSYSTEM;
-
-#endif /* APICLIDATA_H */

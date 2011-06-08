@@ -18,6 +18,7 @@ using Cti::CapControl::DynamicCommandExecutor;
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::PaoIdList; 
 using Cti::CapControl::createPorterRequestMsg;
+using std::endl;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;

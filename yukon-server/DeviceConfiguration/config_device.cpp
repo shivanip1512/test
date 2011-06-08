@@ -16,6 +16,8 @@
 #include "config_device.h"
 #include <string>
 
+using std::string;
+
 namespace Cti       {
 namespace Config    {
 

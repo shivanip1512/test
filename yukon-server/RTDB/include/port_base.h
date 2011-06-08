@@ -4,9 +4,6 @@
 #include <list>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
-
-using std::list;
-
 #include <rw/thr/thrfunc.h>
 
 #include "dev_base.h"
@@ -35,8 +32,8 @@ class IM_EX_PRTDB CtiPort : public CtiMemDBObject, boost::noncopyable
 {
 public:
 
-    typedef vector< CtiTablePaoExclusion >  exclusions;
-    typedef vector< unsigned long >         prohibitions;
+    typedef std::vector< CtiTablePaoExclusion >  exclusions;
+    typedef std::vector< unsigned long >         prohibitions;
     typedef CtiMemDBObject Inherited;
 
 
@@ -60,16 +57,16 @@ public:
     virtual BOOL shouldDisconnect() const;
     virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList) = 0;
-    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList) = 0;
-    virtual INT outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
-    virtual INT traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
-    virtual INT traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
-    virtual INT traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
+    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
+    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
+    virtual INT outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
+    virtual INT traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
+    virtual INT traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
+    virtual INT traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
 
-    static INT traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, list< CtiMessage* > &traceList);
+    static INT traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, std::list< CtiMessage* > &traceList);
     INT logBytes(BYTE *Message, ULONG Length) const;
-    void fileTraces(list< CtiMessage* > &traceList) const;
+    void fileTraces(std::list< CtiMessage* > &traceList) const;
 
     CtiLogger& getPortLog() { return _portLog; }
 
@@ -91,8 +88,8 @@ public:
     virtual INT    byteTime(ULONG bytes) const;
 
     virtual HANDLE getHandle() const;
-    virtual string getPhysicalPort() const;
-    virtual string getModemInit() const;
+    virtual std::string getPhysicalPort() const;
+    virtual std::string getModemInit() const;
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
     virtual INT reset(INT trace);
@@ -124,12 +121,12 @@ public:
 
     void haltLog();
 
-    string getSharedPortType() const;
+    std::string getSharedPortType() const;
     INT getSharedSocketNumber() const;
     INT getType() const;
     LONG getPortID() const;
     INT isDialup() const;
-    string getName() const;
+    std::string getName() const;
     bool isInhibited() const;
     bool isSimulated() const;
     virtual INT getBaudRate() const;
@@ -148,8 +145,8 @@ public:
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
-    pair< bool, INT > verifyPortStatus(CtiDeviceSPtr Device, INT trace = 0);
-    pair< bool, INT > checkCommStatus(CtiDeviceSPtr Device, INT trace = 0);
+    std::pair< bool, INT > verifyPortStatus(CtiDeviceSPtr Device, INT trace = 0);
+    std::pair< bool, INT > checkCommStatus(CtiDeviceSPtr Device, INT trace = 0);
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 
@@ -219,12 +216,12 @@ public:
     void setPortCommunicating(bool state = true, DWORD ticks = 0);
     void addPortTiming(DWORD ticks);
     int getWorkCount(long requestID = 0);
-    vector<long> getQueuedWorkDevices();
+    std::vector<long> getQueuedWorkDevices();
     DWORD getPortTiming();
 
     CtiPort& setDevicePreload(LONG id);
     CtiPort& resetDevicePreload(LONG id);
-    set<LONG> getPreloads(void);
+    std::set<LONG> getPreloads(void);
 
     INT incQueueSubmittal(int bumpcnt, CtiTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
     INT incQueueProcessed(int bumpCnt, CtiTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
@@ -293,8 +290,8 @@ private:
 
     typedef std::map<long, unsigned> device_queue_counts;
 
-    set< LONG >                 _devicesQueued;
-    set< LONG >                 _devicesPreloaded;
+    std::set< LONG >                 _devicesQueued;
+    std::set< LONG >                 _devicesPreloaded;
     device_queue_counts         _queuedWork;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
@@ -310,9 +307,9 @@ inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMax
 inline INT CtiPort::getType() const   { return _tblPAO.getType();}
 inline LONG CtiPort::getPortID() const { return _tblPAO.getID();}
 inline bool CtiPort::isInhibited() const { return _tblPAO.isInhibited();}
-inline string CtiPort::getName() const { return _tblPAO.getName();}
+inline std::string CtiPort::getName() const { return _tblPAO.getName();}
 
-inline string CtiPort::getSharedPortType() const { return _tblPortBase.getSharedPortType();}
+inline std::string CtiPort::getSharedPortType() const { return _tblPortBase.getSharedPortType();}
 inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSharedSocketNumber();}
 inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 

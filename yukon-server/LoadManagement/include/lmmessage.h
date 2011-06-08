@@ -37,11 +37,11 @@ RWDECLARE_COLLECTABLE( CtiLMMessage )
 
 public:
     CtiLMMessage() { };
-    CtiLMMessage(const string& message);
+    CtiLMMessage(const std::string& message);
 
     virtual ~CtiLMMessage() { };
 
-    const string& getMessage() const;
+    const std::string& getMessage() const;
     CtiLMConnectionPtr getConnection();
     
     void restoreGuts(RWvistream&);
@@ -50,7 +50,7 @@ public:
 private:
     // The connection that received/produced this message
     CtiLMConnectionWeakPtr _connection;
-    string _message;
+    std::string _message;
 };
 
 
@@ -141,7 +141,7 @@ public:
 			      const CtiTime& stop_time,
 			      LONG start_gear,
 			      LONG start_priority,
-			      const string& addl_info,
+			      const std::string& addl_info,
 			      LONG constraint_cmd
 			      
 			      );
@@ -157,7 +157,7 @@ public:
     LONG getStartGear() const;
     void setStartGear(LONG gear);
     LONG getStartPriority() const;
-    const string& getAdditionalInfo() const;
+    const std::string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
     virtual void dump() const;
     
@@ -176,7 +176,7 @@ private:
     CtiTime _stoptime;
     LONG _startgear;
     LONG _startpriority;
-    string _additionalinfo;
+    std::string _additionalinfo;
     LONG _constraint_cmd;
 };
 
@@ -191,12 +191,12 @@ public:
     virtual ~CtiLMManualControlResponse() { };
 
     LONG getPAOId() const;
-    const vector< ConstraintViolation >& getConstraintViolations() const;
-    const string& getBestFitAction() const;
+    const std::vector< ConstraintViolation >& getConstraintViolations() const;
+    const std::string& getBestFitAction() const;
 
     CtiLMManualControlResponse& setPAOId(LONG pao_id);
-    CtiLMManualControlResponse& setConstraintViolations(const vector< ConstraintViolation >& constraintViolations);
-    CtiLMManualControlResponse& setBestFitAction(const string& best_fit_action);
+    CtiLMManualControlResponse& setConstraintViolations(const std::vector< ConstraintViolation >& constraintViolations);
+    CtiLMManualControlResponse& setBestFitAction(const std::string& best_fit_action);
 
     virtual CtiMessage* replicateMessage() const;
     
@@ -206,8 +206,8 @@ public:
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
     LONG _paoid;
-    vector< ConstraintViolation > _constraintViolations;
-    string _best_fit_action;
+    std::vector< ConstraintViolation > _constraintViolations;
+    std::string _best_fit_action;
 };
 
 class CtiLMEnergyExchangeControlMsg : public CtiLMMessage
@@ -238,7 +238,7 @@ public:
     const CtiTime& getOfferDate() const;
     const CtiTime& getNotificationDateTime() const;
     const CtiTime& getExpirationDateTime() const;
-    const string& getAdditionalInfo() const;
+    const std::string& getAdditionalInfo() const;
     DOUBLE getAmountRequested(int i) const;
     LONG getPriceOffered(int i) const;
 
@@ -254,7 +254,7 @@ private:
     CtiTime _offerdate;
     CtiTime _notificationdatetime;
     CtiTime _expirationdatetime;
-    string _additionalinfo;
+    std::string _additionalinfo;
     DOUBLE _amountsrequested[HOURS_IN_DAY];
     LONG _pricesoffered[HOURS_IN_DAY];
 };
@@ -276,11 +276,11 @@ public:
     LONG getPAOId() const;
     LONG getOfferId() const;
     LONG getRevisionNumber() const;
-    const string& getAcceptStatus() const;
-    const string& getIPAddressOfAcceptUser() const;
-    const string& getUserIdName() const;
-    const string& getNameOfAcceptPerson() const;
-    const string& getEnergyExchangeNotes() const;
+    const std::string& getAcceptStatus() const;
+    const std::string& getIPAddressOfAcceptUser() const;
+    const std::string& getUserIdName() const;
+    const std::string& getNameOfAcceptPerson() const;
+    const std::string& getEnergyExchangeNotes() const;
     DOUBLE getAmountCommitted(int i) const;
 
     void restoreGuts(RWvistream&);
@@ -292,11 +292,11 @@ private:
     LONG _paoid;
     LONG _offerid;
     LONG _revisionnumber;
-    string _acceptstatus;
-    string _ipaddressofacceptuser;
-    string _useridname;
-    string _nameofacceptperson;
-    string _energyexchangenotes;
+    std::string _acceptstatus;
+    std::string _ipaddressofacceptuser;
+    std::string _useridname;
+    std::string _nameofacceptperson;
+    std::string _energyexchangenotes;
     DOUBLE _amountscommitted[HOURS_IN_DAY];
 };
 
@@ -306,14 +306,14 @@ class CtiLMControlAreaMsg : public CtiLMMessage
 RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
-    CtiLMControlAreaMsg(vector<CtiLMControlArea*>& contAreas, ULONG bitMask = 0);
+    CtiLMControlAreaMsg(std::vector<CtiLMControlArea*>& contAreas, ULONG bitMask = 0);
     
     CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();
 
     ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
-    vector<CtiLMControlArea*>* getControlAreas() const { return _controlAreas; };
+    std::vector<CtiLMControlArea*>* getControlAreas() const { return _controlAreas; };
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
@@ -329,7 +329,7 @@ private:
     CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL), _msgInfoBitMask(0) {};
     
     ULONG _msgInfoBitMask;
-    vector<CtiLMControlArea*>* _controlAreas;
+    std::vector<CtiLMControlArea*>* _controlAreas;
 };
 
 
@@ -345,11 +345,11 @@ public:
 
     LONG getPAOId() const;
     LONG getCurtailReferenceId() const;
-    const string& getAcknowledgeStatus() const;
-    const string& getIPAddressOfAckUser() const;
-    const string& getUserIdName() const;
-    const string& getNameOfAckPerson() const;
-    const string& getCurtailmentNotes() const;
+    const std::string& getAcknowledgeStatus() const;
+    const std::string& getIPAddressOfAckUser() const;
+    const std::string& getUserIdName() const;
+    const std::string& getNameOfAckPerson() const;
+    const std::string& getCurtailmentNotes() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -359,11 +359,11 @@ private:
     
     LONG _paoid;
     LONG _curtailreferenceid;
-    string _acknowledgestatus;
-    string _ipaddressofackuser;
-    string _useridname;
-    string _nameofackperson;
-    string _curtailmentnotes;
+    std::string _acknowledgestatus;
+    std::string _ipaddressofackuser;
+    std::string _useridname;
+    std::string _nameofackperson;
+    std::string _curtailmentnotes;
 };
 
 
@@ -477,7 +477,7 @@ private:
     LONG _currentpriority;
     LONG _currentdailystarttime;
     LONG _currentdailystoptime;
-    vector<CtiLMDynamicTriggerDataMsg> _triggers;
+    std::vector<CtiLMDynamicTriggerDataMsg> _triggers;
 };
 
 #endif

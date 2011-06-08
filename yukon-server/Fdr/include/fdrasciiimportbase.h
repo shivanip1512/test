@@ -33,7 +33,7 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRAsciiImportBase(string &interfaceType); 
+        CtiFDRAsciiImportBase(std::string &interfaceType); 
     
         virtual ~CtiFDRAsciiImportBase();
     
@@ -49,13 +49,13 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
         RWThreadFunction    iThreadReadFromFile;
         void threadFunctionReadFromFile( void );
     
-        string & getFileName();
-        string  getFileName() const;
-        CtiFDRAsciiImportBase &setFileName (string aName);
+        std::string & getFileName();
+        std::string  getFileName() const;
+        CtiFDRAsciiImportBase &setFileName (std::string aName);
     
-        string & getDriveAndPath();
-        string  getDriveAndPath() const;
-        CtiFDRAsciiImportBase &setDriveAndPath (string aDriveAndPath);
+        std::string & getDriveAndPath();
+        std::string  getDriveAndPath() const;
+        CtiFDRAsciiImportBase &setDriveAndPath (std::string aDriveAndPath);
 
         int getImportInterval() const;
         CtiFDRAsciiImportBase &setImportInterval (int aInterval);
@@ -70,11 +70,11 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
         virtual bool loadTranslationLists(void);
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
 
-        virtual bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg) = 0;
+        virtual bool validateAndDecodeLine( std::string &input, CtiMessage **aRetMsg) = 0;
     
     private:
-        string      iFileName;
-        string      iDriveAndPath;
+        std::string      iFileName;
+        std::string      iDriveAndPath;
         int            iImportInterval;
         long           iLinkStatusID;
         bool           iDeleteFileAfterImportFlag;

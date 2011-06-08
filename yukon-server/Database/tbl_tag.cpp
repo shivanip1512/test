@@ -23,6 +23,8 @@
 #include "tbl_tag.h"
 #include "utility.h"
 
+using std::string;
+
 CtiTableTag::CtiTableTag() :
 _tagId(0),
 _tagName("(none)"),

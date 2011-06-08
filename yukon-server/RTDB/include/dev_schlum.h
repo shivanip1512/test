@@ -145,19 +145,19 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           list< CtiMessage* > &vgList,
-                           list< CtiMessage* > &retList,
-                           list< OUTMESS* > &outList,
+                           std::list< CtiMessage* > &vgList,
+                           std::list< CtiMessage* > &retList,
+                           std::list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS *InMessage,
                             CtiTime &TimeNow,
-                            list< CtiMessage* >   &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* > &outList);
+                            std::list< CtiMessage* >   &vgList,
+                            std::list< CtiMessage* > &retList,
+                            std::list< OUTMESS* > &outList);
 
    virtual INT ErrorDecode(const INMESS      &InMessage,
                            const CtiTime      TimeNow,
-                           list<CtiMessage*> &retList);
+                           std::list<CtiMessage*> &retList);
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,
@@ -165,7 +165,7 @@ public:
                                               CtiTime        aTime,
                                               CtiReturnMsg *aReturnMsg,
                                               USHORT        aIntervalType=0,
-                                              string        aValReport=string());
+                                              std::string        aValReport=std::string());
 
    virtual BOOL insertPointIntoReturnMsg (CtiMessage    *aDataPoint,
                                   CtiReturnMsg   *aReturnMsg);

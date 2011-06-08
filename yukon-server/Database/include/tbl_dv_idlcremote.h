@@ -22,7 +22,7 @@ protected:
 
 private:
 
-    static string getTableName();
+    static std::string getTableName();
     LONG getDeviceID() const;
 
 public:

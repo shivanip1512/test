@@ -26,11 +26,11 @@ public:
    INT  getVarBit()        const {  return VarBit;         };
    INT  getRepeaterOrder() const {  return RepeaterOrder;  };
 
-   static string getSQLCoreStatement();
+   static std::string getSQLCoreStatement();
 
    RWBoolean operator<( const CtiTableRepeaterRoute& t2 );
    RWBoolean operator==( const CtiTableRepeaterRoute& t2 );
 
-   static string getTableName();
+   static std::string getTableName();
 };
 

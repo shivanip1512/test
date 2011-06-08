@@ -10,6 +10,7 @@
 #include "msg_pcrequest.h"
 #include "Capcontroller.h"
 
+using namespace boost::posix_time;
 
 namespace Cti           {
 namespace CapControl    {

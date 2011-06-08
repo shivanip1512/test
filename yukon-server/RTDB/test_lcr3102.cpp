@@ -11,6 +11,8 @@
 #include <boost/test/unit_test.hpp>
 
 using boost::unit_test_framework::test_suite;
+using std::list;
+using std::string;
 
 namespace Cti {
 namespace Devices {

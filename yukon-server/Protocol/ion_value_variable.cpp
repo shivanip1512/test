@@ -22,6 +22,7 @@
 #include "ion_value_variable_program.h"
 #include "ion_value_variable_fixedarray.h"
 
+using std::endl;
 
 CtiIONValueVariable::CtiIONValueVariable( VariableTypes variableType ) :
     CtiIONValue(ValueType_Variable)

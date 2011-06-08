@@ -59,7 +59,7 @@ public:
     bool  getControlInhibit() const;
     bool  getRadioDelay() const;
     bool  useRadioDelays() const;
-    static string getTableName();
+    static std::string getTableName();
     virtual void DumpData();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

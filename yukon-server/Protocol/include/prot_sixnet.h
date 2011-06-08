@@ -31,8 +31,6 @@
 #include "dlldefs.h"
 #include "mutex.h"
 
-using std::vector;
-
 typedef unsigned char uchar;
 typedef short int16;
 typedef int int32;
@@ -117,7 +115,7 @@ private:
     uint32   _alias;        // Remote File alias.
 
     // Methods which have data.
-    vector< uchar > _byBuf; // vector of byte data which will be decoded in the process routines
+    std::vector< uchar > _byBuf; // vector of byte data which will be decoded in the process routines
 
     // These are from GetRecs.
     int      _numRecs;      // number of records received
@@ -136,8 +134,8 @@ private:
     uchar*  _pData;        // pointer to where processing in m_data
 
     uint16  _rxCRC;
-    vector< uchar >  _rxdata;   // message data buffer
-    vector< uchar >  _txdata;   // message data buffer
+    std::vector< uchar >  _rxdata;   // message data buffer
+    std::vector< uchar >  _txdata;   // message data buffer
 
     uchar*  pNextRx;        // points to next byte in m_rxdata
     uchar*  pNextTx;        // points to next byte in m_rxdata
@@ -245,7 +243,7 @@ private:
     }; // matches any station
 
 
-    int FsGetAliasGenerate(string szName, string szOptions = string());
+    int FsGetAliasGenerate(std::string szName, std::string szOptions = std::string());
     int FsGetAliasProcess();
 
     int FsREADGenerate(uint32 nPos, int nLen);
@@ -261,7 +259,7 @@ private:
 
     void setBuffers(UCHAR* txBuff = NULL, UCHAR* rxBuff = NULL);
 
-    const vector< uchar >& getByteBuffer();
+    const std::vector< uchar >& getByteBuffer();
 
     bool validAlias() const { return _alias != 0; }
     int getNumRecordsRead() const;

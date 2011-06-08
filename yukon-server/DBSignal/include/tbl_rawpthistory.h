@@ -76,7 +76,7 @@ public:
    virtual void Insert(Cti::Database::DatabaseConnection &conn);
    virtual void Restore();
    void RestoreMax();
-   virtual string getTableName() const;
+   virtual std::string getTableName() const;
 
    virtual void DecodeDatabaseReader( Cti::RowReader& rdr );
 
@@ -94,7 +94,7 @@ public:
    CtiTableRawPointHistory&   setMillis(INT millis);
    CtiTableRawPointHistory&   setQuality(const INT &qual);
    CtiTableRawPointHistory&   setValue(const DOUBLE &val);
-   CtiTableRawPointHistory&   setBookmark(const string &mark);
+   CtiTableRawPointHistory&   setBookmark(const std::string &mark);
 
 
 };

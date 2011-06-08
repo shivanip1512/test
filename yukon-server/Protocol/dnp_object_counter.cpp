@@ -17,6 +17,8 @@
 #include "dnp_object_counter.h"
 #include "logger.h"
 
+using std::endl;
+
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {

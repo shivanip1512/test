@@ -87,7 +87,7 @@ public:
 
    SOURCE_LINK_BFLD getSourceLink ( int aOffset );
    void generateResultPiece( BYTE **dataBlob );
-   void printResult( const string& deviceName);
+   void printResult( const std::string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
    bool getUOMEntryFlag( int index );
    bool getDemandCtrlFlag( int index );

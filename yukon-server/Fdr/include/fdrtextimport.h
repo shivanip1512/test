@@ -127,8 +127,6 @@
 #include "ctistring.h"
 #include <boost/tokenizer.hpp>
 
-using std::list;
-
 class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
 {
     typedef CtiFDRTextFileBase Inherited;
@@ -147,10 +145,10 @@ public:
                            DOUBLE aValue,
                            CtiTime aTimestamp,
                            int aQuality,
-                           string aTranslationName,
+                           std::string aTranslationName,
                            CtiMessage **aRetMsg);
     USHORT ForeignToYukonQuality (char aQuality);
-    CtiTime ForeignToYukonTime (string& aTime, CHAR aDstFlag);
+    CtiTime ForeignToYukonTime (std::string& aTime, CHAR aDstFlag);
 
     bool processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRetMsg);
 
@@ -160,20 +158,20 @@ public:
     bool shouldRenameSaveFileAfterImport() const;
     CtiFDR_TextImport &setRenameSaveFileAfterImport (bool aFlag);
 
-    bool validateAndDecodeLine( string& input, CtiMessage **aRetMsg);
-    vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;};
+    bool validateAndDecodeLine( std::string& input, CtiMessage **aRetMsg);
+    std::vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;};
 
     CtiString& getFileImportBaseDrivePath();
     CtiString& setFileImportBaseDrivePath(CtiString importBase);
 
-    list<string> parseFiles();
-    list<string> getFileNames();
+    std::list<std::string> parseFiles();
+    std::list<std::string> getFileNames();
 
-    bool moveFiles   ( std::list<string> &fileNames );
-    bool moveFile   ( string fileName );
-    bool deleteFiles ( std::list<string> &fileNames );
-    bool deleteFile ( string fileName );
-    void handleFilePostOp( string fileName );
+    bool moveFiles   ( std::list<std::string> &fileNames );
+    bool moveFile   ( std::string fileName );
+    bool deleteFiles ( std::list<std::string> &fileNames );
+    bool deleteFile ( std::string fileName );
+    void handleFilePostOp( std::string fileName );
 
     void threadFunctionReadFromFile( void );
 
@@ -205,8 +203,8 @@ private:
     bool _legacyDrivePath;
     CtiString _fileImportBaseDrivePath;
 
-    vector <CtiFDRTextFileInterfaceParts> _fileInfoList;
-    std::map<string,int> nameToPointId;
+    std::vector <CtiFDRTextFileInterfaceParts> _fileInfoList;
+    std::map<std::string,int> nameToPointId;
 };
 
 

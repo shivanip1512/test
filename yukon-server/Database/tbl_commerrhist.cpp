@@ -6,6 +6,9 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
+using std::string;
+using std::endl;
+
 //CtiTableCommErrorHistory::CtiTableCommErrorHistory() {}
 
 CtiTableCommErrorHistory::CtiTableCommErrorHistory(LONG paoid, const CtiTime& datetime,

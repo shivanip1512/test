@@ -37,12 +37,12 @@ protected:
 
     LONG        _deviceID;
     LONG        _portID;
-    string   _class;
-    string   _name;
-    string   _description;
-    string   _objectType;
-    string   _disableFlag;
-    string   _controlInhibitFlag;
+    std::string   _class;
+    std::string   _name;
+    std::string   _description;
+    std::string   _objectType;
+    std::string   _disableFlag;
+    std::string   _controlInhibitFlag;
 
     private:
 
@@ -56,31 +56,31 @@ protected:
     CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
     LONG getID() const;
     LONG getPortID() const;
-    string getClass() const;
-    string getName() const;
-    string getDescription() const;
+    std::string getClass() const;
+    std::string getName() const;
+    std::string getDescription() const;
 
     CtiDeviceBaseLite& setID( LONG id );
     CtiDeviceBaseLite& setPortID( LONG id );
-    CtiDeviceBaseLite& setClass( const string &str );
-    CtiDeviceBaseLite& setName( const string &str );
-    CtiDeviceBaseLite& setDescription( const string &str );
-    CtiDeviceBaseLite& setDisableFlag( const string &str );
-    CtiDeviceBaseLite& setControlInhibitFlag( const string &str );
+    CtiDeviceBaseLite& setClass( const std::string &str );
+    CtiDeviceBaseLite& setName( const std::string &str );
+    CtiDeviceBaseLite& setDescription( const std::string &str );
+    CtiDeviceBaseLite& setDisableFlag( const std::string &str );
+    CtiDeviceBaseLite& setControlInhibitFlag( const std::string &str );
 
-    string getObjectType() const;
-    string getDisableFlag() const;
+    std::string getObjectType() const;
+    std::string getDisableFlag() const;
     bool isDisabled() const;
-    string getControlInhibitFlag() const;
+    std::string getControlInhibitFlag() const;
     bool isControlInhibited() const;
 
     bool operator<( const CtiDeviceBaseLite &rhs ) const;
     bool operator==( const CtiDeviceBaseLite &rhs ) const;
     bool operator()(const CtiDeviceBaseLite& aRef) const;
 
-    virtual string getSQLCoreStatement(long paoid);
+    virtual std::string getSQLCoreStatement(long paoid);
 
-    static string getTableName();
+    static std::string getTableName();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual bool Restore();
 };

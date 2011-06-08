@@ -20,7 +20,6 @@
 #include "std_ansi_tbl_base.h"
 
 #include <string>
-using std::string;
 
 #pragma pack( push, 1)
 
@@ -108,7 +107,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( const string& deviceName );
+    void printResult( const std::string& deviceName );
 
     CtiAnsiTable08( );
     CtiAnsiTable08( BYTE *dataBlob );

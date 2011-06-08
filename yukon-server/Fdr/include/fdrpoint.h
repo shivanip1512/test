@@ -89,9 +89,6 @@
 #include "types.h"
 #include "ctitime.h"
 
-using std::vector;
-using std::string;
-
 class CtiTime;
 
 typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
@@ -140,8 +137,8 @@ public:
     CtiPointType_t getPointType() const;
     CtiFDRPoint & setPointType(CtiPointType_t aType);
 
-    string      getTranslateName(string &aDestination);
-    string      getTranslateName(int aIndex);
+    std::string      getTranslateName(std::string &aDestination);
+    std::string      getTranslateName(int aIndex);
 
 
 private:

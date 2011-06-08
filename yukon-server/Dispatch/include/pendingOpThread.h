@@ -75,10 +75,6 @@
 #define __PENDINGOPTHREAD_H__
 
 #include <set>
-#include <map>
-using std::map;
-using std::set;
-using std::pair;
 
 #include "connection.h"
 #include "pendable.h"
@@ -122,7 +118,7 @@ private:
 
     void dbWriterThread();
     static CtiPendingOpSet_t::iterator erasePendingControl(CtiPendingOpSet_t::iterator iter);
-    static pair< CtiPendingOpSet_t::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
+    static std::pair< CtiPendingOpSet_t::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
 
     CtiPendingOpThread(const CtiPendingOpThread& aRef);
 

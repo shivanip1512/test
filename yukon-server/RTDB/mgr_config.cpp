@@ -7,6 +7,7 @@
 #include "database_reader.h"
 
 using std::string;
+using std::endl;
 
 using namespace Cti;
 using namespace Config;

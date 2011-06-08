@@ -4,6 +4,8 @@
 
 using namespace Cti::Database;
 using Cti::RowReader;
+using std::endl;
+using std::string;
 
 DatabaseReader::DatabaseReader(Cti::Database::DatabaseConnection &conn, const std::string &command) :
     _currentIndex(1),

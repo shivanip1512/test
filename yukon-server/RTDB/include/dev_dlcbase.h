@@ -67,38 +67,38 @@ protected:
 
     unsigned int getLPRetryRate( unsigned int interval );
 
-    virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executeGetStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executeControl  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executePutValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
-    virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeControl  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
 
     // Places error onto the retlist, DELETES OUT MESSAGE
-    void returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const;
+    void returnErrorMessage( int retval, OUTMESS *&om, std::list< CtiMessage* > &retList, const std::string &error ) const;
 
     bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command);
 
-    int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
 
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
-                           list< OUTMESS* >     &tmpOutList,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
+                           std::list< OUTMESS* >     &tmpOutList,
+                           std::list< CtiMessage* >  &vgList,
+                           std::list< CtiMessage* >  &retList,
+                           std::list< OUTMESS* >     &outList,
                            bool                  broadcastWritesOnMacroSubroutes );
 
-    virtual INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+    virtual INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
 
-    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
 
-    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore = false ) const;
-    INT decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT retMsgHandler( std::string commandStr, int status, CtiReturnMsg *retMsg, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, bool expectMore = false ) const;
+    INT decodeCheckErrorReturn(INMESS *InMessage, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     class CommandStore
     {
@@ -136,7 +136,7 @@ protected:
         }
     };
 
-    typedef set< CommandStore > CommandSet;
+    typedef std::set< CommandStore > CommandSet;
 
 public:
 
@@ -151,14 +151,14 @@ public:
 
     DlcBaseDevice& operator=(const DlcBaseDevice& aRef);
 
-    virtual string getSQLCoreStatement() const;
+    virtual std::string getSQLCoreStatement() const;
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;

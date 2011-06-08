@@ -21,7 +21,7 @@ private:
 
     coll_type      _smartMap;
 
-    typedef std::map<time_t, set<long>, std::greater<time_t> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
+    typedef std::map<time_t, std::set<long>, std::greater<time_t> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
     typedef std::map<long, lru_timeslice_map::iterator>      lru_point_lookup_map;
     typedef CtiLockGuard<CtiCriticalSection>                 lru_guard_t;
 
@@ -88,7 +88,7 @@ public:
     virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
-    ptr_type getEqualByName(LONG pao, string pname);
+    ptr_type getEqualByName(LONG pao, std::string pname);
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
 

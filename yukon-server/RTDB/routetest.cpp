@@ -20,6 +20,8 @@
 #include "mgr_route.h"
 #include "rtdb.h"
 
+using std::endl;
+
 void main(int argc, char** argv)
 {
     CtiRouteManager     RouteManager;

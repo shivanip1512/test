@@ -42,7 +42,7 @@ protected:
 
     LONG           _paObjectID;
     INT            _class;
-    string         _name;
+    std::string         _name;
     INT            _type;
 
     bool           _disableFlag;
@@ -61,7 +61,7 @@ public:
 
     LONG   getID()    const;
     INT    getClass() const;
-    string getName()  const;
+    std::string getName()  const;
     INT    getType()  const;
 
     CtiTblPAOLite& setID( LONG paoid );
@@ -69,7 +69,7 @@ public:
 
     bool isInhibited() const;
 
-    static string getTableName();
+    static std::string getTableName();
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

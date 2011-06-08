@@ -11,6 +11,8 @@
 using boost::unit_test_framework::test_suite;
 
 using Cti::Devices::Mct410Device;
+using std::string;
+using std::list;
 
 struct test_Mct410Device : Mct410Device
 {

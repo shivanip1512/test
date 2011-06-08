@@ -18,6 +18,7 @@
 #include "numstr.h"
 #include "port_modem.h"
 
+using std::string;
 
 static int abortFunction( CtiPort *port )
 {

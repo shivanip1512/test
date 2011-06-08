@@ -22,6 +22,8 @@
 #include "database_connection.h"
 #include "database_writer.h"
 
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer, CTILMENERGYEXCHANGEHOURLYCUSTOMER_ID )

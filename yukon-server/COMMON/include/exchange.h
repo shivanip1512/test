@@ -100,7 +100,7 @@ public:
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Exchange istream has bad status " << FO(__FILE__) << " (" << __LINE__ << ") " << iStream << endl;
+                    dout << CtiTime() << " Exchange istream has bad status " << FO(__FILE__) << " (" << __LINE__ << ") " << iStream << std::endl;
                 }
 
                 RWxmsg   err("Exchange has problems on the inbound stream");
@@ -123,7 +123,7 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " oStream has BAD status " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " oStream has BAD status " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
             }
 
             RWxmsg   err("EXCEPTION: Exchange's outbound socket has a BAD status.  It will be reset.");
@@ -149,7 +149,7 @@ public:
             catch ( RWxmsg& msg )
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << "CtiExchange::getPeer() - " << msg.why() << endl;
+                dout << "CtiExchange::getPeer() - " << msg.why() << std::endl;
             }
         }
         return iHost;
@@ -172,7 +172,7 @@ public:
             catch ( RWxmsg& msg )
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << "CtiExchange::getPeerPort() - " << msg.why() << endl;
+                dout << "CtiExchange::getPeerPort() - " << msg.why() << std::endl;
             }
         }
         return iPort;

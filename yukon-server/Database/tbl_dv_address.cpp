@@ -17,6 +17,9 @@
 
 #include "tbl_dv_address.h"
 
+using std::endl;
+using std::string;
+
 CtiTableDeviceAddress::CtiTableDeviceAddress() :
 _deviceID(-1),
 _masterAddress(-1),

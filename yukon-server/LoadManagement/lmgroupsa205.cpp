@@ -18,6 +18,9 @@
 #include "logger.h"
 #include "dbaccess.h"
 
+using std::string;
+using std::endl;
+
 extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupSA205, CTILMGROUPSA205_ID )

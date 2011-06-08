@@ -139,9 +139,9 @@ public:
 
     bool isCorrectData( int aOffset,int aUOM);
     int getRawIDCode( int aOffset );
-    string getResolvedIDCode( int aOffset );
+    std::string getResolvedIDCode( int aOffset );
     int getRawTimeBase( int aOffset );
-    string getResolvedTimeBase( int aOffset );
+    std::string getResolvedTimeBase( int aOffset );
     int getRawMultiplier( int aOffset );
     DOUBLE getResolvedMultiplier( int aOffset );
 
@@ -152,7 +152,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult(const string& deviceName);
+    void printResult(const std::string& deviceName);
 
 
 private:

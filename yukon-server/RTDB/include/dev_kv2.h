@@ -9,8 +9,6 @@
 #include "types.h"
 #include "dllyukon.h"
 
-using std::string;
-
 class IM_EX_DEVDB CtiDeviceKV2 : public CtiDeviceMeter
 {
 
@@ -22,36 +20,36 @@ public:
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
-                    list< CtiMessage* > &vgList,
-                    list< CtiMessage* > &retList,
-                    list< OUTMESS* > &outList,
+                    std::list< CtiMessage* > &vgList,
+                    std::list< CtiMessage* > &retList,
+                    std::list< OUTMESS* > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
+                           std::list< CtiMessage* >  &vgList,
+                           std::list< CtiMessage* >  &retList,
+                           std::list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            list< CtiMessage* > &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList);
+                            std::list< CtiMessage* > &vgList,
+                            std::list< CtiMessage* > &retList,
+                            std::list< OUTMESS* >    &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
-                       list< CtiMessage* >  &vgList,
-                       list< CtiMessage* >  &retList,
-                       list< OUTMESS* >     &outList );
+                       std::list< CtiMessage* >  &vgList,
+                       std::list< CtiMessage* >  &retList,
+                       std::list< OUTMESS* >     &outList );
 
 
    Cti::Protocols::Ansi::CtiProtocolANSI & getKV2Protocol( void );
    CtiProtocolANSI_kv2 & getANSIProtocol( void );
-   void processDispatchReturnMessage( list< CtiReturnMsg* >  &retList, UINT archiveFlag );
+   void processDispatchReturnMessage( std::list< CtiReturnMsg* >  &retList, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
    INT sendCommResult( INMESS *InMessage);
@@ -68,7 +66,7 @@ private:
     CtiProtocolANSI_kv2   _ansiProtocol;
 
     UINT _parseFlags;
-    string _result_string;
+    std::string _result_string;
     unsigned long _lastLPTime;
 
 };

@@ -26,7 +26,7 @@ class IM_EX_MSG CtiRequestMsg : public CtiMessage
 private:
 
     long    _device_id;
-    string  _command_string;
+    std::string  _command_string;
     long    _route_id;             // What route is to be used to address this device..
     int     _macro_offset;         // Which offset into a macro route should be attempted if the routeid is a macro.
     int     _attempt_num;          // Number of tries on this particular route. A zero or one have the same effect.
@@ -42,7 +42,7 @@ public:
     CtiRequestMsg();
 
     CtiRequestMsg(long device_id,
-                  const string& command_string,
+                  const std::string& command_string,
                   long user_message_id = 0L,
                   long group_message_id= 0L,
                   long route_id        = 0L,
@@ -61,8 +61,8 @@ public:
     long DeviceId() const;
     CtiRequestMsg& setDeviceId( long device_id );
 
-    const string& CommandString() const;
-    CtiRequestMsg& setCommandString(const string& command_string);
+    const std::string& CommandString() const;
+    CtiRequestMsg& setCommandString(const std::string& command_string);
 
     long RouteId() const;
     CtiRequestMsg& setRouteId(long route_id);

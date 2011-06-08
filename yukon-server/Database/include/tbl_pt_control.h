@@ -42,8 +42,8 @@ protected:
    INT               _controlOffset;
    INT               _closeTime1;
    INT               _closeTime2;
-   string         _stateZeroControl;
-   string         _stateOneControl;
+   std::string         _stateZeroControl;
+   std::string         _stateOneControl;
 
 private:
 
@@ -57,14 +57,14 @@ public:
    INT  getControlOffset() const;
    INT  getCloseTime1() const;
    INT  getCloseTime2() const;
-   const string& getStateZeroControl() const;
-   const string& getStateOneControl() const;
+   const std::string& getStateZeroControl() const;
+   const std::string& getStateOneControl() const;
 
    CtiTablePointControl& setControlOffset(INT i);
    CtiTablePointControl& setCloseTime1(INT i);
    CtiTablePointControl& setCloseTime2(INT i);
-   CtiTablePointControl& setStateZeroControl(const string& zero);
-   CtiTablePointControl& setStateOneControl(const string& one);
+   CtiTablePointControl& setStateZeroControl(const std::string& zero);
+   CtiTablePointControl& setStateOneControl(const std::string& one);
 
    void dump() const;
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

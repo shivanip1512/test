@@ -68,6 +68,8 @@
 extern CtiPortManager PortManager;
 using Cti::Porter::PorterStatisticsManager;
 
+using std::endl;
+using std::list;
 
 /* routine to initialize an idlc device and its counters */
 INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
