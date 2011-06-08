@@ -49,10 +49,10 @@ public class AttributeDefinedGroupProvider extends BinningDeviceGroupProviderBas
         Multimaps.invertFrom(allDefinedAttributes, dest );
         Collection<PaoType> collection = dest.get(bin);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.type").in(collection);
+        sql.append("SELECT YPO.PAObjectId");
+        sql.append("FROM Device D");
+        sql.append("JOIN YukonPAObject YPO ON (D.deviceId = YPO.PAObjectId)");
+        sql.append("WHERE YPO.type").in(collection);
         return sql;
     }
 
