@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.ivvc;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,6 +47,7 @@ import com.cannontech.yukon.cbc.SubStation;
 import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 
@@ -129,7 +131,7 @@ public class ZoneDetailController {
 
         setupRegulatorCommands(model, zoneDto);
         
-        List<String> nameKeys = Lists.newArrayList("attributesRegA", "attributesRegB", "attributesRegC");
+        List<String> nameKeys = Lists.newArrayList("attributesRegAll", "attributesRegA", "attributesRegB", "attributesRegC");
         model.addAttribute("nameKeys", nameKeys);
 
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
@@ -251,15 +253,15 @@ public class ZoneDetailController {
     }
 
     private void setupThreePhaseRegulatorPointList(ModelMap model, List<ZoneRegulator> regulators) {
-        List<List<VoltageRegulatorPointMapping>> pointMappingsList = Lists.newArrayListWithCapacity(3);
+        Map<Phase, List<VoltageRegulatorPointMapping>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
         
         for (ZoneRegulator zoneRegulator: regulators) {
             int regId = zoneRegulator.getRegulatorId();
             List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regId);
             Collections.sort(pointMappings);
-            pointMappingsList.add(pointMappings);
+            pointMappingsMap.put(zoneRegulator.getPhase(), pointMappings);
         }
-        model.addAttribute("regulatorPointMappingsList", pointMappingsList);
+        model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }
     
     private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, int zoneId) {

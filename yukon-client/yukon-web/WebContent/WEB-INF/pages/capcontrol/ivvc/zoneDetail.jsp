@@ -23,47 +23,64 @@
     <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
 
 	<script type="text/javascript">
-	
-		function editDelta(id) {
-			$('viewDelta_' + id).hide();
-			$('editDelta_' + id).show();
-			$('editDelta_' + id).down().focus();
-	    }
 
-		function saveDelta(id) {
+        function setRedBulletForPoint(pointId) {
+            //assumes data is of type Hash
+            return function(data) {
+                var redBulletSpans = $$('.redBullet_' + pointId);
+                var quality = data.get('quality');
+                
+                redBulletSpans.each(function(redBulletSpan) {
+                    if (quality != 'Normal') {
+                        redBulletSpan.show();
+                    } else {
+                        redBulletSpan.hide();
+                    }
+                });
+            };
+        }
+
+        function editDelta(id) {
+            $('viewDelta_' + id).hide();
+            $('editDelta_' + id).show();
+            $('editDelta_' + id).down().focus();
+        }
+
+        function saveDelta(id) {
             var newDelta = $('editDelta_' + id).down().value;
             var newStaticValue = $('staticDelta_' + id).checked;
-            
-            if(newDelta.length != 0) {
+
+            if (newDelta.length != 0) {
                 $('delta').value = newDelta.escapeHTML();
                 $('staticDelta').value = newStaticValue;
-                $('bankId').value = id.split('_')[0]; 
-               	$('pointId').value = id.split('_')[1];
+                $('bankId').value = id.split('_')[0];
+                $('pointId').value = id.split('_')[1];
                 $('deltaForm').submit();
             }
-	    }
+        }
 
-	    function cancelEdit(id) {
-			$('viewDelta_' + id).show();
-			$('editDelta_' + id).hide();
-	    }
+        function cancelEdit(id) {
+            $('viewDelta_' + id).show();
+            $('editDelta_' + id).hide();
+        }
 
-	    function saveOrCancel(event, id) {
+        function saveOrCancel(event, id) {
             var key = event.keyCode;
-            if(key == 27) {
+            if (key == 27) {
                 /* Escape Key */
-            	cancelEdit(id);
+                cancelEdit(id);
             } else if (key == 13) {
                 /* Enter Key */
                 saveDelta(id);
             }
             return (key != 13);
-	    }
-	    
-    	function showZoneWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}", null, null, 'get');
-		}
-	</script>
+        }
+
+        function showZoneWizard(url) {
+            openSimpleDialog('zoneWizardPopup', url, "${zoneWizardTitle}",
+                    null, null, 'get');
+        }
+    </script>
 
     
     <cti:standardMenu/>
@@ -517,46 +534,195 @@
             <c:choose>
                 <c:when test="${zoneDto.zoneType == threePhase}">
                     <tags:tabbedBoxContainer nameKeys="${nameKeys}">
-                        <c:forEach var="regulatorPointMappings" items="${regulatorPointMappingsList}" varStatus="status">
-                            <tags:tabbedBoxContainerElement>
-                                <tags:alternateRowReset/>
-                                <table class="compactResultsTable">
-                                    <tr style="text-align: left;">
-                                        <th><i:inline key=".attributes.name"/></th>
-                                        <th><i:inline key=".attributes.value"/></th>
-                                        <th><i:inline key=".attributes.timestamp"/></th>
+                        <tags:tabbedBoxContainerElement>
+                            <tags:alternateRowReset/>
+                            <table class="compactResultsTable">
+                                <tr style="text-align: left;">
+                                    <th><i:inline key=".attributes.name"/></th>
+                                    <th><i:inline key=".attributes.phaseAValue"/></th>
+                                    <th><i:inline key=".attributes.phaseBValue"/></th>
+                                    <th><i:inline key=".attributes.phaseCValue"/></th>
+                                </tr>
+                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}" varStatus="status">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td><spring:escapeBody htmlEscape="true">
+                                            ${point.attribute.description}
+                                        </spring:escapeBody></td>
+                                        <td>
+                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseA][status.index].pointId}"/>
+                                            <c:choose>
+                                                <c:when test="${pointId > 0}">
+                                                    <span class="redBullet_${pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
+                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseB][status.index].pointId}"/>
+                                            <c:choose>
+                                                <c:when test="${pointId > 0}">
+                                                    <span class="redBullet_${pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
+                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseC][status.index].pointId}"/>
+                                            <c:choose>
+                                                <c:when test="${pointId > 0}">
+                                                    <span class="redBullet_${pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
+                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
                                     </tr>
-                                    
-                                    <c:forEach var="point" items="${regulatorPointMappings}">
-                                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                            <td><spring:escapeBody htmlEscape="true">
-                                                ${point.attribute.description}
-                                            </spring:escapeBody></td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${point.pointId > 0}">
-                                                        <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <i:inline key="yukon.web.defaults.dashes"/>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${point.pointId > 0}">
-                                                        <cti:pointValue pointId="${point.pointId}" format="DATE"/>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <i:inline key="yukon.web.defaults.dashes"/>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </table>
-                            </tags:tabbedBoxContainerElement>
-                        </c:forEach>
+                                </c:forEach>
+                            </table>
+                        </tags:tabbedBoxContainerElement>
+                        <tags:tabbedBoxContainerElement>
+                            <tags:alternateRowReset/>
+                            <table class="compactResultsTable">
+                                <tr style="text-align: left;">
+                                    <th><i:inline key=".attributes.name"/></th>
+                                    <th><i:inline key=".attributes.value"/></th>
+                                    <th><i:inline key=".attributes.timestamp"/></th>
+                                </tr>
+                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td><spring:escapeBody htmlEscape="true">
+                                            ${point.attribute.description}
+                                        </spring:escapeBody></td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <span class="redBullet_${point.pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <cti:pointValue pointId="${point.pointId}" 
+                                                        format="DATE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </tags:tabbedBoxContainerElement>
+                        <tags:tabbedBoxContainerElement>
+                            <tags:alternateRowReset/>
+                            <table class="compactResultsTable">
+                                <tr style="text-align: left;">
+                                    <th><i:inline key=".attributes.name"/></th>
+                                    <th><i:inline key=".attributes.value"/></th>
+                                    <th><i:inline key=".attributes.timestamp"/></th>
+                                </tr>
+                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseB]}">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td><spring:escapeBody htmlEscape="true">
+                                            ${point.attribute.description}
+                                        </spring:escapeBody></td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <span class="redBullet_${point.pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <cti:pointValue pointId="${point.pointId}" 
+                                                        format="DATE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </tags:tabbedBoxContainerElement>
+                        <tags:tabbedBoxContainerElement>
+                            <tags:alternateRowReset/>
+                            <table class="compactResultsTable">
+                                <tr style="text-align: left;">
+                                    <th><i:inline key=".attributes.name"/></th>
+                                    <th><i:inline key=".attributes.value"/></th>
+                                    <th><i:inline key=".attributes.timestamp"/></th>
+                                </tr>
+                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseC]}">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td><spring:escapeBody htmlEscape="true">
+                                            ${point.attribute.description}
+                                        </spring:escapeBody></td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <span class="redBullet_${point.pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${point.pointId > 0}">
+                                                    <cti:pointValue pointId="${point.pointId}" 
+                                                        format="DATE"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key="yukon.web.defaults.dashes"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </tags:tabbedBoxContainerElement>
                     </tags:tabbedBoxContainer>
                 </c:when>
                 <c:otherwise>
@@ -568,7 +734,6 @@
         		                <th><i:inline key=".attributes.value"/></th>
         		                <th><i:inline key=".attributes.timestamp"/></th>
         		            </tr>
-        		            
         		            <c:forEach var="point" items="${regulatorPointMappings}">
         		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
         		                    <td><spring:escapeBody htmlEscape="true">
@@ -577,7 +742,12 @@
         		                    <td>
         		                        <c:choose>
         		                            <c:when test="${point.pointId > 0}">
-        		                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                <span class="redBullet_${point.pointId}">
+                                                    <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                </span>
+                                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                <cti:dataUpdaterCallback function="setRedBulletForPoint(${point.pointId})" 
+                                                    initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
         		                            </c:when>
         		                            <c:otherwise>
         		                                <i:inline key="yukon.web.defaults.dashes"/>
