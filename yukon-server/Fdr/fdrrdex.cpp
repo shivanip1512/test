@@ -365,7 +365,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
         // Moved this out to catch the case where we don't find the destination.
         string translationName = aPoint.getTranslateName(getLayer()->getName());
 
-        if (!ciStringEqual("",translationName))
+        if (!translationName.empty())
         {
             switch (aPoint.getPointType())
             {

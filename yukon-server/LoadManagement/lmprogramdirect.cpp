@@ -2029,7 +2029,7 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
     }
     else if( ciStringEqual(currentGearObject->getGroupSelectionMethod(), CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod) )
     {
-        if( !(ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) ))//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+        if( !ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
         {
             for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
             {

@@ -95,7 +95,7 @@ public:
         if(parse.getActionItems().size())
         {
             int offset = 0;
-            bool reducelogs = ciStringEqual(gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG"),"true");
+            bool reducelogs = gConfigParms.isTrue("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG");
             for(std::list< string >::const_iterator itr = parse.getActionItems().begin();
                  itr != parse.getActionItems().end();
                  ++itr )

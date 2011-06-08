@@ -1365,8 +1365,6 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         else if ( !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) || 
                     ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || 
                     ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)) )
-
-
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
