@@ -6,6 +6,7 @@
 #include "packet_finder.h"
 
 #include <string>
+#include <vector>
 
 namespace Cti       {
 namespace Protocols {
@@ -27,7 +28,7 @@ private:
     };
 
     template<typename T>
-    static void serialize(vector<unsigned char> &dst, const T src );
+    static void serialize(std::vector<unsigned char> &dst, const T src );
 
 protected:
 
@@ -102,7 +103,7 @@ public:
     //int generate( CtiXfer &xfer );
     static decoded_packet decode( const unsigned char *p_data, unsigned last_seq, const std::string device_name );
 
-    static vector<unsigned char> generateAck(decoded_packet p);
+    static std::vector<unsigned char> generateAck(decoded_packet p);
 
     static bool isPacketValid( const unsigned char *buf, const size_t len );
 
