@@ -182,8 +182,8 @@
                 <entry key="METERS_DISABLED" value-ref="disabledMeterGroupProvider"/>
                 <entry key="METERS_DISCONNECT_COLLAR" value-ref="disconnectCollarGroupProvider"/>
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
-                <entry key="ATTRDEF" value-ref="attributeDefinedGroupProvider"/>
-                <entry key="ATTREXIST" value-ref="attributeExistsGroupProvider"/>
+                <entry key="ATTRIBUTE_DEFINED" value-ref="attributeDefinedGroupProvider"/>
+                <entry key="ATTRIBUTE_EXISTS" value-ref="attributeExistsGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
