@@ -7850,6 +7850,8 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const LONG command )
             {
                 commandName += "Integrity Scan";
                 regulator->executeIntegrityScan();
+                CtiCapController::getInstance()->sendEventLogMessage(
+                    new CtiCCEventLogMsg( "Sent Integrity Scan", regulator->getPaoId(), capControlIvvcScanOperation ) );
                 break;
             }
             case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:

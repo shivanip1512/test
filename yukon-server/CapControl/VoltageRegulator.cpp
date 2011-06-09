@@ -200,7 +200,7 @@ void VoltageRegulator::executeTapUpOperation()
 {
     notifyTapOperation( VoltageRegulator::RaiseTap );
 
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), "Raise Tap Position" );
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), "Raise Tap Position", capControlIvvcTapOperation );
 }
 
 
@@ -208,7 +208,7 @@ void VoltageRegulator::executeTapDownOperation()
 {
     notifyTapOperation( VoltageRegulator::LowerTap );
 
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), "Lower Tap Position" );
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), "Lower Tap Position", capControlIvvcTapOperation );
 }
 
 
@@ -227,13 +227,13 @@ void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
 
 void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
                                                    const std::string & textDescription,
-                                                   const bool recordEvent )
+                                                   const int recordEvent )
 {
     CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), textDescription ) );
 
-    if ( recordEvent )
+    if ( recordEvent >= 0)
     {
-        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId() ) );
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEvent ) );
     }
 
     std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
@@ -247,13 +247,19 @@ void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
 
 void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
                                                    const int keepAliveValue,
-                                                   const std::string & textDescription)
+                                                   const std::string & textDescription,
+                                                   const int recordEvent )
 {
     CtiSignalMsg * signalMsg = createDispatchMessage( point.getPointId(), textDescription );
 
     signalMsg->setPointValue(keepAliveValue);
 
     CtiCapController::getInstance()->sendMessageToDispatch( signalMsg );
+
+    if ( recordEvent >= 0)
+    {
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEvent ) );
+    }
 }
 
 

@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
 
     BOOST_REQUIRE( eventMsg );
 
-    BOOST_CHECK_EQUAL( 19, eventMsg->getEventType() );      // 19 is a 'Tap' event ID
+    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg->getEventType() );
     BOOST_CHECK_EQUAL( "Raise Tap Position", eventMsg->getText() );
 }
 
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
 
     BOOST_REQUIRE( eventMsg );
 
-    BOOST_CHECK_EQUAL( 19, eventMsg->getEventType() );      // 19 is a 'Tap' event ID
+    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg->getEventType() );
     BOOST_CHECK_EQUAL( "Lower Tap Position", eventMsg->getText() );
 }
 
@@ -472,7 +472,14 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+
+    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+
+    BOOST_REQUIRE( eventMsg );
+
+    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg->getEventType() );
+    BOOST_CHECK_EQUAL( "Enable Remote Control", eventMsg->getText() );
 }
 
 
@@ -539,6 +546,13 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+
+    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+
+    BOOST_REQUIRE( eventMsg );
+
+    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg->getEventType() );
+    BOOST_CHECK_EQUAL( "Disable Remote Control", eventMsg->getText() );
 }
 

@@ -5,6 +5,7 @@
 #include "GangOperatedVoltageRegulator.h"
 #include "ccutil.h"
 #include "capcontroller.h"
+#include "ccmessage.h"
 
 
 
@@ -152,7 +153,8 @@ void GangOperatedVoltageRegulator::executeEnableRemoteControl()
 {
     _lastCommandedOperatingMode = RemoteMode;
 
-    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control" );
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control",
+                                capControlIvvcRemoteControlEvent );
 
     executeEnableKeepAlive();
 }
@@ -162,9 +164,22 @@ void GangOperatedVoltageRegulator::executeDisableRemoteControl()
 {
     _lastCommandedOperatingMode = LocalMode;
 
-    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0, "Disable Remote Control" );
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0, "Disable Remote Control",
+                                capControlIvvcRemoteControlEvent );
 
     executeDisableKeepAlive();
+}
+
+
+VoltageRegulator::IDSet GangOperatedVoltageRegulator::getVoltagePointIDs()
+{
+    IDSet IDs;
+
+    LitePoint voltage = getPointByAttribute( PointAttribute::VoltageY );
+
+    IDs.insert( voltage.getPointId() );
+
+    return IDs;
 }
 
 

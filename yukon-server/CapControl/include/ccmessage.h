@@ -43,7 +43,9 @@ enum CtiCCEventType_t
     capControlIvvcCommStatus = 16,
     capControlIvvcMissingPoint = 17,
     capControlIvvcRejectedPoint = 18,
-    capControlIvvcTapOperation
+    capControlIvvcTapOperation = 19,
+    capControlIvvcRemoteControlEvent = 20,
+    capControlIvvcScanOperation = 21
 };
 
 
@@ -289,9 +291,10 @@ public:
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress),
         _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar), _regulatorId(regulatorId) { }; //provided for polymorphic persitence only
 
-    CtiCCEventLogMsg(string text, int regulatorId = 0) : _userName("cap control"), _text(text), _logId(0),
+    CtiCCEventLogMsg(string text, int regulatorId = 0, LONG eventType = -1)
+        : _userName("cap control"), _text(text), _logId(0),
         _pointId(SYS_PID_CAPCONTROL), _spAreaId(0),_areaId(0),_stationId(0),_subId(0),
-        _feederId(0), _eventType(capControlIvvcTapOperation), _seqId(0), _value(0),
+        _feederId(0), _eventType(eventType), _seqId(0), _value(0),
         _kvarBefore(0), _kvarAfter(0), _kvarChange(0), _ipAddress("(N/A)"),
         _actionId(0), _stateInfo("(N/A)"), _aVar(0), _bVar(0), _cVar(0), _regulatorId(regulatorId) { };
 

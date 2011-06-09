@@ -37,6 +37,8 @@ public:
     virtual void executeEnableRemoteControl();
     virtual void executeDisableRemoteControl();
 
+    virtual IDSet getVoltagePointIDs();
+
 protected:
 
     bool            _recentTapOperation;

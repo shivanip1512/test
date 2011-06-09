@@ -69,6 +69,8 @@ public:
 
     IDSet getRegistrationPoints();
 
+    virtual IDSet getVoltagePointIDs() = 0;
+
     LitePoint getPointByAttribute(const PointAttribute & attribute);
 
     OperatingMode getOperatingMode();
@@ -120,8 +122,11 @@ protected:
     void executeIntegrityScanHelper( const LitePoint & point );
     void executeDigitalOutputHelper( const LitePoint & point,
                                      const std::string & textDescription,
-                                     const bool recordEvent = true );
-    void executeRemoteControlHelper( const LitePoint & point, const int keepAliveValue, const std::string & textDescription);
+                                     const int recordEvent = -1 );
+    void executeRemoteControlHelper( const LitePoint & point,
+                                     const int keepAliveValue,
+                                     const std::string & textDescriptionconst,
+                                     const int recordEvent = -1 );
     void executeKeepAliveHelper(const LitePoint & point, const int keepAliveValue);
 
     CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );

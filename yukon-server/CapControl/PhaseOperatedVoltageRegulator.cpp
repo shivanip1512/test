@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "PhaseOperatedVoltageRegulator.h"
 #include "ccutil.h"
+#include "ccmessage.h"
 
 
 namespace Cti           {
@@ -172,14 +173,14 @@ void PhaseOperatedVoltageRegulator::executeEnableKeepAlive()
 
         executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
 
-        executeDigitalOutputHelper( getPointByAttribute( PointAttribute::AutoBlockEnable ), "Auto Block Enable", false );
+        executeDigitalOutputHelper( getPointByAttribute( PointAttribute::AutoBlockEnable ), "Auto Block Enable" );
     }
 }
 
 
 void PhaseOperatedVoltageRegulator::executeDisableKeepAlive()
 {
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::Terminate ), "Keep Alive", false );
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::Terminate ), "Keep Alive" );
 }
 
 
@@ -187,7 +188,8 @@ void PhaseOperatedVoltageRegulator::executeEnableRemoteControl()
 {
     _lastCommandedOperatingMode = RemoteMode;
 
-    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control" );
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control",
+                                capControlIvvcRemoteControlEvent );
 
     executeEnableKeepAlive();
 }
@@ -197,9 +199,24 @@ void PhaseOperatedVoltageRegulator::executeDisableRemoteControl()
 {
     _lastCommandedOperatingMode = LocalMode;
 
-    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0, "Disable Remote Control" );
+    executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0, "Disable Remote Control",
+                                capControlIvvcRemoteControlEvent );
 
     executeDisableKeepAlive();
+}
+
+
+VoltageRegulator::IDSet PhaseOperatedVoltageRegulator::getVoltagePointIDs()
+{
+    IDSet IDs;
+
+    LitePoint voltageX = getPointByAttribute( PointAttribute::VoltageX );
+    LitePoint voltageY = getPointByAttribute( PointAttribute::VoltageY );
+
+    IDs.insert( voltageX.getPointId() );
+    IDs.insert( voltageY.getPointId() );
+
+    return IDs;
 }
 
 
