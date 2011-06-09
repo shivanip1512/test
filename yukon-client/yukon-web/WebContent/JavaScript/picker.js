@@ -153,7 +153,8 @@ Picker.prototype = {
 	 */
 	init : function(viewMode) {
 	    this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
-	    if (!viewMode) {
+	    // Note: !viewMode here will not work. viewMode is a string.
+	    if (viewMode == 'false') {
 	        if (this.selectionProperty) {
 	            this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup');
 	            this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea');
