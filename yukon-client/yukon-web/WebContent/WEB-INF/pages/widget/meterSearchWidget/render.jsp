@@ -10,10 +10,9 @@
 
 
     <form id="filterForm" action="/spring/meter/search">
-        <input type="hidden" name="Filter" value="true" >
         <tags:nameValueContainer altRowOn="false" tableClass="nonwrapping">
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
-            <tags:nameValue name="${filter.name}"><input size="40" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
+                <tags:nameValue name="${filter.name}"><input size="40" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
 	        </c:forEach>
         </tags:nameValueContainer>
         

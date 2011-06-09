@@ -69,7 +69,7 @@
         </div>
         <div style="clear:both"></div>
         <br>
-        <cti:button key="filter" name="true" value="true" type="submit"/>
+        <cti:button key="filter" name="filter" value="true" type="submit"/>
         <cti:button key="showAll" onclick="javascript:clearFilter()"/>
     </form>
     </tags:hideReveal>
