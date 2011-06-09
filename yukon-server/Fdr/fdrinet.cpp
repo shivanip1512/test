@@ -981,6 +981,7 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                  // need to intercept sending a status point to make it DSM2 like
                 switch (aPoint.getPointType())
                 {
+                    case CalculatedStatusPointType:
                     case StatusPointType:
                         {
                             ptr->msgUnion.value.Value = aPoint.getValue()+1;

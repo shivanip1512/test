@@ -456,6 +456,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     break;
                 }
 
+            case CalculatedStatusPointType:
             case StatusPointType:
                 {
                     if (aPoint.isControllable())

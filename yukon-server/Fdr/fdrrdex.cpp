@@ -391,6 +391,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                         break;
                     }
 
+                case CalculatedStatusPointType:
                 case StatusPointType:
                     {
                         if (aPoint.isControllable())

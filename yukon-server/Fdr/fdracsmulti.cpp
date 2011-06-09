@@ -369,6 +369,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                 break;
             }
 
+        case CalculatedStatusPointType:
         case StatusPointType:
             {
                 /* status point is both status and or control so we must check
