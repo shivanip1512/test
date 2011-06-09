@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
@@ -23,10 +24,11 @@ import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.ModelRow> implements EnergyCompanyModelAttributes {
+public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(OptOutLimitModel.class);
 
@@ -35,6 +37,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
     private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
+    private DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
+    
+    private YukonUserContext userContext;
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -53,8 +58,8 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         public String enrolledProgram;
         public Integer numberOfOverridesUsed;
         public String issuingUser;
-        public Date optOutStart;
-        public Date optOutStop;
+        public String optOutStart;
+        public String optOutStop;
     }
 
     private Comparator<OptOutLimitModel.ModelRow> optOutLimitModelRowComparator = 
@@ -281,9 +286,13 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             row.enrolledProgram = getProgramNames(programList);
             row.numberOfOverridesUsed = overrideHistory.isCountedAgainstLimit() ? 1 : 0;
             row.issuingUser = overrideHistory.getUserName();
-
-            row.optOutStart = overrideHistory.getStartDate();
-            row.optOutStop = overrideHistory.getStopDate();
+            row.optOutStart = dateFormattingService.format(overrideHistory.getStartDate(), 
+                                                           DateFormatEnum.BOTH, 
+                                                           userContext);
+            row.optOutStop = dateFormattingService.format(overrideHistory.getStopDate(), 
+                                                          DateFormatEnum.BOTH, 
+                                                          userContext);
+            
             data.add(row);
     }
 
@@ -315,5 +324,14 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         }
         
         return programNamesStr;
+    }
+
+    @Override
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
+
+    public YukonUserContext getUserContext() {
+        return userContext;
     }
 }
