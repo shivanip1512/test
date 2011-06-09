@@ -14,7 +14,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
-<cti:includeScript link="/JavaScript/simpleCookies.js"/>
+<cti:includeScript link="/JavaScript/simpleCookies.js" />
+<cti:includeScript link="/JavaScript/simpleDialog.js" />
 
 <div class="pagedBox<c:if test="${!empty pageScope.styleClass}"> ${pageScope.styleClass}</c:if>"<c:if test="${!empty pageScope.id}"> id="${pageScope.id}"</c:if>>
 
@@ -36,8 +37,7 @@
                     </c:if>
                 </td>
 
-                <tags:nextPrevLinks searchResult="${pageScope.searchResult}"
-                    baseUrl="${pageScope.baseUrl}" mode="jsp"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
             </tr>
         </table>
     </div>
@@ -51,19 +51,14 @@
             <tr>
                 <td class="perPageArea">
                     <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10"
-                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25"
-                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50"
-                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50" baseUrl="${pageScope.baseUrl}"/>&nbsp;
                     <c:if test="${pageScope.pageByHundereds}">
-                        <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100"
-                            baseUrl="${pageScope.baseUrl}"/>
+                        <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100" baseUrl="${pageScope.baseUrl}"/>
                     </c:if>
                 </td>
-                <tags:nextPrevLinks searchResult="${pageScope.searchResult}"
-                    baseUrl="${pageScope.baseUrl}" mode="jsp"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
             </tr>
         </table>
     </div>
