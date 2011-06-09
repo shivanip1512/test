@@ -1326,6 +1326,8 @@
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                     <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES"/>
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
                                         <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <menu>energyCompanySetup|home</menu>
@@ -1404,6 +1406,7 @@
                                         </pages>
                                     </page>
                                     <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
                                         <menu>energyCompanySetup|home</menu>
                                         <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
