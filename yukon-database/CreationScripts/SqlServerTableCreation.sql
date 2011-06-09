@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/6/2011 11:10:52 AM                         */
+/* Created on:     6/9/2011 9:42:38 AM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5609,27 +5609,6 @@ create table LMGroupVersacom (
    RELAYUSAGE           char(7)              not null,
    SerialAddress        varchar(15)          not null,
    constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
-)
-go
-
-/*==============================================================*/
-/* Table: LMGroupXMLParameter                                   */
-/*==============================================================*/
-create table LMGroupXMLParameter (
-   LMGroupXMLParameterId numeric              not null,
-   LMGroupId            numeric              not null,
-   ParameterName        varchar(50)          not null,
-   ParameterValue       varchar(50)          not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (LMGroupXMLParameterId)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_LMGroupId_ParamName_UNQ                          */
-/*==============================================================*/
-create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
-LMGroupId ASC,
-ParameterName ASC
 )
 go
 
@@ -12264,12 +12243,6 @@ go
 alter table LMGroupVersacom
    add constraint SYS_C0013367 foreign key (ROUTEID)
       references Route (RouteID)
-go
-
-alter table LMGroupXMLParameter
-   add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
-      references LMGroup (DeviceID)
-         on delete cascade
 go
 
 alter table LMHardwareBase

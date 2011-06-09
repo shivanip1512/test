@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/6/2011 11:12:21 AM                         */
+/* Created on:     6/9/2011 9:21:20 AM                          */
 /*==============================================================*/
 
 
@@ -5307,25 +5307,6 @@ create table LMGroupVersacom  (
    RELAYUSAGE           CHAR(7)                         not null,
    SerialAddress        VARCHAR2(15)                    not null,
    constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
-);
-
-/*==============================================================*/
-/* Table: LMGroupXMLParameter                                   */
-/*==============================================================*/
-create table LMGroupXMLParameter  (
-   LMGroupXMLParameterId NUMBER                          not null,
-   LMGroupId            NUMBER                          not null,
-   ParameterName        VARCHAR2(50)                    not null,
-   ParameterValue       VARCHAR2(50)                    not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (LMGroupXMLParameterId)
-);
-
-/*==============================================================*/
-/* Index: INDX_LMGroupId_ParamName_UNQ                          */
-/*==============================================================*/
-create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
-   LMGroupId ASC,
-   ParameterName ASC
 );
 
 /*==============================================================*/
@@ -11332,11 +11313,6 @@ alter table LMGroupVersacom
 alter table LMGroupVersacom
    add constraint SYS_C0013367 foreign key (ROUTEID)
       references Route (RouteID);
-
-alter table LMGroupXMLParameter
-   add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
-      references LMGroup (DeviceID)
-      on delete cascade;
 
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)

@@ -244,6 +244,23 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -20907;
 /* End YUK-9871 */
 
+/* Start YUK-9620 */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonPAObject PAO 
+        WHERE PAO.Type = 'INTEGRATION GROUP' 
+          OR PAO.Type = 'INTEGRATION' 
+          OR PAO.Type = 'Integration Route')
+            RAISERROR('The database update requires manual interaction to continue. Please refer to YUK-9620 for more information on removing existing, non-support Integration Groups, Integration Routes, and/or Integration Transmitters.', 16, 1);
+GO
+
+DROP INDEX INDX_LMGroupId_ParamName_UNQ;
+ALTER TABLE LMGroupXMLParameter
+    DROP CONSTRAINT FK_LMGroupXml_LMGroup;
+GO
+
+DROP TABLE LMGroupXMLParameter;
+/* End YUK-9620 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
