@@ -5280,7 +5280,7 @@
             <point type="Analog" offset="8">
             	<init>true</init>
                 <name>Delta Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>          
@@ -5298,6 +5298,11 @@
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point = "Average Line Voltage" />            
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">
@@ -5327,22 +5332,22 @@
             </point>
             <point type="Analog" offset="5">
                 <init>true</init>
-                <name>Voltage</name>
-                <multiplier value="0.1"/>
+                <name>Average Line Voltage</name>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="6">
                 <init>true</init>
                 <name>High Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="7">
                 <init>true</init>
                 <name>Low Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
@@ -5405,7 +5410,7 @@
             <point type="Analog" offset="19">
                 <init>true</init>
                 <name>VAR RMS Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
@@ -5690,11 +5695,6 @@
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point = "Voltage" />            
-            </attribute>
-        </attributes>
     </pao>
     
     <pao id="CBC_7020" inherits="CBC_702X_BASE">
@@ -5771,7 +5771,7 @@
             </point>
             <point type="Analog" offset="3">
                 <init>true</init>
-                <name>Line Voltage</name>
+                <name>Average Line Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
@@ -5793,21 +5793,21 @@
             <point type="Analog" offset="9">
                 <init>true</init>
                 <name>High Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10">
                 <init>true</init>
                 <name>Low Voltage</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
                 <init>true</init>
                 <name>Last Control Reason</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
@@ -5909,12 +5909,14 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="10015">
+                <init>true</init>
+                <name>Average Line Voltage Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
         </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point = "Line Voltage" />            
-            </attribute>
-        </attributes>
     </pao>
     
     <pao id="CBC_8020" inherits="CBC_802X_BASE">
