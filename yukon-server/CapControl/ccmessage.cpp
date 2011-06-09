@@ -13,6 +13,7 @@
 
 #include "ccmessage.h"
 #include "ccid.h"
+#include "VoltageRegulator.h"
 
 #include <time.h>
 #include "utility.h"

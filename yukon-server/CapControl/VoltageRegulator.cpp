@@ -227,13 +227,13 @@ void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
 
 void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
                                                    const std::string & textDescription,
-                                                   const int recordEvent )
+                                                   const int recordEventType )
 {
     CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), textDescription ) );
 
-    if ( recordEvent >= 0)
+    if ( recordEventType != capControlNoEvent )
     {
-        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEvent ) );
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEventType ) );
     }
 
     std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
@@ -248,7 +248,7 @@ void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
 void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
                                                    const int keepAliveValue,
                                                    const std::string & textDescription,
-                                                   const int recordEvent )
+                                                   const int recordEventType )
 {
     CtiSignalMsg * signalMsg = createDispatchMessage( point.getPointId(), textDescription );
 
@@ -256,9 +256,9 @@ void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
 
     CtiCapController::getInstance()->sendMessageToDispatch( signalMsg );
 
-    if ( recordEvent >= 0)
+    if ( recordEventType != capControlNoEvent )
     {
-        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEvent ) );
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEventType ) );
     }
 }
 

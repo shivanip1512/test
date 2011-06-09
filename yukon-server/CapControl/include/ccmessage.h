@@ -10,7 +10,14 @@
 #include "ccarea.h"
 #include "ccsparea.h"
 #include "ccstate.h"
-#include "VoltageRegulator.h"
+
+namespace Cti
+{
+    namespace CapControl
+    {
+        class VoltageRegulator;
+    }
+}
 
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
 typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
@@ -24,6 +31,7 @@ typedef std::set<CtiCCSubstationBusPtr> CtiCCSubstationBus_set;
 
 enum CtiCCEventType_t
 {
+    capControlNoEvent = -1,
     capBankStateUpdate = 0,  //operation confirmed
     capControlCommandSent = 1, //operation sent
     capControlManualCommand = 2,

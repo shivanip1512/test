@@ -6,6 +6,7 @@
 #include "yukon.h"
 #include "CapControlPao.h"
 #include "UpdatablePao.h"
+#include "ccmessage.h"
 #include "LitePoint.h"
 #include "PointValueHolder.h"
 #include "AttributeService.h"
@@ -120,13 +121,16 @@ protected:
     virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
 
     void executeIntegrityScanHelper( const LitePoint & point );
+
     void executeDigitalOutputHelper( const LitePoint & point,
                                      const std::string & textDescription,
-                                     const int recordEvent = -1 );
+                                     const int recordEventType = capControlNoEvent );
+
     void executeRemoteControlHelper( const LitePoint & point,
                                      const int keepAliveValue,
-                                     const std::string & textDescriptionconst,
-                                     const int recordEvent = -1 );
+                                     const std::string & textDescription,
+                                     const int recordEventType = capControlNoEvent );
+
     void executeKeepAliveHelper(const LitePoint & point, const int keepAliveValue);
 
     CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );
