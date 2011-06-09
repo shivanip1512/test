@@ -86,8 +86,9 @@ import com.google.common.collect.SetMultimap;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_EVENT_LOGS)
 public class EventLogViewerController {
 
+    private final int maxCsvRows = 65536; 
     private final String eventLogResolvablePrefix ="yukon.common.events.";
-
+    
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private EventLogCategoryValidator eventLogCategoryValidator;
     private EventLogFilterFactory eventLogFilterFactory;
@@ -167,7 +168,7 @@ public class EventLogViewerController {
             eventLogUIService.getDataGridRowByCategory(searchResult, userContext);
         
         // Build and write csv report
-        String categoryCsvFileName = messageSourceAccessor.getMessage("yukon.web.modules.support.byCategory.csvExport.fileName");
+        String categoryCsvFileName = messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName");
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition",
                            "filename=\"" + ServletUtil.makeWindowsSafeFileName(categoryCsvFileName)+ ".csv\"");
@@ -532,6 +533,11 @@ public class EventLogViewerController {
         Set<EventCategory> allCategories = eventLogDao.getAllCategories();
         List<EventCategory> result = Ordering.natural().sortedCopy(allCategories);
         return result;
+    }
+
+    @ModelAttribute("maxCsvRows")
+    public int getMaxCsvRows(){
+        return maxCsvRows;
     }
     
     /* INIT BINDER */

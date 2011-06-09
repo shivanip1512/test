@@ -97,12 +97,15 @@
         
     </table>
 
+    <%-- GENERATE REPORTS --%>
     <div style="text-align: right;">
-        <%-- GENERATE REPORTS --%>
-
-        <cti:labeledImg key="csvExport" href="${csvLink}"/>
-
+        <cti:labeledImg key="csvExport" id="csvExportButton"/>
     </div>
+        
+    <c:if test="${maxCsvRows < searchResult.hitCount}">
+        <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+    </c:if>
+
 
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
     <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">

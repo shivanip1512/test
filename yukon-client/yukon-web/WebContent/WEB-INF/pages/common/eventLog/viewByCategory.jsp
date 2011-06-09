@@ -6,7 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<cti:standardPage title="Event Log" module="support" page="byCategory">
+<cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
     <c:set var="baseUrl" value="/spring/common/eventLog/viewByCategory"/>
     
@@ -41,11 +41,15 @@
         </form:form>
     </tags:sectionContainer>
 
+    <%-- GENERATE REPORTS --%>
     <div style="text-align: right;">
-        <%-- GENERATE REPORTS --%>
-
-        <cti:labeledImg key="csvExport" href="${csvLink}"/>
+        <cti:labeledImg key="csvExport" id="csvExportButton"/>
     </div>
+        
+    <c:if test="${maxCsvRows < searchResult.hitCount}">
+        <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+    </c:if>
+        
 
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>

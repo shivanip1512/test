@@ -42,6 +42,14 @@ Yukon.ui = {
             });
         });
         
+        // close popup on submit event
+        $$("button.f_closePopupOnSubmit").each(function(elem){
+            elem.observe('click', function(event){
+            	elem.up('.popUpDiv:first').hide();
+                return true;
+            });
+        });
+        
         // resize it with the window
         Event.observe(window, 'resize', function(event) {
             //get visible blocked element's glass and redraw them as well
