@@ -31,10 +31,10 @@
 
         <div class="actionArea">
             <c:if test="${empty pageScope.submitName}">
-                <cti:button key="ok" type="submit" />
+                <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" />
             </c:if>
             <c:if test="${!empty pageScope.submitName}">
-                <cti:button key="ok" type="submit" name="${pageScope.submitName}" href="${pageScope.href}"/>
+                <cti:button styleClass="${pageScope.styleClass}" key="ok" type="submit" name="${pageScope.submitName}" href="${pageScope.href}"/>
             </c:if>
             <cti:button key="cancel" onclick="$('${uniqueId}').hide()" />
         </div>
