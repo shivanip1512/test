@@ -440,6 +440,10 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         final List<CcEventType> bankEventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.BankStateUpdate, 
                                                       CcEventType.CommandSent, 
                                                       CcEventType.ManualCommand});
+        final List<CcEventType> regulatorEventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.IvvcTapOperation, 
+                                                           CcEventType.IvvcRemoteControl, 
+                                                           CcEventType.IvvcScanOperation});
+
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -466,7 +470,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sql.append("    UNION");
         sql.append("    SELECT LogId, PAO.PaoName");
         sql.append("    FROM CCEventLog EV3");
-        sql.append("    JOIN ZoneRegulator ZR ON EV3.RegulatorId = ZR.RegulatorId AND EV3.EventType").eq(CcEventType.IvvcTapOperation);  
+        sql.append("    JOIN ZoneRegulator ZR ON EV3.RegulatorId = ZR.RegulatorId AND EV3.EventType").in(regulatorEventTypes);  
         sql.append("    JOIN YukonPAObject PAO ON EV3.RegulatorId = PAO.PAObjectId");
         sql.append("    WHERE ZR.ZoneId").eq(zoneId);
         sql.append("  ) EVU on EVU.LogId = EV.LogId");

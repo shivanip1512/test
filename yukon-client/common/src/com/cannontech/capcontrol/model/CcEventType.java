@@ -7,7 +7,9 @@ public enum CcEventType implements DatabaseRepresentationSource {
     CommandSent(1),
     ManualCommand(2),
     IvvcCommStatus(16),
-    IvvcTapOperation(19);
+    IvvcTapOperation(19),
+    IvvcRemoteControl(20),
+    IvvcScanOperation(21);
 
     private int eventTypeId;
     
