@@ -41,7 +41,7 @@ public:
 
 protected:
     
-    long readKeepAliveTimerReload();
+    long getKeepAliveRefreshRate();
 
     bool            _recentTapOperation;
 

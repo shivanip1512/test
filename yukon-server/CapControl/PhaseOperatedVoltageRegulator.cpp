@@ -96,7 +96,7 @@ void PhaseOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 
 void PhaseOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
-    _keepAliveTimer = readKeepAliveTimerReload();
+    _keepAliveTimer = getKeepAliveRefreshRate();
 
     bool recentOperation = ( ( _lastTapOperationTime + 30 ) > CtiTime() );
 
@@ -225,18 +225,18 @@ VoltageRegulator::IDSet PhaseOperatedVoltageRegulator::getVoltagePointIDs()
 
 /*
     We get this value from an attached point.  In case of no point update or value out of range (negative) we return 0 which
-        disables the automatic keep alive.  The value represents the amount of time (in seconds) it takes for the regulator
-        to time out and return to auto mode after receiving a valid keep alive.  We divide it by two so we send keep alive
-        messages twice as frequently as necessary.
+        disables the automatic keep alive.  The value represents the amount of time (in minutes) it takes for the regulator
+        to time out and return to auto mode after receiving a valid keep alive.
+        We convert to seconds but divide by two because we want send keep alive messages twice as frequently as necessary.
 */
-long PhaseOperatedVoltageRegulator::readKeepAliveTimerReload()
+long PhaseOperatedVoltageRegulator::getKeepAliveRefreshRate()
 {
     double    value = -1.0;
     LitePoint point = getPointByAttribute( PointAttribute::HeartbeatTimerConfig );
 
     if ( getPointValue( point.getPointId(), value ) )
     {        
-        return ( value <= 0.0 ) ? 0 : static_cast<long>( value / 2.0 );
+        return ( value <= 0.0 ) ? 0 : static_cast<long>( value * 60.0 / 2.0 );
     }
 
     return 0;
