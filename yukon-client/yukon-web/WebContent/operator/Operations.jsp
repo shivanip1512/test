@@ -39,8 +39,6 @@
 
 <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
-<div><h3 class="indentedElementHeading">${energyCompanyName}</h3></div>
-
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
         <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
 			<tags:sectionLink>

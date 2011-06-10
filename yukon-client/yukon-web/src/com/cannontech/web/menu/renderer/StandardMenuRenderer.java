@@ -21,16 +21,12 @@ import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -72,7 +68,6 @@ public class StandardMenuRenderer implements MenuRenderer {
     private String[] selections = new String[2];
     private final MessageSourceAccessor messageSource;
     private PageInfo currentPage;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
@@ -80,16 +75,14 @@ public class StandardMenuRenderer implements MenuRenderer {
      * for the context path.
      * @param request the current request object
      * @param moduleBase the menu base of the current module
-     * @param yukonEnergyCompanyService
      * @param messageSource 
      */
-    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase, PageInfo currentPage, YukonUserContextMessageSourceResolver messageSourceResolver, YukonEnergyCompanyService yukonEnergyCompanyService) {
+    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase, PageInfo currentPage, YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.httpServletRequest = request;
         this.moduleBase = moduleBase;
         this.userContext = YukonUserContextUtils.getYukonUserContext(request);
         this.messageSource = messageSourceResolver.getMessageSourceAccessor(userContext);
         this.currentPage = currentPage; // may null for non "new" <pages> setup in module_config
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     public String renderMenu() {
@@ -225,7 +218,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         link.addElement(e(menuLabel));
         
         // check for custom title
-        String title = messageSource.getMessageWithDefault(linkKey + ".title", defaultTitle, argument);
+        String title = messageSource.getMessageWithDefault(linkKey + ".title", defaultTitle);
         
         link.setTitle(e(title));
         return link;
@@ -336,15 +329,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             String companyName = cache.getEnergyCompany(energyCompanyId).getParent().getName();
             logoutLink = createLink("yukon.web.menu.backToEc", "", companyName);
         } else {
-            String logoutTooltip = null;
-            try{
-                LiteYukonUser user = userContext.getYukonUser();
-                YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-                logoutTooltip = energyCompany.getName();
-            }catch(EmptyResultDataAccessException e){
-                logoutTooltip = "of Yukon";
-            }
-            logoutLink = createLink("yukon.web.menu.logout",null,logoutTooltip);
+            logoutLink = createLink("yukon.web.menu.logout","");
         }
         
         logoutLink.setHref(buildUrl("/servlet/LoginController?ACTION=LOGOUT"));
