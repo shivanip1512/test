@@ -39,7 +39,7 @@
         
         <input type="hidden" name="schedules" value="<spring:escapeBody htmlEscape="true">${schedules}</spring:escapeBody>"/>
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
-        <input type="hidden" name="type" value="${type}">
+        <input type="hidden" name="thermostatType" value="${thermostatType}">
         <input type="hidden" name="scheduleMode" value="${scheduleMode}"/>
         <input type="hidden" name="temperatureUnit" value="${temperatureUnit}"/>
         <input type="hidden" name="scheduleId" value="${scheduleId}"/>
@@ -51,7 +51,7 @@
 		    <cti:msg var="okText" key="yukon.dr.consumer.thermostatScheduleConfirm.ok" />
 		    <cti:msg var="cancelText" key="yukon.dr.consumer.thermostatScheduleConfirm.cancel" />
 		    <input type="submit" value="${okText}"/>
-		    <input type="button" value="${cancelText}" onclick="javascript: window.location='/spring/stars/consumer/thermostat/schedule/view?thermostatIds=${thermostatIds}'"/>
+		    <input type="button" value="${cancelText}" onclick="javascript: window.location='/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=${thermostatIds}'"/>
 	    </div>
     </form>
           

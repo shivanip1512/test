@@ -159,10 +159,14 @@
     <entry key="yukon.dr.consumer.thermostat.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday</entry>
     <entry key="yukon.dr.consumer.thermostat.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
     <entry key="yukon.dr.consumer.thermostat.ALL">All</entry>
+    <entry key="yukon.dr.consumer.thermostat.SINGLE">Each Day</entry>
     <entry key="yukon.dr.consumer.thermostat.deletedSchedule">(Deleted schedule)</entry>
     <entry key="yukon.dr.consumer.thermostat.sendConfirm.title">Confirm New Thermostat Settings</entry>
     <entry key="yukon.dr.consumer.thermostat.sendConfirm.message">Proceed with the following thermostat settings?</entry>
     <entry key="yukon.dr.consumer.thermostat.temperature">Temperature</entry>
+    
+    <!--  history.jsp -->
+    <entry key="yukon.dr.consumer.history.header">Thermostat History</entry>
    
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>
@@ -226,7 +230,8 @@
     <!--  schedule update events: consumer page -->
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_ERROR">Cannot send schedule to thermostat {0}. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_MULTIPLE_ERROR">There was a problem sending the schedule to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
-    <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_UPDATE_SCHEDULE_SUCCESS">The schedule has been saved and sent to thermostat {0}.  It may take a few minutes before the thermostat receives it.</entry>
+    <entry key="yukon.dr.consumer.scheduleUpdate.result.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
+    <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
     
     <entry key="yukon.dr.consumer.scheduleUpdate.result.saveSuccessful">The schedule has been saved.</entry>
                 
@@ -273,6 +278,14 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.sleep">Sleep (S)</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.occupied">Occupied (O)</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.unoccupied">Unoccupied (U)</entry>
+    
+    <entry key="yukon.dr.consumer.thermostatSchedule.WAKE">Wake</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.LEAVE">Leave</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.RETURN">Return</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.SLEEP">Sleep</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.OCCUPIED">Occupied</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.UNOCCUPIED">Unoccupied</entry>
+    
     <entry key="yukon.dr.consumer.thermostatSchedule.start">Start At:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.coolTemp">Cooling Temp:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.heatTemp">Heating Temp:</entry>
@@ -285,6 +298,7 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.deleteSuccess"><![CDATA[The schedule <b>{0}</b> has been successfully deleted.]]></entry>
     
     <!--  thermostatScheduleConfirm.jsp -->
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.header">Thermostat - Schedule Confirm</entry>
@@ -305,6 +319,12 @@
     <entry key="yukon.dr.consumer.savedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.dr.consumer.savedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.dr.consumer.savedSchedules.deleteSchedule">Delete Schedule</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.modeHint">Pick the mode...</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.sendConfirm.title">Confirm New Thermostat Settings</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.sendConfirm.message">Proceed with the following thermostat settings?</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.noSchedulesHelper">There are no saved schedules. Please create a new schedule by clicking the 'Create' button below.</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.header">Schedule Name</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.title">::CHANGE::</entry>
 
     <!-- allThermostats.jsp -->
     <entry key="yukon.dr.consumer.allThermostats.header">Thermostat - All</entry>
@@ -322,8 +342,28 @@
     <entry key="yukon.dr.consumer.thermostat.schedule.EVERYDAY">Everyday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.WEEKDAY">Weekday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.WEEKEND">Weekend</entry>
+
     <entry key="yukon.dr.consumer.thermostat.schedule.SATURDAY">Saturday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.SUNDAY">Sunday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.MONDAY">Monday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.TUESDAY">Tuesday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.WEDNESDAY">Wednesday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.THURSDAY">Thursday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.FRIDAY">Friday</entry>
+    
+    <!-- Time of week abbreviated -->
+    <entry key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr">All</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.WEEKDAY_abbr">M-F</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.WEEKEND_abbr">Sa/Su</entry>
+
+    <entry key="yukon.dr.consumer.thermostat.schedule.SATURDAY_abbr">Sa</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.SUNDAY_abbr">Su</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.MONDAY_abbr">M</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.TUESDAY_abbr">Tu</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.WEDNESDAY_abbr">W</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.THURSDAY_abbr">Th</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.FRIDAY_abbr">F</entry>
+    
 
     <!-- Hardware Types -->
     <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT">ExpressStat</entry>
@@ -340,6 +380,8 @@
     <entry key="yukon.dr.consumer.hardware.type.SA_SIMPLE">SA Simple</entry>
     <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT_HEAT_PUMP">Heat Pump</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO">UtilityPRO</entry>
+    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G2">UtilityPRO G2</entry>
+    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G3">UtilityPRO G3</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_ZIGBEE">UtilityPRO Zigbee</entry>
 
     <!-- changeLogin.jsp -->

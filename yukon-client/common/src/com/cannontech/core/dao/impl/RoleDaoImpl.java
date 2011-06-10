@@ -177,6 +177,10 @@ public class RoleDaoImpl implements RoleDao {
         
           return null;
     }
+    
+    public boolean updateGroupRoleProperty(LiteYukonGroup group, YukonRoleProperty property, String newVal) {
+        return updateGroupRoleProperty(group, property.getRole().getRoleId(), property.getPropertyId(), newVal);
+    }
 
     public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) {
         

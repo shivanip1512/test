@@ -165,8 +165,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
             LocalTime startTime = entry.getStartTimeLocalTime();
 
-            int coolTemp = entry.getCoolTemp();
-            int heatTemp = entry.getHeatTemp();
+            int coolTemp = entry.getCoolTemp().getIntValue();
+            int heatTemp = entry.getHeatTemp().getIntValue();
 
             if (coolTemp == -1 && heatTemp == -1) {
                 // temp of -1 means ignore this time/temp pair - used when only

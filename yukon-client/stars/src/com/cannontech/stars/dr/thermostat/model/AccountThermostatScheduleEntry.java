@@ -2,7 +2,11 @@ package com.cannontech.stars.dr.thermostat.model;
 
 import java.util.Comparator;
 
+import net.sf.jsonOLD.JSONObject;
+
 import org.joda.time.LocalTime;
+
+import com.cannontech.common.temperature.FahrenheitTemperature;
 
 
 public class AccountThermostatScheduleEntry {
@@ -11,20 +15,27 @@ public class AccountThermostatScheduleEntry {
 	private int accountThermostatScheduleId;
 	private Integer startTime;            //in seconds
 	private TimeOfWeek timeOfWeek;
-	private Integer	coolTemp;
-	private Integer	heatTemp;
+	private FahrenheitTemperature	coolTemp;
+	private FahrenheitTemperature	heatTemp;
 	
 	public AccountThermostatScheduleEntry() {
 	}
+	
+	public AccountThermostatScheduleEntry(JSONObject obj){
+	    this.startTime = obj.getInt("startTime");
+	    this.timeOfWeek = TimeOfWeek.valueOf(obj.getString("timeOfWeek"));
+        this.coolTemp = new FahrenheitTemperature(obj.getDouble("coolTemp"));
+        this.heatTemp = new FahrenheitTemperature(obj.getDouble("heatTemp"));
+	}
 
-	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, int coolTemp, int	heatTemp) {
+	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, FahrenheitTemperature coolTemp, FahrenheitTemperature	heatTemp) {
 		this.startTime = startTime;
 		this.timeOfWeek = timeOfWeek;
 		this.coolTemp = coolTemp;
 		this.heatTemp = heatTemp;
 	}
 	
-	public AccountThermostatScheduleEntry(LocalTime startTime, TimeOfWeek timeOfWeek, int coolTemp, int heatTemp){
+	public AccountThermostatScheduleEntry(LocalTime startTime, TimeOfWeek timeOfWeek, FahrenheitTemperature coolTemp, FahrenheitTemperature heatTemp){
 	    setStartTime(startTime);
 	    this.timeOfWeek = timeOfWeek;
 	    this.coolTemp = coolTemp;
@@ -59,17 +70,17 @@ public class AccountThermostatScheduleEntry {
 	public void setTimeOfWeek(TimeOfWeek timeOfWeek) {
 		this.timeOfWeek = timeOfWeek;
 	}
-	public int getCoolTemp() {
+	public FahrenheitTemperature getCoolTemp() {
 		return coolTemp;
 	}
-	public void setCoolTemp(int coolTemp) {
-		this.coolTemp = coolTemp;
+	public void setCoolTemp(FahrenheitTemperature fahrenheitTemperature) {
+		this.coolTemp = fahrenheitTemperature;
 	}
-	public int getHeatTemp() {
+	public FahrenheitTemperature getHeatTemp() {
 		return heatTemp;
 	}
-	public void setHeatTemp(int heatTemp) {
-		this.heatTemp = heatTemp;
+	public void setHeatTemp(FahrenheitTemperature fahrenheitTemperature) {
+		this.heatTemp = fahrenheitTemperature;
 	}
 	
 	public LocalTime getStartTimeLocalTime() {
@@ -96,9 +107,9 @@ public class AccountThermostatScheduleEntry {
                        return (new Integer(o1.getStartTime())).compareTo(new Integer(o2.getStartTime())); 
                    }
                    if(o1.getCoolTemp() != o2.getCoolTemp()){
-                       return (new Integer(o1.getCoolTemp())).compareTo(new Integer(o2.getCoolTemp())); 
+                       return (o1.getCoolTemp()).compareTo(o2.getCoolTemp()); 
                    }
-                   return (new Integer(o1.getHeatTemp())).compareTo(new Integer(o2.getHeatTemp())); 
+                   return (o1.getHeatTemp()).compareTo(o2.getHeatTemp()); 
                }
        };
        return atsEntryComparator;

@@ -8,7 +8,9 @@ public enum ThermostatScheduleUpdateResult {
     NO_SERIAL_ERROR(true), 
     UPDATE_SCHEDULE_ERROR(true), 
     MULTIPLE_ERROR(true), 
-    UPDATE_SCHEDULE_SUCCESS(false),
+    UPDATE_SCHEDULE_SUCCESS(false), 
+    SEND_SCHEDULE_ERROR(true), 
+    SEND_SCHEDULE_SUCCESS(false),
     ;
 
     private boolean failed;

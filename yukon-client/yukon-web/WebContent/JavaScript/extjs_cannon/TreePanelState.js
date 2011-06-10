@@ -5,11 +5,11 @@ function TreePanelState(mytree) {
 TreePanelState.prototype.init = function() {
     this.cp = new Ext.state.CookieProvider();
     this.state = this.cp.get('TreePanelState_' + this.mytree.id, new Array() );
-}
+};
 TreePanelState.prototype.saveState = function(newState) {
     this.state = newState;
     this.cp.set('TreePanelState_' + this.mytree.id, this.state);
-}
+};
 TreePanelState.prototype.onExpand = function(node) {
     var currentPath = node.getPath();
     var newState = new Array();
@@ -23,7 +23,7 @@ TreePanelState.prototype.onExpand = function(node) {
     // now ad the new path
     newState.push(currentPath);
     this.saveState(newState);
-}
+};
 TreePanelState.prototype.onCollapse = function(node){
     var closedPath = closedPath = node.getPath();
     var newState = new Array();
@@ -39,7 +39,7 @@ TreePanelState.prototype.onCollapse = function(node){
         newState.push((parentNode == null ? this.mytree.pathSeparator : parentNode.getPath()));
     }
     this.saveState(newState);
-}
+};
 TreePanelState.prototype.restoreState = function(defaultPath) { 
     
     if (this.state.length == 0) {
@@ -59,4 +59,4 @@ TreePanelState.prototype.restoreState = function(defaultPath) {
             // TODO fix state at this point
         }
     }   
-}
+};

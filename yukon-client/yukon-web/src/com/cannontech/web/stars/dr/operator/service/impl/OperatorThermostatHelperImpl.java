@@ -1,13 +1,14 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.jsonOLD.JSONArray;
-import net.sf.jsonOLD.JSONException;
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -87,8 +90,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
             for (AccountThermostatScheduleEntry atsEntry : atsEntryList) {
             	
             	Integer time = atsEntry.getStartTimeMinutes();
-            	Integer coolTemp = atsEntry.getCoolTemp();
-            	Integer heatTemp = atsEntry.getHeatTemp();
+            	Integer coolTemp = atsEntry.getCoolTemp().getIntValue();
+            	Integer heatTemp = atsEntry.getHeatTemp().getIntValue();
 
                 JSONObject timeTemp = new JSONObject();
                 timeTemp.put("time", time);
@@ -111,13 +114,162 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         return scheduleObject;
     }
 	
+	@Override
+    public JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule) {
+
+        JSONObject scheduleJSON = new JSONObject();
+        
+        scheduleJSON.put("accountId", schedule.getAccountId());
+        scheduleJSON.put("scheduleName", schedule.getScheduleName());
+        scheduleJSON.put("scheduleId", schedule.getAccountThermostatScheduleId());
+        
+        //number of time divisions available in a given day
+        scheduleJSON.put("supportedPeriods", schedule.getThermostatType().getPeriodStyle().getRealPeriods().size());
+        
+        //type details
+        JSONObject scheduleType = new JSONObject();
+        scheduleType.put("name", schedule.getThermostatScheduleMode());
+        scheduleType.put("periodStyle", schedule.getThermostatType().getPeriodStyle());
+        
+        scheduleJSON.put("type", scheduleType);
+        scheduleJSON.put("schedulalbleThermostatType", schedule.getThermostatType());
+        scheduleJSON.put("thermostatScheduleMode", schedule.getThermostatScheduleMode());
+        
+        List<AccountThermostatScheduleEntry> entries = schedule.getScheduleEntries();
+        schedule.getEntriesByTimeOfWeekMultimap();
+        for(int i=0; i<entries.size(); i++){
+            AccountThermostatScheduleEntry entry = entries.get(i);
+            JSONObject period = new JSONObject();
+            
+            //we keep 'pseudo' periods in the schedule and need to preserve them.  The interface needs
+            //to know how to handle this.  The following chain will only return a period if it is 'real'
+            if (entry.getCoolTemp().getIntValue() == -1 && entry.getHeatTemp().getIntValue() == -1) {
+                // temp of -1 means ignore this time/temp pair - used when only
+                // sending two time/temp values
+                period.put("pseudo", true);
+            }else{
+                period.put("pseudo", false);
+            }
+            
+            period.put("timeOfWeek", entry.getTimeOfWeek().toString());
+            period.put("secondsFromMidnight", entry.getStartTime());
+            period.put("cool_F", entry.getCoolTemp().getValue());
+            period.put("heat_F", entry.getHeatTemp().getValue());
+            scheduleJSON.accumulate("periods", period);
+        }
+
+        return scheduleJSON;
+    }
+	
+	@Override
+    public AccountThermostatSchedule JSONtoAccountThermostatSchedule(JSONObject obj) {
+	    AccountThermostatSchedule ats = new AccountThermostatSchedule();
+	    
+	    //set params
+	    ats.setAccountId(obj.getInt("accountId"));
+	    ats.setAccountThermostatScheduleId(obj.getInt("scheduleId"));
+	    ats.setScheduleName(obj.getString("scheduleName"));
+	    ats.setThermostatType(SchedulableThermostatType.valueOf(obj.getString("schedulalbleThermostatType")));
+	    ats.setThermostatScheduleMode(ThermostatScheduleMode.valueOf(obj.getString("thermostatScheduleMode")));
+	    
+	    //fixup COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
+        if (ats.getThermostatType().getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES) {
+            setToTwoTimeTemps(ats);
+        }
+	    
+	    //buildup the entries list.  The JSON object groups the entries into sensible days
+	    List<AccountThermostatScheduleEntry> entries = new ArrayList();
+	    JSONArray periods = obj.getJSONArray("periods");
+	    for(int i=0; i<periods.size(); i++) {
+	      JSONObject period = periods.getJSONObject(i);
+	      //synthesize the entry by hand
+          AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
+          entry.setAccountThermostatScheduleId(ats.getAccountThermostatScheduleId());
+          entry.setTimeOfWeek(TimeOfWeek.valueOf(period.getString("timeOfWeek")));
+          entry.setCoolTemp(new FahrenheitTemperature(period.getDouble("cool_F")));
+          entry.setHeatTemp(new FahrenheitTemperature(period.getDouble("heat_F")));
+          entry.setStartTime(period.getInt("secondsFromMidnight"));
+          entries.add(entry);
+	    }
+	    
+	    //add the entries to the schedule
+	    ats.setScheduleEntries(entries);
+	    return ats;
+	}
+	
+	@Override
+	public JSONObject ThermostatToJSON(Thermostat thermostat, YukonUserContext yukonUserContext){
+	    JSONObject thermostatJson = new JSONObject();
+	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+
+        //all supported schedule modes: ALL, WEEKDAY_WEEKEND, etc...
+        JSONObject modesJson = new JSONObject();
+        JSONObject dayLabelJson = new JSONObject();
+        SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        Set<ThermostatScheduleMode> modes = type.getSupportedScheduleModes();
+        for(ThermostatScheduleMode mode : modes){
+            //check if user can actually use this mode
+            if(isModeAllowed(mode, yukonUserContext.getYukonUser())){
+                modesJson.put(mode.toString(), messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat."+mode.toString()));
+                
+//                Set<TimeOfWeek>days = mode.getAssociatedTimeOfWeeks();
+//                for(TimeOfWeek day : days) {
+//                    if(!dayLabelJson.containsKey(day.toString())){
+//                        JSONObject label = new JSONObject();
+//                        label.put("name", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()));
+//                        label.put("abbr", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()+"_abbr"));
+//                        dayLabelJson.put(day.toString(), label);
+//                    }
+//                }
+            }
+        }
+        
+        TimeOfWeek days[] = TimeOfWeek.values();
+        for(TimeOfWeek day : days){
+            if(!dayLabelJson.containsKey(day.toString())){
+                JSONObject label = new JSONObject();
+                label.put("name", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()));
+                label.put("abbr", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()+"_abbr"));
+                dayLabelJson.put(day.toString(), label);
+            }
+        }
+        
+        thermostatJson.put("modes", modesJson);
+        thermostatJson.put("dayLabels", dayLabelJson);
+        
+        //limits
+        thermostatJson.put("lowerCoolF", type.getLowerLimitCoolInFahrenheit());
+        thermostatJson.put("upperCoolF", type.getUpperLimitCoolInFahrenheit());
+        thermostatJson.put("lowerHeatF", type.getLowerLimitHeatInFahrenheit());
+        thermostatJson.put("upperHeatF", type.getUpperLimitHeatInFahrenheit());
+        
+        //get the heading labels into a page var: WAKE, SLEEP, etc...
+        JSONObject periodsJson = new JSONObject();
+        List<ThermostatSchedulePeriod> periods = type.getPeriodStyle().getRealPeriods();
+        for(ThermostatSchedulePeriod period : periods){
+            JSONObject periodJson = new JSONObject();
+            periodJson.put("name", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostatSchedule."+period.toString()));
+            periodJson.put("order", period.getEntryIndex());
+            periodsJson.put(period.toString(), periodJson);
+        }
+        thermostatJson.put("periods", periodsJson);
+        thermostatJson.put("supportedPeriods", type.getPeriodStyle().getRealPeriods().size());
+        
+        AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
+        if (thermostatCurrentSchedule != null) {
+            thermostatJson.put("currentScheduleId", thermostatCurrentSchedule.getAccountThermostatScheduleId());
+        }
+	    
+	    return thermostatJson;
+	}
+	
     
 	@Override
     public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
                                                                           SchedulableThermostatType schedulableThermostatType, ThermostatScheduleMode thermostatMode, 
                                                                           boolean isFahrenheit) {
 
-		JSONObject scheduleObject = new JSONObject(jsonString);
+		JSONObject scheduleObject = JSONObject.fromObject(jsonString);
         JSONObject seasonObject = scheduleObject.getJSONObject("season");
 
         List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
@@ -135,9 +287,9 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         		continue; // this time of week doesn't exist - continue to the next
         	}
 
-        	List timeOfWeekList = Lists.newArrayList(timeOfWeekArray.toArray());
         	for (ThermostatSchedulePeriod period : schedulableThermostatType.getPeriodStyle().getAllPeriods()) {
 
+        	    //synthesize the entry by hand
                 AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
                 entry.setAccountThermostatScheduleId(accountThermostatScheduleId);
                 entry.setTimeOfWeek(timeOfWeek);
@@ -155,8 +307,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
                     }
 
                     entry.setStartTime(timeMinutes * 60); // stored as seconds in DB
-                    entry.setCoolTemp(coolTemp);
-                    entry.setHeatTemp(heatTemp);
+                    entry.setCoolTemp(new FahrenheitTemperature(coolTemp));
+                    entry.setHeatTemp(new FahrenheitTemperature(heatTemp));
                 }
 
                 atsEntries.add(entry);
@@ -184,13 +336,13 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
             // -1
             AccountThermostatScheduleEntry firstEntry = entryList.get(0);
             firstEntry.setStartTime(0);
-            firstEntry.setCoolTemp(-1);
-            firstEntry.setHeatTemp(-1);
+            firstEntry.setCoolTemp(new FahrenheitTemperature(-1));
+            firstEntry.setHeatTemp(new FahrenheitTemperature(-1));
             
             AccountThermostatScheduleEntry secondEntry = entryList.get(1);
             secondEntry.setStartTime(0);
-            secondEntry.setCoolTemp(-1);
-            secondEntry.setHeatTemp(-1);
+            secondEntry.setCoolTemp(new FahrenheitTemperature(-1));
+            secondEntry.setHeatTemp(new FahrenheitTemperature(-1));
         }
     }
 	
@@ -246,9 +398,12 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	}
 	
 	@Override
-	public List<ThermostatScheduleDisplay> getScheduleDisplays(
-	           YukonUserContext yukonUserContext, String type, ThermostatScheduleMode thermostatScheduleMode,
-	           AccountThermostatSchedule accountThermostatSchedule, boolean displayAsFahrenheit, String i18nKey){
+	public List<ThermostatScheduleDisplay> getScheduleDisplays(YukonUserContext yukonUserContext, 
+	                                                           String type, 
+	                                                           ThermostatScheduleMode thermostatScheduleMode,
+	                                                           AccountThermostatSchedule accountThermostatSchedule, 
+	                                                           boolean displayAsFahrenheit, 
+	                                                           String i18nKey){
 	    
 	    List<ThermostatScheduleDisplay> scheduleDisplays = Lists.newArrayList();
 	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
@@ -275,8 +430,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	            AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
 	            LocalTime startTime = entry.getStartTimeLocalTime();
                 String startDateString = dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
-                int coolTemp = entry.getCoolTemp();
-                int heatTemp = entry.getHeatTemp();
+                int coolTemp = entry.getCoolTemp().getIntValue();
+                int heatTemp = entry.getHeatTemp().getIntValue();
                 String tempUnit = (displayAsFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
                 coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
                 heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
@@ -296,6 +451,46 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	        allowedModes.remove(ThermostatScheduleMode.WEEKDAY_WEEKEND);
 	    }
 	    return allowedModes;
+	}
+	
+	@Override
+	public List<ThermostatScheduleMode> getAllowedModesForUserAndThermostat(LiteYukonUser user, Thermostat thermostat) {
+	    SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        List<ThermostatScheduleMode> modes = Lists.newArrayList();
+        modes.addAll(type.getSupportedScheduleModes());
+        boolean schedule52Enabled = rolePropertyDao.checkAnyProperties(user, YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2);
+        if(!schedule52Enabled) {
+            modes.remove(ThermostatScheduleMode.WEEKDAY_WEEKEND);
+        }
+        boolean schedule7Enabled = rolePropertyDao.checkAnyProperties(user, YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_7, YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_7);
+        if(!schedule7Enabled) {
+            modes.remove(ThermostatScheduleMode.SINGLE);
+        }
+        
+        return modes;
+    }
+	
+	@Override
+	public List<SchedulableThermostatType> getCompatibleSchedulableThermostatTypes(Thermostat thermostat) {
+	    List<SchedulableThermostatType> types = Lists.newArrayList();
+	    SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        
+        // add similar types? eg. utilityProG2 is compatible with existing utilitypro schedules
+        types.add(type);
+        
+        switch(thermostat.getType()){
+        case UTILITY_PRO_G3:
+            //both UtilityPro and UtilityPro G2 are valid
+            types.add(SchedulableThermostatType.getByHardwareType(HardwareType.UTILITY_PRO_G2));
+        case UTILITY_PRO_G2:
+            //UtilityPro is also valid
+            types.add(SchedulableThermostatType.getByHardwareType(HardwareType.UTILITY_PRO));
+            break;
+        default:
+            break;
+        }
+        
+	    return types;
 	}
 	
 	public boolean isModeAllowed(ThermostatScheduleMode mode, LiteYukonUser user) {

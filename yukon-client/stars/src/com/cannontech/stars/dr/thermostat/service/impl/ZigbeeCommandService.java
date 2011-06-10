@@ -158,8 +158,8 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             AccountThermostatScheduleEntry entry = iter.next();
             
             LocalTime startTime = entry.getStartTimeLocalTime();
-            int coolTemp = entry.getCoolTemp();
-            int heatTemp = entry.getHeatTemp();
+            int coolTemp = entry.getCoolTemp().getIntValue();
+            int heatTemp = entry.getHeatTemp().getIntValue();
 
             String startTimeString = startTime.toString("HH:mm");
             builder.append(startTimeString + ",");

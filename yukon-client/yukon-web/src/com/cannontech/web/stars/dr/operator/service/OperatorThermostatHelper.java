@@ -3,12 +3,13 @@ package com.cannontech.web.stars.dr.operator.service;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
@@ -70,4 +71,13 @@ public interface OperatorThermostatHelper {
      * user is permitted to use.
      */
     public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, LiteYukonUser user);
+
+    JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule);
+    public AccountThermostatSchedule JSONtoAccountThermostatSchedule(JSONObject obj);
+
+    List<ThermostatScheduleMode> getAllowedModesForUserAndThermostat(LiteYukonUser user, Thermostat thermostat);
+
+    JSONObject ThermostatToJSON(Thermostat thermostat, YukonUserContext user);
+
+    public List<SchedulableThermostatType> getCompatibleSchedulableThermostatTypes(Thermostat thermostat);
 }

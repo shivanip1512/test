@@ -218,7 +218,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         setupManualCompletePage(thermostatIds, message, user, map);
 
-        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/schedule/view");
+        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/schedule/view/saved");
         
         return "consumer/actionComplete.jsp";
     }

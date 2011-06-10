@@ -6,13 +6,11 @@
  *  Include this file in your document, no external libs necessary.
  *  
  *  Usage:
- *  <script>
  *  ...
  *  var foo = 'bar';
  *  ...
  *  debug(foo);
  *  ...
- *  </script>
  *  
  *  If your browser is Firefox, Safari or Opera 'foo' will be evaled and outputted directly to the 
  *  built-in JS consoles (firebug included).
@@ -40,7 +38,7 @@ if (typeof(_logger) == 'undefined') {
             this._setupDebugConsole();
             var stack = document.getElementById('debug_stack');
             var li = document.createElement('li');
-            li.style.padding = '2px 5px'
+            li.style.padding = '2px 5px';
                 li.title = "["+typeof(obj)+"]";
             if (options) {
                 if (options.error) {
@@ -74,7 +72,7 @@ if (typeof(_logger) == 'undefined') {
             case 'number':
             default:
                 li.innerHTML += this._escapeHTMLEntities(obj);
-            break;
+                break;
             }
             stack.appendChild(li);
             stack.scrollTop = li.offsetTop;
@@ -99,6 +97,7 @@ if (typeof(_logger) == 'undefined') {
                     break;
                 default:
                     retString.push(obj[i]);
+                    break;
                 }
             }
             return "[" + retString.join(", ") + "]";
@@ -124,7 +123,7 @@ if (typeof(_logger) == 'undefined') {
                     break;
                 default:
                     retString.push(keys[i] + ": " + obj[keys[i]]);
-                break;
+                    break;
                 }
             }
             return "{" + retString.join(", ") + "}";
@@ -230,7 +229,7 @@ if (typeof(_logger) == 'undefined') {
         _hideDebugWindow : function() {
             document.getElementById('debug_console').style.display = 'none';
         }
-    }
+    };
 }
 
 var debug = function(obj) {

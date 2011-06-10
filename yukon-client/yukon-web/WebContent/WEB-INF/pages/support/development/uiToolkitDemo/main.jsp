@@ -63,6 +63,25 @@ display:block;
 width: 6em;
 }
 
+.outline_red {
+border: solid 1px red;
+padding: 4px;
+}
+
+.white {
+background-color: white;
+padding: 5px;
+}
+
+.gradient {
+background-color: -moz-linear-gradient(#aaa, #fff);
+}
+
+.f_tab {
+border: solid 1px #ccc;
+background-color: white;
+}
+
 </style>
 
 <script>
@@ -257,6 +276,127 @@ textarea
 button
         </pre>
         </td>
+    </tr>
+    <tr>
+        <th>Client Side Tabs</th>
+        <th>Relevant Markup</th>
+    </tr>
+    <tr>
+    <td style="width:300px;">
+    
+    <div class="box white">
+        <ul class="f_tabs">
+            <li>
+                Tab 1
+            </li>
+            <li>
+                Tab 2
+            </li>
+            <li>
+                Tab 3
+            </li>
+            <li>
+                Tab 4
+            </li>
+        </ul>
+        
+        <div class="f_tabbed">
+            <div class="f_tab">
+                The contents of Tab 1
+                <br><br>
+                Blah, blah, blah
+            </div>
+            
+            <div class="f_tab">
+                The contents of Tab 2 is better.
+                <br><br>
+                Foo, foo, foo
+            </div>
+            
+            <div class="f_tab">
+                The contents of Tab 3 is the best!
+                
+            </div>
+        </div>
+    </div>
+    
+    <br>
+    <br>
+    
+    <div class="box gradient">
+        <ul class="f_tabs">
+            <li>
+                Tab A
+            </li>
+            <li>
+                Tab B
+            </li>
+            <li>
+                Tab C
+            </li>
+        </ul>
+        
+        <div class="f_tabbed">
+            <div class="outline_red" style="margin: 20px 0;">
+                See, tabs can actually be somewhat disjointed!
+            </div>
+            <div class="f_tab">
+                The contents of Tab A
+                <br>
+                <br>
+                testing, 1,2...3
+            </div>
+            
+            <div class="f_tab">
+                The contents of Tab B is cool.
+            </div>
+            
+            <div class="f_tab">
+                The contents of Tab C is radical!
+                <br>
+                <br>
+                C as in Cat, or Cake.
+            </div>
+        </div>
+    </div>
+    
+    </td>
+    <td>
+     Works on page load.  By default the first tab will be selected with no effort from you.
+        <br>
+        <br>
+        Your markup must be structured such that the tab controls and tabs container are siblings of each other.  The tab controls must look like such:
+        <pre>
+&lt;ul class="f_tabs"&gt;
+    &lt;li&gt;Tab 1&lt;/li&gt;
+    &lt;li&gt;Tab 2&lt;/li&gt;
+    ...
+    &lt;li&gt;Tab n&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class="f_tabbed"&gt;
+    any ol' content - it won't be 'tabbed'
+
+    &lt;div class="f_tab"&gt;
+        Tab 1 contents
+    &lt;/div&gt;
+    
+    &lt;div class="f_tab"&gt;
+        Tab 2 contents
+    &lt;/div&gt;
+    
+    ...
+    
+    &lt;div class="f_tab"&gt;
+        Tab n contents
+    &lt;/div&gt;
+&lt;/div&gt;        
+        </pre>
+        
+        The tab controls must be an unordered list with the <b>ul</b> taking the class name <b>f_tabs</b>.  The actual tabbed content need not be directly next to the tabs but must be in a container with the class name <b>f_tabbed</b>. The actual contents of each tab must be children of the <b>f_tabbed</b> container and themselves have a class of <b>f_tab</b>.
+        <br>
+        <br>
+        Any out of bounds tab control will simply not function.  Similarly, any out of bounds tab content will never be displayed.
     </tr>
 </table>
 </cti:standardPage>

@@ -66,7 +66,5 @@ ExtTreeHelper.prototype = {
         tree.on('collapsenode', treeState.onCollapse, treeState);
         treeState.restoreState(tree.root.getPath());
     }
-    
-        
-} 
+};
 

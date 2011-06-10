@@ -37,7 +37,7 @@ TimeFormatter.prototype = {
         }
         
         // Add a leading zero to hours and minutes if needed
-        var hourStr = "0" + hour;
+        var hourStr = "" + hour;
         hourStr = hourStr.substr(hourStr.length-2, 2);
         var minuteStr = "0" + minute;
         minuteStr = minuteStr.substr(minuteStr.length-2, 2);
@@ -50,14 +50,14 @@ TimeFormatter.prototype = {
     parseTime: function(time) {
 
         // Make sure the time string is a valid time (ex: 12:30 PM)     
-        var exp = /^([0][1-9]|[1][0-2])[:][0-5][0-9]\s[AaPp][Mm]$/;
+        var exp = /^([0]*[1-9]|[1][0-2])([:][0-5][0-9]){0,1}\s{0,1}([AaPp][Mm]){0,1}$/;
         
         if(!exp.test(time)) {
             return -1;
         }
         
         // Get the hours, minutes and determine if the time is pm
-        var timeExp = /\d{2}/g;
+        var timeExp = /\d{1,2}/g;
         var pmExp = /[Pp][Mm]$/;
         
         var timeArray = time.match(timeExp);
@@ -74,7 +74,7 @@ TimeFormatter.prototype = {
         }
         
         // Calculate the minutes from midnight
-        var returnValue = minutes;
+        var returnValue = minutes || 0;
         returnValue = returnValue + (60 * hours);
         
         return returnValue;

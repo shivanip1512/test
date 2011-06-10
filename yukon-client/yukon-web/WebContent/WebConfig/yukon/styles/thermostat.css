@@ -1,0 +1,516 @@
+.dn {display:none;}
+.fl {float:left;}
+.fr {float:right;}
+/* .schedule_editor { */
+/* 	position: absolute; */
+/* 	left: 150px; */
+/* 	top: 50px; */
+/* 	padding: 20px; */
+/* 	border: solid 10px #CCC; */
+/* 	z-index: 100; */
+/* 	margin: 60px 0 0; */
+/* 	width: 100%; */
+/* 	background: white; */
+/* } */
+
+/* .schedule_editor form { */
+/* 	width: 600px; */
+/* 	padding: 10px; */
+/* } */
+
+.conversion_buttons {
+	margin: 0 37px;
+	overflow:hidden;
+	float: left;
+}
+.conversion_buttons a {
+	background: #999;
+	display: inline-block;
+	color: white;
+	font-weight:bold;
+	font-size: 16px;
+	text-decoration: none;
+	float:left;
+	border: solid 1px #CCC;
+	padding: 5px 10px;
+}
+
+.conversion_buttons a:first-child {
+	padding: 5px 10px 5px 20px;
+	-moz-border-radius: 8px 0 0 8px;
+}
+
+.conversion_buttons a:last-child {
+	padding: 5px 20px 5px 10px;
+	-moz-border-radius: 0 8px 8px 0;
+}
+
+.conversion_buttons a:hover {
+	background-color: #BBB;
+}
+
+.conversion_buttons a.active,.conversion_buttons a.active:hover {
+	background-color: lightBlue;
+	color: black;
+	cursor: default;
+}
+
+.conversion_buttons.disabled a {
+	background-color: #EFEFEF;
+	color: #CCC;
+	cursor:default;
+}
+
+.conversion_buttons.disabled a.active {
+	background-color: #BCCDF5;
+	color: #7B8DB8;
+}
+
+.labels {
+	display:none;
+}
+
+.periods, .labels {
+	overflow:hidden;
+	float: left;
+}
+
+.small .labels {
+	display: inherit;
+}
+
+.period, .info {
+	float: left;
+}
+
+.period {
+	margin-left: -1px;
+}
+
+/*LARGE FORMAT*/
+.temp {
+	float: right;
+	padding: 2px 5px;
+	border: solid 1px #CCC;
+	color: #fff;
+	text-align: center;
+	width: 30px;
+}
+
+.info {
+	width: 70px;
+}
+
+.temp:first-child {
+	-moz-border-radius: 5px 0 0 5px;
+}
+
+.temp small {
+	float:none;
+	display: block;
+}
+
+.heat {
+	background-color: orange;
+	-moz-border-radius: 5px 0 0 5px;
+/* 	text-shadow: 1px 1px 1px #666; */
+}
+
+.cool {
+	background-color: lightBlue;
+	-moz-border-radius: 0 5px 5px 0;
+/* 	text-shadow: 1px 1px 1px #666; */
+}
+.name {
+	color: green;
+	font-size: 12px;
+}
+
+.time {
+	font-size: 18px;
+/* 	text-shadow: 1px 1px 1px #000; */
+}
+
+.time.am, .time.pm {
+	background: transparent url("../Icons/bullet_red.gif") top left no-repeat;
+}
+
+.days {
+/* 	-moz-border-radius: 8px 8px 0 0; */
+/* 	border: solid 1px #CCC; */
+}
+
+.editing .days {
+	background-color: white;
+	-moz-border-radius: 8px;
+}
+
+.small .days{
+    margin: 10px 0;
+}
+
+.actions {
+	overflow: hidden;
+	clear: both;
+	margin: 10px 0 10px 38px;
+}
+
+.editing .actions {
+	border: none;
+}
+
+.period {
+/* 	border: solid 1px #CCC; */
+/* 	border-style: none none none solid; */
+	padding: 10px;
+	width: 180px;
+}
+
+
+.labels .period {
+	border-bottom: dotted 1px #ccc;
+	color: green;
+	font-size: 12px;
+	padding: 10px 10px 5px;
+}
+
+.small .label {
+	width: 15px;
+	padding: 0;
+	margin-right: 5px;
+}
+
+.label {
+	color: green;
+	font-size: 12px;
+	
+}
+
+.odd .period {
+	background: #EFEFEF;
+}
+
+.even .period {
+    background: #FFF;
+}
+
+/*SMALL FORMAT*/
+.small .temp {
+	float: left;
+	padding: 2px 5px;
+	border: solid 1px #CCC;
+	color: #fff;
+	text-align: center;
+	width: 29px;
+	font-size: 10px;
+}
+
+.small .temp input {
+	font-size: 10px;
+	width: 23px;
+	text-align:right;
+	border: none;
+	padding: 0;
+}
+
+.small .info {
+	width: 60px;
+}
+
+.small .info input {
+	font-size: 10px;
+	width: 45px;
+}
+
+.small .temp small {
+	display: none;
+}
+
+.small .heat {
+	background-color: orange;
+}
+
+.small .cool {
+	background-color: lightBlue;
+}
+.small .name {
+	color: green;
+	font-size: 10px;
+}
+
+.small .time {
+	font-size: 11px;
+/* 	text-shadow: 1px 1px 1px #000; */
+}
+
+.small .schedule {
+    margin-top: -1px;
+    border-top: dotted 1px #ccc;
+    padding: 20px;
+    display: inline-block;
+}
+
+.small .period {
+	padding: 2px 10px;
+	width: 145px;
+}
+
+.small .period .name {
+	display:none;
+}
+
+.small .label {
+	font-size: 10px;
+/* 	margin: 0 0 0 -37px; */
+/* 	overflow: hidden; */
+	text-align:right;
+	height: 1em;
+	width: 33px;
+}
+
+ul.schedules > li {
+	position: relative;
+	float: left;
+	display: block;
+	clear: both;
+	margin-bottom: 20px;
+	padding: 10px 10px 0;
+	
+	
+/* 	background-color: #DEDEDE; */
+}
+
+li.editing {
+	background-color: #DEDEDE;
+	-moz-border-radius: 8px;
+	border: solid 1px #CCC;
+	z-index: 10;      /* rise above the modal glass! */
+}
+
+li .heading {
+/* 	margin-top: -20px; */
+	font-size: 16px;
+	font-style:italic;
+/* 	position: absolute; */
+	margin: 0 0 5px 38px;
+}
+
+li.current {
+    background: lightGreen;
+}
+
+.type {
+/* 	margin-left: 200px; */
+	font-size: 12px;
+	position: absolute;
+	top: 8px;
+	right: 14px;
+}
+
+.heading .editor {
+	float: left;
+}
+
+.schedules {
+	margin-top: 45px;
+	overflow:hidden;
+}
+Sophie3001
+
+.title.current small {
+	color: green;
+	font-style:normal;
+	font-weight:bold;
+}
+
+/*TABS*/
+/* .tab { */
+/* 	display:none; */
+/* } */
+
+/* .tab.active { */
+/* 	display:block; */
+/* } */
+
+/* .tabs { */
+/* 	overflow:hidden; */
+/* 	margin-bottom: -1px; */
+/* } */
+
+/* ul.schedules .tabs li { */
+/* 	background: transparent; */
+/* 	cursor: pointer; */
+/* 	color: #999; */
+/* 	display: inline; */
+/* 	margin: 0; */
+/* 	padding: 2px 8px; */
+/* 	float:left; */
+/* 	overflow:hidden; */
+/* 	clear:none; */
+/* 	margin-left: -1px; */
+/* 	border-left: solid 1px #ccc; */
+/* 	z-index:10; */
+/* } */
+
+/* .tabs li.last { */
+/*     border-right: solid 1px black; */
+/* } */
+
+/* ul.schedules .tabs li:hover { */
+/* 	color: #333; */
+/* } */
+
+/* ul.schedules .tabs li.active { */
+/* 	background-color: white; */
+/* 	color: black; */
+/* 	cursor: default;  */
+/* } */
+
+.icon_labeled{
+	padding: 2px 0 5px 20px;
+	margin-right: 10px;
+/* 	display:block; */
+/* 	clear:both; */
+	text-decoration: none !important;
+	font-size: 12px;
+	cursor: pointer;
+	color: #666 !important;
+}
+
+.icon_labeled:hover {
+	color: #000 !important;
+}
+
+a.edit {
+	background: transparent url(../Icons/edit.gif) top left no-repeat;
+}
+
+a.send {
+	background: transparent url(../Icons/lightning_go.gif) top left no-repeat;
+}
+
+a.save {
+	background: transparent url(../Icons/accept.gif) top left no-repeat;
+}
+
+a.cancel {
+	background: transparent url(../Icons/cancel.gif) left top no-repeat;
+}
+
+a.default {
+	background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;
+}
+
+.editor {
+	display: none;
+}
+
+.editor label {
+/* 	margin-left: 6em; */
+}
+
+.editing .editor {
+	display: inherit;
+	
+}
+	
+#slider {
+	position: absolute;
+	width: 200px;
+	background: white;
+/* 	border: solid 1px red; */
+	box-shadow: 0 4px 5px rgba(0,0,0,0.5);
+	z-index: 100;
+}
+
+#slider a {
+	text-decoration: none;
+	padding: 2px 3px 3px;
+	font-size: 12px;
+	color: #333;
+	font-weight: normal;
+}
+
+#slider .ui-corner-all {
+	-moz-border-radius: 10px
+}
+
+.chevron {
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+    border-style: solid;
+    border-color: transparent;
+    /* chevron color */
+    border-top-color: #444;
+    /* for left pointers, right border is 0 */
+    border-width: 16px 23px 0;
+    float: left;
+    margin: 14px 85px;
+}
+
+.time_picker {
+/* 	display:none; */
+}
+
+.time_picker {
+	width: 5em;
+	font-size: 12px;
+	border: solid 1px #ccc;
+	padding: 0 5px;
+	overflow:hidden;
+	border-radius: 8px;
+}
+
+.time_picker .down li{
+	border: solid 1px #ccc;
+	border-style: none none solid;
+	padding: 2px 0;
+}
+
+.time_picker .up {
+	padding-top: 20px;
+	background: transparent url('http://cdn4.iconfinder.com/data/icons/fatcow/32x32_0140/bullet_arrow_up.png') center -5px no-repeat;
+}
+
+.time_picker .down {
+	padding-bottom: 20px;
+	background: transparent url('http://cdn4.iconfinder.com/data/icons/fatcow/32x32_0140/bullet_arrow_down.png') center 52px no-repeat;
+}
+
+.time_picker .up li{
+	border: solid 1px #ccc;
+	border-style: solid none none;
+	padding: 2px 0;
+}
+
+.time_picker li:hover, .time_picker li.active {
+	background-color: lightGreen;
+	color: black;
+	cursor: pointer;
+}
+
+.time_picker input {
+	width: 6em;
+	margin-left: -6px;
+	border: solid 1px green;
+	padding-left: 4px;
+}
+
+.ui-widget-content {
+	border: solid 2px #444 !important;
+}
+
+.time_editor .time_picker {
+	display: none;
+}
+
+.time_editor input {
+	border: solid 1px #CCC;
+	border-radius: 2px;
+}
+
+.ui-widget-overlay {
+    z-index: 9;
+    position: fixed !important;
+}

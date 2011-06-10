@@ -1,8 +1,8 @@
 
 function yukonGeneral_setSelectToValue(selectId, selectedValue) {
 	
-	for (i = 0; i < $(selectId).options.length; i++) {
-		if ($(selectId).options[i].value == selectedValue) {
+	for (var i = 0; i < $(selectId).options.length; i++) {
+		if ($(selectId).options[i].value == selectedValue) { 
 			$(selectId).selectedIndex = i;
 			break;
 		}
@@ -58,7 +58,7 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	//going down
 	if (direction == 1){ 
 		j = index.length;
-		for (i = 0; i< index.length; i++){
+		for (var i = 0; i< index.length; i++){
 			
 			//we do it reverse of the going up
 			var routeIndex = index[j - 1]; 
@@ -77,7 +77,7 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	}
 	//going up
 	else{
-		for (i = 0; i < index.length; i++){ 
+		for (var i = 0; i < index.length; i++){ 
 		
 			//simple swapping
 			var routeIndex = index[i];
@@ -213,9 +213,7 @@ function getViewportDimensions() {
 		viewportwidth = window.innerWidth;
 		viewportheight = window.innerHeight;
 	}
-	else if (typeof document.documentElement != 'undefined'
-			&& typeof document.documentElement.clientWidth != 'undefined'
-			&& document.documentElement.clientWidth != 0) {
+	else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
 		// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
 		viewportwidth = document.documentElement.clientWidth;
 		viewportheight = document.documentElement.clientHeight;
@@ -334,12 +332,12 @@ Event.observe(window, 'load', function() {
         Event.observe(passwordField, 'keyup', function() {
             if ($F(passwordField) != '') {
                 // not using prototype disable/enable because it does not support <button>
-                buttons.each(function(button) {button.disabled = false});
+                buttons.each(function(button) {button.disabled = false;});
             } else {
-                buttons.each(function(button) {button.disabled = true});
+                buttons.each(function(button) {button.disabled = true;});
             }
         });
-        buttons.each(function(button) {button.disabled = true});
+        buttons.each(function(button) {button.disabled = true;});
     });
 });
 
@@ -421,14 +419,10 @@ function setTooltipText(elementId, text) {
  */ 
 function changeInputType(inputElement, inputType) {
     var input = document.getElementById(inputElement);
-    debug(input);
-    debug(inputElement);
     var input2 = document.createElement('input');
-    with (input2){
-        id = input.id;
-        name = input.name;
-        value = input.value;
-        type = inputType;
-    }
+        input2.id = input.id;
+        input2.name = input.name;
+        input2.value = input.value;
+        input2.type = inputType;
     input.parentNode.replaceChild(input2,input);
 }

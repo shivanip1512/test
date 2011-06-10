@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

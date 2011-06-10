@@ -24,7 +24,7 @@ CtiMenu.prototype = {
 	// Select the link that was clicked
 	Element.addClassName(link, 'selected');
 	// Show the link's sub menu
-	$(subId).show()
+	$(subId).show();
 
   }
   

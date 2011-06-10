@@ -176,7 +176,7 @@
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">
-            <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">
+            <input id="type" type="hidden" name="thermostatType" value="${schedule.thermostatType}">
             <input id="saveAction" type="hidden" name="saveAction">
             
 

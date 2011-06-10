@@ -155,7 +155,7 @@ public class SelectionListServiceImpl implements SelectionListService {
     }
 
     private Set<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
-        Set<YukonSelectionList> lists = Sets.newTreeSet(new Comparator<YukonSelectionList>(){
+        Set<YukonSelectionList> lists = Sets.newTreeSet(new Comparator<YukonSelectionList>() {
             @Override
             public int compare(YukonSelectionList list1, YukonSelectionList list2) {
                 return list1.getListName().compareToIgnoreCase(list2.getListName());
@@ -189,7 +189,10 @@ public class SelectionListServiceImpl implements SelectionListService {
             }
             // We've passed all the negative tests...we can display lists in this category.
             for (YukonSelectionListEnum listType : YukonSelectionListEnum.getByCategory(category)) {
-                lists.add(energyCompany.getYukonSelectionList(listType.getListName()));
+                YukonSelectionList list = energyCompany.getYukonSelectionList(listType.getListName());
+                if (list != null) {
+                    lists.add(list);
+                }
             }
         }
 

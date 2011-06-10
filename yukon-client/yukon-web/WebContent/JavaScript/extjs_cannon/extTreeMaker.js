@@ -6,10 +6,10 @@ ExtTreeMaker = Class.create();
 ExtTreeMaker.prototype = { 
 
     // Constructor
-	initialize: function(id, static) {
+	initialize: function(id, staticElem) {
     
         this.id = id;
-        this.static = static;
+//        this.static = static;
         this.extTreeHelper = new ExtTreeHelper();
         
         // set using specific data loader setup function
@@ -94,4 +94,4 @@ ExtTreeMaker.prototype = {
     setState: function(tree) {
         this.extTreeHelper.setTreeState(tree);
     }
-}
+};

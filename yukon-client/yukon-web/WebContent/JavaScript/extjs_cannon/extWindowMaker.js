@@ -64,5 +64,5 @@ ExtWindowMaker.prototype = {
     }
     
         
-} 
+};
 

@@ -177,6 +177,7 @@ public enum YukonRoleProperty {
     RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     RESIDENTIAL_ENROLLMENT_PER_DEVICE(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_PER_DEVICE, booleanType()),
     RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
+    RESIDENTIAL_THERMOSTAT_SCHEDULE_7(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_7, booleanType()),
     
     LM_INDIVIDUAL_SWITCH(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.INDIVIDUAL_SWITCH, booleanType()),
     THREE_TIER_DIRECT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT, booleanType()),
@@ -282,6 +283,7 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS, booleanType()),
     OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
+    OPERATOR_THERMOSTAT_SCHEDULE_7(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_7, booleanType()),
     OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_SEARCH, booleanType()),
     OPERATOR_SURVEY_EDIT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.SURVEY_EDIT, booleanType()),

@@ -33,69 +33,69 @@ public class DefaultAccountThermostatScheduleHelperTest {
         List<AccountThermostatScheduleEntry> weekdayscheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.WEEKDAY);
         
         AccountThermostatScheduleEntry wkEntry0 = weekdayscheduleEntryList.get(0);
-        Assert.assertEquals(72, wkEntry0.getCoolTemp());
-        Assert.assertEquals(72, wkEntry0.getHeatTemp());
+        Assert.assertEquals(72, wkEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), wkEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry1 = weekdayscheduleEntryList.get(1);
-        Assert.assertEquals(72, wkEntry1.getCoolTemp());
-        Assert.assertEquals(72, wkEntry1.getHeatTemp());
+        Assert.assertEquals(72, wkEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), wkEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry2 = weekdayscheduleEntryList.get(2);
-        Assert.assertEquals(72, wkEntry2.getCoolTemp());
-        Assert.assertEquals(72, wkEntry2.getHeatTemp());
+        Assert.assertEquals(72, wkEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), wkEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry3 = weekdayscheduleEntryList.get(3);
-        Assert.assertEquals(72, wkEntry3.getCoolTemp());
-        Assert.assertEquals(72, wkEntry3.getHeatTemp());
+        Assert.assertEquals(72, wkEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), wkEntry3.getStartTimeLocalTime());
         
         //Check values for SATURDAY entries
         List<AccountThermostatScheduleEntry> saturdayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SATURDAY);
         
         AccountThermostatScheduleEntry satEntry0 = saturdayScheduleEntryList.get(0);
-        Assert.assertEquals(72, satEntry0.getCoolTemp());
-        Assert.assertEquals(72, satEntry0.getHeatTemp());
+        Assert.assertEquals(72, satEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), satEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry1 = saturdayScheduleEntryList.get(1);
-        Assert.assertEquals(72, satEntry1.getCoolTemp());
-        Assert.assertEquals(72, satEntry1.getHeatTemp());
+        Assert.assertEquals(72, satEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), satEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry2 = saturdayScheduleEntryList.get(2);
-        Assert.assertEquals(72, satEntry2.getCoolTemp());
-        Assert.assertEquals(72, satEntry2.getHeatTemp());
+        Assert.assertEquals(72, satEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), satEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry3 = saturdayScheduleEntryList.get(3);
-        Assert.assertEquals(72, satEntry3.getCoolTemp());
-        Assert.assertEquals(72, satEntry3.getHeatTemp());
+        Assert.assertEquals(72, satEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), satEntry3.getStartTimeLocalTime());
         
         //Check values for SUNDAY entries
         List<AccountThermostatScheduleEntry> sundayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SUNDAY);
         
         AccountThermostatScheduleEntry sunEntry0 = sundayScheduleEntryList.get(0);
-        Assert.assertEquals(72, sunEntry0.getCoolTemp());
-        Assert.assertEquals(72, sunEntry0.getHeatTemp());
+        Assert.assertEquals(72, sunEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), sunEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry1 = sundayScheduleEntryList.get(1);
-        Assert.assertEquals(72, sunEntry1.getCoolTemp());
-        Assert.assertEquals(72, sunEntry1.getHeatTemp());
+        Assert.assertEquals(72, sunEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), sunEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry2 = sundayScheduleEntryList.get(2);
-        Assert.assertEquals(72, sunEntry2.getCoolTemp());
-        Assert.assertEquals(72, sunEntry2.getHeatTemp());
+        Assert.assertEquals(72, sunEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), sunEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry3 = sundayScheduleEntryList.get(3);
-        Assert.assertEquals(72, sunEntry3.getCoolTemp());
-        Assert.assertEquals(72, sunEntry3.getHeatTemp());
+        Assert.assertEquals(72, sunEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), sunEntry3.getStartTimeLocalTime());
     }
     
@@ -116,69 +116,69 @@ public class DefaultAccountThermostatScheduleHelperTest {
         List<AccountThermostatScheduleEntry> weekdayscheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.WEEKDAY);
         
         AccountThermostatScheduleEntry wkEntry0 = weekdayscheduleEntryList.get(0);
-        Assert.assertEquals(72, wkEntry0.getCoolTemp());
-        Assert.assertEquals(72, wkEntry0.getHeatTemp());
+        Assert.assertEquals(72, wkEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(1,0), wkEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry1 = weekdayscheduleEntryList.get(1);
-        Assert.assertEquals(72, wkEntry1.getCoolTemp());
-        Assert.assertEquals(72, wkEntry1.getHeatTemp());
+        Assert.assertEquals(72, wkEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(2,0), wkEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry2 = weekdayscheduleEntryList.get(2);
-        Assert.assertEquals(72, wkEntry2.getCoolTemp());
-        Assert.assertEquals(72, wkEntry2.getHeatTemp());
+        Assert.assertEquals(72, wkEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,0), wkEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry3 = weekdayscheduleEntryList.get(3);
-        Assert.assertEquals(72, wkEntry3.getCoolTemp());
-        Assert.assertEquals(72, wkEntry3.getHeatTemp());
+        Assert.assertEquals(72, wkEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), wkEntry3.getStartTimeLocalTime());
         
         //Check values for SATURDAY entries
         List<AccountThermostatScheduleEntry> saturdayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SATURDAY);
         
         AccountThermostatScheduleEntry satEntry0 = saturdayScheduleEntryList.get(0);
-        Assert.assertEquals(72, satEntry0.getCoolTemp());
-        Assert.assertEquals(72, satEntry0.getHeatTemp());
+        Assert.assertEquals(72, satEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(1,0), satEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry1 = saturdayScheduleEntryList.get(1);
-        Assert.assertEquals(72, satEntry1.getCoolTemp());
-        Assert.assertEquals(72, satEntry1.getHeatTemp());
+        Assert.assertEquals(72, satEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(2,0), satEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry2 = saturdayScheduleEntryList.get(2);
-        Assert.assertEquals(72, satEntry2.getCoolTemp());
-        Assert.assertEquals(72, satEntry2.getHeatTemp());
+        Assert.assertEquals(72, satEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,0), satEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry3 = saturdayScheduleEntryList.get(3);
-        Assert.assertEquals(72, satEntry3.getCoolTemp());
-        Assert.assertEquals(72, satEntry3.getHeatTemp());
+        Assert.assertEquals(72, satEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), satEntry3.getStartTimeLocalTime());
         
         //Check values for SUNDAY entries
         List<AccountThermostatScheduleEntry> sundayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SUNDAY);
         
         AccountThermostatScheduleEntry sunEntry0 = sundayScheduleEntryList.get(0);
-        Assert.assertEquals(72, sunEntry0.getCoolTemp());
-        Assert.assertEquals(72, sunEntry0.getHeatTemp());
+        Assert.assertEquals(72, sunEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(1,0), sunEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry1 = sundayScheduleEntryList.get(1);
-        Assert.assertEquals(72, sunEntry1.getCoolTemp());
-        Assert.assertEquals(72, sunEntry1.getHeatTemp());
+        Assert.assertEquals(72, sunEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(2,0), sunEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry2 = sundayScheduleEntryList.get(2);
-        Assert.assertEquals(72, sunEntry2.getCoolTemp());
-        Assert.assertEquals(72, sunEntry2.getHeatTemp());
+        Assert.assertEquals(72, sunEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,0), sunEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry3 = sundayScheduleEntryList.get(3);
-        Assert.assertEquals(72, sunEntry3.getCoolTemp());
-        Assert.assertEquals(72, sunEntry3.getHeatTemp());
+        Assert.assertEquals(72, sunEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), sunEntry3.getStartTimeLocalTime());
     }    
         
@@ -199,69 +199,69 @@ public class DefaultAccountThermostatScheduleHelperTest {
         List<AccountThermostatScheduleEntry> weekdayscheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.WEEKDAY);
         
         AccountThermostatScheduleEntry wkEntry0 = weekdayscheduleEntryList.get(0);
-        Assert.assertEquals(72, wkEntry0.getCoolTemp());
-        Assert.assertEquals(72, wkEntry0.getHeatTemp());
+        Assert.assertEquals(72, wkEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), wkEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry1 = weekdayscheduleEntryList.get(1);
-        Assert.assertEquals(72, wkEntry1.getCoolTemp());
-        Assert.assertEquals(72, wkEntry1.getHeatTemp());
+        Assert.assertEquals(72, wkEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), wkEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry2 = weekdayscheduleEntryList.get(2);
-        Assert.assertEquals(72, wkEntry2.getCoolTemp());
-        Assert.assertEquals(72, wkEntry2.getHeatTemp());
+        Assert.assertEquals(72, wkEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), wkEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry3 = weekdayscheduleEntryList.get(3);
-        Assert.assertEquals(72, wkEntry3.getCoolTemp());
-        Assert.assertEquals(72, wkEntry3.getHeatTemp());
+        Assert.assertEquals(72, wkEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), wkEntry3.getStartTimeLocalTime());
         
         //Check values for SATURDAY entries
         List<AccountThermostatScheduleEntry> saturdayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SATURDAY);
         
         AccountThermostatScheduleEntry satEntry0 = saturdayScheduleEntryList.get(0);
-        Assert.assertEquals(72, satEntry0.getCoolTemp());
-        Assert.assertEquals(72, satEntry0.getHeatTemp());
+        Assert.assertEquals(72, satEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), satEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry1 = saturdayScheduleEntryList.get(1);
-        Assert.assertEquals(72, satEntry1.getCoolTemp());
-        Assert.assertEquals(72, satEntry1.getHeatTemp());
+        Assert.assertEquals(72, satEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), satEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry2 = saturdayScheduleEntryList.get(2);
-        Assert.assertEquals(72, satEntry2.getCoolTemp());
-        Assert.assertEquals(72, satEntry2.getHeatTemp());
+        Assert.assertEquals(72, satEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), satEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry3 = saturdayScheduleEntryList.get(3);
-        Assert.assertEquals(72, satEntry3.getCoolTemp());
-        Assert.assertEquals(72, satEntry3.getHeatTemp());
+        Assert.assertEquals(72, satEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), satEntry3.getStartTimeLocalTime());
         
         //Check values for SUNDAY entries
         List<AccountThermostatScheduleEntry> sundayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SUNDAY);
         
         AccountThermostatScheduleEntry sunEntry0 = sundayScheduleEntryList.get(0);
-        Assert.assertEquals(72, sunEntry0.getCoolTemp());
-        Assert.assertEquals(72, sunEntry0.getHeatTemp());
+        Assert.assertEquals(72, sunEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), sunEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry1 = sundayScheduleEntryList.get(1);
-        Assert.assertEquals(72, sunEntry1.getCoolTemp());
-        Assert.assertEquals(72, sunEntry1.getHeatTemp());
+        Assert.assertEquals(72, sunEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), sunEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry2 = sundayScheduleEntryList.get(2);
-        Assert.assertEquals(72, sunEntry2.getCoolTemp());
-        Assert.assertEquals(72, sunEntry2.getHeatTemp());
+        Assert.assertEquals(72, sunEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), sunEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry3 = sundayScheduleEntryList.get(3);
-        Assert.assertEquals(72, sunEntry3.getCoolTemp());
-        Assert.assertEquals(72, sunEntry3.getHeatTemp());
+        Assert.assertEquals(72, sunEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), sunEntry3.getStartTimeLocalTime());
     }
         
@@ -282,69 +282,69 @@ public class DefaultAccountThermostatScheduleHelperTest {
         List<AccountThermostatScheduleEntry> weekdayscheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.WEEKDAY);
         
         AccountThermostatScheduleEntry wkEntry0 = weekdayscheduleEntryList.get(0);
-        Assert.assertEquals(72, wkEntry0.getCoolTemp());
-        Assert.assertEquals(72, wkEntry0.getHeatTemp());
+        Assert.assertEquals(72, wkEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), wkEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry1 = weekdayscheduleEntryList.get(1);
-        Assert.assertEquals(72, wkEntry1.getCoolTemp());
-        Assert.assertEquals(72, wkEntry1.getHeatTemp());
+        Assert.assertEquals(72, wkEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), wkEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry2 = weekdayscheduleEntryList.get(2);
-        Assert.assertEquals(72, wkEntry2.getCoolTemp());
-        Assert.assertEquals(72, wkEntry2.getHeatTemp());
+        Assert.assertEquals(72, wkEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), wkEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry wkEntry3 = weekdayscheduleEntryList.get(3);
-        Assert.assertEquals(72, wkEntry3.getCoolTemp());
-        Assert.assertEquals(72, wkEntry3.getHeatTemp());
+        Assert.assertEquals(72, wkEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, wkEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), wkEntry3.getStartTimeLocalTime());
         
         //Check values for SATURDAY entries
         List<AccountThermostatScheduleEntry> saturdayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SATURDAY);
         
         AccountThermostatScheduleEntry satEntry0 = saturdayScheduleEntryList.get(0);
-        Assert.assertEquals(72, satEntry0.getCoolTemp());
-        Assert.assertEquals(72, satEntry0.getHeatTemp());
+        Assert.assertEquals(72, satEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), satEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry1 = saturdayScheduleEntryList.get(1);
-        Assert.assertEquals(72, satEntry1.getCoolTemp());
-        Assert.assertEquals(72, satEntry1.getHeatTemp());
+        Assert.assertEquals(72, satEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), satEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry2 = saturdayScheduleEntryList.get(2);
-        Assert.assertEquals(72, satEntry2.getCoolTemp());
-        Assert.assertEquals(72, satEntry2.getHeatTemp());
+        Assert.assertEquals(72, satEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), satEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry satEntry3 = saturdayScheduleEntryList.get(3);
-        Assert.assertEquals(72, satEntry3.getCoolTemp());
-        Assert.assertEquals(72, satEntry3.getHeatTemp());
+        Assert.assertEquals(72, satEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, satEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), satEntry3.getStartTimeLocalTime());
         
         //Check values for SUNDAY entries
         List<AccountThermostatScheduleEntry> sundayScheduleEntryList = scheduleEntryMultimap.get(TimeOfWeek.SUNDAY);
         
         AccountThermostatScheduleEntry sunEntry0 = sundayScheduleEntryList.get(0);
-        Assert.assertEquals(72, sunEntry0.getCoolTemp());
-        Assert.assertEquals(72, sunEntry0.getHeatTemp());
+        Assert.assertEquals(72, sunEntry0.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry0.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(6,0), sunEntry0.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry1 = sundayScheduleEntryList.get(1);
-        Assert.assertEquals(72, sunEntry1.getCoolTemp());
-        Assert.assertEquals(72, sunEntry1.getHeatTemp());
+        Assert.assertEquals(72, sunEntry1.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry1.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(8,30), sunEntry1.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry2 = sundayScheduleEntryList.get(2);
-        Assert.assertEquals(72, sunEntry2.getCoolTemp());
-        Assert.assertEquals(72, sunEntry2.getHeatTemp());
+        Assert.assertEquals(72, sunEntry2.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry2.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(17,0), sunEntry2.getStartTimeLocalTime());
         
         AccountThermostatScheduleEntry sunEntry3 = sundayScheduleEntryList.get(3);
-        Assert.assertEquals(72, sunEntry3.getCoolTemp());
-        Assert.assertEquals(72, sunEntry3.getHeatTemp());
+        Assert.assertEquals(72, sunEntry3.getCoolTemp().getIntValue());
+        Assert.assertEquals(72, sunEntry3.getHeatTemp().getIntValue());
         Assert.assertEquals(new LocalTime(21,0), sunEntry3.getStartTimeLocalTime());
     }    
 }

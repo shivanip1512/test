@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.dao;
 
 import java.util.List;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 
@@ -86,4 +87,11 @@ public interface AccountThermostatScheduleDao {
 	 * a.k.a. "all saved schedules for account"
 	 */
 	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
+
+    public List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types);
+
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId,
+                                                                                            List<SchedulableThermostatType> types,
+                                                                                            LiteYukonUser yukonUser);
+
 }

@@ -16,7 +16,7 @@
             <cti:msg key="yukon.dr.consumer.scheduleHints.hint" />
         </div>
         
-        <a href="/spring/stars/consumer/thermostat/schedule/view?thermostatIds=${thermostatIds}"><cti:msg key="yukon.dr.consumer.scheduleHints.back" /></a>
+        <a href="/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=${thermostatIds}"><cti:msg key="yukon.dr.consumer.scheduleHints.back" /></a>
     </div>
 
 </cti:standardPage>

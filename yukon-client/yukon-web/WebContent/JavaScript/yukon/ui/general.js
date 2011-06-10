@@ -23,6 +23,8 @@ Yukon.ui = {
             this.autoWire();
 
             this._initialized = true;
+            
+            this.wizard.init();
         }
     },
     
@@ -174,7 +176,141 @@ Yukon.ui = {
                 elem.disable();
             }
         });
-    }    
+    },
+pad: function(number, length) {
+        
+        var str = '' + number;
+        while (str.length < length) {
+            str = '0' + str;
+        }
+        return str;
+    },
+    
+    formatTime: function(time, opts) {
+        if(!opts){
+            opts = {};
+        }
+        var timeStr = ''; 
+        if(opts['24']){
+            if(opts.pad){
+                timeStr = this.pad(time.getHours(), 2) + ':' + this.pad(time.getMinutes(),2);
+            }else{
+                timeStr = time.getHours() + ':' + this.pad(time.getMinutes(),2);
+            }
+        }else{
+            var hours = time.getHours()%12 == 0 ? 12 : time.getHours()%12;
+            var meridian = '';
+            if(opts.meridian){
+                meridian = time.getHours() >= 11 ? 'pm' : 'am';
+            }
+            
+            if(opts.pad){
+                timeStr = pad(hours, 2) + ':' + this.pad(time.getMinutes(),2) + meridian;
+            }else{
+                timeStr = hours + ':' + this.pad(time.getMinutes(),2) + meridian;
+            }
+        }
+        return timeStr;
+    },
+    
+    getParameterByName: function( name ) {
+      name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+      var regexS = "[\\?&]"+name+"=([^&#]*)";
+      var regex = new RegExp( regexS );
+      var results = regex.exec( window.location.href );
+      if( results == null )
+        return null;
+      else
+        return decodeURIComponent(results[1].replace(/\+/g, " "));
+    },
+    
+    wizard: {
+        _initialized: false,
+        
+        init: function() {
+            $$(".f_wizard").each(function(elem){
+                elem.select(".f_next").each(function(nextButton){
+                    nextButton.observe('click', function(event){
+                        Yukon.ui.wizard.nextPage(event.element().up(".f_page"))
+                    });
+                    //by default disable the next buttons
+                    nextButton.disabled = 'disabled';
+                });
+                
+                elem.select(".f_prev").each(function(prevButton){
+                    prevButton.observe('click', function(event){
+                        Yukon.ui.wizard.prevPage(event.element().up(".f_page"))
+                    });
+                });
+                
+                elem.select(".f_page").each(function(elem, idx){
+                    if(idx > 0){
+                        elem.hide();
+                    }else{
+                        elem.show();
+                    }
+                });
+            });
+            
+            Yukon.ui.wizard._initialized = true;
+        },
+        
+        nextPage: function(page) {
+            if(typeof(page) != 'undefined') {
+                var nextPage = page.next(".f_page");
+                if(typeof(nextPage) != 'undefined') {
+                    page.hide();
+                    nextPage.show();
+                }
+            }
+        },
+        
+        prevPage: function(page) {
+            if(typeof(page) != 'undefined') {
+                var prevPage = page.previous(".f_page");
+                if(typeof(prevPage) != 'undefined') {
+                    page.hide();
+                    prevPage.show();
+                }
+            }
+        },
+        
+        /**
+         * Resets the page of the wizard to the first/initial page.  Does NOT do anything with the contents
+         * 
+         * wizard: can be any element in the DOM.  
+         *              * If it is the f_wizard container itself, it will reset the page
+         *              * If it is an arbitrary node, it will search for and reset ALL f_wizard containers within
+         * 
+         */
+        reset: function(wizard) {
+            if(wizard.hasClassName("f_wizard")){
+                wizard.select(".f_page").each(function(elem, idx){
+                    if(idx > 0){
+                        elem.hide();
+                    }else{
+                        elem.show();
+                    }
+                });
+                wizard.select("button.f_next").each(function(button){
+                    button.disabled = 'disabled';
+                });
+            }else{
+                wizard.select(".f_wizard").each(function(elem){
+                    elem.select(".f_page").each(function(elem, idx){
+                        if(idx > 0){
+                            elem.hide();
+                        }else{
+                            elem.show();
+                        }
+                    });
+                    elem.select("button.f_next").each(function(button){
+                        button.disabled = 'disabled';
+                    });
+                });
+            }
+        }
+    }
 };
 
 

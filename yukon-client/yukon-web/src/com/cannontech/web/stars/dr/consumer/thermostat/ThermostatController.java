@@ -59,7 +59,7 @@ public class ThermostatController extends AbstractThermostatController {
                                                                          null) != null;
 
         if (scheduleClicked) {
-            return "redirect:/spring/stars/consumer/thermostat/schedule/view";
+            return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
         }
         
         return "redirect:/spring/stars/consumer/thermostat/view";

@@ -92,8 +92,8 @@ public abstract class AbstractCommandExecutionService implements ThermostatComma
             }
             AccountThermostatScheduleEntry atsEntry = entries.get(period.getEntryIndex());
             String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
-            int coolEntryTemp = atsEntry.getCoolTemp();
-            int heatEntryTemp = atsEntry.getHeatTemp();
+            int coolEntryTemp = atsEntry.getCoolTemp().getIntValue();
+            int heatEntryTemp = atsEntry.getHeatTemp().getIntValue();
             logMessage.append(period + ": " + entryDate + "," + coolEntryTemp + tempUnit + "," + heatEntryTemp + tempUnit);
         }
         

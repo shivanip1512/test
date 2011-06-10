@@ -48,7 +48,7 @@ ExtGridHelper.prototype = {
     	    
     	    colHash['sortable'] =  sortable;
     	    colHash['dataIndex'] =  columnInfo[i]['columnId'];
-            colHash['id'] =  colHash['dataIndex']
+            colHash['id'] =  colHash['dataIndex'];
     	    columns[i] = colHash;
     	}
      

@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.thermostat.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -16,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowAndFieldMapper;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -46,6 +50,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     private YukonJdbcTemplate yukonJdbcTemplate;
     private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
     private ECMappingDao ecMappingDao;
+    private RolePropertyDao rolePropertyDao;
     
     private SimpleTableAccessTemplate<AccountThermostatSchedule> accountThermostatScheduleTemplate;
     
@@ -271,6 +276,52 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
 	}
 	
+	// ALL SCHEDULES FOR ACCOUNT BY TYPE
+    @Override
+    public List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ATS.*");
+        sql.append("FROM AcctThermostatSchedule ATS");
+        sql.append("WHERE ATS.AccountId").eq(accountId);
+        if (types != null) {
+            sql.append("AND ATS.ThermostatType").in(types);
+        }
+        sql.append("ORDER BY ATS.ScheduleName");
+        
+        List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
+        for(AccountThermostatSchedule schedule : schedules) {
+            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
+            schedule.setScheduleEntries(atsEntries);
+        }
+        
+        return schedules;
+    }
+    
+    // ALL SCHEDULES FOR ACCOUNT BY TYPE and remove schedules which are not allowed for the specified user
+    @Override
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types, LiteYukonUser yukonUser) {
+        
+        List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByType(accountId, types);
+        List<AccountThermostatSchedule> disallowedSchedules = new ArrayList<AccountThermostatSchedule>();
+        
+        boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, yukonUser);
+        boolean schedule7Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_7, yukonUser);
+        
+        for(AccountThermostatSchedule schedule : schedules){
+            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.SINGLE && !schedule7Enabled){
+                disallowedSchedules.add(schedule);
+            }
+            
+            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.WEEKDAY_SAT_SUN && !schedule52Enabled){
+                disallowedSchedules.add(schedule);
+            }
+        }
+        schedules.removeAll(disallowedSchedules);
+        
+        return schedules;
+    }
+	
 	// GET NUMBER OF THERMOSTATS USING SCHEDULE
 	@Override
 	public List<Integer> getThermostatIdsUsingSchedule(int atsId) {
@@ -437,4 +488,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
 		this.ecMappingDao = ecMappingDao;
 	}
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }
