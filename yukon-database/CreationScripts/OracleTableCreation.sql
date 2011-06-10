@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/10/2011 11:09:24 AM                        */
+/* Created on:     6/10/2011 4:29:28 PM                         */
 /*==============================================================*/
 
 
@@ -1940,18 +1940,18 @@ create table DEVICEGROUP  (
    constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 );
 
-insert into DeviceGroup values (0,' ',null,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (1,'Meters',0,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (2,'Billing',1,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (3,'Collection',1,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (4,'Alternate',1,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (8,'Flags',1,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (9,'Inventory',8,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC');
-insert into DeviceGroup values (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
-INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_NOMOD','STATIC');
-INSERT INTO DeviceGroup values (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
-INSERT INTO DeviceGroup values (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
+INSERT INTO DeviceGroup VALUES (0,' ',null,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (1,'Meters',0,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (2,'Billing',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (3,'Collection',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (4,'Alternate',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (8,'Flags',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (9,'Inventory',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (12,'System',0,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup VALUES (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
+INSERT INTO DeviceGroup VALUES (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
 INSERT INTO DeviceGroup VALUES (15,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
 INSERT INTO DeviceGroup VALUES (16,'Scanning',15,'NOEDIT_NOMOD','STATIC'); 
 INSERT INTO DeviceGroup VALUES (17,'Load Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_LOAD_PROFILE'); 
@@ -1964,6 +1964,9 @@ INSERT INTO DeviceGroup VALUES (23,'Disconnect',15,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup VALUES (24,'Collars',23,'NOEDIT_MOD','METERS_DISCONNECT_COLLAR');
 INSERT INTO DeviceGroup VALUES (25,'CIS Substation',1,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup VALUES (26,'Substations',12,'NOEDIT_NOMOD','SUBSTATION_TO_ROUTE');
+INSERT INTO DeviceGroup VALUES (27,'Attributes',12,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup VALUES (28,'Supported',12,'NOEDIT_NOMOD','ATTRIBUTE_DEFINED');
+INSERT INTO DeviceGroup VALUES (29,'Existing',12,'NOEDIT_NOMOD','ATTRIBUTE_EXISTS');
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId);
@@ -7476,7 +7479,7 @@ create table ValidationMonitor  (
    constraint PK_ValidMon primary key (ValidationMonitorId)
 );
 
-INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1000001, 15, 1, 'DISABLED');
+INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/System/Attributes/Existing/Usage Reading', 400, 1, 4, .1000001, 15, 1, 'DISABLED');
 
 /*==============================================================*/
 /* Table: VersacomRoute                                         */

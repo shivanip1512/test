@@ -265,6 +265,48 @@ CREATE INDEX Indx_CmdReqExecRes_ExecId_ErrC ON CommandRequestExecResult (
 );
 /* End YUK-9824 */
 
+/* Start YUK-9901 */
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+SELECT DG1.DeviceGroupId, 'Attributes', DG2.ParentDeviceGroupId, 'NOEDIT_NOMOD', 'STATIC'
+FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.DeviceGroupId < 100) DG1,
+      (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.GroupName = 'System'
+       AND DG.ParentDeviceGroupId = 0) DG2;
+
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+SELECT DG1.DeviceGroupId, 'Supported', DG2.ParentDeviceGroupId, 'NOEDIT_NOMOD', 'ATTRIBUTE_DEFINED'
+FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.DeviceGroupId < 100) DG1,
+      (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.GroupName = 'Attributes'
+       AND DG.ParentDeviceGroupId = (SELECT DGSYS.DeviceGroupId
+                                     FROM DeviceGroup DGSYS
+                                     WHERE DGSYS.GroupName = 'System'
+                                     AND DGSYS.ParentDeviceGroupId = 0)) DG2;
+
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+SELECT DG1.DeviceGroupId, 'Existing', DG2.ParentDeviceGroupId, 'NOEDIT_NOMOD', 'ATTRIBUTE_EXISTS'
+FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.DeviceGroupId < 100) DG1,
+      (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+       FROM DeviceGroup DG
+       WHERE DG.GroupName = 'Attributes'
+       AND DG.ParentDeviceGroupId = (SELECT DGSYS.DeviceGroupId
+                                     FROM DeviceGroup DGSYS
+                                     WHERE DGSYS.GroupName = 'System'
+                                     AND DGSYS.ParentDeviceGroupId = 0)) DG2;
+
+UPDATE ValidationMonitor
+SET GroupName = '/System/Attributes/Existing/Usage Reading'
+WHERE ValidationMonitorId = 1;
+/* End YUK-9901 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
