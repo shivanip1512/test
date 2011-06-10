@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/10/2011 4:29:28 PM                         */
+/* Created on:     6/10/2011 5:07:12 PM                         */
 /*==============================================================*/
 
 
@@ -8945,7 +8945,7 @@ insert into YukonRoleProperty values(-80100,-801,'Template Root','Server/web/web
 
 /* Loadcontrol Role Properties */
 INSERT INTO YukonRoleProperty VALUES (-90001,-900,'Individual Switch','true','Controls access to operator individual switch control');
-INSERT INTO YukonRoleProperty VALUES (-90002,-900,'3 Tier Direct Control','false','Allows access to the 3-tier load management web interface');
+INSERT INTO YukonRoleProperty VALUES (-90002,-900,'Demand Response','false','Allows access to the Demand Response control web application');
 INSERT INTO YukonRoleProperty VALUES (-90003,-900,'Direct Loadcontrol','true','Allows access to the Direct load management web interface');
 INSERT INTO YukonRoleProperty VALUES (-90004,-900,'Constraint Check','true','Allow load management program constraints to be CHECKED before starting');
 INSERT INTO YukonRoleProperty VALUES (-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');

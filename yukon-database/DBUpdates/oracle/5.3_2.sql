@@ -307,6 +307,13 @@ SET GroupName = '/System/Attributes/Existing/Usage Reading'
 WHERE ValidationMonitorId = 1;
 /* End YUK-9901 */
 
+/* Start YUK-9900 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Demand Response',
+    Description = 'Allows access to the Demand Response control web application'
+WHERE RolePropertyId = -90002;
+/* End YUK-9900 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
