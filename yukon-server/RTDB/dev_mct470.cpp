@@ -2069,11 +2069,7 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
     bool found = false;
     int function;
 
-    if(parse.isKeyValid("install"))
-    {
-        nRet = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
-    }
-    else if(parse.isKeyValid("multiplier"))
+    if(parse.isKeyValid("multiplier"))
     {
         function = EmetconProtocol::GetConfig_Multiplier;
         found = getOperation(function, OutMessage->Buffer.BSt);

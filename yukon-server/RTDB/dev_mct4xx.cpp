@@ -970,7 +970,11 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
 
     errRet->setExpectMore();
 
-    if( parse.isKeyValid("tou") )
+    if(parse.isKeyValid("install"))
+    {
+        nRet = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if( parse.isKeyValid("tou") )
     {
         found = true;
 
