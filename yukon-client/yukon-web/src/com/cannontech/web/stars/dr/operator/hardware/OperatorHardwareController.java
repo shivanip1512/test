@@ -405,7 +405,7 @@ public class OperatorHardwareController {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (ObjectInOtherEnergyCompanyException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {  //TODO: These keys should probably have something about two-way in the path
+        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
             switch (e.getType()) {
             case UNKNOWN:
                 result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");
