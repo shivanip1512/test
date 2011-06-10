@@ -849,6 +849,8 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
                   resolution    = 0;
     unsigned char error_pad, error_byte, value_byte;
 
+    //  This are the default errors for non-load-profile points.
+    //    Load profile error maps are assigned lower.
     const error_map *errors = &error_codes;
 
     string description;
@@ -892,7 +894,17 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
     switch( vt )
     {
         case ValueType_PulseDemand:
-        case ValueType_LoadProfile_PulseDemand:      min_error = 0xffffffa1; break;
+        case ValueType_LoadProfile_PulseDemand:
+        {
+            min_error = 0xffffffa1;
+            break;
+        }
+
+        case ValueType_IED:
+        {
+            min_error = 0xffffffe0;
+            break;
+        }
 
         case ValueType_LoadProfile_IED_Alpha_A3:
         case ValueType_LoadProfile_IED_Alpha_PP:
@@ -904,37 +916,48 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
         {
             if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
             {
-                min_error = 0xfffffff0; break;
+                min_error = 0xfffffff0;
+
+                switch( vt )
+                {
+                    case ValueType_LoadProfile_IED_Alpha_A3:
+                    {
+                        errors = &_error_info_alphaa3;
+                        break;
+                    }
+                    case ValueType_LoadProfile_IED_Alpha_PP:
+                    {
+                        errors = &_error_info_alphapp;
+                        break;
+                    }
+                    case ValueType_LoadProfile_IED_GE_kV:
+                    case ValueType_LoadProfile_IED_GE_kV2:
+                    case ValueType_LoadProfile_IED_GE_kV2c:
+                    {
+                        errors = &_error_info_gekv;
+                        break;
+                    }
+                    case ValueType_LoadProfile_IED_LG_S4:
+                    {
+                        errors = &_error_info_lgs4;
+                        break;
+                    }
+                    case ValueType_LoadProfile_IED_Sentinel:
+                    {
+                        errors = &_error_info_sentinel;
+                        break;
+                    }
+                }
             }
             else
             {
-                min_error = 0xffff7ff0; break;
-            }
-        }
-    }
+                min_error = 0xffff7ff0;
 
-    if( vt == ValueType_LoadProfile_PulseDemand ||
-        vt == ValueType_PulseDemand )
-    {
-        //  this was already set in errors' initializer, but this is for clarity
-        errors = &error_codes;
-    }
-    else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
-    {
-        switch( vt )
-        {
-            case ValueType_LoadProfile_IED_Alpha_A3:    errors = &_error_info_alphaa3;  break;
-            case ValueType_LoadProfile_IED_Alpha_PP:    errors = &_error_info_alphapp;  break;
-            case ValueType_LoadProfile_IED_GE_kV:
-            case ValueType_LoadProfile_IED_GE_kV2:
-            case ValueType_LoadProfile_IED_GE_kV2c:     errors = &_error_info_gekv;     break;
-            case ValueType_LoadProfile_IED_LG_S4:       errors = &_error_info_lgs4;     break;
-            case ValueType_LoadProfile_IED_Sentinel:    errors = &_error_info_sentinel; break;
+                errors = &_error_info_old_lp;
+            }
+
+            break;
         }
-    }
-    else
-    {
-        errors = &_error_info_old_lp;
     }
 
     if( error_code >= min_error )
