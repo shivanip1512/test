@@ -60,7 +60,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(rowMapper.getBaseQuery());
-                sql.append("WHERE p.programId IN (").appendList(subList).append(")");
+                sql.append("AND p.programId IN (").appendList(subList).append(")");
                 return sql;
             }
         };
