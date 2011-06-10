@@ -23,7 +23,8 @@ const PointAttribute PhaseOperatedVoltageRegulator::attributes[] =
     PointAttribute::AutoRemoteControl,
     PointAttribute::KeepAlive,
     PointAttribute::Terminate,
-    PointAttribute::AutoBlockEnable
+    PointAttribute::AutoBlockEnable,
+    PointAttribute::HeartbeatTimerConfig
 };
 
 
@@ -95,6 +96,8 @@ void PhaseOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 
 void PhaseOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
+    _keepAliveTimer = readKeepAliveTimerReload();
+
     bool recentOperation = ( ( _lastTapOperationTime + 30 ) > CtiTime() );
 
     if (_recentTapOperation != recentOperation)
@@ -217,6 +220,26 @@ VoltageRegulator::IDSet PhaseOperatedVoltageRegulator::getVoltagePointIDs()
     IDs.insert( voltageY.getPointId() );
 
     return IDs;
+}
+
+
+/*
+    We get this value from an attached point.  In case of no point update or value out of range (negative) we return 0 which
+        disables the automatic keep alive.  The value represents the amount of time (in seconds) it takes for the regulator
+        to time out and return to auto mode after receiving a valid keep alive.  We divide it by two so we send keep alive
+        messages twice as frequently as necessary.
+*/
+long PhaseOperatedVoltageRegulator::readKeepAliveTimerReload()
+{
+    double    value = -1.0;
+    LitePoint point = getPointByAttribute( PointAttribute::HeartbeatTimerConfig );
+
+    if ( getPointValue( point.getPointId(), value ) )
+    {        
+        return ( value <= 0.0 ) ? 0 : static_cast<long>( value / 2.0 );
+    }
+
+    return 0;
 }
 
 

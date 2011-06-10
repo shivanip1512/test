@@ -24,6 +24,7 @@ class IM_EX_CTIBASE PointAttribute
             VoltageYAttribute,
             TerminateAttribute,
             AutoBlockEnableAttribute,
+            HeartbeatTimerConfigAttribute,
 
             CbcVoltageAttribute,
             HighVoltageAttribute,
@@ -87,6 +88,7 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute VoltageY;
         static const PointAttribute Terminate;
         static const PointAttribute AutoBlockEnable;
+        static const PointAttribute HeartbeatTimerConfig;
 
         static const PointAttribute CbcVoltage;
         static const PointAttribute HighVoltage;

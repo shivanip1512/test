@@ -30,7 +30,7 @@ VoltageRegulator::VoltageRegulator()
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(pos_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin))
 {
     // empty...
 }
@@ -44,10 +44,21 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(pos_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin))
 {
-    rdr["KeepAliveTimer"]   >> _keepAliveTimer;
-    rdr["KeepAliveConfig"]  >> _keepAliveConfig;
+    /*
+        We have data from the Regulator table - this will only be the case if we are an LTC.
+    */
+
+    if ( ! rdr["KeepAliveTimer"].isNull() )
+    {
+        rdr["KeepAliveTimer"]   >> _keepAliveTimer;
+    }
+
+    if ( ! rdr["KeepAliveConfig"].isNull() )
+    {
+        rdr["KeepAliveConfig"]  >> _keepAliveConfig;
+    }
 }
 
 
@@ -59,7 +70,7 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(pos_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin))
 {
     operator=(toCopy);
 }
@@ -278,7 +289,7 @@ void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const in
 
     if ( isTimeToSendKeepAlive() )      // update the keep alive timer
     {
-        _nextKeepAliveSendTime += _keepAliveTimer;
+        _nextKeepAliveSendTime = ( CtiTime::now() + _keepAliveTimer );
     }
 }
 

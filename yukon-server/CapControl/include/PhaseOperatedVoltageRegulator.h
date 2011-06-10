@@ -40,6 +40,8 @@ public:
     virtual IDSet getVoltagePointIDs();
 
 protected:
+    
+    long readKeepAliveTimerReload();
 
     bool            _recentTapOperation;
 

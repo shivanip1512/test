@@ -31,8 +31,8 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
 {
     static const std::string sql = "SELECT Y.PAObjectID, Y.Category, Y.PAOClass, Y.PAOName, Y.Type, Y.Description,"
                                    " Y.DisableFlag, R.KeepAliveTimer, R.KeepAliveConfig"
-                                   " FROM YukonPAObject Y, Regulator R"
-                                   " WHERE Y.PAObjectID = R.RegulatorId AND Type IN";
+                                   " FROM YukonPAObject Y LEFT OUTER JOIN Regulator R ON Y.PAObjectID = R.RegulatorId"
+                                   " WHERE Y.Type IN";
 
     static const std::string and_clause = " AND Y.PAObjectID = ?";
 

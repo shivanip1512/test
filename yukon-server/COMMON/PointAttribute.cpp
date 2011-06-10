@@ -16,6 +16,7 @@ const PointAttribute PointAttribute::VoltageX = PointAttribute(PointAttribute::V
 const PointAttribute PointAttribute::VoltageY = PointAttribute(PointAttribute::VoltageYAttribute,"VOLTAGE_Y");
 const PointAttribute PointAttribute::Terminate = PointAttribute(PointAttribute::TerminateAttribute,"TERMINATE");
 const PointAttribute PointAttribute::AutoBlockEnable = PointAttribute(PointAttribute::AutoBlockEnableAttribute,"AUTO_BLOCK_ENABLE");
+const PointAttribute PointAttribute::HeartbeatTimerConfig = PointAttribute(PointAttribute::HeartbeatTimerConfigAttribute,"HEARTBEAT_TIMER_CONFIG");
 
 const PointAttribute PointAttribute::CbcVoltage = PointAttribute(PointAttribute::CbcVoltageAttribute, "Voltage");
 const PointAttribute PointAttribute::HighVoltage = PointAttribute(PointAttribute::HighVoltageAttribute, "High Voltage");
