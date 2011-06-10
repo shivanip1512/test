@@ -254,6 +254,17 @@ ALTER TABLE LMGroupXMLParameter
 DROP TABLE LMGroupXMLParameter;
 /* End YUK-9620 */
 
+/* Start YUK-9824 */
+CREATE INDEX Indx_CmdReqExec_ContId ON CommandRequestExec (
+   CommandRequestExecContextId ASC
+);
+
+CREATE INDEX Indx_CmdReqExecRes_ExecId_ErrC ON CommandRequestExecResult (
+   CommandRequestExecId ASC,
+   ErrorCode ASC
+);
+/* End YUK-9824 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

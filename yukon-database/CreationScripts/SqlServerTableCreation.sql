@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/9/2011 9:42:38 AM                          */
+/* Created on:     6/10/2011 11:13:09 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -1696,6 +1696,14 @@ create table CommandRequestExec (
 go
 
 /*==============================================================*/
+/* Index: Indx_CmdReqExec_ContId                                */
+/*==============================================================*/
+create index Indx_CmdReqExec_ContId on CommandRequestExec (
+CommandRequestExecContextId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: CommandRequestExecResult                              */
 /*==============================================================*/
 create table CommandRequestExecResult (
@@ -1707,6 +1715,15 @@ create table CommandRequestExecResult (
    DeviceId             numeric              null,
    RouteId              numeric              null,
    constraint PK_CommandRequestExecResult primary key (CommandRequestExecResultId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_CmdReqExecRes_ExecId_ErrC                        */
+/*==============================================================*/
+create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
+CommandRequestExecId ASC,
+ErrorCode ASC
 )
 go
 
