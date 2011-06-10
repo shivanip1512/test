@@ -432,6 +432,7 @@ string CtiDeviceCBC::getSQLCoreStatement() const
                                    "FROM YukonPAObject YP, Device DV, DeviceCBC CBC "
                                    "WHERE upper (YP.type) != 'CBC 7020' AND upper (YP.type) != 'CBC 7022' AND upper (YP.type) "
                                      "!= 'CBC 7023' AND upper (YP.type) != 'CBC 7024' AND upper (YP.type) != 'CBC DNP' AND "
+                                     "upper (YP.type) != 'CBC 8020' AND upper (YP.type) != 'CBC 8024' AND "
                                      "YP.paobjectid = CBC.deviceid AND YP.paobjectid = DV.deviceid";
 
     return sqlCore;
