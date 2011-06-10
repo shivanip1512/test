@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.joda.time.Instant;
@@ -485,4 +487,13 @@ public class ServletUtils {
     public static String hideUnsetNumber(int num, int num_unset) {
         return (num == num_unset)? "" : String.valueOf(num);
     }
+    
+    public static void closePopup(HttpServletResponse resp, String popupId) throws IOException {
+        resp.getWriter().print("<script type=\"text/javascript\">");
+        resp.getWriter().print("$('" + popupId + "').hide();");
+        resp.getWriter().print("window.location = window.location;");
+        resp.getWriter().print("</script>");
+        
+    }
+    
 }

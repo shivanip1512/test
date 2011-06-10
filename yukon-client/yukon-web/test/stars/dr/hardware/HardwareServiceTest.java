@@ -87,12 +87,6 @@ public class HardwareServiceTest {
     }
     
     @Test
-    public void testGetHardwareTypeById_ForYukonMeter() {
-        HardwareType type = hardwareUiService.getHardwareTypeById(0);
-        Assert.assertEquals(type, HardwareType.YUKON_METER);
-    }
-    
-    @Test
     public void testCheckSerialNumber() {
         HardwareDto possibleDuplicate = new HardwareDto();
         possibleDuplicate.setInventoryId(1);

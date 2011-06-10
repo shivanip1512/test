@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.inventory.HardwareType;
@@ -28,6 +29,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -65,6 +67,7 @@ public class InventoryDaoImpl implements InventoryDao {
     private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private InventoryIdentifierMapper inventoryIdentifierMapper;
+    private YukonListDao yukonListDao;
     
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
@@ -476,6 +479,27 @@ public class InventoryDaoImpl implements InventoryDao {
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
+    @Override
+    public HardwareType getHardwareTypeById(int hardwareTypeId) {
+        Integer hardwareTypeDefinitionId;
+        if (hardwareTypeId > 0) {
+            /* This is a stars object that will live in either LMHardwareBase or MeterHardwareBase */
+            YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId);
+            hardwareTypeDefinitionId = entry.getYukonDefID();
+        } else {
+            /* This is a real MCT that exists as a yukon pao.  It will only have a row in InventoryBase 
+             * so there is no type id. */
+            hardwareTypeDefinitionId = 0;
+        }
+        
+        return HardwareType.valueOf(hardwareTypeDefinitionId);
+    }
+    
+    @Override
+    public HardwareType getHardTypeByInventoryId(int inventoryId) {
+        return getYukonInventory(inventoryId).getHardwareType();
+    }
+    
     // DI Setters
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
@@ -505,6 +529,11 @@ public class InventoryDaoImpl implements InventoryDao {
     @Autowired
     public void setInventoryIdentifierMapper(InventoryIdentifierMapper inventoryIdentifierMapper) {
         this.inventoryIdentifierMapper = inventoryIdentifierMapper;
+    }
+    
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
     }
 
 }

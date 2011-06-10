@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
-import java.beans.PropertyEditorSupport;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -37,7 +33,6 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ServiceCompanyDto;
-import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -51,7 +46,6 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -88,16 +82,10 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
-import com.cannontech.thirdparty.exception.DigiWebServiceException;
-import com.cannontech.thirdparty.exception.GatewayCommissionException;
-import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
-import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -139,12 +127,10 @@ public class OperatorHardwareController {
     private HardwareService hardwareService;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private GatewayDeviceDao gatewayDeviceDao;
-    private ZigbeeWebService zigbeeWebService;
+    
     private ZigbeeDeviceService zigbeeDeviceService;
     private InventoryDao inventoryDao;
 
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-        
     /* HARDWARE LIST PAGE */
     @RequestMapping
     public String list(YukonUserContext userContext, 
@@ -349,16 +335,6 @@ public class OperatorHardwareController {
         HardwareDto hardwareDto = hardwareUiService.getHardwareDto(inventoryId, fragment.getEnergyCompanyId(), fragment.getAccountId());
         
         model.addAttribute("hardwareDto", hardwareDto);
-        
-        if (hardwareDto.getHardwareType().isGateway()) {
-            ZigbeeTextMessage textMessage = new ZigbeeTextMessage();
-            textMessage.setAccountId(fragment.getAccountId());
-            textMessage.setInventoryId(inventoryId);
-            textMessage.setGatewayId(hardwareDto.getDeviceId());
-            textMessage.setStartTime(new Instant());
-            textMessage.setDisplayDuration(Duration.standardMinutes(2));
-            model.addAttribute("textMessage", textMessage);
-        }
         
         model.addAttribute("displayName", hardwareDto.getDisplayName());
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -796,169 +772,6 @@ public class OperatorHardwareController {
         }
     }
     
-    /* ACTIONS */
-    
-    /* GATEWAY ACTIONS */
-    @RequestMapping
-    public String commissionGateway(ModelMap model, FlashScope flash, int accountId, int inventoryId, int gatewayId) {
-        boolean messageFailed = false;
-        String errorMessage = null;
-        try {
-            zigbeeWebService.installGateway(gatewayId);
-        } catch (GatewayCommissionException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        }
-        
-        if (messageFailed) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.commandFailed", errorMessage));
-        } else {
-            String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.gatewayCommissioned", gatewaySerialNumber));
-        }
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
-    @RequestMapping
-    public String decommissionGateway(ModelMap model, FlashScope flash, int accountId, int inventoryId, int gatewayId) {
-        boolean messageFailed = false;
-        String errorMessage = null;
-        try {
-            zigbeeWebService.removeGateway(gatewayId);
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        }
-        
-        if (messageFailed) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.commandFailed", errorMessage));
-        } else {
-            String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.gatewayDecommissioned", gatewaySerialNumber));
-        }
-        
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
-    @RequestMapping
-    public String sendTextMessage(ModelMap model, FlashScope flash, 
-                                  @ModelAttribute("textMessage") ZigbeeTextMessage textMessage,
-                                  BindingResult result,
-                                  AccountInfoFragment fragment,
-                                  YukonUserContext context) {
-        
-        int inventoryId = textMessage.getInventoryId();
-        int energyCompanyId = fragment.getEnergyCompanyId();
-        int accountId = fragment.getAccountId();
-
-        YukonValidationUtils.checkExceedsMaxLength(result, "message", textMessage.getMessage(), 21);
-        if (result.hasErrors()) {
-            model.addAttribute("textMessageError", true);
-            model.addAttribute("accountId", accountId);
-            model.addAttribute("mode", PageEditMode.VIEW);
-            /* Add errors to flash scope */
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-            flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            HardwareDto dto = hardwareUiService.getHardwareDto(inventoryId, energyCompanyId, accountId);
-            model.addAttribute("hardwareDto", dto);
-            setupHardwareViewEditModel(fragment, dto, model, context);
-            
-            return "operator/hardware/hardware.jsp";
-        }
-        
-        boolean messageFailed = false;
-        String errorMessage = null;
-        try {
-            zigbeeWebService.sendTextMessage(textMessage);
-        } catch (ZigbeeClusterLibraryException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        }
-        
-        if (messageFailed) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.commandFailed", errorMessage));
-        } else {
-            String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(textMessage.getGatewayId());
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.messageSent", gatewaySerialNumber));
-        }
-        
-        return redirectView(model, textMessage.getAccountId(), inventoryId);
-    }
-
-    /* TSTAT ACTIONS */
-    @RequestMapping
-    public String commissionTstat(ModelMap model, FlashScope flash, int accountId, int inventoryId, int deviceId, int gatewayId) {
-        boolean messageFailed = false;
-        String errorMessage = null;
-        try {
-            zigbeeWebService.installStat(gatewayId, deviceId);
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        }
-        
-        if (messageFailed) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.commandFailed", errorMessage));
-        } else {
-            String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatCommissioned", deviceSerialNumber));
-        }
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
-    @RequestMapping
-    public String decommissionTstat(ModelMap model, FlashScope flash, int accountId, int inventoryId, int deviceId, int gatewayId) {
-        boolean messageFailed = false;
-        String errorMessage = null;
-        try {
-            zigbeeWebService.uninstallStat(gatewayId, deviceId);
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        }
-        
-        if (messageFailed) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.commandFailed", errorMessage));
-        } else {
-            String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatDecommissioned", deviceSerialNumber));
-        }
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
-    @RequestMapping(value="addDeviceToGateway", method=RequestMethod.POST)
-    public String addDeviceToGateway(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
-        gatewayDeviceDao.updateDeviceToGatewayAssignment(deviceId, gatewayId);
-
-        String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
-        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatAdded", deviceSerialNumber, gatewaySerialNumber));
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
-    @RequestMapping
-    public String removeDeviceFromGateway(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
-        //Send Digi Unlink commands?
-        gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
-        
-        String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
-        String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.thermostatRemoved", deviceSerialNumber, gatewaySerialNumber));
-        
-        return redirectView(model, accountId, inventoryId);
-    }
-    
     /* INIT BINDER */
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext context) {
@@ -968,30 +781,9 @@ public class OperatorHardwareController {
         binder.registerCustomEditor(Date.class, "fieldReceiveDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
         
-        binder.registerCustomEditor(Instant.class, "startTime", datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, context, BlankMode.CURRENT));
-        
-        binder.registerCustomEditor(Duration.class, "displayDuration", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String duration) throws IllegalArgumentException {
-                long durationInMillis = Long.parseLong(duration);
-                setValue(new Duration(durationInMillis));
-            }
-            @Override
-            public String getAsText() {
-                Duration duration = (Duration) getValue();
-                return String.valueOf(duration.getMillis());
-            }
-        });
     }
 
     /* HELPERS */
-    
-    private String redirectView(ModelMap model, int accountId, int inventoryId) {
-        model.addAttribute("inventoryId", inventoryId);
-        model.addAttribute("accountId", accountId);
-        
-        return "redirect:view";
-    }
     
     /* Add common element to model for view/edit and create modes both need for the hardware page */
     /* Should only be called by setupHardwareCreateModelMap and setupHardwareViewEditModelMap methods */
@@ -1143,6 +935,7 @@ public class OperatorHardwareController {
                     model.addAttribute("showTstatChangeoutAction", true);
                 }
             }
+            
             if (tstatAccess) {
                 if (type.isSupportsSchedules()) {
                     model.addAttribute("showScheduleActions", true);
@@ -1151,19 +944,21 @@ public class OperatorHardwareController {
                     model.addAttribute("showManualAction", true);
                 }
             }
+            
             if (type.isZigbee()) {
                 InventoryIdentifier gateway = gatewayDeviceDao.findGatewayByDeviceMapping(dto.getDeviceId());
                 if (gateway == null) {
                     model.addAttribute("showDisabledCommissionActions", true);
+                    model.addAttribute("showDisabledRefresh", true);
                 } else {
-                    model.addAttribute("showCommissionTstatActions", true);
+                    model.addAttribute("showCommissionActions", true);
                     model.addAttribute("gatewayInventoryId", gateway.getInventoryId());
                 }
-            }
-            if (type.isZigbee()) {
+
                 model.addAttribute("showGateway", true);
                 List<DigiGateway> gateways = gatewayDeviceDao.getGatewaysForAccount(accountId);
                 model.addAttribute("gateways", gateways);
+                
             }
             break;
             
@@ -1183,28 +978,16 @@ public class OperatorHardwareController {
             break;
             
         case GATEWAY:
-            model.addAttribute("showCommissionGatewayActions", true);
-
+            model.addAttribute("showCommissionActions", true);
             model.addAttribute("showTextMessageAction", true);
-            model.addAttribute("editMode", PageEditMode.EDIT); // page mode for text message form
-            List<Duration> durations = Lists.newArrayList();
-            durations.add(Duration.standardMinutes(2));
-            durations.add(Duration.standardMinutes(30));
-            durations.add(Duration.standardHours(1));
-            durations.add(Duration.standardHours(6));
-            durations.add(Duration.standardHours(12));
-            durations.add(Duration.standardHours(24));
-            durations.add(Duration.standardDays(2));
-            durations.add(Duration.standardDays(7));
-            durations.add(Duration.standardDays(14));
-            model.addAttribute("durations", durations);
+            model.addAttribute("showAssignedDevices", true);
             
             if (allowAccountEditing) {
                 if (inventoryChecking) {
                     model.addAttribute("showGatewayChangeOutAction", true);
                 }
             }
-            model.addAttribute("showAssignedDevices", true);
+            
             List<Pair<InventoryIdentifier, ZigbeeDeviceDto>> zigbeeDevices = zigbeeDeviceService.buildZigbeeDeviceDtoList(accountId);
             List<ZigbeeDeviceDto> assignedDevices = Lists.newArrayList();
             List<ZigbeeDeviceDto> availableDevices = Lists.newArrayList();
@@ -1403,11 +1186,6 @@ public class OperatorHardwareController {
     }
     
     @Autowired
-    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
-        this.zigbeeWebService = zigbeeWebService;
-    }
-    
-    @Autowired
     public void setZigbeeDeviceService(ZigbeeDeviceService zigbeeDeviceService) {
         this.zigbeeDeviceService = zigbeeDeviceService;
     }
@@ -1415,11 +1193,6 @@ public class OperatorHardwareController {
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
     
 }

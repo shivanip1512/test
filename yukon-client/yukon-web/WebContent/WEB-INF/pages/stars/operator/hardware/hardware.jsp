@@ -6,10 +6,80 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="hardware.${mode}">
+
 <tags:setFormEditMode mode="${mode}"/>
+<cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
+
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
+<cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
 <script type="text/javascript">
+YEvent.observeSelectorClick('#refresh, #commission, #decommission', function(event) {
+    var url = '/spring/stars/operator/hardware/zb/';
+    var button = Event.element(event);
+    if (button.id == 'refresh') {
+        url += 'refresh';
+    } else if (button.id == 'commission') {
+        url += 'commission';
+    } else {
+        url += 'decommission';
+    }
+    
+    Yukon.ui.blockElement({selector:'#zigbeeStatus_content'});
+    
+    new Ajax.Request(url, {
+        method: 'get',
+        parameters: {'deviceId': '${hardwareDto.deviceId}'},
+        onSuccess: function(resp, json) {
+           if (json.success ==  true) {
+               $('zbCommandFailure').hide();
+               $('zbCommandSuccess').innerHTML = json.message;
+               $('zbCommandSuccess').show();
+            } else {
+                $('zbCommandSuccess').hide();
+                $('zbCommandFailure').innerHTML = json.message;
+                $('zbCommandFailure').show(); 
+            }
+        },
+        onComplete: function() {
+            Yukon.ui.unblockElement({selector:'#zigbeeStatus_content'});
+        }
+    });
+});
+
+YEvent.observeSelectorClick('#assignedDevicesCommission, #assignedDevicesDecommission', function(event) {
+    var url = '/spring/stars/operator/hardware/zb/';
+    var button = Event.element(event);
+    var deviceId = button.name;
+    
+    if (button.id == 'assignedDevicesCommission') {
+        url += 'commission';
+    } else {
+        url += 'decommission';
+    }
+    
+    Yukon.ui.blockElement({selector:'#assignedDevices_content'});
+    
+    new Ajax.Request(url, {
+        method: 'get',
+        parameters: {'deviceId': deviceId},
+        onSuccess: function(resp, json) {
+           if (json.success ==  true) {
+               $('zbAssignedFailure').hide();
+               $('zbAssignedSuccess').innerHTML = json.message;
+               $('zbAssignedSuccess').show();
+            } else {
+                $('zbAssignedSuccess').hide();
+                $('zbAssignedFailure').innerHTML = json.message;
+                $('zbAssignedFailure').show(); 
+            }
+        },
+        onComplete: function() {
+            Yukon.ui.unblockElement({selector:'#assignedDevices_content'});
+        }
+    });
+});
+
 YEvent.observeSelectorClick('#newButton', function(event) {
     $('twoWayPickerContainer').hide();
     $('newTwoWayDeviceContainer').show();
@@ -23,6 +93,13 @@ YEvent.observeSelectorClick('#chooseButton', function(event) {
     $('twoWayPickerContainer').show();
     $('newTwoWayDeviceContainer').hide();
     $('creatingNewTwoWayDevice').value = false;
+});
+
+YEvent.observeSelectorClick('#sendTextMsg', function(event) {
+    var params = {'accountId' : ${accountId}, 
+                        'inventoryId' : ${inventoryId}, 
+                        'gatewayId' : ${hardwareDto.deviceId}};
+    openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
 });
 
 function showDeletePopup() {
@@ -53,8 +130,6 @@ function updateServiceCompanyInfo() {
     }
 }
 
-Event.observe(window, 'load', updateServiceCompanyInfo);
-
 function changeOut(oldId, isMeter) {
     $('oldInventoryId').value = oldId;
 
@@ -69,11 +144,14 @@ function changeOut(oldId, isMeter) {
     return true;
 }
 
-function sendTextMsg() {
-    combineDateAndTimeFields('startTime');
-    return true;
-}
+Event.observe(window, 'load', updateServiceCompanyInfo);
 </script>
+
+     <!-- Text Message Popup -->
+    <cti:msg2 var="textMsgTitle" key=".sendTextMsg"/>
+    <tags:simpleDialog id="ajaxDialog" styleClass="smallSimplePopup" title="${textMsgTitle}"/>
+
+    <!-- Changeout Form -->
     <cti:displayForPageEditModes modes="VIEW">
         <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -84,38 +162,10 @@ function sendTextMsg() {
         </form>
         
         <c:if test="${showTextMessageAction}">
-            <!-- Send Text Message Popup -->
-            <tags:setFormEditMode mode="${editMode}"/>
-            <i:simplePopup titleKey=".sendTextMsg" id="textMsgPopup" on="#sendTextMsg" styleClass="smallSimplePopup" showImmediately="${textMessageError}">
-                <form:form action="sendTextMessage" commandName="textMessage" method="post" onsubmit="return sendTextMsg()">
-                    <form:hidden path="accountId"/>
-                    <form:hidden path="inventoryId"/>
-                    <form:hidden path="gatewayId"/>
-                    <tags:nameValueContainer2>
-                        <tags:textareaNameValue nameKey=".message" rows="1" cols="21" path="message" />
-                        <tags:checkboxNameValue nameKey=".confirmationRequired" path="confirmationRequired"/>
-                        <tags:nameValue2 nameKey=".displayDuration">
-                            <form:select path="displayDuration">
-                                <c:forEach var="duration" items="${durations}">
-                                    <cti:formatDuration type="DHMS_REDUCED" value="${duration.millis}" var="durationLabel"/>
-                                    <form:option value="${duration}" label="${durationLabel}"/>
-                                </c:forEach>
-                            </form:select>
-                        </tags:nameValue2>
-                        
-                        <tags:nameValue2 nameKey=".startTime">
-                            <tags:dateTimeInput path="startTime" inline="true" fieldValue="${textMessage.startTime}"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <div class="actionArea">
-                        <cti:button key="send" type="submit" styleClass="f_blocker"/>
-                        <cti:button key="cancel" onclick="$('textMsgPopup').hide()"/>
-                    </div>
-                </form:form>
-            </i:simplePopup>
-            <tags:setFormEditMode mode="${mode}"/>
+            
         </c:if>
     </cti:displayForPageEditModes>
+    
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
@@ -149,8 +199,6 @@ function sendTextMsg() {
             </table>
         </form>
     </i:simplePopup>
-    
-    <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
     
     <cti:displayForPageEditModes modes="EDIT">
         <cti:url value="/spring/stars/operator/hardware/update" var="action"/>
@@ -272,21 +320,6 @@ function sendTextMsg() {
                         
                         <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="${none}"/>
                         
-                        <c:if test="${showZigbeeState}">
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <tags:nameValue2 nameKey=".zigbeeStatus" rowClass="pointState">
-                                    <cti:pointStatusColor pointId="${hardwareDto.commissionedId}" >
-                                        <cti:pointValue pointId="${hardwareDto.commissionedId}" format="VALUE"/>
-                                    </cti:pointStatusColor>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".connectionStatus" rowClass="pointState">
-                                    <cti:pointStatusColor pointId="${hardwareDto.connectStatusId}" >
-                                        <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="VALUE"/>
-                                    </cti:pointStatusColor>
-                                </tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                        </c:if>
-                        
                         <c:if test="${showTwoWay}">
                             <form:hidden path="creatingNewTwoWayDevice" id="creatingNewTwoWayDevice"/>
                             <%-- Two Way LCR's Yukon Device --%>
@@ -407,35 +440,6 @@ function sendTextMsg() {
                         </c:if>
                         
                         <%-- TSTAT ACTIONS --%>
-                        <c:if test="${showCommissionTstatActions}">
-                            <li>
-                                <cti:url var="commissionTstatUrl" value="/spring/stars/operator/hardware/commissionTstat">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                                    <cti:param name="deviceId" value="${hardwareDto.deviceId}"/>
-                                    <cti:param name="gatewayId" value="${hardwareDto.gatewayId}"/>
-                                </cti:url>
-                                <cti:button key="commissionTstat" href="${commissionTstatUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
-                            </li>
-                            <li>
-                                <cti:url var="decommissionTstatUrl" value="/spring/stars/operator/hardware/decommissionTstat">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                                    <cti:param name="deviceId" value="${hardwareDto.deviceId}"/>
-                                    <cti:param name="gatewayId" value="${hardwareDto.gatewayId}"/>
-                                </cti:url>
-                                <cti:button key="decommissionTstat" href="${decommissionTstatUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
-                            </li>
-                        </c:if>
-                        
-                        <c:if test="${showDisabledCommissionActions}">
-                            <li>
-                                <cti:button key="commissionTstat.disabled" disabled="true" renderMode="labeledImage"/>
-                            </li>
-                            <li>
-                                <cti:button key="decommissionTstat.disabled" disabled="true" renderMode="labeledImage"/>
-                            </li>
-                        </c:if>
                         
                         <c:if test="${showTstatChangeoutAction}">
                             <li>
@@ -511,24 +515,6 @@ function sendTextMsg() {
                         </c:if>
                         
                         <%-- GATEWAY ACTIONS --%>
-                        <c:if test="${showCommissionGatewayActions}">
-                            <li>
-                                <cti:url var="commissionGatewayUrl" value="/spring/stars/operator/hardware/commissionGateway">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
-                                </cti:url>
-                                <cti:button key="commissionGateway" href="${commissionGatewayUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
-                            </li>
-                            <li>
-                                <cti:url var="decommissionGatewayUrl" value="/spring/stars/operator/hardware/decommissionGateway">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                                    <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
-                                </cti:url>
-                                <cti:button key="decommissionGateway" href="${decommissionGatewayUrl}" renderMode="labeledImage" styleClass="f_blocker"/>
-                            </li>
-                        </c:if>
                         
                         <c:if test="${showTextMessageAction}">
                             <li>
@@ -554,15 +540,74 @@ function sendTextMsg() {
                     
                 </tags:formElementContainer>
                 
+                <c:if test="${showZigbeeState}">
+                    <cti:displayForPageEditModes modes="VIEW">
+                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer" id="zigbeeStatus">
+                            <table class="compactResultsTable">
+                                <tr>
+                                    <th><i:inline key=".status"/></th>
+                                    <th><i:inline key=".timestamp"/></th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <cti:pointStatusColor pointId="${hardwareDto.connectStatusId}" >
+                                            <span class="fwb">
+                                                <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="VALUE"/>
+                                            </span>
+                                        </cti:pointStatusColor>
+                                    </td>
+                                    <td>
+                                        <cti:pointValue pointId="${hardwareDto.connectStatusId}" format="DATE"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <cti:pointStatusColor pointId="${hardwareDto.commissionedId}" >
+                                            <span class="fwb">
+                                                <cti:pointValue pointId="${hardwareDto.commissionedId}" format="VALUE"/>
+                                            </span>
+                                        </cti:pointStatusColor>
+                                    </td>
+                                    <td>
+                                        <cti:pointValue pointId="${hardwareDto.commissionedId}" format="DATE"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="zbCommandFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
+                            <div id="zbCommandSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
+                            <div class="actionArea">
+                                <c:choose>
+                                    <c:when test="${showDisabledRefresh}">
+                                        <cti:button key="refreshDisabled" disabled="true"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:button id="refresh" key="refresh"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <c:if test="${showCommissionActions}">
+                                    <cti:button key="commission" id="commission"/>
+                                    <cti:button key="decommission" id="decommission"/>
+                                </c:if>
+                                
+                                <c:if test="${showDisabledCommissionActions}">
+                                    <cti:button key="commission.disabled" disabled="true"/>
+                                    <cti:button key="decommission.disabled" disabled="true"/>
+                                </c:if>
+                            </div>
+                        </tags:boxContainer2>
+                        <br>
+                    </cti:displayForPageEditModes>
+                </c:if>
+                
                 <c:if test="${showAssignedDevices}">
-                    <tags:boxContainer2 nameKey="assignedDevices">
+                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices">
                         <div class="historyContainer">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
                                     <table class="compactResultsTable">
                                         <tr>
                                             <th class="nonwrapping"><i:inline key=".serialNumber"/></th>
-                                            <th class="nonwrapping"><i:inline key=".zigbeeStatus"/></th>
+                                            <th class="nonwrapping"><i:inline key=".status"/></th>
                                             <th class="nonwrapping"><i:inline key=".actions"/></th>
                                         </tr>
                                         <c:forEach var="device" items="${assignedDevices}">
@@ -578,21 +623,10 @@ function sendTextMsg() {
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="nonwrapping">
-                                                    <cti:url var="commissionTstatUrl" value="/spring/stars/operator/hardware/commissionTstat">
-                                                        <cti:param name="accountId" value="${accountId}"/>
-                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
-                                                        <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
-                                                    </cti:url>
-                                                    <cti:button key="commissionTstat" href="${commissionTstatUrl}" renderMode="image" styleClass="f_blocker"/>
-                                                    <cti:url var="decommissionTstatUrl" value="/spring/stars/operator/hardware/decommissionTstat">
-                                                        <cti:param name="accountId" value="${accountId}"/>
-                                                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                                                        <cti:param name="deviceId" value="${device.deviceId}"/>
-                                                        <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
-                                                    </cti:url>
-                                                    <cti:button key="decommissionTstat" href="${decommissionTstatUrl}" renderMode="image" styleClass="f_blocker"/>
-                                                    <cti:url value="/spring/stars/operator/hardware/removeDeviceFromGateway" var="removeUrl">
+                                                    <cti:button key="assignedDevices.commission" name="${device.deviceId}" renderMode="image" id="assignedDevicesCommission"/>
+                                                    <cti:button key="assignedDevices.decommission" name="${device.deviceId}" renderMode="image" id="assignedDevicesDecommission"/>
+                                                    
+                                                    <cti:url value="/spring/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
                                                         <cti:param name="accountId" value="${accountId}"/>
                                                         <cti:param name="inventoryId" value="${inventoryId}"/>
                                                         <cti:param name="gatewayId" value="${hardwareDto.deviceId}"/>
@@ -609,10 +643,13 @@ function sendTextMsg() {
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                            
+                        
+                        <div id="zbAssignedFailure" style="display:none;" class="errorMessage zbCommandMsg"></div>
+                        <div id="zbAssignedSuccess" style="display:none;" class="successMessage zbCommandMsg"></div>
+                        
                         <c:if test="${not empty availableDevices}">
                             <div class="actionArea">
-                                <form action="/spring/stars/operator/hardware/addDeviceToGateway" method="post">
+                                <form action="/spring/stars/operator/hardware/zb/addDeviceToGateway" method="post">
                                     <input type="hidden" name="accountId" value="${accountId}">
                                     <input type="hidden" name="inventoryId" value="${inventoryId}">
                                     <input type="hidden" name="gatewayId" value="${hardwareDto.deviceId}">

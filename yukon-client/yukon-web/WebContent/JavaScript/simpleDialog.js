@@ -80,7 +80,7 @@ function adjustDialogSizeAndPosition(dialogId) {
  *            The HTTP method ('get' or 'post'). 'post' is the default.
  */
 function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, method) {
-	showBusy();
+    Yukon.ui.blockPage();
 
     if (arguments.length > 2 && title) {
         $(dialogId + '_title').innerHTML = title;
@@ -94,7 +94,7 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
     		adjustDialogSizeAndPosition(dialogId);
     		$(dialogId).show();
     	}
-    	hideBusy();
+    	Yukon.ui.unblockPage();
     }
 
     new Ajax.Updater($(dialogId + '_body'), innerHtmlUrl, {

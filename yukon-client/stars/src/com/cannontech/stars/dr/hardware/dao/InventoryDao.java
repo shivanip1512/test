@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -83,5 +84,17 @@ public interface InventoryDao {
     public int getAccountIdForInventory(int inventoryId);
 
     public InventoryIdentifier getYukonInventoryForDeviceId(int deviceId);
+
+    /**
+     * Returns the HardwareType enum entry for the given type id.
+     * If the energy company uses yukon for meters then type id 
+     * will be zero.
+     */
+    public HardwareType getHardwareTypeById(int hardwareTypeId);
+    
+    /**
+     * Returns the HardwareType enum entry for the give inventory id.
+     */
+    public HardwareType getHardTypeByInventoryId(int inventoryId);
 
 }

@@ -318,6 +318,11 @@ Yukon.uiUtils = {
     elementGlass: {
         show: function(args) {
             if(args.element != null) {
+                
+                args.element.select('button', 'input[type="button"]', 'input[type="submit"]').each(function(item) {
+                    item.disable();
+                });
+                
                 var glass = args.element.next(".glass");
                 if(glass == null) { //create the glass
                     glass = new Element('div', {'class': 'glass'});
@@ -341,6 +346,11 @@ Yukon.uiUtils = {
         
         hide: function(args) {
             if(args.element != null) {
+                
+                args.element.select('button', 'input[type="button"]', 'input[type="submit"]').each(function(item) {
+                    item.enable();
+                });
+                
                 var glass = args.element.next(".glass");
                 if(glass) {
                     glass.remove();
@@ -360,6 +370,9 @@ Yukon.uiUtils = {
         
     pageGlass : {
         show : function(args) {
+            if (args == null) {
+                args = {color:'#000', alpha: 0.25};
+            }
             var glass = $("modal_glass");
             var tint = $$("#modal_glass > .tint")[0];
             if (glass == null) {

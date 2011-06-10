@@ -47,6 +47,7 @@ import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
@@ -80,6 +81,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     private StarsInventoryBaseService starsInventoryBaseService;
     private HardwareTypeExtensionService hardwareTypeExtensionService;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private InventoryDao inventoryDao;
     
     @Override
     public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
@@ -581,26 +583,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     /* HELPERS */
     
     /**
-     * Returns the HardwareType enum entry for the given type id.
-     * If the energy company uses yukon for meters then type id 
-     * will be zero.
-     */
-    public HardwareType getHardwareTypeById(int hardwareTypeId) {
-        Integer hardwareTypeDefinitionId;
-        if (hardwareTypeId > 0) {
-            /* This is a stars object that will live in either LMHardwareBase or MeterHardwareBase */
-            YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId);
-            hardwareTypeDefinitionId = entry.getYukonDefID();
-        } else {
-            /* This is a real MCT that exists as a yukon pao.  It will only have a row in InventoryBase 
-             * so there is no type id. */
-            hardwareTypeDefinitionId = 0;
-        }
-        
-        return HardwareType.valueOf(hardwareTypeDefinitionId);
-    }
-    
-    /**
      * Returns the category id based on hardware type id which either comes from 
      * LMHardwareBase:LMHardwareTypeID or from MeterHardwareBase:MeterTypeID.
      * If this energy company uses yukon for meters, they will only exist in InventoryBase
@@ -608,7 +590,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
      * category will be 'NON_YUKON_METER'.
      */
     private int getCategoryIdForTypeId(int hardwareTypeId, LiteStarsEnergyCompany energyCompany) {
-        HardwareType hardwareType = getHardwareTypeById(hardwareTypeId);
+        HardwareType hardwareType = inventoryDao.getHardwareTypeById(hardwareTypeId);
 
         /* The category id is the entry id of the yukon list entry for this category in this energy company. */
         YukonListEntry categoryEntryOfEnergyCompany = energyCompany.getYukonListEntry(hardwareType.getInventoryCategory().getDefinitionId());
@@ -802,6 +784,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired
     public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
         this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
+    @Autowired
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
     }
     
 }

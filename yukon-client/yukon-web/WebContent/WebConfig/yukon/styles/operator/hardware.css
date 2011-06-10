@@ -97,3 +97,11 @@ tr.pickerRow td.name {
 td.lastColumn {
     padding-right: 20px !important;
 }
+
+.statusContainer {
+    min-width: 400px;
+}
+
+.zbCommandMsg {
+    margin-top: 15px;
+}
