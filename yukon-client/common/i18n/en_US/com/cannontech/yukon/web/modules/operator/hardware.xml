@@ -101,12 +101,14 @@
     <entry key="yukon.web.modules.operator.hardware.startTime">Scheduled Start Time</entry>
     
     <!-- Errors -->
+    
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.twoWayDeviceName">Yukon device with that name already exists.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.twoWayDeviceName">Yukon device name is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unknown.twoWayDeviceName">Unable to create new yukon device.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.nonNumericSerialNumber.serialNumber">Two Way LCR serial number must be numeric.</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.error.required.serialNumber">A serial number is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.serialNumber.required">A serial number is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.serialNumber.toolong">The serial number is too long.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.serialNumber">This serial number is already in use.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.invalid.numeric.serialNumber">Serial numbers can only contain numeric characters.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.invalid.alphanumeric.serialNumber">Serial numbers can only contain alpha numeric characters.</entry>
@@ -134,6 +136,7 @@
     
     <entry key="yukon.web.modules.operator.hardware.error.required.installCode">An Install Code is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.firmwareVersion">A Firmware Version is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.required.macAddress">A MAC Address is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.eui48.macAddress">A MAC Address is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.eui64.macAddress">A MAC Address is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Invalid Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>

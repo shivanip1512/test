@@ -156,16 +156,58 @@ public class OperatorHardwareController {
         
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         SerialNumber serialNumber = new SerialNumber();
-        model.addAttribute("serialNumber", serialNumber);
+        model.addAttribute("serialNumberSwitch", serialNumber);
+        model.addAttribute("serialNumberThermostat", serialNumber);
+        model.addAttribute("serialNumberGateway", serialNumber);
         model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
-        
         
         setupListModel(fragment, model, energyCompany, userContext);
         return "operator/hardware/hardwareList.jsp";
     }
+
+    @RequestMapping
+    public String checkSerialNumberSwitch(@ModelAttribute("serialNumberSwitch") SerialNumber serialNumber, BindingResult bindingResult,
+                                          ModelMap model, 
+                                          YukonUserContext context,
+                                          HttpServletRequest request,
+                                          FlashScope flashScope,
+                                          AccountInfoFragment fragment,
+                                          int hardwareTypeId) {
+        model.addAttribute("serialNumberThermostat", serialNumber);
+        model.addAttribute("serialNumberGateway", serialNumber);
+        return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
+                                 flashScope, fragment, hardwareTypeId);
+    }
     
     @RequestMapping
-    public String checkSerialNumber(@ModelAttribute("serialNumber") SerialNumber serialNumber, BindingResult bindingResult,
+    public String checkSerialNumberThermostat(@ModelAttribute("serialNumberThermostat") SerialNumber serialNumber, BindingResult bindingResult,
+                                          ModelMap model, 
+                                          YukonUserContext context,
+                                          HttpServletRequest request,
+                                          FlashScope flashScope,
+                                          AccountInfoFragment fragment,
+                                          int hardwareTypeId) {
+        model.addAttribute("serialNumberSwitch", serialNumber);
+        model.addAttribute("serialNumberGateway", serialNumber);
+        return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
+                                 flashScope, fragment, hardwareTypeId);
+    }
+    
+    @RequestMapping
+    public String checkSerialNumberGateway(@ModelAttribute("serialNumberGateway") SerialNumber serialNumber, BindingResult bindingResult,
+                                          ModelMap model, 
+                                          YukonUserContext context,
+                                          HttpServletRequest request,
+                                          FlashScope flashScope,
+                                          AccountInfoFragment fragment,
+                                          int hardwareTypeId) {
+        model.addAttribute("serialNumberSwitch", serialNumber);
+        model.addAttribute("serialNumberThermostat", serialNumber);
+        return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
+                                 flashScope, fragment, hardwareTypeId);
+    }
+    
+    private String checkSerialNumber(SerialNumber serialNumber, BindingResult bindingResult,
                                  ModelMap model, 
                                  YukonUserContext context,
                                  HttpServletRequest request,
@@ -188,7 +230,9 @@ public class OperatorHardwareController {
                 model.addAttribute("showGatewayCheckingPopup", true);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-            return "redirect:list"; 
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+            setupListModel(fragment, model, energyCompany, context);
+            return "operator/hardware/hardwareList.jsp"; 
         }
         
         try {
@@ -385,7 +429,7 @@ public class OperatorHardwareController {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (ObjectInOtherEnergyCompanyException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
+        } catch (StarsTwoWayLcrYukonDeviceCreationException e) {  //TODO: These keys should probably have something about two-way in the path
             switch (e.getType()) {
             case UNKNOWN:
                 result.rejectValue("twoWayDeviceName", "yukon.web.modules.operator.hardware.error.unknown");

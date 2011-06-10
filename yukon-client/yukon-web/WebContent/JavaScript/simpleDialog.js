@@ -172,4 +172,5 @@ function showSimplePopup(popupId, initialFocus) {
     } else if ($(popupId).down("input:first[type='text']")) {
         $(popupId).down("input:first[type='text']").focus();
     }
+    adjustDialogSizeAndPosition(popupId);
 }
