@@ -8,7 +8,7 @@ public interface DirectLoadcontrolRole {
 	public static final int ROLEID = LMRoleDefs.DIRECT_LOADCONTROL_ROLEID;
 	
 	public static final int INDIVIDUAL_SWITCH = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 1;
-	public static final int THREE_TIER_DIRECT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 2;
+	public static final int DEMAND_RESPONSE = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 2;
 	public static final int DIRECT_CONTROL = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 3;
 	public static final int ALLOW_CHECK_CONSTRAINTS = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 4;
 	public static final int ALLOW_OBSERVE_CONSTRAINTS = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 5;

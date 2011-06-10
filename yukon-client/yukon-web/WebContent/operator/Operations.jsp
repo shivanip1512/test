@@ -161,7 +161,7 @@
             	<a href="Consumer/Odds.jsp">Odds for Control</a>
             </tags:sectionLink>
 		</cti:checkRole>
-		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT"> 
+		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE"> 
             <tags:sectionLink>
             	<a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse"/></a>
             </tags:sectionLink>

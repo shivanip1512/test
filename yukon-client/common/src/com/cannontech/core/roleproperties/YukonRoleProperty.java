@@ -180,7 +180,7 @@ public enum YukonRoleProperty {
     RESIDENTIAL_THERMOSTAT_SCHEDULE_7(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_7, booleanType()),
     
     LM_INDIVIDUAL_SWITCH(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.INDIVIDUAL_SWITCH, booleanType()),
-    THREE_TIER_DIRECT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT, booleanType()),
+    DEMAND_RESPONSE(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE, booleanType()),
     DIRECT_CONTROL(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL, booleanType()),
     ALLOW_CHECK_CONSTRAINTS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS, booleanType()),
     ALLOW_OBSERVE_CONSTRAINTS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS, booleanType()),

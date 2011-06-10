@@ -87,7 +87,7 @@
           <option name="demandResponse">
             <link>/spring/dr/home</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
-            <requireRoleProperty value="THREE_TIER_DIRECT" />
+            <requireRoleProperty value="DEMAND_RESPONSE" />
           </option>
         </options>
       </option>
