@@ -335,6 +335,9 @@ public class SurveyController {
             }
             question.setAnswers(answers);
         }
+        else {
+            question.setTextAnswerAllowed(false);// in case it was set before the type was change to "TEXT"
+        }
         questionValidator.validate(question, bindingResult);
         if (!bindingResult.hasErrors()) {
             try {

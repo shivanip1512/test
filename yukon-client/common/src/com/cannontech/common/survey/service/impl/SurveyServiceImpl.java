@@ -65,9 +65,11 @@ public class SurveyServiceImpl implements SurveyService {
             if (!isI18nKeyResolvable(baseKey, messageSourceAccessor))
                 return false;
             
-            if (question.isTextAnswerAllowed())
-                if (!isI18nKeyResolvable(otherKey, messageSourceAccessor))
-                    return false;
+            if (question.getQuestionType() == QuestionType.DROP_DOWN
+                    && question.isTextAnswerAllowed()
+                    && !isI18nKeyResolvable(otherKey, messageSourceAccessor)) {
+                return false;
+            }
             
             for (Answer answer : question.getAnswers()) {
                 String answerKey = baseKey + "." + answer.getAnswerKey();
