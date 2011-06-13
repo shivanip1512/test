@@ -16,7 +16,7 @@
 <script type="text/javascript">
 YEvent.observeSelectorClick('#refresh, #commission, #decommission', function(event) {
     var url = '/spring/stars/operator/hardware/zb/';
-    var button = Event.findElement(event, 'button');
+    var button = event.findElement('button');
     if (button.id == 'refresh') {
         url += 'refresh';
     } else if (button.id == 'commission') {
@@ -49,7 +49,7 @@ YEvent.observeSelectorClick('#refresh, #commission, #decommission', function(eve
 
 YEvent.observeSelectorClick('#assignedDevicesCommission, #assignedDevicesDecommission', function(event) {
     var url = '/spring/stars/operator/hardware/zb/';
-    var button = Event.findElement(event, 'button');
+    var button = event.findElement('button');
     var deviceId = button.name;
     
     if (button.id == 'assignedDevicesCommission') {
