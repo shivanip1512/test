@@ -1326,8 +1326,7 @@
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                     <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES"/>
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
                                         <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <menu>energyCompanySetup|home</menu>
