@@ -119,7 +119,8 @@ public class ZoneWizardController {
     public String wizardTypeSelected(ModelMap model, YukonUserContext userContext, Zone zone) throws IllegalStateException, UnsupportedDataTypeException {
         Integer parentId = zone.getParentId();
         if (parentId != null) {
-            Zone parentZone = zoneService.getZoneById(parentId);
+            AbstractZone parentZone = zoneDtoHelper.getAbstractZoneFromZoneId(parentId, 
+                                                                              userContext.getYukonUser());
             model.addAttribute("parentZone", parentZone);
         } else {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -223,8 +224,7 @@ public class ZoneWizardController {
 
         Integer parentId = zoneDto.getParentId();
         if (parentId != null) {
-            Zone parent = zoneService.getZoneById(parentId);
-            AbstractZone parentZone = zoneDtoHelper.getAbstractZoneFromZone(parent, user);
+            AbstractZone parentZone = zoneDtoHelper.getAbstractZoneFromZoneId(parentId, user);
             model.addAttribute("parentZone", parentZone);
         }
 
