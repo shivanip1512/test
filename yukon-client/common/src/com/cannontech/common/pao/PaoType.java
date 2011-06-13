@@ -97,7 +97,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH), 
     RFN430A3(DeviceTypes.RFN430A3, "RFN-430A3", PaoCategory.DEVICE, PaoClass.RFMESH), 
     RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFWHOLDER(DeviceTypes.RFWHOLDER, "RFW-Holder", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFWHOLDER(DeviceTypes.RFWHOLDER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
 
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
