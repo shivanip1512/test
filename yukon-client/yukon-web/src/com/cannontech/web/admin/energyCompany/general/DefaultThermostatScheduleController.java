@@ -2,6 +2,7 @@ package com.cannontech.web.admin.energyCompany.general;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,6 +46,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 
 @Controller
@@ -83,7 +85,8 @@ public class DefaultThermostatScheduleController {
                 }
             });
         
-        modelMap.addAttribute("schedulableThermostatTypes", schedulableThermostatTypes);
+        Set<SchedulableThermostatType> distinctScheduleThermostatTypes = Sets.newHashSet(schedulableThermostatTypes);
+        modelMap.addAttribute("schedulableThermostatTypes", distinctScheduleThermostatTypes);
         modelMap.addAttribute("availableThermostatTypes", availableThermostatTypes);        
         
         return "energyCompany/defaultThermostatScheduleList.jsp";
