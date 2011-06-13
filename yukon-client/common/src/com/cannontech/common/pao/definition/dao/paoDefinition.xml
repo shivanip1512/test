@@ -202,7 +202,7 @@
     	<changeGroup>mct</changeGroup>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-2147483647</value>	<!-- unsigned int (positive values only) -->
+            	<value>0-4194303</value>	<!-- max 22bit (positive values only) -->
             </tag>
             <tag name="DEVICE_ICON_TYPE">
                 <value>electric_meter</value>
