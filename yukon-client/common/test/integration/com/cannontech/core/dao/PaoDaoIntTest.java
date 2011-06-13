@@ -34,11 +34,6 @@ public class PaoDaoIntTest extends TestCase {
         List ccSubBuses =  paoDao.getAllCapControlSubBuses();
     }
 
-    public void testMaxPaoId() {
-        int id = paoDao.getMaxPAOid();
-        assertTrue("Failed to load max pao id", id >= 0);
-    }
-
     public void testNextPaoId() {
         int id = paoDao.getNextPaoId();
         assertTrue("Failed to load next pao id", id >= 0);

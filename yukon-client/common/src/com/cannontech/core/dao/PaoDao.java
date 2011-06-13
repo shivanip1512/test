@@ -93,13 +93,6 @@ public interface PaoDao {
     public List<LiteYukonPAObject> getAllCapControlSubBuses();
 
     /**
-     * Insert the method's description here.
-     * Creation date: (3/26/2001 9:41:59 AM)
-     * @return int
-     */
-    public int getMaxPAOid();
-
-    /**
      * Returns the next unused pa object id
      * @return
      */

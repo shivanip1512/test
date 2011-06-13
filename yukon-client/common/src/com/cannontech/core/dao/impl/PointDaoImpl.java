@@ -147,13 +147,6 @@ public final class PointDaoImpl implements PointDao {
         return points;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.PointDao#getMaxPointID()
-     */
-    public int getMaxPointID() {
-        return jdbcOps.queryForInt("select max(pointid) from point");
-    }
-    
     public int getNextPointId() {
         return nextValueHelper.getNextValue("point");
     }

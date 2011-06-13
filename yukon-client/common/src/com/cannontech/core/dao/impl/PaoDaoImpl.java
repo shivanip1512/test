@@ -212,14 +212,6 @@ public final class PaoDaoImpl implements PaoDao {
         return subStationList;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getMaxPAOid()
-     */
-    public int getMaxPAOid() {
-        return jdbcOps.queryForInt("select max(paObjectId) from YukonPaObject");
-    }
-
     public int getNextPaoId() {
         return nextValueHelper.getNextValue("YukonPaObject");
     }

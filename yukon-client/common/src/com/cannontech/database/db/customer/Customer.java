@@ -1,7 +1,8 @@
 package com.cannontech.database.db.customer;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -61,24 +62,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	}
 	
     public static final Integer getNextCustomerID() {
-    	
-        int nextID = 1;
-        SqlStatement stmt = new SqlStatement("SELECT Max(CustomerID) FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        return new Integer( nextID );
+        NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        return nextValueHelper.getNextValue("Customer");
     }	
 	
 	public void retrieve() throws java.sql.SQLException 

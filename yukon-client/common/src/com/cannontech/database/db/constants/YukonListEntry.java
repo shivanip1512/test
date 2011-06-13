@@ -3,13 +3,14 @@ package com.cannontech.database.db.constants;
 import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeHelper;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 
 public class YukonListEntry extends DBPersistent implements CTIDbChange {
     
@@ -27,9 +28,6 @@ public class YukonListEntry extends DBPersistent implements CTIDbChange {
 		"ListID", "EntryOrder", "EntryText", "YukonDefinitionID"
 	};
 	
-	public static final String GET_NEXT_ENTRY_ID_SQL =
-			"SELECT MAX(EntryID)+1 FROM " + TABLE_NAME;
-
 	/**
 	 * Constructor for YukonListEntry.
 	 */
@@ -42,7 +40,7 @@ public class YukonListEntry extends DBPersistent implements CTIDbChange {
 	 */
 	public void add() throws SQLException {
 		if (getEntryID() == null)
-			setEntryID( getNextEntryID(getDbConnection()) );
+			setEntryID(getNextEntryID());
 		
 		Object[] addValues = {
 			getEntryID(), getListID(), getEntryOrder(), getEntryText(), getYukonDefID()
@@ -92,30 +90,9 @@ public class YukonListEntry extends DBPersistent implements CTIDbChange {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
-	public synchronized static Integer getNextEntryID(java.sql.Connection conn) {
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-		
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try {
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( GET_NEXT_ENTRY_ID_SQL );	
-				
-			//get the first returned result
-			rset.next();
-		    return new Integer( rset.getInt(1) );
-		}
-		catch (SQLException e) {
-		    e.printStackTrace();
-		}
-		finally {
-			SqlUtils.close(rset, stmt);
-		}
-		
-		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ZERO_ID);
+	public synchronized static Integer getNextEntryID() {
+        NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        return nextValueHelper.getNextValue("YukonListEntry");
 	}
 	
 	public static void deleteAllListEntries(Integer listID, java.sql.Connection conn) {

@@ -43,9 +43,6 @@
         <table name="LMGroupExpresscomAddress" identitycolumn="AddressId" initsequence="true"/>
         <table name="EnergyCompany" identitycolumn="EnergyCompanyId" initsequence="true"/>
       </sequence>
-      <sequence name="UsersRolesAndGroups">
-      	<table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
-      </sequence>
       <sequence name="paobjectid">
       	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
       </sequence>
@@ -257,6 +254,7 @@
         <table name="StaticPaoInfo" identitycolumn="StaticPaoInfoId" initsequence="true"/>
       </sequence>
       <sequence name="RoleProperties">
+		<table name="YukonGroup" identitycolumn="GroupId" initsequence="true"/>
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
         <table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
       </sequence>

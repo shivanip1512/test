@@ -56,7 +56,7 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 	{
 		if( getYukonGroup().getGroupID() == null )
 			setGroupID(
-				com.cannontech.database.db.user.YukonGroup.getNextGroupID(getDbConnection()) );
+				com.cannontech.database.db.user.YukonGroup.getNextGroupID());
 
 		getYukonGroup().add();
 

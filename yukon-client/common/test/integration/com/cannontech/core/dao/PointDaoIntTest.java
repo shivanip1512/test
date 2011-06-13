@@ -23,11 +23,7 @@ public class PointDaoIntTest extends TestCase {
         List<LitePoint> p = pointDao.getLitePoints(new Integer[] { 0, -100, 100 });
         assertTrue("Failed to load system points", p.size()>=2);
     }
-    
-    public void testGetMaxPointID() {
-        int id = pointDao.getMaxPointID();
-        assertTrue("Failed to load max point ID", id >= 0 );
-    }
+
     public void testGetNextPointId() {
         int id = pointDao.getNextPointId();
         assertTrue("Failed to load next point id", id >=0);

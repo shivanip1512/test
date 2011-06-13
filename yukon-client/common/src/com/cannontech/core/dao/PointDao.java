@@ -20,8 +20,6 @@ public interface PointDao {
 
     public List<LitePoint> getLitePoints(Integer[] pointIds);
 
-    public int getMaxPointID();
-
     /**
      * Returns the next available point id.
      */

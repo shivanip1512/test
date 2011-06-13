@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author alauinger
@@ -113,41 +115,9 @@ public class YukonGroup extends DBPersistent
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
 	 */
-	public static final Integer getNextGroupID( java.sql.Connection conn )
-	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-		
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		String sql = "SELECT max(GroupID) as GroupID FROM " + TABLE_NAME;
-		int newID = 0;
-		
-		try
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			rset = pstmt.executeQuery();							
-	
-			while( rset.next() )
-			{
-				newID = rset.getInt("GroupID") + 1;
-				if( newID < 1 )
-					newID = 1;
-				break;
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt);
-		}	
-		
-		return new Integer( newID );
+	public static final Integer getNextGroupID() {
+		NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+		return nextValueHelper.getNextValue("YukonGroup");
 	}
 
 	/**

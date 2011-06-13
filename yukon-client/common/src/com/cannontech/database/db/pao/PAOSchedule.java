@@ -10,8 +10,10 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -89,7 +91,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable
 	public void add() throws java.sql.SQLException 
 	{
 		if( getScheduleID() == null )
-			setScheduleID( getNextPAOScheduleID(getDbConnection()) );
+			setScheduleID(getNextPAOScheduleID());
 
 		Object addValues[] = {
 			getScheduleID(), getNextRunTime(),
@@ -193,37 +195,9 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable
 		return true;
 	}
 	
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Integer
-	 */
-	public final static Integer getNextPAOScheduleID( java.sql.Connection conn )
-	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-		
-			
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-			
-		try {
-			 stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(ScheduleID)+1 FROM " + TABLE_NAME );	
-					
-			 //get the first returned result
-			 rset.next();
-			 return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) {
-			 e.printStackTrace();
-		}
-		finally 
-		{
-			SqlUtils.close(rset, stmt );
-		}
-			
-		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ZERO_ID);
+	public final static Integer getNextPAOScheduleID() {
+        NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        return nextValueHelper.getNextValue("PAOSchedule");
 	}
 
 	/**
