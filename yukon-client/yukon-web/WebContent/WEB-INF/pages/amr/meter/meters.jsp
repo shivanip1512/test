@@ -62,8 +62,7 @@
         <div>
 	        <c:forEach var="filter" items="${filterByList}">
 	            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">
-                    ${filter.name}:&nbsp;
-                    <input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" />
+                    ${filter.name}:&nbsp;<input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" />
                 </div>
 	        </c:forEach>
         </div>
