@@ -10,7 +10,7 @@
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
                 
-class LMGroupDigiSEP : public CtiLMGroupBase, Cti::LoadManagement::GroupControlInterface, Cti::LoadManagement::SEPControlInterface
+class LMGroupDigiSEP : public CtiLMGroupBase, public Cti::LoadManagement::GroupControlInterface, public Cti::LoadManagement::SEPControlInterface
 {
 
 public:
