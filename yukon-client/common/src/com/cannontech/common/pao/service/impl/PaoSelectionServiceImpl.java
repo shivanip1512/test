@@ -43,6 +43,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         builder.put("address", new ByAddressSelector());
         builder.put("deviceGroup", new ByDeviceGroupNamesSelector());
         builder.put("meterNumber", new ByMeterNumbersSelector());
+        builder.put("carrierAddress", new ByAddressSelector());
         builder.put("paoName", new ByPaoNamesSelector());
         builder.put("paoId", new ByPaoIdSelector());
 
