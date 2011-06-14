@@ -11,6 +11,7 @@
 #include "PointValueHolder.h"
 #include "AttributeService.h"
 #include "ccid.h"
+#include "ccutil.h"
 
 #include <rw/collect.h>
 
@@ -100,7 +101,12 @@ public:
     void setKeepAliveConfig(const long value);
     bool isTimeToSendKeepAlive();
 
+    void        setPhase( const Phase & phase );
+    std::string getPhaseString() const;
+
 protected:
+
+    Phase   _phase;
 
     bool            _updated;
     OperatingMode   _mode;

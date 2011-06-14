@@ -10,6 +10,7 @@
 #include "AttributeService.h"
 #include "VoltageRegulatorManager.h"
 #include "PhaseOperatedVoltageRegulator.h"
+#include "ccutil.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulatorManager;
@@ -981,5 +982,54 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Su
     regulator->handlePointData( &pointDataMsg );
 
     BOOST_CHECK_EQUAL( VoltageRegulator::RemoteMode, regulator->getOperatingMode() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase_A_info)
+{
+    TestCtiCapController    capController;
+    TestAttributeService    attributes;
+
+    VoltageRegulatorManager::SharedPtr  regulator( new PhaseOperatedVoltageRegulator );
+
+    regulator->setPaoName("Test Regulator #1");
+    regulator->loadAttributes( &attributes );
+
+    regulator->setPhase( Cti::CapControl::A );
+
+    BOOST_CHECK_NO_THROW( regulator->executeTapUpOperation() );
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
+
+    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    
+    BOOST_REQUIRE( signalMsg );
+    
+    BOOST_CHECK_EQUAL( 3100, signalMsg->getId() );     // ID of the 'TapUp' LitePoint
+    BOOST_CHECK_EQUAL( "Raise Tap Position - Phase: A", signalMsg->getText() );
+    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
+                       signalMsg->getAdditionalInfo() );        
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
+
+    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+    BOOST_REQUIRE( requestMsg );
+
+    BOOST_CHECK_EQUAL( 1003, requestMsg->DeviceId() );  // PaoID of the 'TapUp' LitePoint
+    BOOST_CHECK_EQUAL( "control close select pointid 3100",
+                       requestMsg->CommandString() );   // ID of the 'TapUp' LitePoint
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+
+    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+
+    BOOST_REQUIRE( eventMsg );
+
+    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg->getEventType() );
+    BOOST_CHECK_EQUAL( "Raise Tap Position - Phase: A", eventMsg->getText() );
 }
 

@@ -8,6 +8,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "ZoneLoader.h"
+#include "ccsubstationbusstore.h"
 
 using std::endl;
 
@@ -243,6 +244,24 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
             }
 
             zone->second->addRegulatorId( resolvePhase( phase ), regulatorId );
+
+            // Assign the phase info directly to the regulator of interest
+            try
+            {
+                CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+
+                VoltageRegulatorManager::SharedPtr  regulator
+                    = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+
+                regulator->setPhase( resolvePhase( phase ) );
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
         }
     }
 }

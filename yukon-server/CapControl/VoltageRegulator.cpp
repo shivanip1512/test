@@ -24,6 +24,7 @@ const std::string VoltageRegulator::PhaseOperatedVoltageRegulator   = "PO_REGULA
 
 VoltageRegulator::VoltageRegulator()
     : CapControlPao(),
+    _phase(Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -38,6 +39,7 @@ VoltageRegulator::VoltageRegulator()
 
 VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     : CapControlPao(rdr),
+    _phase(Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -64,6 +66,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
 
 VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     : CapControlPao(),
+    _phase(Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -81,6 +84,8 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
     if ( this != &rhs )
     {
         CapControlPao::operator=(rhs);
+
+        _phase = rhs._phase;
 
         _updated    = rhs._updated;
         _mode       = rhs._mode;
@@ -211,7 +216,9 @@ void VoltageRegulator::executeTapUpOperation()
 {
     notifyTapOperation( VoltageRegulator::RaiseTap );
 
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), "Raise Tap Position", capControlIvvcTapOperation );
+    std::string description = "Raise Tap Position" + getPhaseString();
+
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), description, capControlIvvcTapOperation );
 }
 
 
@@ -219,7 +226,9 @@ void VoltageRegulator::executeTapDownOperation()
 {
     notifyTapOperation( VoltageRegulator::LowerTap );
 
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), "Lower Tap Position", capControlIvvcTapOperation );
+    std::string description = "Lower Tap Position" + getPhaseString();
+
+    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), description, capControlIvvcTapOperation );
 }
 
 
@@ -327,6 +336,29 @@ bool VoltageRegulator::isTimeToSendKeepAlive()
 {
     return ( ( _keepAliveTimer != 0 ) && ( CtiTime::now() >= _nextKeepAliveSendTime ) );
 }
+
+
+void VoltageRegulator::setPhase( const Phase & phase )
+{
+    _phase = phase;
+}
+
+
+std::string VoltageRegulator::getPhaseString() const
+{
+    switch ( _phase )
+    {
+        case A:
+        case B:
+        case C:
+        {
+            return ( " - Phase: " + desolvePhase( _phase ) );
+        }
+    }
+
+    return "";
+}
+
 
 }
 }
