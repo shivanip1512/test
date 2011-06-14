@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/10/2011 5:07:12 PM                         */
+/* Created on:     6/14/2011 11:23:20 AM                        */
 /*==============================================================*/
 
 
@@ -384,7 +384,7 @@ create table ApplianceWaterHeater  (
 create table ArchiveDataAnalysis  (
    AnalysisId           NUMBER                          not null,
    Attribute            VARCHAR2(60)                    not null,
-   IntervalLength       NUMBER                          not null,
+   IntervalLengthInMillis NUMBER                          not null,
    LastChangeId         NUMBER                          not null,
    RunDate              DATE                            not null,
    ExcludeBadPointQualities CHAR(1)                         not null,
@@ -400,7 +400,6 @@ create table ArchiveDataAnalysisSlotValues  (
    SlotValueId          NUMBER                          not null,
    DeviceId             NUMBER                          not null,
    SlotId               NUMBER                          not null,
-   HasValue             CHAR(1)                         not null,
    ChangeId             NUMBER,
    constraint PK_ArcDataAnalSlotValues primary key (SlotValueId)
 );
@@ -411,7 +410,7 @@ create table ArchiveDataAnalysisSlotValues  (
 create table ArchiveDataAnalysisSlots  (
    SlotId               NUMBER                          not null,
    AnalysisId           NUMBER                          not null,
-   Timestamp            DATE                            not null,
+   StartTime            DATE                            not null,
    constraint PK_ArcDataAnalSlots primary key (SlotId)
 );
 

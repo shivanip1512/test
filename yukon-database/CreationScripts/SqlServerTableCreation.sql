@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/10/2011 5:08:38 PM                         */
+/* Created on:     6/14/2011 11:22:00 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -402,7 +402,7 @@ go
 create table ArchiveDataAnalysis (
    AnalysisId           numeric              not null,
    Attribute            varchar(60)          not null,
-   IntervalLength       numeric              not null,
+   IntervalLengthInMillis numeric              not null,
    LastChangeId         numeric              not null,
    RunDate              datetime             not null,
    ExcludeBadPointQualities char(1)              not null,
@@ -419,7 +419,6 @@ create table ArchiveDataAnalysisSlotValues (
    SlotValueId          numeric              not null,
    DeviceId             numeric              not null,
    SlotId               numeric              not null,
-   HasValue             char(1)              not null,
    ChangeId             numeric              null,
    constraint PK_ArcDataAnalSlotValues primary key (SlotValueId)
 )
@@ -431,7 +430,7 @@ go
 create table ArchiveDataAnalysisSlots (
    SlotId               numeric              not null,
    AnalysisId           numeric              not null,
-   Timestamp            datetime             not null,
+   StartTime            datetime             not null,
    constraint PK_ArcDataAnalSlots primary key (SlotId)
 )
 go

@@ -5,8 +5,8 @@
 /* Start YUK-9847 */
 CREATE TABLE ArchiveDataAnalysis (
    AnalysisId           NUMERIC              NOT NULL,
-   Attribute            varCHAR(60)          NOT NULL,
-   IntervalLength       NUMERIC              NOT NULL,
+   Attribute            VARCHAR(60)          NOT NULL,
+   IntervalLengthInMillis NUMERIC              NOT NULL,
    LastChangeId         NUMERIC              NOT NULL,
    RunDate              DATETIME             NOT NULL,
    ExcludeBadPointQualities CHAR(1)          NOT NULL,
@@ -19,7 +19,6 @@ CREATE TABLE ArchiveDataAnalysisSlotValues (
    SlotValueId          NUMERIC              NOT NULL,
    DeviceId             NUMERIC              NOT NULL,
    SlotId               NUMERIC              NOT NULL,
-   HasValue             CHAR(1)              NOT NULL,
    ChangeId             NUMERIC              NULL,
    CONSTRAINT PK_ArcDataAnalSlotValues PRIMARY KEY (SlotValueId)
 );
@@ -27,7 +26,7 @@ CREATE TABLE ArchiveDataAnalysisSlotValues (
 CREATE TABLE ArchiveDataAnalysisSlots (
    SlotId               NUMERIC              NOT NULL,
    AnalysisId           NUMERIC              NOT NULL,
-   Timestamp            DATETIME             NOT NULL,
+   StartTime            DATETIME             NOT NULL,
    CONSTRAINT PK_ArcDataAnalSlots PRIMARY KEY (SlotId)
 );
 GO
