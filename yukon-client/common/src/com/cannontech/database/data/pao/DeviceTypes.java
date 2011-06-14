@@ -164,7 +164,7 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
     public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;
     
-    public final static int RFWHOLDER = DEVICE_OFFSET + 129;
+    public final static int RFWMETER = DEVICE_OFFSET + 129;
     
     public final static int CBC_8020 = DEVICE_OFFSET + 130;
     public final static int CBC_8024 = DEVICE_OFFSET + 131;

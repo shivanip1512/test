@@ -4776,7 +4776,7 @@
         </tags>
     </pao>
 
-    <pao id="RFWHOLDER" inherits="RFN_WATER_BASE">
+    <pao id="RFWMETER" inherits="RFN_WATER_BASE">
         <displayName>RFW-Meter</displayName>
     </pao>
     
