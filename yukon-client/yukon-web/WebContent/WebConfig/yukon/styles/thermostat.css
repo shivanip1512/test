@@ -1,70 +1,10 @@
 .dn {display:none;}
 .fl {float:left;}
 .fr {float:right;}
-/* .schedule_editor { */
-/* 	position: absolute; */
-/* 	left: 150px; */
-/* 	top: 50px; */
-/* 	padding: 20px; */
-/* 	border: solid 10px #CCC; */
-/* 	z-index: 100; */
-/* 	margin: 60px 0 0; */
-/* 	width: 100%; */
-/* 	background: white; */
-/* } */
-
-/* .schedule_editor form { */
-/* 	width: 600px; */
-/* 	padding: 10px; */
-/* } */
-
-.conversion_buttons {
-	margin: 0 37px;
-	overflow:hidden;
-	float: left;
-}
-.conversion_buttons a {
-	background: #999;
-	display: inline-block;
-	color: white;
-	font-weight:bold;
-	font-size: 16px;
-	text-decoration: none;
-	float:left;
-	border: solid 1px #CCC;
-	padding: 5px 10px;
+.schedule_editor {
+    max-width: 785px;
 }
 
-.conversion_buttons a:first-child {
-	padding: 5px 10px 5px 20px;
-	-moz-border-radius: 8px 0 0 8px;
-}
-
-.conversion_buttons a:last-child {
-	padding: 5px 20px 5px 10px;
-	-moz-border-radius: 0 8px 8px 0;
-}
-
-.conversion_buttons a:hover {
-	background-color: #BBB;
-}
-
-.conversion_buttons a.active,.conversion_buttons a.active:hover {
-	background-color: lightBlue;
-	color: black;
-	cursor: default;
-}
-
-.conversion_buttons.disabled a {
-	background-color: #EFEFEF;
-	color: #CCC;
-	cursor:default;
-}
-
-.conversion_buttons.disabled a.active {
-	background-color: #BCCDF5;
-	color: #7B8DB8;
-}
 
 .labels {
 	display:none;
@@ -97,12 +37,12 @@
 	width: 30px;
 }
 
-.info {
-	width: 70px;
+.F span.C, .C span.F {
+    display: none;
 }
 
-.temp:first-child {
-	-moz-border-radius: 5px 0 0 5px;
+.info {
+	width: 70px;
 }
 
 .temp small {
@@ -112,14 +52,16 @@
 
 .heat {
 	background-color: orange;
+	border-radius: 5px 0 0 5px;
 	-moz-border-radius: 5px 0 0 5px;
-/* 	text-shadow: 1px 1px 1px #666; */
+	-webkit-border-radius: 5px 0 0 5px;
 }
 
 .cool {
 	background-color: lightBlue;
+	border-radius: 0 5px 5px 0;
 	-moz-border-radius: 0 5px 5px 0;
-/* 	text-shadow: 1px 1px 1px #666; */
+	-webkit-border-radius: 0 5px 5px 0;
 }
 .name {
 	color: green;
@@ -128,25 +70,18 @@
 
 .time {
 	font-size: 18px;
-/* 	text-shadow: 1px 1px 1px #000; */
-}
-
-.time.am, .time.pm {
-	background: transparent url("../Icons/bullet_red.gif") top left no-repeat;
-}
-
-.days {
-/* 	-moz-border-radius: 8px 8px 0 0; */
-/* 	border: solid 1px #CCC; */
-}
-
-.editing .days {
-	background-color: white;
-	-moz-border-radius: 8px;
 }
 
 .small .days{
     margin: 10px 0;
+    min-width: 545px;
+    overflow: hidden;
+}
+
+.day {
+    clear: both;
+    display: block;
+    overflow:hidden;
 }
 
 .actions {
@@ -160,8 +95,6 @@
 }
 
 .period {
-/* 	border: solid 1px #CCC; */
-/* 	border-style: none none none solid; */
 	padding: 10px;
 	width: 180px;
 }
@@ -175,9 +108,13 @@
 }
 
 .small .label {
-	width: 15px;
 	padding: 0;
+	margin-top: 5px;
 	margin-right: 5px;
+	font-size: 10px;
+    text-align:right;
+    height: 1em;
+    width: 33px;
 }
 
 .label {
@@ -187,11 +124,11 @@
 }
 
 .odd .period {
-	background: #EFEFEF;
+    background: #efefef;
 }
 
 .even .period {
-    background: #FFF;
+    background: white;
 }
 
 /*SMALL FORMAT*/
@@ -201,8 +138,18 @@
 	border: solid 1px #CCC;
 	color: #fff;
 	text-align: center;
-	width: 29px;
+	width: 40px;
 	font-size: 10px;
+}
+
+.small .labels .temp {
+    float: left;
+    padding: 2px 5px;
+    text-align: left;
+    border: none;
+    color: blue;
+    width: 40px;
+    font-size: 10px;
 }
 
 .small .temp input {
@@ -214,12 +161,16 @@
 }
 
 .small .info {
-	width: 60px;
+	width: 95px;
+	float: none;
+	text-align: right;
+	font-size: 13px;
 }
 
 .small .info input {
 	font-size: 10px;
-	width: 45px;
+	width: 55px;
+	text-align: right;
 }
 
 .small .temp small {
@@ -239,7 +190,7 @@
 }
 
 .small .time {
-	font-size: 11px;
+	font-size: 13px;
 /* 	text-shadow: 1px 1px 1px #000; */
 }
 
@@ -252,20 +203,11 @@
 
 .small .period {
 	padding: 2px 10px;
-	width: 145px;
+	width: 105px;
 }
 
 .small .period .name {
 	display:none;
-}
-
-.small .label {
-	font-size: 10px;
-/* 	margin: 0 0 0 -37px; */
-/* 	overflow: hidden; */
-	text-align:right;
-	height: 1em;
-	width: 33px;
 }
 
 ul.schedules > li {
@@ -275,28 +217,26 @@ ul.schedules > li {
 	clear: both;
 	margin-bottom: 20px;
 	padding: 10px 10px 0;
-	
-	
-/* 	background-color: #DEDEDE; */
 }
 
-li.editing {
-	background-color: #DEDEDE;
-	-moz-border-radius: 8px;
-	border: solid 1px #CCC;
-	z-index: 10;      /* rise above the modal glass! */
-}
-
-li .heading {
-/* 	margin-top: -20px; */
+.heading {
 	font-size: 16px;
 	font-style:italic;
-/* 	position: absolute; */
 	margin: 0 0 5px 38px;
+	border-bottom: solid 1px #666; 
 }
 
 li.current {
-    background: lightGreen;
+    border: solid 1px #666;
+}
+
+li.current .helper {
+    margin: 0 0 15px;
+    background: lightYellow;
+    font-style: italic;
+    padding: 5px 10px;
+    font-size: 12px;
+    border: solid 1px orange;
 }
 
 .type {
@@ -315,7 +255,14 @@ li.current {
 	margin-top: 45px;
 	overflow:hidden;
 }
-Sophie3001
+
+.schedule {
+    overflow: hidden;
+    float: left;
+    clear: both;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
 
 .title.current small {
 	color: green;
@@ -323,54 +270,9 @@ Sophie3001
 	font-weight:bold;
 }
 
-/*TABS*/
-/* .tab { */
-/* 	display:none; */
-/* } */
-
-/* .tab.active { */
-/* 	display:block; */
-/* } */
-
-/* .tabs { */
-/* 	overflow:hidden; */
-/* 	margin-bottom: -1px; */
-/* } */
-
-/* ul.schedules .tabs li { */
-/* 	background: transparent; */
-/* 	cursor: pointer; */
-/* 	color: #999; */
-/* 	display: inline; */
-/* 	margin: 0; */
-/* 	padding: 2px 8px; */
-/* 	float:left; */
-/* 	overflow:hidden; */
-/* 	clear:none; */
-/* 	margin-left: -1px; */
-/* 	border-left: solid 1px #ccc; */
-/* 	z-index:10; */
-/* } */
-
-/* .tabs li.last { */
-/*     border-right: solid 1px black; */
-/* } */
-
-/* ul.schedules .tabs li:hover { */
-/* 	color: #333; */
-/* } */
-
-/* ul.schedules .tabs li.active { */
-/* 	background-color: white; */
-/* 	color: black; */
-/* 	cursor: default;  */
-/* } */
-
 .icon_labeled{
 	padding: 2px 0 5px 20px;
 	margin-right: 10px;
-/* 	display:block; */
-/* 	clear:both; */
 	text-decoration: none !important;
 	font-size: 12px;
 	cursor: pointer;
@@ -401,38 +303,40 @@ a.default {
 	background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;
 }
 
-.editor {
-	display: none;
-}
-
-.editor label {
-/* 	margin-left: 6em; */
-}
-
 .editing .editor {
 	display: inherit;
-	
 }
 	
-#slider {
-	position: absolute;
-	width: 200px;
+.slider {
+	position: fixed;
+	width: 250px;
+	height: 29px;
 	background: white;
-/* 	border: solid 1px red; */
-	box-shadow: 0 4px 5px rgba(0,0,0,0.5);
-	z-index: 100;
+	border: solid 4px #333;
+	box-shadow: 0 0 5px rgba(0,0,0,0.5);
+	z-index: 200;
+	left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	font-size: 10px;
 }
 
-#slider a {
-	text-decoration: none;
-	padding: 2px 3px 3px;
-	font-size: 12px;
-	color: #333;
-	font-weight: normal;
+.slider .handle {
+    height: 20px;
+    width: 20px;
+    background: transparent url(../Icons/slider-handle.png) top left no-repeat;
+    margin-top: -10px;
 }
 
-#slider .ui-corner-all {
-	-moz-border-radius: 10px
+.slider .track {
+    width: 238px;
+    height: 1px;
+    border: solid 1px #666;
+    background-color: #999;
+    position: absolute;
+    left: 5px;
+    top: 19px;
 }
 
 .chevron {
@@ -442,75 +346,13 @@ a.default {
     border-style: solid;
     border-color: transparent;
     /* chevron color */
-    border-top-color: #444;
+    border-bottom-color: #333;
     /* for left pointers, right border is 0 */
-    border-width: 16px 23px 0;
+    border-width: 0 23px 16px;
     float: left;
-    margin: 14px 85px;
+    margin: -20px 100px;
 }
 
-.time_picker {
-/* 	display:none; */
-}
-
-.time_picker {
-	width: 5em;
-	font-size: 12px;
-	border: solid 1px #ccc;
-	padding: 0 5px;
-	overflow:hidden;
-	border-radius: 8px;
-}
-
-.time_picker .down li{
-	border: solid 1px #ccc;
-	border-style: none none solid;
-	padding: 2px 0;
-}
-
-.time_picker .up {
-	padding-top: 20px;
-	background: transparent url('http://cdn4.iconfinder.com/data/icons/fatcow/32x32_0140/bullet_arrow_up.png') center -5px no-repeat;
-}
-
-.time_picker .down {
-	padding-bottom: 20px;
-	background: transparent url('http://cdn4.iconfinder.com/data/icons/fatcow/32x32_0140/bullet_arrow_down.png') center 52px no-repeat;
-}
-
-.time_picker .up li{
-	border: solid 1px #ccc;
-	border-style: solid none none;
-	padding: 2px 0;
-}
-
-.time_picker li:hover, .time_picker li.active {
-	background-color: lightGreen;
-	color: black;
-	cursor: pointer;
-}
-
-.time_picker input {
-	width: 6em;
-	margin-left: -6px;
-	border: solid 1px green;
-	padding-left: 4px;
-}
-
-.ui-widget-content {
-	border: solid 2px #444 !important;
-}
-
-.time_editor .time_picker {
-	display: none;
-}
-
-.time_editor input {
-	border: solid 1px #CCC;
-	border-radius: 2px;
-}
-
-.ui-widget-overlay {
-    z-index: 9;
-    position: fixed !important;
+.pad {
+    padding: 15px;
 }

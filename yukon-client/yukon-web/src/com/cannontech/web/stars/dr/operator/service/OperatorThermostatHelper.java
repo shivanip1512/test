@@ -75,7 +75,7 @@ public interface OperatorThermostatHelper {
     JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule);
     public AccountThermostatSchedule JSONtoAccountThermostatSchedule(JSONObject obj);
 
-    List<ThermostatScheduleMode> getAllowedModesForUserAndThermostat(LiteYukonUser user, Thermostat thermostat);
+    List<ThermostatScheduleMode> getAllowedModesForUserAndType(LiteYukonUser user, SchedulableThermostatType type);
 
     JSONObject ThermostatToJSON(Thermostat thermostat, YukonUserContext user);
 

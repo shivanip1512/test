@@ -59,6 +59,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	@Override
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
 		
+	    thermostatIds = thermostatIds.replace("[", "");
+	    thermostatIds = thermostatIds.replace("]", "");
 		List<Integer> thermostatIdsList = ServletUtil.getIntegerListFromString(thermostatIds);
 		hardwareUiService.validateInventoryAgainstAccount(thermostatIdsList, accountInfoFragment.getAccountId());
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -166,10 +168,9 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	    AccountThermostatSchedule ats = new AccountThermostatSchedule();
 	    
 	    //set params
-	    ats.setAccountId(obj.getInt("accountId"));
 	    ats.setAccountThermostatScheduleId(obj.getInt("scheduleId"));
 	    ats.setScheduleName(obj.getString("scheduleName"));
-	    ats.setThermostatType(SchedulableThermostatType.valueOf(obj.getString("schedulalbleThermostatType")));
+	    ats.setThermostatType(SchedulableThermostatType.valueOf(obj.getString("schedulableThermostatType")));
 	    ats.setThermostatScheduleMode(ThermostatScheduleMode.valueOf(obj.getString("thermostatScheduleMode")));
 	    
 	    //fixup COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
@@ -454,8 +455,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	}
 	
 	@Override
-	public List<ThermostatScheduleMode> getAllowedModesForUserAndThermostat(LiteYukonUser user, Thermostat thermostat) {
-	    SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+	public List<ThermostatScheduleMode> getAllowedModesForUserAndType(LiteYukonUser user, SchedulableThermostatType type) {
         List<ThermostatScheduleMode> modes = Lists.newArrayList();
         modes.addAll(type.getSupportedScheduleModes());
         boolean schedule52Enabled = rolePropertyDao.checkAnyProperties(user, YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2);
