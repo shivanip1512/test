@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/14/2011 11:23:20 AM                        */
+/* Created on:     6/14/2011 11:37:44 AM                        */
 /*==============================================================*/
 
 
@@ -9288,25 +9288,25 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /* Table: ZBControlEvent                                        */
 /*==============================================================*/
 create table ZBControlEvent  (
-   EventId              NUMBER                          not null,
+   ZBControlEventId     NUMBER                          not null,
    IntegrationType      VARCHAR2(50)                    not null,
    StartTime            DATE                            not null,
    GroupId              NUMBER                          not null,
    LMControlHistoryId   NUMBER,
-   constraint PK_ZBContEvent primary key (EventId)
+   constraint PK_ZBContEvent primary key (ZBControlEventId)
 );
 
 /*==============================================================*/
 /* Table: ZBControlEventDevice                                  */
 /*==============================================================*/
 create table ZBControlEventDevice  (
-   EventId              NUMBER                          not null,
+   ZBControlEventId     NUMBER                          not null,
    DeviceId             NUMBER                          not null,
    DeviceAck            CHAR(1)                         not null,
    StartTime            DATE,
    StopTime             DATE,
    Canceled             CHAR(1),
-   constraint PK_ZBContEventDev primary key (EventId, DeviceId)
+   constraint PK_ZBContEventDev primary key (ZBControlEventId, DeviceId)
 );
 
 /*==============================================================*/
@@ -12053,8 +12053,8 @@ alter table ZBControlEvent
       on delete cascade;
 
 alter table ZBControlEventDevice
-   add constraint FK_ZBContEventDev_ZBContEvent foreign key (EventId)
-      references ZBControlEvent (EventId)
+   add constraint FK_ZBContEventDev_ZBContEvent foreign key (ZBControlEventId)
+      references ZBControlEvent (ZBControlEventId)
       on delete cascade;
 
 alter table ZBControlEventDevice

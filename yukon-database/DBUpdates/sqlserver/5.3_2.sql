@@ -147,22 +147,22 @@ DROP TABLE ZBControlEvent;
 GO
 
 CREATE TABLE ZBControlEvent (
-   EventId              NUMERIC              NOT NULL,
+   ZBControlEventId     NUMERIC              NOT NULL,
    IntegrationType      VARCHAR(50)          NOT NULL,
    StartTime            DATETIME             NOT NULL,
    GroupId              NUMERIC              NOT NULL,
    LMControlHistoryId   NUMERIC              null,
-   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (ZBControlEventId)
 );
 
 CREATE TABLE ZBControlEventDevice (
-   EventId              NUMERIC              NOT NULL,
+   ZBControlEventId     NUMERIC              NOT NULL,
    DeviceId             NUMERIC              NOT NULL,
    DeviceAck            CHAR                 NOT NULL,
    StartTime            DATETIME             NULL,
    StopTime             DATETIME             NULL,
    Canceled             CHAR                 NULL,
-   CONSTRAINT PK_ZBContEventDev PRIMARY KEY (EventId, DeviceId)
+   CONSTRAINT PK_ZBContEventDev PRIMARY KEY (ZBControlEventId, DeviceId)
 );
 GO
 
@@ -176,8 +176,8 @@ ALTER TABLE ZBControlEvent
             ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEventDevice
-    ADD CONSTRAINT FK_ZBContEventDev_ZBContEvent FOREIGN KEY (EventId)
-        REFERENCES ZBControlEvent (EventId)
+    ADD CONSTRAINT FK_ZBContEventDev_ZBContEvent FOREIGN KEY (ZBControlEventId)
+        REFERENCES ZBControlEvent (ZBControlEventId)
             ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEventDevice

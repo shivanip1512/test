@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/14/2011 11:22:00 AM                        */
+/* Created on:     6/14/2011 11:40:36 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9783,12 +9783,12 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /* Table: ZBControlEvent                                        */
 /*==============================================================*/
 create table ZBControlEvent (
-   EventId              numeric              not null,
+   ZBControlEventId     numeric              not null,
    IntegrationType      varchar(50)          not null,
    StartTime            datetime             not null,
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
-   constraint PK_ZBContEvent primary key (EventId)
+   constraint PK_ZBContEvent primary key (ZBControlEventId)
 )
 go
 
@@ -9796,13 +9796,13 @@ go
 /* Table: ZBControlEventDevice                                  */
 /*==============================================================*/
 create table ZBControlEventDevice (
-   EventId              numeric              not null,
+   ZBControlEventId     numeric              not null,
    DeviceId             numeric              not null,
    DeviceAck            char(1)              not null,
    StartTime            datetime             null,
    StopTime             datetime             null,
    Canceled             char(1)              null,
-   constraint PK_ZBContEventDev primary key (EventId, DeviceId)
+   constraint PK_ZBContEventDev primary key (ZBControlEventId, DeviceId)
 )
 go
 
@@ -13156,8 +13156,8 @@ alter table ZBControlEvent
 go
 
 alter table ZBControlEventDevice
-   add constraint FK_ZBContEventDev_ZBContEvent foreign key (EventId)
-      references ZBControlEvent (EventId)
+   add constraint FK_ZBContEventDev_ZBContEvent foreign key (ZBControlEventId)
+      references ZBControlEvent (ZBControlEventId)
          on delete cascade
 go
 

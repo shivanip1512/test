@@ -135,22 +135,22 @@ DROP TABLE DigiControlEventMapping;
 DROP TABLE ZBControlEvent;
 
 CREATE TABLE ZBControlEvent  (
-   EventId              NUMBER                          NOT NULL,
+   ZBControlEventId     NUMBER                          NOT NULL,
    IntegrationType      VARCHAR2(50)                    NOT NULL,
    StartTime            DATE                            NOT NULL,
    GroupId              NUMBER                          NOT NULL,
    LMControlHistoryId   NUMBER,
-   CONSTRAINT PK_ZBContEvent PRIMARY KEY (EventId)
+   CONSTRAINT PK_ZBContEvent PRIMARY KEY (ZBControlEventId)
 );
 
 CREATE TABLE ZBControlEventDevice  (
-   EventId              NUMBER                          NOT NULL,
+   ZBControlEventId     NUMBER                          NOT NULL,
    DeviceId             NUMBER                          NOT NULL,
    DeviceAck            CHAR                            NOT NULL,
    StartTime            DATE							NULL,
    StopTime             DATE							NULL,
    Canceled             CHAR							NULL,
-   CONSTRAINT PK_ZBContEventDev PRIMARY KEY (EventId, DeviceId)
+   CONSTRAINT PK_ZBContEventDev PRIMARY KEY (ZBControlEventId, DeviceId)
 );
 
 ALTER TABLE ZBControlEvent
@@ -163,8 +163,8 @@ ALTER TABLE ZBControlEvent
             ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEventDevice
-    ADD CONSTRAINT FK_ZBContEventDev_ZBContEvent FOREIGN KEY (EventId)
-        REFERENCES ZBControlEvent (EventId)
+    ADD CONSTRAINT FK_ZBContEventDev_ZBContEvent FOREIGN KEY (ZBControlEventId)
+        REFERENCES ZBControlEvent (ZBControlEventId)
             ON DELETE CASCADE;
 
 ALTER TABLE ZBControlEventDevice
