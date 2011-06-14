@@ -153,5 +153,5 @@
 </c:if>
 
 <script type="text/javascript">
-callAfterMainWindowLoad(${id}.init.bind(${id}, '${viewMode}'));
+callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
 </script>
