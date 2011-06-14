@@ -38,7 +38,6 @@
 #include "ctidate.h"
 #include "utility.h"
 #include "GroupControlInterface.h"
-#include "lmgroupdigisep.h"
 
 using namespace Cti::LoadManagement;
 using std::vector;
@@ -649,11 +648,6 @@ void CtiLMCommandExecutor::ShedGroup()
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
                             }
                         }
-
-                        LMGroupDigiSEP *sepGroup = new LMGroupDigiSEP();
-                        GroupControlInterface *controllableGroup = dynamic_cast<GroupControlInterface *>(sepGroup);
-                        sepGroup->sendShedControl(1);
-                        delete sepGroup;
 
                         if( GroupControlInterface *controllableGroup = dynamic_cast<GroupControlInterface*>(currentLMGroup.get()) )
                         {
