@@ -394,7 +394,6 @@ public final class PointDaoImpl implements PointDao {
                     sql.append(  "LEFT JOIN PointUnit PU ON P.PointId = PU.PointId");
                     sql.append(  "LEFT JOIN UnitMeasure UM ON PU.UomId = UM.UomId");
                     Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
-                    // TODO:  maybe move this outside of generator
                     List<Integer> integerPaoIds = Lists.transform(subList, paoIdFunction);
                     sql.append("WHERE P.PointName").eq(pointName);
                     sql.append(  "AND P.PaobjectId").in(integerPaoIds);
@@ -416,10 +415,10 @@ public final class PointDaoImpl implements PointDao {
         ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paos);
 
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        Function<PaoIdentifier, PaoIdentifier> typeMapper = Functions.identity();
+        Function<PaoIdentifier, PaoIdentifier> identity = Functions.identity();
 
         Map<PaoIdentifier, LitePoint> retVal = Maps.newHashMap();
-        for (PaoType paoType : paosByType.keys()) {
+        for (PaoType paoType : paosByType.keySet()) {
             final PointIdentifier pointIdentifier =
                 paoDefinitionDao.getPointIdentifierByDefaultName(paoType, defaultPointName);
             SqlFragmentGenerator<PaoIdentifier> sqlGenerator =
@@ -439,7 +438,9 @@ public final class PointDaoImpl implements PointDao {
                         return sql;
                     }
                 };
-            template.mappedQuery(sqlGenerator, paos, new EntryRowMapper(paos), typeMapper);
+            Map<PaoIdentifier, LitePoint> paoTypeResults =
+                template.mappedQuery(sqlGenerator, paos, new EntryRowMapper(paos), identity);
+            retVal.putAll(paoTypeResults);
         }
 
         return retVal;

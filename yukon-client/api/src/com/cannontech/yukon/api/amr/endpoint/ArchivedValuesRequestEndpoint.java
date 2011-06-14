@@ -293,8 +293,7 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         if (responseFields.contains(ResponseDescriptor.CARRIER_ADDRESS)) {
-            element.setAttribute("carrierAddress",
-                                    Integer.toString(paoData.getCarrierAddress()));
+            element.setAttribute("carrierAddress", Integer.toString(paoData.getCarrierAddress()));
         }
 
         if (responseFields.contains(ResponseDescriptor.ENABLED)) {

@@ -446,17 +446,18 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         return sql;
                     }
                 };
-
             }
         };
 
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = ArrayListMultimap.create(IterableUtils.guessSize(paos), 20); // 20 should be based on maxRows, with some care taken if maxRows happens to be gigantic
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result =
+            ArrayListMultimap.create(IterableUtils.guessSize(paos), Math.min(20, maxRows));
         ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paos);
 
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
 
-        for(Entry<PaoType, Collection<PaoIdentifier>> typeWithPaos : paosByType.asMap().entrySet()) {
-            PointIdentifier pointIdentifier = paoDefinitionDao.getPointIdentifierByDefaultName(typeWithPaos.getKey(), defaultPointName);
+        for (Entry<PaoType, Collection<PaoIdentifier>> typeWithPaos : paosByType.asMap().entrySet()) {
+            PointIdentifier pointIdentifier =
+                paoDefinitionDao.getPointIdentifierByDefaultName(typeWithPaos.getKey(), defaultPointName);
 
             ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = 
                 template.multimappedQuery(factory.create(pointIdentifier),
