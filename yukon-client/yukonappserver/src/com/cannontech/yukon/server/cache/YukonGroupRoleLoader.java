@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
@@ -89,7 +91,7 @@ public final class YukonGroupRoleLoader implements Runnable
       			final LiteYukonRoleProperty roleProperty = rolePropertyMap.get(rolePropertyID);
       			
       			// Check to see if we should use the properties default 
-      			if(CtiUtilities.STRING_NONE.equalsIgnoreCase(value)) {
+      			if(StringUtils.isBlank(value) || value.trim().equals(CtiUtilities.STRING_NONE)) {
       			    //we will print a warning and let the exception propogate
       			    if (roleProperty == null) {
       			        throw new RuntimeException("Unable to find the RoleProperty entry with a rolePropertyID = " + rolePropertyID + " and roleID = " + roleID );

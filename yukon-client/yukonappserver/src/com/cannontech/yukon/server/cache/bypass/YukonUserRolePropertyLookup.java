@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -85,7 +86,7 @@ public class YukonUserRolePropertyLookup
             }
     	
     		//no user role property, so get the group one...first need to find all the groups for this user, though
-    		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
+    		if(StringUtils.isBlank(propertyValue) || propertyValue.trim().equals(CtiUtilities.STRING_NONE))
     		{
     			sql = "SELECT YUG.GroupID, YGR.Value " +
                        " FROM YukonUserGroup yug, " + YukonGroupRole.TABLE_NAME + " ygr " + 
@@ -121,7 +122,7 @@ public class YukonUserRolePropertyLookup
     		
     		//not sure why we can't find it, but better return default value
     		
-    		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
+    		if(StringUtils.isBlank(propertyValue) || propertyValue.trim().equals(CtiUtilities.STRING_NONE))
     		{
                 sql = "SELECT DefaultValue " +
                       " FROM " + YukonRoleProperty.TABLE_NAME + 
