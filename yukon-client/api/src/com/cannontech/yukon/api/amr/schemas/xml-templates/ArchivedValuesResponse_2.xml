@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<archivedValuesResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ArchivedValuesResponse.xsd" 
+           version="1.0">
+           
+        <paos>
+            <pao meterNumber="234234">
+                <point>
+                    <value timestamp="2010-04-01T04:00:00Z">23432.456</value> 
+                </point>
+            </pao>
+
+            <pao meterNumber="567456">
+                <point>
+                    <value timestamp="2010-04-01T04:00:00Z">23432.456</value> 
+                </point>
+            </pao>
+
+            <pao meterNumber="23789442">
+                <point>
+                    <value timestamp="2010-04-01T04:00:00Z">23432.456</value> 
+                </point>
+            </pao>
+
+    </paos>
+
+
+</archivedValuesResponse>

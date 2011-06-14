@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<archivedValuesRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ArchivedValuesRequest.xsd" 
+           version="1.0">
+    <paos>
+        <paoId value="213423"/>
+    </paos>
+    
+    <point>
+        <typeAndOffset type="Analog" offset="1"/>
+        <all/>
+    </point>
+    
+    <point>
+        <pointName name="Voltage Phase A"/>
+        <allAfter limit="unbounded"/>
+    </point>
+    
+    <response>
+        <uofm/>
+    </response>
+</archivedValuesRequest>

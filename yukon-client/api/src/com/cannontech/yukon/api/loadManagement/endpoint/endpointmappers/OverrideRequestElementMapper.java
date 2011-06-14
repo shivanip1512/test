@@ -22,7 +22,7 @@ public class OverrideRequestElementMapper implements ObjectMapper<Element, OptOu
         String serialNumber = template.evaluateAsString("//y:serialNumber");
         Instant startDate = template.evaluateAsInstant("//y:startDate");
         long durationInHours = template.evaluateAsLong("//y:durationInHours");
-        boolean optOutCountsBool = template.evaluateAsBooleanWithDefault("//y:counts", true);
+        boolean optOutCountsBool = template.evaluateAsBoolean("//y:counts", true);
 
         optOutHelper.setAccountNumber(accountNumber);
         optOutHelper.setSerialNumber(serialNumber);

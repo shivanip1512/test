@@ -22,8 +22,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public class ChunkingMappedSqlTemplate {
-
     private SimpleJdbcOperations simpleJdbcTemplate;
+    private int chunkSize = ChunkingSqlTemplate.DEFAULT_SIZE;
 
     public ChunkingMappedSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
@@ -175,6 +175,7 @@ public class ChunkingMappedSqlTemplate {
         final Multimap<I, R> intermediaryResult = ArrayListMultimap.create();
 
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkingTemplate.setChunkSize(chunkSize);
         chunkingTemplate.query(sqlGenerator, 
                                Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), 
                                new RowCallbackHandler() {
@@ -201,5 +202,8 @@ public class ChunkingMappedSqlTemplate {
     private static interface PairProcessor<A,B> {
         public void handle(A a,B b);
     }
-    
+
+    public void setChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
+    }
 }

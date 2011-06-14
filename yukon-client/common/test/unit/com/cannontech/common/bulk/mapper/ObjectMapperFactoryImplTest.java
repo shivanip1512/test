@@ -333,11 +333,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		}
 		
 		@Override
-		public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
-			throw new UnsupportedOperationException("Method not implemented");
-		}
-		
-		@Override
 		public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId) {
 		    throw new UnsupportedOperationException("Method not implemented");
 		}
@@ -352,11 +347,20 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
+        public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**
      * Adapter class which implements DeviceDao - allows for easily overriding
-     * only the mehtods you need
+     * only the methods you need
      */
     private class DeviceDaoAdapter implements DeviceDao {
 

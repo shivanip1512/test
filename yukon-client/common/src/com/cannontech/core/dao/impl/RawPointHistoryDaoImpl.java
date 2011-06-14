@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -18,11 +19,13 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
@@ -37,6 +40,9 @@ import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
@@ -58,11 +64,28 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private YukonJdbcTemplate yukonTemplate = null;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private AttributeService attributeService;
-    
-    private SqlFragmentSource buildSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, Order order) {
+    private PaoDefinitionDao paoDefinitionDao;
+
+    YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
+        new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
+            final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
+
+            @Override
+            public Map.Entry<Integer, PointValueQualityHolder> mapRow(YukonResultSet rs)
+                    throws SQLException {
+                int paObjectId = rs.getInt("PAObjectID");
+
+                PointValueQualityHolder pointValueQualityHolder =
+                    liteRPHQualityRowMapper.mapRow(rs.getResultSet(), 0);
+                return Maps.immutableEntry(paObjectId, pointValueQualityHolder);
+            }
+        };
+
+    private SqlFragmentSource buildSql(Clusivity clusivity, List<Integer> pointIds, Date startDate,
+                                       Date stopDate, Order order) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sql, pointId, startDate, stopDate, clusivity);
+        appendFromAndWhereClause(sql, pointIds, startDate, stopDate, clusivity);
         appendOrderByClause(sql, order);
 
         return sql;
@@ -91,13 +114,22 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return builder;
     }
 
-    private static void appendFromAndWhereClause(SqlBuilder sql, int pointId, Date startDate,
-            Date stopDate, Clusivity clusivity) {
-        
+    private static void appendFromAndWhereClause(SqlBuilder sql, List<Integer> pointIds,
+                                                 Date startDate, Date stopDate,
+                                                 Clusivity clusivity) {
         sql.append("FROM rawpointhistory rph");
         sql.append(  "JOIN point p on rph.pointId = p.pointId");
-        sql.append("WHERE rph.pointid").eq(pointId); //used to be an IN clause?
-        
+        sql.append("WHERE rph.pointid").in(pointIds);
+
+        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+    }
+
+    private static void appendFromAndWhereClause(SqlBuilder sql, int pointId, Date startDate,
+                                                 Date stopDate, Clusivity clusivity) {
+        sql.append("FROM rawpointhistory rph");
+        sql.append(  "JOIN point p on rph.pointId = p.pointId");
+        sql.append("WHERE rph.pointid").eq(pointId);
+
         appendTimeStampClause(sql, startDate, stopDate, clusivity);
     }
 
@@ -135,8 +167,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return getPointData(pointId, startDate, stopDate, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
     }
 
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order) {
-        SqlFragmentSource sql = buildSql(clusivity, pointId, startDate, stopDate, order);
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate,
+                                               Clusivity clusivity, Order order) {
+        SqlFragmentSource sql =
+            buildSql(clusivity, Collections.singletonList(pointId), startDate, stopDate, order);
+        return executeQuery(sql);
+    }
+
+    public List<PointValueHolder> getMultiplePointData(List<Integer> pointIds, Date startDate,
+                                                       Date stopDate, Clusivity clusivity, Order order) {
+        SqlFragmentSource sql = buildSql(clusivity, pointIds, startDate, stopDate, order);
         return executeQuery(sql);
     }
 
@@ -221,7 +261,261 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20, excludeDisabledPaos);
     }
+
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos, final String pointName, 
+                                                                                   final Date startDate, final Date stopDate, final Clusivity clusivity, final Order order) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT p.paobjectid, rph.pointid, rph.timestamp,");
+                sql.append(  "rph.value, rph.quality, p.pointtype");
+                sql.append("FROM rawpointhistory rph");
+                sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                sql.append("WHERE p.PointName").eq(pointName);
+                appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                sql.append(  "AND p.PAObjectID").in(subList);
+                appendOrderByClause(sql, order);
+
+                return sql;
+            }
+        };
+        
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = template.multimappedQuery(sqlFragmentGenerator,
+                                                                                              paos,
+                                                                                              rphYukonRowMapper,
+                                                                                              PaoUtils.getPaoIdFunction());
+        return rows;    
+    }
     
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos, final String pointName, 
+                                                                                   final Date startDate, final Date stopDate, final int maxRows, 
+                                                                                   final Clusivity clusivity, final Order order) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT * FROM (");
+                sql.append("SELECT DISTINCT p.paobjectid, rph.pointid, rph.timestamp,");
+                sql.append(  "rph.value, rph.quality, p.pointtype");
+                sql.append(    ", ROW_NUMBER() OVER (");
+                sql.append(      "PARTITION BY rph.pointid");
+                appendOrderByClause(sql, order);
+                sql.append(    ") rn");
+                sql.append("FROM rawpointhistory rph");
+                sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                sql.append("WHERE p.PointName").eq(pointName);
+                appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                sql.append(  "AND p.PAObjectID").in(subList);
+                sql.append(") numberedRows");
+                sql.append("WHERE numberedRows.rn").lte(maxRows);
+                sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+
+                return sql;
+            }
+        };
+        
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = template.multimappedQuery(sqlFragmentGenerator,
+                                                                                              paos,
+                                                                                              rphYukonRowMapper,
+                                                                                              PaoUtils.getPaoIdFunction());
+        
+        return rows;    
+    }
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByTypeAndOffset(Iterable<PaoIdentifier> paos, final PointType type, final int offset,
+                                                                                       final Date startDate, final Date stopDate, final Clusivity clusivity, 
+                                                                                       final Order order) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append(  "rph.value, rph.quality, p.pointtype");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                        sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append(  "AND yp.PAObjectID").in(subList);
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                        appendOrderByClause(sql, order);
+                        return sql;
+                    }
+                };
+
+            }
+        };
+        PointIdentifier pointIdentifier = new PointIdentifier(type, offset);
+        
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = 
+            template.multimappedQuery(factory.create(pointIdentifier),
+                                      paos,
+                                      rphYukonRowMapper,
+                                      PaoUtils.getPaoIdFunction());
+        
+        return result;
+    }
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByTypeAndOffset(Iterable<PaoIdentifier> paos, final PointType type, final int offset,
+                                                                                       final Date startDate, final Date stopDate, final int maxRows, 
+                                                                                       final Clusivity clusivity, 
+                                                                                       final Order order) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT * FROM (");
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append(  "rph.value, rph.quality, p.pointtype");
+                        sql.append(    ", ROW_NUMBER() OVER (");
+                        sql.append(      "PARTITION BY rph.pointid");
+                        appendOrderByClause(sql, order);
+                        sql.append(    ") rn");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                        sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                        sql.append(  "AND yp.PAObjectID").in(subList);
+                        sql.append(") numberedRows");
+                        sql.append("WHERE numberedRows.rn").lte(maxRows);
+                        sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+
+                        return sql;
+                    }
+                };
+
+            }
+        };
+        PointIdentifier pointIdentifier = new PointIdentifier(type, offset);
+        
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = 
+            template.multimappedQuery(factory.create(pointIdentifier),
+                                      paos,
+                                      rphYukonRowMapper,
+                                      PaoUtils.getPaoIdFunction());
+        
+        return result;
+    }
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByDefaultPointName(Iterable<PaoIdentifier> paos, final String defaultPointName,
+                                                                                                 final Date startDate, final Date stopDate, final int maxRows, 
+                                                                                                 final Clusivity clusivity, 
+                                                                                                 final Order order) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT * FROM (");
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append(  "rph.value, rph.quality, p.pointtype");
+                        sql.append(    ", ROW_NUMBER() OVER (");
+                        sql.append(      "PARTITION BY rph.pointid");
+                        appendOrderByClause(sql, order);
+                        sql.append(    ") rn");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                        sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                        sql.append(  "AND yp.PAObjectID").in(subList);
+                        sql.append(") numberedRows");
+                        sql.append("WHERE numberedRows.rn").lte(maxRows);
+                        sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+
+                        return sql;
+                    }
+                };
+
+            }
+        };
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = ArrayListMultimap.create(IterableUtils.guessSize(paos), 20); // 20 should be based on maxRows, with some care taken if maxRows happens to be gigantic
+        ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paos);
+
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+
+        for(Entry<PaoType, Collection<PaoIdentifier>> typeWithPaos : paosByType.asMap().entrySet()) {
+            PointIdentifier pointIdentifier = paoDefinitionDao.getPointIdentifierByDefaultName(typeWithPaos.getKey(), defaultPointName);
+
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = 
+                template.multimappedQuery(factory.create(pointIdentifier),
+                                          typeWithPaos.getValue(),
+                                          rphYukonRowMapper,
+                                          PaoUtils.getPaoIdFunction());
+            result.putAll(rows);
+        }
+
+        return result;
+    }
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByDefaultPointName(Iterable<PaoIdentifier> paos, final String defaultPointName,
+                                                                                                 final Date startDate, final Date stopDate, 
+                                                                                                 final Clusivity clusivity, 
+                                                                                                 final Order order) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append(  "rph.value, rph.quality, p.pointtype");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                        sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append(  "AND yp.PAObjectID").in(subList);
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+                        appendOrderByClause(sql, order);
+                        return sql;
+                    }
+                };
+
+            }
+        };
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = ArrayListMultimap.create(IterableUtils.guessSize(paos), 20); // 20 should be based on maxRows, with some care taken if maxRows happens to be gigantic
+        ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paos);
+
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
+
+        for (Entry<PaoType, Collection<PaoIdentifier>> typeWithPaos : paosByType.asMap().entrySet()) {
+            PointIdentifier pointIdentifier = paoDefinitionDao.getPointIdentifierByDefaultName(typeWithPaos.getKey(), defaultPointName);
+
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = 
+                template.multimappedQuery(factory.create(pointIdentifier),
+                                          typeWithPaos.getValue(),
+                                          rphYukonRowMapper,
+                                          PaoUtils.getPaoIdFunction());
+            result.putAll(rows);
+        }
+
+        return result;
+    }
+
     public int getMaxChangeId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(ChangeId)");
@@ -235,17 +529,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             SqlFragmentGeneratorFactory sqlGeneratorFactory,
             Iterable<? extends YukonPao> paos, Attribute attribute, int valuePerPaoHint,
             final boolean excludeDisabledDevices) {
-        // maps from the point identifier to the pao, it is possible, although
-        // unlikely, that two paos would have the same point
-        // for an attribute, thus this is a SetMultimap instead of a Map
-        SetMultimap<PaoPointIdentifier, PaoIdentifier> paoIdentifierLookup = HashMultimap.create(IterableUtils.guessSize(paos),
-                                                                                                 1);
-        
-        // maps from the pao to the values, this is the pao associated with the attribute
-        // not the pao associated with the value's point (they could be the same, but may not be)
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> result = ArrayListMultimap.create(IterableUtils.guessSize(paos),
-                                                                                               valuePerPaoHint);
-
         /*
          * The general idea here is that input PAOs will probably be of a mix of PaoTypes. Any of those
          * PaoTypes could use a different point for a given attribute, and in the case of mappable
@@ -306,7 +589,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
          * the "Analog 1045" row, there would be two PaoIdentifiers that would be returned from the lookup
          * map (because it is actually a Multimap) and we would associate the same rows with both. 
          */
-        
+
+        // maps from the point identifier to the pao, it is possible, although
+        // unlikely, that two paos would have the same point
+        // for an attribute, thus this is a SetMultimap instead of a Map
+        SetMultimap<PaoPointIdentifier, PaoIdentifier> paoIdentifierLookup =
+            HashMultimap.create(IterableUtils.guessSize(paos), 1);
+
         for (YukonPao pao : paos) {
             try {
                 // for non-mapped attributes, the following does not require a DB hit
@@ -318,29 +607,22 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 continue; //This device does not support the selected attribute.
             }
         }
-        
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(paoIdentifierLookup.keySet());
 
+        // maps from the pao to the values, this is the pao associated with the attribute
+        // not the pao associated with the value's point (they could be the same, but may not be)
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> result =
+            ArrayListMultimap.create(IterableUtils.guessSize(paos), valuePerPaoHint);
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = 
+            PaoUtils.mapPaoPointIdentifiers(paoIdentifierLookup.keySet());
+        
         for (final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()) {
             ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
 
-            final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
-
-            ParameterizedRowMapper<Map.Entry<Integer, PointValueQualityHolder>> parameterizedRowMapper = new ParameterizedRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
-                @Override
-                public Map.Entry<Integer, PointValueQualityHolder> mapRow(ResultSet rs, int rowNum)
-                        throws SQLException {
-                    int paObjectId = rs.getInt("PAObjectID");
-
-                    PointValueQualityHolder pointValueQualityHolder = liteRPHQualityRowMapper.mapRow(rs, 0);
-                    return Maps.immutableEntry(paObjectId, pointValueQualityHolder);
-                }
-            };
-
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = template.multimappedQuery(sqlGeneratorFactory.create(pointIdentifier),
-                                                                                                  paoPointIdentifiersMap.get(pointIdentifier),
-                                                                                                  parameterizedRowMapper,
-                                                                                                  PaoUtils.getPaoIdFunction());
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> rows =
+                template.multimappedQuery(sqlGeneratorFactory.create(pointIdentifier),
+                                          paoPointIdentifiersMap.get(pointIdentifier),
+                                          rphYukonRowMapper,
+                                          PaoUtils.getPaoIdFunction());
 
             for (PaoIdentifier pao : rows.keySet()) {
                 List<PointValueQualityHolder> list = rows.get(pao);
@@ -494,5 +776,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
+    }
+
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

@@ -3,7 +3,9 @@ package com.cannontech.common.mock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
@@ -14,6 +16,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -163,6 +166,29 @@ public class MockPointDao implements PointDao {
     
     @Override
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
+        return null;
+    }
+
+    @Override
+    public Map<PaoPointIdentifier, LitePoint> getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+        return null;
+    }
+
+    @Override
+    public Map<PaoIdentifier, LitePoint> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
+                                                                  String pointName) {
+        return null;
+    }
+
+    @Override
+    public Map<PaoIdentifier, LitePoint> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
+                                                                    String defaultName) {
+        return null;
+    }
+
+    @Override
+    public Map<PaoIdentifier, LitePoint> getLitePointsByTypeAndOffset(Iterable<PaoIdentifier> paos,
+                                                                      PointType type, int offset) {
         return null;
     }
 

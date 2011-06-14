@@ -39,7 +39,7 @@ public class UpdateAccountsRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(updateAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0,XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(updateAccountsRequest);
         
-        Boolean add = requestTemplate.evaluateAsBooleanWithDefault("//y:updateAccountsRequest/@addOnFail", true);
+        Boolean add = requestTemplate.evaluateAsBoolean("//y:updateAccountsRequest/@addOnFail", true);
         
         List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));

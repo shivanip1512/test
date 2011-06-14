@@ -160,4 +160,9 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

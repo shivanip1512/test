@@ -7,14 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -26,6 +26,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -39,6 +40,9 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.util.NaturalOrderComparator;
@@ -49,8 +53,8 @@ import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao, InitializingBean {
     private DBPersistentDao dbPersistentDao;
-    private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private MeterRowMapper meterRowMapper;
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
@@ -62,12 +66,10 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
         retrieveOneByIdSql = meterRowMapper.getSql() + "WHERE ypo.paObjectId = ? ";
         retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "WHERE UPPER(DeviceMeterGroup.MeterNumber) = UPPER(?) ";
         retrieveOneByPaoNameSql = meterRowMapper.getSql() + "WHERE UPPER(ypo.PaoName) = UPPER(?) ";
         retrieveOneByPhysicalAddressSql = meterRowMapper.getSql() + "WHERE DeviceCarrierSettings.Address = ? ";
-        
     }
     
     public void delete(Meter object) {
@@ -107,7 +109,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public Meter getForId(Integer id) {
         try {
-            return simpleJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
+            return yukonJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unknown meter id " + id);
         }
@@ -123,7 +125,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public Meter getForMeterNumber(String meterNumber) {
         try {
-            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByMeterNumberSql,
+            Meter meter = yukonJdbcTemplate.queryForObject(retrieveOneByMeterNumberSql,
                                                             meterRowMapper,
                                                             meterNumber);
             return meter;
@@ -134,7 +136,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     @Override
     public Meter getForPhysicalAddress(String address) {
         try {
-            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByPhysicalAddressSql,
+            Meter meter = yukonJdbcTemplate.queryForObject(retrieveOneByPhysicalAddressSql,
                                                             meterRowMapper,
                                                             address);
             return meter;
@@ -143,15 +145,52 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         }
     }
 
+    @Override
     public Meter getForPaoName(String paoName) {
         try {
-            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByPaoNameSql,
+            Meter meter = yukonJdbcTemplate.queryForObject(retrieveOneByPaoNameSql,
                                                             meterRowMapper,
                                                             paoName);
             return meter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown pao name " + paoName);
         }
+    }
+    
+    @Override
+    public Map<PaoIdentifier, Meter> getPaoIdMeterMap(Iterable<PaoIdentifier> paos) {
+        
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(meterRowMapper.getSql());
+                sql.append("WHERE ypo.PAObjectId").in(subList);
+                return sql;
+            }
+        };
+        
+        Function<PaoIdentifier, Integer> transform = new Function<PaoIdentifier, Integer>() {
+            @Override
+            public Integer apply(PaoIdentifier pao) {
+                return pao.getPaoId();
+            }
+        };
+        
+        YukonRowMapper<Map.Entry<Integer, Meter>> mappingRowMapper =
+            new YukonRowMapper<Map.Entry<Integer, Meter>>() {
+                @Override
+                public Entry<Integer, Meter> mapRow(YukonResultSet rs)
+                        throws SQLException {
+                    Meter meter = meterRowMapper.mapRow(rs.getResultSet(), 0);
+                    return Maps.immutableEntry(meter.getDeviceId(), meter);
+                }
+        };
+
+        Map<PaoIdentifier, Meter> meterMap =  template.mappedQuery(sqlGenerator, paos, mappingRowMapper, transform);
+        
+        return meterMap;
     }
 
     public void save(Meter object) {
@@ -222,7 +261,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public <I extends YukonPao> List<Meter> getMetersForPaoIdentifiers(Iterable<I> identifiers) {
         
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
                
                SqlFragmentGenerator<I> sqlGenerator = new SqlFragmentGenerator<I>() {
                    public SqlFragmentSource generate(List<I> subList) {
@@ -250,7 +289,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     		return Collections.emptyList();
     	}
     	
-    	ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
+    	ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
     	
     	List<Meter> meters = template.query(new SqlFragmentGenerator<String>() {
     		public SqlFragmentSource generate(List<String> subList) {
@@ -343,30 +382,29 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     }
 
+    @Autowired
     public void setMeterRowMapper(MeterRowMapper meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
 
-    public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-
-    @Required
+    @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
     	this.rolePropertyDao = rolePropertyDao;
     }
     
-    @Required
+    @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
     }
 
-    @Required
+    @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+        jdbcOps = yukonJdbcTemplate.getJdbcOperations();
     }
 }

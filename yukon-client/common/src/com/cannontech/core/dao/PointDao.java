@@ -2,7 +2,9 @@ package com.cannontech.core.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -12,6 +14,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointType;
 
 public interface PointDao {
     public LitePoint getLitePoint(int pointId);
@@ -80,6 +83,18 @@ public interface PointDao {
      * Delegates to getPointIDByDeviceID_Offset_PointType.
      */
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier);
+
+    public Map<PaoPointIdentifier, LitePoint>
+        getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers);
+
+    public Map<PaoIdentifier, LitePoint> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
+                                                                  String pointName);
+
+    public Map<PaoIdentifier, LitePoint> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
+                                                                    String defaultName);
+
+    public Map<PaoIdentifier, LitePoint> getLitePointsByTypeAndOffset(Iterable<PaoIdentifier> paos,
+                                                                      PointType type, int offset);
 
     /**
      * Optimized lookup of just the point id.

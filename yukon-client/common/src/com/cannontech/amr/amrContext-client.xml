@@ -39,16 +39,8 @@
         <property name="connection" ref="macsConnection" />
     </bean>
 
-    <bean id="meterDao"
-        class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl">
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-        <property name="meterRowMapper" ref="meterRowMapper" />
-        <property name="paoDao" ref="paoDao" />
-        <property name="rolePropertyDao" ref="rolePropertyDao" />
-        <property name="jdbcOps" ref="jdbcTemplate" />
-    </bean>
-    
+    <bean id="meterDao" class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl"/>
+
     <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterRowMapper" ref="meterRowMapper" />

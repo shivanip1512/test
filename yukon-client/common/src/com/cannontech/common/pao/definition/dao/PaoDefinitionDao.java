@@ -153,5 +153,7 @@ public interface PaoDefinitionDao {
     public Set<PaoDefinition> getCreatablePaoDefinitions();
 
     public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType);
+
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName);
     
 }

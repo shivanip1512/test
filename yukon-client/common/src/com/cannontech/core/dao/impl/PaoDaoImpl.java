@@ -40,6 +40,8 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -106,7 +108,40 @@ public final class PaoDaoImpl implements PaoDao {
             throw new NotFoundException("A PAObject with id " + paoID + " cannot be found.");
         }
     }
-    
+
+    @Override
+    public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(litePaoSql);
+                sql.append("WHERE y.PAObjectId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<PaoIdentifier, Integer> transform = new Function<PaoIdentifier, Integer>() {
+            @Override
+            public Integer apply(PaoIdentifier pao) {
+                return pao.getPaoId();
+            }
+        };
+
+        YukonRowMapper<Map.Entry<Integer, LiteYukonPAObject>> mappingRowMapper =
+            new YukonRowMapper<Map.Entry<Integer, LiteYukonPAObject>>() {
+                @Override
+                public Entry<Integer, LiteYukonPAObject> mapRow(YukonResultSet rs)
+                        throws SQLException {
+                    LiteYukonPAObject pao = litePaoRowMapper.mapRow(rs.getResultSet(), 0);
+                    return Maps.immutableEntry(pao.getPaoIdentifier().getPaoId(), pao);
+                }
+            };
+
+        return template.mappedQuery(sqlGenerator, paos, mappingRowMapper, transform);
+    }
+
     /*
      * (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(Sring, int, int, int)
@@ -492,7 +527,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
+    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds) {
     	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcOperations);
 

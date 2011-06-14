@@ -11,6 +11,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -55,6 +56,18 @@ public interface RawPointHistoryDao {
         public boolean isEndInclusive() {
             return endInclusive;
         }
+
+        public static Clusivity getClusivity(boolean startInclusive, boolean endInclusive) {
+            if (startInclusive && !endInclusive) {
+                return INCLUSIVE_EXCLUSIVE;
+            } else if (!startInclusive && endInclusive) {
+                return EXCLUSIVE_INCLUSIVE;
+            } else if (startInclusive && endInclusive) {
+                return INCLUSIVE_INCLUSIVE;
+            } else {
+                return EXCLUSIVE_EXCLUSIVE;
+            }
+        }
     }
 
     /**
@@ -78,7 +91,22 @@ public interface RawPointHistoryDao {
      * @return List of values for the point
      */
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
-    
+
+    /**
+     * Method to get the point values for a list of points and time period
+     * @param pointIds - List of point ids
+     * @param startDate - Start time of period (this is always the first argument in SQL, either >
+     *            or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or
+     *            <=)
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and change id
+     * @return List of values for the points
+     */
+    public List<PointValueHolder> getMultiplePointData(List<Integer> pointIds, Date startDate,
+                                                       Date stopDate, Clusivity clusivity,
+                                                       Order order);
+
     /**
      * Method to get a list of point values for a given point and time period, 
      * but only returning up to maxRows rows. 
@@ -128,6 +156,47 @@ public interface RawPointHistoryDao {
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos, String pointName, Date startDate, Date stopDate, int maxRows, Clusivity clusivity, Order order);
+
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos,
+                                                                                   String pointName,
+                                                                                   Date startDate,
+                                                                                   Date stopDate,
+                                                                                   Clusivity clusivity,
+                                                                                   Order order);
+
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByTypeAndOffset(Iterable<PaoIdentifier> paos,
+                                                                                              PointType pointType,
+                                                                                              int offset,
+                                                                                              Date startDate,
+                                                                                              Date stopDate,
+                                                                                              int maxRows,
+                                                                                              Clusivity clusivity,
+                                                                                              Order order);
+
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByTypeAndOffset(Iterable<PaoIdentifier> paos,
+                                                                                       PointType pointType,
+                                                                                       int offset,
+                                                                                       Date startDate,
+                                                                                       Date stopDate,
+                                                                                       Clusivity clusivity,
+                                                                                       Order order);
+
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByDefaultPointName(Iterable<PaoIdentifier> paos,
+                                                                                                 String defaultPointName,
+                                                                                                 Date startDate,
+                                                                                                 Date stopDate,
+                                                                                                 int maxRows,
+                                                                                                 Clusivity clusivity,
+                                                                                                 Order order);
+
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByDefaultPointName(Iterable<PaoIdentifier> paos,
+                                                                                          String defaultPointName,
+                                                                                          Date startDate,
+                                                                                          Date stopDate,
+                                                                                          Clusivity clusivity,
+                                                                                          Order order);
+
     /**
      * Equivalent to calling
      *   getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, false, true);

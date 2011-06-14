@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" 
+elementFormDefault="qualified" version="1.0"
+targetNamespace="http://yukon.cannontech.com/api">
+	
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
+    
+    <xsd:complexType name="PaoCollection">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="deviceGroup" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:attribute name="value" use="required" type="xsd:string"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="paoName" maxOccurs="unbounded"> 
+                <xsd:complexType>
+                    <xsd:attribute name="value" use="required" type="xsd:string"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="meterNumber" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:attribute name="value" use="required" type="xsd:string"/>
+                </xsd:complexType>
+            </xsd:element>        
+            <xsd:element name="carrierAddress" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:attribute name="value" use="required" type="xsd:unsignedInt"/>
+                </xsd:complexType>
+            </xsd:element>        
+            <xsd:element name="paoId" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:attribute name="value" use="required" type="xsd:int"/>
+                </xsd:complexType>
+            </xsd:element>        
+        </xsd:choice>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="PointType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Status"/>
+            <xsd:enumeration value="Analog"/>
+            <xsd:enumeration value="PulseAccumulator"/>
+            <xsd:enumeration value="DemandAccumulator"/>
+            <xsd:enumeration value="CalcAnalog"/>
+            <xsd:enumeration value="StatusOutput"/>
+            <xsd:enumeration value="AnalogOutput"/>
+            <xsd:enumeration value="System"/>
+            <xsd:enumeration value="CalcStatus"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+    <xsd:simpleType name="Order">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ascending"/>
+            <xsd:enumeration value="descending"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+  
+    <xsd:complexType name="ResponseDescriptors">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="meterNumber" type="yukon:emptyElement"/>
+            <xsd:element name="carrierAddress" type="yukon:emptyElement"/>
+            <xsd:element name="name" type="yukon:emptyElement"/>
+            <xsd:element name="enabled" type="yukon:emptyElement"/>
+            <xsd:element name="paoId" type="yukon:emptyElement"/>
+            <xsd:element name="paoType" type="yukon:emptyElement"/>
+            
+            <xsd:element name="pointType" type="yukon:emptyElement"/>
+            <xsd:element name="uofm" type="yukon:emptyElement"/>
+            <xsd:element name="pointName" type="yukon:emptyElement"/>
+            
+            <xsd:element name="quality" type="yukon:emptyElement"/>
+            <xsd:element name="statusText" type="yukon:emptyElement"/>
+        </xsd:choice>
+        <xsd:attribute name="flatten" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  
+    <xsd:complexType name="ValueProducer">
+        <xsd:attribute name="label" use="optional" type="xsd:Name"/>
+    </xsd:complexType>
+  
+    <xsd:complexType name="ValueDescription">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="attribute">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" use="required" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="pointName">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" use="required" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="defaultPointName">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" use="required" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="typeAndOffset">
+                    <xsd:complexType>
+                        <xsd:attribute name="type" use="required" type="yukon:PointType"/>
+                        <xsd:attribute name="offset" use="required" type="xsd:unsignedShort"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice maxOccurs="unbounded">
+                <xsd:element name="before">
+                    <xsd:complexType><xsd:complexContent>
+                    <xsd:extension base="yukon:ValueProducer">
+                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- now if not specified -->
+                        <xsd:attribute name="index" type="xsd:positiveInteger" default="1"/>
+                        <xsd:attribute name="inclusive" type="xsd:boolean" default="true"/>
+                    </xsd:extension>
+                    </xsd:complexContent></xsd:complexType>
+                </xsd:element>
+                <xsd:element name="after">
+                    <xsd:complexType><xsd:complexContent>
+                    <xsd:extension base="yukon:ValueProducer">
+                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- beginning of time if not specified -->
+                        <xsd:attribute name="index" type="xsd:positiveInteger" default="1"/>
+                        <xsd:attribute name="inclusive" type="xsd:boolean" default="false"/>
+                    </xsd:extension>
+                    </xsd:complexContent></xsd:complexType>
+                </xsd:element>
+                <xsd:element name="allBefore">
+                    <xsd:complexType><xsd:complexContent>
+                    <xsd:extension base="yukon:ValueProducer">
+                        <xsd:attribute name="date" type="xsd:dateTime"/>
+                        <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
+                        <xsd:attribute name="inclusive" type="xsd:boolean" default="true"/>
+                        <xsd:attribute name="order" type="yukon:Order" default="descending"/>
+                    </xsd:extension>
+                    </xsd:complexContent></xsd:complexType>
+                </xsd:element>
+                <xsd:element name="allAfter">
+                    <xsd:complexType><xsd:complexContent>
+                    <xsd:extension base="yukon:ValueProducer">
+                        <xsd:attribute name="date" type="xsd:dateTime"/>
+                        <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
+                        <xsd:attribute name="inclusive" type="xsd:boolean" default="false"/>
+                        <xsd:attribute name="order" type="yukon:Order" default="ascending"/>
+                    </xsd:extension>
+                    </xsd:complexContent></xsd:complexType>
+                </xsd:element>
+                <xsd:element name="allBetween">
+                    <xsd:complexType><xsd:complexContent>
+                    <xsd:extension base="yukon:ValueProducer">
+                        <xsd:attribute name="from" type="xsd:dateTime"/>
+                        <xsd:attribute name="fromInclusive" type="xsd:boolean" default="false"/>
+                        <xsd:attribute name="to" type="xsd:dateTime"/>
+                        <xsd:attribute name="toInclusive" type="xsd:boolean" default="true"/>
+                        <xsd:attribute name="order" type="yukon:Order" default="ascending"/>
+                        <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
+                    </xsd:extension>
+                    </xsd:complexContent></xsd:complexType>
+                </xsd:element>
+                <xsd:element name="all" type="yukon:ValueProducer"> <!-- alias for allAfter with no parameters-->
+                </xsd:element>
+                <xsd:element name="latest" type="yukon:ValueProducer"> <!-- alias for before with no parameters -->
+                </xsd:element>
+                <xsd:element name="snapshot" type="yukon:ValueProducer"> <!-- latest value from DynamicDataSource -->
+                </xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+  
+    <xsd:complexType name="ArchivedValuesRequest">
+      <xsd:complexContent>
+        <xsd:extension base="yukon:YukonMessage">
+          <xsd:sequence maxOccurs="1" minOccurs="1">
+            <xsd:element name="paos" type="yukon:PaoCollection"/>
+            <xsd:element name="point" type="yukon:ValueDescription" maxOccurs="unbounded"/>
+            <xsd:element name="response" type="yukon:ResponseDescriptors" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="archivedValuesRequest" type="yukon:ArchivedValuesRequest"/>
+
+</xsd:schema>

@@ -134,24 +134,12 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws XPathException
      */
     public Boolean evaluateAsBoolean(String expression) throws XPathException {
-        //XPathConstants.BOOLEAN looks for presence/absence of element,
-        //so retrieve the NODE and its text-value
-        Node result = evaluateAsNode(expression);
-        return result == null ? null : Boolean.valueOf(result.getTextContent());
+        return evaluateAsBoolean(expression, null);
     }
     
-    /**
-     * This method returns a Boolean(false) if the tag isn't there, otherwise a Boolean
-     * object of the tag contents.
-     * @param expression
-     * @return
-     * @throws XPathException
-     */
-    public Boolean evaluateAsBooleanWithDefault(String expression, boolean bool) throws XPathException {
-        //XPathConstants.BOOLEAN looks for presence/absence of element,
-        //so retrieve the NODE and its text-value
+    public Boolean evaluateAsBoolean(String expression, Boolean defaultValue) {
         Node result = evaluateAsNode(expression);
-        return result == null ? new Boolean(bool) : Boolean.valueOf(result.getTextContent());        
+        return result == null ? defaultValue : Boolean.valueOf(result.getTextContent());
     }
 
     public Node evaluateAsNode(String expression) throws XPathException {
@@ -214,9 +202,12 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws XPathException
      */
     public Integer evaluateAsInt(String expression) throws XPathException {
-        
+        return evaluateAsInt(expression, null);
+    }
+    
+    public Integer evaluateAsInt(String expression, Integer defaultInt) throws XPathException {
         Double num = evaluateNumber(expression);
-        return num == null ? null : num.intValue();
+        return num == null ? defaultInt : num.intValue();
     }
     
     /**
@@ -288,20 +279,23 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @return
      * @throws XPathException
      */
-    public Date evaluateAsDate(String expression) throws XPathException {
+    public Date evaluateAsDate(String expression, Date defaultDate) throws XPathException {
         
-        String dateStr;
+        String dateStr = null;
+        Date date = null;
         try {
             dateStr = evaluateAsString(expression);
-        } catch (XPathException e) {
-            return null;
-        }
+        } catch (XPathException e) {}
         
         if (dateStr != null) {
-            return Iso8601DateUtil.parseIso8601Date(dateStr.trim());
+            date = Iso8601DateUtil.parseIso8601Date(dateStr.trim());
         }
-        
-        return null;
+    
+        return date==null ? defaultDate : date;
+    }
+    
+    public Date evaluateAsDate(String expression) throws XPathException {
+        return evaluateAsDate(expression, null);
     }
     
     public Object evaluateAsObject(String expression, NodeMapper nodeMapper) throws XPathException {

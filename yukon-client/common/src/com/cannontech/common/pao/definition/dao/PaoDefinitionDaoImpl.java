@@ -877,4 +877,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
         this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
+
+    @Override
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) {
+        Set<PointTemplate> templates = getAllPointTemplates(type);
+        for (PointTemplate template : templates) {
+            if (template.getName().equals(defaultPointName)) {
+                return template.getPointIdentifier();
+            }
+        }
+
+        return null;
+    }
 }

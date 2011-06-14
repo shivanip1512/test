@@ -126,4 +126,8 @@ public class PaoUtils {
     public static Function<YukonPao, Integer> getYukonPaoToPaoIdFunction() {
         return yukonPaoToPaoIdFunction;
     }
+    
+    public static Function<YukonPao, PaoIdentifier> getYukonPaoToPaoIdentifierFunction() {
+        return yukonPaoToPaoIdentifierFunction;
+    }
 }

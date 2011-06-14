@@ -23,7 +23,12 @@ public interface PaoDao {
      * @return
      */
     public LiteYukonPAObject getLiteYukonPAO(int paoID);
-    
+
+    /**
+     * Get a map of LiteYukonPAObjects by their PaoIdentifier.
+     */
+    public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos);
+
     /**
      * Will find a device based on the four parameters that make up its unique key.
      * @param deviceName
@@ -137,15 +142,12 @@ public interface PaoDao {
     
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
     
-    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
+    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds);
     
     public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId);
     
     /**
-     * Returns true if the name is availabe for the pao type's pao class and pao category
-     * @param paoName
-     * @param paoType
-     * @return
+     * Returns true if the name is available for the PAO type's PAO class and PAO category
      */
-    boolean isNameAvailable(String paoName, PaoType paoType);
+    public boolean isNameAvailable(String paoName, PaoType paoType);
 }

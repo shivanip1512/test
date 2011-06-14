@@ -17,6 +17,20 @@
     <xsd:simpleType name="SerialNumber" >
         <xsd:restriction base="xsd:string" />
     </xsd:simpleType>
-    
-	
+
+    <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord" />
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="unbounded" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+            <xsd:restriction base="xsd:anyType" />
+        </xsd:complexContent>
+    </xsd:complexType>
 </xsd:schema>
