@@ -84,10 +84,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         //Serial Number is unique, using that as the PaoName
         YukonPaObjectFields yukonPaObjectFields = new YukonPaObjectFields(hardwareDto.getSerialNumber());
         
-        UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields();
-        tStatFields.setInstallCode(hardwareDto.getInstallCode());
-        tStatFields.setMacAddress(hardwareDto.getMacAddress());
-        
+        UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields(hardwareDto.getInstallCode(),
+                                                                        hardwareDto.getMacAddress(),
+                                                                        1/*Constant place holder until Firmware change*/);
+
         //Build Template and call Pao Creation Service
         ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
         paoFields.put(UtilityProZigbeeFields.class, tStatFields);

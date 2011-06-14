@@ -1,6 +1,7 @@
 package com.cannontech.thirdparty.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
@@ -12,8 +13,10 @@ import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
+import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.google.common.collect.Lists;
@@ -24,6 +27,11 @@ public class DigiXMLBuilder {
     private SepDeviceClassDao sepDeviceClassDao;
     private LMGroupDao lmGroupDao;
     private GatewayDeviceDao gatewayDeviceDao;
+    private ZigbeeDeviceDao zigbeeDeviceDao;
+    
+    private static int sourceEndPointId = 0x5E;
+    private static int clusterId = 0x0701;
+    private static int serverClient = 1;
     
     public String buildInstallStatMessage(ZigbeeDevice gateway, ZigbeeThermostat thermostat) {
         String gatewayMacAddress = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
@@ -33,6 +41,13 @@ public class DigiXMLBuilder {
         
         int crc = zigbeeCRC16(installCode);
         String hexCrc = Integer.toHexString(crc);
+        
+        //Pad with leading zeros
+        if (hexCrc.length() < 4) {
+            for (int i = 0; i < 4-hexCrc.length();i++) {
+                hexCrc = "0" + hexCrc;
+            }
+        }
         
         String xml = "<sci_request version=\"1.0\">" +
                         "<send_message>" +
@@ -252,6 +267,100 @@ public class DigiXMLBuilder {
         return xml;
     }
     
+    public String buildWriteLMAddressing(ZigbeeDevice gateway, ZigbeeDevice endPoint, Map<DRLCClusterAttribute,Integer> attributes) {
+        
+        String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+                
+        //Find based on the endPoint Device
+        ZigbeeThermostat tstat = zigbeeDeviceDao.getZigbeeUtilPro(endPoint.getZigbeeDeviceId());
+        
+        String xml = 
+           "<sci_request version=\"1.0\">"
+        + "  <send_message>"
+        + "  <targets>"
+        + "    <device id=\"" + gatewayMac + "\"/>"
+        + "  </targets>"
+        + "  <rci_request version=\"1.1\">"
+        + "  <do_command target=\"RPC_request\">"
+        
+        /* Start Command */
+        + "  <write_attributes>"
+        + "    <destination_address type=\"MAC\">" + tstat.getMacAddress() + "</destination_address>"
+        + "    <destination_endpoint_id>" + tstat.getDestinationEndPointId() + "</destination_endpoint_id>"
+        + "    <source_endpoint_id>" +sourceEndPointId + "</source_endpoint_id>"
+        + "    <cluster_id>" + clusterId + "</cluster_id>"
+        + "    <server_or_client>" + serverClient + "</server_or_client>"
+        + "    <record_list type=\"list\">";
+        
+        for (DRLCClusterAttribute attribute : attributes.keySet()) {
+            int value = attributes.get(attribute);
+            xml += "      <item type=\"WriteAttributeRecord\">"
+                 +   "        <attribute_id>" + attribute.getId() + "</attribute_id>"
+                 +   "        <attribute_type>" + attribute.getType() + "</attribute_type>"
+                 +   "        <value type=\"int\">" + value + "</value>"
+                 +   "      </item>";
+        }
+        
+        xml += 
+           "    </record_list>"
+        + "  </write_attributes>"
+        /* End Command Message */
+
+        + "</do_command>"
+        + "</rci_request>"
+        + "</send_message>"
+        + "</sci_request>";
+        
+        return xml;
+    }
+    
+    public String buildReadLMAddressingForEndPoint(ZigbeeDevice gateway, ZigbeeDevice endPoint) {       
+        //Find based on the endPoint Device
+        ZigbeeThermostat tstat = zigbeeDeviceDao.getZigbeeUtilPro(endPoint.getZigbeeDeviceId());
+
+        String gatewayMac = convertMacAddresstoDigi(gateway.getZigbeeMacAddress());
+        
+        String xml = 
+           "<sci_request version=\"1.0\">"
+        + "  <send_message>"
+        + "  <targets>"
+        + "    <device id=\"" + gatewayMac + "\"/>"
+        + "  </targets>"
+        + "  <rci_request version=\"1.1\">"
+        + "  <do_command target=\"RPC_request\">"
+        
+        /* Start Command */
+        +   "<read_attributes synchronous=\"true\">" 
+        + "  <destination_address type=\"mac\">" + tstat.getMacAddress() + "</destination_address>"
+        + "  <destination_endpoint_id>" + tstat.getDestinationEndPointId() + "</destination_endpoint_id>"
+        + "  <source_endpoint_id>" + sourceEndPointId + "</source_endpoint_id>"
+        + "  <cluster_id>" + clusterId + "</cluster_id>"
+        + "  <server_or_client>" + serverClient + "</server_or_client>"
+        + "  <record_list type=\"list\">"
+        + "    <item type=\"ReadAttributeRecord\">"
+        + "      <attribute_id>" + DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP.getId() + "</attribute_id>"
+        + "    </item>"
+        + "    <item type=\"ReadAttributeRecord\">"
+        + "      <attribute_id>" + DRLCClusterAttribute.START_RANDOMIZE_MINUTES.getId() + "</attribute_id>"
+        + "    </item>"
+        + "    <item type=\"ReadAttributeRecord\">"
+        + "      <attribute_id>" + DRLCClusterAttribute.STOP_RANDOMIZE_MINTES.getId() + "</attribute_id>"
+        + "    </item>"
+        + "    <item type=\"ReadAttributeRecord\">"
+        + "      <attribute_id>" + DRLCClusterAttribute.DEVICE_CLASS.getId() + "</attribute_id>"
+        + "    </item>"
+        + "  </record_list>"
+        + "</read_attributes>"
+        /* End Command Message */
+        
+        + "</do_command>"
+        + "</rci_request>"
+        + "</send_message>"
+        + "</sci_request>";
+        
+        return xml;
+    }
+    
     /**
      * Take the assigned classes and build up the 16 byte Device Class.
      * 
@@ -312,6 +421,11 @@ public class DigiXMLBuilder {
         crc ^= 0xffff;//Remove for regular CRC
 
         return crc;
+    }
+    
+    @Autowired
+    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
+        this.zigbeeDeviceDao = zigbeeDeviceDao;
     }
     
     @Autowired

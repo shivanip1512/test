@@ -23,6 +23,7 @@ import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
+    
     public static YukonRowMapper<DigiGateway> digiGatewayRowMapper = new YukonRowMapper<DigiGateway>() {
         @Override
         public DigiGateway mapRow(YukonResultSet rs) throws SQLException {
@@ -78,6 +79,24 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     public DigiGateway getDigiGateway(int deviceId) {
+        SqlStatementBuilder sql = buildDigiGatewayStatement();
+        sql.append("WHERE DG.DeviceId").eq(deviceId);
+        
+        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
+
+        return digiGateway;
+    }
+    
+    public DigiGateway getDigiGateway(String macAddress) {
+        SqlStatementBuilder sql = buildDigiGatewayStatement();
+        sql.append("WHERE ZG.MacAddress").eq(macAddress);
+        
+        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
+
+        return digiGateway;
+    }
+    
+    private SqlStatementBuilder buildDigiGatewayStatement() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT DG.DeviceId,DG.DigiId,ZG.FirmwareVersion,");
@@ -87,11 +106,8 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "JOIN YukonPAObject YPO ON DG.DeviceId = YPO.PAObjectID");
         sql.append(  "JOIN InventoryBase IB ON DG.DeviceId = IB.DeviceID");
         sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
-        sql.append("WHERE DG.DeviceId").eq(deviceId);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
-
-        return digiGateway;
+        return sql;
     }
     
     @Override
@@ -193,6 +209,19 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     }
     
     @Override
+    public List<ZigbeeDevice> getAssignedZigbeeDevices(int gatewayId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT ZEP.DeviceId,ZEP.MacAddress,YPO.Type");
+        sql.append("FROM ZBEndPoint ZEP");
+        sql.append(  "JOIN YukonPAObject YPO on ZEP.DeviceId = YPO.PaObjectId");
+        sql.append(  "JOIN ZBGatewayToDeviceMapping ZBDM on ZBDM.DeviceId = ZEP.DeviceId");
+        sql.append("WHERE ZBDM.GatewayId").eq(gatewayId);
+        
+        return yukonJdbcTemplate.query(sql, zigbeeDeviceRowMapper);
+    }
+    
+    @Override
     public void updateDeviceToGatewayAssignment(int deviceId, Integer gatewayId) {
     	unassignDeviceFromGateway(deviceId);
     	
@@ -264,6 +293,21 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
         return yukonJdbcTemplate.query(sql,zigbeeDeviceRowMapper); 
+    }
+    
+    @Override
+    public int getLMGroupIdByDeviceId(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT LMHCG.LMGroupId");
+        sql.append("FROM LMHardwareControlGroup LMHCG");
+        sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
+        sql.append(  "JOIN ZBEndPoint ZEP on ZEP.DeviceId = IB.DeviceId");
+        sql.append(  "JOIN YukonPaObject YPO on ZEP.DeviceId = YPO.PaObjectId");
+        sql.append("WHERE YPO.PaObjectId").eq(deviceId);
+        sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
+        
+        return yukonJdbcTemplate.queryForInt(sql);
     }
     
     @Autowired

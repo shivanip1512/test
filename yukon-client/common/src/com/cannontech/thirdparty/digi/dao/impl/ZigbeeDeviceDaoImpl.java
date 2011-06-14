@@ -37,6 +37,8 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
             zigbeeThermostat.setMacAddress(rs.getString("MacAddress"));
             zigbeeThermostat.setName(rs.getString("ManufacturerSerialNumber"));
             zigbeeThermostat.setGatewayId(rs.getNullableInt("GatewayId"));
+            zigbeeThermostat.setNodeId(rs.getNullableInt("NodeId"));
+            zigbeeThermostat.setDestinationEndPointId(rs.getInt("DestinationEndPointId"));
             
             return zigbeeThermostat;
         }
@@ -56,16 +58,27 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     @Override
-    public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
+    public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZE.DeviceId,ZE.InstallCode,ZE.MacAddress,");
-        sql.append(           "YPO.Type,HB.ManufacturerSerialNumber, DM.GatewayId");
-        sql.append("FROM ZBEndPoint ZE");
-        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
-        sql.append(  "JOIN InventoryBase IB ON ZE.DeviceId = IB.DeviceID");
-        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
-        sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
+        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type");
+        sql.append("FROM LMHardwareControlGroup LMHCG");
+        sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
+        sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");
+        sql.append(  "JOIN ZBEndPoint ZE on ZE.DeviceId = ZB.DeviceId");
+        sql.append(  "JOIN YukonPaObject YPO on ZE.DeviceId = YPO.PaObjectId");
+        sql.append("WHERE LMHCG.LMGroupId").eq(groupId);
+        sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
+        
+        List<ZigbeeDevice> zigbeeDevice = yukonJdbcTemplate.query(sql, GatewayDeviceDaoImpl.zigbeeDeviceRowMapper);
+        
+        return zigbeeDevice;
+    }
+    
+    @Override
+    public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
+        SqlStatementBuilder sql = buildZigbeeUtilProStatement();
+        
         sql.append("WHERE ZE.DeviceId").eq(deviceId);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
@@ -74,15 +87,8 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     public ZigbeeThermostat getZigbeeUtilProByMACAddress(String macAddress) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = buildZigbeeUtilProStatement();        
         
-        sql.append("SELECT ZE.DeviceId,ZE.InstallCode,ZE.MacAddress,");
-        sql.append(           "YPO.Type,HB.ManufacturerSerialNumber, DM.GatewayId");
-        sql.append("FROM ZBEndPoint ZE");
-        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
-        sql.append(  "JOIN InventoryBase IB ON ZE.DeviceId = IB.DeviceID");
-        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
-        sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
         sql.append("WHERE ZE.MacAddress").eq(macAddress);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
@@ -90,15 +96,32 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         return tstat; 
     }
     
+    private SqlStatementBuilder buildZigbeeUtilProStatement() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT ZE.DeviceId,ZE.InstallCode,ZE.MacAddress,ZE.NodeId,ZE.DestinationEndPointId,");
+        sql.append(           "YPO.Type,HB.ManufacturerSerialNumber, DM.GatewayId");
+        sql.append("FROM ZBEndPoint ZE");
+        sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
+        sql.append(  "JOIN InventoryBase IB ON ZE.DeviceId = IB.DeviceID");
+        sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
+        sql.append(  "LEFT JOIN ZBGatewayToDeviceMapping DM ON DM.DeviceId = ZE.DeviceID");
+        
+        return sql;
+    }
+    
     @Override
     @Transactional
     public void createZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("INSERT INTO ZBEndPoint (DeviceId,InstallCode,MacAddress)");
+        sql.append("INSERT INTO ZBEndPoint (DeviceId,InstallCode,MacAddress,NodeId,DestinationEndPointId)");
         sql.values(zigbeeThermostat.getPaoIdentifier().getPaoId(),
                       zigbeeThermostat.getInstallCode().toUpperCase(),
-                      zigbeeThermostat.getMacAddress().toUpperCase());
+                      zigbeeThermostat.getMacAddress().toUpperCase(),
+                      zigbeeThermostat.getNodeId(),
+                      zigbeeThermostat.getDestinationEndPointId()
+                      );
         
         yukonJdbcTemplate.update(sql);
     }
@@ -109,7 +132,9 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         
         sql.append("UPDATE ZBEndPoint");
         sql.append("SET InstallCode").eq(zigbeeThermostat.getInstallCode().toUpperCase()).append(",");
-        sql.append("MacAddress").eq(zigbeeThermostat.getMacAddress().toUpperCase());
+        sql.append("MacAddress").eq(zigbeeThermostat.getMacAddress().toUpperCase()).append(",");
+        sql.append("NodeId").eq(zigbeeThermostat.getNodeId()).append(",");
+        sql.append("DestinationEndPointId").eq(zigbeeThermostat.getDestinationEndPointId());
         sql.append("WHERE DeviceId").eq(zigbeeThermostat.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);

@@ -23,7 +23,7 @@
 
     <bean id="gatewayDeviceDao" class="com.cannontech.thirdparty.digi.dao.impl.GatewayDeviceDaoImpl"/>
     <bean id="zigbeeDeviceDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeDeviceDaoImpl"/>
-    <bean id="digiControlEventDao" class="com.cannontech.thirdparty.digi.dao.impl.DigiControlEventDao"/>
+    <bean id="zigbeeControlEventDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDao"/>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
     <constructor-arg>
@@ -39,5 +39,7 @@
     </bean>
     
     <bean id="digiErrorHandler" class="com.cannontech.thirdparty.digi.DigiErrorHandler"/>
+    
+    <bean id="zigbeeServiceHelper" class="com.cannontech.thirdparty.service.ZigbeeServiceHelper"/>
 </beans>
 

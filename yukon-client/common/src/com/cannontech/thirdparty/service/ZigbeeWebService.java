@@ -1,6 +1,7 @@
 package com.cannontech.thirdparty.service;
 
 import java.net.SocketTimeoutException;
+import java.util.Map;
 
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
@@ -8,12 +9,17 @@ import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
+import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 
 public interface ZigbeeWebService {
 
-	public String getAllDevices();
+    public void refreshAllGateways();
+    
+	public void refreshGateway(ZigbeeDevice gateway);
 	
+	public void refreshDeviceStatuses(ZigbeeDevice device);
+
 	public void installGateway(int gatewayId) throws GatewayCommissionException;
 	
 	public void removeGateway(int gatewayId);
@@ -22,6 +28,8 @@ public interface ZigbeeWebService {
 	
 	public void uninstallStat(int gatewayId, int deviceId);
 
+	public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes);
+	
 	/**
 	 * Sends a text message to the gateway. 
      *  
@@ -32,12 +40,13 @@ public interface ZigbeeWebService {
 	public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
 	
 	/**
-	 * Sends SEP Control message.
+	 * Sends Control Message.
 	 * 
+	 * @param eventId
 	 * @param controlMessage
 	 * @return
 	 */
-	public int sendSEPControlMessage(int eventId, SepControlMessage controlMessage);
+	public void sendSEPControlMessage(int eventId, SepControlMessage controlMessage);
 	
 	/**
      * Sends SEP Restore message.
@@ -54,4 +63,5 @@ public interface ZigbeeWebService {
      * @throws SocketTimeoutException 
      */
     public void processAllDeviceNotificationsOnGateway(ZigbeeDevice gateway) throws SocketTimeoutException;
+    
 }

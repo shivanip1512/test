@@ -26,9 +26,12 @@ public class DigiPollingService {
     private ScheduledExecutorService globalScheduledExecutor;
     private ConfigurationSource configurationSource;
     
-    private Runnable digiPoller = new Runnable() {
+    /**
+     * Gets and processes all files on each gateway from iDigi.
+     */
+    private Runnable digiDeviceNotificationPoll = new Runnable() {
         public void run() {
-            logger.info("Digi Poller Started");
+            logger.info("Digi Device Notification Started");
             
             try {
                 //Get all gateways to poll
@@ -43,11 +46,32 @@ public class DigiPollingService {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Exception while Polling Gateways", e);
+                logger.error("Exception while Polling Device Notifications", e);
             }
             
-            logger.info("Digi Poller Finished");
+            logger.info("Digi Device Notification Finished");
         }
+    };
+    
+    /**
+     * Queries and updates the status of each Device on iDigi account.
+     * 
+     */
+    private Runnable digiDeviceStatusPoll = new Runnable() {
+
+        @Override
+        public void run() {
+            logger.info("Digi Device Status Poll Started");
+            
+            try {
+                zigbeeWebService.refreshAllGateways();
+            } catch (Exception e) {
+                logger.error("Exception in Digi Device Status Poll", e);
+            }
+            
+            logger.info("Digi Device Status Poll Finished");
+        }
+        
     };
     
     @PostConstruct
@@ -56,12 +80,16 @@ public class DigiPollingService {
         
         if (runDigi) {
             Duration duration = configurationSource.getDuration("DIGI_TIME_BETWEEN_READS", Duration.standardSeconds(600));
-            globalScheduledExecutor = Executors.newScheduledThreadPool(1);
+            globalScheduledExecutor = Executors.newScheduledThreadPool(2);
             
-            globalScheduledExecutor.scheduleWithFixedDelay(digiPoller, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
-            logger.info("Digi Polling Service has been started.");
+            globalScheduledExecutor.scheduleWithFixedDelay(digiDeviceNotificationPoll, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
+            logger.info("Digi Device Notification polling has been started.");
+            
+            duration = configurationSource.getDuration("DIGI_TIME_REFRESH_STATUS", Duration.standardHours(24));
+            globalScheduledExecutor.scheduleWithFixedDelay(digiDeviceStatusPoll, 5, duration.getStandardSeconds(), TimeUnit.SECONDS);
+            
         } else {
-            logger.info("Digi Polling Service not started. No URL configured in master.cfg");
+            logger.info("Digi Services not started. No URL configured in master.cfg");
         }
     }
     

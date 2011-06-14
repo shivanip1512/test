@@ -37,6 +37,7 @@ import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.GatewayCommissionException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -67,13 +68,19 @@ public class ZigBeeHardwareController {
     public ModelAndView refresh(YukonUserContext context, int deviceId) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
+
+        InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
+        HardwareType type = id.getHardwareType();
+        
+        ZigbeeDevice device = null;
+        if (type.isGateway()) {
+            device = gatewayDeviceDao.getZigbeeGateway(deviceId);
+        } else {
+            device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+        }
         
         try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {}
-        
-        try {
-//            zigbeeWebService.refreshStatuses(zigbeeDeviceDao.getZigbeeDevice(deviceId));
+            zigbeeWebService.refreshDeviceStatuses(device);
         } catch (DigiWebServiceException e) {
             commandFailed(mav.getModelMap(), accessor, e.getMessage());
             return mav;

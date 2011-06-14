@@ -14,6 +14,7 @@ public interface GatewayDeviceDao {
     public List<ZigbeeDevice> getAllGateways();
     
     public DigiGateway getDigiGateway(int deviceId);
+    public DigiGateway getDigiGateway(String macAddress);
     
     public void createDigiGateway(DigiGateway digiGateway);
     
@@ -24,6 +25,7 @@ public interface GatewayDeviceDao {
     /**
      * Updates the device to gateway assignment. If gatewayId is null, any device to gateway mapping
      * for this device will be removed. 
+     * 
      * @param deviceId
      * @param gatewayId
      */
@@ -34,7 +36,14 @@ public interface GatewayDeviceDao {
     public void removeDevicesFromGateway(int gatewayId);
 
     public List<ZigbeeDeviceAssignment> getZigbeeDevicesForAccount(int accountId, List<Integer> hardwareTypeIds);
-
+    
+    /**
+     * Returns a list of ZigbeeDevice that is assigned to the passed in gatewayId.
+     * 
+     * @param gatewayId
+     * @return
+     */
+    public List<ZigbeeDevice> getAssignedZigbeeDevices(int gatewayId);
     /**
      * Returns the InventoryIdentifier for the gateway this device is assigned to or null if not assigned to a gateway
      */
@@ -57,4 +66,11 @@ public interface GatewayDeviceDao {
      * @return
      */
     public List<ZigbeeDevice> getZigbeeGatewaysForGroupId(int groupId);
+    
+    /**
+     * Returns the LMGroupId of the ZigBee End Point.
+     * @param deviceId
+     * @return
+     */
+    public int getLMGroupIdByDeviceId(int endPointId);
 }

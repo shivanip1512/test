@@ -18,10 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.TransactionType;
@@ -72,7 +76,12 @@ import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
+import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.exception.DigiWebServiceException;
+import com.cannontech.thirdparty.model.DRLCClusterAttribute;
+import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
@@ -87,6 +96,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private LoadGroupDao loadGroupDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private ZigbeeWebService zigbeeWebService;
+    private YukonListDao yukonListDao;
+    private LMGroupDao lmGroupDao;
+    private GatewayDeviceDao gatewayDeviceDao;
     
     @Override
     @Transactional
@@ -138,8 +151,31 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
                 boolean toConfig = HardwareAction.isToConfig(liteHw, liteCustomerAccount);
-
+                
                 if (toConfig) {
+                    //ZigBee related configs
+                    YukonListEntry yukonListEntry = yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
+                    HardwareType hardwareType = HardwareType.valueOf(yukonListEntry.getYukonDefID());
+                    
+                    // If send config commands to device.
+                    if (hardwareType.isZigbee()) {
+                        //Determine Gateway and Device Id.
+                        int deviceId = liteHw.getDeviceID();
+                        int lmGroupId = gatewayDeviceDao.getLMGroupIdByDeviceId(deviceId);
+                        
+                        //Build Attributes to send
+                        Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
+                        
+                        //Utility Enrollment group
+                        int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
+                        if (utilEnrollGroup == 0) {
+                            log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
+                        } else {
+                            attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
+                            zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
+                        }
+                    }
+                
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
                     if (!trackHardwareAddressingEnabled && automaticConfigurationEnabled) {
@@ -157,6 +193,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             return ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY;
         } catch (WebClientException e2) {
             log.error(e2);
+            return ProgramEnrollmentResultEnum.FAILURE;
+        } catch (DigiWebServiceException e3) {
+            log.error(e3);
             return ProgramEnrollmentResultEnum.FAILURE;
         }
 
@@ -964,6 +1003,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         return false;
     }
     
+    @Autowired
+    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
+        this.zigbeeWebService = zigbeeWebService;
+    }
+    
     // DI Setter
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
@@ -1014,5 +1058,20 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
-
+    
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setLmGroupDao(LMGroupDao lmGroupDao) {
+        this.lmGroupDao = lmGroupDao;
+    }
+    
+    @Autowired
+    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
+        this.gatewayDeviceDao = gatewayDeviceDao;
+    }
+    
 }
