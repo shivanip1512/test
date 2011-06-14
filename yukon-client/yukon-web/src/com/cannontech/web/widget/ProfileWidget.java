@@ -31,9 +31,11 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.common.util.TimeUtil;
@@ -258,18 +260,24 @@ public class ProfileWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        String startDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_start", "");
-        String stopDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
        
         // get lite device, set name
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        Meter meter = meterDao.getForId(deviceId);
         
         // get info about each channels scanning status
         List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
         mav.addObject("availableChannels", availableChannels);
         
+        // check for daily usage report's previously entered rejected dates 
+        String reportStartDateStr = WidgetParameterHelper.getStringParameter(request, "reportStartDateStr", "");
+        String reportStopDateStr = WidgetParameterHelper.getStringParameter(request, "reportStopDateStr", "");
+        if (!StringUtils.isBlank(reportStartDateStr) && !StringUtils.isBlank(reportStopDateStr)) {
+            mav.addObject("startDateStr", reportStartDateStr);
+            mav.addObject("stopDateStr", reportStopDateStr);
+        } 
         // initialize past profile dates
+        String stopDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
+        String startDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_start", "");
         if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
             mav.addObject("startDateStr",
                           dateFormattingService.format(DateUtils.addDays(new Date(),
@@ -600,45 +608,77 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     public ModelAndView viewDailyUsageReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
-        // get pointId
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
-        
-        LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
-        Integer pointId = point.getLiteID();
-        
         // get date range
         String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStartDateStr");
         String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStopDateStr");
-        
-        // end date should be inclusive
-        Date stopDate = dateFormattingService.flexibleDateParser(reportStopDateStr,
-                                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                 userContext);
-        stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
-        stopDate = DateUtils.addDays(stopDate, 1);
-        reportStopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-       
-        // build query
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        propertiesMap.put("def", "dailyUsageDefinition");
-        propertiesMap.put("viewJsp", "MENU");
-        propertiesMap.put("module", "amr");
-        propertiesMap.put("menuSelection", "meters");
-        propertiesMap.put("showMenu", "true");
-        propertiesMap.put("pointId", pointId.toString());
-        propertiesMap.put("startDate", reportStartDateStr);
-        propertiesMap.put("stopDate", reportStopDateStr);
-        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
-        
-        String url = "/spring/reports/simple/extView?" + queryString;
-        url = ServletUtil.createSafeUrl(request, url);
-        
-        // redirect
-        ModelAndView mav = new ModelAndView("redirect:" + url);
+        ModelAndView mav = render(request, response);
+        String errorMsg = null;
+
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+        LitePoint point = null;
+        try {
+            point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
+        } catch (IllegalUseOfAttribute e) {
+            Meter meter = meterDao.getForId(device.getDeviceId());
+            PaoType paoType = meter.getPaoType();
+            errorMsg = "Device Name: " + meter.getName() + " of Type: "+ paoType.getPaoTypeName() + " does not support this operation.";
+        }
+        if (point != null) {
+            Integer pointId = point.getLiteID();            // get pointId          
+            // validate dates
+            if (reportStartDateStr == null || reportStartDateStr.trim().equals("")) {
+                errorMsg = "Start Date Required.";
+            } else if (reportStopDateStr == null || reportStopDateStr.trim().equals("")) {
+                errorMsg = "Stop Date Required.";
+            } else {
+                LocalDate startDate = null, stopDate = null;
+                try {
+                    startDate = dateFormattingService.parseLocalDate(reportStartDateStr, userContext);
+                } catch(ParseException e) {
+                    errorMsg = "Start date: " + reportStartDateStr + " is invalid.";
+                }
+                try {
+                    stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
+                } catch(ParseException e) {
+                    errorMsg = "Stop date: " + reportStopDateStr + " is invalid.";
+                }
+                if (startDate != null && stopDate != null) {
+                    LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+                    if (stopDate.isBefore(startDate)) {
+                        errorMsg = "Start date: " + reportStartDateStr + " must be on or before stop date.";
+                    } else if (stopDate.isAfter(today)) {
+                        errorMsg = "Stop date: " + reportStopDateStr + " must be on or before today.";
+                    } else {
+                        // build report query
+                        stopDate = stopDate.plusDays(1); //end date should be inclusive
+                        reportStopDateStr = dateFormattingService.format(stopDate,
+                                                                         DateFormattingService.DateFormatEnum.DATE,
+                                                                         userContext);
+                        Map<String, String> propertiesMap = new HashMap<String, String>();
+                        propertiesMap.put("def", "dailyUsageDefinition");
+                        propertiesMap.put("viewJsp", "MENU");
+                        propertiesMap.put("module", "amr");
+                        propertiesMap.put("menuSelection", "meters");
+                        propertiesMap.put("showMenu", "true");
+                        propertiesMap.put("pointId", pointId.toString());
+                        propertiesMap.put("startDate", reportStartDateStr);
+                        propertiesMap.put("stopDate", reportStopDateStr);
+                        
+                        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
+                        String url = "/spring/reports/simple/extView?" + queryString;
+                        url = ServletUtil.createSafeUrl(request, url);
+                        mav.addObject("reportQueryString", url);
+                    }
+                }
+            }
+        }
+        if (errorMsg != null) {
+            mav.addObject("errorMsgDailyUsage", errorMsg);
+            mav.addObject("reportStartDateStr", reportStartDateStr);
+            mav.addObject("reportStopDateStr", reportStopDateStr);
+        }
         return mav;
     }
     
