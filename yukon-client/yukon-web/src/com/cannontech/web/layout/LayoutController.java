@@ -20,6 +20,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,6 +36,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
@@ -57,6 +60,7 @@ public class LayoutController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PageDetailProducer pageDetailProducer;
     private ConfigurationSource configurationSource;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     private List<String> layoutScriptFiles;
     
@@ -197,6 +201,18 @@ public class LayoutController {
             });
         }
         
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        String username = yukonUser.getUsername();
+        String energyCompanyName = null;
+        
+        try{
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+            energyCompanyName = energyCompany.getName();
+        } catch(EmptyResultDataAccessException e) {}
+        
+        map.addAttribute("energyCompanyName", energyCompanyName);
+        map.addAttribute("username", username);
+        
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
         if (showContextualNavigation) {
@@ -277,6 +293,11 @@ public class LayoutController {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setyukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
 }

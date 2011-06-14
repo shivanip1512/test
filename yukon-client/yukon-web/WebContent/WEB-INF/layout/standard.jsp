@@ -104,29 +104,41 @@
 
 <div id="CopyRight">
     <ul class="pipes">
-        <cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
+        <li>
+            <cti:msg key="yukon.web.layout.standard.copyright"/>
+        </li>
+    </ul>
+    <br>
+    <ul class="pipes">
+        <li>
+            <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
+        </li>
+        <li>
+            Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
+        </li>
+        
+        <c:if test="${not empty energyCompanyName}">
+        	<li>
+            	<cti:msg key="yukon.web.layout.standard.energyCompany" arguments="${energyCompanyName}"/>
+        	</li>
+        </c:if>
+       	
+       	<li>
+        	<cti:msg key="yukon.web.layout.standard.username" arguments="${username}"/>
+    	</li>
+    </ul>
+    <br>
+    <ul class="pipes">
+    	<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
             <li>
                 module=${info.moduleName}, page=${info.pageName}
             </li>
         </cti:checkGlobalRolesAndProperties>
-        
-        <li>
-            <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
-        </li>
-        
         <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
             <li>
                 <cti:msg key="yukon.web.layout.standard.buildInfo" arguments="${buildInfo}"/>
             </li>
         </cti:checkGlobalRolesAndProperties>
-        
-        <li>
-            <cti:msg key="yukon.web.layout.standard.copyright"/>
-        </li> 
-        
-        <li>
-            Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
-        </li>
     </ul>
 </div>
 </div>
