@@ -636,8 +636,8 @@ public class CBControllerEditor implements ICBControllerModel {
 	
 	public boolean isDevice802X() {
 	    if(getPaoCBC() != null) {
-	        int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
-	        return DeviceTypesFuncs.isCapBankController802X(deviceType);
+	        PaoType paoType = PaoType.getForDbString(getPaoCBC().getPAOType());
+	        return CBCUtils.isCapBankController802X(paoType);
 	    }
 	    return false;
 	}

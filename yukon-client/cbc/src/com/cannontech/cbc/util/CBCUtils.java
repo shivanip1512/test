@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
@@ -714,6 +715,10 @@ public final class CBCUtils {
 	    default:
 	        return false;
 	    }
+    }
+    
+    public static boolean isCapBankController802X(PaoType paoType) {
+        return (paoType == PaoType.CBC_8020 || paoType == PaoType.CBC_8024);
     }
     
     public static boolean isController(int id) {

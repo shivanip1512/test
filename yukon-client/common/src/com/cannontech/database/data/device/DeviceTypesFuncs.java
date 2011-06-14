@@ -217,11 +217,6 @@ public final static boolean isCapBankController702X( int deviceType )
              || deviceType == CBC_7024);
 }
 
-public final static boolean isCapBankController802X( int deviceType )
-{
-    return ( deviceType == CBC_8020 || deviceType == CBC_8024 );
-}
-
 public final static boolean isCapBankControllerDNP( int deviceType )
 {
     return ( deviceType == CBC_DNP);

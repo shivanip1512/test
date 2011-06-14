@@ -353,10 +353,6 @@ public final class DeviceFactory {
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
         case CBC_8020:
-            returnDevice = new CapBankController702x();
-            returnDevice.setDeviceType(paoType.getPaoTypeName());
-            returnDevice.setDeviceClass(paoType.getPaoClass().getDbString());
-            break;
         case CBC_8024:
             returnDevice = new CapBankController702x();
             returnDevice.setDeviceType(paoType.getPaoTypeName());
