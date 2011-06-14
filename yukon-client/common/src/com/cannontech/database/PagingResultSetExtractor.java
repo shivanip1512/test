@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-public class PagingResultSetExtractor<T> implements ResultSetExtractor {
+public class PagingResultSetExtractor<T> implements ResultSetExtractor<T> {
     
     private int start;
     private int pageCount;
@@ -22,7 +22,7 @@ public class PagingResultSetExtractor<T> implements ResultSetExtractor {
         this.rowMapper = rowMapper;
     }
     
-    public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public T extractData(ResultSet rs) throws SQLException, DataAccessException {
         
         // Move the cursor to the correct spot in the result set so we only
         // process the results we want

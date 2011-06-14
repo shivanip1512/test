@@ -6,6 +6,11 @@ public class VoltageRegulatorFields implements PaoTemplatePart {
     private int keepAliveTimer;
     private int keepAliveConfig;
 
+    public VoltageRegulatorFields(int keepAliveTimer, int keepAliveConfig) {
+        this.keepAliveTimer = keepAliveTimer;
+        this.keepAliveConfig = keepAliveConfig;
+    }
+
     public int getKeepAliveTimer() {
         return keepAliveTimer;
     }

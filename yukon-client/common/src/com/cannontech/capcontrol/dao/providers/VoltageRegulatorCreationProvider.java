@@ -6,11 +6,13 @@ import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.providers.BaseCreationProvider;
 
 public class VoltageRegulatorCreationProvider extends BaseCreationProvider<VoltageRegulatorFields> {
-
     private VoltageRegulatorDao voltageRegulatorDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     public float getOrder() {
@@ -19,9 +21,8 @@ public class VoltageRegulatorCreationProvider extends BaseCreationProvider<Volta
 
     @Override
     public boolean isTypeSupported(PaoType paoType) {
-        return paoType == PaoType.LOAD_TAP_CHANGER ||
-            paoType == PaoType.GANG_OPERATED ||
-            paoType == PaoType.PHASE_OPERATED;
+        boolean isSupported = paoDefinitionDao.isTagSupported(paoType, PaoTag.VOLTAGE_REGULATOR);
+        return isSupported;
     }
 
     @Override
@@ -37,5 +38,10 @@ public class VoltageRegulatorCreationProvider extends BaseCreationProvider<Volta
     @Autowired
     public void setVoltageRegulatorDao(VoltageRegulatorDao voltageRegulatorDao) {
         this.voltageRegulatorDao = voltageRegulatorDao;
+    }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

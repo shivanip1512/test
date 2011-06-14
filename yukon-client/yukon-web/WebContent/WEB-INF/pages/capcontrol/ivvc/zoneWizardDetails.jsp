@@ -202,8 +202,7 @@
                             extraArgs="${zoneDto.zoneId}"
                             useInitialIdsIfEmpty="true"
             				multiSelectMode="false"
-            				immediateSelectMode="true" 
-            				anchorStyleClass="simpleLink">
+            				immediateSelectMode="true">
             			</tags:pickerDialog>
                     </tags:bind>
         		</tags:nameValue2>
@@ -226,7 +225,6 @@
                             useInitialIdsIfEmpty="true"
                             multiSelectMode="false"
                             immediateSelectMode="true" 
-                            anchorStyleClass="simpleLink"
                             allowEmptySelection="true">
                         </tags:pickerDialog>
                     </tags:bind>
@@ -243,7 +241,6 @@
                             useInitialIdsIfEmpty="true"
                             multiSelectMode="false"
                             immediateSelectMode="true" 
-                            anchorStyleClass="simpleLink"
                             allowEmptySelection="true">
                         </tags:pickerDialog>
                     </tags:bind>
@@ -260,7 +257,6 @@
                             useInitialIdsIfEmpty="true"
                             multiSelectMode="false"
                             immediateSelectMode="true" 
-                            anchorStyleClass="simpleLink"
                             allowEmptySelection="true">
                         </tags:pickerDialog>
                     </tags:bind>
@@ -295,8 +291,7 @@
                             extraArgs="${zoneDto.zoneId}"
                             useInitialIdsIfEmpty="true"
                             multiSelectMode="false"
-                            immediateSelectMode="true" 
-                            anchorStyleClass="simpleLink">
+                            immediateSelectMode="true">
                         </tags:pickerDialog>
                     </tags:bind>
                 </tags:nameValue2>

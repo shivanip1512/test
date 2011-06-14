@@ -6000,6 +6000,11 @@
                     <typeFilter type="STATUSPOINT"/>
                 </mappedLookup>
             </attribute>
+            <attribute name="KEEP_ALIVE_TIMER">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
         </attributes>
     </pao>
     <pao id="PHASE_OPERATED" inherits="VOLTAGE_REGULATOR">
@@ -6018,6 +6023,11 @@
             <attribute name="AUTO_BLOCK_ENABLE">
                 <mappedLookup>
                     <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="KEEP_ALIVE_TIMER">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
                 </mappedLookup>
             </attribute>
         </attributes>

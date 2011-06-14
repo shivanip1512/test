@@ -7,7 +7,6 @@ import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.database.data.pao.ZoneType;
 
 public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
 
@@ -24,15 +23,13 @@ public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
             if (((AbstractZoneNotThreePhase)zoneDto).getRegulator().getRegulatorId() == 0) {
                 errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
             }
-        } else if (zoneDto.getZoneType() == ZoneType.THREE_PHASE) {
+        } else {
             AbstractZoneThreePhase abstractZoneThreePhase = (AbstractZoneThreePhase)zoneDto;
             if (abstractZoneThreePhase.getRegulatorA().getRegulatorId() == 0 ||
                     abstractZoneThreePhase.getRegulatorB().getRegulatorId() == 0 ||
                     abstractZoneThreePhase.getRegulatorC().getRegulatorId() == 0) {
                 errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
             }
-        } else {
-            errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
         }
 
         if (zoneDto.getSubstationBusId() == -1) {

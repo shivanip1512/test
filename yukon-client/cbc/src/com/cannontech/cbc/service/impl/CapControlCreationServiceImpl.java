@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.capcontrol.VoltageRegulatorDefaults;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.providers.fields.VoltageRegulatorFields;
 import com.cannontech.cbc.dao.AreaDao;
@@ -155,9 +154,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	private int createRegulator(String name, boolean disabled, int type) {
-	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields();
-	    voltageRegulatorFields.setKeepAliveTimer(VoltageRegulatorDefaults.KEEP_ALIVE_TIMER);
-	    voltageRegulatorFields.setKeepAliveConfig(VoltageRegulatorDefaults.KEEP_ALIVE_CONFIG);
+	    VoltageRegulatorFields voltageRegulatorFields = new VoltageRegulatorFields(0,0);
 
 	    YukonPaObjectFields yukonPaoFields = new YukonPaObjectFields(name);
 	    ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
@@ -374,15 +371,30 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	@Transactional
 	public boolean assignController(CapbankController controller, int capbankId) {
-		boolean ret = capbankControllerDao.assignController(capbankId, controller.getId());
-		PaoType deviceType = controller.getType();
-		
-		if (ret) {
-		    sendDeviceDBChangeMessage(controller.getId(),DbChangeType.UPDATE, deviceType.getDbString());
-		    sendCapcontrolDBChangeMessage(capbankId, DbChangeType.UPDATE,CapControlType.CAPBANK.getDbValue());
-		}
-		
-		return ret; 
+		return assignController(controller.getId(), controller.getType(), capbankId);
+	}
+	
+	@Override
+	@Transactional
+	public boolean assignController(int controllerId, PaoType controllerType, int capbankId) {
+	    boolean ret = capbankControllerDao.assignController(capbankId, controllerId);
+	    
+	    if (ret) {
+	        sendDeviceDBChangeMessage(controllerId,DbChangeType.UPDATE, controllerType.getDbString());
+	        sendCapcontrolDBChangeMessage(capbankId, DbChangeType.UPDATE,CapControlType.CAPBANK.getDbValue());
+	    }
+	    
+	    return ret; 
+	}
+
+	@Override
+	@Transactional
+	public boolean assignController(int controllerId, PaoType controllerType, String capBankName) {
+        int id = getPaoIdByName(capBankName);
+        if(id == -1) {
+            return false;
+        }
+        return assignController(controllerId, controllerType, id);
 	}
 
 	@Override

@@ -427,19 +427,17 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function setMode(mode, div) {
-        if (mode == 'none') {
-            setModeNormalRemote(div);
-        } else if (mode == 'NormalLocal'){
+        if (mode == 'NormalLocal'){
             setModeNormalLocal(div);
         } else if (mode == 'WarningLocal'){
             setModeWarningLocal(div);
+        } else {
+            setModeNormalRemote(div);
         }
     }
     
     function setTapIcon(tapIcon, mode, div, tapTooltip) {
-        if (tapIcon == 'NONE' || tapIcon == 'NONE_RECENT') {
-            showTapDefault(div, tapTooltip);
-        } else if (tapIcon == 'RAISE_TAP') {
+        if (tapIcon == 'RAISE_TAP') {
             if (mode == 'WarningLocal') {
                 showTapRaiseWarning(div, tapTooltip);
             } else {
@@ -463,6 +461,8 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             } else {
                 showTapRaiseRecent(div, tapTooltip);
             }
+        } else {
+            showTapDefault(div, tapTooltip);
         }
     }
     
@@ -523,13 +523,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function hideAll() {
-        var phaseContainers = tapContainer.childElements();
-        phaseContainers.each(function(phaseContainer) {
-            var phaseElements = phaseContainer.childElements();
-            phaseElements.each(function(phaseElement) {
-                phaseElement.hide();
-            });
-        });
+        tapContainer.select('* *').invoke('hide');
     }
 }
 

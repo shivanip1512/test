@@ -3,13 +3,12 @@ package com.cannontech.capcontrol.model;
 import java.util.List;
 
 import com.cannontech.database.data.pao.ZoneType;
-import com.google.common.collect.Lists;
 
 public class Zone {
 
     private Integer id;
     private String name;
-    private List<ZoneRegulator> regulators = Lists.newArrayListWithCapacity(3);
+    private List<ZoneRegulator> regulators;
     private int substationBusId;
     private Integer parentId;
     private double graphStartPosition;

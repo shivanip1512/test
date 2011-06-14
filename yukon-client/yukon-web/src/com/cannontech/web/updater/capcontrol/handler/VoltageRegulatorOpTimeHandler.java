@@ -2,6 +2,7 @@ package com.cannontech.web.updater.capcontrol.handler;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cbc.cache.CapControlCache;
@@ -34,7 +35,7 @@ public class VoltageRegulatorOpTimeHandler implements VoltageRegulatorUpdaterHan
             // the server was able to update the cache.
             // By returning null the service won't try to update
             // that object.
-            return null;
+            return StringUtils.EMPTY;
         }
     }
     

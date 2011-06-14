@@ -7,6 +7,7 @@ import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.common.pao.PaoType;
 
 public interface CapControlCreationService {
 
@@ -70,6 +71,8 @@ public interface CapControlCreationService {
 	
 	public boolean assignController(CapbankController controller, int capbankId);
 	public boolean assignController(CapbankController controller, String capBankName);
+	public boolean assignController(int controllerId, PaoType controllerType, int capbankId);
+	public boolean assignController(int controllerId, PaoType controllerType, String capBankName);
 	public boolean unassignController(int controllerId);
 	
 	public int create(int type, String name, boolean disabled, int portId);

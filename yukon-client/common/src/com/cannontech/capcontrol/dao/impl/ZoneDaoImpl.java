@@ -141,7 +141,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM Zone");
         sqlBuilder.append("WHERE ZoneId").eq(zoneId);
         
-        Zone zone = null;
+        Zone zone;
 
         try {
             zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);

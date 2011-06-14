@@ -13,6 +13,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     FAULT_STATUS("Fault Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
     KEEP_ALIVE("Keep Alive"),
+    KEEP_ALIVE_TIMER("Keep Alive Timer"),
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
@@ -41,8 +42,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TOU_RATE_D_USAGE("Tou Rate D Usage", false, true), 
     USAGE("Usage Reading", false, true), 
     VOLTAGE("Voltage"), 
-    VOLTAGE_X("Voltage X"),
-    VOLTAGE_Y("Voltage Y"),
+    VOLTAGE_X("Voltage X"), // Source Side
+    VOLTAGE_Y("Voltage Y"), // Load Side
     TERMINATE("Terminate"),
     AUTO_BLOCK_ENABLE("Auto Block Enable"),
     VOLTAGE_PROFILE("Voltage Profile", true, false),

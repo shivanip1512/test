@@ -76,7 +76,6 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         return false;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
@@ -92,11 +91,10 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
             }
         };
         
-        List<String> regulatorTypes = Lists.newArrayList();
-        
-        regulatorTypes.add(PaoType.GANG_OPERATED.getDbString());
-        regulatorTypes.add(PaoType.PHASE_OPERATED.getDbString());
-        regulatorTypes.add(PaoType.LOAD_TAP_CHANGER.getDbString());
+        List<PaoType> regulatorTypes = Lists.newArrayList();
+        regulatorTypes.add(PaoType.GANG_OPERATED);
+        regulatorTypes.add(PaoType.PHASE_OPERATED);
+        regulatorTypes.add(PaoType.LOAD_TAP_CHANGER);
         
         /* Get the unordered total count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -121,7 +119,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("ORDER BY PAOName");
         
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, rowMapper);
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        yukonJdbcTemplate.query(sql, orphanExtractor);
         
         List<LiteCapControlObject> unassignedLtcs = orphanExtractor.getResultList();
         

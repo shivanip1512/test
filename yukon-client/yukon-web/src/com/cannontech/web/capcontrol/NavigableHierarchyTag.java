@@ -25,9 +25,7 @@ public class NavigableHierarchyTag extends YukonTagSupport {
         JspWriter out = getJspContext().getOut();
         out.print("<div class=\"" + styleClass + "\">");
         
-        Object root = hierarchy.getNode();
-        
-        if (root != null) {
+        if (hierarchy != null && hierarchy.getNode() != null) {
             List<NavigableHierarchy<?>> children = Lists.newArrayList();
             children.add(hierarchy);
             doTagZones(out, children, 0);

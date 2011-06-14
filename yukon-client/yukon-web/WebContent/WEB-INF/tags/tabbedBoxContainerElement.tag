@@ -4,11 +4,11 @@
 
 <c:choose>
     <c:when test="${tabContainer}">
-        <div id="${id}" class="tabContainer_content f_tab">
+        <div <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if> class="tabContainer_content f_tab">
             <jsp:doBody/>
         </div>
     </c:when>
     <c:otherwise>
-        <div class="errorRed">ERROR: The &lt;tabElement&gt; tag must be enclosed in a &lt;tabContainer&gt; tag</div>
+        <div class="errorMessage">ERROR: The &lt;tabElement&gt; tag must be enclosed in a &lt;tabContainer&gt; tag</div>
     </c:otherwise>
 </c:choose>

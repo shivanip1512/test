@@ -124,6 +124,8 @@ public class ZoneServiceImpl implements ZoneService {
                 zoneDto = new ZoneSinglePhase(zone);
             } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
                 zoneDto = new ZoneThreePhase(zone);
+            } else {
+                throw new RuntimeException("ZoneType unknown.");
             }
             zoneDtoList.add(zoneDto);
         }
@@ -162,15 +164,15 @@ public class ZoneServiceImpl implements ZoneService {
                 childOfLookup.put(zoneDto.getParentId(), zoneDto);
             }
         }
+        
+        if (root == null) {
+            return null;
+        }
 
         //Build Hierarchy
         ZoneHierarchy hierarchy = new ZoneHierarchy();
         hierarchy.setZone(root);
-        //Recursive call to set children
-        if (root != null) {
-            setChildHierarchy(hierarchy, root.getZoneId(), childOfLookup);
-        }
-
+        setChildHierarchy(hierarchy, root.getZoneId(), childOfLookup);
         return hierarchy;
     }
 

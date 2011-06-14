@@ -597,7 +597,7 @@ div.boxContainer .boxContainer_titleBar,
 table.boxContainer td.boxContainer_titleBar,
 div.pagedBox .title, div.pagedBox .footer,
 div.boxContainerFooter .footer {
-    padding: .25em .5em; 
+    padding: 4px 8px;
 }
 
 .boxContainer_titleBar{position:relative; overflow:hidden;}
@@ -1503,49 +1503,6 @@ div.f_toggle {
 .f_tabs {
     overflow:hidden;
     margin-bottom: -1px;
-    border-left: solid 1px #CCC;
-}
-
-.f_tabs li {
-    background: transparent;
-    cursor: pointer;
-    color: #999;
-    display: inline;
-    margin: 0;
-    padding: 2px 8px;
-    float:left;
-    overflow:hidden;
-    clear:none;
-    border-right: solid 1px #CCC;
-    border-top: solid 1px #CCC;
-    position: relative;
-    z-index:10;
-}
-
-.f_tabs li:hover {
-    color: #333;
-}
-
-.f_tabs li.active {
-    background-color: white;
-    color: black;
-    cursor: default; 
-}
-/* END TABS */
-}
-
-/*TABS*/
-.f_tab {
-    display:none;
-}
-
-.f_tab.active {
-    display:block;
-}
-
-.f_tabs {
-    overflow:hidden;
-    margin-bottom: -1px;
 }
 
 .f_tabs li {
@@ -1577,7 +1534,7 @@ div.f_toggle {
 
 .greyGradientBox .f_tabs li {
     border-top: none;
-    padding: .25em .5em;
+    padding: 4px 8px;
     min-height: 19px;  /* height determined by control icon: 1px padding top + 1px border (top & bottom)  */
     line-height: 19px;
     font-weight: bold; 
@@ -1587,8 +1544,8 @@ div.f_toggle {
 }
 .greyGradientBox .f_tabs .controls {
     position: absolute;
-    right: .5em;
-    top: .25em;
+    right: 8px;
+    top: 4px;
 }
 .greyGradientBox .f_tabbed {
     border-top: 1px solid #BBB;

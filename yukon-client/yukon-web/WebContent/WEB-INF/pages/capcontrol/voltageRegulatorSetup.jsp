@@ -23,17 +23,19 @@
 					value="#{capControlForm.PAOBase.PAODescription}" required="false"
 					maxlength="60" styleClass="char32Label" />
 
-                <x:htmlTag value="br"/>
-                <x:htmlTag value="br"/>
+                <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
+                <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
 
                 <x:outputLabel for="keepAliveTimer" value="Keep Alive Timer: "
-                    title="Keep Alive Timer (in minutes) for the Voltage Regulator" />
+                    title="Keep Alive Timer (in minutes) for the Voltage Regulator"
+                    rendered="#{capControlForm.regulatorBase.displayTimer}" />
                 <x:inputText id="keepAliveTimer"
                     value="#{capControlForm.regulatorBase.keepAliveTimer}" required="false"
-                    maxlength="10" styleClass="char4Label" />
+                    maxlength="10" styleClass="char4Label"
+                    rendered="#{capControlForm.regulatorBase.displayTimer}" />
 
-                <x:htmlTag value="br"/>
-                <x:htmlTag value="br"/>
+                <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayConfig}" />
+                <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayConfig}" />
 
                 <x:outputLabel for="keepAliveConfig" value="Keep Alive Config: "
                     title="Keep Alive Config for the Voltage Regulator"

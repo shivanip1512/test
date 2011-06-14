@@ -23,7 +23,6 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     private List<VoltageRegulatorPointMapping> pointMappings;
     private int keepAliveTimer;
     private int keepAliveConfig;
-    boolean displayConfig;
 
     public VoltageRegulator() {
         super();
@@ -129,6 +128,11 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         this.keepAliveConfig = keepAliveConfig;
     }
 
+    public boolean isDisplayTimer() {
+        PaoType paoType = PaoType.getForDbString(getPAOType());
+        return paoType == PaoType.LOAD_TAP_CHANGER;
+    }
+    
     public boolean isDisplayConfig() {
         PaoType paoType = PaoType.getForDbString(getPAOType());
         return paoType == PaoType.LOAD_TAP_CHANGER;
