@@ -120,12 +120,7 @@ VoltageRegulator * GangOperatedVoltageRegulator::replicate() const
 
 const VoltageRegulator::Type GangOperatedVoltageRegulator::getType() const
 {
-    if ( getPaoType() == VoltageRegulator::LoadTapChanger )
-    {
-        return VoltageRegulator::LoadTapChangerType;
-    }
-
-    return VoltageRegulator::GangOperatedVoltageRegulatorType;
+    return VoltageRegulator::LoadTapChangerType;
 }
 
 

@@ -14,10 +14,9 @@ Zone::Zone( const long Id,
     _Id(Id),
     _parentId(parentId),
     _subbusId(subbusId),
-    _name(name),
-    _type(type)
+    _name(name)
 {
-    // empty!
+    _gangOperated = ( type == "GANG_OPERATED" );
 }
 
 
@@ -57,12 +56,6 @@ long Zone::getParentId() const
 }
 
 
-long Zone::getRegulatorId() const
-{
-    return -1;      // jmoc -- fix me!?!??!?!?
-}
-
-
 long Zone::getSubbusId() const
 {
     return _subbusId;
@@ -72,6 +65,12 @@ long Zone::getSubbusId() const
 std::string Zone::getName() const
 {
     return _name;
+}
+
+
+bool Zone::isGangOperated() const
+{
+    return _gangOperated;
 }
 
 
@@ -96,36 +95,46 @@ void Zone::clearChildIds()
 }
 
 
-Zone::IdSet Zone::getBankIds() const
-{
-    return _bankPaos;
-}
-
-
-Zone::IdSet Zone::getPointIds() const
-{
-    return _voltagePoints;
-}
-
-
 void Zone::addBankId( const long Id )
 {
     _bankPaos.insert(Id);
 }
 
 
-void Zone::addPointId( const long Id )
+Zone::IdSet Zone::getBankIds() const
 {
-    _voltagePoints.insert(Id);
+    return _bankPaos;
 }
 
 
-void Zone::addRegulatorId( const char Phase, const long Id )
+void Zone::addPointId( const Phase & Phase, const long Id )
 {
-    _regulatorIds.insert(  std::make_pair(Phase, Id) );
+    _voltagePoints.insert( std::make_pair(Phase, Id) );
 }
 
 
-}   // namespace Cti
-}   // namespace CapControl
+Zone::IdSet Zone::getPointIds() const
+{
+    IdSet   IDs;
+
+    return IDs;     // jmoc -- fix me!?!??!?!?
+}
+
+
+void Zone::addRegulatorId( const Phase & Phase, const long Id )
+{
+    _regulatorIds.insert( std::make_pair(Phase, Id) );
+}
+
+
+long Zone::getRegulatorId() const
+{
+    return -1;      // jmoc -- fix me!?!??!?!?
+}
+
+
+
+
+}
+}
 

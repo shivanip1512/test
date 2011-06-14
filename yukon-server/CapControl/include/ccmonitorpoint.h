@@ -8,6 +8,7 @@
 #include "observe.h"
 #include "ctitime.h"
 #include "ctidate.h"
+#include "ccutil.h"
 
 namespace Cti {
 namespace Database {
@@ -68,8 +69,12 @@ public:
     int operator==(const CtiCCMonitorPoint& right) const;
     int operator!=(const CtiCCMonitorPoint& right) const;
 
+    Cti::CapControl::Phase  getPhase() const;
+    CtiCCMonitorPoint &     setPhase( const Cti::CapControl::Phase & phase );
 
 private:
+
+    Cti::CapControl::Phase  _phase;
 
     LONG _pointId;
     LONG _bankId;

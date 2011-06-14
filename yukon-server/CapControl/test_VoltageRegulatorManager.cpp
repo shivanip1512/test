@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_test_getter_exceptions)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_GangOperatedVoltageRegulator_Loads_OK)
+BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_OK)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_GangOperatedVoltageRegulator_L
     regulator->setUpdated(false);
     BOOST_CHECK_EQUAL( false, regulator->isUpdated() );
 
-    BOOST_CHECK_EQUAL( VoltageRegulator::GangOperatedVoltageRegulatorType, regulator->getType() );
+    BOOST_CHECK_EQUAL( VoltageRegulator::LoadTapChangerType, regulator->getType() );
 
     CtiCCSubstationBusStore::deleteInstance();
 }

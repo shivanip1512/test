@@ -61,5 +61,60 @@ const bool MissingPointAttribute::complain( ) const
 {
     return _complain;
 }
+
+
+Phase resolvePhase( const std::string & p )
+{
+    if ( p == "A" )
+    {
+        return A;
+    }
+    else if ( p == "B" )
+    {
+        return B;
+    }
+    else if ( p == "C" )
+    {
+        return C;
+    }
+    else if ( p == "*" )
+    {
+        return Poly;
+    }
+//    else if ( p == "?" )
+
+    return Unknown;
+}
+
+
+std::string desolvePhase( const Phase & p )
+{
+    switch ( p )
+    {
+        case A:
+        {
+            return "A";
+        }
+        case B:
+        {
+            return "B";
+        }
+        case C:
+        {
+            return "C";
+        }
+    
+        case Poly:
+        {
+            return "*";
+        }
+//        default:
+//        case Unknown:
+    }
+
+    return "?";
+}
+
+
 }
 }

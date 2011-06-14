@@ -122,8 +122,27 @@ VoltageRegulator * PhaseOperatedVoltageRegulator::replicate() const
 }
 
 
+/*
+    GangOperatedVoltageRegulator is a CooperCL6 attached to all three phases
+    PhaseOperatedVoltageRegulatorType is a CooperCL6 attached to only one phase.
+        A distinction without a difference as the phase behavior is controlled by the
+        zone type that the regulator is attached to.
+
+    The CooperCL6 functionality is contained here in the PhaseOperatedVoltageRegulator class.
+ 
+    The PaoType() is poorly named - time permitting it will be changed and the relevent
+        classes renamed and reduced to only 2 different types from the original 3.
+ 
+        GangOperatedVoltageRegulator    --> BeckwithLTC
+        PhaseOperatedVoltageRegulator   --> CooperCL6 
+*/
 const VoltageRegulator::Type PhaseOperatedVoltageRegulator::getType() const
 {
+    if ( getPaoType() == VoltageRegulator::GangOperatedVoltageRegulator )
+    {
+        return VoltageRegulator::GangOperatedVoltageRegulatorType;
+    }
+
     return VoltageRegulator::PhaseOperatedVoltageRegulatorType;
 }
 

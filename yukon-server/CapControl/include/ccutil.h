@@ -22,6 +22,21 @@ enum CapControlType
     VoltageRegulatorType
 };
 
+
+enum Phase
+{
+    Unknown,
+    A,
+    B,
+    C,
+    Poly
+};
+
+
+Phase       resolvePhase( const std::string & p );
+std::string desolvePhase( const Phase & p );
+
+
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString);
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString, const std::string& user);
 bool isQualityOk(unsigned quality);

@@ -53,12 +53,9 @@ private:
 
         switch (Id)
         {
-//        case 100: newZone = ZoneManager::SharedPtr( new Zone( Id, 135, 34, 35, "The Neutral Zone" ) );  break;
-  //      case 110: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 76, 48, "The Twilight Zone" ) ); break;
-    //    case 115: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 37, 48, "The Dead Zone" ) );
-            case 100: newZone = ZoneManager::SharedPtr( new Zone( Id, 135, 35, "The Neutral Zone" ) );  break;
-            case 110: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 48, "The Twilight Zone" ) ); break;
-            case 115: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 48, "The Dead Zone" ) );
+            case 100: newZone = ZoneManager::SharedPtr( new Zone( Id, 135, 35, "The Neutral Zone", "GANG_OPERATED" ) );  break;
+            case 110: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 48, "The Twilight Zone", "GANG_OPERATED" ) ); break;
+            case 115: newZone = ZoneManager::SharedPtr( new Zone( Id, 115, 48, "The Dead Zone", "GANG_OPERATED" ) );
                 newZone->addChildId(110);
                 break;
 

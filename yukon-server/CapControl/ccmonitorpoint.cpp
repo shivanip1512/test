@@ -16,6 +16,7 @@
 
 #include "dbaccess.h"
 #include "ccid.h"
+#include "ccutil.h"
 #include "ccmonitorpoint.h"
 #include "pointdefs.h"
 #include "logger.h"
@@ -32,6 +33,7 @@ RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint::CtiCCMonitorPoint() :
+_phase(Cti::CapControl::Unknown),
 _pointId(0),              
 _bankId(0),               
 _displayOrder(0),         
@@ -362,6 +364,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
 {
     if( this != &rght )
     {
+        _phase = rght._phase;
         _pointId = rght._pointId;
         _bankId = rght._bankId;
         _displayOrder = rght._displayOrder;
@@ -410,6 +413,15 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
 
     CtiTime dynamicTimeStamp;
     string tempBoolString;
+
+    if ( ! rdr["Phase"].isNull() )
+    {
+        std::string phaseStr;
+
+        rdr["Phase"] >> phaseStr;
+        CtiToUpper(phaseStr);
+        _phase = Cti::CapControl::resolvePhase(phaseStr);
+    }
 
     rdr["bankid"] >> _bankId;
     rdr["pointid"] >> _pointId;
@@ -571,5 +583,23 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             }
         }
     }
+}
+
+
+Cti::CapControl::Phase  CtiCCMonitorPoint::getPhase() const
+{
+    return _phase;
+}
+
+
+CtiCCMonitorPoint &  CtiCCMonitorPoint::setPhase( const Cti::CapControl::Phase & phase )
+{
+    if ( _phase != phase )
+    {
+        _phase = phase;
+        _dirty = TRUE;
+    }
+
+    return *this;
 }
 

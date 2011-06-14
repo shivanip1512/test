@@ -141,7 +141,7 @@ void ZoneDBLoader::loadBankParameters(const long Id, ZoneManager::ZoneMap &zones
 
 void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
-    static const std::string sql =   "SELECT PointId, ZoneId FROM PointToZoneMapping";
+    static const std::string sql =   "SELECT PointId, ZoneId, Phase FROM PointToZoneMapping";
     static const std::string where = " WHERE ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
@@ -178,11 +178,14 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
 
         if ( zone != zones.end() )
         {
+            std::string phase;
+
             rdr["PointId"] >> Id;
+            rdr["Phase"]   >> phase;
 
             if ( rdr.isValid() )                    // reader is ~still~ valid
             {
-                zone->second->addPointId(Id);
+                zone->second->addPointId( resolvePhase( phase ), Id );
             }
         }
     }
@@ -230,7 +233,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
         if ( zone != zones.end() )
         {
             long        regulatorId;
-            std::string phase("X");         // 'X' will be the designator for a gang-operated regulator (all phases)
+            std::string phase( desolvePhase( Poly ) );      // default to gang operated in the case of rdr["Phase"] == null
 
             rdr["RegulatorId"] >> regulatorId;
 
@@ -239,11 +242,12 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
                 rdr["Phase"] >> phase;
             }
 
-            zone->second->addRegulatorId( phase[0], regulatorId );
+            zone->second->addRegulatorId( resolvePhase( phase ), regulatorId );
         }
     }
 }
 
-}   // namespace Cti
-}   // namespace CapControl
+
+}
+}
 

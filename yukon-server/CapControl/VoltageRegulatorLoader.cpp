@@ -77,12 +77,12 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
         {
             VoltageRegulatorManager::SharedPtr regulator;
 
-            if ( regulatorType == VoltageRegulator::LoadTapChanger || 
-                 regulatorType == VoltageRegulator::GangOperatedVoltageRegulator )
+            if ( regulatorType == VoltageRegulator::LoadTapChanger )
             {
                 regulator.reset( new GangOperatedVoltageRegulator(rdr) );
             }
-            else if ( regulatorType == VoltageRegulator::PhaseOperatedVoltageRegulator )
+            else if ( regulatorType == VoltageRegulator::PhaseOperatedVoltageRegulator ||
+                      regulatorType == VoltageRegulator::GangOperatedVoltageRegulator )
             {
                 regulator.reset( new PhaseOperatedVoltageRegulator(rdr) );
             }

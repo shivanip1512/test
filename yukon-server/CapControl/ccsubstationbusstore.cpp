@@ -7371,7 +7371,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
         {
             //LOADING OF MONITOR POINTS.
             static const string sqlNoID =  "SELECT MB.bankid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase "
                                            "FROM ccmonitorbanklist MB";
 
             Cti::Database::DatabaseConnection connection;
