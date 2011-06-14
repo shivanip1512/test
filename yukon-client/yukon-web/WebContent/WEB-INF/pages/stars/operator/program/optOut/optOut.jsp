@@ -51,6 +51,7 @@
                     <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" 
                                      var="formattedDate"/>
                     <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
+                    <input type="hidden" name="startDate" value="${formattedDate}" />
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
                     <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" 
