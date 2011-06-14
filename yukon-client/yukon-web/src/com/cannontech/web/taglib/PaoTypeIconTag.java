@@ -21,11 +21,17 @@ public class PaoTypeIconTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         PaoType paoType = yukonPao.getPaoIdentifier().getPaoType();
-        String deviceIconTypeClass = paoDefinitionDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE);
+
+        String deviceIconTypeClass = null;
+        try {
+            deviceIconTypeClass = paoDefinitionDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE);
+        } catch (IllegalArgumentException e) {
+            // We didn't find a Device_Icon_Type PaoTag.
+        }
 
         JspWriter out = getJspContext().getOut();
-
         out.print("<span class=\"icon "+deviceIconTypeClass+"\"></span>");
+        
     }
     
     public void setYukonPao(YukonPao yukonPao) {

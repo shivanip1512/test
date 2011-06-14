@@ -4272,6 +4272,9 @@
         	</attribute>
        	</attributes>
        	<tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>electric_meter</value>
+            </tag>
     		<tag name="PORTER_COMMAND_REQUESTS"/>
         </tags>
       	

@@ -346,7 +346,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         Validate.isTrue(returnType.isAssignableFrom(tag.getValueType().getTypeClass()), "can't convert " + tag + " to " + returnType);
         PaoTagDefinition tagDefinition = getSupportedTag(paoType, tag);
         if (tagDefinition == null) {
-            throw new RuntimeException("no value of " + tag + " for " + paoType + " that is supported");
+            throw new IllegalArgumentException("no value of " + tag + " for " + paoType + " that is supported");
         }
         Object convertedValue = tagDefinition.getValue();
 
