@@ -7,8 +7,10 @@
 
 #include "lmgroupbase.h"
 #include "observe.h"
+#include "GroupControlInterface.h"
+#include "SepControlInterface.h"
                 
-class LMGroupDigiSEP : public CtiLMGroupBase
+class LMGroupDigiSEP : public CtiLMGroupBase, Cti::LoadManagement::GroupControlInterface, Cti::LoadManagement::SEPControlInterface
 {
 
 public:
@@ -32,8 +34,6 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     virtual bool sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop);
     virtual bool sendStopControl(bool stopImmediately);
     virtual bool sendShedControl(long controlMinutes);
-
-    virtual bool isSmartGroup() { return true; }
 
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;

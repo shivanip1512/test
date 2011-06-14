@@ -119,13 +119,6 @@ public:
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;// CtiLMGroupExpresscom
-    virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, long criticality, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
-    virtual bool sendSEPTempOffsetControl(long controlMinutes, long heatOffset, long coolOffset, bool isCelsius, long criticality, bool randomizeStart, bool randomizeStop);
-    virtual bool sendStopControl(bool stopImmediately);
-    virtual bool sendShedControl(long controlMinutes);
-
-    //Returns true if this group has new functionality such as sending its own messages, not using request messages.
-    virtual bool isSmartGroup() { return false; }
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

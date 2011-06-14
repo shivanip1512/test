@@ -222,7 +222,8 @@ executor.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
 		lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h lmprogramcontrolwindow.h \
-		devicetypes.h lmconstraint.h lmutility.h
+		devicetypes.h lmconstraint.h lmutility.h \
+		GroupControlInterface.h
 lmcicustomerbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -463,7 +464,8 @@ lmfactory.obj:	yukon.h precompiled.h types.h ctidbgmem.h lmfactory.h \
 		sema.h database_reader.h row_reader.h boost_time.h msg_cmd.h \
 		logger.h thread.h CtiPCPtrQueue.h resolvers.h pointtypes.h \
 		db_entry_defines.h devicetypes.h lmgroupversacom.h \
-		lmgroupdigisep.h lmgroupemetcon.h lmgroupexpresscom.h \
+		lmgroupdigisep.h GroupControlInterface.h \
+		SepControlInterface.h lmgroupemetcon.h lmgroupexpresscom.h \
 		lmgroupmct.h lmgroupripple.h lmgrouppoint.h lmgroupsa105.h \
 		lmgroupsa205.h lmgroupsa305.h lmgroupsadigital.h \
 		lmgroupgolay.h lmgroupmacro.h
@@ -492,7 +494,8 @@ lmgroupdigisep.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		dsm2err.h words.h optional.h sema.h database_reader.h \
-		row_reader.h boost_time.h msg_cmd.h lmid.h logger.h thread.h \
+		row_reader.h boost_time.h msg_cmd.h GroupControlInterface.h \
+		SepControlInterface.h lmid.h logger.h thread.h \
 		CtiPCPtrQueue.h amq_connection.h critical_section.h \
 		activemqcpp.h connection.h lmsepcontrolmessage.h \
 		lmseprestoremessage.h
@@ -935,7 +938,8 @@ sepcyclegear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		tbl_lmprogramhistory.h smartgearbase.h
+		tbl_lmprogramhistory.h smartgearbase.h \
+		GroupControlInterface.h SepControlInterface.h
 septempoffsetgear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		septempoffsetgear.h lmprogramdirect.h boostutil.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -950,7 +954,8 @@ septempoffsetgear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
 		tbl_lmprogramhistory.h lmprogramthermostatgear.h \
-		smartgearbase.h ctistring.h
+		smartgearbase.h GroupControlInterface.h SepControlInterface.h \
+		ctistring.h
 test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h numstr.h lmprogrambase.h \

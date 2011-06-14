@@ -37,7 +37,10 @@
 #include "lmconstraint.h"
 #include "ctidate.h"
 #include "utility.h"
+#include "GroupControlInterface.h"
+#include "lmgroupdigisep.h"
 
+using namespace Cti::LoadManagement;
 using std::vector;
 using std::string;
 using std::endl;
@@ -647,9 +650,14 @@ void CtiLMCommandExecutor::ShedGroup()
                             }
                         }
 
-                        if( currentLMGroup->isSmartGroup() )
+                        LMGroupDigiSEP *sepGroup = new LMGroupDigiSEP();
+                        GroupControlInterface *controllableGroup = dynamic_cast<GroupControlInterface *>(sepGroup);
+                        sepGroup->sendShedControl(1);
+                        delete sepGroup;
+
+                        if( GroupControlInterface *controllableGroup = dynamic_cast<GroupControlInterface*>(currentLMGroup.get()) )
                         {
-                            currentLMGroup->sendShedControl(shedTime/60);
+                            controllableGroup->sendShedControl(shedTime / 60);
                         }
                         else
                         {
@@ -812,9 +820,9 @@ void CtiLMCommandExecutor::RestoreGroup()
                             }
                         }
 
-                        if( currentLMGroup->isSmartGroup() )
+                        if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
                         {
-                            currentLMGroup->sendStopControl(true);
+                            controllableGroup->sendStopControl(true);
                         }
                         else
                         {
@@ -968,9 +976,9 @@ void CtiLMCommandExecutor::DisableGroup()
                                 }
                             }
 
-                            if( currentLMGroup->isSmartGroup() )
+                            if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
                             {
-                                currentLMGroup->sendStopControl(true);
+                                controllableGroup->sendStopControl(true);
                             }
                             else
                             {
