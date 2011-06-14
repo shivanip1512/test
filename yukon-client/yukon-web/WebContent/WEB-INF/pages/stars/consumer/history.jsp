@@ -9,15 +9,15 @@
 <cti:standardMenu/>
 
 <h3>
-    <cti:msg key="yukon.dr.consumer.history.header" /><br>
-<%--     <cti:msg var="label" key="${thermostatLabel}" htmlEscape="true"/><br> --%>
-<%--     ${label} --%>
+    <cti:msg key="yukon.web.modules.consumer.history.pageTitle" /><br>
+    <c:forEach var="stat" items="${thermostats}">
+        &#160;${stat.label}&#160;
+    </c:forEach>
 </h3>
 
 <c:set var="multipleThermostatsSelected" value="false"></c:set>
-<%-- <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set> --%>
-<%-- <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/> --%>
-                <tags:pagedBox title="::HISTORY::" searchResult="${searchResult}"
+<cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
+                <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
                     filterDialog="" baseUrl="/spring/stars/consumer/thermostat/schedule/history"
                     isFiltered="false" showAllUrl="/spring/stars/consumer/thermostat/schedule/history">
                     <c:choose>

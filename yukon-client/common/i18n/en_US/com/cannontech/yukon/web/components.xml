@@ -196,6 +196,11 @@
     <entry key="yukon.web.components.button.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
     
+    <entry key="yukon.web.components.button.copy.imageUrl">/WebConfig/yukon/Icons/copy.gif</entry>
+    <entry key="yukon.web.components.button.copy.hoverUrl">/WebConfig/yukon/Icons/copy_over.gif</entry>
+    <entry key="yukon.web.components.button.copy.hoverText">Copy</entry>
+    <entry key="yukon.web.components.button.copy.label">Copy</entry>
+    
     <entry key="yukon.web.components.button.disabledEdit.imageUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
     <entry key="yukon.web.components.button.disabledEdit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.disabledEdit.label">Edit</entry>

@@ -16,614 +16,235 @@
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
     <cti:includeCss link="/WebConfig/yukon/styles/StarsConsumerStyles.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
     
-    <tags:setFormEditMode mode="${mode}"/>
-    
-    <table width="760" border="0" cellspacing="0" cellpadding="0">
-      <tr>
-        <td>
-        
     <!-- Add language specific time formatter -->
     <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
-    <script language="JavaScript" type="text/javascript"  src="${timeFormatter}"></script>
+    <cti:includeScript link="${timeFormatter}"/>
+    <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
+    <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
     
-    <script language="JavaScript" type="text/javascript"  src="/JavaScript/nav_menu.js"></script>
-    <script language="JavaScript" type="text/javascript"  src="/JavaScript/drag.js"></script>
-    <script language="JavaScript" type="text/javascript"  src="/JavaScript/thermostatSchedule.js"></script>
-    <script language="JavaScript" type="text/javascript"  src="/JavaScript/temp_conversion.js"></script>
-
+    <script>
+    var TIME_SLIDER = null;
+    Event.observe(window, 'load', function(){
+        Yukon.ThermostatScheduleEditor.upperHeatF = ${schedule.thermostatType.upperLimitHeatInFahrenheit};
+        Yukon.ThermostatScheduleEditor.lowerHeatF = ${schedule.thermostatType.lowerLimitHeatInFahrenheit};
+        Yukon.ThermostatScheduleEditor.upperCoolF = ${schedule.thermostatType.upperLimitCoolInFahrenheit};
+        Yukon.ThermostatScheduleEditor.lowerCoolF = ${schedule.thermostatType.lowerLimitCoolInFahrenheit};
+        Yukon.ThermostatScheduleEditor.initPrototype();
+        
+        //scroll the schedule into view
+        var scheduleId = Yukon.ui.getParameterByName('scheduleId');
+        if(scheduleId != null){
+            window.location.hash = "scheduleId_" + scheduleId;
+        }
+    });
+    </script>
+    
     <cti:msg var="noScheduleName" key="yukon.web.modules.operator.thermostatSchedule.noScheduleName" />
     <cti:msg var="saveScheduleText" key="yukon.web.modules.operator.thermostatSchedule.saveScheduleText" />
     <cti:msg var="modeChangeText" key="yukon.web.modules.operator.thermostatSchedule.modeChangeText" />
     
-<script type="text/javascript">
+<tags:setFormEditMode mode="${mode}"/>
 
-    Event.observe(window, 'load', function(){init();});
+<!-- Sliders -->
+<div id="timeSlider" class="slider">
+    <div class="chevron"></div>
+    <div class="startLabel fl"></div>
+    <div class="track">
+        <div class="handle"></div>
+    </div>
+    <div class="endLabel fr"></div>
+</div>
 
-    // things that thermostat.js is expecting to get set dynamically
-    currentScheduleMode = '${scheduleMode}';
+<div id="tempSlider" class="slider">
+    <div class="chevron"></div>
+    <div class="box fl tempHolder ${temperatureUnit}">
+        <div class="startLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+    </div>
+    <div class="track">
+        <div class="handle"></div>
+    </div>
+    <div class="box fr tempHolder ${temperatureUnit}">
+        <div class="endLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+    </div>
+</div>
+<!-- END Sliders -->
 
-    lowerLimitCool = ${schedule.thermostatType.lowerLimitCoolInFahrenheit};
-    upperLimitCool = ${schedule.thermostatType.upperLimitCoolInFahrenheit};
-    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeatInFahrenheit};
-    upperLimitHeat = ${schedule.thermostatType.upperLimitHeatInFahrenheit};
-
-    tempUnit = '${temperatureUnit}';
-    
-    var schedules = null;
-
-    function init() {
-        schedules = $H('${scheduleJSONString}'.evalJSON());
-
-        // convert raw objects to $H objects.  As of prototype 1.6 you cannot directly reference
-        // hash members.  The code in thermostatSchedule.js assumes that the members of  schedules.season
-        // have been constructed as a Hash
-        for(i in schedules.get('season')){
-            var tmp = schedules.get('season')[i];
-            for(var j=0; j<tmp.length; j++){
-                tmp[j] = $H(tmp[j]);
-            }
-        }
+<table width="760" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>
         
-        $('schedules').value = Object.toJSON(schedules);
-        
-        setCurrentSchedule(currentTimePeriod);
-    }
-    
-    function saveSchedule(action) {
-    
-        // Save the current settings before submitting form
-        getCurrentSchedule(currentTimePeriod);
-       
-        $('scheduleForm').submit();
-        
-    }
-    
-    function alertSaveSchedule() {
-    
-        if(!viewHasChanged){
-            return true;
-        }
-        
-        var continueNoSave = confirm('${saveScheduleText}');
-        if(continueNoSave) {
-           viewHasChanged = false;
-        }
-        
-        return continueNoSave;
-    }
-    
-    function alertModeChange() {
-    
-        var continueNoSave = confirm('${modeChangeText}');
-        if(continueNoSave) {
-           viewHasChanged = false;
-        }
-        
-        return continueNoSave;
-    }
-    
-    
-</script>
-
-    <!-- Images for schedule 'slidey bar' -->
-    <cti:theme var="thermostatScheduleBackground" key="yukon.web.modules.operator.thermostatSchedule.thermostatScheduleBackground" default="/WebConfig/yukon/ThermImages/TempBG2.gif" url="true"/>
-    
-    <cti:theme var="grayLeftArrow" key="yukon.web.modules.operator.thermostatSchedule.grayLeftArrow" default="/WebConfig/yukon/ThermImages/GrayArrowL.gif" url="true"/>
-    <cti:theme var="grayRightArrow" key="yukon.web.modules.operator.thermostatSchedule.grayRightArrow" default="/WebConfig/yukon/ThermImages/GrayArrowR.gif" url="true"/>
-    <cti:theme var="blueArrow" key="yukon.web.modules.operator.thermostatSchedule.blueArrow" default="/WebConfig/yukon/ThermImages/BlueArrow.gif" url="true"/>
-    <cti:theme var="redArrow" key="yukon.web.modules.operator.thermostatSchedule.redArrow" default="/WebConfig/yukon/ThermImages/RedArrow.gif" url="true"/>
-    
-    <cti:theme var="thermW" key="yukon.web.modules.operator.thermostatSchedule.thermW" default="/WebConfig/yukon/ThermImages/ThermW.gif" url="true"/>
-    <cti:theme var="thermL" key="yukon.web.modules.operator.thermostatSchedule.thermL" default="/WebConfig/yukon/ThermImages/ThermL.gif" url="true"/>
-    <cti:theme var="thermR" key="yukon.web.modules.operator.thermostatSchedule.thermR" default="/WebConfig/yukon/ThermImages/ThermR.gif" url="true"/>
-    <cti:theme var="thermS" key="yukon.web.modules.operator.thermostatSchedule.thermS" default="/WebConfig/yukon/ThermImages/ThermS.gif" url="true"/>
-    <cti:theme var="thermO" key="yukon.web.modules.operator.thermostatSchedule.thermO" default="/WebConfig/yukon/ThermImages/OcTherm.gif" url="true"/>
-    <cti:theme var="thermU" key="yukon.web.modules.operator.thermostatSchedule.thermU" default="/WebConfig/yukon/ThermImages/UnOcTherm.gif" url="true"/>
-    
-    
-    <c:set var="twoBars" value="${schedule.thermostatType == 'COMMERCIAL_EXPRESSSTAT'}" />
-    
-    <c:set var="timeOfWeek" value="WEEKDAY" />
-    
-    <cti:msg var="degreesCelsius" key="yukon.web.modules.operator.thermostatSchedule.degreesCelsius" /> 
-    <cti:msg var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatSchedule.degreesFahrenheit" /> 
     
     <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
-
-        <input id="ecId" type="hidden" name="ecId" value="${ecId}">
-        <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
-        <input id="schedules" type="hidden" name="schedules">
-        <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">
-        <input id="scheduleId" type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
-        <input id="timeOfWeek" type="hidden" name="timeOfWeek" value="WEEKDAY">
-        <input id="scheduleName" type="hidden" name="scheduleName" value="${schedule.scheduleName}">
-        
-        <input type="hidden" name="ConfirmOnMessagePage">
-        <input type="hidden" name="tempC1" id="tempC1">
-        <input type="hidden" name="tempC2" id="tempC2">
-        <input type="hidden" name="tempC3" id="tempC3">
-        <input type="hidden" name="tempC4" id="tempC4">
-
-        <input type="hidden" name="tempH1" id="tempH1">
-        <input type="hidden" name="tempH2" id="tempH2">
-        <input type="hidden" name="tempH3" id="tempH3">
-        <input type="hidden" name="tempH4" id="tempH4">
-
-        <table width="80%" border="1" cellspacing="0" cellpadding="2">
-            <tr> 
-                <td align="center" valign="bottom" class="Background"> 
-                    <table width="90%" border="0" height="8">
-                        <tr> 
-                            <td align="left"> 
-                                <input id="radioALL" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
-                                <label class="timePeriodText" for="radioALL">
-                                    <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleModeAll" />
-                                </label><br>
-                                <c:if test="${schedule.thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
-                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
-                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleMode52" />
-                                    </label><br>
-                                </c:if>
-                                <input id="radioWEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
-                                <label class="timePeriodText" for="radioWEEKDAY_SAT_SUN">
-                                    <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleMode511" />
-                                </label><br>
-                            </td>
-                            <td align="right"> 
-                                <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY" /></span> 
-
-                                <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></span> 
-                                <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></a> 
-
-                                <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></span>
-                                <a id="saturdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SATURDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SATURDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></a> 
-
-                                <span id="sundayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SUNDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></span> 
-                                <a id="sundayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SUNDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SUNDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></a> 
-
-                                <span id="weekendText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKEND')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></span>
-                                <a id="weekendLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKEND' || scheduleMode == 'WEEKDAY_WEEKEND')? '' : 'none'}" href="javascript:changeTimePeriod('WEEKEND')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></a> 
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr> 
-                <td align="center"> 
-                    <table width="80%" border="0">
-                        <tr>
-                            <td class="TableCell" style="width: 50%; text-align: left; vertical-align: top;"> 
-                                <cti:msg key="yukon.web.modules.operator.thermostatSchedule.instructions" />
-                            </td>
-                            <td class="TableCell"  style="width: 50%; text-align: left; vertical-align: top; padding-top: 11px;"> 
-                                &nbsp;
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <table width="478" height="186" background="${thermostatScheduleBackground}" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td width="50">
-                                <div id="MovingLayer1" class="movingBar" style="z-index:1; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');viewChanged();">
-                                    <table class="movingTable">
-                                        <tr>
-                                            <td align="center" colspan="2">
-                                                <img src="${thermW}" class="barImage">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td width="50%">
-                                                <div id="div1C" class="barCool">
-                                                    <img id="arrow1C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateCoolTemp(1)','vertical','div1C');viewChanged();"></img>
-                                                </div>
-                                            </td>
-                                            <td width="50%">
-                                                <div id="div1H" class="barHeat">
-                                                    <img id="arrow1H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateHeatTemp(1)','vertical','div1H');viewChanged();"></img>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td width="50">
-                                <div id="MovingLayer2" class="movingBar" style="z-index:2; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');viewChanged();"> 
-                                    <table class="movingTable">
-                                        <tr>
-                                            <td align="center" colspan="2">
-                                                <img src="${thermL}" class="barImage"> 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td width="50%">
-                                                <div id="div2C" class="barCool">
-                                                    <img id="arrow2C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateCoolTemp(2)','vertical','div2C');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                            <td width="50%">
-                                                <div id="div2H" class="barHeat">
-                                                    <img id="arrow2H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateHeatTemp(2)','vertical','div2H');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td width="50">
-                                <div id="MovingLayer3" class="movingBar" style="z-index:3;" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');viewChanged();"> 
-                                    <table class="movingTable">
-                                        <tr> 
-                                            <td align="center" colspan="2">
-                                                <img src="${(twoBars)? thermO : thermR}" class="barImage"> 
-                                            </td>
-                                        </tr>
-                                        <tr> 
-                                            <td width="50%"> 
-                                                <div id="div3C" class="barCool"> 
-                                                    <img id="arrow3C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateCoolTemp(3)','vertical','div3C');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                            <td width="50%"> 
-                                                <div id="div3H" class="barHeat"> 
-                                                    <img id="arrow3H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateHeatTemp(3)','vertical','div3H');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td width="50">
-                                <div id="MovingLayer4" class="movingBar" style="z-index:4;" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');viewChanged();"> 
-                                    <table class="movingTable">
-                                        <tr> 
-                                            <td align="center" colspan="2">
-                                                <img src="${(twoBars)? thermU : thermS}" class="barImage"> 
-                                            </td>
-                                        </tr>
-                                        <tr> 
-                                            <td width="50%"> 
-                                                <div id="div4C" class="barCool"> 
-                                                    <img id="arrow4C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateCoolTemp(4)','vertical','div4C');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                            <td width="50%"> 
-                                                <div id="div4H" class="barHeat"> 
-                                                    <img id="arrow4H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateHeatTemp(4)','vertical','div4H');viewChanged();" ></img>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td>&nbsp;</td>
-                        </tr>
-                    </table>
-                    <c:choose>
-                        <c:when test="${twoBars}">
-                            <table width="100%" border="0" height="27">
-                                <tr>
-                                    <td width="10%">&nbsp;</td> 
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.occupied" />
-                                    </td>
-                                    <td width="10%">&nbsp;</td>
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.unoccupied" />
-                                    </td>
-                                </tr>
-                                <tr> 
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <input id="time1" type="hidden" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
-                                        <input id="time1min" type="hidden" size="8" name="time1min">
-                                        <input id="time2" type="hidden" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
-                                        <input id="time2min" type="hidden" size="8" name="time2min">
-                                        <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
-                                        <input id="time3min" type="hidden" size="8" name="time3min">
-                                    </td>
-                                    <td class="fieldLabel" width="10%">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
-                                        <input id="time4min" type="hidden" size="8" name="time4min">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <span style="display: none;">
-                                            <input id="tempCin1" type="text" size="3" value="" name="tempCin1" onchange="tempChange(1, coolMode);viewChanged();">
-                                            <span id="tempCin1F"></span>
-                                            <span id="tempCin1C"></span>
-                                         </span>
-                                        <span style="display: none;">
-                                            <span id="tempCin2F"></span>
-                                            <span id="tempCin2C"></span>
-                                            <input id="tempCin2" type="hidden" size="3" value="" name="tempCin2" onchange="tempChange(2, coolMode);viewChanged();">
-                                        </span>
-
-                                        <input id="tempCin3" type="text" size="3" value="" name="tempCin3" onchange="tempChange(3, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin3F">${degreesFahrenheit}</span><span id="tempCin3C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin3C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempCin4" type="text" size="3" value="" name="tempCin4" onchange="tempChange(4, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin4F">${degreesFahrenheit}</span><span id="tempCin4C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin4C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <span style="display: none;">
-                                            <span id="tempHin1F"></span>
-                                            <span id="tempHin1C"></span>
-                                            <input id="tempHin1" type="hidden" size="3" value="" name="tempHin1" onchange="tempChange(1, heatMode);viewChanged();">
-                                        </span>
-                                        
-                                        <span style="display: none;">
-                                            <span id="tempHin2F"></span>
-                                            <span id="tempHin2C"></span>
-                                            <input id="tempHin2" type="hidden" size="3" value="" name="tempHin2" onchange="tempChange(2, heatMode);viewChanged();">
-                                        </span>
-                                        <input id="tempHin3" type="text" size="3" value="" name="tempHin3" onchange="tempChange(3, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin3F">${degreesFahrenheit}</span><span id="tempHin3C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin3C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempHin4" type="text" size="3" value="" name="tempHin4" onchange="tempChange(4, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin4F">${degreesFahrenheit}</span><span id="tempHin4C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin4C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                            </table>
-                        </c:when>
-                        <c:otherwise>
-                            <table width="100%" border="0" height="27">
-                                <tr>
-                                    <td width="10%">&nbsp;</td> 
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.wake" />
-                                    </td>
-                                    <td width="10%">&nbsp;</td>
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.leave" />
-                                    </td>
-                                    <td width="10%">&nbsp;</td>
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.return" />
-                                    </td>
-                                    <td width="10%">&nbsp;</td>
-                                    <td class="timeOfDayLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.sleep" />
-                                    </td>
-                                </tr>
-                                <tr> 
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
-                                        <input id="time1min" type="hidden" size="8" name="time1min">
-                                    </td>
-                                    <td class="fieldLabel" width="10%">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="time2" type="text" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
-                                        <input id="time2min" type="hidden" size="8" name="time2min">
-                                    </td>
-                                    <td class="fieldLabel" width="10%">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
-                                        <input id="time3min" type="hidden" size="8" name="time3min">
-                                    </td>
-                                    <td class="fieldLabel" width="10%">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
-                                        <input id="time4min" type="hidden" size="8" name="time4min">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <input id="tempCin1" type="text" size="3" value="" name="tempCin1" onchange="tempChange(1, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin1F">${degreesFahrenheit}</span><span id="tempCin1C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin1C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempCin2" type="text" size="3" value="" name="tempCin2" onchange="tempChange(2, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin2F">${degreesFahrenheit}</span><span id="tempCin2C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin2F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin2C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempCin3" type="text" size="3" value="" name="tempCin3" onchange="tempChange(3, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin3F">${degreesFahrenheit}</span><span id="tempCin3C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin3C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempCin4" type="text" size="3" value="" name="tempCin4" onchange="tempChange(4, coolMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempCin4F">${degreesFahrenheit}</span><span id="tempCin4C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempCin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin4C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField">  
-                                        <input id="tempHin1" type="text" size="3" value="" name="tempHin1" onchange="tempChange(1, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin1F">${degreesFahrenheit}</span><span id="tempHin1C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin1C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempHin2" type="text" size="3" value="" name="tempHin2" onchange="tempChange(2, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin2F">${degreesFahrenheit}</span><span id="tempHin2C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin2F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin2C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempHin3" type="text" size="3" value="" name="tempHin3" onchange="tempChange(3, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin3F">${degreesFahrenheit}</span><span id="tempHin3C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin3C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="fieldLabel">
-                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
-                                    </td>
-                                    <td class="timeTempField"> 
-                                        <input id="tempHin4" type="text" size="3" value="" name="tempHin4" onchange="tempChange(4, heatMode);viewChanged();">
-                                        <c:choose>
-                                            <c:when test="${temperatureUnit == 'F'}">
-                                                <span id="tempHin4F">${degreesFahrenheit}</span><span id="tempHin4C" style="display: none;">${degreesCelsius}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span id="tempHin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin4C">${degreesCelsius}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                            </table>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </tr>
-            <tr>
-                <td class="modeText">
-                    <cti:msg key="yukon.web.modules.operator.thermostatSchedule.mode" />
-                    <c:choose>
-                        <c:when test="${temperatureUnit == 'F'}">
-                            <a id="celsiusLink" href="javascript:setTempUnits('C');">${degreesCelsius}</a>
-                            <span id="celsiusSpan" style="display: none;">${degreesCelsius}</span> | 
-                            <a id="fahrenheitLink" style="display: none;" href="javascript:setTempUnits('F');">${degreesFahrenheit}</a>
-                            <span id="fahrenheitSpan">${degreesFahrenheit}</span>
-                        </c:when>
-                        <c:otherwise>
-                            <a id="celsiusLink" style="display: none;" href="javascript:setTempUnits('C');">${degreesCelsius}</a>
-                            <span id="celsiusSpan">${degreesCelsius}</span> | 
-                            <a id="fahrenheitLink" href="javascript:setTempUnits('F');">${degreesFahrenheit}</a>
-                            <span id="fahrenheitSpan" style="display: none;">${degreesFahrenheit}</span>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </tr>
-        </table>
-        
-        <br>
-        
-        <table width="80%" border="0" cellpadding="5">
-            <tr>
-                <td style="text-align: center;"> 
-                    <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"/>
-                    <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
-                </td>
-            </tr>
-            
-        </table>
     </form>
-        </td>
-      </tr>
-    </table>
+    
+    <div class="schedule small <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
+    <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">
+        <div class="titleBar boxContainer_titleBar">
+            <div class="title boxContainer_title">
+                <cti:msg2 key=".lastSent"/>
+            </div>
+        </div>
+    </c:if>
+    <div class="boxContainer_content">
+        <form method="POST" action="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
+            <input type="hidden" name="thermostatType" value="${schedule.thermostatType}">
+            <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
+            <input type="hidden" name="scheduleName" value="${schedule.scheduleName}">
+            <input type="hidden" name="scheduleMode" value="">
+            <input type="hidden" name="schedules" value="">
+            <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
+            <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
+            
+            <div class="heading">
+                <span class="title"><spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody></span>
+            </div>
+            <div class="days fl">
+                <span class="labels">
+                    <label class="label fl"></label>
+                    <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
+                        <div class="period">
+                            <cti:msg2 key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                            <br>
+                            <small class="heat_cool_label"><span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
+                        </div>
+                    </c:forEach>
+                </span>
+                
+                <c:forEach var="day" items="${schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
+                        <c:choose>
+                          <c:when test="${rowCounter.count % 2 == 0}">
+                            <c:set var="rowStyle" scope="page" value="odd"/>
+                          </c:when>
+                          <c:otherwise>
+                            <c:set var="rowStyle" scope="page" value="even"/>
+                          </c:otherwise>
+                        </c:choose>
+                        <div class="day active ${rowStyle}">
+                        <div class="periods">
+                            <c:choose>
+                                <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
+                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                </c:when>
+                                <c:otherwise>
+                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:forEach var="period" items="${day.value}">
+                                <!-- Comeup with a better way to determine mode -->
+                                <c:if test="${period.heatTemp.value gt -1 }">
+                                    <div class="period period_view">
+                                        <input type="hidden" name="timeOfWeek" value="${day.key}">
+                                        <div class="info time">
+                                            <span class="time"></span>
+                                            <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
+                                        </div>
+                                        <div class="temp heat ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/>">
+                                            <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><span class="hide_when_editing">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span></span>
+                                        </div>
+                                        <div class="temp cool ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/>">
+                                            <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><span class="hide_when_editing">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span></span>
+                                        </div>
+                                    </div>
+                                </c:if>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </c:forEach>
+                
+            </div>
+            <div class="actions">
+                    <cti:button key="edit" renderMode="labeledImage" styleClass="edit edit_${schedule.accountThermostatScheduleId}" />
+            </div>
+        </form>
+</div>
+        <cti:msg2 var="editTitle" key=".editSchedule.title" argument="${schedule.scheduleName}" />
+        <tags:simplePopup title="${editTitle}" id="editSchedule_${schedule.accountThermostatScheduleId}" on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
+        <div class="container">
+            <div class="schedule_editor">
+                <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
+                    <input type="hidden" name="schedulableThermostatType" value="${schedule.thermostatType}">
+                    <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
+                    <input type="hidden" name="scheduleMode" value="">
+                    <input type="hidden" name="schedules" value="">
+                    <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
+                    <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
+                    <input type="hidden" name="ecId" value="${ecId}">
+                    
+                    <label for="scheduleName"><cti:msg2 key=".name"/></label><input type="text" name="scheduleName" value="${schedule.scheduleName}" initialValue="${schedule.scheduleName}" size="40" maxlength="60">
+    
+                    <div class="days fl">
+                        <span class="labels">
+                            <label class="label fl"></label>
+                            <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
+                                <div class="period">
+                                    <cti:msg2 key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                                    <br>
+                                    <small class="heat_cool_label"><span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
+                                </div>
+                            </c:forEach>
+                        </span>
+                        <c:forEach var="day" items="${schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
+                            <c:choose>
+                              <c:when test="${rowCounter.count % 2 == 0}">
+                                <c:set var="rowStyle" scope="page" value="odd"/>
+                              </c:when>
+                              <c:otherwise>
+                                <c:set var="rowStyle" scope="page" value="even"/>
+                              </c:otherwise>
+                            </c:choose>
+                            <div class="day active ${rowStyle} ${day.key}">
+                                <div class="periods">
+                                    <c:choose>
+                                        <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
+                                            <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:forEach var="period" items="${day.value}">
+                                    <!-- Comeup with a better way to determine mode -->
+                                        <c:if test="${period.heatTemp.value gt -1 }">
+                                            <div class="period period_edit ${period.timeOfWeek}">
+                                                <input type="hidden" name="timeOfWeek" value="${period.timeOfWeek}">
+                                                <div class="info time">
+                                                    <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}" initialValue="${period.startTime}">
+                                                    <input type="text" class="time" maxlength="8">
+                                                </div>
+                                                
+                                                <div class="temp heat ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/>">
+                                                    <input type="text" class="heat_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+                                                    <input type="hidden" value="${period.heatTemp.value}" initialValue="${period.heatTemp.value}" name="heat_F">
+                                                </div>
+                                                <div class="temp cool ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/>">
+                                                    <input type="text" class="cool_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+                                                    <input type="hidden" value="${period.coolTemp.value}" initialValue="${period.coolTemp.value}" name="cool_F">
+                                                </div>
+                                            </div>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="fr">
+                <tags:slowInput2 key="save" formId="form_${schedule.accountThermostatScheduleId}"/>
+                <cti:button key="cancel" styleClass="cancel" />
+            </div>
+        </div>
+        </tags:simplePopup>
+    </div>
+    
+
+    </td>
+  </tr>
+</table>
     
     
 </cti:standardPage>

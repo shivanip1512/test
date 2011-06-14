@@ -15,8 +15,7 @@
 <cti:url var="viewUrl" value="/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/edit?accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editMeterConfigUrl" value="/spring/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
-<cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
+<cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
 
@@ -462,7 +461,6 @@
                                 
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                     <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                        <cti:img key="editSchedule" href="${editScheduleUrl}${thermostat.inventoryId}"/>
                                         <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
                                     </c:if>
                                     <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">

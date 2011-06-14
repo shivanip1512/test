@@ -1,3 +1,6 @@
+var CURRENT_TIME_INPUT = null;
+var CURRENT_TEMP_INPUT = null;
+
 Yukon.ThermostatScheduleEditor = {
         
     upperHeatF: 99,
@@ -7,662 +10,445 @@ Yukon.ThermostatScheduleEditor = {
     currentUnit: 'fahrenheit',
     
     heatColor: {
-        r: {
-            start: 242,
-            end: 242
-        },
-        g: {
-            start: 150,
-            end: 0
-        },
-        b: {
-            start: 29,
-            end: 29
-        },
-        a: {
-            start: 1,
-            end: 1
-        }
+        r: {start: 242, end: 242},
+        g: {start: 150, end: 0},
+        b: {start: 29, end: 29},
+        a: {start: 1, end: 1}
     },
     
     coolColor: {
-        r: {
-            start: 64,
-            end: 189
-        },
-        g: {
-            start: 153,
-            end: 220
-        },
-        b: {
-            start: 255,
-            end: 255
-        },
-        a: {
-            start: 1,
-            end: 1
-        }
+        r: {start: 64, end: 189},
+        g: {start: 153, end: 220},
+        b: {start: 255, end: 255},
+        a: {start: 1, end: 1}
     },
     
+    initPrototype: function() {
+        Yukon.ThermostatScheduleEditor.renderTime();
+        Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
+       
+        $$(".time input:text").each(function(input){
+            input.observe('focus', Yukon.ThermostatScheduleEditor.showTimeSlider);
+            input.observe('blur', Yukon.ThermostatScheduleEditor.blurTimeInput);
+            input.observe('keyup', Yukon.ThermostatScheduleEditor.timeKeyup);
+        });
         
-    init: function(opts) {
-        var _self = Yukon.ThermostatScheduleEditor;
-        //merge the options
-        for(opt in opts){
-            if(_self[opt] != 'undefined'){
-                _self[opt] = opts[opt];
+        $$(".temp input:text").each(function(input){
+            input.observe('focus', Yukon.ThermostatScheduleEditor.showTempSlider);
+            input.observe('blur', Yukon.ThermostatScheduleEditor.blurTempInput);
+            input.observe('keyup', Yukon.ThermostatScheduleEditor.tempKeyup);
+        });
+        
+        TIME_SLIDER = new Control.Slider($("timeSlider").down('.handle'), $("timeSlider").down('.track'), {
+            range: $R(0, 24*60),
+            sliderValue: 0,
+            onSlide: function(value, e) {
+                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value);
+            },
+            onChange: function(value, e) {
+                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value), CURRENT_TIME_INPUT);
             }
-        }
+            
+        });
         
-        if(opts.thermostat){
-            for(key in opts.thermostat){
-                _self[key] = opts.thermostat[key];
-            }
-            _self.thermostat = opts.thermostat;
-        }
-        
-        _self.hookupControls();
-        
-        
-        if(opts.schedules){
-            $j(".schedules").addClass(Yukon.ui.getParameterByName('size') || "small");
-            for(var i=0; i<opts.schedules.length; i++){
-                if(opts.thermostat.currentScheduleId == opts.schedules[i].scheduleId){
-                    $j(".schedules").prepend(_self.render(opts.schedules[i], {
-                        meridian: true, 
-                        size: Yukon.ui.getParameterByName('size') || "small",
-                        tabs: Yukon.ui.getParameterByName('tabs'),
-                        current: true
-                    }));
-                }else{
-                    $j(".schedules").append(_self.render(opts.schedules[i], {
-                        meridian: true, 
-                        size: Yukon.ui.getParameterByName('size') || "small",
-                        tabs: Yukon.ui.getParameterByName('tabs'),
-                        current: false
-                    }));
+        TEMP_SLIDER = new Control.Slider($("tempSlider").down('.handle'), $("tempSlider").down('.track'), {
+            range: $R(40, 99),
+            sliderValue: 72,
+            onSlide: function(value) {
+                if(Yukon.ThermostatScheduleEditor.currentUnits == 'celcius'){
+                    CURRENT_TEMP_INPUT.value = (Math.round(value*2) / 2).toFixed(1);
+                }else {
+                    CURRENT_TEMP_INPUT.value = parseInt(value);
                 }
+            },
+            onChange: function(value, e) {
+                Yukon.ThermostatScheduleEditor.commitTempValue(value, CURRENT_TEMP_INPUT);
             }
-        }
+        });
 
-        //set the interface into the default temperature scale
-        _self[opts.units ? opts.units : 'fahrenheit']();
-    },
-        
-    render: function(schedule, opts){
-        
-        var _self = Yukon.ThermostatScheduleEditor;
-        
-        if(!opts){
-            opts = {};
-        }
-        
-        var rowClass = ['even', 'odd'];
-        var sched = $j(".templates .schedule").clone();
-        
-        sched.attr('id', "scheduleId_"+schedule.scheduleId);
-        
-        if(opts.current){
-            sched.addClass("current");
-        }
-        
-        sched.find(".title").html(schedule.scheduleName);
-        
-        //show the schedule type
-//        if(_self.thermostat){
-//            sched.find(".title").after(' <small><em>(' + _self.thermostat.modes[schedule.type.name] + '</em>)</small>');
-//        }else{
-//            sched.find(".title").after(' <small><em>(' + schedule.type.name + '</em>)</small>');
-//        }
-        
-        //figure out tabs
-        if(opts.tabs && schedule.type.days.length > 1){
-            //render tab controls
-            for(var l=0; l<schedule.type.days.length; l++) {
-                var label = schedule.type.days[l];
-                if(schedule.supported_period == 2){
-                    label = schedule.type.days_label[l];
-                }
-                sched.find(".f_tabs").append('<li>'+ label +'</li>');
-            }
-            
-            //don't need striping on tabbed interface
-            rowClass = ['even', 'even'];
-        }else{
-            sched.find(".f_tabs").remove();
-            sched.find(".f_tabbed").removeClass('f_tabbed');
-            sched.find(".f_tab").removeClass('f_tab');
-        }
-        
-        sched.find(".type").html("");
-        
-//            for(var k=0; k<TYPES.length; k++){
-//                var checked = TYPES[k].name == schedule.type.name ? 'checked="checked"' : '';
-//            }
-        
-        if(_self.thermostat){
-            var periodLabels = [];
-            for(period in _self.thermostat.periods) {
-                periodLabels.push(_self.thermostat.periods[period]);
-            }
-            
-            periodLabels.sort(function(a,b){
-                if(a.order < b.order){
-                    return -1;
-                }else if(a.order > b.order){
-                    return 1;
-                }else{
-                    return 0;
-                }
+        $$(".schedules input:text").each(function(input){
+            input.observe('focus', function(event){
+                this.writeAttribute("previousValue", this.value);
+                this.select();
             });
-            
-            for(var k=0; k<periodLabels.length; k++){
-                sched.find(".labels").append('<div class="period">'+ periodLabels[k].name +'</div>');
-            }
-            
-            sched.find(".labels .period").append($j(".templates .heat_cool_label").clone());
-        }
+        });
         
-        schedule.days = {};
-        
-        if(schedule.periods){
-            _self.renderDays({schedule:schedule, elem:sched, mode:'view'});
-        }
-        
-        for(key in schedule){
-            sched.find("input[name="+key+"]").val(schedule[key]);
-        }
-        
-        sched.find("input[name=schedules]").val(JSON.stringify(schedule));
-        return sched;
-    },
-    
-    renderEditor: function(schedule){
-        
-        var _self = Yukon.ThermostatScheduleEditor;
-        var sched = $j(".templates .schedule_editor").clone();
-
-//        sched.find(".type").html("");
-        
-        //fill-in all of the keyed values
-        for(var key in schedule){
-            sched.find("input[name="+key+"]").val(schedule[key]);
-        }
-
-        if(_self.thermostat){
-            var periodLabels = [];
-            for(period in _self.thermostat.periods) {
-                periodLabels.push(_self.thermostat.periods[period]);
-            }
-            
-            periodLabels.sort(function(a,b){
-                if(a.order < b.order){
-                    return -1;
-                }else if(a.order > b.order){
-                    return 1;
-                }else{
-                    return 0;
-                }
+        $$(".tempControls input:radio").each(function(radio){
+            radio.observe('click', function(e){
+                Yukon.ThermostatScheduleEditor[this.value]();
             });
-            
-            for(var k=0; k<periodLabels.length; k++){
-                sched.find(".labels").append('<div class="period">'+ periodLabels[k].name +'</div>');
-            }
-            
-            sched.find(".labels .period").append($j(".templates .heat_cool_label").clone());
-        }
-        
-        schedule.days = {};
-        
-        if(schedule.periods){
-            _self.renderDays({schedule:schedule, elem:sched, mode:'edit'});
-        }
-        
-        sched.find("input[name=schedules]").val(JSON.stringify(schedule));
-        return sched;
-    },
-    
-    renderDays: function(opts){
-        var _self = Yukon.ThermostatScheduleEditor;
-        var rowClass = ['even', 'odd'];
-        
-      //@TODO: cleanup this hack
-        for(var j=0; j<opts.schedule.periods.length; j++){
-            var entry = opts.schedule.periods[j];
-            
-            if(typeof(opts.schedule.days[entry.timeOfWeek]) == 'undefined') {
-                opts.schedule.days[entry.timeOfWeek] = {periods:[]};
-            }
-            
-            opts.schedule.days[entry.timeOfWeek].periods.push(entry);
-        }
-        
-        for(var j=0; j<opts.schedule.days.length; j++) {
-            opts.schedule.days[j].sort(function(a,b){
-                if(a.secondsFromMidnight < b.secondsFromMidnight)
-                    return -1;
-                else if(a.secondsFromMidnight < b.secondsFromMidnight)
-                    return 1;
-                return 0;
-            });
-        }
-        //END hack
-        
-        //render days
-        var j=0;
-        for(var key in opts.schedule.days){
-            j++;
-            
-            var day = $j(".templates .day").clone();
-            day.addClass("small");
-            day.addClass(rowClass[j%2]);
-            
-            if(typeof(_self.thermostat.dayLabels[key]) == 'undefined'){
-                day.find(".label").text(key);
-            }else{
-                day.find(".label").text(_self.thermostat.dayLabels[key].abbr);
-            }
-            
-            //render periods
-            for(var k=0; k<opts.schedule.days[key].periods.length; k++){
-                var period = $j(".templates .period_"+opts.mode).clone();
-                
-                var time = opts.schedule.days[key].periods[k].secondsFromMidnight/60
-                period.find(".name").text(opts.schedule.days[key].periods[k].name);
-                
-                if(opts.mode == "edit"){
-                    period.find(".time").val(timeFormatter.formatTime(time));
-                    period.find(".cool_F").val(opts.schedule.days[key].periods[k].cool_F);
-                    period.find(".heat_F").val(opts.schedule.days[key].periods[k].heat_F);
-                }else{
-                    period.find(".time").text(timeFormatter.formatTime(time));
-                    period.find(".cool .value").text(opts.schedule.days[key].periods[k].cool_F);
-                    period.find(".heat .value").text(opts.schedule.days[key].periods[k].heat_F);
-                }
-                
-                //store data
-                for(periodKey in opts.schedule.days[key].periods[k]) {
-                    period.find("input[name="+ periodKey +"]").val(opts.schedule.days[key].periods[k][periodKey]);
-                }
-                
-                if(opts.schedule.days[key].periods[k].pseudo){
-                    period.addClass('dn');
-                }
-                
-                //render edit
-                day.find(".periods").append(period);
-            }
-            opts.elem.find(".days").append(day);
-        }
-    },
-    
-    hookupControls: function() {
-        var _self = Yukon.ThermostatScheduleEditor;
-        
-        $j('#conversion_buttons a').live('click', function(ev){
-            var target = $j(this);
-            var mode = target.attr('mode');
-            
-            if(!target.parent().hasClass('disabled')){
-                target.addClass('active');
-                target.siblings().removeClass('active');
-                
-                if(mode == 'c'){
-                    _self.celcius();
-                } else {
-                    _self.fahrenheit();
-                }
-            }
-            return false;
         });
         
-        $j('span.close').live('click', function(){
-            $j('.schedule_editor').hide();
-            $j('.conversion_buttons').removeClass('disabled');
-            return false;
-        });
-    
-        $j(".edit").live("click", function(event){
-            var target = $j(this);
-            var _self = Yukon.ThermostatScheduleEditor;
-            
-//            target.closest("li.schedule").toggleClass("editing");
-//            $j("#editingScreen").fadeIn();
-//            target.closest("li.schedule").find(".editable").each(function(index, elem){
-//                elem = $j(elem);
-//                elem.hide();
-//                elem.siblings(".hide_when_editing").hide();
-//                elem.siblings(".editor").find("input:text").val(elem.text());
-//            });
-            
-            var id = target.closest('.schedule').find('input[name=scheduleId]').val();
-            for(var i=0; i<DATA.SCHEDULES.length; i++){
-                if(DATA.SCHEDULES[i].scheduleId == id){
-                    $j("#editSchedule_body .container").html(_self.renderEditor(DATA.SCHEDULES[i], {
-                        meridian: _self.meridian, 
-                        size: "small"
-                    }));
-                    break;
-                }
-            }
-          //set the interface into the default temperature scale
-            _self[_self.currentUnit]();
-            return false;
-        });
-        
-        $j(".save").live('click', function(event){
-            var target = $j(this);
-//            target.closest("li.schedule").toggleClass("editing");
-//            $j("#editingScreen").fadeOut();
-//            target.closest("li.schedule").find(".editable").each(function(index, elem){
-//                elem = $j(elem);
-//                elem.show();
-//                elem.siblings(".hide_when_editing").show();
-//                
-//                //transfer values into inputs
-//                elem.siblings("input:hidden").val(elem.siblings(".editor").find("input:text").val());
-//            });
-//            
-//            $j("#slider").slider('destroy');
-//            $j("#slider .chevron").remove();
-//            _self.fahrenheit();
-            
-            var form = target.closest(".popUpDiv").find("form");
-            _self.prepForm(form);
-            form.submit();
-            return false;
-        });
-        
-//        $j("a.toggle").live("click", function(event){
-//            event.stopPropagation();
-//            var target = $j(this);
-//            var parent = target.closest("div.toggle");
-//            parent.hide()
-//            parent.siblings(".toggle").show();
-//            return false;
-//        });
-        
-        $j(".schedule_editor input[type=text]").live('focus', function(e){
-            this.select();
-            //store the previous value
-            $j(e.currentTarget).attr('previousValue', e.currentTarget.value);
-            return false;
-        });
-        
-        $j(".popUpDiv .cancel").live("click", function(e){
-            $j(e.currentTarget).closest(".popUpDiv").hide();
-            debug('hide');
-            $j("#slider").slider('destroy');
-            $j("#slider .chevron").remove();
-            return false;
-        });
-        
-        $j("#mode_buttons a").live("click", function(event){
-            event.stopPropagation();
-            var target = $j(this);
-            target.addClass('active');
-            target.siblings().removeClass('active');
-            if(target.hasClass('cool')){
-                $j('.temp.heat').css('visibility', 'hidden');
-                $j('.temp.cool').css('visibility', 'visible');
-            }else if(target.hasClass('heat')){
-                $j('.temp.cool').css('visibility', 'hidden');
-                $j('.temp.heat').css('visibility', 'visible');
-            }else if(target.hasClass('auto')){
-                $j('.temp.cool').css('visibility', 'visible');
-                $j('.temp.heat').css('visibility', 'visible');
-            }
-            return false;
-        });
-        
-        $j(".temp.heat input").live('focus', function(){
-            var target = $j(this);
-            $j( "#slider" ).offset({top:target.offset().top - 30, left:target.offset().left-100});
-            $j( "#slider" ).slider({
-                value:this.value,
-                min: _self.lowerHeatF,
-                max: _self.upperHeatF,
-                step: 1,
-                slide: function( event, ui ) {
-                    target.val(ui.value);
-                    target.closest(".temp").css('background-color', _self.calcHeatColor(ui.value));
-                    $j("#slider").css('background-color', _self.calcHeatColor(ui.value));                    
-                    $j("#slider a").text(ui.value);
-                }
-            });
-            $j("#slider a").text(this.value);
-            $j("#slider").css('background-color', _self.calcHeatColor(this.value));
-            if(!$j("#slider .chevron")[0]){
-                $j("#slider").append('<div class="chevron"></div>');
-            }
-            return false;
-        });
-        
-        $j(".temp.cool input").live('focus', function(){
-            var target = $j(this);
-            $j( "#slider" ).offset({top:target.offset().top - 30, left:target.offset().left-100});
-            $j( "#slider" ).slider({
-                value:this.value,
-                min: _self.lowerCoolF,
-                max: _self.upperCoolF,
-                step: 1,
-                slide: function( event, ui ) {
-                    target.val(ui.value);
-                    target.closest(".temp").css('background-color', _self.calcCoolColor(ui.value));
-                    $j("#slider a").text(ui.value);
-                    $j("#slider").css('background-color', _self.calcCoolColor(ui.value));
-                }
-            });
-            $j("#slider a").text(this.value);
-            $j("#slider").css('background-color', _self.calcCoolColor(this.value));
-            if(!$j("#slider .chevron")[0]){
-                $j("#slider").append('<div class="chevron"></div>');
-            }
-            return false;
-        });
-        
-        //time editing and validation
-        $j("input.time").live('blur change', function(e){
-            var curr = timeFormatter.parseTime(e.currentTarget.value);
-            
-            if(curr != -1){
-                //check bounds
-                var prev = timeFormatter.parseTime($j(e.currentTarget).closest(".period").prev(".period").find("input.time").val());
-                var next = timeFormatter.parseTime($j(e.currentTarget).closest(".period").next(".period").find("input.time").val());
-                if(!$j(e.currentTarget).closest(".period").next(".period")[0]){
-                    next = (24*60)-1;
-                }
-                if((prev < curr) && (curr < next)){
-                    //set seconds from midnight value
-                    $j(e.currentTarget).siblings('input[type=hidden]').val(timeFormatter.parseTime(e.currentTarget.value)*60);
-                    //get a nicely formatted time in case the user inputs some shorthand value such as '4pm'
-                    e.currentTarget.value = timeFormatter.formatTime(timeFormatter.parseTime(e.currentTarget.value));
-                    $j(e.currentTarget).attr('previousValue', e.currentTarget.value);
-                    return false;
-                }
-            }
-            //revert to previousValue
-            e.currentTarget.value = $j(e.currentTarget).attr('previousValue');
-            return false;
-        });
-        
-        //temp validation
-        $j("input.cool_F, input.heat_F").live('blur change', function(e){
-            var _self = Yukon.ThermostatScheduleEditor;
-            var value = parseFloat(e.currentTarget.value);
-            var value_C = value;
-            
-            //convert the value to fahrenheit scale
-            if(_self.currentUnit == 'celcius'){
-                //only .5 increments are allowed
-                value = Math.round(value*2)/2;
-                value_C = value;
-                value = ((value*9)/5)+32;
-            }
-            
-            var pass = false;
-            
-            if($j(e.currentTarget).hasClass('cool_F')){
-                if((_self.lowerCoolF <= value) && (value <= _self.upperCoolF)){
-                    pass = true;
-                    $j(e.currentTarget).closest(".temp").css('background-color',  _self.calcCoolColor(value));
-                }
-            }else if($j(e.currentTarget).hasClass('heat_F')){
-                if((_self.lowerHeatF <= value) && (value <= _self.upperHeatF)){
-                    pass = true;
-                   $j(e.currentTarget).closest(".temp").css('background-color',  _self.calcHeatColor(value));
-                }
-            }
-            
-            if(pass){
-                $j(e.currentTarget).siblings("input:hidden").val(value);
-                if(_self.currentUnit == 'celcius'){
-                    e.currentTarget.value = value_C;
-                }else{
-                    e.currentTarget.value = parseInt(value);
-                }
-                return false;
-            }
-            
-            //revert to previousValue
-            e.currentTarget.value = $j(e.currentTarget).attr('previousValue');
-            return false;
-        });
-        
-        
-        $j(".delete").live('click', function(e){
-           //confirmation popup already shown at this point
-            $j("form[name=deleteSchedule] input[name=scheduleId]").val($j(e.currentTarget).closest(".popUpDiv").find("form").find('input[name=scheduleId]').val());
-            return false;
-        });
-        
-        $j(".send").live('click', function(e){
+        YEvent.observeSelectorClick(".send", function(e){
             //confirmation popup already shown at this point
-             $j("form[name=sendSchedule] input[name=scheduleId]").val($j(e.currentTarget).closest('form').find('input[name=scheduleId]').val());
-             return false;
-         });
+             $$("form[name=sendSchedule] input[name=scheduleId]")[0].value = e.target.up("form").down("input[name=scheduleId]").value;
+        });
         
-        $j(".create").live('click', function(){
+        YEvent.observeSelectorClick(".delete", function(e){
+            //confirmation popup already shown at this point
+             $$("form[name=deleteSchedule] input[name=scheduleId]")[0].value = e.target.up(".popUpDiv").down("form input[name=scheduleId]").value;
+        });
+        
+        YEvent.observeSelectorClick(".cancel", function(e){
+            e.target.up(".popUpDiv").down('form').select("input[initialValue]").each(function(input){
+                input.value = input.readAttribute('initialValue');
+            });
+            Yukon.ThermostatScheduleEditor.renderTime();
+            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
+            e.target.up(".popUpDiv").hide();
+        });
+        
+        YEvent.observeSelectorClick(".copy", function(e){
+             $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value).down("input[name=scheduleId]").value = -1;
+             $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value).down("input[name=scheduleName]").value += "*";
+        });
+        
+        YEvent.observeSelectorClick(".edit", function(e){
+            var id = e.target.up("form").down("input[name=scheduleId]").value;
+            var name = e.target.up("form").down("input[name=scheduleName]").value;
+            $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value).down("input[name=scheduleId]").value = id;
+            $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value).down("input[name=scheduleName]").value = name;
+        });
+        
+        YEvent.observeSelectorClick(".save", function(e){
+            var form = null;
+            if(e.target.up("#createSchedule")){
+                var mode = $("createSchedule_body").down("input[name=defaultScheduleMode]:checked").value
+                form = e.target.up('.popUpDiv').down('.'+ mode +' form');
+            }else{
+                form = e.target.up('.popUpDiv').down('form');
+            }
+            Yukon.ThermostatScheduleEditor.prepForm(form);
+            form.submit();
+            return true;
+        });
+        
+        YEvent.observeSelectorClick(".create", function(e){
             //show type picker
-            $j(".page_0 input:radio").prop('checked', false);
+            $$(".page_0 input:radio").each(function(input){
+                input.checked = false;
+                input.observe('click', function(e){
+                    e.target.up('.f_page').down('.f_next').enable();
+                });
+            });
             Yukon.ui.wizard.reset($("createSchedule_body"));
             return false;
         });
         
-        $j(".page_0 input").live('change', function(e){
-            $j(e.currentTarget).closest(".f_page").find(".f_next").removeAttr("disabled");
+        YEvent.observeSelectorClick(".page_0 .f_next", function(e){
+            var value = $("createSchedule_body").down("input[name=defaultScheduleMode]:checked").value;
+            $("createSchedule_body").select(".schedule_editor").each(function(elem){
+                if(!elem.hasClassName(value)){
+                    elem.hide();
+                }else{
+                    elem.show();
+                }
+            });
         });
         
-        //creating a schedule
-        $j(".page_0 .f_next").live('click', function(e){
+        YEvent.observeSelectorClick(".default", function(e){
+            //find 'recommended schedule in the create popup
+            var ourForm = e.target.up(".popUpDiv").down('form');
+            var mode = ourForm.down("input[name=thermostatScheduleMode]").value;
+            var recForm = $("createSchedule").down('.'+ mode +' form');
             
-            //if the selected mode does not match the default mode, then try to fill in the blanks or strip out unnecessary periods
-            //WEEKDAY periods tend to trump
-            
-            //copy the default schedule
-            var schedule = $j.extend(true, {}, DATA.DEFAULT);
-            
-            //separate by timeOfWeek
-            periods = {WEEKDAY:[],WEEKEND:[],MONDAY:[],TUESDAY:[],WEDNESDAY:[],THURSDAY:[],FRIDAY:[],SATURDAY:[],SUNDAY:[]};
-            for(var i=0; i<schedule.periods.length; i++){
-                periods[schedule.periods[i].timeOfWeek].push(schedule.periods[i]);
-            }
-            
-            //fill-in the blanks
-            for(day in periods){
-                if(periods[day].length == 0){
-                    periods[day] = $j.extend(true, [], periods.WEEKDAY);
-                }
-                for(var i=0; i<periods[day].length; i++){
-                    periods[day][i].timeOfWeek = day;
-                    //fixup 4 <-> 2 period schedule type mismatch
-                    if((DATA.thermostat.supportedPeriods == 2) && (i < 2)){
-                        periods[day][i].pseudo = true;
-                        periods[day][i].cool_F = -1;
-                        periods[day][i].heat_F = -1;
-                        periods[day][i].secondsFromMidnight = 0;
-                    } else if(DATA.thermostat.supportedPeriods == 4) {
-                        if(periods[day][i].pseudo) {
-                            periods[day][i].pseudo = false;
-                            periods[day][i].cool_F = DATA.thermostat.upperCoolF - ((DATA.thermostat.upperCoolF - DATA.thermostat.lowerCoolF)/2);
-                            periods[day][i].heat_F = DATA.thermostat.upperHeatF - ((DATA.thermostat.upperHeatF - DATA.thermostat.lowerHeatF)/2);
-                            periods[day][i].secondsFromMidnight = i*3600;
-                        }
+            if(recForm != null){
+                var days = ourForm.select(".day");
+                for(var i=0; i<days.length; i++){
+                    var timeOfWeek = days[i].down("input[name=timeOfWeek]").value;
+                    
+                    //copy values over
+                    var times = days[i].select("input[name=secondsFromMidnight]");
+                    for(var j=0; j<times.length; j++){
+                        times[j].value = recForm.down("."+timeOfWeek).down('input[name=secondsFromMidnight]', j).readAttribute("defaultValue");
+                    }
+                    
+                    var heatTemps = days[i].select("input[name=heat_F]");
+                    for(var j=0; j<heatTemps.length; j++){
+                        heatTemps[j].value = recForm.down("."+timeOfWeek).down('input[name=heat_F]', j).readAttribute("defaultValue");
+                    }
+                    
+                    var coolTemps = days[i].select("input[name=cool_F]");
+                    for(var j=0; j<coolTemps.length; j++){
+                        coolTemps[j].value = recForm.down("."+timeOfWeek).down('input[name=cool_F]', j).readAttribute("defaultValue");
                     }
                 }
+                
+                //render times and temps
+                Yukon.ThermostatScheduleEditor.renderTime();
+                Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
             }
             
-            schedule.thermostatScheduleMode = $j(".page_0 input:radio:checked").val();
-            
-            switch(schedule.thermostatScheduleMode){
-            case 'ALL':
-                schedule.periods = periods.WEEKDAY;
-                break;
-            case 'WEEKDAY_WEEKEND':
-                schedule.periods = periods.WEEKDAY.concat(periods.WEEKEND);
-                break;
-            case 'WEEKDAY_SAT_SUN':
-                schedule.periods = periods.WEEKDAY.concat(periods.SATURDAY, periods.SUNDAY);
-                break;
-            case 'SINGLE':
-                schedule.periods = periods.MONDAY.concat(periods.TUESDAY, periods.WEDNESDAY, periods.THURSDAY, periods.FRIDAY, periods.SATURDAY, periods.SUNDAY);
-                break;
-            default:
-                break;
+        });
+        
+        $(document).observe('click', function(e) {
+            //hide the sliders if we did NOT click on the slider or the inputs that spawn them
+            if(e.target.up('.slider') == null && e.target.up('.time') == null && e.target.up('.temp') == null){
+                Yukon.ThermostatScheduleEditor.hideTimeSlider();
+                Yukon.ThermostatScheduleEditor.hideTempSlider();
             }
-            
-            //render the schedule in edit mode
-            $j(".page_1 .createSchedule").html(_self.renderEditor(schedule, {
-                meridian: true, 
-                size: "small",
-                tabs: false
-            }));
-            
-          //set the interface into the default temperature scale
-          _self[_self.currentUnit]();
-            
-            return false;
-        });        
+        });
+        
+        
     },
     
     prepForm: function(form) {
        //reconstruct the data object to submit
         var periodsArr = [];
-       var periods = form.find(".period");
+       var periods = form.select(".period");
        
        for(var i=0; i<periods.length; i++) {
-           var inputs = $j(periods[i]).find("input[name!=]");
+           var inputs = periods[i].select("input[name]");
            if(inputs.length > 0){
                periodData = {};
                for(var j=0; j<inputs.length; j++) {
-                   periodData[$j(inputs[j]).attr('name')] = $j(inputs[j]).val();
+                   periodData[inputs[j].readAttribute('name')] = inputs[j].value;
                }
                periodsArr.push(periodData);
            }
        }
        
-       var schedule = JSON.parse(form.find("input[name=schedules]").val());
+       //var schedule = JSON.parse(form.down("input[name=schedules]").value);
+       
+       var schedule = {};
+       var inputs = form.select("input[name]");
+       for(var i=0; i<inputs.length; i++){
+           schedule[inputs[i].readAttribute('name')] = inputs[i].value;
+       }
+       
        schedule.periods = periodsArr;
-       schedule.scheduleName = form.find("input[name=scheduleName]").val();
-       form.find("input[name=schedules]").val(JSON.stringify(schedule));
+       schedule.scheduleName = form.down("input[name=scheduleName]").value;
+       schedule.scheduleId = form.down("input[name=scheduleId]").value;
+       form.down("input[name=schedules]").value = JSON.stringify(schedule);
+       
+       form.submit();
+    },
+    
+    tempKeyup: function(event){
+        //handle up/down nudge
+    },
+    
+    showTempSlider: function(event){
+        var _self = Yukon.ThermostatScheduleEditor;
+        _self.hideTimeSlider();
+        
+        var startingValue = parseFloat(this.value);
+        
+        //determine range
+        var start = 0;
+        var end = 0;
+        
+        if(this.hasClassName("heat_F")) {
+            start = Yukon.ThermostatScheduleEditor.lowerHeatF;
+            end = Yukon.ThermostatScheduleEditor.upperHeatF;
+        } else if(this.hasClassName("cool_F")) {
+            start = Yukon.ThermostatScheduleEditor.lowerCoolF;
+            end = Yukon.ThermostatScheduleEditor.upperCoolF;
+        }
+        
+        var startLabel = "";
+        var endLabel = "";
+        if(_self.currentUnit == 'celcius'){
+            var c = (((start - 32)*5)/9)
+            start = Math.round(c*2) / 2;
+            
+            c = (((end - 32)*5)/9)
+            end = Math.round(c*2) / 2;
+            TEMP_SLIDER.increment = 0.5;
+            startLabel = start.toFixed(1);
+            endLabel = end.toFixed(1);
+        }else {
+            TEMP_SLIDER.increment = 1;
+            startLabel = Math.round(start);
+            endLabel = Math.round(end);
+        }
+        
+        CURRENT_TEMP_INPUT = this;
+        TEMP_SLIDER.options.range.start = start;
+        TEMP_SLIDER.options.range.end = end;
+        TEMP_SLIDER.setValue(startingValue);
+        
+        $("tempSlider").down(".startLabel").innerHTML = startLabel;
+        $("tempSlider").down(".endLabel").innerHTML = endLabel;
+        $("tempSlider").show();
+        
+        var inputDimensions = this.getDimensions();
+        var sliderDimensions = $("tempSlider").getDimensions();
+        // 1/2 width of the targetted item + 1/2 width of slider
+        var offsetLeft = -1 * ((sliderDimensions.width/2) - (inputDimensions.width/2));
+        //height of the input plus the height of the chevron
+        var offsetTop = inputDimensions.height + 16;
+        
+        $("tempSlider").clonePosition(this, {setWidth: false, setHeight: false, offsetLeft: offsetLeft, offsetTop: offsetTop});
+    },
+    
+    hideTempSlider: function(event){
+//        if(TEMP_SLIDER.active){
+//            return;
+//        }
+        
+        $("tempSlider").hide();
+    },
+    
+    blurTempInput: function(event) {
+        Yukon.ThermostatScheduleEditor.commitTempValue(this.value, this);
+    },
+    
+    commitTempValue: function(value, input){
+        var _self = Yukon.ThermostatScheduleEditor;
+        value = parseFloat(value);
+        var value_C = null;
+        var value_F = value;
+        
+        //determine range
+        var start = 0;
+        var end = 0;
+                
+        if(input.hasClassName("heat_F")) {
+            start = Yukon.ThermostatScheduleEditor.lowerHeatF;
+            end = Yukon.ThermostatScheduleEditor.upperHeatF;
+        } else if(input.hasClassName("cool_F")) {
+            start = Yukon.ThermostatScheduleEditor.lowerCoolF;
+            end = Yukon.ThermostatScheduleEditor.upperCoolF;
+        }
+        
+        //convert the value to fahrenheit scale
+        if(_self.currentUnit == 'celcius'){
+            //only .5 increments are allowed
+            value = Math.round(value*2)/2;
+            value_C = value;
+            value_F = ((value*9)/5)+32;
+            input.value = value_C.toFixed(1);
+        }else {
+            input.value = parseInt(value_F);
+        }
+        
+        if(value_F >= start && value_F <= end){
+            //put value into REAL input
+            input.adjacent("input:hidden")[0].value = value_F;
+            if(input.up('.temp').hasClassName('heat')){
+                input.up('.temp').setStyle({backgroundColor:_self.calcHeatColor(value_F)});
+            }else if(input.up('.temp').hasClassName('cool')){
+                input.up('.temp').setStyle({backgroundColor:_self.calcCoolColor(value_F)});
+            }
+            return true;
+        }
+        
+        //revert to previousValue
+        input.value = input.readAttribute('previousValue');
+    },
+    
+    timeKeyup: function(event){
+        //handle up/down nudge
+    },
+    
+    showTimeSlider: function(event){
+        var _self = Yukon.ThermostatScheduleEditor;
+        _self.hideTempSlider();
+        
+        var startingValue = parseInt(this.adjacent('input[name=secondsFromMidnight]')[0].value);
+        var input = event.currentTarget;
+        
+        //determine range
+        var parent = this.up('.period');
+        var start = 0;
+        var end = ((24*60)-10)*60;  //11:50pm is the default 
+                
+        if(parent.previous('.period')) {
+            start = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
+        }
+        if(parent.next('.period')){
+            end = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
+        }
+        
+        CURRENT_TIME_INPUT = this;
+        TIME_SLIDER.options.range.start = Math.ceil((start+600)/60);    //round to the nearest 10 minutes
+        TIME_SLIDER.options.range.end = Math.floor((end-600)/60);
+        TIME_SLIDER.setValue(startingValue/60);
+        
+        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start);
+        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end);
+        $("timeSlider").show();
+        
+        var inputDimensions = this.getDimensions();
+        var sliderDimensions = $("timeSlider").getDimensions();
+        // 1/2 width of the targetted item + 1/2 width of slider
+        var offsetLeft = -1 * ((sliderDimensions.width/2) - (inputDimensions.width/2));
+        //height of the input plus the height of the chevron
+        var offsetTop = inputDimensions.height + 16;
+        $("timeSlider").clonePosition(this, {setWidth: false, setHeight: false, offsetLeft: offsetLeft, offsetTop: offsetTop});
+    },
+    
+    hideTimeSlider: function(event){
+//        if(TIME_SLIDER.active){
+//            return;
+//        }
+//        
+//        Yukon.ThermostatScheduleEditor.commitTimeValue(this.value, this);
+        $("timeSlider").hide();
+    },
+    
+    blurTimeInput: function(event) {
+        Yukon.ThermostatScheduleEditor.commitTimeValue(this.value, this);
+    },
+    
+    commitTimeValue: function(value, input){
+        var curr = timeFormatter.parseTime(value)*60;
+        
+        if(curr != -1){
+            //check bounds
+            var parent = input.up('.period');
+            var prev = 0;
+            var next = ((24*60)-10)*60;  //11:50pm is the default 
+                    
+            if(parent.previous('.period')) {
+                prev = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
+            }
+            if(parent.next('.period')){
+                next = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
+            }
+
+            if((prev < curr) && (curr < next)){
+                //set seconds from midnight value
+                input.adjacent('input[name=secondsFromMidnight]')[0].value = timeFormatter.parseTime(input.value)*60;
+                
+                //get a nicely formatted time in case the user inputs some shorthand value such as '4pm'
+                input.value = timeFormatter.formatTime(timeFormatter.parseTime(input.value));
+                input.writeAttribute('previousValue', input.value);
+                return true;
+            }
+        }
+        //revert to previousValue
+        input.value = input.readAttribute('previousValue');
     },
     
     celcius: function(){
         var _self = Yukon.ThermostatScheduleEditor;
         _self.currentUnit = 'celcius';
         $$(".temp .value").each(function(elem){
-            var f = parseFloat(elem.next().value);
+            var f = parseFloat(elem.next("input:hidden").value);
             f -= 32;
             var c = ((f*5)/9)
             var rounded = Math.round(c*2) / 2;
             elem.innerHTML = rounded.toFixed(1);
         });
         $$(".temp input:text").each(function(elem){
-            var f = parseFloat($j(elem).siblings("input[type=hidden]").val());
+            var f = parseFloat(elem.next("input:hidden").value);
             f -= 32;
             var c = ((f*5)/9)
             var rounded = Math.round(c*2) / 2;
             elem.value = rounded.toFixed(1);
+        });
+        $$(".temp").each(function(elem){
+            elem.removeClassName('F');
+            elem.addClassName('C');
+        });
+        $("tempSlider").select(".tempHolder").each(function(elem){
+            elem.removeClassName('F');
+            elem.addClassName('C');
+        });
+        $$("input[name=temperatureUnit]").each(function(elem){
+            elem.value = "C";
         });
         _self.calcTempColor();
     },
@@ -671,61 +457,46 @@ Yukon.ThermostatScheduleEditor = {
         var _self = Yukon.ThermostatScheduleEditor;
         _self.currentUnit = 'fahrenheit';
         $$(".temp .value").each(function(elem){
-            $j(elem).text(parseInt($j(elem).siblings("input[type=hidden]").val()));
+            elem.innerHTML = Math.round(elem.next("input:hidden").value);
         });
         $$(".temp input:text").each(function(elem){
-            $j(elem).val(parseInt($j(elem).siblings("input[type=hidden]").val()));
+            elem.value = Math.round(elem.next("input:hidden").value);
+        });
+        $$(".temp").each(function(elem){
+            elem.removeClassName('C');
+            elem.addClassName('F');
+        });
+        $("tempSlider").select(".tempHolder").each(function(elem){
+            elem.removeClassName('C');
+            elem.addClassName('F');
+        });
+        $$("input[name=temperatureUnit]").each(function(elem){
+            elem.value = "F";
         });
         _self.calcTempColor();
     },
     
-    conversionTest: function(){
-//        var fail = [];
-//        
-//        for(var i=1; i<120; i++) {
-//            var c = ((i-32)*5/9);
-//            var value = ((c*9)/5)+32;
-//            if (i != value) {
-//                fail.push(i + " FAIL!!!!!!! " + c + " " + value);
-//            }
-//        }
-//        
-//        if(fail.length > 0){
-//            alert("FAIL/n"+fail.join("/n"));
-//        }else{
-//            alert("PASS")
-//        }
-        var fail = [];
-        var c = 0;
-        while(c<40) {
-            //convert to fahrenheit
-            var f = ((c*9)/5)+32;
+    renderTime: function(){
+        $$("input[name=secondsFromMidnight]").each(function(elem){
+            elem.adjacent("span.time").each(function(span){
+                span.innerHTML =timeFormatter.formatTime(elem.value/60);
+            });
             
-            //convert back to celcius and round like we do on display and validate
-            var d = Math.round(((f-32)*5/9)*2)/2;
-            if (d != c) {
-                fail.push(c + " FAIL!!!!!!! " + d + " " + f);
-            }
-            
-            c += 0.5;
-        }
-        
-        if(fail.length > 0){
-            alert("FAIL\n"+fail.join("\n"));
-        }else{
-            alert("PASS")
-        }
+            elem.adjacent("input:text").each(function(input){
+                input.value =timeFormatter.formatTime(elem.value/60);
+            });
+        });
     },
     
     calcTempColor: function(){
-        $j(".temp input[type=hidden]").each(function(idx, elem){
-            elem = $j(elem);
-            if(elem.closest('.temp').hasClass('heat')){
-                var temp = parseInt(elem.val());
-                elem.closest(".temp").css('backgroundColor', Yukon.ThermostatScheduleEditor.calcHeatColor(temp));
+        
+        $$(".temp input[type=hidden]").each(function(elem){
+            if(elem.up('.temp').hasClassName('heat')){
+                var temp = parseInt(elem.value);
+                elem.up(".temp").setStyle({backgroundColor:Yukon.ThermostatScheduleEditor.calcHeatColor(temp)});
             } else {
-                var temp = parseInt(elem.val());
-                elem.closest(".temp").css('backgroundColor', Yukon.ThermostatScheduleEditor.calcCoolColor(temp));
+                var temp = parseInt(elem.value);
+                elem.up(".temp").setStyle({backgroundColor:Yukon.ThermostatScheduleEditor.calcCoolColor(temp)});
             }
         });
     },
@@ -747,5 +518,28 @@ Yukon.ThermostatScheduleEditor = {
         var g = Math.round(_self.coolColor.g.start + ((temp - _self.lowerCoolF) * (GRange/tempRange)));
         var b = _self.coolColor.b.start;
         return "rgb("+ r +","+ g +","+ b +")";
+    },
+    
+    conversionTest: function(){
+        var fail = [];
+        var c = 0;
+        while(c<40) {
+            //convert to fahrenheit
+            var f = ((c*9)/5)+32;
+            
+            //convert back to celcius and round like we do on display and validate
+            var d = Math.round(((f-32)*5/9)*2)/2;
+            if (d != c) {
+                fail.push(c + " FAIL!!!!!!! " + d + " " + f);
+            }
+            
+            c += 0.5;
+        }
+        
+        if(fail.length > 0){
+            alert("FAIL\n"+fail.join("\n"));
+        }else{
+            alert("PASS")
+        }
     }
 }

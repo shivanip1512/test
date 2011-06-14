@@ -165,9 +165,6 @@
     <entry key="yukon.dr.consumer.thermostat.sendConfirm.message">Proceed with the following thermostat settings?</entry>
     <entry key="yukon.dr.consumer.thermostat.temperature">Temperature</entry>
     
-    <!--  history.jsp -->
-    <entry key="yukon.dr.consumer.history.header">Thermostat History</entry>
-   
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>
     <entry key="yukon.dr.consumer.scheduleHints.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
@@ -232,6 +229,7 @@
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_MULTIPLE_ERROR">There was a problem sending the schedule to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.SEND_SCHEDULE_ERROR">There was a problem sending the schedule to the thermostat you selected. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_SEND_SCHEDULE_SUCCESS">The schedule {0} has been sent.  It may take a few minutes before the thermostat receives it.</entry>
+    <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_UPDATE_SCHEDULE_SUCCESS">The schedule {0} been saved.</entry>
     
     <entry key="yukon.dr.consumer.scheduleUpdate.result.saveSuccessful">The schedule has been saved.</entry>
                 
@@ -297,8 +295,8 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.deleteSuccess"><![CDATA[The schedule <b>{0}</b> has been successfully deleted.]]></entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.modeChangeText">You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.deleteSuccess">The schedule {0} has been successfully deleted.</entry>
     
     <!--  thermostatScheduleConfirm.jsp -->
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.header">Thermostat - Schedule Confirm</entry>
@@ -319,12 +317,9 @@
     <entry key="yukon.dr.consumer.savedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.dr.consumer.savedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.dr.consumer.savedSchedules.deleteSchedule">Delete Schedule</entry>
-    <entry key="yukon.dr.consumer.savedSchedules.modeHint">Pick the mode...</entry>
     <entry key="yukon.dr.consumer.savedSchedules.sendConfirm.title">Confirm New Thermostat Settings</entry>
     <entry key="yukon.dr.consumer.savedSchedules.sendConfirm.message">Proceed with the following thermostat settings?</entry>
     <entry key="yukon.dr.consumer.savedSchedules.noSchedulesHelper">There are no saved schedules. Please create a new schedule by clicking the 'Create' button below.</entry>
-    <entry key="yukon.dr.consumer.savedSchedules.header">Schedule Name</entry>
-    <entry key="yukon.web.modules.consumer.savedSchedules.title">::CHANGE::</entry>
 
     <!-- allThermostats.jsp -->
     <entry key="yukon.dr.consumer.allThermostats.header">Thermostat - All</entry>

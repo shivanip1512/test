@@ -83,12 +83,12 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
 
         MenuOptionProducer producer;
 
-        // Create manual menu option
-        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + thermSummary.getInventoryId());
-        producerList.add(producer);
-
         // Create saved schedules menu option
         producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + thermSummary.getInventoryId());
+        producerList.add(producer);
+        
+        // Create manual menu option
+        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + thermSummary.getInventoryId());
         producerList.add(producer);
         
         // Create history menu option

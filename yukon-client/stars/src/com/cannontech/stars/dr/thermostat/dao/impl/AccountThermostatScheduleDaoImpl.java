@@ -38,6 +38,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -51,6 +52,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
     private ECMappingDao ecMappingDao;
     private RolePropertyDao rolePropertyDao;
+    private EnergyCompanyService energyCompanyService;
     
     private SimpleTableAccessTemplate<AccountThermostatSchedule> accountThermostatScheduleTemplate;
     
@@ -305,15 +307,24 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         List<AccountThermostatSchedule> schedules = getAllSchedulesAndEntriesForAccountByType(accountId, types);
         List<AccountThermostatSchedule> disallowedSchedules = new ArrayList<AccountThermostatSchedule>();
         
-        boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, yukonUser);
-        boolean schedule7Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_7, yukonUser);
+        
+        boolean schedule52Enabled = false;
+        boolean schedule7Enabled = false;
+        
+        if(energyCompanyService.isOperator(yukonUser)){
+            schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, yukonUser);
+            schedule7Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_7, yukonUser);
+        }else{
+            schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2, yukonUser);
+            schedule7Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_7, yukonUser);
+        }
         
         for(AccountThermostatSchedule schedule : schedules){
             if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.SINGLE && !schedule7Enabled){
                 disallowedSchedules.add(schedule);
             }
             
-            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.WEEKDAY_SAT_SUN && !schedule52Enabled){
+            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.WEEKDAY_WEEKEND && !schedule52Enabled){
                 disallowedSchedules.add(schedule);
             }
         }
@@ -321,7 +332,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         
         return schedules;
     }
-	
+    
 	// GET NUMBER OF THERMOSTATS USING SCHEDULE
 	@Override
 	public List<Integer> getThermostatIdsUsingSchedule(int atsId) {
@@ -492,5 +503,10 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
 }

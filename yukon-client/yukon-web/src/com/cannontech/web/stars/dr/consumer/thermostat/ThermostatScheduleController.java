@@ -1,9 +1,9 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -54,7 +55,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private ThermostatService thermostatService;
     private OperatorThermostatHelper operatorThermostatHelper;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
 
     
@@ -62,6 +62,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public String sendSchedule(HttpServletRequest request,
                                @ModelAttribute("customerAccount") CustomerAccount account,
                                @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+                               @RequestParam("temperatureUnit") String temperatureUnit,
                                Integer scheduleId,
                                YukonUserContext yukonUserContext,
                                FlashScope flashScope,
@@ -70,18 +71,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
-        boolean failed = false;
         
-        for (int thermostatId : thermostatIds) {
-            message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        //associate the thermostats with this schedule
+        accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
         
-            if (message.isFailed()) {
-                //Log schedule send to thermostat history
-                thermostatEventHistoryDao.logScheduleEvent(yukonUserContext.getYukonUser(), thermostatId, ats.getAccountThermostatScheduleId(), thermostatScheduleMode);
-            }
-        }
-        
-        if (failed){
+        message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
+    
+        if (message.isFailed()) {
+            //Log schedule send to thermostat history
             if(thermostatIds.size() > 1) {
                 message = ThermostatScheduleUpdateResult.MULTIPLE_ERROR;
             }else{
@@ -93,17 +90,20 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
         }
         
-        map.addAttribute("thermostatIds", thermostatIds);
-
-        //navigate back to whence you came
-        String referer = request.getHeader("Referer");
-        return "redirect:"+ referer;
+        //change the default temperature unit for the user based on what the interface was showing
+        //when they submitted the form.  hmm... seems like an odd thing to do
+        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
+        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
+        }
+        
+        return "redirect:view/saved";
     }
     
     @RequestMapping(value = "/consumer/thermostat/schedule/saveJSON", method = RequestMethod.POST)
     public String saveJSON(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            @ModelAttribute("temperatureUnit") String temperatureUnit,
+            @RequestParam("temperatureUnit") String temperatureUnit,
             @RequestParam(value="schedules", required=true) String scheduleString,
             YukonUserContext yukonUserContext, 
             ModelMap map,
@@ -115,6 +115,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
         
         AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
+        ats.setAccountId(account.getAccountId());
         
         String oldScheduleName = "";
         if(ats.getAccountThermostatScheduleId() >= 0) {
@@ -140,7 +141,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
         
         // Save the Schedule
-        accountThermostatScheduleDao.saveAndMapToThermostats(ats, thermostatIds);
+        accountThermostatScheduleDao.save(ats);
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
 
         // Log schedule name change
@@ -148,14 +149,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
         }
 
-        map.addAttribute("thermostatIds", thermostatIds.toString());
-        
         //flash messages
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
 
-        //navigate back
-        String referer = request.getHeader("Referer");
-        return "redirect:"+ referer;
+        return "redirect:view/saved";
     }
 
 
@@ -163,60 +160,87 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", 
                     method = RequestMethod.GET)
     public String viewSaved(@ModelAttribute("customerAccount") CustomerAccount account,
-                            @ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
+                            @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                             YukonUserContext yukonUserContext,
                             ModelMap map) throws NotAuthorizedException {
 
         accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostatIds);
-        
-        //ensure thermostatIds are of the same type
-        
 
         //even if there are multiple thermostat ids, they are supposed to be of the same type
         int thermostatId = thermostatIds.get(0);
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        List<Thermostat> thermostats = new ArrayList<Thermostat>();
+        for(int statId : thermostatIds) {
+            thermostats.add(inventoryDao.getThermostatById(statId));
+        }
         List<SchedulableThermostatType> types = operatorThermostatHelper.getCompatibleSchedulableThermostatTypes(thermostat);
         SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
 		List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(account.getAccountId(), types, yukonUserContext.getYukonUser());
+		String temperatureUnit = customerDao.getCustomerForUser(yukonUserContext.getYukonUser().getUserID()).getTemperatureUnit();
+		
+		// current schedule is only relevant when operating in the context of 1 Thermostat
+		if(thermostatIds.size() == 1){
+    		AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
+            if (thermostatCurrentSchedule != null) {
+                map.addAttribute("currentScheduleId", thermostatCurrentSchedule.getAccountThermostatScheduleId());
+    
+                //put the current schedule first
+                int index = -1;
+                for(AccountThermostatSchedule ats : schedules){
+                    if (ats.getAccountThermostatScheduleId() == thermostatCurrentSchedule.getAccountThermostatScheduleId()){
+                        index = schedules.indexOf(ats);
+                        break;
+                    }
+                }
+                
+                if(index > -1){
+                    schedules.add(0, schedules.remove(index));
+                }
+            }
+		}
 
 		map.addAttribute("schedules", schedules);
-		
-        JSONObject json = new JSONObject();
-        
-        // temperatureUnitmanual
-        String temperatureUnit = customerDao.getCustomerForUser(yukonUserContext.getYukonUser().getUserID()).getTemperatureUnit();
-        map.addAttribute("temperatureUnit", temperatureUnit);
-        
-        json.put("SCHEDULES", new JSONArray());
-        
-        for(AccountThermostatSchedule schedule : schedules){
-            json.accumulate("SCHEDULES", operatorThermostatHelper.AccountThermostatScheduleToJSON(schedule));
-        }
-        
+        map.addAttribute("thermostat", thermostat);
+        map.addAttribute("thermostats", thermostats);
+        map.addAttribute("thermostatType", type);
         map.addAttribute("type", type);
+        map.addAttribute("temperatureUnit", temperatureUnit);
+        map.addAttribute("celcius_char", CtiUtilities.CELSIUS_CHARACTER);
+        map.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
         
-        json.put("thermostat", operatorThermostatHelper.ThermostatToJSON(thermostat, yukonUserContext));
-
         //default schedule(s)
         AccountThermostatSchedule defaultSchedule  = thermostatService.getAccountThermostatScheduleTemplate(account.getAccountId(), type);
         String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, yukonUserContext);
         defaultSchedule.setScheduleName(useDefaultScheduleName);
-        json.put("DEFAULT", operatorThermostatHelper.AccountThermostatScheduleToJSON(defaultSchedule));
         
-        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.label",
-                                                                                   thermostat.getLabel());
-        map.addAttribute("thermostatLabel", resolvable);
-        map.addAttribute("savedSchedules", json.toString());
-        map.addAttribute("defaultSchedule", operatorThermostatHelper.AccountThermostatScheduleToJSON(defaultSchedule));
-        map.addAttribute("allowedModes", operatorThermostatHelper.getAllowedModesForUserAndThermostat(yukonUserContext.getYukonUser(), thermostat));
-
+        List<ThermostatScheduleMode> modes = operatorThermostatHelper.getAllowedModesForUserAndType(yukonUserContext.getYukonUser(), type);
+        List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
+        for(ThermostatScheduleMode mode : modes){
+            if(defaultSchedule.getThermostatScheduleMode() == mode){
+                defaultSchedules.add(defaultSchedule);
+            }else{
+                //create a schedule that looks similar to the default
+                AccountThermostatSchedule defaultAts = new AccountThermostatSchedule();
+                defaultAts.setAccountId(account.getAccountId());
+                defaultAts.setAccountThermostatScheduleId(-1);
+                defaultAts.setScheduleName(useDefaultScheduleName);
+                defaultAts.setThermostatScheduleMode(mode);
+                defaultAts.setThermostatType(SchedulableThermostatType.getByHardwareType(thermostat.getType()));
+                thermostatService.addMissingScheduleEntries(defaultAts);
+                
+                defaultSchedules.add(defaultAts);
+            }
+        }        
+        map.addAttribute("defaultSchedules", defaultSchedules);
+        map.addAttribute("allowedModes", modes);
+        
         return "consumer/savedSchedules.jsp";
     }
     
     @RequestMapping(value = "/consumer/thermostat/schedule/delete", method = RequestMethod.POST)
     public String delete(HttpServletRequest request,
                          @ModelAttribute("customerAccount") CustomerAccount account,
-                         String thermostatIds,
+                         @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                          Integer scheduleId,
                          LiteYukonUser user,
                          FlashScope flashScope,
@@ -232,10 +256,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
     	//flash message
     	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.deleteSuccess", oldScheduleName));
-    	map.addAttribute("thermostatIds", thermostatIds);
     	
-    	String referer = request.getHeader("Referer");
-        return "redirect:"+ referer;
+    	return "redirect:view/saved";
 
     }
     
@@ -243,13 +265,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                     method = RequestMethod.GET)
     public String history(HttpServletRequest request,
                          @ModelAttribute("customerAccount") CustomerAccount account,
-                         String thermostatIds,
+                         @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                          LiteYukonUser user,
                          FlashScope flashScope,
                          ModelMap map) throws Exception {
         
         List<Integer> thermostatIdsList = getThermostatIds(request);
-        
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
@@ -258,15 +279,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("searchResult", result);
         map.addAttribute("eventHistoryList", result.getResultList());
         
-        return "consumer/history.jsp";
-    }
-
-    @RequestMapping(value = "/consumer/thermostat/schedule/saved", method = RequestMethod.POST, params = "createNew")
-    public String createNewSchedule(String thermostatIds, Integer scheduleId, ModelMap map) {
+        List<Thermostat> thermostats = new ArrayList<Thermostat>();
+        for(int statId : thermostatIds) {
+            thermostats.add(inventoryDao.getThermostatById(statId));
+        }
+        map.addAttribute("thermostats", thermostats);
         
-        map.addAttribute("createAsNew", true);
-        map.addAttribute("thermostatIds", thermostatIds);
-        return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
+        return "consumer/history.jsp";
     }
 
     @Autowired

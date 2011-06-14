@@ -1,6 +1,9 @@
 package com.cannontech.stars.dr.thermostat.model;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.google.common.collect.ArrayListMultimap;
@@ -74,6 +77,20 @@ public class AccountThermostatSchedule {
             result.put(atsEntry.getTimeOfWeek(), atsEntry);
         }
         return result;
+    }
+	
+	public Map<TimeOfWeek, Collection<AccountThermostatScheduleEntry>> getEntriesByTimeOfWeekMultimapAsMap() {
+	    Map<TimeOfWeek, Collection<AccountThermostatScheduleEntry>> result = new LinkedHashMap<TimeOfWeek, Collection<AccountThermostatScheduleEntry>>();
+	    ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> multimap =  getEntriesByTimeOfWeekMultimap();
+	    TimeOfWeek days[] = TimeOfWeek.values();
+
+	    for (TimeOfWeek day : days) {
+	        if(multimap.containsKey(day)){
+	            result.put(day, multimap.get(day));
+	        }
+	    }
+	    
+	    return result;
     }
 
 }

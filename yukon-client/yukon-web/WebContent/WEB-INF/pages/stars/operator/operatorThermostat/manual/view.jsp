@@ -80,7 +80,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
    				
    					<%-- INSTRUCTIONS --%>
 				    <div class="plainText">
-				    	<cti:url var="scheduleUrl" value="/spring/stars/operator/thermostatSchedule/view">
+				    	<cti:url var="scheduleUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
 				    		<cti:param name="accountId" value="${accountId}"/>
 				    		<cti:param name="thermostatIds" value="${thermostatIds}"/>
 				    	</cti:url>
@@ -365,7 +365,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                                             <cti:msg key="yukon.web.modules.operator.thermostatManual.deletedSchedule"/>, 
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <a href="/spring/stars/operator/thermostatSchedule/view?thermostatIds=${thermostatIds}&scheduleId=${historyItem.scheduleId}&accountNumber=${accountNumber}&accountId=${accountId}"><cti:msg key="yukon.web.modules.operator.thermostatManual.scheduleDetails" arguments="${historyItem.scheduleName}"/></a>,
+                                                            <a href="/spring/stars/operator/thermostatSchedule/savedSchedules?thermostatIds=${thermostatIds}&scheduleId=${historyItem.scheduleId}&accountNumber=${accountNumber}&accountId=${accountId}"><cti:msg key="yukon.web.modules.operator.thermostatManual.scheduleDetails" arguments="${historyItem.scheduleName}"/></a>,
                                                         </c:otherwise>
                                                     </c:choose> 
                                                     <!-- Schedule Day Mode -->

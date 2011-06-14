@@ -126,7 +126,7 @@ public class OperatorThermostatManualController {
 
 		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temperature, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
-        return "redirect:/spring/stars/operator/thermostatSchedule/view";
+        return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
     }
 	
     private void executeManualEvent(String thermostatIds,

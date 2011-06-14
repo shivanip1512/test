@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.context.Theme;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,9 +31,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
@@ -93,12 +92,14 @@ public class DefaultThermostatScheduleController {
     }
 
     @RequestMapping(value = "editDefaultThermostatSchedule", method = RequestMethod.GET)
-    public String editDefaultThermostatSchedule(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment,
-                                                HttpServletRequest request, String type, YukonUserContext userContext) {
+    public String editDefaultThermostatSchedule(ModelMap modelMap,
+                                                EnergyCompanyInfoFragment energyCompanyInfoFragment,
+                                                HttpServletRequest request,
+                                                String type,
+                                                YukonUserContext userContext) {
 
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
-
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
         // AccountThermostatSchedule
@@ -106,28 +107,18 @@ public class DefaultThermostatScheduleController {
         AccountThermostatSchedule schedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyId(), schedulableThermostatType);
         modelMap.addAttribute("schedule", schedule);
         
-        // schedule52Enabled
-        boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, userContext.getYukonUser());
-        modelMap.addAttribute("schedule52Enabled", schedule52Enabled);
-        
-        // adjusted scheduleMode
-        ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
-        if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
-            scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
-        }
-        modelMap.addAttribute("scheduleMode", scheduleMode);
-        
         // temperatureUnit
         String temperatureUnit = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser());
         modelMap.addAttribute("temperatureUnit", temperatureUnit);
-        
-        // scheduleJSON
-        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
-        JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
-        modelMap.addAttribute("scheduleJSONString", scheduleJSON.toString());
-        modelMap.addAttribute("schedule", schedule);
-        
+
+        modelMap.addAttribute("thermostatType", schedulableThermostatType);
         modelMap.addAttribute("type", type);
+
+        modelMap.addAttribute("celcius_char", CtiUtilities.CELSIUS_CHARACTER);
+        modelMap.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
+        
+        List<ThermostatScheduleMode> modes = operatorThermostatHelper.getAllowedModesForUserAndType(userContext.getYukonUser(), schedulableThermostatType);
+        modelMap.addAttribute("allowedModes", modes);
         
         // Set the displable form of type to the model map
         YukonMessageSourceResolvable messageSourceResolvable = 
@@ -139,45 +130,19 @@ public class DefaultThermostatScheduleController {
     }
 
     @RequestMapping(value = "saveDefaultThermostatSchedule", method = RequestMethod.POST)
-    public String save(String type,
-                       String timeOfWeek,
-                       String scheduleMode,
-                       String temperatureUnit,
-                       Integer scheduleId, 
-                       String scheduleName,
-                       EnergyCompanyInfoFragment energyCompanyInfoFragment,
+    public String save(@ModelAttribute("temperatureUnit") String temperatureUnit,
                        @RequestParam(value="schedules", required=true) String scheduleString,
+                       EnergyCompanyInfoFragment energyCompanyInfoFragment,
                        FlashScope flashScope,
                        YukonUserContext userContext,
                        ModelMap modelMap) throws ServletRequestBindingException {
 
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
-        
-        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
-        ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
 
-        // id
-        AccountThermostatSchedule ats = new AccountThermostatSchedule();
-        ats.setAccountThermostatScheduleId(scheduleId);
-
-        // schedulableThermostatType
-        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
-        ats.setThermostatType(schedulableThermostatType);
+        JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
         
-        // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = 
-            operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
-        ats.setScheduleEntries(atsEntries);
-        
-        
-        // thermostatScheduleMode
-        ats.setThermostatScheduleMode(thermostatScheduleMode);
-        
-        // COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
-        if(schedulableThermostatType.getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES){
-            operatorThermostatHelper.setToTwoTimeTemps(ats);
-        }
+        AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
         
         // determine if legacy schedule name should be changed 
         String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(ats, null, userContext);
@@ -186,7 +151,7 @@ public class DefaultThermostatScheduleController {
         // Save changes to schedule
         accountThermostatScheduleDao.save(ats);
 
-        modelMap.addAttribute("type", type);
+        modelMap.addAttribute("type", ats.getThermostatType());
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.schedules.scheduleSaved"));
         return "redirect:editDefaultThermostatSchedule";

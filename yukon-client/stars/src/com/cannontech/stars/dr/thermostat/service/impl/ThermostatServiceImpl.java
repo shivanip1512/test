@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -34,6 +36,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatCommandExecutionService;
@@ -195,8 +198,36 @@ public class ThermostatServiceImpl implements ThermostatService {
             List<AccountThermostatScheduleEntry> entries = ats.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
             if (entries.size() == 0) {
                 //No entries for this time of week on this schedule.
-                //Copy entries from WEEKDAY, which is used in all modes.
+                //Copy entries from WEEKDAY, which is used in most modes.
                 List<AccountThermostatScheduleEntry> weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                if(weekdayEntries.size() == 0){
+                    Set<TimeOfWeek> keys = ats.getEntriesByTimeOfWeekMultimap().keySet();
+                    if(keys.size() == 0){
+                        //Nothing exists, create a default day of periods
+                        List<ThermostatSchedulePeriod> periods = ats.getThermostatType().getPeriodStyle().getAllPeriods();
+                        for(ThermostatSchedulePeriod period : periods){
+                            AccountThermostatScheduleEntry atse = new AccountThermostatScheduleEntry();
+                            atse.setTimeOfWeek(TimeOfWeek.WEEKDAY);
+                            if(period.isPsuedo()){
+                                atse.setCoolTemp(new FahrenheitTemperature(-1));
+                                atse.setHeatTemp(new FahrenheitTemperature(-1));
+                            }else{
+                                atse.setCoolTemp(new FahrenheitTemperature(72));
+                                atse.setHeatTemp(new FahrenheitTemperature(72));
+                            }
+                            atse.setStartTime(period.getDefaultStartTime());
+                            
+                            weekdayEntries.add(atse);
+                        }
+                    }else{
+                        //copy the first one we can find as a last resort
+                        for(TimeOfWeek day : keys){
+                            weekdayEntries = ats.getEntriesByTimeOfWeekMultimap().get(day);
+                            break;
+                        }
+                    }
+                }
+                
                 List<AccountThermostatScheduleEntry> newEntries = Lists.newArrayList();
                 for (AccountThermostatScheduleEntry weekdayEntry : weekdayEntries) {
                     AccountThermostatScheduleEntry copiedEntry = new AccountThermostatScheduleEntry();
