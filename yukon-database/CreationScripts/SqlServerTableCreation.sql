@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/14/2011 11:40:36 AM                        */
+/* Created on:     6/15/2011 11:59:07 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -788,7 +788,7 @@ create table CCMonitorBankList (
    UpperBandwidth       float                not null,
    LowerBandwidth       float                not null,
    Phase                char(1)              null,
-   constraint PK_CCMONITORBANKLIST primary key nonclustered (BankId, PointId)
+   constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
 )
 go
 
