@@ -107,6 +107,8 @@ public class InventoryBean {
         builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, true);
         builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, true);
         builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, true);
+        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G2, true);
+        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G3, true);
         unsupportedDeviceTypes = builder.build();
     }
 
