@@ -76,6 +76,17 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     @Override
+    public ZigbeeThermostat getZigbeeUtilProByInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = buildZigbeeUtilProStatement();
+
+        sql.append("WHERE IB.InventoryID").eq(inventoryId);
+        
+        ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
+
+        return tstat;
+    }
+    
+    @Override
     public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
         SqlStatementBuilder sql = buildZigbeeUtilProStatement();
         

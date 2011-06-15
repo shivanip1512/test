@@ -27,6 +27,7 @@ import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionServic
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
+import com.cannontech.thirdparty.model.ZigbeeThermostat;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
@@ -61,7 +62,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                                                           Thermostat stat, 
                                                           LiteYukonUser user) throws CommandCompletionException {
         try {
-            String command = buildManualEventZigbeeCommand(event);
+            String command = buildManualEventZigbeeCommand(stat,event);
             ZigbeeTextMessage message = new ZigbeeTextMessage();
             message.setAccountId(inventoryDao.getAccountIdForInventory(stat.getId()));
             message.setDisplayDuration(Duration.standardMinutes(1));
@@ -92,7 +93,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
         
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {
             try {
-                List<String> commands = buildUpdateScheduleZigbeeCommand(ats, timeOfWeek, mode);
+                List<String> commands = buildUpdateScheduleZigbeeCommand(stat, ats, timeOfWeek, mode);
                 for (String command : commands) {
                     ZigbeeTextMessage message = new ZigbeeTextMessage();
                     message.setAccountId(inventoryDao.getAccountIdForInventory(stat.getId()));
@@ -122,7 +123,20 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
         return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
     }
     
-    private List<String> buildUpdateScheduleZigbeeCommand(AccountThermostatSchedule schedule, TimeOfWeek timeOfWeek, ThermostatScheduleMode mode) {
+    private String buildHexNodeId(Thermostat stat) {
+        ZigbeeThermostat zbStat = zigbeeDeviceDao.getZigbeeUtilProByInventoryId(stat.getId());
+        String hexNodeId = Integer.toHexString(zbStat.getNodeId());
+        
+        //Pad with leading zeros
+        if (hexNodeId.length() < 4) {
+            for (int i = 0; i < 4-hexNodeId.length();i++) {
+                hexNodeId = "0" + hexNodeId;
+            }
+        }
+        return hexNodeId;
+    }
+    
+    private List<String> buildUpdateScheduleZigbeeCommand(Thermostat stat, AccountThermostatSchedule schedule, TimeOfWeek timeOfWeek, ThermostatScheduleMode mode) {
         
         Multimap<TimeOfWeek, AccountThermostatScheduleEntry> entries = schedule.getEntriesByTimeOfWeekMultimap();
         Collection<AccountThermostatScheduleEntry> entriesForToW = entries.get(timeOfWeek);
@@ -133,9 +147,10 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             timeOfWeek = TimeOfWeek.EVERYDAY;
         }
         
+        String hexNodeId = buildHexNodeId(stat);
         List<String> commands = Lists.newArrayList();
         for (String day : dayLetterLookup.get(timeOfWeek)) {
-            commands.add("_!S" + day + buildZigbeeSetPoints(entriesForToW));
+            commands.add("_!" + hexNodeId +"S" + day + buildZigbeeSetPoints(entriesForToW));
         }
         
         return commands;
@@ -172,17 +187,19 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
         return builder.toString();
     }
     
-    private String buildManualEventZigbeeCommand(ThermostatManualEvent event) {
-
+    private String buildManualEventZigbeeCommand(Thermostat stat, ThermostatManualEvent event) {
+        String hexNodeId = buildHexNodeId(stat);
         StringBuilder command = new StringBuilder();
+        
+        command.append("_!" + hexNodeId);
         
         if (event.isRunProgram()) {
             /* P for restore program */
-            command.append("_!P");
+            command.append("P");
         } else {
             
             /* Use hold command to do manual changes */
-            command.append("_!H,");
+            command.append("H,");
             
             /* Mode */
             ThermostatMode mode = event.getMode();

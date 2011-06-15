@@ -12,6 +12,8 @@ public interface ZigbeeDeviceDao {
     
     public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId);
     
+    public ZigbeeThermostat getZigbeeUtilProByInventoryId(int inventoryId);
+    
     public ZigbeeThermostat getZigbeeUtilPro(int deviceId);
     
     public ZigbeeThermostat getZigbeeUtilProByMACAddress(String macAddress);
