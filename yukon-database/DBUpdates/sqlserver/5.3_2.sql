@@ -93,12 +93,12 @@ ALTER TABLE RegulatorToZoneMapping
         REFERENCES Zone (ZoneId)
             ON DELETE CASCADE;
 
-INSERT INTO ZoneRegulator (RegulatorId, ZoneId)
+INSERT INTO RegulatorToZoneMapping (RegulatorId, ZoneId)
 SELECT RegulatorId, ZoneId
 FROM Zone;
 
 /* Remove old regulatorId */
-DROP INDEX Indx_Zone_RegId_UNQ;
+DROP INDEX Zone.Indx_Zone_RegId_UNQ;
 
 ALTER TABLE Zone
 DROP CONSTRAINT FK_Zone_PAO;
@@ -252,7 +252,7 @@ IF 0 < (SELECT COUNT(*)
             RAISERROR('The database update requires manual interaction to continue. Please refer to YUK-9620 for more information on removing existing, non-support Integration Groups, Integration Routes, and/or Integration Transmitters.', 16, 1);
 GO
 
-DROP INDEX INDX_LMGroupId_ParamName_UNQ;
+DROP INDEX LMGroupXMLParameter.INDX_LMGroupId_ParamName_UNQ;
 ALTER TABLE LMGroupXMLParameter
     DROP CONSTRAINT FK_LMGroupXml_LMGroup;
 GO

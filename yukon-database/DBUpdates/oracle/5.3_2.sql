@@ -89,7 +89,7 @@ ALTER TABLE RegulatorToZoneMapping
         REFERENCES Zone (ZoneId)
             ON DELETE CASCADE;
 
-INSERT INTO ZoneRegulator (RegulatorId, ZoneId)
+INSERT INTO RegulatorToZoneMapping (RegulatorId, ZoneId)
 SELECT RegulatorId, ZoneId
 FROM Zone;
 
