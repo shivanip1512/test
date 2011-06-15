@@ -170,6 +170,10 @@ public class ServiceCompanyController {
       //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
+       // Remove formatting so 11 digit phone number's don't take 16 char's in DB, which only hold 14
+       serviceCompany.setMainFaxNumber(serviceCompany.getMainFaxNumber().replaceAll("\\D", ""));
+       serviceCompany.setMainPhoneNumber(serviceCompany.getMainPhoneNumber().replaceAll("\\D", ""));
+        
       //verify the object
         serviceCompanyDtoValidator.validate(serviceCompany, bindingResult);
         if (bindingResult.hasErrors()) {

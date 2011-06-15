@@ -184,8 +184,8 @@
 	    					<tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber"/>
 	    					<tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
 	    					<tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
-	    					<tags:inputNameValue nameKey=".homePhoneLabel" path="accountDto.homePhone"/>
-	    					<tags:inputNameValue nameKey=".workPhoneLabel" path="accountDto.workPhone"/>
+	    					<tags:inputPhone nameKey=".homePhoneLabel" path="accountDto.homePhone" inputClass="phone f_formatPhone" maxlength="16"/>
+	    					<tags:inputPhone nameKey=".workPhoneLabel" path="accountDto.workPhone" inputClass="phone f_formatPhone" maxlength="16"/>
 	    					<tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
 	    					<tags:inputNameValue nameKey=".altTrackingNumberLabel" path="accountDto.altTrackingNumber"/>
 	    					<cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">

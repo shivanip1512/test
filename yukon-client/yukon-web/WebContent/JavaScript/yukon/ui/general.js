@@ -124,8 +124,6 @@ Yukon.ui = {
                     input.value = stripped.replace(regex, format);
                     input.removeClassName('error');
                     break;
-                }else{
-                    input.addClassName('error');
                 }
             }
         } else {
@@ -558,6 +556,7 @@ Event.observe(window, 'load', function() {
 });
 
 function showPointingPopup(event) {
+    
     var target = Event.element(event);
     var offsets = target.cumulativeOffset();
     var popupLeft = offsets.left + target.getDimensions().width + 2;
@@ -567,4 +566,5 @@ function showPointingPopup(event) {
     $('descriptionPopup').setStyle({left:left, top:top});
     $('descriptionPopup_content').innerHTML = target.up().next('span.focusedFieldDescription').innerHTML;
     $('descriptionPopup').show();
+    
 }
