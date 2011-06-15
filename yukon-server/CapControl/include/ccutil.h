@@ -25,11 +25,11 @@ enum CapControlType
 
 enum Phase
 {
-    Unknown,
-    A,
-    B,
-    C,
-    Poly
+    Phase_Unknown,
+    Phase_A,
+    Phase_B,
+    Phase_C,
+    Phase_Poly
 };
 
 

@@ -234,7 +234,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
         if ( zone != zones.end() )
         {
             long        regulatorId;
-            std::string phase( desolvePhase( Poly ) );      // default to gang operated in the case of rdr["Phase"] == null
+            std::string phase( desolvePhase( Phase_Poly ) );    // default to gang operated in the case of rdr["Phase"] == null
 
             rdr["RegulatorId"] >> regulatorId;
 

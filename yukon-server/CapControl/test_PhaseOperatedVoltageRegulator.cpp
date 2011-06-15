@@ -995,7 +995,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase
     regulator->setPaoName("Test Regulator #1");
     regulator->loadAttributes( &attributes );
 
-    regulator->setPhase( Cti::CapControl::A );
+    regulator->setPhase( Cti::CapControl::Phase_A );
 
     BOOST_CHECK_NO_THROW( regulator->executeTapUpOperation() );
 

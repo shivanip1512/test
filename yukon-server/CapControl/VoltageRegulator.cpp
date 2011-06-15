@@ -24,7 +24,7 @@ const std::string VoltageRegulator::PhaseOperatedVoltageRegulator   = "PO_REGULA
 
 VoltageRegulator::VoltageRegulator()
     : CapControlPao(),
-    _phase(Unknown),
+    _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -39,7 +39,7 @@ VoltageRegulator::VoltageRegulator()
 
 VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     : CapControlPao(rdr),
-    _phase(Unknown),
+    _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -66,7 +66,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
 
 VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     : CapControlPao(),
-    _phase(Unknown),
+    _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
     _lastTapOperation(VoltageRegulator::None),
@@ -348,9 +348,9 @@ std::string VoltageRegulator::getPhaseString() const
 {
     switch ( _phase )
     {
-        case A:
-        case B:
-        case C:
+        case Phase_A:
+        case Phase_B:
+        case Phase_C:
         {
             return ( " - Phase: " + desolvePhase( _phase ) );
         }

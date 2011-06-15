@@ -67,23 +67,23 @@ Phase resolvePhase( const std::string & p )
 {
     if ( p == "A" )
     {
-        return A;
+        return Phase_A;
     }
     else if ( p == "B" )
     {
-        return B;
+        return Phase_B;
     }
     else if ( p == "C" )
     {
-        return C;
+        return Phase_C;
     }
     else if ( p == "*" )
     {
-        return Poly;
+        return Phase_Poly;
     }
 //    else if ( p == "?" )
 
-    return Unknown;
+    return Phase_Unknown;
 }
 
 
@@ -91,25 +91,25 @@ std::string desolvePhase( const Phase & p )
 {
     switch ( p )
     {
-        case A:
+        case Phase_A:
         {
             return "A";
         }
-        case B:
+        case Phase_B:
         {
             return "B";
         }
-        case C:
+        case Phase_C:
         {
             return "C";
         }
     
-        case Poly:
+        case Phase_Poly:
         {
             return "*";
         }
 //        default:
-//        case Unknown:
+//        case Phase_Unknown:
     }
 
     return "?";

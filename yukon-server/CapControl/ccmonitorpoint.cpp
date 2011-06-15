@@ -33,7 +33,7 @@ RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint::CtiCCMonitorPoint() :
-_phase(Cti::CapControl::Unknown),
+_phase(Cti::CapControl::Phase_Unknown),
 _pointId(0),              
 _bankId(0),               
 _displayOrder(0),         
