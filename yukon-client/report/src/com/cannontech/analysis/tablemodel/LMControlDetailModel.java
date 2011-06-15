@@ -29,6 +29,8 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
     private int energyCompanyId;
@@ -119,8 +121,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
             try {
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
                 for (Integer groupId : groupIds) {
-                    ModelRow row = new ModelRow();
-                    row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
                     
                     List<ProgramLoadGroup> groupPrograms = groupIdToProgram.get(groupId);
                     if(groupPrograms == null) {
@@ -136,8 +136,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                         if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) {
                             continue;
                         }else {
-                            row.program = currentGroupProgram.getProgramName();
-                            
                             StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
                             if(allControlEventsForAGroup == null) {
                                 allControlEventsForAGroup = 
@@ -150,6 +148,17 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                             List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
                             List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                             
+                            List<Integer> enrollmentProgramIds = 
+                                Lists.transform(enrollments, new Function<LMHardwareControlGroup, Integer>() {
+                                    @Override
+                                    public Integer apply(LMHardwareControlGroup lmHardwareControlGroup) {
+                                        return lmHardwareControlGroup.getProgramId();
+                                    }});
+
+                            if (!enrollmentProgramIds.contains(currentGroupProgram.getProgramId())) {
+                                continue;
+                            }
+                            
                             CustomerControlTotals controlTotals = 
                                 LMControlHistoryUtil
                                     .calculateCumulativeCustomerControlValues(allControlEventsForAGroup,
@@ -157,6 +166,11 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                               stopDateTime,
                                                                               enrollments,
                                                                               optOuts);
+
+                            
+                            ModelRow row = new ModelRow();
+                            row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
+                            row.program = currentGroupProgram.getProgramName();
 
                             double oneHour = Duration.standardHours(1).getMillis();
                             double totalControlHours =
