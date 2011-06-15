@@ -9,6 +9,7 @@
 <cti:standardPage module="operator" page="hardware.list">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
+<cti:url var="hardwareListUrl" value="/spring/stars/operator/hardware/list?accountId=${accountId}"/>
 <cti:url var="createUrl" value="/spring/stars/operator/hardware/createPage"/>
 <cti:url var="checkSnUrl" value="/spring/stars/operator/hardware/checkSerialNumber"/>
 <cti:url var="addDevice" value="/spring/stars/operator/hardware/addDeviceToAccount"/>
@@ -85,11 +86,23 @@
     
     Event.observe(window, 'load', function() {
         if ($('inventoryCheckingThermostatPopup').visible())
-            adjustDialogSizeAndPosition($('inventoryCheckingThermostatPopup'));
+            adjustDialogSizeAndPosition('inventoryCheckingThermostatPopup');
         if ($('inventoryCheckingGatewayPopup').visible())
-            adjustDialogSizeAndPosition($('inventoryCheckingGatewayPopup'));
+            adjustDialogSizeAndPosition('inventoryCheckingGatewayPopup');
         if ($('inventoryCheckingSwitchPopup').visible())
-            adjustDialogSizeAndPosition($('inventoryCheckingSwitchPopup'));
+            adjustDialogSizeAndPosition('inventoryCheckingSwitchPopup');
+        if ($('addFromWarehousePopup'))
+            adjustDialogSizeAndPosition('addFromWarehousePopup');
+        if ($('addFromAccountPopup'))
+            adjustDialogSizeAndPosition('addFromAccountPopup');
+        if ($('createSerialPopup'))
+            adjustDialogSizeAndPosition('createSerialPopup');
+        if ($('notFoundSerial'))
+            adjustDialogSizeAndPosition('notFoundSerial');
+        if ($('sameAccountPopup'))
+            adjustDialogSizeAndPosition('sameAccountPopup');
+        if ($('anotherECPopup'))
+            adjustDialogSizeAndPosition('anotherECPopup');
     });
 </script>
 
@@ -108,9 +121,12 @@
 <%-- INVENTORY CHECKING SWITCH POPUP --%>
 <i:simplePopup titleKey=".switches.add" 
         id="inventoryCheckingSwitchPopup" 
-        styleClass="smallSimplePopup" 
-        showImmediately="${showSwitchCheckingPopup}">
-    <cti:flashScopeMessages/>
+        styleClass="smallSimplePopup"
+        showImmediately="${showSwitchCheckingPopup}"
+        onClose="window.location='${hardwareListUrl}';">
+    <c:if test="${showSwitchCheckingPopup}">
+        <cti:flashScopeMessages/>
+    </c:if>
     <form:form commandName="serialNumberSwitch" action="${checkSnUrl}Switch">
     
         <tags:nameValueContainer2>
@@ -122,7 +138,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" type="submit"/>
+            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('switch');" type="submit"/>
         </div>
         
         </form:form>
@@ -132,8 +148,11 @@
 <i:simplePopup titleKey=".thermostats.add" 
         id="inventoryCheckingThermostatPopup" 
         styleClass="smallSimplePopup" 
-        showImmediately="${showThermostatCheckingPopup}">
-    <cti:flashScopeMessages/>
+        showImmediately="${showThermostatCheckingPopup}"
+        onClose="window.location='${hardwareListUrl}';">
+    <c:if test="${showThermostatCheckingPopup}">
+        <cti:flashScopeMessages/>
+    </c:if>
     <form:form commandName="serialNumberThermostat" action="${checkSnUrl}Thermostat">
     
         <tags:nameValueContainer2>
@@ -145,7 +164,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" type="submit"/>
+            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('thermostat');" type="submit"/>
         </div>
         
     </form:form>
@@ -155,8 +174,11 @@
 <i:simplePopup titleKey=".gateways.add" 
         id="inventoryCheckingGatewayPopup" 
         styleClass="smallSimplePopup" 
-        showImmediately="${showGatewayCheckingPopup}">
-    <cti:flashScopeMessages/>
+        showImmediately="${showGatewayCheckingPopup}"
+        onClose="window.location='${hardwareListUrl}';">
+    <c:if test="${showGatewayCheckingPopup}">
+        <cti:flashScopeMessages/>
+    </c:if>
     <form:form commandName="serialNumberGateway" action="${checkSnUrl}Gateway">
     
         <tags:nameValueContainer2>
@@ -168,7 +190,7 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button key="checkInventoryButton" type="submit"/>
+            <cti:button key="checkInventoryButton" onclick="showInvCheckingPopup('gateway');" type="submit"/>
         </div>
     
     </form:form>
@@ -179,7 +201,8 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="addFromWarehousePopup" 
             styleClass="mediumSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
         
         <div style="padding:10px;"><i:inline key=".serialNumber.inWarehouse"/></div>
         
@@ -208,7 +231,7 @@
             
             <div class="actionArea">
                 <cti:button key="ok" type="submit"/>
-                <cti:button key="cancel" onclick="javascript:$('addFromWarehousePopup').hide();"/>
+                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
         </form>
     </i:simplePopup>
@@ -219,7 +242,8 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="addFromAccountPopup" 
             styleClass="mediumSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
         
         <div class="hardwarePopup"><i:inline key=".serialNumber.foundOnAnotherAccount"/></div>
         
@@ -254,7 +278,7 @@
             
             <div class="actionArea">
                 <cti:button key="ok" type="submit"/>
-                <cti:button key="cancel" onclick="javascript:$('addFromAccountPopup').hide();"/>
+                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
         </form>
@@ -267,7 +291,8 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="createSerialPopup" 
             styleClass="smallSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
 
         <div class="hardwarePopup"><i:inline key=".serialNumber.notFoundAdd" arguments="${confirmCreateSerial}"/></div>
         
@@ -278,7 +303,7 @@
             
             <div class="actionArea">
                 <cti:button key="ok" type="submit" styleClass="f_blocker"/>
-                <cti:button key="cancel" onclick="javascript:$('createSerialPopup').hide();"/>
+                <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
         </form>
@@ -290,13 +315,14 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="notFoundSerialPopup" 
             styleClass="smallSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
 
         <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
         
         <div class="actionArea">
             <cti:button key="ok" type="submit" styleClass="f_blocker"/>
-            <cti:button key="cancel" onclick="javascript:$('notFoundSerialPopup').hide();"/>
+            <cti:button key="cancel" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>
@@ -307,12 +333,13 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="sameAccountPopup" 
             styleClass="smallSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
 
         <div class="hardwarePopup"><i:inline key=".error.sameAccount.serialNumber" arguments="${sameAccountSerial}"/></div>
         
         <div class="actionArea">
-            <cti:button key="ok" onclick="javascript:$('sameAccountPopup').hide();"/>
+            <cti:button key="ok" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>
@@ -323,12 +350,13 @@
     <i:simplePopup titleKey="${titleKey}" 
             id="anotherECPopup" 
             styleClass="smallSimplePopup" 
-            showImmediately="true">
+            showImmediately="true"
+            onClose="window.location='${hardwareListUrl}';">
 
         <div class="hardwarePopup"><i:inline key=".error.anotherEC.serialNumber" arguments="${anotherEC}"/></div>
         
         <div class="actionArea">
-            <cti:button key="ok" onclick="javascript:$('anotherECPopup').hide();"/>
+            <cti:button key="ok" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
     </i:simplePopup>

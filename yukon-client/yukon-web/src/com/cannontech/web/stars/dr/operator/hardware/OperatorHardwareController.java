@@ -141,10 +141,9 @@ public class OperatorHardwareController {
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        SerialNumber serialNumber = new SerialNumber();
-        model.addAttribute("serialNumberSwitch", serialNumber);
-        model.addAttribute("serialNumberThermostat", serialNumber);
-        model.addAttribute("serialNumberGateway", serialNumber);
+        model.addAttribute("serialNumberSwitch", new SerialNumber());
+        model.addAttribute("serialNumberThermostat", new SerialNumber());
+        model.addAttribute("serialNumberGateway", new SerialNumber());
         model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
         
         setupListModel(fragment, model, energyCompany, userContext);
@@ -159,8 +158,8 @@ public class OperatorHardwareController {
                                           FlashScope flashScope,
                                           AccountInfoFragment fragment,
                                           int hardwareTypeId) {
-        model.addAttribute("serialNumberThermostat", serialNumber);
-        model.addAttribute("serialNumberGateway", serialNumber);
+        model.addAttribute("serialNumberThermostat", new SerialNumber());
+        model.addAttribute("serialNumberGateway", new SerialNumber());
         return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
                                  flashScope, fragment, hardwareTypeId);
     }
@@ -173,8 +172,8 @@ public class OperatorHardwareController {
                                           FlashScope flashScope,
                                           AccountInfoFragment fragment,
                                           int hardwareTypeId) {
-        model.addAttribute("serialNumberSwitch", serialNumber);
-        model.addAttribute("serialNumberGateway", serialNumber);
+        model.addAttribute("serialNumberSwitch", new SerialNumber());
+        model.addAttribute("serialNumberGateway", new SerialNumber());
         return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
                                  flashScope, fragment, hardwareTypeId);
     }
@@ -187,8 +186,8 @@ public class OperatorHardwareController {
                                           FlashScope flashScope,
                                           AccountInfoFragment fragment,
                                           int hardwareTypeId) {
-        model.addAttribute("serialNumberSwitch", serialNumber);
-        model.addAttribute("serialNumberThermostat", serialNumber);
+        model.addAttribute("serialNumberSwitch", new SerialNumber());
+        model.addAttribute("serialNumberThermostat", new SerialNumber());
         return checkSerialNumber(serialNumber, bindingResult, model, context, request, 
                                  flashScope, fragment, hardwareTypeId);
     }
@@ -473,6 +472,9 @@ public class OperatorHardwareController {
         
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Creation */
+            int accountId = fragment.getAccountId();
+            model.clear();
+            model.addAttribute("accountId", accountId);
             return "redirect:list";
         }
         

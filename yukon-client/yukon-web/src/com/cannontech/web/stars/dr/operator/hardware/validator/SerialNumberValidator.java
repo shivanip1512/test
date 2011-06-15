@@ -17,9 +17,9 @@ public class SerialNumberValidator extends SimpleValidator<SerialNumber> {
         
         /* Serial Number */
         if (StringUtils.isBlank(serialNumber.getSerialNumber())) {
-            errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.serialNumber.required");
+            errors.rejectValue("serialNumber", "yukon.web.error.required");
         } else if(serialNumber.getSerialNumber().length() > 30) {
-            errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.serialNumber.toolong");
+            errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.toolong");
         }
         
     }

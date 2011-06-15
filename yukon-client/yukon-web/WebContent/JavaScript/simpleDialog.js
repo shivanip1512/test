@@ -6,7 +6,7 @@ var naturalDialogSizes = {};
  */
 function adjustDialogSizeAndPosition(dialogId) {
     var dialogDiv = $(dialogId);
-    var dialogDimensions = naturalDialogSizes[dialogId];
+    var dialogDimensions = naturalDialogSizes[dialogDiv.id];
     if (!dialogDimensions) {
         dialogDimensions = {
         		'width' : dialogDiv.getStyle('width'),
@@ -166,11 +166,11 @@ function simpleAJAXRequest(url) {
 }
 
 function showSimplePopup(popupId, initialFocus) {
+    adjustDialogSizeAndPosition(popupId);
     $(popupId).show();
     if (initialFocus) {
         $(initialFocus).focus();
     } else if ($(popupId).down("input:first[type='text']")) {
         $(popupId).down("input:first[type='text']").focus();
     }
-    adjustDialogSizeAndPosition(popupId);
 }

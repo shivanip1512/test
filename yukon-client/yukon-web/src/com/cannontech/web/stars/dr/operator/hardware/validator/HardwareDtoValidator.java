@@ -42,7 +42,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
         /* Serial Number */
         if (!hardwareType.isMeter()) {  /* Check serial numbers for switches and tstats */
             if (StringUtils.isBlank(hardwareDto.getSerialNumber())) {
-                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.required");
+                errors.rejectValue("serialNumber", "yukon.web.error.required");
             } else {
                 if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
                     /* This is a two way lcr so the serial number can only have numeric chars and must be a valid integer. */
