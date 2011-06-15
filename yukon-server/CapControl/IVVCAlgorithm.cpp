@@ -70,25 +70,37 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        long regulatorID = zone->getRegulatorId();
-
-        VoltageRegulatorManager::SharedPtr regulator;
-
-        try
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
-            regulator = store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
+            long regulatorID = mapping.second;
 
-            regulator->updateFlags( ((_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2) );
-        }
-        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-        {
-            ++missingRegulatorCount;
+            VoltageRegulatorManager::SharedPtr regulator;
 
-            if ( state->isShowNoRegulatorAttachedMsg() )
+            try
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
+                regulator = store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
 
-                dout << CtiTime() << " - IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << endl;
+                regulator->updateFlags( ((_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2) );
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                ++missingRegulatorCount;
+
+                if ( state->isShowNoRegulatorAttachedMsg() )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << endl;
+                }
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {    
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
             }
         }
     }
@@ -566,7 +578,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     int  tapOpCount = operation.second;
 
                     ZoneManager & zoneManager = store->getZoneManager();
-                    long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+
+// need to re-think the TapoperationZoneMap..  now we can have tapOps on several phases in the same zone --> multimap maybe...
+
+                    long regulatorId = -1;
+
+//    for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+  //  {
+    //    long regulatorID = mapping.second;
+    //}
+
+
+////                    long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
 
 
                     try
@@ -635,7 +658,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if ( tapOpCount < 0 )
                     {
                         ZoneManager & zoneManager = store->getZoneManager();
-                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+
+// same here....
+
+long regulatorId = -1;
+
+//                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
 
                         if ( regulatorId > 0 )
                         {
@@ -654,7 +682,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     else if ( tapOpCount > 0 )
                     {
                         ZoneManager & zoneManager = store->getZoneManager();
-                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+// and here....
+
+long regulatorId = -1;
+
+//                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
 
                         if ( regulatorId > 0 )
                         {
@@ -787,7 +819,6 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     ZoneManager & zoneManager = store->getZoneManager();
-    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> regulatorManager = store->getVoltageRegulatorManager();
 
     try
     {
@@ -799,18 +830,39 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
         {
             ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-            // Regulator
+            // Regulator(s)
 
-            VoltageRegulatorManager::SharedPtr regulator = regulatorManager->getVoltageRegulator( zone->getRegulatorId() );
-
-            long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
-
-            pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
-
-            if ( sendScan )
+            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
-//                CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN,
-  //                                                                      zone->getRegulatorId() ) )->execute();
+                try
+                {
+                    VoltageRegulatorManager::SharedPtr  regulator
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                    long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
+
+                    pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
+
+                    if ( sendScan )
+                    {
+                        regulator->executeIntegrityScan();
+                    }
+                }
+                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                }
+                catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                {
+                    if (missingAttribute.complain())
+                    {    
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    }
+                }
             }
 
             // 2-way CBCs
@@ -837,11 +889,9 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
             // Additional voltage points
 
-            Zone::IdSet additionalVoltagePointIds = zone->getPointIds();
-
-            for each ( const Zone::IdSet::value_type & ID in additionalVoltagePointIds )
+            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
             {
-                pointRequests.insert( PointRequest(ID, OtherRequestType) );
+                pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
             }
         }
     }
@@ -983,15 +1033,38 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     ZoneManager & zoneManager = store->getZoneManager();
+    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> regulatorManager = store->getVoltageRegulatorManager();
+
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
-        long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
-        if (regulatorID > 0)
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
-//            CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE,
-  //                                                                  regulatorID ) )->execute();
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                regulator->executeEnableKeepAlive();
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {    
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
+            }
         }
     }
 
@@ -1028,43 +1101,6 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
 {
     sendEvents(dispatchConnection,ccEvents);
     sendPointChanges(dispatchConnection,pointChanges);
-}
-
-
-bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
-{
-    try
-    {
-        double value = -1.0;
-
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-        VoltageRegulatorManager::SharedPtr regulator =
-                store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
-
-        LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
-
-        bool hasValue = regulator->getPointValue( point.getPointId(), value );
-
-        return ( hasValue && ( value == 1.0 ) );    // Remote Mode
-    }
-    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
-    }
-    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
-    {
-        if (missingAttribute.complain())
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-    
-            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
-        }
-    }
-
-    return false;
 }
 
 
@@ -1369,15 +1405,18 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
         try
         {
-            VoltageRegulatorManager::SharedPtr regulator =
-                    store->getVoltageRegulatorManager()->getVoltageRegulator( zone->getRegulatorId() );
-
-            long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
-
-            PointValueMap::const_iterator found = pointValues.find( voltagePointId );   // lookup
-            if ( found != pointValues.end() )
+            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
-                zonePointValues.insert( *found );
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
+
+                PointValueMap::const_iterator found = pointValues.find( voltagePointId );   // lookup
+                if ( found != pointValues.end() )
+                {
+                    zonePointValues.insert( *found );
+                }
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -1422,9 +1461,9 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
         // Other voltage points in this zone
 
-        for each ( const Zone::IdSet::value_type & pointId in zone->getPointIds() )
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
         {
-            PointValueMap::const_iterator found = pointValues.find( pointId );  // lookup
+            PointValueMap::const_iterator found = pointValues.find( mapping.second );  // lookup
 
             if ( found != pointValues.end() )
             {
@@ -1525,19 +1564,41 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
 
     Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbusId);
 
-    bool remoteMode = true;
-
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
-        long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        if (regulatorID > 0)
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
-            remoteMode &= isVoltageRegulatorInRemoteMode(regulatorID);
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                if ( regulator->getOperatingMode() != VoltageRegulator::RemoteMode )
+                {
+                    return false;
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {    
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
+            }
         }
     }
 
-    return remoteMode;
+    return true;
 }
 
 
@@ -1643,14 +1704,34 @@ void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr
 
         for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
         {
-            long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-            if (regulatorID > 0)
+            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
-                if ( isVoltageRegulatorInRemoteMode(regulatorID) )
+                try
                 {
-//                    CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
-  //                                                                          regulatorID ) )->execute();
+                    VoltageRegulatorManager::SharedPtr regulator =
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                    if ( regulator->getOperatingMode() == VoltageRegulator::RemoteMode )
+                    {
+                        regulator->executeDisableRemoteControl();
+                    }
+                }
+                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                
+                    dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                }
+                catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                {
+                    if (missingAttribute.complain())
+                    {    
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                
+                        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    }
                 }
             }
         }

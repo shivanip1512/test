@@ -116,11 +116,9 @@ void Zone::addPointId( const Phase phase, const long Id )
 }
 
 
-Zone::IdSet Zone::getPointIds() const
+Zone::PhaseIdMap Zone::getPointIds() const
 {
-    IdSet   IDs;
-
-    return IDs;     // jmoc -- fix me!?!??!?!?
+    return _voltagePoints;
 }
 
 
@@ -130,12 +128,10 @@ void Zone::addRegulatorId( const Phase phase, const long Id )
 }
 
 
-long Zone::getRegulatorId() const
+Zone::PhaseIdMap Zone::getRegulatorIds() const
 {
-    return -1;      // jmoc -- fix me!?!??!?!?
+    return _regulatorIds;
 }
-
-
 
 
 }

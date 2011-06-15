@@ -49,10 +49,10 @@ public:
     IdSet getBankIds() const;
 
     void addPointId( const Phase phase, const long Id );
-    IdSet getPointIds() const;
+    PhaseIdMap getPointIds() const;
 
     void addRegulatorId( const Phase phase, const long Id );
-    long getRegulatorId() const;
+    PhaseIdMap getRegulatorIds() const;
 
 private:
 

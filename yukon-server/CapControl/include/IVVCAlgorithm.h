@@ -45,8 +45,6 @@ class IVVCAlgorithm
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
-        virtual bool isVoltageRegulatorInRemoteMode(const long regulatorID) const;
-
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         bool allRegulatorsInRemoteMode(const long subbusId) const;
