@@ -21,9 +21,11 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
+import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.UtilityProZigbeeFields;
 import com.cannontech.thirdparty.model.ZigbeeThermostat;
+import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 
@@ -34,7 +36,8 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private DeviceDao deviceDao;
     private AttributeService attributeService;
-    
+    private ZigbeeWebService zigbeeWebService;
+    private GatewayDeviceDao gatewayDeviceDao;
     
     @Override
     public HardwareType getType() {
@@ -117,6 +120,12 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         
         return;
     }
+
+    @Override
+    @Transactional
+    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        decommissionDevice(inventoryId.getInventoryId(),pao.getPaoId());        
+    }
     
     @Override
     @Transactional
@@ -125,6 +134,27 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
+    @Override
+    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        decommissionDevice(inventoryId.getInventoryId(),pao.getPaoId());
+    };
+    
+    private void decommissionDevice(int inventoryId, int deviceId) {
+        Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);        
+        if (gatewayId != null) {
+            //Send Decommission command.
+            zigbeeWebService.uninstallStat(gatewayId, deviceId);
+            
+            //Remove from gateway
+            gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
+        }
+    }
+    
+    @Autowired
+    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
+        this.gatewayDeviceDao = gatewayDeviceDao;
+    }
+    
     @Autowired
     public void setPaoCreationService(PaoCreationService paoCreationService) {
         this.paoCreationService = paoCreationService;
@@ -148,5 +178,10 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
+    }
+    
+    @Autowired
+    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
+        this.zigbeeWebService = zigbeeWebService;
     }
 }

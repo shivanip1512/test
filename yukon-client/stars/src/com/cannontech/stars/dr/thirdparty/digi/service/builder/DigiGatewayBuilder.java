@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.thirdparty.digi.service.builder;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.provider.fields.GatewayFields;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
+import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ClassToInstanceMap;
 
@@ -34,6 +38,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     private AttributeService attributeService;
     private DeviceDao deviceDao;
     private PaoCreationService paoCreationService;
+    private ZigbeeWebService zigbeeWebService;
     
     @Override
     public void retrieveDevice(HardwareDto hardwareDto) {
@@ -88,11 +93,37 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     @Transactional
-    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        //Send Decommission command for devices
+        decommissionGateway(pao.getPaoId());
+    }
+    
+    @Override
+    @Transactional
+    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {       
         gatewayDeviceDao.deleteDigiGateway(pao.getPaoId());
         deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
+    @Override
+    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        //Send Decommission command for devices
+        decommissionGateway(pao.getPaoId());
+        
+        //Remove devices from gateway
+        gatewayDeviceDao.removeDevicesFromGateway(pao.getPaoId());
+    };
+
+    private void decommissionGateway(int gatewayId) {
+        List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gatewayId);
+        for (ZigbeeDevice device : devices) {
+            zigbeeWebService.uninstallStat(gatewayId, device.getZigbeeDeviceId());
+        }
+
+        //Decommission from iDigi
+        zigbeeWebService.removeGateway(gatewayId);
+    }
+    
     @Override
     public HardwareType getType() {
         return HardwareType.DIGI_GATEWAY;
@@ -155,4 +186,10 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     public void setPaoCreationService(PaoCreationService paoCreationService) {
         this.paoCreationService = paoCreationService;
     }
+
+    @Autowired
+    public void setZigbeeWebService(ZigbeeWebService zigbeeWebService) {
+        this.zigbeeWebService = zigbeeWebService;
+    }
+
 }

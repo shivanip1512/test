@@ -203,10 +203,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 
         //When decommissioning a device, change it's connection status to disconnected 
         //since we will no longer get updates for it, prevent it from appearing connected
-        //The Commission status will get updated via reponses from the Tstat.
         zigbeeServiceHelper.sendPointStatusUpdate(device, 
                                                   BuiltInAttribute.CONNECTION_STATUS, 
                                                   CommStatusState.DISCONNECTED);
+        zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                  BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                  Commissioned.DECOMMISSIONED);
         
         logger.debug(response);
     }

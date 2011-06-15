@@ -309,7 +309,8 @@ public class ZigBeeHardwareController {
     
     @RequestMapping
     public String removeDeviceFromGateway(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
-        //Send Digi Unlink commands?
+
+        zigbeeWebService.uninstallStat(gatewayId, deviceId);
         gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
         
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);

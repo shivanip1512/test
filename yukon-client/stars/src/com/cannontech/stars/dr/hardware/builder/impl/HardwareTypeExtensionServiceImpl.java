@@ -37,12 +37,30 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
+    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
+        
+        if (hardwareBuilder == null) return;
+        
+        hardwareBuilder.preDeleteCleanup(pao, inventoryId);
+    }
+    
+    @Override
     public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {
         HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
         
         if (hardwareBuilder == null) return;
         
         hardwareBuilder.deleteDevice(pao, inventoryId);
+    }
+    
+    @Override
+    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+        HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
+        
+        if (hardwareBuilder == null) return;
+        
+        hardwareBuilder.moveDeviceToInventory(pao, inventoryId);
     }
     
     @Override

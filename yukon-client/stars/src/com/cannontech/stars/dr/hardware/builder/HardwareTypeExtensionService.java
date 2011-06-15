@@ -25,9 +25,25 @@ public interface HardwareTypeExtensionService {
     public void updateDevice(HardwareDto hardwareDto);
     
     /**
+     * Handles any cleanup before we call delete.
+     * 
+     * @param pao
+     * @param inventoryId
+     */
+    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId);
+    
+    /**
      * Call to delete any extra data the ExtensionService is responsible for.
      */
     public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId);
+    
+    /**
+     * Call to handle any actions needed for a device when moving to inventory.
+     * 
+     * @param pao
+     * @param inventoryId
+     */
+    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId);
     
     /**
      * Fill in any extra parameters.
