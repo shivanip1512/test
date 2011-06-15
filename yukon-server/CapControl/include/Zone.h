@@ -16,6 +16,8 @@ class Zone : private boost::noncopyable
 
 public:
 
+    static const std::string GangOperated;
+
     typedef std::set<long>          IdSet;
     typedef std::map<Phase, long>   PhaseIdMap;
 
@@ -23,7 +25,9 @@ public:
           const long parentId,
           const long subbusId,
           const std::string & name,
-          const std::string & type );
+          const std::string & type = GangOperated );    // this 'type' field is unnecessary for the server because
+                                                        //  we can get this info from the attached regulator(s) phase
+                                                        // information.
 
     ~Zone();
 
@@ -44,10 +48,10 @@ public:
     void addBankId( const long Id );
     IdSet getBankIds() const;
 
-    void addPointId( const Phase & Phase, const long Id );
+    void addPointId( const Phase phase, const long Id );
     IdSet getPointIds() const;
 
-    void addRegulatorId( const Phase & Phase, const long Id );
+    void addRegulatorId( const Phase phase, const long Id );
     long getRegulatorId() const;
 
 private:

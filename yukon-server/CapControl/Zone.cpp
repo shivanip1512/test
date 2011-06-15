@@ -6,6 +6,9 @@
 namespace Cti           {
 namespace CapControl    {
 
+const std::string Zone::GangOperated = "GANG_OPERATED";
+
+
 Zone::Zone( const long Id,
             const long parentId,
             const long subbusId,
@@ -16,7 +19,7 @@ Zone::Zone( const long Id,
     _subbusId(subbusId),
     _name(name)
 {
-    _gangOperated = ( type == "GANG_OPERATED" );
+    _gangOperated = ( type == GangOperated );
 }
 
 
@@ -107,9 +110,9 @@ Zone::IdSet Zone::getBankIds() const
 }
 
 
-void Zone::addPointId( const Phase & Phase, const long Id )
+void Zone::addPointId( const Phase phase, const long Id )
 {
-    _voltagePoints.insert( std::make_pair(Phase, Id) );
+    _voltagePoints.insert( std::make_pair(phase, Id) );
 }
 
 
@@ -121,9 +124,9 @@ Zone::IdSet Zone::getPointIds() const
 }
 
 
-void Zone::addRegulatorId( const Phase & Phase, const long Id )
+void Zone::addRegulatorId( const Phase phase, const long Id )
 {
-    _regulatorIds.insert( std::make_pair(Phase, Id) );
+    _regulatorIds.insert( std::make_pair(phase, Id) );
 }
 
 

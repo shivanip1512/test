@@ -8,7 +8,18 @@
 namespace Cti           {
 namespace CapControl    {
 
-const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1, -1, -1, "(none)", "GANG_OPERATED" ) );
+/*
+    This non-Zone is what is returned on a call to getZone() that has
+    no corresponding entry in the map.  The ID of -1 is the standard
+    CapControl way of saying: "Ignore me - I really don't exist"
+ 
+    Someday I'd like to replace this with a thrown exception.
+*/
+const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1,       // Zone ID
+                                                                  -1,       // Parent Zone ID
+                                                                  -1,       // Subbus ID
+                                                                  "(none)"  // Zone name
+                                                                ) );
 
 
 ZoneManager::ZoneManager( std::auto_ptr<ZoneLoader> loader )

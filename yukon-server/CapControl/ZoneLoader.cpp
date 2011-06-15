@@ -233,17 +233,21 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
 
         if ( zone != zones.end() )
         {
-            long        regulatorId;
-            std::string phase( desolvePhase( Phase_Poly ) );    // default to gang operated in the case of rdr["Phase"] == null
+            long    regulatorId;
+            Phase   phase = Phase_Poly;
 
             rdr["RegulatorId"] >> regulatorId;
 
             if ( ! rdr["Phase"].isNull() )
             {
-                rdr["Phase"] >> phase;
+                std::string phaseStr;
+
+                rdr["Phase"] >> phaseStr;
+
+                phase = resolvePhase( phaseStr );
             }
 
-            zone->second->addRegulatorId( resolvePhase( phase ), regulatorId );
+            zone->second->addRegulatorId( phase, regulatorId );
 
             // Assign the phase info directly to the regulator of interest
             try
@@ -254,7 +258,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
                 VoltageRegulatorManager::SharedPtr  regulator
                     = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
-                regulator->setPhase( resolvePhase( phase ) );
+                regulator->setPhase( phase );
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
