@@ -176,7 +176,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             int coolTemp = entry.getCoolTemp().getIntValue();
             int heatTemp = entry.getHeatTemp().getIntValue();
 
-            String startTimeString = startTime.toString("HH:mm");
+            String startTimeString = startTime.toString("HHmm");
             builder.append(startTimeString + ",");
             builder.append(coolTemp + ",");
             builder.append(heatTemp);
