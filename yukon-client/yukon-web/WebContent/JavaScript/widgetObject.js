@@ -103,15 +103,15 @@ JsWidgetObject.prototype = {
   },
   
   doPeriodicRefresh: function(cmd, newParams, period, container) {
-      var useContainer = container;
+      var containerToUse = container;
       if (container == undefined || container == '') {
-          useContainer = this.container;
+          containerToUse = this.container;
       }
       oldParams = this.getWidgetParameters();
       oldParams.update(newParams);
       
       var url = "/spring/widget/" + this.shortName + "/" + cmd;
-      new Ajax.PeriodicalUpdater(useContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this), 'frequency': period});
+      return new Ajax.PeriodicalUpdater(containerToUse, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this), 'frequency': period});
   },
   
   /**
