@@ -134,7 +134,7 @@
             <td colspan="5">
                 <c:if test="${not empty errorMsgDailyUsage}">
                     <div class="errorMessage" style="none">Error Retrieving Daily Usage Report:</div>
-                    <tags:hideReveal title="${errorMsgDailyUsage}" showInitially="false"/>
+                    <tags:hideReveal title="${errorMsgDailyUsage}" escapeTitle="true" showInitially="false"/>
                 </c:if>
             </td>
         </tr>
