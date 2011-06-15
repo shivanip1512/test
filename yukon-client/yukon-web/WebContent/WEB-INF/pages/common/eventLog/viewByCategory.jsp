@@ -42,14 +42,20 @@
     </tags:sectionContainer>
 
     <%-- GENERATE REPORTS --%>
-    <div style="text-align: right;">
-        <cti:labeledImg key="csvExport" id="csvExportButton"/>
-    </div>
-        
-    <c:if test="${maxCsvRows < searchResult.hitCount}">
-        <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
-    </c:if>
-        
+    <c:choose>
+        <c:when test="${maxCsvRows > searchResult.hitCount}">
+            <div style="text-align: right;">
+                <cti:labeledImg key="csvExport" href="${csvLink}"/>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div style="text-align: right;">
+                <cti:labeledImg key="csvExport" id="csvExportButton"/>
+            </div>
+            <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+        </c:otherwise>
+    </c:choose>
+
 
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>

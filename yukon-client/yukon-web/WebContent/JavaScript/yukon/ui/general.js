@@ -47,7 +47,7 @@ Yukon.ui = {
         // close popup on submit event
         $$("button.f_closePopupOnSubmit").each(function(elem){
             elem.observe('click', function(event){
-            	elem.up('.popUpDiv:first').hide();
+            	elem.up('.popUpDiv').hide();
                 return true;
             });
         });
