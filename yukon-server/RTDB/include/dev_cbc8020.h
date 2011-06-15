@@ -12,12 +12,14 @@ protected:
     enum PointOffsets
     {
         PointOffset_FirmwareRevisionMajor = 5,
-        PointOffset_FirmwareRevisionMinor = 6
+        PointOffset_FirmwareRevisionMinor = 6,
+        PointOffset_FirmwareRevision      = 9999
     };
 
     virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
 
     static void combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t &points );
+
 };
 
 }

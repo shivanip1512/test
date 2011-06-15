@@ -9,90 +9,67 @@ namespace Devices {
 
 /**
  * This function will iterate over the <code>points</code> 
- * vector, searching for the two firmware points. If it finds 
- * both, as soon as it finds the second point it will break out
- * of the iteration, calculate the firmware version, delete the 
- * first message it encountered, and update the last message it 
- * processed to contain the firmware version and point offset 
- * required to be processed.
+ * vector, searching for the two firmware points. It will set 
+ * aside the first major or minor firmware revision points it 
+ * comes across until it finds its complement point and, as 
+ * soon as it finds the second point, it combines the 
+ * information from the major and minor revisions into a new 
+ * CtiPointDataMsg object and pushes it 
+ * onto the <code>points</code> vector and returns.
  *  
- * If we encounter multiple major or minor revisions in the 
- * <code>points</code> vector (i.e. Major Major Minor or 
- * similar), the first one processed will be the only one that 
- * will be saved and passed on (assuming both major and minor 
- * points are eventually processed in the vector.) Any 
- * subsequent message whose type has already been encountered 
- * will be removed from the points vector. 
- *  
- * There is no guarantee on the order of the points in the 
- * vector when they are passed into this function. 
+ * If a major and minor point aren't both encountered in the
+ * iteration, this function will effectively do nothing and the 
+ * vector of messages will remain untouched. If the function 
+ * does find both a major and minor, the size of the vector will 
+ * increase by one and all major and minor revision messages 
+ * previously in the vector will remain there untouched. 
  */
 void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t &points )
 {
-    boost::optional<CtiPointDataMsg*> major, minor;
+    CtiPointDataMsg *major = 0, *minor = 0;
+    Cti::Protocol::Interface::pointlist_t::iterator itr, end = points.end();
 
     // We need to check if the firmware analog points are present, then consolidate
-    // them into one point for processing.
-    for( int i = 0; i < points.size(); /* Increments handled manually */ )
+    // them into single points for processing.
+    for( itr = points.begin(); itr != end; itr++ )
     {
-        CtiPointDataMsg *pt_msg = points[i];
+        CtiPointDataMsg *pt_msg = *itr;
         
         if( pt_msg && pt_msg->getType() == AnalogPointType )
         {
             if( pt_msg->getId() == PointOffset_FirmwareRevisionMajor )
             {
-                if( !major || (*major)->getTime() < pt_msg->getTime() )
+                if( !major )
                 {
                     major = pt_msg;
                 }
-                points.erase(points.begin() + i);
-                continue;
             }
             if( pt_msg->getId() == PointOffset_FirmwareRevisionMinor )
             {
-                if( !minor || (*minor)->getTime() < pt_msg->getTime() )
+                if( !minor )
                 {
                     minor = pt_msg;
                 }
-                points.erase(points.begin() + i);
-                continue;
             }
         }
 
-
-        /**
-         * We want to increment in the general case, but not when we've 
-         * encountered multiple major or minor revision messages. The 
-         * continue statement in those cases will skip the 
-         * incrementation, which will keep us in place in the vector 
-         * since we've erased a message from the vector. 
-         */
-        i++;
-    }
-
-    if( major && minor )
-    {
-        /**
-         * We just processed the second firmware point message. We have 
-         * the index of the first one, lets shove all the firmare 
-         * information into one value, put it into this message, and 
-         * delete the first one. 
-         */
-        double firmware = static_cast<double>((*major)->getValue()) +
-                          static_cast<double>((*minor)->getValue()) / 100.0;
-
-        (*major)->setValue(firmware);
-        points.push_back(*major);
-    }
-    else
-    {
-        if( major ) 
+        if( major && minor )
         {
-            points.push_back(*major);
-        }
-        if( minor ) 
-        {
-            points.push_back(*minor);
+            /**
+             * We've encountered both a major and minor revision message.
+             * Use them to create the single revision data point message and
+             * store it.
+             */
+            double firmware = static_cast<double>(major->getValue()) +
+                              static_cast<double>(minor->getValue()) / 100.0;
+    
+            CtiPointDataMsg *pt_msg = new CtiPointDataMsg(PointOffset_FirmwareRevision,
+                                                          firmware,
+                                                          NormalQuality,
+                                                          AnalogPointType);
+            points.push_back(pt_msg);
+
+            return;
         }
     }
 }
