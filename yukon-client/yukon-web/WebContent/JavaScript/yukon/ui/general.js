@@ -319,7 +319,7 @@ Yukon.uiUtils = {
         show: function(args) {
             if(args.element != null) {
                 
-                args.element.select('button', 'input[type="button"]', 'input[type="submit"]').each(function(item) {
+                args.element.select('button', 'input[type=button]', 'input[type=submit]').each(function(item) {
                     item.disable();
                 });
                 
@@ -347,7 +347,7 @@ Yukon.uiUtils = {
         hide: function(args) {
             if(args.element != null) {
                 
-                args.element.select('button', 'input[type="button"]', 'input[type="submit"]').each(function(item) {
+                args.element.select('button', 'input[type=button]', 'input[type=submit]').each(function(item) {
                     item.enable();
                 });
                 
