@@ -39,6 +39,8 @@ import com.cannontech.stars.web.collection.SimpleCollection;
 import com.cannontech.stars.web.collection.SimpleCollectionFactory;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * @author yao
@@ -95,10 +97,23 @@ public class InventoryBean {
 	private String referer = null;
 	private List<LiteInventoryBase> inventorySet = null;
 	private String action = null;
-	
+
 	private LiteStarsEnergyCompany energyCompany = null;
     private List<FilterWrapper> filterByList = null;
-	
+
+    public final static ImmutableMap<Integer, Boolean> unsupportedDeviceTypes;
+    static {
+        Builder<Integer, Boolean> builder = ImmutableMap.builder();
+        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, true);
+        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, true);
+        builder.put(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, true);
+        unsupportedDeviceTypes = builder.build();
+    }
+
+    public Map<Integer, Boolean> getUnsupportedDeviceTypes() {
+        return unsupportedDeviceTypes;
+    }
+
 	public InventoryBean() {
 	}
 	

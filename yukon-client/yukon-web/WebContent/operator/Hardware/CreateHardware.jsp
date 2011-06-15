@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ page import="com.cannontech.common.inventory.HardwareConfigType" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -203,10 +204,11 @@ function init() {
 	int savedDeviceType = 0;
 	if (savedReq.getProperty("DeviceType") != null)
 		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
-	
-	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
-		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
-		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+
+	for (YukonListEntry entry : devTypeList.getYukonListEntries()) {
+		if (InventoryBean.unsupportedDeviceTypes.containsKey(entry.getYukonDefID())) {
+		    continue;
+		}
 		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>

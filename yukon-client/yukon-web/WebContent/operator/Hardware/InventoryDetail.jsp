@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ page import="com.cannontech.common.model.ContactNotificationType" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
@@ -46,6 +47,9 @@
             }
             
             boolean isMCT = inventory.getDeviceID() > 0;
+
+            boolean deviceTypeSupportsEdit =
+                !InventoryBean.unsupportedDeviceTypes.containsKey(yukonListEntry.getYukonDefID());
 
             String src = request.getParameter("src");
             String referer = "";
@@ -94,6 +98,9 @@
             }
 
             boolean viewOnly = src.equalsIgnoreCase("SelectInv");
+            if (!deviceTypeSupportsEdit) {
+                viewOnly = true;
+            }
 %>
 <c:set target="${detailBean}" property="currentInventory" value="${currentInv}" />
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -249,7 +256,11 @@ var setChoosenYukonDevice = function() {
 			  <%if (confirmMsg != null)
                 out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");
             %>
-			  
+
+<% if (!deviceTypeSupportsEdit) { %>
+    <span style="color: red"><%= devTypeStr %> devices are not editable unless attached to an account.</span>
+<% } %>
+
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return <%= !viewOnly %> && validate(this)">
 			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">

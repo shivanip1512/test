@@ -8,6 +8,9 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -23,10 +26,12 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.google.common.collect.Maps;
 
 public class ManipulateInventoryTask extends TimeConsumingTask {
     LiteStarsEnergyCompany currentCompany = null;
@@ -105,6 +110,13 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
             return;
         }
 
+        YukonSelectionList deviceTypeList =
+            currentCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+        Map<Integer, YukonListEntry> deviceTypesByHardwareType = Maps.newHashMap();
+        for (YukonListEntry listEntry : deviceTypeList.getYukonListEntries()) {
+            deviceTypesByHardwareType.put(listEntry.getEntryID(), listEntry);
+        }
+
         for (int i = 0; i < hwList.size(); i++) {
             LiteStarsLMHardware liteHw = null;
             LiteStarsEnergyCompany oldMember = null;
@@ -129,8 +141,21 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 }
             }
 
+            YukonListEntry listEntry = deviceTypesByHardwareType.get(liteHw.getLmHardwareTypeID());
+            if (InventoryBean.unsupportedDeviceTypes.containsKey(listEntry.getYukonDefID())) {
+                String msg = "Manipulation not supported for device type " +
+                    listEntry.getEntryText() + ".";
+                CTILogger.error(msg);
+                hardwareSet.add(liteHw);
+                failedSerialNumbers.add("Serial #: " + liteHw.getManufacturerSerialNumber() +
+                                        " - " + msg);
+                numFailure++;
+                continue;
+            }
+
             try {
                 LMHardwareBase hardware = new LMHardwareBase();
+                
                 InventoryBase invDB = hardware.getInventoryBase();
                 com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB =
                     hardware.getLMHardwareBase();

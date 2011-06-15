@@ -1,4 +1,5 @@
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	Properties savedReq = null;
@@ -126,7 +127,9 @@ function validate(form) {
 	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
-		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+		if (InventoryBean.unsupportedDeviceTypes.containsKey(entry.getYukonDefID())) {
+		    continue;
+		}
 		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>

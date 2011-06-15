@@ -1,4 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="manipBean" class="com.cannontech.stars.web.bean.ManipulationBean" scope="session"/>
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
@@ -45,11 +46,15 @@
 	                    	<option value="4"> Move to Warehouse </option>
 						</select>
 	            	</td>
-	            	<td width="240"> 
+	            	<td width="240">
 	                	<div id="1"> 
 	                    	<select id="11" name="11" size="1" style="width: 200px" onChange="selectAction(this.value)">
 	                            <c:forEach var="deviceTypeEntry" items="${manipBean.availableDeviceTypes.yukonListEntries}">
-									<option value='<c:out value="${deviceTypeEntry.entryID}"/>'> <c:out value="${deviceTypeEntry.entryText}"/> </option>
+                                    <c:if test="${!inventoryBean.unsupportedDeviceTypes[deviceTypeEntry.yukonDefID]}">
+									    <option value="${deviceTypeEntry.entryID}">
+                                            <spring:escapeBody>${deviceTypeEntry.entryText}</spring:escapeBody>
+                                        </option>
+                                    </c:if>
 								</c:forEach>
 	                      	</select>
 	                    </div>
@@ -103,7 +108,7 @@
             	<tr>
                 	<td width="320" class="headeremphasis"> 
                     	<c:out value="${inventoryBean.numberOfRecordsSelected}"/>
-						records selected from inventory.
+						record(s) selected from inventory.
                   	</td>
                   	<td width="205"> 
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
@@ -117,6 +122,12 @@
 						<input type="submit" name="Submit" value="Apply to Selected Inventory">
 					</td>
 				</tr>
+                <tr>
+                    <td class="headeremphasis" style="font-size: 10px;">
+                        NOTE:  Manipulating MCTs, Digi Gateways and UtilityPRO Zigbee devices is
+                        not yet supported and any devices of these types will be ignored.
+                    </td>
+                </tr>
         	</table>
         	<br>
         </form>
