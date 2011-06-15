@@ -1,5 +1,7 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.Date;
+
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -26,23 +28,36 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         throw new PointDataException(point);
     }
     
+    @Override
     public void setPointValue(LitePoint point, double value) {
-        setPointValue(point, value, PointTypes.ANALOG_POINT);
+        setPointValue(point, new Date(), value, PointTypes.ANALOG_POINT);
     }
     
+    @Override
     public void setPointValue(LitePoint point, PointState pointState) {
-        setPointValue(point,pointState.getRawState(),PointTypes.STATUS_POINT);
+        setPointValue(point, new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
     }
     
-    public void setPointValue(LitePoint point, double value, int pointType) {
+    @Override
+    public void setPointValue(LitePoint point, Date time, double value) {
+        setPointValue(point, time, value, PointTypes.ANALOG_POINT);
+    }
+    
+    @Override
+    public void setPointValue(LitePoint point,  Date time, PointState pointState) {
+        setPointValue(point,time,pointState.getRawState(),PointTypes.STATUS_POINT);
+    }
+    
+    private void setPointValue(LitePoint point, Date time, double value, int pointType) {
         PointData pointData = new PointData();
         pointData.setId(point.getPointID());
         pointData.setValue(value);
         pointData.setType(pointType);
         pointData.setPointQuality(PointQuality.Normal);
+        pointData.setTime(time);
+        
         writePointData(pointData);
     }
-    
     
     @Override
     public void writePointData(PointData pointData) {

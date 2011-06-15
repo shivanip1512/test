@@ -26,6 +26,7 @@ import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.exception.DigiEmptyDeviceCoreResultException;
 import com.cannontech.thirdparty.exception.DigiEndPointDisconnectedException;
 import com.cannontech.thirdparty.exception.DigiGatewayDisconnectedException;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
@@ -224,25 +225,42 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 try {
                     pingEndPoint(device);
                 } catch (DigiEndPointDisconnectedException e) {
-                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId());
-                    endPointState = CommStatusState.DISCONNECTED;               
+                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId(),e);
+                    endPointState = CommStatusState.DISCONNECTED;
+                    throw e;
                 } catch (DigiGatewayDisconnectedException e) {
-                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId());
+                    logger.error("Caught Exception while attempting to ping " +type + " with id: " + device.getZigbeeDeviceId(),e);
                     endPointState = CommStatusState.DISCONNECTED;
                     gatewayState = CommStatusState.DISCONNECTED;
+                    throw e;
+                } finally {
+                    
+                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              endPointState);
+                    zigbeeServiceHelper.sendPointStatusUpdate(gateway, 
+                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              gatewayState);
                 }
                 
-                zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                          BuiltInAttribute.CONNECTION_STATUS, 
-                                                          endPointState);
-                zigbeeServiceHelper.sendPointStatusUpdate(gateway, 
-                                                          BuiltInAttribute.CONNECTION_STATUS, 
-                                                          gatewayState);
                 break;
             }
             case DIGIGATEWAY: {
-                //This call will send the point status values for us.
-                refreshGateway(device);
+                try {
+                    //This call will send the point status values for us.
+                    refreshGateway(device);
+                } catch(DigiEmptyDeviceCoreResultException e) {
+                    String errorMsg = "Gateway not found on iDigi Account. Possibly need to re-commission.";
+                    logger.error(errorMsg);
+                    
+                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              CommStatusState.DISCONNECTED);
+                    zigbeeServiceHelper.sendPointStatusUpdate(device, 
+                                                              BuiltInAttribute.ZIGBEE_LINK_STATUS, 
+                                                              Commissioned.DECOMMISSIONED);
+                    throw new DigiWebServiceException(errorMsg);
+                }
                 break;
             }
             default: {
@@ -294,6 +312,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         //URL for single gateway. NOT using digiId in case it has not been commissioned properly
         String url = digiBaseUrl + "ws/DeviceCore/?condition=devConnectwareId='" + convertedMac +"'";
+
         refreshDeviceCore(url);
         
         logger.debug("Refresh Gateway done");
@@ -305,7 +324,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         //URL to load all gateways the account.
         String url = digiBaseUrl + "ws/DeviceCore/";
-        refreshDeviceCore(url);
+        
+        try {
+            refreshDeviceCore(url);
+        } catch (DigiEmptyDeviceCoreResultException e) {
+            //eat the Error.. It is not REQUIRED to have a gateway
+        }
         
         logger.debug("Refresh ALL Gateway done");
     }

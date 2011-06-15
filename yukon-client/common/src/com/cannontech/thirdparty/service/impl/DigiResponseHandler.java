@@ -17,6 +17,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -27,6 +28,7 @@ import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
+import com.cannontech.thirdparty.exception.DigiEmptyDeviceCoreResultException;
 import com.cannontech.thirdparty.exception.DigiEndPointDisconnectedException;
 import com.cannontech.thirdparty.exception.DigiGatewayDisconnectedException;
 import com.cannontech.thirdparty.exception.DigiWebServiceException;
@@ -69,11 +71,22 @@ public class DigiResponseHandler {
 
             int devId = template.evaluateAsInt("//devId");
             String devMac = template.evaluateAsString("//devMac");
-            String devFirmware = template.evaluateAsString("//dpFirmwareLevelDesc");
+
             int connectionStatus = template.evaluateAsInt("//dpConnectionStatus");
             boolean connected = connectionStatus==1?true:false;
             
-            return new DeviceCore(devId,devMac,devFirmware,connected);
+            String devFirmware = template.evaluateAsString("//dpFirmwareLevelDesc");
+            String lastTimeStr = template.evaluateAsString("//dpLastConnectTime");
+            
+            //If the gateway has not been connected yet, this field may be null
+            if (devFirmware == null) {
+                devFirmware = CtiUtilities.STRING_NONE;
+            }
+            
+            //Even if lastTimeStr is null, this will just create an Instant to now.
+            Instant instant = new Instant(lastTimeStr);
+            
+            return new DeviceCore(devId,devMac,devFirmware,connected,instant);
         }
     };
     
@@ -133,6 +146,11 @@ public class DigiResponseHandler {
         
         List<DeviceCore> cores = template.evaluate("//DeviceCore", digiDeviceCoreNodeMapper);
         
+        //Make sure we got a result
+        if (cores.isEmpty()) {
+            throw new DigiEmptyDeviceCoreResultException("0 results from DeviceCore query.");
+        }
+        
         for (DeviceCore core : cores) {
             DigiGateway digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());        
             digiGateway.setDigiId(core.getDevId());
@@ -141,6 +159,7 @@ public class DigiResponseHandler {
             
             if (core.isConnected()) {
                 zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
+                                                      core.getLastTime(),
                                                       BuiltInAttribute.CONNECTION_STATUS,
                                                       CommStatusState.CONNECTED);
                 
@@ -298,7 +317,7 @@ public class DigiResponseHandler {
             
             if( error == null) {
                 String errorSource = "Error Communicating with ZigBee EndPoint";
-                logger.error("Error Communicating with ");
+                logger.error("Error Communicating with ZigBee EndPoint ");
                 error = template.evaluateAsString("//description");
                 throw new DigiEndPointDisconnectedException( errorSource + ": " + error);
             } else {

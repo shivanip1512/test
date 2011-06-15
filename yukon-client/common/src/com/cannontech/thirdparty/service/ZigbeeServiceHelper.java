@@ -1,5 +1,6 @@
 package com.cannontech.thirdparty.service;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.YukonDevice;
@@ -14,8 +15,12 @@ public class ZigbeeServiceHelper {
     private SimplePointAccessDao simplePointAccessDao;
     
     public void sendPointStatusUpdate(YukonDevice zigbeeDevice, BuiltInAttribute attribute, PointState pointState) {
+        sendPointStatusUpdate(zigbeeDevice,new Instant(), attribute, pointState);
+    }
+    
+    public void sendPointStatusUpdate(YukonDevice zigbeeDevice, Instant lastTime, BuiltInAttribute attribute, PointState pointState) {
         LitePoint point = attributeService.getPointForAttribute(zigbeeDevice, attribute);
-        simplePointAccessDao.setPointValue(point, pointState);
+        simplePointAccessDao.setPointValue(point, lastTime.toDate(), pointState);
     }
     
     @Autowired
