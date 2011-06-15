@@ -649,7 +649,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             }
                         }
 
-                        if( GroupControlInterface *controllableGroup = dynamic_cast<GroupControlInterface*>(currentLMGroup.get()) )
+                        if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
                         {
                             controllableGroup->sendShedControl(shedTime / 60);
                         }
