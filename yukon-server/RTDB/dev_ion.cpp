@@ -801,7 +801,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
 
     if( expectMore )
     {
-        retMsg->setExpectMore();
+        retMsg->setExpectMore(true);
     }
 
     retList.push_back(retMsg);

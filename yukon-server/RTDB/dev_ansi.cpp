@@ -38,7 +38,7 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
     if( OutMessage != NULL )
     {
          setCurrentCommand( CmdScanData );
-         
+
          // Load all the other stuff that is needed
          OutMessage->DeviceID  = getID();
          OutMessage->TargetID  = getID();
@@ -49,11 +49,11 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
          OutMessage->Sequence  = 0;
          OutMessage->Retry     = 3;
          EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
-         
+
          //let's populate this list with the tables we want for a general scan...
          BYTE *ptr = OutMessage->Buffer.OutMessage;
-         
-         
+
+
          buildSingleTableRequest (ptr, 0);
          CtiReturnMsg *retMsg = NULL;
          retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -65,11 +65,11 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
                              1, //pReq->Attempt(),
                              pReq->GroupMessageId(),
                              pReq->UserMessageId());
-          retMsg->setExpectMore(1);
+          retMsg->setExpectMore(true);
           retList.push_back(retMsg);
-         
+
           retMsg = 0;
-         
+
           outList.push_back( OutMessage );
           OutMessage = 0;
    }
@@ -129,7 +129,7 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
                                           1, //pReq->Attempt(),
                                           pReq->GroupMessageId(),
                                           pReq->UserMessageId());
-          retMsg->setExpectMore(1);
+          retMsg->setExpectMore(true);
           retList.push_back(retMsg);
 
           retMsg = 0;
@@ -273,7 +273,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
             nRet = DemandReset( pReq, parse, OutMessage, vgList, retList, outList );
             break;
         }
-      
+
         default:
         {
             {
@@ -310,7 +310,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );
     }
-    
+
 
     return nRet;
 }
@@ -336,7 +336,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         else
         {
-            returnString += " failed"; 
+            returnString += " failed";
         }
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                 InMessage->Return.CommandStr,
@@ -422,7 +422,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     }
     if( retMsg != NULL )
     {
-        retMsg->setExpectMore(0);
+        retMsg->setExpectMore(false);
         retList.push_back(retMsg);
         retMsg = NULL;
     }
@@ -520,7 +520,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
     {
         return;
     }
-    
+
     try
     {
         {
@@ -691,7 +691,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                         {
                             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg();
                             pData->setId( pStatusPoint->getID() );
-                    
+
                             pData->setValue( value );
                             pData->setQuality( NormalQuality );
                             if (archiveFlag & CMD_FLAG_UPDATE)
@@ -700,12 +700,12 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                             }
                             pData->setTime( CtiTime() );
                             pData->setType( pStatusPoint->getType() );
-                    
+
                             msgPtr = CTIDBG_new CtiReturnMsg();
                             msgPtr->insert(pData);
-                    
+
                             retList.push_back(msgPtr);
-                    
+
                             resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(pStatusPoint->getStateGroupID(), value);
                             pData = NULL;
                             msgPtr = NULL;
@@ -725,7 +725,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
             gotLPValues = false;
             x++;
         }
-        
+
 
     }
     catch(...)
@@ -738,10 +738,10 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
 {
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
     CtiPointDataMsg *pData = NULL;
-    
+
     value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1);
     value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0) ;
-    
+
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
     pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, (int) NormalQuality, pPoint->getType());
@@ -788,7 +788,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
             lpValue = getANSIProtocol().getLPValue(y);
             lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1);
             lpValue += (ptOffset != NULL ? ptOffset : 0) ;
-            
+
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setTime( CtiTime(getANSIProtocol().getLPTime(y)) );

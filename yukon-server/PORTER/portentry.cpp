@@ -486,7 +486,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
                 CtiReturnMsg *info = new CtiReturnMsg(OutMessage->DeviceID, OutMessage->Request, error_string, error);
 
                 //  This isn't the last you'll hear from this request.
-                info->setExpectMore();
+                info->setExpectMore(true);
 
                 conn->WriteConnQue(info);
             }
@@ -793,7 +793,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
              *  We will execute based upon the data in the request....
              */
 
-            status = Dev->beginExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
+            status = Dev->beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
 
             if(status != NORMAL)
             {
@@ -824,7 +824,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 
                     if((Conn = ((CtiConnection*)pRet->getConnectionHandle())) != NULL)
                     {
-                        pRet->setExpectMore(TRUE);
+                        pRet->setExpectMore(true);
                         Conn->WriteConnQue(pRet);
                     }
                     else

@@ -79,30 +79,40 @@ INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
                                        CtiCommandParser &parse,
                                        CtiMessageList &vgList,
                                        CtiMessageList &retList,
-                                       OutMessageList &outList,
-                                       const OUTMESS *OutTemplate)
+                                       OutMessageList &outList)
+{
+    return beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, 0);
+}
+
+
+INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
+                                                   CtiCommandParser &parse,
+                                                   CtiMessageList &vgList,
+                                                   CtiMessageList &retList,
+                                                   OutMessageList &outList,
+                                                   const OUTMESS *OutTemplate)
 {
     INT      status = NORMAL;
     LONG     Id;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
-    OUTMESS  *OutMessageTemplate = NULL;   // This memory MUST be cleaned up after the NEXUS WRITE!
+    OUTMESS  *OutMessage = NULL;   // This memory MUST be cleaned up after the NEXUS WRITE!
 
     if(OutTemplate != NULL)
     {
-        OutMessageTemplate = CTIDBG_new OUTMESS(*OutTemplate);
+        OutMessage = CTIDBG_new OUTMESS(*OutTemplate);
     }
     else
     {
-        OutMessageTemplate = CTIDBG_new OUTMESS;
+        OutMessage = CTIDBG_new OUTMESS;
     }
 
-    if(OutMessageTemplate != NULL)
+    if(OutMessage != NULL)
     {
-        propagateRequest(OutMessageTemplate, pReq);
+        propagateRequest(OutMessage, pReq);
 
-        if((status = checkForInhibitedDevice(retList, OutMessageTemplate)) != DEVICEINHIBITED)
+        if((status = checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             /*
              *  Now that the OutMessageTemplate is primed, we should send it out to the specific device..
@@ -116,28 +126,28 @@ INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
                 status = ControlInhibitedOnDevice;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                             string(OutMessageTemplate->Request.CommandStr),
+                                                             string(OutMessage->Request.CommandStr),
                                                              getName() + string(": ") + FormatError(status),
                                                              status,
-                                                             OutMessageTemplate->Request.RouteID,
-                                                             OutMessageTemplate->Request.MacroOffset,
-                                                             OutMessageTemplate->Request.Attempt,
-                                                             OutMessageTemplate->Request.GrpMsgID,
-                                                             OutMessageTemplate->Request.UserID,
-                                                             OutMessageTemplate->Request.SOE,
+                                                             OutMessage->Request.RouteID,
+                                                             OutMessage->Request.MacroOffset,
+                                                             OutMessage->Request.Attempt,
+                                                             OutMessage->Request.GrpMsgID,
+                                                             OutMessage->Request.UserID,
+                                                             OutMessage->Request.SOE,
                                                              CtiMultiMsg_vec());
 
                 retList.push_back( pRet );
             }
             else
             {
-                status = ExecuteRequest(pReq, parse, OutMessageTemplate, vgList, retList, outList );
+                status = ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList );
             }
         }
 
-        if(OutMessageTemplate != NULL)
+        if(OutMessage != NULL)
         {
-            delete OutMessageTemplate;
+            delete OutMessage;
         }
     }
     else

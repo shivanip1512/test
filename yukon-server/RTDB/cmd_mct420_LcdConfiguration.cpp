@@ -2,9 +2,56 @@
 
 #include "cmd_mct420_LcdConfiguration.h"
 
+#include <sstream>
+
 namespace Cti {
 namespace Devices {
 namespace Commands {
+
+char *MetricNames[] =
+    {
+        "Slot Disabled",
+        "No Segments",
+        "All Segments",
+        "Tamper",
+        "Current Local Time",
+        "Current Local Date",
+        "Total kWh",
+        "Net kWh",
+        "Delivered kWh",
+        "Reverse kWh",
+        "Last Interval kW",
+        "Peak kW",
+        "Peak kW Date",
+        "Peak kW Time",
+        "Last Interval Voltage",
+        "Peak Voltage",
+        "Peak Voltage Date",
+        "Peak Voltage Time",
+        "Minimum Voltage",
+        "Minimum Voltage Date",
+        "Minimum Voltage Time",
+        "TOU Rate A kWh",
+        "TOU Rate A Peak kW",
+        "TOU Rate A Date of Peak kW",
+        "TOU Rate A Time of Peak kW",
+        "TOU Rate B kWh",
+        "TOU Rate B Peak kW",
+        "TOU Rate B Date of Peak kW",
+        "TOU Rate B Time of Peak kW",
+        "TOU Rate C kWh",
+        "TOU Rate C Peak kW",
+        "TOU Rate C Date of Peak kW",
+        "TOU Rate C Time of Peak kW",
+        "TOU Rate D kWh",
+        "TOU Rate D Peak kW",
+        "TOU Rate D Date of Peak kW",
+        "TOU Rate D Time of Peak kW",
+        "TOU Rate E kWh",
+        "TOU Rate E Peak kW",
+        "TOU Rate E Date of Peak kW",
+        "TOU Rate E Time of Peak kW"
+    };
 
 Mct420LcdConfigurationCommand::Mct420LcdConfigurationCommand(const metric_vector_t &display_metrics, bool reads_only) :
     _display_metrics(display_metrics),
@@ -27,6 +74,36 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
 {
+    if( ! payload.empty() )
+    {
+        std::ostringstream metric_description;
+
+        unsigned display_number = 0;
+
+        if(  function == Read_LcdConfiguration2 )
+        {
+            display_number = DisplayMetricSlotsPerRead;
+        }
+
+        unsigned char total_metrics = sizeof(MetricNames) / sizeof(MetricNames[0]);
+
+        for each(unsigned char metric in payload)
+        {
+            metric_description << "Display metric " << ++display_number << ": ";
+
+            if( metric < total_metrics )
+            {
+                metric_description << MetricNames[metric] << "\n";
+            }
+            else
+            {
+                metric_description << "Unsupported metric [" << (int)metric << "]\n";
+            }
+        }
+
+        description += metric_description.str();
+    }
+
     return doCommand();
 }
 

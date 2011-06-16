@@ -791,7 +791,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 }
 
                 Ret->setResultString( msg );
-                Ret->setExpectMore();           // Help MACS know this is intermediate.
+                Ret->setExpectMore(true);           // Help MACS know this is intermediate.
                 Ret->setStatus( nRet );
 
                 retList.push_back( Ret );
@@ -799,7 +799,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             size_t cnt = outList.size();
 
-            if( 0 != (status = beginExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
+            if( 0 != (status = beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -862,7 +862,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)
             {
-                Ret->setExpectMore();
+                Ret->setExpectMore(true);
             }
 
             retList.push_back( Ret );

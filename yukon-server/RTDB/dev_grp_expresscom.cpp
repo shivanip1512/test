@@ -363,7 +363,7 @@ string CtiDeviceGroupExpresscom::getAddressingAsString()
         if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)         addressing += " Feeder "   + CtiNumStr(_expresscomGroup.getFeeder());
         if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)            addressing += " ZIP "      + CtiNumStr(_expresscomGroup.getZip());
         if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)           addressing += " User "     + CtiNumStr(_expresscomGroup.getUda());
-    
+
         if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)        addressing += " Program "  + CtiNumStr(_expresscomGroup.getProgram());
         if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)       addressing += " Splinter " + CtiNumStr(_expresscomGroup.getSplinter());
     }
@@ -446,7 +446,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
     if(status)
     {
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-        pRet->setExpectMore( FALSE );
+        pRet->setExpectMore(false);
 
         retList.push_back( pRet );
 

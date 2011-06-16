@@ -926,7 +926,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, li
                                                                 InMessage.Return.SOE);
 
                     //  NOT setting ErrorDecode()'s overrideExpectMore in case ExecuteRequest() fails
-                    ret->setExpectMore();
+                    ret->setExpectMore(true);
                     retList.push_back(ret);
 
                     //  same UserMessageID, no need to reset the in_progress flag

@@ -91,7 +91,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
                                           1, //pReq->Attempt(),
                                           pReq->GroupMessageId(),
                                           pReq->UserMessageId());
-          retMsg->setExpectMore(1);
+          retMsg->setExpectMore(true);
           retList.push_back(retMsg);
 
           retMsg = 0;
@@ -475,7 +475,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
     }
     if( retMsg != NULL )
     {
-        retMsg->setExpectMore(0);
+        retMsg->setExpectMore(false);
         retList.push_back(retMsg);
         retMsg = NULL;
     }

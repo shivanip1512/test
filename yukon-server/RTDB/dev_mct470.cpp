@@ -830,7 +830,7 @@ bool Mct470Device::requestChannelConfig(unsigned channel, OUTMESS *OutMessage, O
 
     CtiCommandParser parse(req.CommandString());
 
-    return beginExecuteRequest(&req, parse, unused, unused, outList, OutMessage) == NoError;
+    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, OutMessage) == NoError;
 }
 
 
@@ -2321,7 +2321,7 @@ INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    errRet->setExpectMore();
+    errRet->setExpectMore(true);
 
     if( parse.isKeyValid("precanned_table") )
     {

@@ -64,9 +64,8 @@ public:
     int Status() const;
     CtiReturnMsg& setStatus(int status);
 
-    int ExpectMore() const;
-    CtiReturnMsg& setExpectMore(int more = 1);
-    CtiReturnMsg& resetExpectMore(int more = 0);
+    bool ExpectMore() const;
+    CtiReturnMsg& setExpectMore(bool more);
 
     int RouteID() const;
     CtiReturnMsg& setRouteID(int route);

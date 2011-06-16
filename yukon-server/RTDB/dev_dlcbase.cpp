@@ -380,7 +380,7 @@ INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *r
 
             if( expectMore )
             {
-                retMsg->setExpectMore();
+                retMsg->setExpectMore(true);
             }
 
             retList.push_back(retMsg);
@@ -594,7 +594,15 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
 
             std::vector<DlcCommand::point_data> points;
 
-            ptr = command.decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
+            unsigned function = InMessage.Return.ProtocolInfo.Emetcon.Function;
+
+            if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read ||
+                InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Write )
+            {
+                function += 0x100;
+            }
+
+            ptr = command.decode(TimeNow, function, payload, description, points);
 
             for each( const DlcCommand::point_data &pdata in points )
             {
@@ -613,9 +621,22 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
 
         if( ptr.get() )
         {
+            ReturnMsg->setExpectMore(true);
+        }
+
+        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
+
+        if( ptr.get() )
+        {
             OUTMESS *OutMessage = new OUTMESS;
 
             InEchoToOut(InMessage, OutMessage);
+
+            //  If there were no errors, start the command on the first macro route
+            if( ! InMessage.EventCode )
+            {
+                OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+            }
 
             fillOutMessage(*OutMessage, *ptr);
 
@@ -641,8 +662,6 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
         }
 
         _activeCommands.erase(command_itr);
-
-        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
 
         return NORMAL;
     }
@@ -687,7 +706,11 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
     OutMessage.Retry     = 2;
 
     OutMessage.Request.RouteID     = getRouteID();
-    OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+
+    if( ! OutMessage.Request.MacroOffset )
+    {
+        OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+    }
 
     OutMessage.Buffer.BSt.Function = request.function;
     OutMessage.Buffer.BSt.IO       = request.io();
@@ -844,7 +867,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         //  we must trap any return messages to the client that this creates...
                         list<CtiMessage *> tmp_retlist;
 
-                        if( beginExecuteRequest(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
+                        if( beginExecuteRequestFromTemplate(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

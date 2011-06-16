@@ -176,7 +176,8 @@ public:
     virtual INT  ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     // This is a preprocessing method which calls ExecuteRequest.
-    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate = NULL);
+    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);
 
     // This one is implemented in the child classes
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);

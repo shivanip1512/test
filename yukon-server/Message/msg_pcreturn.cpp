@@ -150,16 +150,11 @@ CtiMessage* CtiReturnMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-int CtiReturnMsg::ExpectMore() const
+bool CtiReturnMsg::ExpectMore() const
 {
    return _expectMore;
 }
-CtiReturnMsg& CtiReturnMsg::setExpectMore(int more)
-{
-   _expectMore = more;
-   return *this;
-}
-CtiReturnMsg& CtiReturnMsg::resetExpectMore(int more)
+CtiReturnMsg& CtiReturnMsg::setExpectMore(bool more)
 {
    _expectMore = more;
    return *this;

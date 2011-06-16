@@ -8,7 +8,6 @@ using boost::unit_test_framework::test_suite;
 
 #include <iostream>
 #include "prot_klondike.h"
-#include "dev_ccu721.h"  //  for timesync writes
 
 using namespace std;
 

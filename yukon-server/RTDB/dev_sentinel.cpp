@@ -79,7 +79,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
                                           1, //pReq->Attempt(),
                                           pReq->GroupMessageId(),
                                           pReq->UserMessageId());
-          retMsg->setExpectMore(1);
+          retMsg->setExpectMore(true);
           retList.push_back(retMsg);
 
           retMsg = 0;
@@ -432,7 +432,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
     }
     if( retMsg != NULL )
     {
-        retMsg->setExpectMore(0);
+        retMsg->setExpectMore(false);
         retList.push_back(retMsg);
         retMsg = NULL;
     }
@@ -717,7 +717,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 //=========================================================================================================================================
 
 CtiProtocolANSI& CtiDeviceSentinel::getANSIProtocol( void )
-{                        
+{
    return  _ansiProtocol;
 }
 

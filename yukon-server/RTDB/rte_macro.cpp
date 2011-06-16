@@ -81,7 +81,7 @@ CtiRouteMacro::CtiRoutePtrList_t   CtiRouteMacro::getRoutePtrList() const
 void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    
+
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
@@ -144,7 +144,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                 {
                                     if((*iter)->isA() == MSG_PCRETURN)
                                     {
-                                        ((CtiReturnMsg*)(*iter))->setExpectMore();
+                                        ((CtiReturnMsg*)(*iter))->setExpectMore(true);
                                     }
                                 }
                                 ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);

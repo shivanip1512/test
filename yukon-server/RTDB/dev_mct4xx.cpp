@@ -968,7 +968,7 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    errRet->setExpectMore();
+    errRet->setExpectMore(true);
 
     if(parse.isKeyValid("install"))
     {
@@ -1172,7 +1172,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
-    errRet->setExpectMore();
+    errRet->setExpectMore(true);
 
     if( parse.isKeyValid("install") )
     {
@@ -1196,14 +1196,14 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         {
             //In the case of verify we need to set the Last expect bit to zero.
             //Since there will be no more messages and/or maintaining of this list.
-            ((CtiReturnMsg*)retList.back())->setExpectMore(0);
+            ((CtiReturnMsg*)retList.back())->setExpectMore(false);
         }
         else if( !outList.empty() && !retList.empty() )
         {
             //hackish way to fix problem of retlist automatically telling commander to not expect more anymore.
             //pil will not set expectmore on the last entry, so I do it by hand...
             //This may be useless at the moment, but is on my way to controlling expect more properly.
-            ((CtiReturnMsg*)retList.back())->setExpectMore(1);
+            ((CtiReturnMsg*)retList.back())->setExpectMore(true);
         }
 
         if(OutMessage!=NULL)
@@ -1818,7 +1818,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
         // If this is not done, the webservice will think the first message is the last message and ignore the rest.
         for (CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); itr++)
         {
-            ((CtiReturnMsg*)*itr)->setExpectMore(1);
+            ((CtiReturnMsg*)*itr)->setExpectMore(true);
         }
     }
     else
@@ -1953,7 +1953,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                 OutMessage->Request.SOE,
                                 CtiMultiMsg_vec( ));
 
-        retMsg->setExpectMore();
+        retMsg->setExpectMore(true);
 
         retList.push_back( retMsg );
     }

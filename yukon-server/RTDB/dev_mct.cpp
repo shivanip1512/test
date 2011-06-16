@@ -2088,7 +2088,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
-    errRet->setExpectMore();
+    errRet->setExpectMore(true);
 
     if( parse.isKeyValid("install") )
     {
@@ -3537,7 +3537,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                         }
 
                         CtiCommandParser parse(pReq->CommandString());
-                        beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
 
                         delete pReq;
                     }
@@ -3553,7 +3553,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                         }
 
                         CtiCommandParser parse(pReq->CommandString());
-                        beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
 
                         delete pReq;
                     }
@@ -3571,7 +3571,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
 
                             delete pReq;
                         }
@@ -3590,7 +3590,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
                         }
                     }
@@ -3610,7 +3610,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                                 }
 
                                 CtiCommandParser parse(pReq->CommandString());
-                                beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                                 delete pReq;
                             }
 
@@ -3654,7 +3654,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
                         }
 
@@ -3672,7 +3672,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                                     }
 
                                     CtiCommandParser parse(pReq->CommandString());
-                                    beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                    beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                                     delete pReq;
                                 }
                             }
