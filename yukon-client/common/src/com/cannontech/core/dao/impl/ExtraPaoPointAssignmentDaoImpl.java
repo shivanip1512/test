@@ -55,6 +55,21 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
             throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + attribute.getDescription(), e);
         }
     }
+    
+    @Override
+    public int getPointId(YukonPao pao, Attribute attribute) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select point.pointId");
+        sql.append("from Point point");
+        sql.append("join ExtraPaoPointAssignment eppa on point.PointId = eppa.PointId");
+        sql.append("where eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
+        sql.append("and eppa.Attribute = ").appendArgument(attribute);
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + attribute.getDescription(), e);
+        }
+    }
 
     @Override
     public void saveAssignments(YukonPao pao, List<ExtraPaoPointMapping> pointMappings) {

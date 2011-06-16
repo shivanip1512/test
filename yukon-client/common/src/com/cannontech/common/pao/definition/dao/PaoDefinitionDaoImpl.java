@@ -75,6 +75,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -132,6 +133,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
     private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
+    private PointDao pointDao;
     
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
@@ -721,7 +723,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             Object choiceLookup, Map<String, PointTemplate> pointNameTemplateMap) {
 
         AttributeDefinition attributeDefinition = null;
-        Attribute attribute = BuiltInAttribute.valueOf(attributeName);
+        BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeName);
 
         if (choiceLookup instanceof BasicLookup) {
             BasicLookup lookup = (BasicLookup) choiceLookup;
@@ -730,7 +732,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + ":");
             }
             
-            attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate);
+            attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate, pointDao);
         } else if(choiceLookup instanceof MappedLookup) {
             MappedLookup lookup = (MappedLookup) choiceLookup;
             TypeFilter typeFilter = lookup.getTypeFilter();
@@ -891,7 +893,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
         this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
-
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
     @Override
     public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) {
         Set<PointTemplate> templates = getAllPointTemplates(type);

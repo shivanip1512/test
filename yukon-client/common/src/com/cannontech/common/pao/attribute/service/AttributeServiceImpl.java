@@ -127,7 +127,10 @@ public class AttributeServiceImpl implements AttributeService {
     public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
 
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), (BuiltInAttribute) attribute);
-        PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
+        PaoPointIdentifier paoPointIdentifier = attributeDefinition.findActualPointIdentifier(pao);
+        if (paoPointIdentifier == null) {
+            return false;
+        }
 
         return pointService.pointExistsForPao(paoPointIdentifier);
     }

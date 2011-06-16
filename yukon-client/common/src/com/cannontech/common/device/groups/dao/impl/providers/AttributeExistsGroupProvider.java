@@ -1,8 +1,6 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +14,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class AttributeExistsGroupProvider extends CompleteBinningDeviceGroupProviderBase<BuiltInAttribute> {
-
-    private List<BuiltInAttribute> allBins = Arrays.asList(BuiltInAttribute.values());
+public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
     private AttributeService attributeService;
     
-    @Override
-    protected List<BuiltInAttribute> getAllBins() {
-        return allBins;
-    }
-
     @Override
     protected Set<BuiltInAttribute> getBinsForDevice(YukonDevice device) {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
@@ -43,11 +34,6 @@ public class AttributeExistsGroupProvider extends CompleteBinningDeviceGroupProv
         sql.append("SELECT exists_frag.paobjectId");
         sql.append("FROM (").appendFragment(fragment).append(") exists_frag");
         return sql;
-    }
-
-    @Override
-    protected String getGroupName(BuiltInAttribute bin) {
-        return bin.getDescription();
     }
 
     @Autowired

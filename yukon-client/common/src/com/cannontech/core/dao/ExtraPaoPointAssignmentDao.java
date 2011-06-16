@@ -10,6 +10,8 @@ public interface ExtraPaoPointAssignmentDao {
     
     public PaoPointIdentifier getPaoPointIdentifier(YukonPao pao, Attribute attribute);
 
+    public int getPointId(YukonPao pao, Attribute attribute);
+
     public void saveAssignments(YukonPao pao, List<ExtraPaoPointMapping> pointMappings);
 
     public void removeAssignments(YukonPao pao);

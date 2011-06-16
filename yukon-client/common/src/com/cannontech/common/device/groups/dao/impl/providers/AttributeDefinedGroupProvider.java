@@ -1,8 +1,6 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +18,15 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
-public class AttributeDefinedGroupProvider extends BinningDeviceGroupProviderBase<BuiltInAttribute> {
-
-    private List<BuiltInAttribute> allBins = Arrays.asList(BuiltInAttribute.values());
+public class AttributeDefinedGroupProvider extends AttributeGroupProviderBase {
     private PaoDefinitionDao paoDefinitionDao;
     
-    @Override
-    protected List<BuiltInAttribute> getAllBins() {
-        return allBins;
-    }
-
     @Override
     protected Set<BuiltInAttribute> getBinsForDevice(YukonDevice device) {
         Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(device.getPaoIdentifier().getPaoType());
         Set<BuiltInAttribute> result = Sets.newHashSet();
         for (AttributeDefinition attributeDefinition : definedAttributes) {
-            Attribute attribute = attributeDefinition.getAttribute();
-            BuiltInAttribute builtInAttribute = BuiltInAttribute.valueOf(attribute.getKey());
+            BuiltInAttribute builtInAttribute = attributeDefinition.getAttribute();
             result.add(builtInAttribute);
         }
         return result;
@@ -67,14 +57,8 @@ public class AttributeDefinedGroupProvider extends BinningDeviceGroupProviderBas
         return sql;
     }
 
-    @Override
-    protected String getGroupName(BuiltInAttribute bin) {
-        return bin.getDescription();
-    }
-
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
     }
-
 }

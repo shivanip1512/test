@@ -109,5 +109,5 @@ public interface AttributeService {
      * @param attribute
      * @return
      */
-    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
 }
