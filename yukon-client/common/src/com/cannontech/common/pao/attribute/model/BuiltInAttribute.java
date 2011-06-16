@@ -47,7 +47,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TERMINATE("Terminate"),
     AUTO_BLOCK_ENABLE("Auto Block Enable"),
     VOLTAGE_PROFILE("Voltage Profile", true, false),
-    WATER_USAGE("Water Usage Reading", false, true),
+    USAGE_WATER("Water Usage Reading", false, true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     ;

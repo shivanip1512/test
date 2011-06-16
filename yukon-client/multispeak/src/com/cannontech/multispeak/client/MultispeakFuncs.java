@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -353,6 +354,27 @@ public class MultispeakFuncs
             parsedValue = parsedValue.substring(0, bracketIndex).trim();
         }
         return parsedValue;
+    }
+    
+    /**
+     * This method returns the cisInfoWidgetName for the user.  If it is NONE, it will use the venderId
+     * and proceed as if they actually had the MULTISPEAK value set.
+     */
+    public String getCisDetailWidget(LiteYukonUser liteYukonUser) {
+        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, liteYukonUser);
+        if (cisDetailWidgetEnabled) {
+            CisDetailRolePropertyEnum cisDetailRoleProperty = 
+                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, liteYukonUser);
+            String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
+            if (cisInfoWidgetName == null) {
+                int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, liteYukonUser)).intValue();
+                if (vendorId > 0) {
+                    cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
+                }
+            }
+            return cisInfoWidgetName;
+        }
+        return null;
     }
     
     @Autowired

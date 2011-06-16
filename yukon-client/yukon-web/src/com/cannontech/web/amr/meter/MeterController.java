@@ -33,7 +33,6 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -42,6 +41,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
@@ -61,6 +61,7 @@ public class MeterController extends MultiActionController {
     private MeterSearchService meterSearchService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
+    private MultispeakFuncs multispeakFuncs;
     private PointDao pointDao = null;
     private PointService pointService = null;
     private PaoLoadingService paoLoadingService = null;
@@ -182,7 +183,7 @@ public class MeterController extends MultiActionController {
         boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
         mav.addObject("outageSupported", outageSupported);
 
-        String cisInfoWidgetName = getCisInfoWidgetName(user);
+        String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
         mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
@@ -226,27 +227,6 @@ public class MeterController extends MultiActionController {
         return mav;
     }
 
-    /**
-     * This method returns the cisInfoWidgetName for the user.  If it is NONE, it will use the venderId
-     * and proceed as if they actually had the MULTISPEAK value set.
-     */
-    private String getCisInfoWidgetName(LiteYukonUser liteYukonUser) {
-        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, liteYukonUser);
-        if (cisDetailWidgetEnabled) {
-        	CisDetailRolePropertyEnum cisDetailRoleProperty = 
-        	    rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, liteYukonUser);
-	        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
-	        if (cisInfoWidgetName == null) {
-	        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, liteYukonUser)).intValue();
-	        	if (vendorId > 0) {
-	        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
-	        	}
-	        }
-	        return cisInfoWidgetName;
-        }
-        return null;
-    }
-
     public ModelAndView touPreviousReadings(HttpServletRequest request,
                                             HttpServletResponse response) throws ServletException {
         ModelAndView mav = new ModelAndView("touPreviousReadings.jsp");
@@ -286,6 +266,11 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
+    }
+
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
     }
     
     @Autowired

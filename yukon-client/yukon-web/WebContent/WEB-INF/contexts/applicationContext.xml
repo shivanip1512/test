@@ -386,7 +386,7 @@
               <ref local="widgetInput.deviceId"/>
               <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
                   <property name="name" value="startOffset"/>
-                  <property name="description" value="the number of prior day's of point history to display"/>
+                  <property name="description" value="the number of prior days of point history to display"/>
                   <property name="required" value="false"/>
               </bean>
            </set>
@@ -417,7 +417,7 @@
               <ref local="widgetInput.deviceId"/>
               <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
                   <property name="name" value="startOffset"/>
-                  <property name="description" value="the number of prior day's of point history to display"/>
+                  <property name="description" value="the number of prior days of point history to display"/>
                   <property name="required" value="false"/>
               </bean>
            </set>
@@ -429,11 +429,11 @@
         </property>
         <property name="attributesToShow">
           <list>
-            <value>WATER_USAGE</value>
+            <value>USAGE_WATER</value>
           </list>
         </property>
         <property name="previousReadingsAttributeToShow">
-          <value>WATER_USAGE</value>
+          <value>USAGE_WATER</value>
         </property>
     </bean>
     
@@ -1172,7 +1172,7 @@
         <property name="supportedAttributeGraphSet">
             <list>
                 <bean class="com.cannontech.common.chart.model.AttributeGraphType">
-                    <property name="attribute" value="WATER_USAGE"/>
+                    <property name="attribute" value="USAGE_WATER"/>
                     <property name="graphType" value="COLUMN"/>
                     <property name="converterType" value="NORMALIZED_DELTA"/>
                     <property name="label" value="Water Usage (Normalized)"/>

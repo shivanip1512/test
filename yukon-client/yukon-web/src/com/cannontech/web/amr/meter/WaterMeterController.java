@@ -18,14 +18,12 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
@@ -36,11 +34,11 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
 public class WaterMeterController {
 
     private DeviceDao deviceDao = null;
+    private MultispeakFuncs multispeakFuncs;
     private PointDao pointDao = null;
     private PaoLoadingService paoLoadingService = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
-    private RolePropertyDao rolePropertyDao = null;
     private PaoDefinitionDao paoDefinitionDao = null;
 
     @RequestMapping
@@ -62,20 +60,8 @@ public class WaterMeterController {
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        // account information widget
-        // if it is NONE, do a check for vendorId and proceed as if they actually had MULTISPEAK value set
-        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, user);
-        if (cisDetailWidgetEnabled) {
-            CisDetailRolePropertyEnum cisDetailRoleProperty = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, user);
-            String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
-            if (cisInfoWidgetName == null) {
-                int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();
-                if (vendorId > 0) {
-                    cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
-                }
-            }
-            mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
-        }
+        String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
+        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
         
         if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
             mav.addObject("isRFMesh", true);
@@ -93,6 +79,11 @@ public class WaterMeterController {
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
+
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
     
     @Autowired
     public void setPointDao(PointDao pointDao) {
@@ -105,20 +96,13 @@ public class WaterMeterController {
     }
     
     @Autowired
-    public void setCachingPointFormattingService(
-            CachingPointFormattingService cachingPointFormattingService) {
+    public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
         this.cachingPointFormattingService = cachingPointFormattingService;
     }
     
     @Autowired
-    public void setPointUpdateBackingService(
-            PointUpdateBackingService pointUpdateBackingService) {
+    public void setPointUpdateBackingService(PointUpdateBackingService pointUpdateBackingService) {
         this.pointUpdateBackingService = pointUpdateBackingService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Autowired

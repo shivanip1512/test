@@ -4764,7 +4764,7 @@
             </point>
         </points>
         <attributes>
-            <attribute name="WATER_USAGE">
+            <attribute name="USAGE_WATER">
                 <basicLookup point="Water Usage" />
             </attribute>
         </attributes>
