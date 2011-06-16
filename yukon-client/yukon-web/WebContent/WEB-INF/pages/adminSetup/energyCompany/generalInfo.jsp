@@ -50,8 +50,8 @@ Event.observe(window, "load", function() {
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
-                        <tags:inputPhone nameKey=".phone" path="phone" inputClass="phone f_formatPhone" maxlength="16"/>
-                        <tags:inputPhone nameKey=".fax" path="fax" inputClass="phone f_formatPhone" maxlength="16"/>
+                        <tags:inputPhone nameKey=".phone" path="phone" inputClass="phone f_formatPhone"/>
+                        <tags:inputPhone nameKey=".fax" path="fax" inputClass="phone f_formatPhone"/>
 
                         <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
                         <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
