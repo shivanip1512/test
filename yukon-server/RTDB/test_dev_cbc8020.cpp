@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
     BOOST_REQUIRE_EQUAL(points[3]->getType(),  AnalogPointType);
     BOOST_REQUIRE_EQUAL(points[3]->getId(),    TestCbc8020Device::PointOffset_FirmwareRevisionMinor);
 
-    BOOST_REQUIRE_EQUAL(points[4]->getValue(), 7.28);
+    BOOST_REQUIRE_EQUAL(points[4]->getValue(), 4.28);
     BOOST_REQUIRE_EQUAL(points[4]->getType(),  AnalogPointType);
     BOOST_REQUIRE_EQUAL(points[4]->getId(),    TestCbc8020Device::PointOffset_FirmwareRevision);
 
