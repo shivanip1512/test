@@ -339,7 +339,7 @@ public static synchronized void createBankStatusPt(
  * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
  */
 public static synchronized PointBase createStatusPoint( String pointName, Integer paoID, 
-	      Integer pointID, int pointOffset, int stateGroupId, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
+	      Integer pointID, int pointOffset, int stateGroupId, int initialState, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
 {
 	//Create new point
 	PointBase newPoint = PointFactory.createPoint(PointTypes.STATUS_POINT);
@@ -358,6 +358,7 @@ public static synchronized PointBase createStatusPoint( String pointName, Intege
 	
 	//defaults pointStatus
 	PointStatus pointStatus = new PointStatus(pointID);
+	pointStatus.setInitialState(initialState);
 	pointStatus.setControlType(controlType.getControlName());
 	((StatusPoint) newPoint).setPointStatus(pointStatus);
 

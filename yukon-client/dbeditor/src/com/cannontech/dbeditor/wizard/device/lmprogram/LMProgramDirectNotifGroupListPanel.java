@@ -196,6 +196,7 @@ public Object getValue(Object o)
                                                0.0,
                                                0,
                                                StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
+                                               StateGroupUtils.DEFAULT_STATE,
                                                PointUnit.DEFAULT_DECIMAL_PLACES,
                                                ControlType.NONE,
                                                PointArchiveType.NONE,

@@ -6039,16 +6039,16 @@
             <point type="Status" offset="1">
                 <init>true</init>
                 <name>Connection Status</name>
-                <stategroup value="Comm Status State"/>
+                <stategroup value="Comm Status State" initialState="Disconnected"/>
             </point>
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
-                <stategroup value="Commissioned State"/>
+                <stategroup value="Commissioned State" initialState="Decommissioned"/>
             </point>
         </points>
         <attributes>
-            <attribute name="CONNECTION_STATUS">
+            <attribute name="ZIGBEE_CONNECTION_STATUS">
                 <basicLookup point="Connection Status" />
             </attribute>
             <attribute name="ZIGBEE_LINK_STATUS">
@@ -6063,16 +6063,16 @@
             <point type="Status" offset="1">
                 <init>true</init>
                 <name>Connection Status</name>
-                <stategroup value="Comm Status State"/>
+                <stategroup value="Comm Status State" initialState="Disconnected"/>
             </point>
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>Commissioned State</name>
-                <stategroup value="Commissioned State"/>
+                <stategroup value="Commissioned State" initialState="Decommissioned"/>
             </point>
         </points>
         <attributes>
-            <attribute name="CONNECTION_STATUS">
+            <attribute name="ZIGBEE_CONNECTION_STATUS">
                 <basicLookup point="Connection Status" />
             </attribute>
             <attribute name="ZIGBEE_LINK_STATUS">

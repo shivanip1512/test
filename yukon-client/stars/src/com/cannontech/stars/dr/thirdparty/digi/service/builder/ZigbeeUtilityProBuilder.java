@@ -54,7 +54,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         LitePoint linkPt = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
         
-        LitePoint connectStatus = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint connectStatus = attributeService.getPointForAttribute(zigbeeThermostat, BuiltInAttribute.ZIGBEE_CONNECTION_STATUS);
         hardwareDto.setConnectStatusId(connectStatus.getLiteID());
         
         hardwareDto.setGatewayId(zigbeeThermostat.getGatewayId());

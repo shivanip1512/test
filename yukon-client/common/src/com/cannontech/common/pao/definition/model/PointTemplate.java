@@ -20,6 +20,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
+    private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
     private ControlType controlType = ControlType.NONE;
     private PointArchiveType pointArchiveType = PointArchiveType.NONE;
@@ -101,6 +102,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.stateGroupId = stateGroupId;
     }
 
+    public void setInitialState(int initialState) {
+        this.initialState = initialState;
+    }
+    
+    public int getInitialState() {
+        return initialState;
+    }
+    
     public int getUnitOfMeasure() {
         return unitOfMeasure;
     }

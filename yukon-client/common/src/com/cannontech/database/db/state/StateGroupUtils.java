@@ -30,6 +30,9 @@ public final class StateGroupUtils {
 
     public static final int STATEGROUP_TWO_STATE_ACTIVE = -8;
 
+    //Default State of point
+    public static final int DEFAULT_STATE = 0;
+
     // all StateGroup types
     public static final String GROUP_TYPE_STATUS = "Status";
 

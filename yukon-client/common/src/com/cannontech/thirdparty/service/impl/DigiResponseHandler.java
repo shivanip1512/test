@@ -160,19 +160,19 @@ public class DigiResponseHandler {
             if (core.isConnected()) {
                 zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
                                                       core.getLastTime(),
-                                                      BuiltInAttribute.CONNECTION_STATUS,
+                                                      BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                       CommStatusState.CONNECTED);
                 
             } else {
                 zigbeeServiceHelper.sendPointStatusUpdate(digiGateway,
-                                                          BuiltInAttribute.CONNECTION_STATUS,
+                                                          BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                           CommStatusState.DISCONNECTED);
                 
                 //Disconnect all devices on the gateway
                 List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(digiGateway.getPaoId());
                 for (ZigbeeDevice device : devices) {
                     zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                               CommStatusState.DISCONNECTED);
                 }
                 
@@ -219,7 +219,7 @@ public class DigiResponseHandler {
             } else if ( message.contains(connectStr) || message.contains(connectStr2)) {
                 //Connected
                 logger.debug("Device: " + macAddress + "has connected.");
-                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.CONNECTION_STATUS,
+                zigbeeServiceHelper.sendPointStatusUpdate(utilPro,BuiltInAttribute.ZIGBEE_CONNECTION_STATUS,
                                                                             CommStatusState.CONNECTED);
                 
                 if (message.contains(connectStr)) {

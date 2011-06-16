@@ -47,7 +47,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         gatewayDto.setDigiId(digiGateway.getDigiId());
         gatewayDto.setFirmwareVersion(digiGateway.getFirmwareVersion());
         
-        LitePoint connPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint connPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_CONNECTION_STATUS);
         LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         
         gatewayDto.setConnectionStatusId(connPt.getLiteID());
@@ -94,7 +94,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
         ZigbeeThermostat tStat = new ZigbeeThermostat();
         tStat.setPaoIdentifier(new PaoIdentifier(deviceId, PaoType.ZIGBEEUTILPRO));
         
-        LitePoint connPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint connPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_CONNECTION_STATUS);
         LitePoint linkPt = attributeService.getPointForAttribute(tStat, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         
         device.setConnectionStatusId(connPt.getLiteID());

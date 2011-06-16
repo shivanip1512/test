@@ -38,6 +38,11 @@ public class Stategroup implements java.io.Serializable {
      */
     private java.lang.String _value;
 
+    /**
+     * Field _initialState
+     */
+    private java.lang.String _initialState;
+
 
       //----------------/
      //- Constructors -/
@@ -52,6 +57,17 @@ public class Stategroup implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'initialState'.
+     * 
+     * @return String
+     * @return the value of field 'initialState'.
+     */
+    public java.lang.String getInitialState()
+    {
+        return this._initialState;
+    } //-- java.lang.String getInitialState() 
 
     /**
      * Returns the value of field 'value'.
@@ -109,6 +125,16 @@ public class Stategroup implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'initialState'.
+     * 
+     * @param initialState the value of field 'initialState'.
+     */
+    public void setInitialState(java.lang.String initialState)
+    {
+        this._initialState = initialState;
+    } //-- void setInitialState(java.lang.String) 
 
     /**
      * Sets the value of field 'value'.

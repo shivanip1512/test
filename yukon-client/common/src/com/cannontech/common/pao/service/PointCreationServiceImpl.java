@@ -20,7 +20,7 @@ public class PointCreationServiceImpl implements PointCreationService {
 	
 	// TODO This service is intended to be the future home of Pointfactory code.
 	public PointBase createPoint(int type, String name, int paoId, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId, int decimalPlaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval) {
+            int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval) {
 
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
@@ -45,6 +45,7 @@ public class PointCreationServiceImpl implements PointCreationService {
             													pointId, 
             													offset, 
             													stateGroupId,
+            													initialState,
             													controlType,
             													pointArchiveType,
             													pointArchiveInterval);
@@ -93,6 +94,7 @@ public class PointCreationServiceImpl implements PointCreationService {
                                 template.getMultiplier(),
                                 template.getUnitOfMeasure(),
                                 template.getStateGroupId(),
+                                template.getInitialState(),
                                 template.getDecimalPlaces(),
                                 template.getControlType(),
                                 template.getPointArchiveType(),

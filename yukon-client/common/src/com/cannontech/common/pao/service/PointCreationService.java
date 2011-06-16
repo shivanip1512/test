@@ -17,13 +17,14 @@ public interface PointCreationService {
      * @param multiplier - Multiplier for point
      * @param unitOfMeasure - Unit of measure for point
      * @param stateGroupId - State group id for point
+     * @param initialState - starting state for point
      * @param decimalPlaces - Number of decimal places
      * @param pointArchiveType - Type of archiving
      * @param pointArchiveInterval - Interval of archiving
      * @return A new point of the given type
      */
     public PointBase createPoint(int type, String name, int paoId, int offset,
-            double multiplier, int unitOfMeasure, int stateGroupId, int decimalplaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval);
+            double multiplier, int unitOfMeasure, int stateGroupId, int initialState, int decimalplaces, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval);
 
     /**
      * Method to create a point based on a point template

@@ -78,6 +78,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.InputTypeFactory;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.ControlType;
@@ -856,6 +857,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
+        int initialState =  StateGroupUtils.DEFAULT_STATE;
         if (point.getPointChoice().getStategroup() != null) {
 
             String stateGroupName = point.getPointChoice().getStategroup().getValue();
@@ -867,9 +869,21 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                         + ". Check the paoDefinition.xml file ", e);
             }
             stateGroupId = stateGroup.getStateGroupID();
+            
+            String initialStateStr = point.getPointChoice().getStategroup().getInitialState();
+            if (initialStateStr != null) {
+                List<LiteState> states = stateGroup.getStatesList();
+                for (LiteState state : states) {
+                    if (initialStateStr.equals(state.getStateText())) {
+                        initialState = state.getStateRawState();
+                        break;
+                    }
+                }
+            }
         }
         template.setStateGroupId(stateGroupId);
-
+        template.setInitialState(initialState);
+        
         return template;
     }
     

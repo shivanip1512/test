@@ -76,7 +76,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             
             //Update the Connection Point State
             zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
-                                                      BuiltInAttribute.CONNECTION_STATUS, 
+                                                      BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                       CommStatusState.CONNECTED);
             
             //Update the database with the DigiId we got assigned.
@@ -104,7 +104,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         
         //When decommission a device, change it's connection status to disconnected as well.
         zigbeeServiceHelper.sendPointStatusUpdate(digiGateway, 
-                                                  BuiltInAttribute.CONNECTION_STATUS, 
+                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                   CommStatusState.DISCONNECTED);
         
         logger.info("-- Remove Gateway Stop --");
@@ -204,7 +204,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         //When decommissioning a device, change it's connection status to disconnected 
         //since we will no longer get updates for it, prevent it from appearing connected
         zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                  BuiltInAttribute.CONNECTION_STATUS, 
+                                                  BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                   CommStatusState.DISCONNECTED);
         zigbeeServiceHelper.sendPointStatusUpdate(device, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
@@ -238,10 +238,10 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 } finally {
                     
                     zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                               endPointState);
                     zigbeeServiceHelper.sendPointStatusUpdate(gateway, 
-                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                               gatewayState);
                 }
                 
@@ -256,7 +256,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                     logger.error(errorMsg);
                     
                     zigbeeServiceHelper.sendPointStatusUpdate(device, 
-                                                              BuiltInAttribute.CONNECTION_STATUS, 
+                                                              BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                               CommStatusState.DISCONNECTED);
                     zigbeeServiceHelper.sendPointStatusUpdate(device, 
                                                               BuiltInAttribute.ZIGBEE_LINK_STATUS, 

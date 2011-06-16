@@ -50,7 +50,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         LitePoint linkPt = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         hardwareDto.setCommissionedId(linkPt.getLiteID());
         
-        LitePoint connectStatus = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.CONNECTION_STATUS);
+        LitePoint connectStatus = attributeService.getPointForAttribute(digiGateway, BuiltInAttribute.ZIGBEE_CONNECTION_STATUS);
         hardwareDto.setConnectStatusId(connectStatus.getLiteID());
     }
     
