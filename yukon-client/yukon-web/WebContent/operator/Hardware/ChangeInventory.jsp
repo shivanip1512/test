@@ -124,7 +124,7 @@
 				</tr>
                 <tr>
                     <td class="headeremphasis" style="font-size: 10px;">
-                        NOTE:  Manipulating MCTs, Digi Gateways and UtilityPRO Zigbee devices is
+                        NOTE:  Manipulating MCTs, Digi Gateways and UtilityPRO ZigBee devices is
                         not yet supported and any devices of these types will be ignored.
                     </td>
                 </tr>

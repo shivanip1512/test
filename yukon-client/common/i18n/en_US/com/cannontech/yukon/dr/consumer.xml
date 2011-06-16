@@ -377,7 +377,7 @@
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO">UtilityPRO</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G2">UtilityPRO G2</entry>
     <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_G3">UtilityPRO G3</entry>
-    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_ZIGBEE">UtilityPRO Zigbee</entry>
+    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO_ZIGBEE">UtilityPRO ZigBee</entry>
 
     <!-- changeLogin.jsp -->
     <entry key="yukon.dr.consumer.changelogin.header">Administration - Change Login</entry>

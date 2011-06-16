@@ -159,7 +159,7 @@ function applyOrdering(form)
 					                </tr>
                                     <tr>
                                         <td colspan="4">
-                                            <strong>NOTE:  If the results contain MCTs, Digi Gateways or UtilityPRO Zigbee devices, those
+                                            <strong>NOTE:  If the results contain MCTs, Digi Gateways or UtilityPRO ZigBee devices, those
                                             devices will be skipped when manipulating results.</strong>
                                         </td>
                                     </tr>
