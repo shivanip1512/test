@@ -13,6 +13,13 @@ protected:
     {
         PointOffset_FirmwareRevisionMajor = 5,
         PointOffset_FirmwareRevisionMinor = 6,
+        /**
+         * Offset 9999 was chosen for the artificial Firmware Revision 
+         * point since negative offsets are not allowable. Analog 
+         * outputs start at 10000 and go up, so 9999 was a safe offset 
+         * choice for Firmware Revision point since analog inputs will 
+         * likely never reach that high and cause a conflict.
+         */
         PointOffset_FirmwareRevision      = 9999
     };
 

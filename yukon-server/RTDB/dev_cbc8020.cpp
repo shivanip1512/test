@@ -39,17 +39,11 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
         {
             if( pt_msg->getId() == PointOffset_FirmwareRevisionMajor )
             {
-                if( !major )
-                {
-                    major = pt_msg;
-                }
+                major = pt_msg;
             }
             if( pt_msg->getId() == PointOffset_FirmwareRevisionMinor )
             {
-                if( !minor )
-                {
-                    minor = pt_msg;
-                }
+                minor = pt_msg;
             }
         }
 
@@ -60,8 +54,7 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
              * Use them to create the single revision data point message and
              * store it.
              */
-            double firmware = static_cast<double>(major->getValue()) +
-                              static_cast<double>(minor->getValue()) / 100.0;
+            double firmware = major->getValue() + (minor->getValue() / 100.0);
     
             CtiPointDataMsg *pt_msg = new CtiPointDataMsg(PointOffset_FirmwareRevision,
                                                           firmware,

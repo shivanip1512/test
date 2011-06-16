@@ -430,11 +430,9 @@ string CtiDeviceCBC::getSQLCoreStatement() const
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CBC.serialnumber, "
                                      "CBC.routeid "
                                    "FROM YukonPAObject YP, Device DV, DeviceCBC CBC "
-                                   "WHERE upper (YP.type) != 'CBC 7020' AND upper (YP.type) != 'CBC 7022' AND upper (YP.type) "
-                                     "!= 'CBC 7023' AND upper (YP.type) != 'CBC 7024' AND upper (YP.type) != 'CBC DNP' AND "
-                                     "upper (YP.type) != 'CBC 8020' AND upper (YP.type) != 'CBC 8024' AND "
-                                     "YP.paobjectid = CBC.deviceid AND YP.paobjectid = DV.deviceid";
-
+                                   "WHERE YP.paobjectid = CBC.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                     "upper (YP.Type) NOT IN ('CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', 'CBC DNP', "
+                                     "'CBC 8020', 'CBC 8024')";
     return sqlCore;
 }
 
