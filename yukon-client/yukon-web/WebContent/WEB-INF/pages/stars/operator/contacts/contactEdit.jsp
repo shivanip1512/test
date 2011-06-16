@@ -44,8 +44,8 @@
 			
 				<tags:inputNameValue nameKey=".firstNameLabel" path="firstName"/>
 				<tags:inputNameValue nameKey=".lastNameLabel" path="lastName"/>
-				<tags:inputPhone nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE" path="homePhone"  inputClass="phone f_formatPhone" maxlength="16"/>
-				<tags:inputPhone nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE" path="workPhone"  inputClass="phone f_formatPhone" maxlength="16"/>
+				<tags:inputPhone nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE" path="homePhone"  inputClass="phone f_formatPhone"/>
+				<tags:inputPhone nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE" path="workPhone"  inputClass="phone f_formatPhone"/>
 				<tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL" path="email"/>
                 <c:if test="${not empty username}">
                     <tags:nameValue2 nameKey=".usernameLabel">${username}</tags:nameValue2>

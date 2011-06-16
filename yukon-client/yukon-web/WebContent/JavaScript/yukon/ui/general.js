@@ -68,6 +68,14 @@ Yukon.ui = {
             Yukon.ui.formatPhone(elem);
         });
         
+        $$("input.f_formatPhone").each(function(elem){
+            elem.observe('focus', function(event){
+                Yukon.ui.removeFormatPhone(event.element());
+            });
+            
+            Yukon.ui.formatPhone(elem);
+        });
+
         $$("input.f_toggle:checkbox").each(function(elem){
             elem.observe('change', function(event){
                 Yukon.ui.toggleInputs(event.element());
@@ -132,6 +140,17 @@ Yukon.ui = {
         }
     },
     
+    removeFormatPhone: function(input){
+        //strip the input down to just numbers
+        var stripped = input.value.replace(/[^\d]/g, "");
+        if(stripped.length > 0) {
+                input.value = stripped;
+        } else {
+            input.value = "";
+            input.removeClassName('error');
+        }
+    },
+
     toggleInputs: function(input){
         //find matching inputs
         var container = input.next("div.f_toggle");
