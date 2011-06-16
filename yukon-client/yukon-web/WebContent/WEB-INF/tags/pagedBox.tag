@@ -15,7 +15,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <cti:includeScript link="/JavaScript/simpleCookies.js" />
-<cti:includeScript link="/JavaScript/simpleDialog.js" />
 
 <div class="pagedBox<c:if test="${!empty pageScope.styleClass}"> ${pageScope.styleClass}</c:if>"<c:if test="${!empty pageScope.id}"> id="${pageScope.id}"</c:if>>
 

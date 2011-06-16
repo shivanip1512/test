@@ -79,8 +79,10 @@ public class LayoutController {
         builder.add("/JavaScript/dataUpdater.js");
         builder.add(JsLibrary.SCRIPTACULOUS.getPath());
         builder.add("/JavaScript/simpleCookies.js");
+        builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/alert.js");
         builder.add("/JavaScript/javaWebStartLauncher.js");
+        
         layoutScriptFiles = builder.build();
     }
     
