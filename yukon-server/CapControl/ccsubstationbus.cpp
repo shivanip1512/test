@@ -3699,6 +3699,16 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
 
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
+     if( getPerformingVerificationFlag())
+     {
+         if ( getWaitForReCloseDelayFlag() || 
+              (!capBankVerificationStatusUpdate(pointChanges, ccEvents)  && 
+                getCurrentVerificationCapBankId() != -1)  )
+         {
+             return false;
+         }
+         return true;
+     }
     BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
     char tempchar[64] = "";
@@ -5352,6 +5362,10 @@ void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 BOOL CtiCCSubstationBus::isAlreadyControlled()
 {
 
+    if (getVerificationFlag())
+    {
+        return isVerificationAlreadyControlled();
+    }
     BOOL returnBoolean = FALSE;
     try
     {

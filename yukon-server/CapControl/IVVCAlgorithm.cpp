@@ -103,7 +103,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     // Make sure all zones on the subbus have a regulator attached.
 
-    if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
+   if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
     {
         state->setShowNoRegulatorAttachedMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
@@ -115,7 +115,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     // subbus is disabled - reset the algorithm and bail
 
-    if ( subbus->getDisableFlag() )
+    if ( subbus->getDisableFlag() && !subbus->getVerificationFlag())
     {
         if (state->isShowBusDisableMsg())
         {
@@ -386,7 +386,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
                 }
             }
-
             if ( busAnalysisState(state, subbus, strategy, dispatchConnection) )
             {
                 break;
@@ -411,7 +410,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             bool isControlled = false;
 
             if( bank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                bank->getControlStatus() == CtiCCCapBank::ClosePending )
+				bank->getControlStatus() == CtiCCCapBank::ClosePending ||
+				bank->getPerformingVerificationFlag() )
             {
                 isControlled = subbus->isAlreadyControlled();
             }
@@ -441,12 +441,24 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
 
                 //Update Control Status
-                subbus->capBankControlStatusUpdate(pointChanges,ccEvents);
+                bool result = subbus->capBankControlStatusUpdate(pointChanges, ccEvents);
+                if (subbus->getPerformingVerificationFlag())
+                {
+                    state->_verification.failureCount += (bank->isFailedStatus() ? 1 : 0);
+                    state->_verification.successCount += (bank->isFailedStatus() ? 0 : 1);
+                
+                    if (result)
+                    {
+                        setupNextBankToVerify(state, subbus, ccEvents);
+                    }
+                }
+                        
+                    
                 sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
                 subbus->setBusUpdatedFlag(true);
                 state->setTimeStamp(now);
 
-                if (isControlled)
+                if (isControlled && !bank->isFailedStatus())
                 {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
@@ -1057,12 +1069,134 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
 }
 
 
+bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection)
+{
+    if (subbus->getVerificationFlag())
+    {
+        CtiTime now;
+        state->setTimeStamp(now);
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+        CtiMultiMsg_vec pointChanges;
+        CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+        CtiMultiMsg* pilMessages = new CtiMultiMsg();
+        CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
+        CtiMultiMsg_vec &pilMsg = pilMessages->getData();
+        if (!subbus->getPerformingVerificationFlag())
+        {
+            subbus->setLastVerificationCheck(now);
+
+            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+            {
+               CtiLockGuard<CtiLogger> logger_guard(dout);
+               dout << CtiTime() << " - IVVC Algorithm: "<< subbus->getPaoName() <<" Performing Verification." <<std::endl;
+            }
+            subbus->setCapBanksToVerifyFlags((long)subbus->getVerificationStrategy(), ccEvents);
+            setupNextBankToVerify(state, subbus, ccEvents);
+        }
+        PointValueMap pointValues = state->getGroupRequest()->getPointValues();
+        pointValues.erase(subbus->getCurrentWattLoadPointId());
+        PointIdList pointIds = subbus->getCurrentVarLoadPoints();
+        for each (long pointId in pointIds)
+        {
+            pointValues.erase(pointId);
+        }//At this point we have removed the var and watt points. Only volt points remain.
+
+        CtiCCCapBankPtr currentBank = store->getCapBankByPaoId(subbus->getCurrentVerificationCapBankId());;
+
+        
+        state->_estimated[currentBank->getPaoId()].capbank = currentBank;
+        // record preoperation voltage values for the feeder our capbank is on
+        for each (PointValueMap::value_type pointValuePair in pointValues)
+        {
+            try
+            {
+                state->_estimated[currentBank->getPaoId()].capbank->updatePointResponsePreOpValue(pointValuePair.first,pointValuePair.second.value);
+            }
+            catch (NotFoundException& e)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first <<  std::endl;
+            }
+        }
+
+        state->_estimated[currentBank->getPaoId()].operated = true;
+        state->setControlledBankId(currentBank->getPaoId());
+
+        state->_estimated.clear();     // done with this data
+
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank: " << currentBank->getPaoName() << std::endl;
+        }
+
+        if (state->_verification.successCount == 0 && state->_verification.failureCount == 0)
+        {
+            subbus->startVerificationOnCapBank(now, pointChanges, ccEvents, pilMsg);
+        }
+        else
+        {
+            if (subbus->sendNextCapBankVerificationControl(now, pointChanges, ccEvents, pilMsg))
+            {
+                subbus->setWaitForReCloseDelayFlag(FALSE);
+            }
+            else
+                subbus->setWaitForReCloseDelayFlag(TRUE);
+        }
+        if (pilMsg.size() > 0)
+        {
+            CtiConnectionPtr pilConn = CtiCapController::getInstance()->getPILConnection();
+            pilConn->WriteConnQue(pilMessages);
+            sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
+        }
+
+        state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+
+        return true;
+    }
+    return false;
+}
+
+void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, CtiMultiMsg_vec& ccEvents)
+{
+    if(subbus->areThereMoreCapBanksToVerify(ccEvents))
+    {
+        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+        {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<" Performing Verification on CapBankId: "<< subbus->getCurrentVerificationCapBankId() << std::endl;
+        }
+
+        state->_verification = IVVCState::VerificationHelper(subbus->getCurrentVerificationCapBankId());
+    }
+    else
+    {
+
+        //reset VerificationFlag
+        subbus->setVerificationFlag(FALSE);
+        subbus->setBusUpdatedFlag(TRUE);
+        CtiCCExecutorFactory::createExecutor( new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, subbus->getPaoId(),0, -1, subbus->getVerificationDisableOvUvFlag()))->execute();
+        CtiCCExecutorFactory::createExecutor( new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, subbus->getPaoId()))->execute();
+        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+        {
+           CtiLockGuard<CtiLogger> logger_guard(dout);
+           dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() << " has completed Verification." <<std::endl;
+        }
+    }
+    return;
+}
+
 /**
  * @return bool :   true    - break out of the state machine.
  *                  false   - fall through to the next case.
  */
 bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection)
 {
+    if ( busVerificationAnalysisState(state, subbus, strategy, dispatchConnection) )
+        return true;
+
     std::set<long> pointIdsToSkip;
     bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
 

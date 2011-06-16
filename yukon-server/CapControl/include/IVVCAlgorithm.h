@@ -47,6 +47,8 @@ class IVVCAlgorithm
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
+        bool busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
+        void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, CtiMultiMsg_vec& ccEvents);
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 
         void handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);

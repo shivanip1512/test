@@ -10,7 +10,13 @@
 class IVVCState
 {
     public:
-        
+        struct VerificationHelper
+        {
+            long verificationBankId;
+            int  successCount;
+            int  failureCount;
+            VerificationHelper(long bankId = -1) : verificationBankId(bankId), successCount(0), failureCount(0) { }
+        };
         struct CommsStatus
         {
             bool cbcsLost;
@@ -118,6 +124,8 @@ class IVVCState
         typedef std::map<long, EstimatedData> EstimatedDataMap;
 
         EstimatedDataMap    _estimated;
+
+        VerificationHelper _verification;
 
     private:
 
