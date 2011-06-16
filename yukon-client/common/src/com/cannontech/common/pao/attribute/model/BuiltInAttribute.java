@@ -1,8 +1,7 @@
 package com.cannontech.common.pao.attribute.model;
 
-import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum BuiltInAttribute implements Attribute, DisplayableEnum {
+public enum BuiltInAttribute implements Attribute {
     
     /* Keep this ordered alphabetically by description */
     AUTO_REMOTE_CONTROL("Auto/Remote Control"),
@@ -82,11 +81,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public String getKey() {
         return this.name();
-    }
-
-    @Override
-    public String getFormatKey() {
-        return "yukon.common.point.attribute." + getKey();
     }
 
 }

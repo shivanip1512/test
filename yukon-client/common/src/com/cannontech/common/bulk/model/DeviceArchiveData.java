@@ -7,7 +7,6 @@ import org.joda.time.Interval;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.bulk.model.PixelData;
 import com.google.common.collect.Lists;
 
 public class DeviceArchiveData {
@@ -15,7 +14,7 @@ public class DeviceArchiveData {
     private Attribute attribute;
     private Interval archiveRange;
     private List<ArchiveData> archiveData = Lists.newArrayList();
-    private List<PixelData> timeline;
+    private List<ReadSequence> timeline;
     
     public DeviceArchiveData() {}
     
@@ -88,11 +87,11 @@ public class DeviceArchiveData {
         return count;
     }
     
-    public void setTimeline(List<PixelData> timeline) {
+    public void setTimeline(List<ReadSequence> timeline) {
         this.timeline = timeline;
     }
 
-    public List<PixelData> getTimeline() {
+    public List<ReadSequence> getTimeline() {
         return timeline;
     }
     

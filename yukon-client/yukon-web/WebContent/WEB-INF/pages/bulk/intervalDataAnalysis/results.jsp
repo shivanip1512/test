@@ -35,7 +35,7 @@
                 <tags:nameValueContainer2>
                     
                     <tags:nameValue2 nameKey=".attribute">
-                        <cti:formatObject value="${result.analysis.attribute}"/>
+                        ${result.analysis.attribute.description}
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".dateRange">

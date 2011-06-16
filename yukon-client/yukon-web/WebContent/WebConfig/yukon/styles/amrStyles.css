@@ -63,7 +63,7 @@ div.resultBar {
     overflow: hidden;
 }
 
-div.resultBarInterval {
+div.resultBar > div {
     display: inline-block;
     position: relative;
     float: left;

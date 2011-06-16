@@ -57,7 +57,7 @@
                         <form:select path="selectedAttribute" style="width:${selectInputWidth};">
                             <c:forEach var="attribute" items="${attributes}">
                                  <form:option value="${attribute}" title="${attribute.description}">
-                                    <cti:formatObject value="${attribute}" />
+                                    ${attribute.description}
                                  </form:option>
                             </c:forEach>
                         </form:select>
