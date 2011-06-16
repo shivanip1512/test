@@ -313,7 +313,6 @@ public enum YukonRoleProperty {
     SN_DELETE_RANGE(INVENTORY, com.cannontech.roles.operator.InventoryRole.SN_DELETE_RANGE, booleanType()),
     INVENTORY_CREATE_HARDWARE(INVENTORY, com.cannontech.roles.operator.InventoryRole.INVENTORY_CREATE_HARDWARE, stringType()),
     EXPRESSCOM_TOOS_RESTORE_FIRST(INVENTORY, com.cannontech.roles.operator.InventoryRole.EXPRESSCOM_TOOS_RESTORE_FIRST, booleanType()),
-    ALLOW_DESIGNATION_CODES(INVENTORY, com.cannontech.roles.operator.InventoryRole.ALLOW_DESIGNATION_CODES, stringType()),
     ALLOW_MULTIPLE_WAREHOUSES(INVENTORY, com.cannontech.roles.operator.InventoryRole.ALLOW_MULTIPLE_WAREHOUSES, stringType()),
     PURCHASING_ACCESS(INVENTORY, com.cannontech.roles.operator.InventoryRole.PURCHASING_ACCESS, booleanType()),
     DEVICE_RECONFIG(INVENTORY, com.cannontech.roles.operator.InventoryRole.DEVICE_RECONFIG, booleanType()),

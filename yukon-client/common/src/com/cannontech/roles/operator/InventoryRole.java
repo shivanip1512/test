@@ -20,7 +20,7 @@ public interface InventoryRole {
 	public static final int SN_DELETE_RANGE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 4;
 	public static final int INVENTORY_CREATE_HARDWARE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 5;
 	public static final int EXPRESSCOM_TOOS_RESTORE_FIRST = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 6;
-    public static final int ALLOW_DESIGNATION_CODES = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 7;
+
     public static final int ALLOW_MULTIPLE_WAREHOUSES = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 8;
     public static final int PURCHASING_ACCESS = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 9;
     public static final int DEVICE_RECONFIG = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 10;
