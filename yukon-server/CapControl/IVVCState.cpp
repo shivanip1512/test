@@ -10,7 +10,6 @@ IVVCState::IVVCState() :
     _showSubbusDisableMsg(true),
     _showRegulatorAutoModeMsg(true),
     _showNoRegulatorAttachedMsg(true),
-    _remoteMode(false),
     _cbcCommsLost(false),
     _regulatorCommsLost(false),
     _voltageCommsLost(false),
@@ -107,16 +106,6 @@ long IVVCState::getPaoId() const
     return _paoId;
 }
 
-bool IVVCState::isRemoteMode()
-{
-    return _remoteMode;
-}
-
-void IVVCState::setRemoteMode(bool remoteMode)
-{
-    _remoteMode = remoteMode;
-}
-
 bool IVVCState::isFirstPass()
 {
     return _firstPass;
@@ -126,17 +115,6 @@ void IVVCState::setFirstPass(bool firstPass)
 {
     _firstPass = firstPass;
 }
-
-CtiTime IVVCState::getNextHeartbeatTime()
-{
-    return _nextHeartbeat;
-}
-
-void IVVCState::setNextHeartbeatTime(const CtiTime& time)
-{
-    _nextHeartbeat = time;
-}
-
 
 void IVVCState::setShowVarCheckMsg(const bool flag)
 {

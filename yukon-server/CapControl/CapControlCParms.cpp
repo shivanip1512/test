@@ -44,8 +44,6 @@ ULONG   _VOLT_REDUCTION_COMMAND_DELAY;
 string  _MAXOPS_ALARM_CAT;
 LONG    _MAXOPS_ALARM_CATID;
 BOOL    _ENABLE_IVVC;
-ULONG   _IVVC_KEEPALIVE;
-ULONG   _IVVC_HEARTBEAT_CONFIG;
 ULONG   _IVVC_MIN_TAP_PERIOD_MINUTES;
 ULONG   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
@@ -596,20 +594,6 @@ void refreshGlobalCParms()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
-    _IVVC_KEEPALIVE = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_KEEPALIVE", 0);
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_KEEPALIVE: " << _IVVC_KEEPALIVE << endl;
-    }
-
-    _IVVC_HEARTBEAT_CONFIG = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_HEARTBEAT_CONFIG", 0);
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_HEARTBEAT_CONFIG: " << _IVVC_HEARTBEAT_CONFIG << endl;
     }
 
     _IVVC_MIN_TAP_PERIOD_MINUTES = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES", 15);

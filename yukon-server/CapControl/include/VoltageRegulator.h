@@ -102,6 +102,7 @@ public:
     bool isTimeToSendKeepAlive();
 
     void        setPhase( const Phase & phase );
+    Phase       getPhase() const;
     std::string getPhaseString() const;
 
 protected:

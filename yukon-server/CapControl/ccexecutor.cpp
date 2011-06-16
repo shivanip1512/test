@@ -25,7 +25,6 @@ extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern BOOL _LOG_MAPID_INFO;
-extern ULONG _IVVC_HEARTBEAT_CONFIG;
 extern BOOL _LIMIT_ONE_WAY_COMMANDS;
 
 /*===========================================================================

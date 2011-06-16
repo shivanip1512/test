@@ -32,7 +32,6 @@
 
 
 using boost::unit_test_framework::test_suite;
-using namespace std;
 
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneLoader;
@@ -642,41 +641,6 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_all_children_of_zone)
     Zone::IdSet subset109 = zoneManager.getAllChildrenOfZone(109);
 
     BOOST_CHECK_EQUAL_COLLECTIONS( emptySet.begin(), emptySet.end(), subset109.begin(), subset109.end() );
-}
-
-
-BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_zone_normalization)
-{
-    struct test_IVVCAlgorithm : public IVVCAlgorithm
-    {
-        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
-
-        using IVVCAlgorithm::tapOpZoneNormalization;
-    };
-
-    test_IVVCAlgorithm              algorithm;
-    IVVCState::TapOperationZoneMap  tapOps;
-
-    ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
-    zoneManager.reloadAll();
-
-    tapOps.insert( std::make_pair(101,  1) );   // these are initialized from calls to IVVCAlgorithm::calculateVte
-    tapOps.insert( std::make_pair(103,  0) );
-    tapOps.insert( std::make_pair(104,  1) );
-    tapOps.insert( std::make_pair(106, -1) );
-    tapOps.insert( std::make_pair(107, -1) );
-    tapOps.insert( std::make_pair(108,  1) );
-    tapOps.insert( std::make_pair(109,  0) );
-
-    algorithm.tapOpZoneNormalization( zoneManager.getRootZoneIdForSubbus(35), zoneManager, tapOps );
-
-    BOOST_CHECK_EQUAL(  1 , tapOps[101] );
-    BOOST_CHECK_EQUAL( -1 , tapOps[103] );
-    BOOST_CHECK_EQUAL(  1 , tapOps[104] );
-    BOOST_CHECK_EQUAL(  0 , tapOps[106] );
-    BOOST_CHECK_EQUAL( -2 , tapOps[107] );
-    BOOST_CHECK_EQUAL(  2 , tapOps[108] );
-    BOOST_CHECK_EQUAL(  0 , tapOps[109] );
 }
 
 

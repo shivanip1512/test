@@ -10,34 +10,19 @@
 #include "PointResponse.h"
 #include "Exceptions.h"
 
-#include <list>
-#include <limits>
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
-#include <sstream>
-
-using Cti::CapControl::PointResponse;
-
-using Cti::CapControl::VoltageRegulator;
-using Cti::CapControl::VoltageRegulatorManager;
-
-using Cti::CapControl::ZoneManager;
-using Cti::CapControl::Zone;
-
 using Cti::CapControl::PaoIdList;
 using Cti::CapControl::PointIdList;
-
-using std::string;
-using std::endl;
-using std::set;
+using Cti::CapControl::PointResponse;
+using Cti::CapControl::VoltageRegulator;
+using Cti::CapControl::VoltageRegulatorManager;
+using Cti::CapControl::Zone;
+using Cti::CapControl::ZoneManager;
 
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern ULONG _CC_DEBUG;
-extern ULONG _IVVC_KEEPALIVE;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
 extern double _IVVC_NONWINDOW_MULTIPLIER;
 extern double _IVVC_BANKS_REPORTING_RATIO;
@@ -90,7 +75,7 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                    dout << CtiTime() << " - IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << endl;
+                    dout << CtiTime() << " - IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << std::endl;
                 }
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
@@ -136,7 +121,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
 
-            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << endl;
+            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << std::endl;
         }
         state->setShowBusDisableMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
@@ -147,13 +132,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     state->setShowBusDisableMsg(true);
 
     // subbus is enabled
-    // send LTC heartbeat as long as cbcs are communicating
-    if ( (_IVVC_KEEPALIVE != 0) &&
-         (timeNow > state->getNextHeartbeatTime()) &&
-         ! state->isCbcCommsLost() )
+    // send regulator heartbeat messages as long as cbcs are communicating
+    if ( ! state->isCbcCommsLost() )
     {
         sendKeepAlive(subbus);
-        state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);  // _IVVC_KEEPALIVE is in seconds!
     }
 
     DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
@@ -181,8 +163,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 subbus->setBusUpdatedFlag(true);
 
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Configuration Error: Algorithm cannot execute." << endl;
-                dout << CtiTime() << " - Disabling bus: " << subbus->getPaoName() << endl;
+                dout << CtiTime() << " - IVVC Configuration Error: Algorithm cannot execute." << std::endl;
+                dout << CtiTime() << " - Disabling bus: " << subbus->getPaoName() << std::endl;
 
                 return;
             }
@@ -200,7 +182,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Scanned Group Request made in IVVC State" << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Scanned Group Request made in IVVC State" << std::endl;
                 }
             }
             else
@@ -209,7 +191,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Group Request made in IVVC State" << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Group Request made in IVVC State" << std::endl;
                 }
             }
 
@@ -231,7 +213,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Control attempt." << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Control attempt." << std::endl;
             }
 
             //set next control time.
@@ -248,7 +230,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Stale Data." << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Stale Data." << std::endl;
                     request->reportStatusToLog();
                 }
 
@@ -266,7 +248,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more additional voltage points." << endl;
+                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more additional voltage points." << std::endl;
                             }
                         }
                     }
@@ -291,7 +273,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more Voltage Regulator points." << endl;
+                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more Voltage Regulator points." << std::endl;
                             }
                         }
                     }
@@ -323,7 +305,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
                             }
                         }
 
@@ -337,7 +319,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
                 }
                 request->reportStatusToLog();
                 state->setState(IVVCState::IVVC_ANALYZE_DATA);
@@ -390,7 +372,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - IVVC Analysis Suspended for bus: " << subbus->getPaoName()
-                         << ". One or more Voltage Regulators are in 'Auto' mode." << endl;
+                         << ". One or more Voltage Regulators are in 'Auto' mode." << std::endl;
                 }
                 return;
             }
@@ -401,7 +383,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setShowRegulatorAutoModeMsg(true);
         
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << endl;
+                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
                 }
             }
 
@@ -422,7 +404,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 state->setState(IVVCState::IVVC_WAIT);
 
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank with ID: " << bankId << " not found." << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank with ID: " << bankId << " not found." << std::endl;
                 break;
             }
 
@@ -438,7 +420,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 state->setState(IVVCState::IVVC_WAIT);
 
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank: " << bank->getPaoName()  << " not in pending state.  Resetting IVVC Control loop." << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank: " << bank->getPaoName()  << " not in pending state.  Resetting IVVC Control loop." << std::endl;
 
                 return;
             }
@@ -451,7 +433,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  isAlreadyControlled() true." << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  isAlreadyControlled() true." << std::endl;
                 }
 
                 CtiMultiMsg_vec pointChanges;
@@ -469,7 +451,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait." << endl;
+                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait." << std::endl;
                     }
                     state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
                 }
@@ -487,7 +469,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Var Check failed." << endl;
+                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Var Check failed." << std::endl;
                     }
                 }
                 break;
@@ -504,7 +486,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait. Creating Post Scan " << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait. Creating Post Scan " << std::endl;
             }
 
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
@@ -534,7 +516,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Complete. " << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Complete. " << std::endl;
                 }
 
                 std::set<long> reportedControllers = state->getReportedControllers();
@@ -551,7 +533,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Timed out. " << endl;
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Timed out. " << std::endl;
                 }
                 //scan timed out.
                 state->setState(IVVCState::IVVC_WAIT);
@@ -574,45 +556,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
-                    long zoneID     = operation.first;
-                    int  tapOpCount = operation.second;
-
-                    ZoneManager & zoneManager = store->getZoneManager();
-
-// need to re-think the TapoperationZoneMap..  now we can have tapOps on several phases in the same zone --> multimap maybe...
-
-                    long regulatorId = -1;
-
-//    for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-  //  {
-    //    long regulatorID = mapping.second;
-    //}
-
-
-////                    long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
-
+                    long regulatorId    = operation.first;
+                    int  tapOpCount     = operation.second;
 
                     try
                     {
-                        if ( tapOpCount < 0 )
+                        if ( tapOpCount != 0 )
                         {
-                            VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
-                            if ( regulatorId > 0 )
-                            {
-                                regulator->getPointByAttribute( PointAttribute::TapDown );
-                            }
-                        }
-                        else if ( tapOpCount > 0 )
-                        {
-                            VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
-                            if ( regulatorId > 0 )
-                            {
-                                regulator->getPointByAttribute( PointAttribute::TapUp );
-                            }
-                        }
-                        else    // tapOpCount == 0
-                        {
-                            // Nothing to do here....
+                            VoltageRegulatorManager::SharedPtr  regulator
+                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+
+                            regulator->getPointByAttribute( 
+                                ( tapOpCount > 0 ) ? PointAttribute::TapUp : PointAttribute::TapDown );
                         }
                     }
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -644,7 +599,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<" - Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." << endl;
+                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<" - Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." << std::endl;
                     }
                 }
 
@@ -652,59 +607,54 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
-                    long zoneID     = operation.first;
-                    int  tapOpCount = operation.second;
+                    long regulatorId    = operation.first;
+                    int  tapOpCount     = operation.second;
 
-                    if ( tapOpCount < 0 )
+                    try
                     {
-                        ZoneManager & zoneManager = store->getZoneManager();
-
-// same here....
-
-long regulatorId = -1;
-
-//                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
-
-                        if ( regulatorId > 0 )
+                        if ( tapOpCount != 0 )
                         {
-//                            CtiCCExecutorFactory::createExecutor(
-  //                              new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
+                            VoltageRegulatorManager::SharedPtr  regulator
+                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            if ( tapOpCount > 0 )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Lowering Tap on Voltage Regulator with ID: " << regulatorId << endl;
+                                regulator->executeTapUpOperation();
+                                state->_tapOps[ regulatorId ]--;
+                        
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                                                      << " - Raising Tap on Voltage Regulator with ID: " << regulatorId << std::endl;
+                                }
+                            }
+                            else
+                            {
+                                regulator->executeTapDownOperation();
+                                state->_tapOps[ regulatorId ]++;
+                        
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                                                      << " - Lowering Tap on Voltage Regulator with ID: " << regulatorId << std::endl;
+                                }
                             }
                         }
-                        state->_tapOps[zoneID]++;
                     }
-                    else if ( tapOpCount > 0 )
+                    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                     {
-                        ZoneManager & zoneManager = store->getZoneManager();
-// and here....
-
-long regulatorId = -1;
-
-//                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
-
-                        if ( regulatorId > 0 )
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                    }
+                    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                    {
+                        if (missingAttribute.complain())
                         {
-//                            CtiCCExecutorFactory::createExecutor(
-  //                              new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
-
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Raising Tap on Voltage Regulator with ID: " << regulatorId << endl;
-                            }
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
                         }
-                        state->_tapOps[zoneID]--;
-                    }
-                    else    // tapOpCount == 0
-                    {
-                        // Nothing to do here
                     }
                 }
 
@@ -721,7 +671,7 @@ long regulatorId = -1;
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  default. " << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  default. " << std::endl;
             }
         }
     }//switch
@@ -752,7 +702,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << endl;
+            dout << CtiTime() << " - IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << std::endl;
         }
         return true;
     }
@@ -761,12 +711,12 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: Enough data received for Request Type: " << pointRequestType << endl;
+            dout << CtiTime() << " - IVVC Algorithm: Enough data received for Request Type: " << pointRequestType << std::endl;
         }
 
         PointValueMap valueMap = request->getPointValues(pointRequestType);
         int currentData = 0;
-        set<long> stalePoints;
+        std::set<long> stalePoints;
 
 
         for each (const PointValueMap::value_type& pv in valueMap)
@@ -787,7 +737,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << endl;
+                dout << CtiTime() << " - IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << std::endl;
             }
             return true;
         }
@@ -796,7 +746,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: Data Current for Request Type: " << pointRequestType << endl;
+                dout << CtiTime() << " - IVVC Algorithm: Data Current for Request Type: " << pointRequestType << std::endl;
             }
 
             //Removing stale points from the request.
@@ -839,7 +789,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                     VoltageRegulatorManager::SharedPtr  regulator
                         = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
+                    long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
 
                     pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
 
@@ -1048,7 +998,10 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                regulator->executeEnableKeepAlive();
+                if ( regulator->isTimeToSendKeepAlive() )
+                {
+                    regulator->executeEnableKeepAlive();
+                }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
@@ -1072,7 +1025,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                          << subbus->getPaoName() << endl;
+                          << subbus->getPaoName() << std::endl;
     }
 }
 
@@ -1150,19 +1103,19 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Current measurement set." << endl;
+        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Current measurement set." << std::endl;
 
-        dout << "Voltages [ Point ID : Value ]" << endl;
+        dout << "Voltages [ Point ID : Value ]" << std::endl;
         for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
         {
-            dout << b->first << " : " << b->second.value << endl;
+            dout << b->first << " : " << b->second.value << std::endl;
         }
-        dout << "Subbus Watts        : " << wattValue << endl;
-        dout << "Subbus VARs         : " << varValue << endl;
-        dout << "Subbus Flatness     : " << Vf << endl;
-        dout << "Subbus Power Factor : " << PFBus << endl;
-        dout << "Subbus Weight       : " << currentBusWeight << endl;
-        dout << "Target PF VARs      : " << targetPowerFactorVars << endl;
+        dout << "Subbus Watts        : " << wattValue << std::endl;
+        dout << "Subbus VARs         : " << varValue << std::endl;
+        dout << "Subbus Flatness     : " << Vf << std::endl;
+        dout << "Subbus Power Factor : " << PFBus << std::endl;
+        dout << "Subbus Weight       : " << currentBusWeight << std::endl;
+        dout << "Target PF VARs      : " << targetPowerFactorVars << std::endl;
     }
 
     //calculate estimated bus weights etc from historical data
@@ -1227,14 +1180,14 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
                     dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Estimated voltages if Capbank ID# "
-                         << currentBank->getPaoId() << " is " << (isCapBankOpen ? "CLOSED" : "OPENED") << endl;
+                         << currentBank->getPaoId() << " is " << (isCapBankOpen ? "CLOSED" : "OPENED") << std::endl;
 
-                    dout << "Estimated Voltages [ Point ID : Estimated Value ]" << endl;
+                    dout << "Estimated Voltages [ Point ID : Estimated Value ]" << std::endl;
                     for each (PointResponse currentResponse in responses)
                     {
                         if (deltas.find(currentResponse.getPointId()) != deltas.end())
                         {
-                            dout << currentResponse.getPointId() << " : " << deltas[ currentResponse.getPointId() ].value << endl;
+                            dout << currentResponse.getPointId() << " : " << deltas[ currentResponse.getPointId() ].value << std::endl;
                         }
                     }
                 }
@@ -1282,11 +1235,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                    dout << "Estimated Subbus Watts        : " << wattValue << endl;
-                    dout << "Estimated Subbus VARs         : " << estVarValue << endl;
-                    dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << endl;
-                    dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << endl;
-                    dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << endl;
+                    dout << "Estimated Subbus Watts        : " << wattValue << std::endl;
+                    dout << "Estimated Subbus VARs         : " << estVarValue << std::endl;
+                    dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << std::endl;
+                    dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << std::endl;
+                    dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << std::endl;
                 }
             }
         }
@@ -1328,7 +1281,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             catch (NotFoundException& e)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first << std::endl;
             }
         }
 
@@ -1341,7 +1294,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
 
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank ID# " << operatePaoId << endl;
+            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank ID# " << operatePaoId << std::endl;
         }
 
         //send cap bank command
@@ -1377,7 +1330,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<"  Not Operating Voltage Regulators due to minimum tap period." << endl;
+            dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<"  Not Operating Voltage Regulators due to minimum tap period." << std::endl;
         }
 
         return;
@@ -1401,22 +1354,71 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        // Get the voltage regulator for this zone
-
         try
         {
+            // grab the voltage regulator(s)
+
             for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
+                long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
 
                 PointValueMap::const_iterator found = pointValues.find( voltagePointId );   // lookup
                 if ( found != pointValues.end() )
                 {
                     zonePointValues.insert( *found );
                 }
+
+                // Capbanks
+
+                // this guy is a helper for the individual bandwidths...
+                std::map<long, CtiCCMonitorPointPtr>    _monitorMap;
+
+                for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
+                {
+                    CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
+                    if ( bank )
+                    {
+                        for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                        {
+                            //  if our zone is gang operated we grab all bank monitor points despite their phase
+                            //  if phase operated zone we grab only the bank monitor points on the same phase as our regulator
+
+                            if ( zone->isGangOperated() || point->getPhase() == regulator->getPhase() )
+                            {
+                                PointValueMap::const_iterator iter = pointValues.find( point->getPointId() );   // lookup
+                                if ( iter != pointValues.end() )    // found
+                                {
+                                    zonePointValues.insert( *iter );
+
+                                    _monitorMap.insert( std::make_pair( point->getPointId(), point ) );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Other voltage points in this zone
+
+                for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
+                {
+                    //  if our zone is gang operated we grab all points despite their phase
+                    //  if phase operated zone we grab only the points on the same phase as our regulator
+
+                    if ( zone->isGangOperated() || mapping.first == regulator->getPhase() )
+                    {
+                        PointValueMap::const_iterator found = pointValues.find( mapping.second );  // lookup
+
+                        if ( found != pointValues.end() )
+                        {
+                            zonePointValues.insert( *found );
+                        }
+                    }
+                }
+
+                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, _monitorMap, isPeakTime);
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -1435,43 +1437,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             }
 
         }
-
-        // get our CapBanks for this zone
-
-        // this guy is a helper for the individual bandwidths...
-        std::map<long, CtiCCMonitorPointPtr>    _monitorMap;
-
-        for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
-        {
-            CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
-            if ( bank )
-            {
-                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
-                {
-                    PointValueMap::const_iterator iter = pointValues.find( point->getPointId() );   // lookup
-                    if ( iter != pointValues.end() )    // found
-                    {
-                        zonePointValues.insert( *iter );
-
-                        _monitorMap.insert( std::make_pair( point->getPointId(), point ) );
-                    }
-                }
-            }
-        }
-
-        // Other voltage points in this zone
-
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
-        {
-            PointValueMap::const_iterator found = pointValues.find( mapping.second );  // lookup
-
-            if ( found != pointValues.end() )
-            {
-                zonePointValues.insert( *found );
-            }
-        }
-
-        state->_tapOps[ID] = calculateVte(zonePointValues, strategy, _monitorMap, isPeakTime);
     }
 
     long rootZoneId = zoneManager.getRootZoneIdForSubbus(subbusId);
@@ -1492,7 +1457,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode." << endl;
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode." << std::endl;
             }
         }
     }
@@ -1503,7 +1468,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed." << endl;
+            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed." << std::endl;
         }
     }
 }
@@ -1545,7 +1510,27 @@ void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManage
 
     for each ( const Zone::IdSet::value_type & ID in allChildren )
     {
-        tapOp[ID] -= tapOp[parentID];
+        ZoneManager::SharedPtr  parentZone  = zoneManager.getZone(parentID);
+        ZoneManager::SharedPtr  zone        = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            Zone::PhaseIdMap    parentMapping = parentZone->getRegulatorIds();
+            
+            if ( parentZone->isGangOperated() )
+            {
+                tapOp[ mapping.second ] -= tapOp[ parentMapping[ Cti::CapControl::Phase_Poly ] ];
+            }
+            else
+            {
+                // normalize parent to child on the same phase
+
+                if ( parentMapping.find( mapping.first ) != parentMapping.end() )
+                {
+                    tapOp[ mapping.second ] -= tapOp[ parentMapping[ mapping.first ] ];
+                }
+            }
+        }
     }
 
     Zone::IdSet immediateChildren = zoneManager.getZone(parentID)->getChildIds();
@@ -1696,7 +1681,7 @@ void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Comms lost, sending remote control disable. " << endl;
+            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Comms lost, sending remote control disable. " << std::endl;
         }
 
         ZoneManager & zoneManager = store->getZoneManager();

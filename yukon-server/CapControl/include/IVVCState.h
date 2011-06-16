@@ -64,14 +64,8 @@ class IVVCState
         void setPaoId(long paoId);
         long getPaoId() const;
 
-        bool isRemoteMode();
-        void setRemoteMode(bool remoteMode);
-
         bool isFirstPass();
         void setFirstPass(bool firstPass);
-
-        CtiTime getNextHeartbeatTime();
-        void setNextHeartbeatTime(const CtiTime& time);
 
         void setShowVarCheckMsg(const bool flag);
         bool isShowVarCheckMsg() const;
@@ -130,7 +124,6 @@ class IVVCState
         CtiTime _timeStamp;
         CtiTime _nextControlTime;
         CtiTime _lastTapOpTime;
-        CtiTime _nextHeartbeat;
 
         PointDataRequestPtr _groupRequest;
 
@@ -140,7 +133,6 @@ class IVVCState
         long _controlledId;
         long _paoId;
 
-        bool _remoteMode;
         bool _firstPass;
 
         bool _showVarCheckFailMsg;

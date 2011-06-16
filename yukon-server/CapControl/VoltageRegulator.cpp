@@ -344,6 +344,12 @@ void VoltageRegulator::setPhase( const Phase & phase )
 }
 
 
+Phase VoltageRegulator::getPhase() const
+{
+    return _phase;
+}
+
+
 std::string VoltageRegulator::getPhaseString() const
 {
     switch ( _phase )
