@@ -7527,6 +7527,8 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
             if (capBankId > 0)
             {
                 pointResponses = pointResponseDao->getPointResponsesByBankId(capBankId);
+                std::vector<PointResponse> pResponsesByPoint = pointResponseDao->getPointResponsesByPointId(monPointId);
+                pointResponses.insert(pointResponses.end(),pResponsesByPoint.begin(), pResponsesByPoint.end());
             }
             else
             {

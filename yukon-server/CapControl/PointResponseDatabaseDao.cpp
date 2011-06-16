@@ -33,6 +33,8 @@ vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByBankId(int ba
 
     DatabaseReader dbReader(databaseConnection,sql);
 
+    dbReader << bankId;
+
     performDatabaseOperation(dbReader,pointResponses);
 
     return pointResponses;
@@ -46,6 +48,8 @@ vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByPointId(int p
     vector<PointResponse> pointResponses;
 
     DatabaseReader dbReader(databaseConnection,sql);
+
+    dbReader << pointId;
 
     performDatabaseOperation(dbReader,pointResponses);
 
