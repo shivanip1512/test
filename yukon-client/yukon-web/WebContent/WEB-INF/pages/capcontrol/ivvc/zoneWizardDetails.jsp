@@ -73,7 +73,7 @@
         var rowToDelete = document.createElement('input');
         rowToDelete.type = 'hidden';
         //rowType will be "bank" or "point"
-        rowToDelete.name = rowType + 'sToRemove';
+        rowToDelete.name = rowType + 'ToRemove';
         rowToDelete.value = rowId;
         rowToDelete.id =  'deleteInput_' + rowId;
         $('zoneDetailsForm').appendChild(rowToDelete);
@@ -91,19 +91,19 @@
     };
     
     updateRegPickerExcludes = function(selectedItems, picker) {
-        if (picker != voltageThreePhaseARegulatorPicker) {
-            if (voltageThreePhaseARegulatorPicker.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseARegulatorPicker.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPickerA) {
+            if (voltageThreePhaseRegulatorPickerA.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPickerA.clearSelected();
             }
         }
-        if (picker != voltageThreePhaseBRegulatorPicker) {
-            if (voltageThreePhaseBRegulatorPicker.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseBRegulatorPicker.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPickerB) {
+            if (voltageThreePhaseRegulatorPickerB.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPickerB.clearSelected();
             }
         }
-        if (picker != voltageThreePhaseCRegulatorPicker) {
-            if (voltageThreePhaseCRegulatorPicker.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseCRegulatorPicker.clearSelected();
+        if (picker != voltageThreePhaseRegulatorPickerC) {
+            if (voltageThreePhaseRegulatorPickerC.getSelected() == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPickerC.clearSelected();
             }
         }
     }
@@ -191,7 +191,7 @@
         <c:choose>
     		<%-- Regulator Selection - Gang --%>
             <c:when test="${zoneDto.zoneType ==  gangOperated}">
-        		<tags:nameValue2 nameKey=".label.regulator" rowId="gangRow">
+        		<tags:nameValue2 nameKey=".label.regulator">
                     <tags:bind path="regulator.regulatorId">
             			<tags:pickerDialog 	id="voltageGangRegulatorPicker" 
             				type="availableVoltageRegulatorGangPicker" 
@@ -210,77 +210,32 @@
     
             <%-- Regulator Selection - Three Phase --%>
             <c:when test="${zoneDto.zoneType ==  threePhase}">
-                <input type="hidden" name="regulatorA.phase" value="${phaseA}"/>
-                <input type="hidden" name="regulatorB.phase" value="${phaseB}"/>
-                <input type="hidden" name="regulatorC.phase" value="${phaseC}"/>
-                <tags:nameValue2 nameKey=".label.regulatorA" rowId="phaseARow">
-                    <tags:bind path="regulatorA.regulatorId">
-                        <tags:pickerDialog  id="voltageThreePhaseARegulatorPicker" 
-                            type="availableVoltageRegulatorPhasePicker" 
-                            destinationFieldName="regulatorA.regulatorId"
-                            initialId="${zoneDto.regulatorA.regulatorId}"
-                            selectionProperty="paoName"
-                            linkType="selection"
-                            extraArgs="${zoneDto.zoneId}"
-                            useInitialIdsIfEmpty="true"
-                            multiSelectMode="false"
-                            immediateSelectMode="true" 
-                            allowEmptySelection="true">
-                        </tags:pickerDialog>
-                    </tags:bind>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".label.regulatorB" rowId="phaseBRow">
-                    <tags:bind path="regulatorB.regulatorId">
-                        <tags:pickerDialog  id="voltageThreePhaseBRegulatorPicker" 
-                            type="availableVoltageRegulatorPhasePicker" 
-                            destinationFieldName="regulatorB.regulatorId"
-                            initialId="${zoneDto.regulatorB.regulatorId}"
-                            selectionProperty="paoName"
-                            linkType="selection"
-                            extraArgs="${zoneDto.zoneId}"
-                            useInitialIdsIfEmpty="true"
-                            multiSelectMode="false"
-                            immediateSelectMode="true" 
-                            allowEmptySelection="true">
-                        </tags:pickerDialog>
-                    </tags:bind>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".label.regulatorC" rowId="phaseCRow">
-                    <tags:bind path="regulatorC.regulatorId">
-                        <tags:pickerDialog  id="voltageThreePhaseCRegulatorPicker" 
-                            type="availableVoltageRegulatorPhasePicker" 
-                            destinationFieldName="regulatorC.regulatorId"
-                            initialId="${zoneDto.regulatorC.regulatorId}"
-                            selectionProperty="paoName"
-                            linkType="selection"
-                            extraArgs="${zoneDto.zoneId}"
-                            useInitialIdsIfEmpty="true"
-                            multiSelectMode="false"
-                            immediateSelectMode="true" 
-                            allowEmptySelection="true">
-                        </tags:pickerDialog>
-                    </tags:bind>
-                </tags:nameValue2>
+                <c:forEach items="${zoneDto.regulators}" var="regulator">
+                    <c:set var="phaseKey" value="${regulator.key}"/>
+                    <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
+                    <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
+                        <tags:bind path="regulators[${phaseKey}].regulatorId">
+                            <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${phaseKey}"
+                                type="availableVoltageRegulatorPhasePicker" 
+                                destinationFieldName="regulators[${phaseKey}].regulatorId"
+                                initialId="${zoneDto.regulators[phaseKey].regulatorId}"
+                                selectionProperty="paoName"
+                                linkType="selection"
+                                extraArgs="${zoneDto.zoneId}"
+                                useInitialIdsIfEmpty="true"
+                                multiSelectMode="false"
+                                immediateSelectMode="true" 
+                                allowEmptySelection="true">
+                            </tags:pickerDialog>
+                        </tags:bind>
+                    </tags:nameValue2>
+                </c:forEach>
             </c:when>
 
             <%-- Regulator Selection - Single Phase --%>
             <c:when test="${zoneDto.zoneType == singlePhase}">
                 <input type="hidden" name="regulator.phase" value="${zoneDto.regulator.phase}"/>
-                <c:choose>
-                    <c:when test="${zoneDto.regulator.phase == phaseA}">
-                        <c:set var="regKey" value=".label.regulatorA"/>
-                        <c:set var="regNameRowId" value="phaseARow"/>
-                    </c:when>
-                    <c:when test="${zoneDto.regulator.phase == phaseB}">
-                        <c:set var="regKey" value=".label.regulatorB"/>
-                        <c:set var="regNameRowId" value="phaseBRow"/>
-                    </c:when>
-                    <c:when test="${zoneDto.regulator.phase == phaseC}">
-                        <c:set var="regKey" value=".label.regulatorC"/>
-                        <c:set var="regNameRowId" value="phaseCRow"/>
-                    </c:when>
-                </c:choose>
-                <tags:nameValue2 nameKey="${regKey}" rowId="${regNameRowId}">
+                <tags:nameValue2 nameKey=".label.regulator.${zoneDto.regulator.phase}">
                     <tags:bind path="regulator.regulatorId">
                         <tags:pickerDialog id="voltageSinglePhaseRegulatorPicker" 
                             type="availableVoltageRegulatorPhasePicker" 
@@ -457,9 +412,9 @@
 
 <c:if test="${zoneDto.zoneType ==  threePhase}">
     <script type="text/javascript">
-        voltageThreePhaseARegulatorPicker.endAction = updateRegPickerExcludes;
-        voltageThreePhaseBRegulatorPicker.endAction = updateRegPickerExcludes;
-        voltageThreePhaseCRegulatorPicker.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPickerA.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPickerB.endAction = updateRegPickerExcludes;
+        voltageThreePhaseRegulatorPickerC.endAction = updateRegPickerExcludes;
     </script>
 </c:if>
 

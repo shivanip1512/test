@@ -237,7 +237,7 @@ public class PhaseDetectController {
         
         model.addAttribute("data", phaseDetectService.getPhaseDetectData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
-        model.addAttribute("phases", Phase.values());
+        model.addAttribute("phases", Phase.getRealPhases());
         model.addAttribute("phaseA", Phase.A);
         model.addAttribute("phaseB", Phase.B);
         model.addAttribute("phaseC", Phase.C);

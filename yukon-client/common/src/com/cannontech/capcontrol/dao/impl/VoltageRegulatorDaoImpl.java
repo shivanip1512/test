@@ -102,9 +102,8 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM ZoneRegulator)");
+        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM RegulatorToZoneMapping)");
         sql.append("    AND Type").in(regulatorTypes);
-        
         
         int orphanCount = yukonJdbcTemplate.queryForInt(sql);
         
@@ -114,7 +113,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM ZoneRegulator)");
+        sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM RegulatorToZoneMapping)");
         sql.append("    AND Type").in(regulatorTypes);
         sql.append("ORDER BY PAOName");
         

@@ -77,7 +77,7 @@ table td.rightActionColumn {
     font-weight: bold;
 }
 .regulatorModeLocalWarning {
-    color: orange;    
+    color: #EE8800;    
 }
 
 div.historyContainer {
@@ -132,4 +132,8 @@ table.ivvcGridLayout tr {
 
 .regulatorActions button.labeledImage {
     font-size: 11px;
+}
+
+.regulatorAttributeRow {
+    height: 21px;
 }

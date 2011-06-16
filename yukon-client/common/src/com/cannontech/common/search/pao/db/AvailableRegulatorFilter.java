@@ -17,7 +17,7 @@ public class AvailableRegulatorFilter implements SqlFilter {
         SqlStatementBuilder notAttachedToAnyZone = new SqlStatementBuilder();
         notAttachedToAnyZone.append("PAObjectId NOT IN (");
         notAttachedToAnyZone.append("  SELECT RegulatorId");
-        notAttachedToAnyZone.append("  FROM ZoneRegulator");
+        notAttachedToAnyZone.append("  FROM RegulatorToZoneMapping");
         if (zoneId != null) {
             notAttachedToAnyZone.append("  WHERE ZoneId").neq(zoneId);
         }

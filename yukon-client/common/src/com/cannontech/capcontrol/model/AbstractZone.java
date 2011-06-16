@@ -1,9 +1,11 @@
 package com.cannontech.capcontrol.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.enums.Phase;
 
 public abstract class AbstractZone {
     
@@ -26,6 +28,20 @@ public abstract class AbstractZone {
         this.parentId = zone.getParentId();
         this.substationBusId = zone.getSubstationBusId();
         this.graphStartPosition = zone.getGraphStartPosition();
+    }
+    
+    public static AbstractZone create(ZoneType zoneType) {
+        AbstractZone zoneDto = null;
+        if (zoneType == ZoneType.GANG_OPERATED) {
+            zoneDto = new ZoneGang();
+        } else if (zoneType == ZoneType.SINGLE_PHASE) {
+            zoneDto = new ZoneSinglePhase();
+        } else if (zoneType == ZoneType.THREE_PHASE) {
+            zoneDto = new ZoneThreePhase();
+        } else {
+            throw new RuntimeException("ZoneType unknown.");
+        }
+        return zoneDto;
     }
     
     public Integer getZoneId() {
@@ -85,4 +101,6 @@ public abstract class AbstractZone {
 	}
 
     public abstract ZoneType getZoneType();
+    public abstract List<RegulatorToZoneMapping> getRegulatorsList();
+    public abstract Map<Phase, RegulatorToZoneMapping> getRegulators();
 }

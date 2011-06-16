@@ -1,7 +1,13 @@
 package com.cannontech.capcontrol.model;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 public abstract class AbstractZoneNotThreePhase extends AbstractZone {
-    private ZoneRegulator regulator;
+    protected RegulatorToZoneMapping regulator;
 
     public AbstractZoneNotThreePhase() {
         super();
@@ -9,14 +15,18 @@ public abstract class AbstractZoneNotThreePhase extends AbstractZone {
 
     public AbstractZoneNotThreePhase(Zone zone) {
         super(zone);
-        this.regulator = zone.getRegulators().get(0);
+        this.regulator = Iterables.getOnlyElement(zone.getRegulators());
     }
 
-    public ZoneRegulator getRegulator() {
+    public RegulatorToZoneMapping getRegulator() {
         return regulator;
     }
 
-    public void setRegulator(ZoneRegulator regulator) {
+    public void setRegulator(RegulatorToZoneMapping regulator) {
         this.regulator = regulator;
+    }
+    
+    public List<RegulatorToZoneMapping> getRegulatorsList() {
+        return Lists.newArrayList(Collections.singleton(regulator));
     }
 }

@@ -1,5 +1,9 @@
 package com.cannontech.web.capcontrol.ivvc.models;
 
+import java.util.Map;
+
+import com.cannontech.enums.Phase;
+
 
 public class VfGraphSettings {
 
@@ -9,48 +13,36 @@ public class VfGraphSettings {
 	private String xAxisLabel;
 	private String graphTitle;
 	private String graphWidgetName;
-
-    private String phaseAString;
-    private String phaseBString;
-    private String phaseCString;
-
-    private String zoneLineColorPhaseA;
-    private String zoneLineColorPhaseB;
-    private String zoneLineColorPhaseC;
+    private Map<Phase, String> phaseStringMap;
+    private Map<Phase, String> phaseZoneLineColorMap;
     private String zoneLineColorNoPhase;
-     
-    private String phaseABulletType;
-    private String phaseBBulletType;
-    private String phaseCBulletType;
-    
-    private boolean showZoneTransitionText;
+    private Map<Phase, String> phaseBulletTypeMap;
+    private boolean showZoneTransitionTextBusGraph;
+    private boolean showZoneTransitionTextZoneGraph;
     private String zoneTransitionDataLabel;
     
     private String balloonDistanceText;
     
-	public VfGraphSettings(double yLowerBound, double yUpperBound, String yAxisLabel, String xAxisLabel,
-                           String graphTitle, String graphWidgetName, String phaseAString, String phaseBString, String phaseCString,
-                           String zoneLineColorPhaseA, String zoneLineColorPhaseB, String zoneLineColorPhaseC,
-                           String zoneLineColorNoPhase, String phaseABulletType, String phaseBBulletType,
-                           String phaseCBulletType, boolean showZoneTransitionText, String zoneTransitionDataLabel,
+
+    public VfGraphSettings(double yLowerBound, double yUpperBound, String yAxisLabel, String xAxisLabel,
+                           String graphTitle, String graphWidgetName, Map<Phase, String> phaseStringMap,
+                           Map<Phase, String> phaseZoneLineColorMap, String zoneLineColorNoPhase,
+                           Map<Phase, String> phaseBulletTypeMap, boolean showZoneTransitionTextBusGraph,
+                           boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel, 
                            String balloonDistanceText) {
+        super();
         this.yLowerBound = yLowerBound;
         this.yUpperBound = yUpperBound;
         this.yAxisLabel = yAxisLabel;
         this.xAxisLabel = xAxisLabel;
         this.graphTitle = graphTitle;
         this.graphWidgetName = graphWidgetName;
-        this.phaseAString = phaseAString;
-        this.phaseBString = phaseBString;
-        this.phaseCString = phaseCString;
-        this.zoneLineColorPhaseA = zoneLineColorPhaseA;
-        this.zoneLineColorPhaseB = zoneLineColorPhaseB;
-        this.zoneLineColorPhaseC = zoneLineColorPhaseC;
+        this.phaseStringMap = phaseStringMap;
+        this.phaseZoneLineColorMap = phaseZoneLineColorMap;
         this.zoneLineColorNoPhase = zoneLineColorNoPhase;
-        this.phaseABulletType = phaseABulletType;
-        this.phaseBBulletType = phaseBBulletType;
-        this.phaseCBulletType = phaseCBulletType;
-        this.showZoneTransitionText = showZoneTransitionText;
+        this.phaseBulletTypeMap = phaseBulletTypeMap;
+        this.showZoneTransitionTextBusGraph = showZoneTransitionTextBusGraph;
+        this.showZoneTransitionTextZoneGraph = showZoneTransitionTextZoneGraph;
         this.zoneTransitionDataLabel = zoneTransitionDataLabel;
         this.balloonDistanceText = balloonDistanceText;
     }
@@ -103,52 +95,28 @@ public class VfGraphSettings {
 		this.graphTitle = graphTitle;
 	}
 
-    public String getPhaseAString() {
-        return phaseAString;
+    public Map<Phase, String> getPhaseStringMap() {
+        return phaseStringMap;
+    }
+    
+    public String getPhaseString(Phase phase) {
+        return phaseStringMap.get(phase);
     }
 
-    public void setPhaseAString(String phaseAString) {
-        this.phaseAString = phaseAString;
+    public void setPhaseStringMap(Map<Phase, String> phaseStringMap) {
+        this.phaseStringMap = phaseStringMap;
     }
 
-    public String getPhaseBString() {
-        return phaseBString;
+    public Map<Phase, String> getPhaseZoneLineColorMap() {
+        return phaseZoneLineColorMap;
+    }
+    
+    public String getPhaseZoneLineColor(Phase phase) {
+        return phaseZoneLineColorMap.get(phase);
     }
 
-    public void setPhaseBString(String phaseBString) {
-        this.phaseBString = phaseBString;
-    }
-
-    public String getPhaseCString() {
-        return phaseCString;
-    }
-
-    public void setPhaseCString(String phaseCString) {
-        this.phaseCString = phaseCString;
-    }
-
-    public String getZoneLineColorPhaseA() {
-        return zoneLineColorPhaseA;
-    }
-
-    public void setZoneLineColorPhaseA(String zoneLineColorPhaseA) {
-        this.zoneLineColorPhaseA = zoneLineColorPhaseA;
-    }
-
-    public String getZoneLineColorPhaseB() {
-        return zoneLineColorPhaseB;
-    }
-
-    public void setZoneLineColorPhaseB(String zoneLineColorPhaseB) {
-        this.zoneLineColorPhaseB = zoneLineColorPhaseB;
-    }
-
-    public String getZoneLineColorPhaseC() {
-        return zoneLineColorPhaseC;
-    }
-
-    public void setZoneLineColorPhaseC(String zoneLineColorPhaseC) {
-        this.zoneLineColorPhaseC = zoneLineColorPhaseC;
+    public void setPhaseZoneLineColorMap(Map<Phase, String> phaseZoneLineColorMap) {
+        this.phaseZoneLineColorMap = phaseZoneLineColorMap;
     }
 
     public String getZoneLineColorNoPhase() {
@@ -159,36 +127,32 @@ public class VfGraphSettings {
         this.zoneLineColorNoPhase = zoneLineColorNoPhase;
     }
 
-    public String getPhaseABulletType() {
-        return phaseABulletType;
+    public Map<Phase, String> getPhaseBulletTypeMap() {
+        return phaseBulletTypeMap;
+    }
+    
+    public String getPhaseBulletType(Phase phase) {
+        return phaseBulletTypeMap.get(phase);
     }
 
-    public void setPhaseABulletType(String phaseABulletType) {
-        this.phaseABulletType = phaseABulletType;
+    public void setPhaseBulletTypeMap(Map<Phase, String> phaseBulletTypeMap) {
+        this.phaseBulletTypeMap = phaseBulletTypeMap;
     }
 
-    public String getPhaseBBulletType() {
-        return phaseBBulletType;
+    public boolean isShowZoneTransitionTextBusGraph() {
+        return showZoneTransitionTextBusGraph;
     }
 
-    public void setPhaseBBulletType(String phaseBBulletType) {
-        this.phaseBBulletType = phaseBBulletType;
+    public void setShowZoneTransitionTextBusGraph(boolean showZoneTransitionTextBusGraph) {
+        this.showZoneTransitionTextBusGraph = showZoneTransitionTextBusGraph;
     }
 
-    public String getPhaseCBulletType() {
-        return phaseCBulletType;
+    public boolean isShowZoneTransitionTextZoneGraph() {
+        return showZoneTransitionTextZoneGraph;
     }
 
-    public void setPhaseCBulletType(String phaseCBulletType) {
-        this.phaseCBulletType = phaseCBulletType;
-    }
-
-    public boolean isShowZoneTransitionText() {
-        return showZoneTransitionText;
-    }
-
-    public void setShowZoneTransitionText(boolean showZoneTransitionText) {
-        this.showZoneTransitionText = showZoneTransitionText;
+    public void setShowZoneTransitionTextZoneGraph(boolean showZoneTransitionTextZoneGraph) {
+        this.showZoneTransitionTextZoneGraph = showZoneTransitionTextZoneGraph;
     }
 
     public String getZoneTransitionDataLabel() {

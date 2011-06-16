@@ -1832,6 +1832,7 @@
     <bean id="energyCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator"/>
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
+    <bean id="zoneDtoHelper" class="com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper"/>
 	<bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl"/>
     
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>

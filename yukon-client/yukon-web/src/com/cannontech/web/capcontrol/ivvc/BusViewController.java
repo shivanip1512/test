@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,18 +13,19 @@ import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.enums.Phase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
+import com.google.common.collect.Maps;
 
 
 @RequestMapping("/ivvc/bus/*")
@@ -66,15 +68,15 @@ public class BusViewController {
     
     @RequestMapping
     public String chart(ModelMap model, FlashScope flash, YukonUserContext userContext, int subBusId) {
-        boolean missingVoltageAttribute = false;
-        try {
+        boolean zoneAttributesExist = voltageFlatnessGraphService.
+                                                allZonesHaveRequiredAttributes(subBusId,
+                                                                               userContext.getYukonUser());
+        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
+        if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
-        } catch (IllegalUseOfAttribute e) {
-            missingVoltageAttribute = true;
         }
-        model.addAttribute("missingVoltageAttribute", missingVoltageAttribute);
         
         return "ivvc/flatnessGraphLine.jsp";
     }
@@ -113,6 +115,11 @@ public class BusViewController {
     private void setupZoneList(ModelMap model, CapControlCache cache, int subBusId) {
         ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(subBusId);
         model.addAttribute("zones",hierarchy);
+        Map<String, Phase> phaseMap = Maps.newHashMapWithExpectedSize(3);
+        for (Phase phase : Phase.getRealPhases()) {
+            phaseMap.put(phase.name(), phase);
+        }
+        model.addAttribute("phaseMap", phaseMap);
         
         //Check for any unassigned banks and flag it
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(subBusId);

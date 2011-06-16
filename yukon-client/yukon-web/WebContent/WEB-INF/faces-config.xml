@@ -35,6 +35,10 @@
             <property-name>cbcHelperService</property-name>
              <value>#{cbcHelperService}</value>
         </managed-property>
+        <managed-property>
+            <property-name>yukonUserContextMessageSourceResolver</property-name>
+             <value>#{yukonUserContextMessageSourceResolver}</value>
+        </managed-property>
     </managed-bean>
     
 	<!-- Navigation bean -->

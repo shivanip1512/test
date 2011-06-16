@@ -12,18 +12,8 @@ public class VfPoint {
     private Double y;
     private Integer seriesId;
     
-    public VfPoint() {
-    }
-    
-    public VfPoint(Double x, Double y) {
-        this(null, null, null, false, x, y, null);
-    }
-    
     public VfPoint(Double x, Double y, Integer seriesId) {
         this(null, null, null, false, x, y, seriesId);
-    }
-    public VfPoint(VfPoint point) {
-        this(point.getDescription(), point.getZoneName(),point.getPhase(), point.isRegulator(), point.getX(), point.getY(), point.getSeriesId());
     }
     
     public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y) {

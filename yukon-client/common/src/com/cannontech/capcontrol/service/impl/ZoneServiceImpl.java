@@ -1,6 +1,5 @@
 package com.cannontech.capcontrol.service.impl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -12,21 +11,16 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
 import com.cannontech.capcontrol.model.AbstractZone;
-import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
-import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneGang;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
-import com.cannontech.capcontrol.model.ZoneSinglePhase;
-import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -81,11 +75,11 @@ public class ZoneServiceImpl implements ZoneService {
         return true;
     }
     
-    private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(AbstractZone zoneDto) {
+    private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(AbstractZone abstractZone) {
     	List<CapBankToZoneMapping> banks = Lists.newArrayList();
-        for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
+        for (ZoneAssignmentCapBankRow bankRow : abstractZone.getBankAssignments()) {
         	int bankId = bankRow.getId();
-        	int zoneId = zoneDto.getZoneId();
+        	int zoneId = abstractZone.getZoneId();
         	double position = bankRow.getGraphPositionOffset();
         	double dist = bankRow.getDistance();
         	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, position, dist);
@@ -94,11 +88,11 @@ public class ZoneServiceImpl implements ZoneService {
         return banks;
     }
     
-    private List<PointToZoneMapping> getPointToZoneMappingByDto(AbstractZone zoneDto) {
+    private List<PointToZoneMapping> getPointToZoneMappingByDto(AbstractZone abstractZone) {
     	List<PointToZoneMapping> points = Lists.newArrayList();
-        for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
+        for (ZoneAssignmentPointRow pointRow : abstractZone.getPointAssignments()) {
         	int  pointId = pointRow.getId();
-        	int zoneId = zoneDto.getZoneId();
+        	int zoneId = abstractZone.getZoneId();
         	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
         	Phase phase = pointRow.getPhase();
@@ -114,22 +108,13 @@ public class ZoneServiceImpl implements ZoneService {
         return zones;
     }
     
-    private List<AbstractZone> getZoneDtoListFromZones(List<Zone> zones) {
-        List<AbstractZone> zoneDtoList = Lists.newArrayList();
+    private List<AbstractZone> getAbstractZoneListFromZones(List<Zone> zones) {
+        List<AbstractZone> abstractZoneList = Lists.newArrayList();
         for (Zone zone: zones) {
-            AbstractZone zoneDto = null;
-            if (zone.getZoneType() == ZoneType.GANG_OPERATED) {
-                zoneDto = new ZoneGang(zone);
-            } else if (zone.getZoneType() == ZoneType.SINGLE_PHASE) {
-                zoneDto = new ZoneSinglePhase(zone);
-            } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
-                zoneDto = new ZoneThreePhase(zone);
-            } else {
-                throw new RuntimeException("ZoneType unknown.");
-            }
-            zoneDtoList.add(zoneDto);
+            AbstractZone abstractZone = AbstractZone.create(zone.getZoneType());
+            abstractZoneList.add(abstractZone);
         }
-        return zoneDtoList;
+        return abstractZoneList;
     }
 
     private Zone getNewZoneFromAbstractZone(AbstractZone abstractZone) {
@@ -138,12 +123,8 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setName(abstractZone.getName());
         zone.setParentId(abstractZone.getParentId());
 
-        if (abstractZone instanceof AbstractZoneThreePhase) {
-            zone.setRegulators(((AbstractZoneThreePhase)abstractZone).getRegulators());
-        } else {
-            zone.setRegulators(Lists.newArrayList(Collections.singleton(((AbstractZoneNotThreePhase)abstractZone).getRegulator())));
-        }
-
+        List<RegulatorToZoneMapping> regulators = abstractZone.getRegulatorsList();
+        zone.setRegulators(regulators);
         zone.setSubstationBusId(abstractZone.getSubstationBusId());
         zone.setGraphStartPosition(abstractZone.getGraphStartPosition());
         zone.setZoneType(abstractZone.getZoneType());
@@ -155,13 +136,13 @@ public class ZoneServiceImpl implements ZoneService {
         //Find parent zone and build lookup map
         AbstractZone root = null;
         List<Zone> zones = getZonesBySubBusId(subbusId);
-        List<AbstractZone> zoneDtoList = getZoneDtoListFromZones(zones);
+        List<AbstractZone> abstractZoneList = getAbstractZoneListFromZones(zones);
         Multimap<Integer, AbstractZone> childOfLookup = ArrayListMultimap.create();
-        for (AbstractZone zoneDto : zoneDtoList) {
-            if (zoneDto.getParentId() == null) {
-                root = zoneDto;
+        for (AbstractZone abstractZone : abstractZoneList) {
+            if (abstractZone.getParentId() == null) {
+                root = abstractZone;
             } else {
-                childOfLookup.put(zoneDto.getParentId(), zoneDto);
+                childOfLookup.put(abstractZone.getParentId(), abstractZone);
             }
         }
         
@@ -180,11 +161,11 @@ public class ZoneServiceImpl implements ZoneService {
         List<ZoneHierarchy> childZones = Lists.newArrayList();
         
         Iterable<AbstractZone> childGroups = childOfLookup.get(rootId);
-        for (AbstractZone zoneDto : childGroups) {
+        for (AbstractZone abstractZone : childGroups) {
             ZoneHierarchy childHierarchy = new ZoneHierarchy();
-            childHierarchy.setZone(zoneDto);
+            childHierarchy.setZone(abstractZone);
             
-            setChildHierarchy(childHierarchy, zoneDto.getZoneId(), childOfLookup);
+            setChildHierarchy(childHierarchy, abstractZone.getZoneId(), childOfLookup);
             
             childZones.add(childHierarchy);
         }

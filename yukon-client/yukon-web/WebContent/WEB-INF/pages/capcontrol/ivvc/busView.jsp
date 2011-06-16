@@ -154,7 +154,8 @@
                                 </c:choose>
                             </td>
                             <td class="lastOperation">
-                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"/>
+                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"
+                                    phaseMap="${phaseMap}"/>
                             </td>
                             <td class="rightActionColumn">
                                 <c:choose>

@@ -114,7 +114,6 @@
 	<bean id="busViewController" class="com.cannontech.web.capcontrol.ivvc.BusViewController"/>
 	<bean id="zoneDetailController" class="com.cannontech.web.capcontrol.ivvc.ZoneDetailController"/>
 	<bean id="zoneWizardController" class="com.cannontech.web.capcontrol.ivvc.ZoneWizardController"/>
-	<bean id="zoneDtoHelper" class="com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper"/>
 	
     <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>

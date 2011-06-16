@@ -3,10 +3,12 @@ package com.cannontech.web.updater.capcontrol.handler;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.TapOperation;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
@@ -21,6 +23,7 @@ public class VoltageRegulatorTapTooltipHandler implements VoltageRegulatorUpdate
     private CapControlCache capControlCache;
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private static final Logger log = YukonLogManager.getLogger(VoltageRegulatorTapTooltipHandler.class);
     
     @Override
     public VoltageRegulatorUpdaterTypeEnum getUpdaterType() {
@@ -75,11 +78,10 @@ public class VoltageRegulatorTapTooltipHandler implements VoltageRegulatorUpdate
             }
             return text;
         } catch (NotFoundException nfe) {
+            log.info("Voltage Regulator with Id " + id + " not found in cache.");
             // This can happen if we delete an object and return
             // to a page that that used to have that object before
             // the server was able to update the cache.
-            // By returning null the service won't try to update
-            // that object.
             return StringUtils.EMPTY;
         }
     }

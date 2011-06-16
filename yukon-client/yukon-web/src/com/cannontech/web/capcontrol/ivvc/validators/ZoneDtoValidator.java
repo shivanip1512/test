@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
@@ -25,10 +26,10 @@ public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
             }
         } else {
             AbstractZoneThreePhase abstractZoneThreePhase = (AbstractZoneThreePhase)zoneDto;
-            if (abstractZoneThreePhase.getRegulatorA().getRegulatorId() == 0 ||
-                    abstractZoneThreePhase.getRegulatorB().getRegulatorId() == 0 ||
-                    abstractZoneThreePhase.getRegulatorC().getRegulatorId() == 0) {
-                errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
+            for (RegulatorToZoneMapping regulator : abstractZoneThreePhase.getRegulators().values()) {
+                if (regulator.getRegulatorId() == 0) {
+                    errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
+                }
             }
         }
 

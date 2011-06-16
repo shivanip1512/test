@@ -113,7 +113,7 @@
     
     <strings>
         <c:set var="noDataKey" value=".strings.noData"/>
-        <c:if test="${missingVoltageAttribute}">
+        <c:if test="${zoneAttributesExist == false}">
             <c:set var="noDataKey" value=".missingVoltageAttribute"/>
         </c:if>
         <no_data><cti:msg2 key="${noDataKey}"/></no_data>

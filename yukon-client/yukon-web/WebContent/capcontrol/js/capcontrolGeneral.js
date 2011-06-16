@@ -523,7 +523,13 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function hideAll() {
-        tapContainer.select('* *').invoke('hide');
+        var phaseContainers = tapContainer.childElements();
+        phaseContainers.each(function(phaseContainer) {
+            var phaseElements = phaseContainer.childElements();
+            phaseElements.each(function(phaseElement) {
+                phaseElement.hide();
+            });
+        });
     }
 }
 

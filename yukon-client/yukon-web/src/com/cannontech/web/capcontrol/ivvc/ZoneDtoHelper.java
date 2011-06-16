@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneGang;
-import com.cannontech.capcontrol.model.ZoneSinglePhase;
-import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -22,6 +20,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.enums.Phase;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.google.common.collect.Lists;
 
@@ -31,25 +30,6 @@ public class ZoneDtoHelper {
     private PointDao pointDao;
     private FilterCacheFactory filterCacheFactory;
     
-    public AbstractZone getAbstractZoneFromZoneType(ZoneType zoneType) {
-        AbstractZone zoneDto = null;
-        switch(zoneType) {
-            case GANG_OPERATED: {
-                zoneDto = new ZoneGang();
-                break;
-            } 
-            case SINGLE_PHASE: {                        
-                zoneDto = new ZoneSinglePhase();
-                break;
-            }
-            case THREE_PHASE: {
-                zoneDto = new ZoneThreePhase();
-                break;
-            }
-        }
-        return zoneDto;
-    }
-    
     public AbstractZone getAbstractZoneFromZoneId(int zoneId, LiteYukonUser user) {
         Zone zone = zoneService.getZoneById(zoneId);
         AbstractZone zoneDto = getAbstractZoneFromZone(zone, user);
@@ -58,15 +38,7 @@ public class ZoneDtoHelper {
     
     public AbstractZone getAbstractZoneFromZone(Zone zone, LiteYukonUser user) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        
-        AbstractZone zoneDto = null;
-        if (zone.getZoneType() == ZoneType.GANG_OPERATED) {
-            zoneDto = new ZoneGang(zone);
-        } else if (zone.getZoneType() == ZoneType.THREE_PHASE) {
-            zoneDto = new ZoneThreePhase(zone);
-        } else if (zone.getZoneType() == ZoneType.SINGLE_PHASE) {
-            zoneDto = new ZoneSinglePhase(zone);
-        }
+        AbstractZone zoneDto = AbstractZone.create(zone.getZoneType());
         
         //Add Bank Assignments
         if (zone.getId() != null) {
@@ -81,6 +53,31 @@ public class ZoneDtoHelper {
         }
         
         return zoneDto;
+    }
+    
+    public List<ZoneType> getAvailableChildZoneTypesFromParentZoneType(ZoneType parentZoneType) {
+        List<ZoneType> availableZoneTypes = Lists.newArrayListWithExpectedSize(3);
+        if (parentZoneType == ZoneType.GANG_OPERATED) {
+            availableZoneTypes =
+                Lists.newArrayList(ZoneType.GANG_OPERATED, ZoneType.THREE_PHASE, ZoneType.SINGLE_PHASE);
+        } else if (parentZoneType == ZoneType.THREE_PHASE) {
+            availableZoneTypes.add(ZoneType.THREE_PHASE);
+            availableZoneTypes.add(ZoneType.SINGLE_PHASE);
+        } else {
+            availableZoneTypes.add(ZoneType.SINGLE_PHASE);
+        }
+        return availableZoneTypes;
+    }
+    
+    public List<Phase> getAvailableChildPhasesFromParentZone(AbstractZone parentZone) {
+        List<Phase> availableZonePhases = Lists.newArrayListWithExpectedSize(3);
+        if (parentZone.getZoneType() == ZoneType.SINGLE_PHASE) {
+            Phase parentPhase = ((AbstractZoneNotThreePhase)parentZone).getRegulator().getPhase();
+            availableZonePhases.add(parentPhase);
+        } else {
+            availableZonePhases.addAll(Lists.newArrayList(Phase.getRealPhases()));
+        }
+        return availableZonePhases;
     }
 
     private List<ZoneAssignmentCapBankRow> getBankAssignmentList(int zoneId, CapControlCache cache) {

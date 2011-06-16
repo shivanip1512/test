@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,11 +14,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.model.AbstractZone;
-import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
-import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
-import com.cannontech.capcontrol.model.ZoneRegulator;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -25,7 +24,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -65,8 +64,8 @@ public class ZoneDetailController {
     
     @RequestMapping
     public String detail(ModelMap model, FlashScope flash, HttpServletRequest request, 
-                         LiteYukonUser user, int zoneId, Boolean isSpecialArea) {
-        setupDetails(model, flash, request, user, zoneId, isSpecialArea);
+                         YukonUserContext userContext, int zoneId, Boolean isSpecialArea) {
+        setupDetails(model, flash, request, userContext, zoneId, isSpecialArea);
         return "ivvc/zoneDetail.jsp";
     }
     
@@ -90,21 +89,23 @@ public class ZoneDetailController {
     @RequestMapping
     public String chart(ModelMap model, FlashScope flash, HttpServletRequest request, 
                         YukonUserContext userContext, int zoneId) {
-        boolean missingVoltageAttribute = false;
-        try {
+        boolean zoneAttributesExist = voltageFlatnessGraphService.
+                                        zoneHasRequiredAttribute(zoneId, BuiltInAttribute.VOLTAGE_Y,
+                                                                 userContext.getYukonUser());
+        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
+
+        if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
-        } catch (IllegalUseOfAttribute e) {
-            missingVoltageAttribute = true;
         }
-        model.addAttribute("missingVoltageAttribute", missingVoltageAttribute);
         
         return "ivvc/flatnessGraphLine.jsp";
     }
     
     private void setupDetails(ModelMap model, FlashScope flash, HttpServletRequest request, 
-                              LiteYukonUser user, int zoneId, Boolean isSpecialArea) {
+                              YukonUserContext userContext, int zoneId, Boolean isSpecialArea) {
+        LiteYukonUser user = userContext.getYukonUser();
         if(isSpecialArea == null) {
             isSpecialArea = false;
         }
@@ -122,13 +123,7 @@ public class ZoneDetailController {
         setupCapBanks(model, cache, zoneDto);
         setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
         setupDeltas(model, request, cache, zoneDto.getZoneId());
-        
-        if (zoneDto instanceof AbstractZoneThreePhase) {
-            setupThreePhaseRegulatorPointList(model, ((AbstractZoneThreePhase)zoneDto).getRegulators());
-        } else {
-            setupRegulatorPointList(model, ((AbstractZoneNotThreePhase)zoneDto).getRegulator());
-        }
-
+        setupRegulatorPointMappings(model, zoneDto, userContext);
         setupRegulatorCommands(model, zoneDto);
         
         List<String> nameKeys = Lists.newArrayList("attributesRegAll", "attributesRegA", "attributesRegB", "attributesRegC");
@@ -138,27 +133,19 @@ public class ZoneDetailController {
     }
 
     private void setupZoneDetails(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
-        if (zoneDto instanceof AbstractZoneThreePhase) {
-            AbstractZoneThreePhase abstractZoneThreePhase = (AbstractZoneThreePhase) zoneDto;
-            VoltageRegulatorFlags regulatorFlagsPhaseA =
-                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorA().getRegulatorId());
-            model.addAttribute("regulatorIdPhaseA", regulatorFlagsPhaseA.getCcId());
-            model.addAttribute("regulatorNamePhaseA", regulatorFlagsPhaseA.getCcName());
-            VoltageRegulatorFlags regulatorFlagsPhaseB =
-                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorB().getRegulatorId());
-            model.addAttribute("regulatorIdPhaseB", regulatorFlagsPhaseB.getCcId());
-            model.addAttribute("regulatorNamePhaseB", regulatorFlagsPhaseB.getCcName());
-            VoltageRegulatorFlags regulatorFlagsPhaseC =
-                cache.getVoltageRegulatorFlags(abstractZoneThreePhase.getRegulatorC().getRegulatorId());
-            model.addAttribute("regulatorIdPhaseC", regulatorFlagsPhaseC.getCcId());
-            model.addAttribute("regulatorNamePhaseC", regulatorFlagsPhaseC.getCcName());
-        } else {
+        Map<Phase, Integer> regulatorIdMap = Maps.newHashMapWithExpectedSize(3);
+        Map<Phase, String> regulatorNameMap = Maps.newHashMapWithExpectedSize(3);
+        Map<Phase, RegulatorToZoneMapping> regulators = zoneDto.getRegulators();
+        for (Entry<Phase, RegulatorToZoneMapping> entry : regulators.entrySet()) {
             VoltageRegulatorFlags regulatorFlags =
-                cache.getVoltageRegulatorFlags(((AbstractZoneNotThreePhase) zoneDto).getRegulator().getRegulatorId());
-            model.addAttribute("regulatorId", regulatorFlags.getCcId());
-            model.addAttribute("regulatorName", regulatorFlags.getCcName());
+                cache.getVoltageRegulatorFlags(entry.getValue().getRegulatorId());
+            Integer regulatorId = regulatorFlags.getCcId();
+            String regulatorName = regulatorFlags.getCcName();
+            regulatorIdMap.put(entry.getKey(), regulatorId);
+            regulatorNameMap.put(entry.getKey(), regulatorName);
         }
-
+        model.addAttribute("regulatorIdMap", regulatorIdMap);
+        model.addAttribute("regulatorNameMap", regulatorNameMap);
         model.addAttribute("zoneDto", zoneDto);
         addZoneEnums(model);
     }
@@ -172,30 +159,16 @@ public class ZoneDetailController {
         model.addAttribute("phaseC", Phase.C);
     }
 
-    private void setupRegulatorCommands(ModelMap model, AbstractZone zoneDto) {
-        if (zoneDto instanceof AbstractZoneThreePhase) {
-            AbstractZoneThreePhase abstractZoneThreePhase = (AbstractZoneThreePhase) zoneDto;
-            YukonPao regulatorAPao = paoDao.getYukonPao(abstractZoneThreePhase.getRegulatorA().getRegulatorId());
-            PaoType regAType = regulatorAPao.getPaoIdentifier().getPaoType();
-            String regulatorAType = regAType.getDbString();
-            model.addAttribute("regulatorAType", regulatorAType);
-            
-            YukonPao regulatorBPao = paoDao.getYukonPao(abstractZoneThreePhase.getRegulatorB().getRegulatorId());
-            PaoType regBType = regulatorBPao.getPaoIdentifier().getPaoType();
-            String regulatorBType = regBType.getDbString();
-            model.addAttribute("regulatorBType", regulatorBType);
-            
-            YukonPao regulatorCPao = paoDao.getYukonPao(abstractZoneThreePhase.getRegulatorC().getRegulatorId());
-            PaoType regCType = regulatorCPao.getPaoIdentifier().getPaoType();
-            String regulatorCType = regCType.getDbString();
-            model.addAttribute("regulatorCType", regulatorCType);
-        } else {
-            YukonPao regulatorPao = paoDao.getYukonPao(((AbstractZoneNotThreePhase) zoneDto).getRegulator().getRegulatorId());
+    private void setupRegulatorCommands(ModelMap model, AbstractZone abstractZone) {
+        Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
+        Map<Phase, String> regulatorTypeMap = Maps.newHashMapWithExpectedSize(3);
+        for (Entry<Phase, RegulatorToZoneMapping> entry : regulators.entrySet()) {
+            YukonPao regulatorPao = paoDao.getYukonPao(entry.getValue().getRegulatorId());
             PaoType regType = regulatorPao.getPaoIdentifier().getPaoType();
-            String regulatorType = regType.getDbString();
-            model.addAttribute("regulatorType", regulatorType);
+            String regTypeString = regType.getDbString();
+            regulatorTypeMap.put(entry.getKey(), regTypeString);
         }
-        
+        model.addAttribute("regulatorTypeMap", regulatorTypeMap);
         model.addAttribute("scanCommandHolder",CommandHolder.LTC_SCAN_INTEGRITY);
         model.addAttribute("tapDownCommandHolder",CommandHolder.LTC_TAP_POSITION_LOWER);
         model.addAttribute("tapUpCommandHolder",CommandHolder.LTC_TAP_POSITION_RAISE);
@@ -205,9 +178,7 @@ public class ZoneDetailController {
     
     private void setupIvvcEvents(ModelMap model,int zoneId,int subBusId) {
         final int rowLimit = 20;
-        
         List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit);
-        
         model.addAttribute("events", events);
     }
     
@@ -245,21 +216,15 @@ public class ZoneDetailController {
         model.addAttribute("capBankList", viewableCapBankList);
     }
     
-    private void setupRegulatorPointList(ModelMap model, ZoneRegulator regulator) {
-        int regulatorId = regulator.getRegulatorId();
-        List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regulatorId);
-        Collections.sort(pointMappings);
-        model.addAttribute("regulatorPointMappings", pointMappings);
-    }
-
-    private void setupThreePhaseRegulatorPointList(ModelMap model, List<ZoneRegulator> regulators) {
+    private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone,
+                                                   YukonUserContext userContext) {
+        Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
         Map<Phase, List<VoltageRegulatorPointMapping>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
-        
-        for (ZoneRegulator zoneRegulator: regulators) {
-            int regId = zoneRegulator.getRegulatorId();
+        for (Entry<Phase, RegulatorToZoneMapping> entry: regulators.entrySet()) {
+            int regId = entry.getValue().getRegulatorId();
             List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regId);
             Collections.sort(pointMappings);
-            pointMappingsMap.put(zoneRegulator.getPhase(), pointMappings);
+            pointMappingsMap.put(entry.getKey(), pointMappings);
         }
         model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }

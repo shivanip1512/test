@@ -28,7 +28,6 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
@@ -71,10 +70,7 @@ public class CBCSelectionLists {
 	private LiteYukonUser yukonUser;
 	private AuthDao authDao;
 	private CbcHelperService cbcHelperService;
-    private static YukonUserContextMessageSourceResolver messageSourceResolver;
-    static {
-        messageSourceResolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
-    }
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -311,24 +307,6 @@ public class CBCSelectionLists {
 	};
 
 	private static YukonUserContext userContext;
-	private static MessageSourceAccessor messageSourceAccessor;
-	private static final String phaseAString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseA");
-	private static final String phaseBString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseB");
-	private static final String phaseCString = getMessageSourceAccessor().getMessage("yukon.common.phase.phaseC");
-	private static final SelectItem[] phases = {
-	    new SelectItem(Phase.A.name(), phaseAString),
-	    new SelectItem(Phase.B.name(), phaseBString),
-	    new SelectItem(Phase.C.name(), phaseCString)
-	};
-	
-	private static MessageSourceAccessor getMessageSourceAccessor() {
-	    if (messageSourceAccessor == null) {
-	        YukonUserContext yukonUserContext = getYukonUserContext();
-	        messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-	    }
-	    return messageSourceAccessor;
-	}
-	
 	private static YukonUserContext getYukonUserContext() {
 	    if (userContext == null) {
 	        userContext = JSFUtil.getYukonUserContext();
@@ -665,8 +643,16 @@ public class CBCSelectionLists {
     public SelectItem[] getSwitchManufacturers() {
         return switchManufacturers;
     }
-
+    
     public SelectItem[] getPhases() {
+        YukonUserContext yukonUserContext = getYukonUserContext();
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+        String phaseAString = messageSourceAccessor.getMessage("yukon.common.phase.phaseA");
+        String phaseBString = messageSourceAccessor.getMessage("yukon.common.phase.phaseB");
+        String phaseCString = messageSourceAccessor.getMessage("yukon.common.phase.phaseC");
+        SelectItem[] phases = {new SelectItem(Phase.A.name(), phaseAString), 
+                               new SelectItem(Phase.B.name(), phaseBString), 
+                               new SelectItem(Phase.C.name(), phaseCString)};
         return phases;
     }
 
@@ -692,5 +678,9 @@ public class CBCSelectionLists {
     
     public void setCbcHelperService(CbcHelperService cbcHelperService) {
         this.cbcHelperService = cbcHelperService;
+    }
+    
+    public void setYukonUserContextMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }

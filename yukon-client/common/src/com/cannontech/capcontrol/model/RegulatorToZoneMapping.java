@@ -2,7 +2,7 @@ package com.cannontech.capcontrol.model;
 
 import com.cannontech.enums.Phase;
 
-public class ZoneRegulator {
+public class RegulatorToZoneMapping {
     private int regulatorId;
     private int zoneId;
     private double graphStartPosition;

@@ -165,344 +165,91 @@
 							</c:choose>
                         </td>
 					</tr>
-                    <c:choose>
-                        <c:when test="${zoneDto.zoneType == threePhase}">
-        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-        						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorA.phase}"/></B>
-                                </td>
-        						<td>
-        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseA}" type="VOLTAGE_REGULATOR"/>
-        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseA}</spring:escapeBody>
-        						</td>
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                    </spring:escapeBody>
-                                </td>
-        						<td class="rightActionColumn">
-                                    <cti:button key="edit" renderMode="image" 
-                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseA}"/>
-                                </td>
-        					</tr>
-        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-        						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorB.phase}"/></B>
-                                </td>
-        						<td>
-        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseB}" type="VOLTAGE_REGULATOR"/>
-        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseB}</spring:escapeBody>
-        						</td>
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                    </spring:escapeBody>
-                                </td>
-        						<td class="rightActionColumn">
-        							<cti:button key="edit" renderMode="image" 
-                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseB}" />
-                                </td>
-        					</tr>
-        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-        						<td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulatorC.phase}"/></B>
-                                </td>
-        						<td>
-        							<capTags:regulatorModeIndicator paoId="${regulatorIdPhaseC}" type="VOLTAGE_REGULATOR"/>
-        							<spring:escapeBody htmlEscape="true">${regulatorNamePhaseC}</spring:escapeBody>
-        						</td>
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                    </spring:escapeBody>
-                                </td>
-        						<td class="rightActionColumn">
-        							<cti:button key="edit" renderMode="image" 
-                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdPhaseC}" />
-                                </td>
-        					</tr>
-                        </c:when>
-                        <c:when test="${zoneDto.zoneType == singlePhase}">
-                            <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-                                <td><B><i:inline key=".details.table.regulator"/> - 
-                                        <i:inline key="${zoneDto.regulator.phase}"/></B>
-                                </td>
-                                <td>
-                                    <capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
-                                    <spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
-                                </td>
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                    </spring:escapeBody>
-                                </td>
-                                <td class="rightActionColumn">
-                                    <cti:button key="edit" renderMode="image" 
-                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" />
-                                </td>
-                            </tr>
-                        </c:when>
-                        <c:otherwise>
-        					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-        						<td><B><i:inline key=".details.table.regulator"/></B></td>
-        						<td>
-        							<capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
-        							<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
-        						</td>
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">
-                                        <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
-                                    </spring:escapeBody>
-                                </td>
-        						<td class="rightActionColumn">
-        							<cti:button key="edit" renderMode="image" 
-                                        href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" />
-                                </td>
-        					</tr>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:forEach items="${zoneDto.regulators}" var="regulator">
+                        <c:set value="${regulator.key}" var="phaseKey"/>
+                        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                            <td><B><i:inline key=".details.table.regulator"/>
+                                <c:if test="${zoneDto.zoneType != gangOperated}"> - 
+                                    <i:inline key="${phaseKey}"/></c:if>
+                                </B>
+                            </td>
+                            <td>
+                                <capTags:regulatorModeIndicator paoId="${regulatorIdMap[phaseKey]}" type="VOLTAGE_REGULATOR"/>
+                                <spring:escapeBody htmlEscape="true">${regulatorNameMap[phaseKey]}</spring:escapeBody>
+                            </td>
+                            <td>
+                                <spring:escapeBody htmlEscape="true">
+                                    <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                                </spring:escapeBody>
+                            </td>
+                            <td class="rightActionColumn">
+                                <cti:button key="edit" renderMode="image" 
+                                    href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdMap[phaseKey]}"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
                 </table>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">			
-                <c:choose>
-                    <c:when test="${zoneDto.zoneType == threePhase}">
-                        <table class="compactResultsTable">
-                            <tr>
-                                <th><i:inline key=".details.table.phase.A"/></th>
-                                <th><i:inline key=".details.table.phase.B"/></th>
-                                <th><i:inline key=".details.table.phase.C"/></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <ul class="buttonStack">
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="scan" 
-                                                onclick="executeCommand('${regulatorIdPhaseA}',
-                    													'${scanCommandHolder.cmdId}',
-                    													'${scanCommandHolder.commandName}',
-                    													'${regulatorAType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="up" 
-                                                onclick="executeCommand('${regulatorIdPhaseA}',
-                                                                        '${tapUpCommandHolder.cmdId}',
-                                                                        '${tapUpCommandHolder.commandName}',
-                                                                        '${regulatorAType}',
-                                                                        'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="down" 
-                                                onclick="executeCommand('${regulatorIdPhaseA}',
-                    													'${tapDownCommandHolder.cmdId}',
-                    													'${tapDownCommandHolder.commandName}',
-                    													'${regulatorAType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="enable" 
-                                                onclick="executeCommand('${regulatorIdPhaseA}',
-                    													'${enableRemoteCommandHolder.cmdId}',
-                    													'${enableRemoteCommandHolder.commandName}',
-                    													'${regulatorAType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="disable" 
-                                                onclick="executeCommand('${regulatorIdPhaseA}',
-                    													'${disableRemoteCommandHolder.cmdId}',
-                    													'${disableRemoteCommandHolder.commandName}',
-                    													'${regulatorAType}',
-                    													'false');"/>
-                        				</li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="buttonStack">
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="scan" 
-                                                onclick="executeCommand('${regulatorIdPhaseB}',
-                    													'${scanCommandHolder.cmdId}',
-                    													'${scanCommandHolder.commandName}',
-                    													'${regulatorBType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="up" 
-                                                onclick="executeCommand('${regulatorIdPhaseB}',
-                    													'${tapUpCommandHolder.cmdId}',
-                    													'${tapUpCommandHolder.commandName}',
-                    													'${regulatorBType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="down" 
-                                                onclick="executeCommand('${regulatorIdPhaseB}',
-                    													'${tapDownCommandHolder.cmdId}',
-                    													'${tapDownCommandHolder.commandName}',
-                    													'${regulatorBType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="enable" 
-                                                onclick="executeCommand('${regulatorIdPhaseB}',
-                    													'${enableRemoteCommandHolder.cmdId}',
-                    													'${enableRemoteCommandHolder.commandName}',
-                    													'${regulatorBType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="disable" 
-                                                onclick="executeCommand('${regulatorIdPhaseB}',
-                    													'${disableRemoteCommandHolder.cmdId}',
-                    													'${disableRemoteCommandHolder.commandName}',
-                    													'${regulatorBType}',
-                    													'false');"/>
-                        				</li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="buttonStack">
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="scan" 
-                                                onclick="executeCommand('${regulatorIdPhaseC}',
-                    													'${scanCommandHolder.cmdId}',
-                    													'${scanCommandHolder.commandName}',
-                    													'${regulatorCType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="up" 
-                                                onclick="executeCommand('${regulatorIdPhaseC}',
-                    													'${tapUpCommandHolder.cmdId}',
-                    													'${tapUpCommandHolder.commandName}',
-                    													'${regulatorCType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="down" 
-                                                onclick="executeCommand('${regulatorIdPhaseC}',
-                    													'${tapDownCommandHolder.cmdId}',
-                    													'${tapDownCommandHolder.commandName}',
-                    													'${regulatorCType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="enable" 
-                                                onclick="executeCommand('${regulatorIdPhaseC}',
-                    													'${enableRemoteCommandHolder.cmdId}',
-                    													'${enableRemoteCommandHolder.commandName}',
-                    													'${regulatorCType}',
-                    													'false');"/>
-                        				</li>
-                        				<li>
-                        					<cti:button renderMode="labeledImage" key="disable" 
-                                                onclick="executeCommand('${regulatorIdPhaseC}',
-                    													'${disableRemoteCommandHolder.cmdId}',
-                    													'${disableRemoteCommandHolder.commandName}',
-                    													'${regulatorCType}',
-                    													'false');"/>
-                        				</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </table>
-                    </c:when>
-                    <c:when test="${zoneDto.zoneType == singlePhase}">
-                        <table class="compactResultsTable">
-                            <tr>
-                                <th><i:inline key=".details.table.phase.${zoneDto.regulator.phase}"/></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div>
+                <table class="compactResultsTable">
+                    <tr>
+                        <c:if test="${zoneDto.zoneType != gangOperated}">
+                            <c:forEach items="${zoneDto.regulators}" var="regulator">
+                                <th><i:inline key=".details.table.phase.${regulator.key}"/></th>
+                            </c:forEach>
+                        </c:if>
+                    </tr>
+                    <tr>
+                        <c:forEach items="${zoneDto.regulators}" var="regulator">
+                            <c:set var="phaseKey" value="${regulator.key}"/>
+                            <td>
+                                <ul class="buttonStack">
+                                    <li>
                                         <cti:button renderMode="labeledImage" key="scan" 
-                                            onclick="executeCommand('${regulatorId}',
+                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${scanCommandHolder.cmdId}',
                                                                     '${scanCommandHolder.commandName}',
-                                                                    '${regulatorType}',
+                                                                    '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
-                                    </div>
-                                    <div>
+                                    </li>
+                                    <li>
                                         <cti:button renderMode="labeledImage" key="up" 
-                                            onclick="executeCommand('${regulatorId}',
+                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${tapUpCommandHolder.cmdId}',
                                                                     '${tapUpCommandHolder.commandName}',
-                                                                    '${regulatorType}',
+                                                                    '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
-                                    </div>
-                                    <div>
+                                    </li>
+                                    <li>
                                         <cti:button renderMode="labeledImage" key="down" 
-                                            onclick="executeCommand('${regulatorId}',
+                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${tapDownCommandHolder.cmdId}',
                                                                     '${tapDownCommandHolder.commandName}',
-                                                                    '${regulatorType}',
+                                                                    '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
-                                    </div>
-                                    <div>
+                                    </li>
+                                    <li>
                                         <cti:button renderMode="labeledImage" key="enable" 
-                                            onclick="executeCommand('${regulatorId}',
+                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${enableRemoteCommandHolder.cmdId}',
                                                                     '${enableRemoteCommandHolder.commandName}',
-                                                                    '${regulatorType}',
+                                                                    '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
-                                    </div>
-                                    <div>
+                                    </li>
+                                    <li>
                                         <cti:button renderMode="labeledImage" key="disable" 
-                                            onclick="executeCommand('${regulatorId}',
+                                            onclick="executeCommand('${regulatorIdMap[phaseKey]}',
                                                                     '${disableRemoteCommandHolder.cmdId}',
                                                                     '${disableRemoteCommandHolder.commandName}',
-                                                                    '${regulatorType}',
+                                                                    '${regulatorTypeMap[phaseKey]}',
                                                                     'false');"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </c:when>
-                    <c:otherwise>
-                        <div>
-                            <cti:button renderMode="labeledImage" key="scan" 
-                                onclick="executeCommand('${regulatorId}',
-                                                        '${scanCommandHolder.cmdId}',
-                                                        '${scanCommandHolder.commandName}',
-                                                        '${regulatorType}',
-                                                        'false');"/>
-                        </div>
-                        <div>
-                            <cti:button renderMode="labeledImage" key="up" 
-                                onclick="executeCommand('${regulatorId}',
-                                                        '${tapUpCommandHolder.cmdId}',
-                                                        '${tapUpCommandHolder.commandName}',
-                                                        '${regulatorType}',
-                                                        'false');"/>
-                        </div>
-                        <div>
-                            <cti:button renderMode="labeledImage" key="down" 
-                                onclick="executeCommand('${regulatorId}',
-                                                        '${tapDownCommandHolder.cmdId}',
-                                                        '${tapDownCommandHolder.commandName}',
-                                                        '${regulatorType}',
-                                                        'false');"/>
-                        </div>
-                        <div>
-                            <cti:button renderMode="labeledImage" key="enable" 
-                                onclick="executeCommand('${regulatorId}',
-                                                        '${enableRemoteCommandHolder.cmdId}',
-                                                        '${enableRemoteCommandHolder.commandName}',
-                                                        '${regulatorType}',
-                                                        'false');"/>
-                        </div>
-                        <div>
-                            <cti:button renderMode="labeledImage" key="disable" 
-                                onclick="executeCommand('${regulatorId}',
-                                                        '${disableRemoteCommandHolder.cmdId}',
-                                                        '${disableRemoteCommandHolder.commandName}',
-                                                        '${regulatorType}',
-                                                        'false');"/>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
+                                    </li>
+                                </ul>
+                            </td>
+                        </c:forEach>
+                    </tr>
+                </table>
             </tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
@@ -541,190 +288,82 @@
                             <table class="compactResultsTable">
                                 <tr style="text-align: left;">
                                     <th><i:inline key=".attributes.name"/></th>
-                                    <th><i:inline key=".attributes.phaseAValue"/></th>
-                                    <th><i:inline key=".attributes.phaseBValue"/></th>
-                                    <th><i:inline key=".attributes.phaseCValue"/></th>
+                                    <c:forEach items="${zoneDto.regulators}" var="regulator">
+                                        <th><i:inline key=".attributes.phaseValue.${regulator.key}"/></th>
+                                    </c:forEach>
                                 </tr>
                                 <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}" varStatus="status">
-                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
                                         <td><spring:escapeBody htmlEscape="true">
                                             ${point.attribute.description}
                                         </spring:escapeBody></td>
-                                        <td>
-                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseA][status.index].pointId}"/>
-                                            <c:choose>
-                                                <c:when test="${pointId > 0}">
-                                                    <span class="redBullet_${pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
-                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseB][status.index].pointId}"/>
-                                            <c:choose>
-                                                <c:when test="${pointId > 0}">
-                                                    <span class="redBullet_${pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
-                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseC][status.index].pointId}"/>
-                                            <c:choose>
-                                                <c:when test="${pointId > 0}">
-                                                    <span class="redBullet_${pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
-                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
+                                        <c:forEach items="${zoneDto.regulators}" var="regulator">
+                                            <c:set var="phaseKey" value="${regulator.key}"/>
+                                            <td>
+                                                <c:set var="pointId" value="${regulatorPointMappingsMap[phaseKey][status.index].pointId}"/>
+                                                <c:choose>
+                                                    <c:when test="${pointId > 0}">
+                                                        <span class="redBullet_${pointId}">
+                                                            <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                        </span>
+                                                        <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                        <cti:dataUpdaterCallback function="setRedBulletForPoint(${pointId})" 
+                                                            initialize="true" quality="POINT/${pointId}/QUALITY"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <i:inline key="yukon.web.defaults.dashes"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </c:forEach>
                                     </tr>
                                 </c:forEach>
                             </table>
                         </tags:tabbedBoxContainerElement>
-                        <tags:tabbedBoxContainerElement>
-                            <tags:alternateRowReset/>
-                            <table class="compactResultsTable">
-                                <tr style="text-align: left;">
-                                    <th><i:inline key=".attributes.name"/></th>
-                                    <th><i:inline key=".attributes.value"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}">
-                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                        <td><spring:escapeBody htmlEscape="true">
-                                            ${point.attribute.description}
-                                        </spring:escapeBody></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <span class="redBullet_${point.pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <cti:pointValue pointId="${point.pointId}" 
-                                                        format="DATE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
+                        <c:forEach items="${zoneDto.regulators}" var="regulator">
+                            <c:set var="phaseKey" value="${regulator.key}"/>
+                            <tags:tabbedBoxContainerElement>
+                                <tags:alternateRowReset/>
+                                <table class="compactResultsTable">
+                                    <tr style="text-align: left;">
+                                        <th><i:inline key=".attributes.name"/></th>
+                                        <th><i:inline key=".attributes.value"/></th>
+                                        <th><i:inline key=".attributes.timestamp"/></th>
                                     </tr>
-                                </c:forEach>
-                            </table>
-                        </tags:tabbedBoxContainerElement>
-                        <tags:tabbedBoxContainerElement>
-                            <tags:alternateRowReset/>
-                            <table class="compactResultsTable">
-                                <tr style="text-align: left;">
-                                    <th><i:inline key=".attributes.name"/></th>
-                                    <th><i:inline key=".attributes.value"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseB]}">
-                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                        <td><spring:escapeBody htmlEscape="true">
-                                            ${point.attribute.description}
-                                        </spring:escapeBody></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <span class="redBullet_${point.pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <cti:pointValue pointId="${point.pointId}" 
-                                                        format="DATE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                        </tags:tabbedBoxContainerElement>
-                        <tags:tabbedBoxContainerElement>
-                            <tags:alternateRowReset/>
-                            <table class="compactResultsTable">
-                                <tr style="text-align: left;">
-                                    <th><i:inline key=".attributes.name"/></th>
-                                    <th><i:inline key=".attributes.value"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseC]}">
-                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                        <td><spring:escapeBody htmlEscape="true">
-                                            ${point.attribute.description}
-                                        </spring:escapeBody></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <span class="redBullet_${point.pointId}">
-                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                    </span>
-                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <cti:pointValue pointId="${point.pointId}" 
-                                                        format="DATE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                        </tags:tabbedBoxContainerElement>
+                                    <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
+                                        <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
+                                            <td><spring:escapeBody htmlEscape="true">
+                                                ${point.attribute.description}
+                                            </spring:escapeBody></td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${point.pointId > 0}">
+                                                        <span class="redBullet_${point.pointId}">
+                                                            <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                        </span>
+                                                        <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <i:inline key="yukon.web.defaults.dashes"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${point.pointId > 0}">
+                                                        <cti:pointValue pointId="${point.pointId}" 
+                                                            format="DATE"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <i:inline key="yukon.web.defaults.dashes"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </table>
+                            </tags:tabbedBoxContainerElement>
+                        </c:forEach>
                     </tags:tabbedBoxContainer>
                 </c:when>
                 <c:otherwise>
@@ -736,38 +375,41 @@
         		                <th><i:inline key=".attributes.value"/></th>
         		                <th><i:inline key=".attributes.timestamp"/></th>
         		            </tr>
-        		            <c:forEach var="point" items="${regulatorPointMappings}">
-        		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-        		                    <td><spring:escapeBody htmlEscape="true">
-                                        ${point.attribute.description}
-                                    </spring:escapeBody></td>
-        		                    <td>
-        		                        <c:choose>
-        		                            <c:when test="${point.pointId > 0}">
-                                                <span class="redBullet_${point.pointId}">
-                                                    <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
-                                                </span>
-                                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                <cti:dataUpdaterCallback function="setRedBulletForPoint(${point.pointId})" 
-                                                    initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
-        		                            </c:when>
-        		                            <c:otherwise>
-        		                                <i:inline key="yukon.web.defaults.dashes"/>
-        		                            </c:otherwise>
-        		                        </c:choose>
-        		                    </td>
-        		                    <td>
-        		                        <c:choose>
-        		                            <c:when test="${point.pointId > 0}">
-        		                                <cti:pointValue pointId="${point.pointId}" format="DATE"/>
-        		                            </c:when>
-        		                            <c:otherwise>
-        		                                <i:inline key="yukon.web.defaults.dashes"/>
-        		                            </c:otherwise>
-        		                        </c:choose>
-        		                    </td>
-        		                </tr>
-        		            </c:forEach>
+                            <c:forEach items="${zoneDto.regulators}" var="regulator">
+                                <c:set var="phaseKey" value="${regulator.key}"/>
+            		            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
+            		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+            		                    <td><spring:escapeBody htmlEscape="true">
+                                            ${point.attribute.description}
+                                        </spring:escapeBody></td>
+            		                    <td>
+            		                        <c:choose>
+            		                            <c:when test="${point.pointId > 0}">
+                                                    <span class="redBullet_${point.pointId}">
+                                                        <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
+                                                    </span>
+                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                    <cti:dataUpdaterCallback function="setRedBulletForPoint(${point.pointId})" 
+                                                        initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
+            		                            </c:when>
+            		                            <c:otherwise>
+            		                                <i:inline key="yukon.web.defaults.dashes"/>
+            		                            </c:otherwise>
+            		                        </c:choose>
+            		                    </td>
+            		                    <td>
+            		                        <c:choose>
+            		                            <c:when test="${point.pointId > 0}">
+            		                                <cti:pointValue pointId="${point.pointId}" format="DATE"/>
+            		                            </c:when>
+            		                            <c:otherwise>
+            		                                <i:inline key="yukon.web.defaults.dashes"/>
+            		                            </c:otherwise>
+            		                        </c:choose>
+            		                    </td>
+            		                </tr>
+            		            </c:forEach>
+                            </c:forEach>
         		        </table>
         			</tags:boxContainer2>
                 </c:otherwise>

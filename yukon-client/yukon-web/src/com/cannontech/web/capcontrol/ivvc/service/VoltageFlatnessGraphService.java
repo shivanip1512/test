@@ -1,5 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc.service;
 
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 
@@ -39,4 +41,22 @@ public interface VoltageFlatnessGraphService {
      * @return long
      */
     public long getLargestPointTimeForZoneGraph(int zoneId);
+
+    /**
+     * Returns true if the regulators for all zones have a point existing for the BuiltInAttribute VOLTAGE_Y. 
+     * This method may change in the future to check more than just this attribute.
+     * @param subBusId
+     * @param user
+     * @return
+     */
+    public boolean allZonesHaveRequiredAttributes(int subBusId, LiteYukonUser user);
+
+    /**
+     * Returns true if the regulators for this zone have a point existing for the BuiltInAttribute VOLTAGE_Y. 
+     * This method may change in the future to check more than just this attribute.
+     * @param zoneId
+     * @param user
+     * @return
+     */
+    public boolean zoneHasRequiredAttribute(int zoneId, BuiltInAttribute attribute, LiteYukonUser user);
 }

@@ -8,7 +8,7 @@ public class Zone {
 
     private Integer id;
     private String name;
-    private List<ZoneRegulator> regulators;
+    private List<RegulatorToZoneMapping> regulators;
     private int substationBusId;
     private Integer parentId;
     private double graphStartPosition;
@@ -34,11 +34,11 @@ public class Zone {
         this.name = name;
     }
 
-    public List<ZoneRegulator> getRegulators() {
+    public List<RegulatorToZoneMapping> getRegulators() {
         return regulators;
     }
 
-    public void setRegulators(List<ZoneRegulator> regulators) {
+    public void setRegulators(List<RegulatorToZoneMapping> regulators) {
         this.regulators = regulators;
     }
 
