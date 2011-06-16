@@ -74,14 +74,6 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
         // notifyOddsOfControl
         setupEmailNotification(accountId, operatorGeneralUiExtras);
     	
-    	// notes
-    	customerAccount.setAccountNotes(operatorGeneralUiExtras.getNotes());
-    	customerAccountDao.update(customerAccount);
-    	
-    	// account site notes
-    	accountSite.setPropertyNotes(operatorGeneralUiExtras.getAccountSiteNotes());
-    	accountSiteDao.update(accountSite);
-    	
     	// usePrimaryAddressForBilling
     	if (operatorGeneralUiExtras.isUsePrimaryAddressForBilling()) {
     		

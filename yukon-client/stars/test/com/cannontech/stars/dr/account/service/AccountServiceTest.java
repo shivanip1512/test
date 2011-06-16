@@ -279,7 +279,6 @@ public class AccountServiceTest {
         expect(accountSiteDaoMock.add(new AccountSite())).andReturn(true);
         CustomerAccount customerAccount = new CustomerAccount();
         customerAccount.setAccountNumber(updatableAccount.getAccountNumber());
-        expect(customerAccountDaoMock.add(customerAccount)).andReturn(true);
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                                             DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,

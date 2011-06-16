@@ -10,8 +10,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -44,23 +48,54 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class CustomerAccountDaoImpl implements CustomerAccountDao {
+public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingBean {
 	
 	private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
-	
-    private static final String insertSql;
-    private static final String removeSql;
-    private static final String updateSql;
-    private static final String selectAllUsefulAccountInfoFromECSql;
-    private static final ParameterizedRowMapper<CustomerAccount> rowMapper;
-    private static final ParameterizedRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
-    
+
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
+
+	
+    private static final String removeSql;
+    private static final String selectAllUsefulAccountInfoFromECSql;
+    private static final ParameterizedRowMapper<CustomerAccount> rowMapper;
+    private static final ParameterizedRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
     
+    private SimpleTableAccessTemplate<CustomerAccount> customerAccountTemplate;
+    
+    private FieldMapper<CustomerAccount> customerAccountFieldMapper = new FieldMapper<CustomerAccount>() {
+        @Override
+        public void extractValues(MapSqlParameterSource p, CustomerAccount account) {
+            p.addValue("AccountSiteId", account.getAccountSiteId());
+            p.addValue("AccountNumber", account.getAccountNumber());
+            p.addValue("CustomerId", account.getCustomerId());
+            p.addValue("BillingAddressId", account.getBillingAddressId());
+            p.addValue("AccountNotes", account.getAccountNotes());
+        }
+        
+        @Override
+        public Number getPrimaryKey(CustomerAccount account) {
+            return account.getAccountId();
+        }
+        
+        @Override
+        public void setPrimaryKey(CustomerAccount account, int newId) {
+            account.setAccountId(newId);
+        }
+    };
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(yukonJdbcTemplate, nextValueHelper);
+        customerAccountTemplate.setTableName("CustomerAccount");
+        customerAccountTemplate.setPrimaryKeyField("AccountId");
+        customerAccountTemplate.setFieldMapper(customerAccountFieldMapper);
+        customerAccountTemplate.setPrimaryKeyValidOver(0);
+    }
+
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
         selectSql.appendFragment(new CustomerAccountRowMapper().getBaseQuery());
@@ -80,11 +115,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     static {
         
-        insertSql = "INSERT INTO CustomerAccount (AccountId,AccountSiteId,AccountNumber,CustomerId,BillingAddressId,AccountNotes) VALUES (?,?,?,?,?,?)";
-        
         removeSql = "DELETE FROM CustomerAccount WHERE AccountId = ?";
-        
-        updateSql = "UPDATE CustomerAccount SET AccountSiteId = ?, AccountNumber = ?, CustomerId = ?, BillingAddressId = ?, AccountNotes = ? WHERE AccountId = ?";
         
         selectAllUsefulAccountInfoFromECSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
                 " FROM CustomerAccount ca JOIN Customer cust ON cust.CustomerId = ca.CustomerId " + 
@@ -104,19 +135,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean add(final CustomerAccount account) {
-        final int nextId = nextValueHelper.getNextValue("CustomerAccount");
-        account.setAccountId(nextId);
-
-        int rowsAffected = yukonJdbcTemplate.update(insertSql, 
-                                                     account.getAccountId(),
-                                                     account.getAccountSiteId(),
-                                                     account.getAccountNumber(),
-                                                     account.getCustomerId(),
-                                                     account.getBillingAddressId(),
-                                                     SqlUtils.convertStringToDbValue(account.getAccountNotes()));
-        boolean result = (rowsAffected == 1);
-        return result;
+    public void add(CustomerAccount account) {
+        customerAccountTemplate.insert(account);
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -127,16 +147,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean update(final CustomerAccount account) {
-        int rowsAffected = yukonJdbcTemplate.update(updateSql, 
-                                                     account.getAccountSiteId(),
-                                                     account.getAccountNumber(),
-                                                     account.getCustomerId(),
-                                                     account.getBillingAddressId(),
-                                                     SqlUtils.convertStringToDbValue(account.getAccountNotes()),
-                                                     account.getAccountId());
-        boolean result = (rowsAffected == 1);
-        return result;
+    public void update(CustomerAccount account) {
+        customerAccountTemplate.update(account);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

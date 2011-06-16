@@ -347,7 +347,7 @@ public class AccountServiceImpl implements AccountService {
         }
         
         accountSite.setSiteNumber(accountDto.getMapNumber());
-        accountSite.setPropertyNotes(updatableAccount.getAccountSiteNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountSiteNotes());
+        accountSite.setPropertyNotes(updatableAccount.getAccountDto().getPropertyNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getPropertyNotes());
         accountSiteDao.add(accountSite);
         
         /*
@@ -357,7 +357,7 @@ public class AccountServiceImpl implements AccountService {
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
         customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
-        customerAccount.setAccountNotes(updatableAccount.getCustomerNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getCustomerNotes());
+        customerAccount.setAccountNotes(updatableAccount.getAccountDto().getAccountNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getAccountNotes());
         if(liteBillingAddress != null) {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
         }
@@ -698,6 +698,8 @@ public class AccountServiceImpl implements AccountService {
         } else {
         	account.setAccountNumber(accountNumber);
         }
+        account.setAccountNotes(accountDto.getAccountNotes());
+        
         customerAccountDao.update(account);
         dbPersistantDao.processDBChange(new DBChangeMsg(account.getAccountId(),
                                                         DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
@@ -893,6 +895,7 @@ public class AccountServiceImpl implements AccountService {
         if (accountDto.getIsCustAtHome() != null) {
         	accountSite.setCustAtHome(BooleanUtils.toString(accountDto.getIsCustAtHome(), "Y", "N"));
         }
+        accountSite.setPropertyNotes(accountDto.getPropertyNotes());
         accountSiteDao.update(accountSite);
         
         /*
@@ -987,6 +990,7 @@ public class AccountServiceImpl implements AccountService {
             retrievedDto.setIsCommercial(false);
             retrievedDto.setCommercialTypeEntryId(null);
         }
+        retrievedDto.setAccountNotes(customerAccount.getAccountNotes());
         
         /*
          * Notifications
@@ -1021,6 +1025,7 @@ public class AccountServiceImpl implements AccountService {
         giveAddressFieldsToDTO(address, retrievedDto.getStreetAddress());
         LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
+        retrievedDto.setPropertyNotes(accountSite.getPropertyNotes());
         
         int loginId = primaryContact.getLoginID();
         if(loginId > UserUtils.USER_DEFAULT_ID) {

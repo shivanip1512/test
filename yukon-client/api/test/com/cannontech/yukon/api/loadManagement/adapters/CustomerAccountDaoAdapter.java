@@ -15,7 +15,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 public class CustomerAccountDaoAdapter implements CustomerAccountDao{
 
     @Override
-    public boolean add(CustomerAccount account) {
+    public void add(CustomerAccount account) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -25,7 +25,7 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
-    public boolean update(CustomerAccount account) {
+    public void update(CustomerAccount account) {
         throw new UnsupportedOperationException("not implemented");
     }
 

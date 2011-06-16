@@ -191,7 +191,7 @@
 	    					<cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">
 	    						<tags:checkboxNameValue nameKey=".notifyOddsForControlLabel" path="operatorGeneralUiExtras.notifyOddsForControl" id="notifyOddsForControlCheckbox"/>
 	    					</cti:checkRolesAndProperties>
-	    					<tags:textareaNameValue nameKey=".notesLabel" path="operatorGeneralUiExtras.notes" rows="3" cols="20"/>
+	    					<tags:textareaNameValue nameKey=".notesLabel" path="accountDto.accountNotes" rows="3" cols="20"/>
 	    				
 	    				</tags:nameValueContainer2>
 	    			
@@ -233,7 +233,7 @@
     					<tags:inputNameValue nameKey=".zipLabel" path="accountDto.streetAddress.zipCode"/>
     					<tags:inputNameValue nameKey=".mapNumberLabel" path="accountDto.mapNumber"/>
     					<tags:inputNameValue nameKey=".countyLabel" path="accountDto.streetAddress.county"/>
-						<tags:textareaNameValue nameKey=".addressNotesLabel" path="operatorGeneralUiExtras.accountSiteNotes" rows="3" cols="20"/>	    					
+						<tags:textareaNameValue nameKey=".addressNotesLabel" path="accountDto.propertyNotes" rows="3" cols="20"/>	    					
     				
     				</tags:nameValueContainer2>
     			

@@ -14,11 +14,11 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface CustomerAccountDao {
 
-    public boolean add(CustomerAccount account);
+    public void add(CustomerAccount account);
     
     public boolean remove(CustomerAccount account);
     
-    public boolean update(CustomerAccount account);
+    public void update(CustomerAccount account);
     
     public CustomerAccount getById(int accountId);
     

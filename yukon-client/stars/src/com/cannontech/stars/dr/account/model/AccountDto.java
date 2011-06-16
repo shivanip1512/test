@@ -28,6 +28,8 @@ public class AccountDto {
     private Integer rateScheduleEntryId;
     private String customerStatus;
     private Boolean isCustAtHome;
+    private String propertyNotes;
+    private String accountNotes;
 
     public String getAccountNumber() {
 		return accountNumber;
@@ -211,5 +213,18 @@ public class AccountDto {
     public void setIsCustAtHome(Boolean isCustAtHome) {
 		this.isCustAtHome = isCustAtHome;
 	}
-
+    
+    public String getAccountNotes() {
+        return accountNotes;
+    }
+    public void setAccountNotes(String accountNotes) {
+        this.accountNotes = accountNotes;
+    }
+    
+    public String getPropertyNotes() {
+        return propertyNotes;
+    }
+    public void setPropertyNotes(String propertyNotes) {
+        this.propertyNotes = propertyNotes;
+    }
 }

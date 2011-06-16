@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.cc.model.Group;
+import com.cannontech.cc.service.GroupService;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -87,6 +90,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping(value = "/operator/account/*")
@@ -103,6 +107,7 @@ public class OperatorAccountController {
 	private SubstationDao substationDao;
     private AccountImportDataValidator accountImportDataValidator;
     private AccountImportService accountImportService;
+    private GroupService groupService;
     private RecentResultsCache<AccountImportResult> recentResultsCache;
     private YukonUserDao yukonUserDao;
     private YukonGroupService yukonGroupService;
@@ -393,9 +398,6 @@ public class OperatorAccountController {
                     checkEditingDefaultUser(accountGeneral.getLoginBackingBean().getUsername());
                 }
                 
-                updatableAccount.setCustomerNotes(accountGeneral.getOperatorGeneralUiExtras().getNotes());
-                updatableAccount.setAccountSiteNotes(accountGeneral.getOperatorGeneralUiExtras().getAccountSiteNotes());
-                
                 /* Validation passed, proceed with creation */
     	        /* IMPORTANT NOTE HERE
     	         * 
@@ -526,7 +528,7 @@ public class OperatorAccountController {
     }
     
 	// UPDATE ACCOUNT
-	@RequestMapping(method=RequestMethod.POST, value="updateAccount")
+    @RequestMapping(method=RequestMethod.POST, value="updateAccount")
     public String updateAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral, 
 								BindingResult bindingResult,
 								final int accountId,
@@ -549,9 +551,24 @@ public class OperatorAccountController {
 	    final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
+
         LiteYukonGroup originalLoginGroup = 
             yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
         
+        List<Group> groups = groupService.getAllGroups(residentialUser);
+        for (Group group : groups) {
+            List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+
+            Map<Integer, LiteYukonGroup> residentialGroupMap  = Maps.newHashMapWithExpectedSize(residentialGroups.size());
+            for (LiteYukonGroup residentialGroup : residentialGroups) {
+                residentialGroupMap.put(residentialGroup.getGroupID(), residentialGroup);
+            }
+            
+            if (residentialGroupMap.keySet().contains(group.getId())) {
+                originalLoginGroup = residentialGroupMap.get(group.getId());
+            }
+        }
+
         /* 
          * Ignore the login fields if: 
          * 
@@ -561,7 +578,7 @@ public class OperatorAccountController {
          */
         final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
             || (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
-            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && 
+            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && originalLoginGroup != null &&
                 !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup.getGroupName()));
 		
 		/* UpdatableAccount */
@@ -884,6 +901,11 @@ public class OperatorAccountController {
 	@Autowired
 	public void setYukonGroupService(YukonGroupService yukonGroupService) {
         this.yukonGroupService = yukonGroupService;
+    }
+	
+	@Autowired
+	public void setGroupService(GroupService groupService) {
+        this.groupService = groupService;
     }
 	
 	@Autowired
