@@ -70,9 +70,7 @@ ALTER TABLE Regulator
 INSERT INTO Regulator (RegulatorId, KeepAliveTimer, KeepAliveConfig)
 SELECT PaobjectId, 0, 0
 FROM YukonPAObject
-WHERE Type = 'LTC' 
-  OR Type = 'PO_REGULATOR' 
-  OR Type = 'GO_REGULATOR';
+WHERE Type = 'LTC';
 
 /* RegulatorToZoneMapping table informaiton */
 CREATE TABLE RegulatorToZoneMapping (
