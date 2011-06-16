@@ -20,13 +20,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -63,9 +66,14 @@ public class ZigBeeHardwareController {
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private InventoryDao inventoryDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    private ZigbeeEventLogService zigbeeEventLogService;
+    private PaoDao paoDao;
+
     @RequestMapping
     public ModelAndView refresh(YukonUserContext context, int deviceId) {
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
+        zigbeeEventLogService.zigbeeDeviceRefreshAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
 
@@ -94,6 +102,9 @@ public class ZigBeeHardwareController {
 
     @RequestMapping
     public ModelAndView commission(YukonUserContext context, int deviceId) {
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
+        zigbeeEventLogService.zigbeeDeviceCommissionAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
         InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
@@ -110,6 +121,9 @@ public class ZigBeeHardwareController {
     
     @RequestMapping
     public ModelAndView decommission(YukonUserContext context, int deviceId) {
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
+        zigbeeEventLogService.zigbeeDeviceDecommissionAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         ModelAndView mav = new ModelAndView(new JsonView());
         InventoryIdentifier id = inventoryDao.getYukonInventoryForDeviceId(deviceId);
@@ -262,6 +276,9 @@ public class ZigBeeHardwareController {
         int gatewayId = textMessage.getGatewayId();
         int accountId = fragment.getAccountId();
 
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(gatewayId);
+        zigbeeEventLogService.zigbeeSendTextAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        
         YukonValidationUtils.checkExceedsMaxLength(result, "message", textMessage.getMessage(), 21);
         if (result.hasErrors()) {
             /* Add errors to flash scope */
@@ -297,9 +314,15 @@ public class ZigBeeHardwareController {
     /* TSTAT ACTIONS */
     
     @RequestMapping(value="addDeviceToGateway", method=RequestMethod.POST)
-    public String addDeviceToGateway(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+    public String addDeviceToGateway(YukonUserContext context, ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
+        zigbeeEventLogService.zigbeeDeviceAssignAttemptedByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
+        
         gatewayDeviceDao.updateDeviceToGatewayAssignment(deviceId, gatewayId);
 
+        zigbeeEventLogService.zigbeeDeviceAssigned(device.getPaoName(), gateway.getPaoName());
+        
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
         flash.setConfirm(new YukonMessageSourceResolvable(keyPrefix + "thermostatAdded", deviceSerialNumber, gatewaySerialNumber));
@@ -308,10 +331,15 @@ public class ZigBeeHardwareController {
     }
     
     @RequestMapping
-    public String removeDeviceFromGateway(ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
-
+    public String removeDeviceFromGateway(YukonUserContext context, ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);
+        zigbeeEventLogService.zigbeeDeviceUnassignAttemptedByOperator(context.getYukonUser(), device.getPaoName(), gateway.getPaoName());
+        
         zigbeeWebService.uninstallStat(gatewayId, deviceId);
         gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
+        
+        zigbeeEventLogService.zigbeeDeviceUnassigned(device.getPaoName(), gateway.getPaoName());
         
         String deviceSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(deviceId);
         String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(gatewayId);
@@ -380,6 +408,16 @@ public class ZigBeeHardwareController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
+        this.zigbeeEventLogService = zigbeeEventLogService;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
     
 }

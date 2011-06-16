@@ -5,4 +5,5 @@ import com.cannontech.common.pao.YukonDevice;
 public interface ZigbeeDevice extends YukonDevice {
     public int getZigbeeDeviceId();
     public String getZigbeeMacAddress();
+    public String getName();
 }

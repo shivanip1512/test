@@ -6,6 +6,7 @@ public class GenericZigbeeDevice implements ZigbeeDevice {
 
     private String zigbeeMacAddress;
     private PaoIdentifier paoIdentifier;
+    private String name; 
     
     public void setZigbeeMacAddress(String zigbeeMacAddress) {
         this.zigbeeMacAddress = zigbeeMacAddress;
@@ -28,6 +29,15 @@ public class GenericZigbeeDevice implements ZigbeeDevice {
     @Override
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
     }
 
 }

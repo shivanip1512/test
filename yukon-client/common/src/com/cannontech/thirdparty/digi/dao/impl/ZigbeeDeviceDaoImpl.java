@@ -23,7 +23,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private GatewayDeviceDao gatewayDeviceDao;
-
+    
     private static YukonRowMapper<ZigbeeThermostat> zigbeeThermostatRowMapper  = new YukonRowMapper<ZigbeeThermostat>(){
         @Override
         public ZigbeeThermostat mapRow(YukonResultSet rs) throws SQLException {
@@ -47,7 +47,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     @Override
     public ZigbeeDevice getZigbeeDevice(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type");
+        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM ZBEndPoint ZE");
         sql.append(  "JOIN YukonPAObject YPO ON ZE.DeviceId = YPO.PAObjectID");
         sql.append("WHERE DeviceId").eq(deviceId);
@@ -61,7 +61,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     public List<ZigbeeDevice> getZigbeeDevicesForGroupId(int groupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type");
+        sql.append("SELECT ZE.DeviceId,ZE.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
         sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");

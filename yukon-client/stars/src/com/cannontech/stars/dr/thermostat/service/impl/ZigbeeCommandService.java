@@ -10,6 +10,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -40,6 +41,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
     private InventoryDao inventoryDao;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private ZigbeeWebService zigbeeWebService;
+    private ZigbeeEventLogService zigbeeEventLogService;
     
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -252,6 +254,11 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
+    }
+    
+    @Autowired
+    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
+        this.zigbeeEventLogService = zigbeeEventLogService;
     }
     
 }

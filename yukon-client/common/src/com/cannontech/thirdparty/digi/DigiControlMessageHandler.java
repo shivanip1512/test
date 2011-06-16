@@ -9,12 +9,14 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDao;
@@ -38,6 +40,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     private PaoDao paoDao;
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private ZigbeeControlEventDao zigbeeControlEventDao;
+    private ZigbeeEventLogService zigbeeEventLogService;
     
     private Set<Integer> pendingEvents = new HashSet<Integer>();
     
@@ -53,6 +56,9 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleControlMessage(SepControlMessage message) {
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
+        zigbeeEventLogService.zigbeeSendSEPControlAttempted(pao.getPaoName());
+        
         int eventId = nextValueHelper.getNextValue("ZBControlEvent");
         Instant now = new Instant();
 
@@ -83,6 +89,9 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleRestoreMessage(SepRestoreMessage message) {
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
+        zigbeeEventLogService.zigbeeSendSEPRestoreAttempted(pao.getPaoName());
+        
         int eventId = zigbeeControlEventDao.findCurrentEventId(message.getGroupId());
         
         try {
@@ -204,5 +213,10 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Autowired
     public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
         this.zigbeeDeviceDao = zigbeeDeviceDao;
+    }
+    
+    @Autowired
+    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
+        this.zigbeeEventLogService = zigbeeEventLogService;
     }
 }

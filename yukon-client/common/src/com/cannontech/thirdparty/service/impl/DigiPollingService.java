@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -25,13 +26,15 @@ public class DigiPollingService {
     private GatewayDeviceDao gatewayDeviceDao;
     private ScheduledExecutorService globalScheduledExecutor;
     private ConfigurationSource configurationSource;
+    private ZigbeeEventLogService zigbeeEventLogService;
     
     /**
      * Gets and processes all files on each gateway from iDigi.
      */
     private Runnable digiDeviceNotificationPoll = new Runnable() {
         public void run() {
-            logger.info("Digi Device Notification Started");
+            logger.debug("Digi Device Notification Started");
+            zigbeeEventLogService.zigbeePollAllGatewaysAttempted();
             
             try {
                 //Get all gateways to poll
@@ -40,6 +43,7 @@ public class DigiPollingService {
                 for (ZigbeeDevice gateway : gateways) {
                     //Poll the gateway.
                     try {
+
                         zigbeeWebService.processAllDeviceNotificationsOnGateway(gateway);
                     } catch (SocketTimeoutException e) {
                         logger.error("TimeOut while requesting files from gateway", e);
@@ -49,7 +53,7 @@ public class DigiPollingService {
                 logger.error("Exception while Polling Device Notifications", e);
             }
             
-            logger.info("Digi Device Notification Finished");
+            logger.debug("Digi Device Notification Finished");
         }
     };
     
@@ -61,15 +65,17 @@ public class DigiPollingService {
 
         @Override
         public void run() {
-            logger.info("Digi Device Status Poll Started");
+            logger.debug("Digi Device Status Poll Started");
+            zigbeeEventLogService.zigbeeRefreshAllGatewaysAttempted();
             
             try {
+
                 zigbeeWebService.refreshAllGateways();
             } catch (Exception e) {
                 logger.error("Exception in Digi Device Status Poll", e);
             }
             
-            logger.info("Digi Device Status Poll Finished");
+            logger.debug("Digi Device Status Poll Finished");
         }
         
     };
@@ -106,5 +112,10 @@ public class DigiPollingService {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
+        this.zigbeeEventLogService = zigbeeEventLogService;
     }
 }

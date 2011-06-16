@@ -45,21 +45,22 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public static YukonRowMapper<ZigbeeDevice> zigbeeDeviceRowMapper = new YukonRowMapper<ZigbeeDevice>() {
         @Override
         public ZigbeeDevice mapRow(YukonResultSet rs) throws SQLException {
-            GenericZigbeeDevice gateway = new GenericZigbeeDevice();
+            GenericZigbeeDevice device = new GenericZigbeeDevice();
             
             int paoId = rs.getInt("DeviceId");
             PaoType paoType = rs.getEnum("Type", PaoType.class);
             
-            gateway.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
-            gateway.setZigbeeMacAddress(rs.getString("MacAddress"));
+            device.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
+            device.setZigbeeMacAddress(rs.getString("MacAddress"));
+            device.setName(rs.getString("PaoName"));
             
-            return gateway;
+            return device;
         }
     };
     
     public ZigbeeDevice getZigbeeGateway(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type");
+        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM ZBGateway ZBG");
         sql.append(  "JOIN YukonPAObject YPO on ZBG.DeviceId = YPO.PaObjectId");
         sql.append("WHERE ZBG.DeviceId").eq(gatewayId);
@@ -71,7 +72,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     public List<ZigbeeDevice> getAllGateways() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type");
+        sql.append("SELECT ZBG.DeviceId,ZBG.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM ZBGateway ZBG");
         sql.append(  "JOIN YukonPAObject YPO on ZBG.DeviceId = YPO.PaObjectId");
         
@@ -283,7 +284,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public List<ZigbeeDevice> getZigbeeGatewaysForGroupId(int groupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZG.DeviceId,ZG.MacAddress,YPO.Type");
+        sql.append("SELECT ZG.DeviceId,ZG.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append(  "JOIN InventoryBase IB ON LMHCG.InventoryID = IB.InventoryID ");
         sql.append(  "JOIN ZBGatewayToDeviceMapping ZB on ZB.DeviceId = IB.DeviceId");

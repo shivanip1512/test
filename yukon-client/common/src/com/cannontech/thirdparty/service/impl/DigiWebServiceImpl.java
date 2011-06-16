@@ -17,10 +17,13 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.model.ZigbeeTextMessage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
@@ -52,6 +55,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     private DigiResponseHandler digiResponseHandler;
     private ConfigurationSource configurationSource;
     private ZigbeeServiceHelper zigbeeServiceHelper;
+    private ZigbeeEventLogService zigbeeEventLogService;
+    private PaoDao paoDao;
     
     private static String digiBaseUrl;
     
@@ -62,7 +67,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     
     @Override
     public void installGateway(int gatewayId) throws GatewayCommissionException {
-        logger.info("-- Install Gateway Start --");
+        logger.debug("-- Install Gateway Start --");
         
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         
@@ -82,18 +87,21 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
             //Update the database with the DigiId we got assigned.
             digiGateway.setDigiId(digiId);
             gatewayDeviceDao.updateDigiGateway(digiGateway);
+            
         } catch (GatewayCommissionException e) {
             logger.error("Caught exception in the commissioning process", e);
             //re throw
             throw e;
         }
+
+        zigbeeEventLogService.zigbeeDeviceCommissioned(digiGateway.getName());
         
-        logger.info("-- Install Gateway End --");
+        logger.debug("-- Install Gateway End --");
     }
     
     @Override
     public void removeGateway(int gatewayId) {
-        logger.info("-- Remove Gateway Start --");
+        logger.debug("-- Remove Gateway Start --");
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         decommissionConnectPort(digiGateway.getDigiId());
 
@@ -107,7 +115,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                                                   BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                   CommStatusState.DISCONNECTED);
         
-        logger.info("-- Remove Gateway Stop --");
+        zigbeeEventLogService.zigbeeDeviceDecommissioned(digiGateway.getName());
+        
+        logger.debug("-- Remove Gateway Stop --");
     }
     
     /**
@@ -185,14 +195,16 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         //Throws a DigiWebServiceException if it failed.
         digiResponseHandler.evaluateAddDevice(response);
         
+        zigbeeEventLogService.zigbeeDeviceCommissioned(stat.getName());
+        
         logger.debug("InstallStat End");
     }
     
     public void uninstallStat(int gatewayId, int deviceId) {
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-        ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+        ZigbeeDevice stat = zigbeeDeviceDao.getZigbeeDevice(deviceId);
         
-        String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, device);
+        String xml = digiXMLBuilder.buildUninstallStatMessage(gateway, stat);
         
         String response;
         try {
@@ -203,12 +215,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 
         //When decommissioning a device, change it's connection status to disconnected 
         //since we will no longer get updates for it, prevent it from appearing connected
-        zigbeeServiceHelper.sendPointStatusUpdate(device, 
+        zigbeeServiceHelper.sendPointStatusUpdate(stat, 
                                                   BuiltInAttribute.ZIGBEE_CONNECTION_STATUS, 
                                                   CommStatusState.DISCONNECTED);
-        zigbeeServiceHelper.sendPointStatusUpdate(device, 
+        zigbeeServiceHelper.sendPointStatusUpdate(stat, 
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS, 
                                                   Commissioned.DECOMMISSIONED);
+        
+        zigbeeEventLogService.zigbeeDeviceDecommissioned(stat.getName());
         
         logger.debug(response);
     }
@@ -269,6 +283,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 throw new DigiWebServiceException("Refresh of " + type.getDbString() + " is not supported.");
             }
         }
+        
+        zigbeeEventLogService.zigbeeDeviceRefreshed(device.getName());
     }
     
     private boolean pingEndPoint(ZigbeeDevice endPoint) {
@@ -305,6 +321,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
+        
+        zigbeeEventLogService.zigbeeDeviceLoadGroupAddressingSent(endPoint.getName());
     }
     
     @Override
@@ -332,6 +350,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         } catch (DigiEmptyDeviceCoreResultException e) {
             //eat the Error.. It is not REQUIRED to have a gateway
         }
+        
+        zigbeeEventLogService.zigbeeRefreshedAllGateways();
         
         logger.debug("Refresh ALL Gateway done");
     }
@@ -383,11 +403,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 throw new ZigbeeClusterLibraryException(zclStatus);
             }
         }
+        
+        zigbeeEventLogService.zigbeeSentText(gateway.getName());
     }
 
     @Override
     public void sendSEPControlMessage(int eventId, SepControlMessage controlMessage) {
         logger.debug("Sending SEP Control Message Start");
+        
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
         
         String xmlSEPMessage = digiXMLBuilder.buildSEPControlMessage(eventId, gateways, controlMessage);
@@ -400,6 +423,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
+        
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(controlMessage.getGroupId());
+        zigbeeEventLogService.zigbeeSentSEPControl(pao.getPaoName());
         
         logger.debug("XML Response to SEP Control \n " + response);
         
@@ -417,6 +443,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         } catch (RestClientException e) {
             throw new DigiWebServiceException(e);
         }
+        
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(restoreMessage.getGroupId());
+        zigbeeEventLogService.zigbeeSentSEPRestore(pao.getPaoName());
         
         logger.debug("XML Response to SEP Restore \n " + response);
         
@@ -454,7 +483,8 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 restTemplate.delete(folderUrl +"/" + filename);
             }
         }
-
+        
+        zigbeeEventLogService.zigbeePolledGateway(gateway.getName());
     }
     
     @Autowired
@@ -490,5 +520,15 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     @Autowired
     public void setZigbeeServiceHelper(ZigbeeServiceHelper zigbeeServiceHelper) {
         this.zigbeeServiceHelper = zigbeeServiceHelper;
+    }
+    
+    @Autowired
+    public void setZigbeeEventLogService(ZigbeeEventLogService zigbeeEventLogService) {
+        this.zigbeeEventLogService = zigbeeEventLogService;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }
