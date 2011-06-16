@@ -13,7 +13,6 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -42,7 +41,16 @@ public abstract class FilteredReportModelBase<T> extends BareDatedReportModelBas
 		this.filteredModelHelper = filteredModelHelper;
 	}
     
-	@Override
+	/**
+	 * Returns an SqlFragmentSource that can be placed in an SQL WHERE clause
+	 * for the identifier field. 
+	 * The identifier field MUST BE of type PAObjectID or an extension of.
+	 * The whole SQL statement might look something like:
+	 *   select * from device where <identifier> in (select distinct paobjectid from yukonpaobject)
+	 * In the above sql, "<identifier> in (select distinct paobjectid from yukonpaobject)" may be the returned string.
+	 * 
+	 * @return
+	 */
 	public SqlFragmentSource getPaoIdentifierWhereClause(String identifier) {
 		return getFilterWhereClause(identifier);
 	}
@@ -50,8 +58,7 @@ public abstract class FilteredReportModelBase<T> extends BareDatedReportModelBas
 	/**
 	 * Loads and returns a list of YukonPaos for filtered values, specifically _Device_s.
 	 */
-	@Override
-	public List<? extends YukonPao> getYukonPaoList() {
+	public List<SimpleDevice> getYukonPaoList() {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT PaobjectId, Type");
     	sql.append("FROM YukonPaobject");
@@ -112,7 +119,7 @@ public abstract class FilteredReportModelBase<T> extends BareDatedReportModelBas
 		// build up a dummy generator when null
 		if (whereClauseFragment == null){
 			whereClauseFragment = new SimpleSqlFragment("1=1");
-			log.warn("No filter where clause loaded, returning 1=1.");
+			log.info("No filter where clause loaded, returning 1=1.");
 		}
 		return whereClauseFragment;
 	}
