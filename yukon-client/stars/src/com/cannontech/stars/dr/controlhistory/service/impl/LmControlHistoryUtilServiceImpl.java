@@ -135,7 +135,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             if (ActiveRestoreEnum.getActiveRestoreStartEntries().contains(controlHistoryActiveRestore)) {
                 // Clean up any existing control entries before creating a new entry.
                 if (hist != null) {
-                    hist.setControlDuration(new Duration(lmCtrlHist.getStartDateInstant(), histStartDate));
+                    hist.setControlDuration(new Duration(histStartDate, lmCtrlHist.getStartDateInstant())); 
                     hist.setCurrentlyControlling(false);
                 }
                 

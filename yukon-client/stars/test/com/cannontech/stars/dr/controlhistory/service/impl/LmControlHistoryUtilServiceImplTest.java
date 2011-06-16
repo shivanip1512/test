@@ -198,6 +198,33 @@ public class LmControlHistoryUtilServiceImplTest {
         
         observedControlHistoryOne.addAllControlHistoryEntries(starsLMControlHistoryOne.getControlHistoryList());
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // This control duration is for control that has more than one start in a row.  
+    LiteLMControlHistory doubleStartContHistOne;
+    LiteLMControlHistory doubleStartContHistTwo;
+    LiteLMControlHistory doubleStartContHistThree;
+    LiteLMControlHistory doubleStartContHistFour;
+    {
+        doubleStartContHistOne = createLiteLMControlHistory("01/04/2010 14:30:00", "01/04/2010 16:30:00", ActiveRestoreEnum.NEW_CONTROL);
+        doubleStartContHistTwo = createLiteLMControlHistory("01/04/2010 14:50:00", "01/04/2010 16:30:00",ActiveRestoreEnum.NEW_CONTROL);
+        doubleStartContHistThree = createLiteLMControlHistory("01/04/2010 14:50:00", "01/04/2010 16:00:00", ActiveRestoreEnum.MANUAL_RESTORE);
+        doubleStartContHistFour = createLiteLMControlHistory("01/04/2010 16:00:00", "01/04/2010 16:00:00", ActiveRestoreEnum.MANUAL_RESTORE);
+    }
+    
+    LiteStarsLMControlHistory doubleStartCtrlHistOne;
+    {
+        doubleStartCtrlHistOne = new LiteStarsLMControlHistory();
+
+        List<LiteBase> controlHistoryList = Lists.newArrayListWithExpectedSize(4);
+        doubleStartCtrlHistOne.setLmControlHistory(controlHistoryList);
+        
+        controlHistoryList.add(doubleStartContHistOne);
+        controlHistoryList.add(doubleStartContHistTwo);
+        controlHistoryList.add(doubleStartContHistThree);
+        controlHistoryList.add(doubleStartContHistFour);
+    }
+    
         
     /* Test building control history functionality */
     /**
@@ -620,6 +647,41 @@ public class LmControlHistoryUtilServiceImplTest {
 
     }
 
+    /**
+     * This tests building control history when there are more than one start event in a row.
+     * This could be caused by the event not being stopped correctly or an error in the servers.
+     * 
+     * Days                       [---------------------------------------------------]
+     * Viewable Control History   [--------------------------------------------------->
+     * Control History Blocks                                  [|--]
+     */
+    @Test
+    public void testStarsControlHistoryForPeriod_Ten() {
+        LiteStarsLMControlHistory liteStarsLMControlHistory = doubleStartCtrlHistOne;
+        Instant viewableStartDate = dateTimeFormmater.parseDateTime("01/04/2010 00:00:00").toInstant();
+        
+        StarsLMControlHistory starsLmControlHistory = 
+            service.buildStarsControlHistoryForPeriod(liteStarsLMControlHistory, viewableStartDate, null, timeZone);
+        
+        List<ControlHistoryEntry> controlHistoryEntryList = starsLmControlHistory.getControlHistoryList();
+        
+        checkNumberOfControlHistoryEntries(controlHistoryEntryList, 2);
+
+        // Check Second Control History Entry
+        ControlHistoryEntry controlHistoryEntryOne = controlHistoryEntryList.get(0);
+        checkControlHistoryEntryStartAndStopDates(controlHistoryEntryOne,
+                                                  doubleStartContHistOne.getStartDateInstant(),
+                                                  doubleStartContHistTwo.getStartDateInstant());
+        checkControlHistoryEntryDuration(controlHistoryEntryOne, Duration.standardMinutes(20));
+
+        // Check Second Control History Entry
+        ControlHistoryEntry controlHistoryEntryTwo = controlHistoryEntryList.get(1);
+        checkControlHistoryEntryStartAndStopDates(controlHistoryEntryTwo,
+                                                  doubleStartContHistTwo.getStartDateInstant(),
+                                                  doubleStartContHistFour.getStopDateInstant());
+        checkControlHistoryEntryDuration(controlHistoryEntryTwo, Duration.standardMinutes(70));
+        
+    }
     
     /* Test Control Summary Functionality */
     /**
