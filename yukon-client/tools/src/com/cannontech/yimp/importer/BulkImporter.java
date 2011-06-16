@@ -341,7 +341,7 @@ public void runImport(List<ImportData> imps) {
         
         /*Address range check for 400 series*/
     	PaoType paoType = PaoType.getForDbString(template400SeriesBase.getPAOType());
-    	if (!dlcAddressRangeService.isValidAddress(paoType, Integer.parseInt(address))) {
+    	if (!dlcAddressRangeService.isEnforcedAddress(paoType, Integer.parseInt(address))) {
     		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
     		log.error(logMsgPrefix + error);
     		errorMsg.add(error);

@@ -98,7 +98,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             // test
             PaoType type = PaoType.getForId(deviceType);   
-            if (!dlcAddressRangeService.isValidAddress(type, address)) {
+            if (!dlcAddressRangeService.isEnforcedAddress(type, address)) {
                 throw new DeviceCreationException("Invalid address: " + address + ".");
             }
             else if (StringUtils.isBlank(name)) {

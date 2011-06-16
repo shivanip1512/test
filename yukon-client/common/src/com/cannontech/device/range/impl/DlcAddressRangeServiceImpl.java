@@ -29,7 +29,7 @@ public class DlcAddressRangeServiceImpl implements DlcAddressRangeService {
     }
 
     @Override
-    public boolean isValidAddress(PaoType paoType, int address) {
+    public boolean isEnforcedAddress(PaoType paoType, int address) {
         IntegerRange range = getEnforcedAddressRangeForDevice(paoType);
         return range.isWithinRange(address);
     }

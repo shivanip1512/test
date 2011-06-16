@@ -36,7 +36,7 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
             PaoType deviceType = meter.getPaoType();
             try {
                 int physicalAddress = Integer.parseInt(meter.getAddress()); 
-                if(!dlcAddressRangeService.isValidAddress(deviceType, physicalAddress)) {
+                if(!dlcAddressRangeService.isEnforcedAddress(deviceType, physicalAddress)) {
                     failAddress(meter, errors);
                 }
             } catch (NumberFormatException e) {

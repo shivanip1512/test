@@ -76,7 +76,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
     
-        if (!dlcAddressRangeService.isValidAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
+        if (!dlcAddressRangeService.isEnforcedAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
         }
 

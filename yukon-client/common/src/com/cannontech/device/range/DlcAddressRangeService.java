@@ -29,5 +29,5 @@ public interface DlcAddressRangeService {
 	 * @param address
 	 * @return
 	 */
-    public boolean isValidAddress(PaoType paoType, int address);
+    public boolean isEnforcedAddress(PaoType paoType, int address);
 }
