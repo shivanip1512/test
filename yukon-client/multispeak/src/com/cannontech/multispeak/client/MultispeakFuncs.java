@@ -367,7 +367,7 @@ public class MultispeakFuncs
                 rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, liteYukonUser);
             String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
             if (cisInfoWidgetName == null) {
-                int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, liteYukonUser)).intValue();
+                int vendorId = getPrimaryCIS();
                 if (vendorId > 0) {
                     cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
                 }
