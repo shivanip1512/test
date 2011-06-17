@@ -1302,7 +1302,7 @@ void CtiCCSubstationBusStore::reset()
             /***********************************************************
             *******  Loading Areas                               *******
             ************************************************************/
-            reloadSpecialAreaFromDatabase(0, &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
+            reloadSpecialAreaFromDatabase(&_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
 
             reloadAreaFromDatabase(0, &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
 
@@ -5093,8 +5093,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
     Reloads a single subbus from the database.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
-                                  PaoIdToSpecialAreaMap *paobject_specialarea_map,
+void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMap *paobject_specialarea_map,
                                   PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {

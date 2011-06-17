@@ -248,8 +248,7 @@ public:
                                   PaoIdToAreaMap *paobject_area_map,
                                   PointIdToAreaMultiMap *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
-    void reloadSpecialAreaFromDatabase(long areaId,
-                                  PaoIdToSpecialAreaMap *paobject_specialarea_map,
+    void reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMap *paobject_specialarea_map,
                                   PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId);
