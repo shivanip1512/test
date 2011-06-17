@@ -2031,6 +2031,27 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
         regMsg = NULL;
     }
 }
+
+/*---------------------------------------------------------------------------
+    isCbcDbChange
+
+    Determines if a DB change is for a CBC device type.
+---------------------------------------------------------------------------*/
+bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
+{
+    bool CbcDbChange;
+    CbcDbChange = (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
+                   (resolveDeviceType(dbChange->getObjectType()) == TYPEVERSACOMCBC ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC8020 ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPECBCDNP ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
+                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) );
+    return CbcDbChange;
+}
+
 /*---------------------------------------------------------------------------
     parseMessage
 
@@ -2173,15 +2194,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                                 changeId = specialArea->getPaoId();
                             }
                         }
-                        else if (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
-                                 (resolveDeviceType(dbChange->getObjectType()) == TYPEVERSACOMCBC ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC8020 ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBCDNP ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
-                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) )
+                        else if ( isCbcDbChange(dbChange) )
                         {
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {

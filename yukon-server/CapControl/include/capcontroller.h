@@ -16,6 +16,7 @@
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
+#include "msg_dbchg.h"
 #include "msg_reg.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
@@ -103,6 +104,8 @@ class CtiCapController : public MessageListener
         void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
         void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
         void signalMsg(long pointID, unsigned tags, const string& text, const string& additional);
+
+        bool isCbcDbChange(const CtiDBChangeMsg* dbChange);
 
         static CtiCapController* _instance;
         RWThread _substationBusThread;
