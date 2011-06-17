@@ -811,26 +811,24 @@ CtiCCCapBank_SVector& CtiCCFeeder::getCCCapBanks()
     return _cccapbanks;
 }
 
-/*---------------------------------------------------------------------------
-    getCCCapBanks
 
-    Returns the list of cap banks in the feeder
----------------------------------------------------------------------------*/
-std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllCapBanks(bool onlySwitched)
+std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllSwitchedCapBanks( )
 {
     std::vector<CtiCCCapBankPtr> banks;
-    if( onlySwitched )
+    for each (const CtiCCCapBankPtr c in _cccapbanks)
     {
-        for each (const CtiCCCapBankPtr c in _cccapbanks)
+        if( ciStringEqual(c->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) )
         {
-            if( ciStringEqual(c->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) )
-            {
-                banks.push_back(c);
-            }
+            banks.push_back(c);
         }
     }
-    else
-        banks.insert( banks.begin(),_cccapbanks.begin(), _cccapbanks.end() );
+    return banks;
+}
+
+std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllCapBanks( ) 
+{
+    std::vector<CtiCCCapBankPtr> banks; 
+    banks.assign(_cccapbanks.begin(), _cccapbanks.end());
     return banks;
 }
 

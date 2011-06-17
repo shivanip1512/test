@@ -8923,30 +8923,30 @@ int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates)
 {
     int currentNum = 0;
     std::vector<CtiCCCapBankPtr> banks = getAllSwitchedCapBanks();
-    for(LONG j=0;j<banks.size();j++)
+    for each (CtiCCCapBankPtr currentCapBank in banks)
     {
-        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[j];
-        if (setOfStates.find(currentCapBank->getControlStatus()) != setOfStates.end())
-        {
-            currentNum += 1;
-        }
+        currentNum += setOfStates.count(currentCapBank->getControlStatus());
     }
     return currentNum;
 }
 
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks() 
-{
-    return getAllCapBanks( true );
-}
-
-std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( bool onlySwitched ) 
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( ) 
 {
     std::vector<CtiCCCapBankPtr> banks;
-    for(LONG i=0;i<_ccfeeders.size();i++)
+    for each (CtiCCFeeder* currentFeeder in _ccfeeders)
     {
-        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-        std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllCapBanks(onlySwitched);
-        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());
+        std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllCapBanks( );
+        banks.assign(fdrbanks.begin(), fdrbanks.end());
+    }
+    return banks;
+}
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( ) 
+{
+    std::vector<CtiCCCapBankPtr> banks;
+    for each (CtiCCFeeder* currentFeeder in _ccfeeders)
+    {
+        std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllSwitchedCapBanks( );
+        banks.assign(fdrbanks.begin(), fdrbanks.end());
     }
     return banks;
 }
@@ -8961,7 +8961,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
     {
         try
         {
-            int numOfBanks = getAllSwitchedCapBanks().size();
+            int numOfBanks = getAllCapBanks().size();
             int closeStates[] = {CtiCCCapBank::Close,CtiCCCapBank::CloseFail,CtiCCCapBank::ClosePending,CtiCCCapBank::CloseQuestionable};
             set<int> closedStates = set<int>(closeStates, closeStates + 4);
             int currentNumClosed = getNumOfBanksInState( closedStates );
