@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.loadManagement.adapters;
 
 import java.util.List;
 
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -31,6 +30,6 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
 
     @Override
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
-        return energyCompany.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+        throw new UnsupportedOperationException("not implemented");
     }
 }
