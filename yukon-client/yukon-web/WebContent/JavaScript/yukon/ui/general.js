@@ -573,17 +573,3 @@ Event.observe(window, 'load', function() {
     });
 
 });
-
-function showPointingPopup(event) {
-    
-    var target = Event.element(event);
-    var offsets = target.cumulativeOffset();
-    var popupLeft = offsets.left + target.getDimensions().width + 2;
-    var left = popupLeft + 'px';
-    var top = (offsets.top -20) + 'px';
-    
-    $('descriptionPopup').setStyle({left:left, top:top});
-    $('descriptionPopup_content').innerHTML = target.up().next('span.focusedFieldDescription').innerHTML;
-    $('descriptionPopup').show();
-    
-}
