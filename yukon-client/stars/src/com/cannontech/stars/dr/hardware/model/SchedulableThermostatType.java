@@ -42,7 +42,7 @@ public enum SchedulableThermostatType {
 	UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
 	            50, 99,
 	            40, 90,
-	            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND),
+	            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SINGLE),
 	            ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
