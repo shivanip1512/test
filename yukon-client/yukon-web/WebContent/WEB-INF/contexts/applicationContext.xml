@@ -1461,8 +1461,6 @@
         </property>
     </bean>
     
-    <bean id="adaResultsHelper" class="com.cannontech.web.bulk.service.AdaResultsHelper"/>
-    
     <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InventoryOperationsFilterServiceImpl"/>
     
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
