@@ -1,10 +1,14 @@
 package com.cannontech.common.bulk.model;
 
+import java.util.List;
+
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.google.common.collect.Lists;
 
 public class Analysis {
     private BuiltInAttribute attribute;
@@ -72,4 +76,30 @@ public class Analysis {
         return runDate;
     }
     
+    public List<Instant> getIntervalStartTimes() {
+        List<Instant> dateTimeList = Lists.newArrayList();
+        
+        Instant nextIntervalStartTime = dateTimeRange.getStart().toInstant();
+        Instant endTime = dateTimeRange.getEnd().toInstant();
+        dateTimeList.add(nextIntervalStartTime);
+        boolean loop = true;
+        
+        while(loop) {
+            nextIntervalStartTime = nextIntervalStartTime.plus(intervalLength);
+            if(nextIntervalStartTime.isBefore(endTime)) {
+                dateTimeList.add(nextIntervalStartTime);
+            } else {
+                loop = false;
+            }
+        }
+        
+        return dateTimeList;
+    }
+    
+    public Interval getDateTimeRangeForDisplay() {
+        DateTime newStart = dateTimeRange.getStart().minus(intervalLength);
+        DateTime newEnd = dateTimeRange.getEnd().minus(intervalLength);
+
+        return new Interval(newStart, newEnd);
+    }
 }

@@ -9,18 +9,15 @@
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        <%-- interval data analysis --%>
+        <%-- metering --%>
+        <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
+        <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
+        <%-- ADA List --%>
+        <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysisList.pageName" />
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list" title="${adaListPageTitle}" />
+        <%-- ADA Results --%>
         <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisResults.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
-    
     
     <div class="smallBoldLabel notesSection">
         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
@@ -39,7 +36,7 @@
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".dateRange">
-                        <cti:formatInterval type="DATEHM" value="${result.analysis.dateTimeRange}"/>
+                        <cti:formatInterval type="DATEHM" value="${result.analysis.dateTimeRangeForDisplay}"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".intervalLength">
@@ -70,11 +67,23 @@
                 
                     <c:if test="${showReadOption}">
                         <li><cti:button key="read" renderMode="labeledImage"/></li>
-                        <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li>
+                        <%-- not enabled in 5.3.2 <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> --%>
                     </c:if>
-                    <li><cti:button key="csv" renderMode="labeledImage"/></li>
-                    <li><cti:button key="viewTabular" renderMode="labeledImage"/></li>
-                
+                    <li><cti:button key="csv" renderMode="labeledImage" href="csv?analysisId=${result.analysis.analysisId}"/></li>
+                    <c:choose>
+                        <c:when test="${underTabularSizeLimit}">
+                            <li><cti:button key="viewTabular" renderMode="labeledImage" href="tabular?analysisId=${result.analysis.analysisId}"/></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li><cti:button key="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
+                        </c:otherwise>
+                    </c:choose>
+                    <c:url var="linkUrl" value="/spring/bulk/collectionActions">
+                        <c:forEach var="p" items="${deviceCollection.collectionParameters}">
+                            <c:param name="${p.key}" value="${p.value}"/>
+                        </c:forEach>
+                    </c:url>
+                    <li><cti:button key="collectionActions" renderMode="labeledImage" href="${linkUrl}"/></li>
                 </ul>
             </tags:formElementContainer>
         </cti:dataGridCell>
@@ -104,5 +113,5 @@
         </table>
         
     </tags:pagedBox2>
-
+    
 </cti:standardPage>

@@ -35,16 +35,41 @@ public interface ArchiveDataAnalysisDao {
     public void insertSlotValues(int deviceId, int analysisId, DeviceArchiveData data);
     
     /**
-     * Retrieve all slot values for all devices in a given analysis. Returned as a list of
-     * DeviceAttributeIntervalData, each of which contains all slot values for a single device.
-     * Use to collect results after analysis is complete.
+     * Retrieves slot values for the specified subset of devices in a given analysis. 
+     * Returned as a list of DeviceArchiveData, each of which contains all slot values
+     * for a single device. Use to collect results after analysis is complete.
      */
     public List<DeviceArchiveData> getSlotValues(int analysisId, List<Integer> deviceIds);
+    
+    /**
+     * Retrieves all slot values for all devices in a given analysis. Returned as a list of
+     * DeviceArchiveData, each of which contains all slot values for a single device.
+     * Use to collect results after analysis is complete.
+     */
+    public List<DeviceArchiveData> getSlotValues(int analysisId);
     
     /**
      * Retrieves the Analysis object for a given analysisId.
      */
     public Analysis getAnalysisById(int analysisId);
-
+    
+    /**
+     * Retrieves a list of all Analyses.
+     */
+    public List<Analysis> getAllAnalyses();
+    
+    /**
+     * Deletes an analysis and all associated slot and read status information.
+     */
+    public void deleteAnalysis(int analysisId);
+    
+    /**
+     * Retrieves the number of devices in a given analysis.
+     */
+    public int getNumberOfDevicesInAnalysis(int analysisId);
+    
+    /**
+     * Retrieves the list of deviceIds associated with a given analysis.
+     */
     public List<Integer> getRelevantDeviceIds(int analysisId);
 }

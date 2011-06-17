@@ -39,6 +39,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -750,6 +751,30 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         AdjacentPointValues result = new AdjacentPointValues(preceding, succeeding);
         return result;
+    }
+    
+    private YukonRowMapper<PointValueHolder> pointValueRowMapper = new YukonRowMapper<PointValueHolder>() {
+        @Override
+        public PointValueHolder mapRow(YukonResultSet rs) throws SQLException {
+            int id = rs.getInt("PointId");
+            Date timestamp = rs.getDate("Timestamp");
+            int type = rs.getEnum("PointType", PointType.class).getPointTypeId();
+            double value = rs.getDouble("Value");
+            
+            SimplePointValue pointValue = new SimplePointValue(id, timestamp, type, value);
+            return pointValue;
+        }
+    };
+    
+    public PointValueHolder getPointValue(int changeId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RawPointHistory.PointId, Timestamp, ROUND(Value, 2) as Value, PointType");
+        sql.append("FROM RawPointHistory");
+        sql.append("JOIN Point ON RawPointHistory.PointId = Point.PointId");
+        sql.append("WHERE ChangeId").eq(changeId);
+        
+        PointValueHolder pointValueHolder = yukonTemplate.queryForObject(sql, pointValueRowMapper);
+        return pointValueHolder;
     }
     
     @Override

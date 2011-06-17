@@ -15,9 +15,9 @@
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle" />
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
         <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        <%-- interval data analysis --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
+        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />      
+        <%-- ADA Progress --%>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisProgress.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
 
     <tags:bulkActionContainer key="yukon.web.modules.amr.analysisProgress" deviceCollection="${deviceCollection}">
@@ -26,11 +26,7 @@
         <div style="padding: 0px 0px 20px 0px">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".dateRange">
-                    <cti:formatDate value="${backingBean.startDate}" type="DATE" />
-                    <cti:formatDate value="${backingBean.startDate}" type="TIME24H" />
-                    -
-                    <cti:formatDate value="${backingBean.stopDate}" type="DATE" />
-                    <cti:formatDate value="${backingBean.stopDate}" type="TIME24H" />
+                    <cti:formatInterval type="DATEHM" value="${dateTimeRangeForDisplay}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".interval">
                     <cti:formatPeriod value="${backingBean.selectedIntervalDuration}" type="DHMS_REDUCED" />
@@ -77,7 +73,7 @@
         
         <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['viewResultsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
         
-        <div id="viewResultsDiv">
+        <div id="viewResultsDiv" style="display:none;">
             <cti:button key="viewResultsButton" href="results?analysisId=${analysisId}"/>
         </div>
     </tags:bulkActionContainer>

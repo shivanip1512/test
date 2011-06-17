@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -71,8 +72,15 @@ public class ArchiveDataAnalysisController {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("attributes", attributes);
         model.addAttribute("intervalDurations", intervalDurations);
-        model.addAttribute("startDateInitialValue", new Instant().minus(MILLIS_IN_DAY));
-        model.addAttribute("stopDateInitialValue", new Instant());
+        
+        long currentMillis = new Instant().getMillis();
+        long intervalMillis = intervalDurations.iterator().next().getMillis();
+        
+        Instant stopDateInitialValue = getNearestPreviousIntervalTime(currentMillis, intervalMillis);
+        Instant startDateInitialValue = stopDateInitialValue.minus(MILLIS_IN_DAY);
+        
+        model.addAttribute("startDateInitialValue", startDateInitialValue);
+        model.addAttribute("stopDateInitialValue", stopDateInitialValue);
         
         return "archiveDataAnalysis/home.jsp";
     }
@@ -81,6 +89,11 @@ public class ArchiveDataAnalysisController {
     public String analyze(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
+        
+        alignDateRangeToIntervals(backingBean);
+        
+        Interval dateTimeRangeForDisplay = archiveDataAnalysisService.getDateTimeRangeForDisplay(backingBean.getDateRange(), backingBean.getSelectedIntervalDuration());
+        model.addAttribute("dateTimeRangeForDisplay", dateTimeRangeForDisplay);
         
         int analysisId = archiveDataAnalysisService.createAnalysis(backingBean);
         String resultsId = archiveDataAnalysisService.startAnalysis(backingBean, analysisId);
@@ -93,6 +106,46 @@ public class ArchiveDataAnalysisController {
         model.addAttribute("callbackResult", callbackResult);
         
         return "archiveDataAnalysis/analyze.jsp";
+    }
+    
+    private Instant getNearestPreviousIntervalTime(long baseMillis, long intervalMillis) {
+        long millisPastPrevInterval = baseMillis % intervalMillis;
+        long prevIntervalMillis = baseMillis - millisPastPrevInterval;
+        
+        return new Instant(prevIntervalMillis);
+    }
+    
+    private void alignDateRangeToIntervals(ArchiveDataAnalysisBackingBean backingBean) {
+        //If start or end times aren't aligned to interval, align them.
+        //If they are aligned, adjust forward one interval to match expectations
+        //(exclusive start time and inclusive end time)
+        Interval dateRange = backingBean.getDateRange();
+        long start = dateRange.getStartMillis();
+        long end = dateRange.getEndMillis();
+        long selectedInterval = backingBean.getSelectedInterval();
+        
+        long millisPastPrevInterval = start % selectedInterval;
+        long millisAwayFromNextInterval = selectedInterval - millisPastPrevInterval;
+        if(millisAwayFromNextInterval != 0) {
+            //adjust start date forward to the nearest interval
+            start = start + millisAwayFromNextInterval;
+        } else {
+            //adjust forward one full interval
+            start = start + selectedInterval;
+        }
+        
+        millisPastPrevInterval = end % selectedInterval;
+        millisAwayFromNextInterval = selectedInterval - millisPastPrevInterval;
+        if(millisAwayFromNextInterval != 0) {
+            //adjust start date forward to the nearest interval
+            end = end + millisAwayFromNextInterval;
+        } else {
+            //adjust forward one full interval
+            end = end + selectedInterval;
+        }
+
+        backingBean.setStartDate(new Date(start));
+        backingBean.setStopDate(new Date(end));
     }
     
     @InitBinder

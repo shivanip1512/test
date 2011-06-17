@@ -1,5 +1,6 @@
 package com.cannontech.web.bulk.service.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -7,6 +8,7 @@ import java.util.Map.Entry;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
@@ -21,6 +23,7 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -36,18 +39,35 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisService {
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private AttributeService attributeService;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private BulkProcessor bulkProcessor = null;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private RawPointHistoryDao rawPointHistoryDao;
+    private PaoDao paoDao;
+    private static Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
+    
+    {
+        lpAttributeChannelMap = Maps.newLinkedHashMap();
+        lpAttributeChannelMap.put(BuiltInAttribute.LOAD_PROFILE, 1);
+        lpAttributeChannelMap.put(BuiltInAttribute.PROFILE_CHANNEL_2, 2);
+        lpAttributeChannelMap.put(BuiltInAttribute.PROFILE_CHANNEL_3, 3);
+        lpAttributeChannelMap.put(BuiltInAttribute.VOLTAGE_PROFILE, 4);
+    }
     
     @Override
     public int createAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean) {
@@ -70,6 +90,42 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         return resultsId;
     }
     
+    @Override
+    public List<DevicePointValuesHolder> getDevicePointValuesList(List<DeviceArchiveData> dataList) {
+        List<DevicePointValuesHolder> devicePointValuesList = Lists.newArrayList();
+        
+        for(DeviceArchiveData data : dataList) {
+            int paoId = data.getId().getPaoId();
+            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+            DevicePointValuesHolder devicePointValues = new DevicePointValuesHolder(pao.getPaoName());
+            
+            List<Double> pointValues = Lists.newArrayList();
+            
+            for(ArchiveData deviceData : data.getArchiveData()) {
+                Double pointValue = null;
+                Integer changeId = deviceData.getChangeId();
+                
+                if(changeId != null) {
+                    PointValueHolder pointValueHolder = rawPointHistoryDao.getPointValue(changeId);
+                    pointValue = pointValueHolder.getValue();
+                }
+                
+                pointValues.add(pointValue);
+            }
+            devicePointValues.setPointValues(pointValues);
+            devicePointValuesList.add(devicePointValues);
+        }
+        return devicePointValuesList;
+    }
+    
+    @Override
+    public Interval getDateTimeRangeForDisplay(Interval dateRange, Duration intervalLength) {
+        DateTime newStart = dateRange.getStart().minus(intervalLength);
+        DateTime newEnd = dateRange.getEnd().minus(intervalLength);
+
+        return new Interval(newStart, newEnd);
+    }
+    
     private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor) {
         //Set up callback
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
@@ -83,7 +139,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                                                                                                  deviceGroupCollectionHelper);
         
         //Set up cache
-        recentResultsCache.addResult(resultsId, callbackResult);
+        bpRecentResultsCache.addResult(resultsId, callbackResult);
         
         //Run analysis in background process
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
@@ -110,7 +166,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                         Instant date = entry.getKey();
                         Interval intervalRange = new Interval(date, analysis.getIntervalLength());
                         Integer changeId = entry.getValue();
-                        //ArchiveReadStatus readStatus = new ArchiveReadStatus(date, ReadType.DATA_PRESENT, changeId);
                         ArchiveData readData = new ArchiveData(intervalRange, ReadType.DATA_PRESENT, changeId);
                         data.addArchiveData(readData);
                     }
@@ -126,8 +181,8 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     }
     
     @Resource(name="recentResultsCache")
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
+    public void setBackgroundProcessRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.bpRecentResultsCache = recentResultsCache;
     }
     
     @Resource(name="transactionPerItemProcessor")
@@ -158,5 +213,15 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Autowired
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    @Autowired
+    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
+        this.rawPointHistoryDao = rawPointHistoryDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

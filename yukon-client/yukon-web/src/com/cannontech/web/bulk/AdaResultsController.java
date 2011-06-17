@@ -20,12 +20,15 @@ import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
+import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 
 @Controller
 public class AdaResultsController {
+    private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private DeviceIdListCollectionProducer deviceIdListCollectionProducer;
+    ArchiveDataAnalysisService archiveDataAnalysisService;
     
     @RequestMapping("archiveDataAnalysis/results")
     public String view(ModelMap model, int analysisId, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
@@ -57,6 +60,7 @@ public class AdaResultsController {
         result.setSearchResult(searchResult);
         
         model.addAttribute("barWidth", BAR_WIDTH);
+        
         if (analysis.getAttribute().isProfile()) {
             model.addAttribute("showReadOption", true);
         }
@@ -64,11 +68,18 @@ public class AdaResultsController {
         int numberOfIntervals = data.get(0).getNumberOfIntervals();
         model.addAttribute("intervals", numberOfIntervals);
         
+        int numberOfDataPoints = data.size() * numberOfIntervals;
+        boolean underTabularSizeLimit = true;
+        if(numberOfDataPoints > TABULAR_SIZE_LIMIT) {
+            underTabularSizeLimit = false;
+        }
+        model.addAttribute("underTabularSizeLimit", underTabularSizeLimit);
+        
         model.addAttribute("result", result);
         
-        return "intervalDataAnalysis/results.jsp";
+        return "archiveDataAnalysis/results.jsp";
     }
-
+    
     @Autowired
     public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
         this.archiveDataAnalysisDao = archiveDataAnalysisDao;
@@ -77,5 +88,10 @@ public class AdaResultsController {
     @Autowired
     public void setDeviceIdListCollectionProducer(DeviceIdListCollectionProducer deviceIdListCollectionProducer) {
         this.deviceIdListCollectionProducer = deviceIdListCollectionProducer;
+    }
+    
+    @Autowired
+    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
+        this.archiveDataAnalysisService = archiveDataAnalysisService;
     }
 }

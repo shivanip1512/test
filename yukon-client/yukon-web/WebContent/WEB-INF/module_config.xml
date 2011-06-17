@@ -440,6 +440,12 @@
         <page name="analysisResults" type="BASIC">
             <menu>meters</menu>
         </page>
+        <page name="analysisTabular" type="DETAIL">
+            <menu>meters</menu>
+        </page>
+        <page name="analysisList" type="BASIC">
+            <menu>meters</menu>
+        </page>
     </pages>
   </module>
 
