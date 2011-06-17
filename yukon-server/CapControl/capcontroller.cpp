@@ -2041,12 +2041,13 @@ bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
 {
     bool CbcDbChange;
     INT category = resolvePAOCategory(dbChange->getCategory());
+    INT DeviceType = resolveDeviceType(dbChange->getObjectType());
 
     CbcDbChange = (category == PAO_CATEGORY_DEVICE && 
-                   (category == TYPEVERSACOMCBC || category == TYPEEXPRESSCOMCBC || 
-                    category == TYPECBC7010 || category == TYPECBC7020 || 
-                    category == TYPECBC8020 || category == TYPECBCDNP || 
-                    category == TYPEFISHERPCBC || category == TYPECBC6510 ) );
+                   (DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC || 
+                    DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 || 
+                    DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP || 
+                    DeviceType == TYPEFISHERPCBC || DeviceType == TYPECBC6510 ) );
 
     return CbcDbChange;
 }
