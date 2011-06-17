@@ -2038,18 +2038,19 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
     Determines if a DB change is for a CBC device type.
 ---------------------------------------------------------------------------*/
 bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
-{
-    bool CbcDbChange;
-    INT category = resolvePAOCategory(dbChange->getCategory());
-    INT DeviceType = resolveDeviceType(dbChange->getObjectType());
-
-    CbcDbChange = (category == PAO_CATEGORY_DEVICE && 
-                   (DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC || 
-                    DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 || 
-                    DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP || 
-                    DeviceType == TYPEFISHERPCBC || DeviceType == TYPECBC6510 ) );
-
-    return CbcDbChange;
+{       
+    if( resolvePAOCategory(dbChange->getCategory()) != PAO_CATEGORY_DEVICE )
+    {
+        return false;
+    }
+    else
+    {
+        INT DeviceType = resolveDeviceType(dbChange->getObjectType());
+        return( DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC || 
+                DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 || 
+                DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP || 
+                DeviceType == TYPEFISHERPCBC || DeviceType == TYPECBC6510 );
+    }
 }
 
 /*---------------------------------------------------------------------------
