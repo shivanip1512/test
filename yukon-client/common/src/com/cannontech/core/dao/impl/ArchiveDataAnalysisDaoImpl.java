@@ -168,12 +168,11 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
 
     @Override
-    public List<DeviceArchiveData> getSlotValues(int analysisId) {
+    public List<DeviceArchiveData> getSlotValues(int analysisId, List<Integer> deviceIds) {
         Analysis analysis = getAnalysisById(analysisId);
-        List<Integer> deviceList = getRelevantDeviceIds(analysisId);
         
         List<DeviceArchiveData> dataList = Lists.newArrayList();
-        for(Integer deviceId : deviceList) {
+        for(Integer deviceId : deviceIds) {
             //get device + slot values for relevant slots - each set becomes a DeviceArchiveData
             DeviceArchiveData data = getDeviceSlotValues(analysis, deviceId);
             dataList.add(data);
@@ -204,7 +203,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return slotList;
     }
     
-    private List<Integer> getRelevantDeviceIds(int analysisId) {
+    @Override
+    public List<Integer> getRelevantDeviceIds(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT DeviceId");
         sql.append("FROM ArchiveDataAnalysisSlotValues");

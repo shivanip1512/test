@@ -39,10 +39,12 @@ public interface ArchiveDataAnalysisDao {
      * DeviceAttributeIntervalData, each of which contains all slot values for a single device.
      * Use to collect results after analysis is complete.
      */
-    public List<DeviceArchiveData> getSlotValues(int analysisId);
+    public List<DeviceArchiveData> getSlotValues(int analysisId, List<Integer> deviceIds);
     
     /**
      * Retrieves the Analysis object for a given analysisId.
      */
     public Analysis getAnalysisById(int analysisId);
+
+    public List<Integer> getRelevantDeviceIds(int analysisId);
 }
