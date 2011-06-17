@@ -90,7 +90,8 @@ public final class YukonGroupRoleLoader implements Runnable
       			final LiteYukonRole role = roleMap.get(roleID);
       			final LiteYukonRoleProperty roleProperty = rolePropertyMap.get(rolePropertyID);
       			
-      			// Check to see if we should use the properties default 
+      			// Check to see if we should use the properties default
+                // The logic here needs to mimic com.cannontech.core.roleproperties.InputTypeFactory.convertPropertyValue(InputType<?>, String).
       			if(StringUtils.isBlank(value) || value.trim().equals(CtiUtilities.STRING_NONE)) {
       			    //we will print a warning and let the exception propogate
       			    if (roleProperty == null) {

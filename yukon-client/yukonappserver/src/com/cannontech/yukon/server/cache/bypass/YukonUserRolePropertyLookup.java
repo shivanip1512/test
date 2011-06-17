@@ -85,7 +85,8 @@ public class YukonUserRolePropertyLookup
     		    JdbcUtils.closeStatement(pstmt);
             }
     	
-    		//no user role property, so get the group one...first need to find all the groups for this user, though
+    		// no user role property, so get the group one...first need to find all the groups for this user, though
+            // The logic here needs to mimic com.cannontech.core.roleproperties.InputTypeFactory.convertPropertyValue(InputType<?>, String).
     		if(StringUtils.isBlank(propertyValue) || propertyValue.trim().equals(CtiUtilities.STRING_NONE))
     		{
     			sql = "SELECT YUG.GroupID, YGR.Value " +
@@ -121,7 +122,7 @@ public class YukonUserRolePropertyLookup
     		}
     		
     		//not sure why we can't find it, but better return default value
-    		
+            // The logic here needs to mimic com.cannontech.core.roleproperties.InputTypeFactory.convertPropertyValue(InputType<?>, String).    		
     		if(StringUtils.isBlank(propertyValue) || propertyValue.trim().equals(CtiUtilities.STRING_NONE))
     		{
                 sql = "SELECT DefaultValue " +
