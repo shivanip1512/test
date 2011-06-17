@@ -1,32 +1,22 @@
 package com.cannontech.web.bulk.service;
 
+import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
+import org.joda.time.Interval;
 
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.PixelData;
+import com.cannontech.common.bulk.model.ReadSequence;
 import com.cannontech.common.bulk.model.ReadType;
-import com.cannontech.common.search.SearchResult;
-import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
-import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
-import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.google.common.collect.Lists;
 
 public class AdaResultsHelper {
 
-    private DeviceCollectionFactory deviceCollectionFactory;
-    
-    public ArchiveAnalysisResult buildResults(Analysis analysis, int barWidth, List<DeviceArchiveData> data, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
-        ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
-//        DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
-//        result.setDeviceCollection(collection);
-        
+    public static void buildBars(Analysis analysis, int barWidth, List<DeviceArchiveData> data) {
+        // Build pixel data for the visible devices subset
         long analysisStartLong = analysis.getDateTimeRange().getStartMillis();
         long analysisEndLong = analysis.getDateTimeRange().getEndMillis();
         long analysisLength = analysisEndLong - analysisStartLong;
@@ -95,28 +85,39 @@ public class AdaResultsHelper {
                     done = true;
                 }
             }
-
-            device.setTimeline(pixels);
+            
+            List<ReadSequence> readData = compressPixelData(pixels);
+            device.setTimeline(readData);
         }
         
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = data.size();
-        
-        if (numberOfResults < toIndex) toIndex = numberOfResults;
-        data = data.subList(startIndex, toIndex);
-        
-        SearchResult<DeviceArchiveData> searchResult = new SearchResult<DeviceArchiveData>();
-        searchResult.setResultList(data);
-        searchResult.setBounds(startIndex, itemsPerPage, numberOfResults);
-        result.setSearchResult(searchResult);
-        
-        return result;
     }
     
-    private void setPixelColor(List<PixelData> pixels, int pixelIndex, PixelData currentPixel) {
+    private static List<ReadSequence> compressPixelData(List<PixelData> pixels) {
+        long start = pixels.get(0).getStart();
+        Iterator<PixelData> iter = pixels.iterator();
+        int colorWidth = 1; //px width of div
+        List<ReadSequence> readData = Lists.newArrayList();
+        
+        while(iter.hasNext()) {
+            PixelData current = iter.next();
+            PixelData next = iter.hasNext() ? iter.next() : null;
+            
+            if (next == null || next.getReadType() != current.getReadType()) {
+                ReadSequence sequence = new ReadSequence(colorWidth, current.getReadType().name(), new Interval(start, current.getEnd()));
+                readData.add(sequence);
+                if (next != null) {
+                    start = next.getStart();
+                    colorWidth = 1;
+                }
+            } else {
+                colorWidth++;
+            }
+        }
+        
+        return readData;
+    }
+
+    private static void setPixelColor(List<PixelData> pixels, int pixelIndex, PixelData currentPixel) {
         if (pixelIndex > 0) {
             adjustForTransition(pixels, pixelIndex, currentPixel);
         } else {
@@ -127,7 +128,7 @@ public class AdaResultsHelper {
         }
     }
 
-    private void adjustForTransition(List<PixelData> pixels, int pixelIndex, PixelData currentPixel) {
+    private static void adjustForTransition(List<PixelData> pixels, int pixelIndex, PixelData currentPixel) {
         if (currentPixel.isHasTransition()) {
             // There was a transition, use the opposite read type of the previous pixel.
             PixelData lastPixel = pixels.get(pixelIndex - 1);

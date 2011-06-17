@@ -8,61 +8,67 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
-import com.google.common.collect.Lists;
 
 @Controller
 public class AdaResultsController {
     private final static int BAR_WIDTH = 400;
-    private AdaResultsHelper adaResultsHelper;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private DeviceIdListCollectionProducer deviceIdListCollectionProducer;
     
     @RequestMapping("archiveDataAnalysis/results")
     public String view(ModelMap model, int analysisId, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
-        
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
-        List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId);
+        ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
-        ArchiveAnalysisResult result = adaResultsHelper.buildResults(analysis, BAR_WIDTH, data, request);
+        // Build device collection
+        List<Integer> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
+        DeviceCollection collection = deviceIdListCollectionProducer.createDeviceCollection(deviceIds);
+        model.addAttribute("deviceCollection", collection);
+        model.addAllAttributes(collection.getCollectionParameters());
+
+        // Page the result
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = deviceIds.size();
+        if (numberOfResults < toIndex) toIndex = numberOfResults;
         
+        // Build bars for this page of devices
+        deviceIds = deviceIds.subList(startIndex, toIndex);
+        List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId, deviceIds);
+        AdaResultsHelper.buildBars(analysis, BAR_WIDTH, data);
+        
+        SearchResult<DeviceArchiveData> searchResult = new SearchResult<DeviceArchiveData>();
+        searchResult.setResultList(data);
+        searchResult.setBounds(startIndex, itemsPerPage, numberOfResults);
+        result.setSearchResult(searchResult);
+        
+        model.addAttribute("barWidth", BAR_WIDTH);
         if (analysis.getAttribute().isProfile()) {
             model.addAttribute("showReadOption", true);
         }
         
-        //Generate device collection from device ids list
-        List<Integer> idList = Lists.newArrayList();
-        for(DeviceArchiveData deviceData : data) {
-            int id = deviceData.getId().getPaoId();
-            idList.add(id);
-        }
-        DeviceCollection collection = deviceIdListCollectionProducer.createDeviceCollection(idList);
-        
         int numberOfIntervals = data.get(0).getNumberOfIntervals();
-        
         model.addAttribute("intervals", numberOfIntervals);
-        model.addAttribute("deviceCollection", collection);
-        model.addAllAttributes(collection.getCollectionParameters());
+        
         model.addAttribute("result", result);
-        model.addAttribute("barWidth", BAR_WIDTH);
         
         return "intervalDataAnalysis/results.jsp";
     }
 
-    @Autowired
-    public void setAdaResultsHelper(AdaResultsHelper adaResultsHelper) {
-        this.adaResultsHelper = adaResultsHelper;
-    }
-    
     @Autowired
     public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
         this.archiveDataAnalysisDao = archiveDataAnalysisDao;
