@@ -4442,12 +4442,14 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                      currentCCSubstation->setDynamicData(rdr);
                      CtiCCAreaPtr currentSA = NULL;
                      if (substationId > 0)
+                     {    
                         currentSA = findAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
-                     else
-                     {
-                         if (paobject_area_map->find(currentCCSubstation->getSaEnabledId()) != paobject_area_map->end())
-                             currentSA = paobject_area_map->find(currentCCSubstation->getSaEnabledId())->second;
                      }
+                     else if (paobject_area_map->find(currentCCSubstation->getSaEnabledId()) != paobject_area_map->end())
+                     {        
+                         currentSA = paobject_area_map->find(currentCCSubstation->getSaEnabledId())->second;
+                     }
+                     
                      if (!currentSA)
                      {
                          currentCCSubstation->setSaEnabledId(0);
