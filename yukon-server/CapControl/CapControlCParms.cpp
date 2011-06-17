@@ -36,7 +36,6 @@ BOOL    _OP_STATS_DYNAMIC_UPDATE;
 ULONG   _LINK_STATUS_TIMEOUT;
 bool    _RATE_OF_CHANGE;
 unsigned long   _RATE_OF_CHANGE_DEPTH;
-BOOL    _TIME_OF_DAY_VAR_CONF;
 LONG    _VOLT_REDUCTION_SYSTEM_POINTID;
 BOOL    _AUTO_VOLT_REDUCTION;
 ULONG   _VOLT_REDUCTION_COMMANDS;
@@ -464,25 +463,7 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE_DEPTH: " << _RATE_OF_CHANGE_DEPTH << endl;
     }
 
-    _TIME_OF_DAY_VAR_CONF = false;  // number of command/retries for disable ovuv
-
-    strcpy(var, "CAP_CONTROL_TIME_OF_DAY_VAR_CONF");
-    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        CtiToLower(str);
-        _TIME_OF_DAY_VAR_CONF = (str == "true" ? TRUE : FALSE);
-        if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
+    
     _VOLT_REDUCTION_SYSTEM_POINTID = 0; // pointid
 
     strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_SYSTEM_POINTID");

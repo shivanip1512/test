@@ -26,6 +26,7 @@
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointIdList;
 using std::endl;
+using std::set;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -38,7 +39,6 @@ extern BOOL _LOG_MAPID_INFO;
 extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
-extern BOOL _TIME_OF_DAY_VAR_CONF;
 extern LONG _MAXOPS_ALARM_CATID;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 
@@ -8919,6 +8919,38 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
     return retVal;
 }
 
+int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates) 
+{
+    int currentNum = 0;
+    std::vector<CtiCCCapBankPtr> banks = getAllSwitchedCapBanks();
+    for(LONG j=0;j<banks.size();j++)
+    {
+        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[j];
+        if (setOfStates.find(currentCapBank->getControlStatus()) != setOfStates.end())
+        {
+            currentNum += 1;
+        }
+    }
+    return currentNum;
+}
+
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks() 
+{
+    return getAllCapBanks( true );
+}
+
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( bool onlySwitched ) 
+{
+    std::vector<CtiCCCapBankPtr> banks;
+    for(LONG i=0;i<_ccfeeders.size();i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+        std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllCapBanks(onlySwitched);
+        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());
+    }
+    return banks;
+}
+    
 CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
@@ -8929,285 +8961,156 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
     {
         try
         {
-
-            LONG currentNumClosed = 0;
-            LONG numOfBanks = 0;
-            try
-            {
-                for(LONG i=0;i<_ccfeeders.size();i++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                    for(LONG j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
-                        {
-                            numOfBanks += 1;
-                            if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
-                                currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                                currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail )
-                            {
-                                currentNumClosed += 1;
-                            }
-                        }
-                    }
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
+            int numOfBanks = getAllSwitchedCapBanks().size();
+            int closeStates[] = {CtiCCCapBank::Close,CtiCCCapBank::CloseFail,CtiCCCapBank::ClosePending,CtiCCCapBank::CloseQuestionable};
+            set<int> closedStates = set<int>(closeStates, closeStates + 4);
+            int currentNumClosed = getNumOfBanksInState( closedStates );
+            
             int targetNumClose = numOfBanks * (_percentToClose * 0.01);
-            int targetNumOpen =  numOfBanks - targetNumClose;
-            int currentNumOpen = numOfBanks - currentNumClosed;
+            int targetState = CtiCCCapBank::Close; //close
+            int targetNumInState = targetNumClose;
+            int currentNumInState = currentNumClosed;
+            if (targetNumClose < currentNumClosed)
+            {
+                targetState = CtiCCCapBank::Open; //open
+                targetNumInState = numOfBanks - targetNumClose;
+                currentNumInState = numOfBanks - currentNumClosed;    
+            }
             CtiCCFeeder* currentFeeder = NULL;
             CtiCCCapBank* capBank =  NULL;
             int loopCount = 0;
+
             if (_CC_DEBUG & CC_DEBUG_TIMEOFDAY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " - SubBus: "<<getPaoName() << " percentClose: " << _percentToClose << "% targetClose: " << targetNumClose <<
-                       " currentClose: " << currentNumClosed << " targetOpen: " << targetNumOpen  <<" currentOpen: " << currentNumOpen << endl;
+                       " currentClose: " << currentNumClosed << " targetOpen: " << (numOfBanks - targetNumClose)  <<" currentOpen: " << (numOfBanks - currentNumClosed) << endl;
             }
-            if (targetNumClose >= currentNumClosed)
+            setSendMoreTimeControlledCommandsFlag(FALSE);
+            
+            LONG currentPosition = getLastFeederControlledPosition();
+            while (currentNumInState < targetNumInState )
             {
+                if( currentPosition >= _ccfeeders.size()-1 )
+                    currentPosition = 0;
+                else
+                    currentPosition++;
 
-                setSendMoreTimeControlledCommandsFlag(FALSE);
-                LONG currentPosition = getLastFeederControlledPosition();
-                while (currentNumClosed < targetNumClose )
+                currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                if( !currentFeeder->getDisableFlag() &&
+                    !currentFeeder->getWaiveControlFlag() &&
+                    currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                 {
-                    if( currentPosition >= _ccfeeders.size()-1 )
-                        currentPosition = 0;
-                    else
-                        currentPosition++;
-
-                    currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
-                    if( !currentFeeder->getDisableFlag() &&
-                        !currentFeeder->getWaiveControlFlag() &&
-                        currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
+                    try
                     {
-                        try
-                        {
-                            capBank = currentFeeder->findCapBankToChangeVars(-1, pointChanges);  //close
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
+                        //CtiCCCapBank::Open = 0, CtiCCCapBank::Close = 1
+                        //need to pass in -1 for close and 1 for open
+                        int operation = (targetState == CtiCCCapBank::Close ? -1 : 1);
+                        capBank = currentFeeder->findCapBankToChangeVars( operation, pointChanges);  
                     }
-                    if (capBank != NULL)
+                    catch(...)
                     {
-                        string text = "";
-
-                        try
-                        {
-                            if (!_TIME_OF_DAY_VAR_CONF)
-                                request = currentFeeder->createForcedVarRequest(capBank, pointChanges, ccEvents, CtiCCCapBank::Close, "TimeOfDay Control");
-                            else
-                            {
-                                text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, getCurrentVarLoadPointValue(),  getCurrentVarLoadPointValue());
-                                if ( (currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() )  ||
-                                     (currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0
-                                      && currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
-                                {
-                                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  currentFeeder->getCurrentVarLoadPointValue(),
-                                                                                      currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
-                                }
-                                else
-                                {
-                                    //assume substation points...
-                                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
-                                                                                      getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                                }
-
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-
-
-                        if( request != NULL )
-                        {
-                            try
-                            {
-                                if (!_TIME_OF_DAY_VAR_CONF)
-                                    currentFeeder->createForcedVarConfirmation(capBank, pointChanges, ccEvents, "TimeOfDay Control");
-                                else
-                                {
-                                    currentFeeder->setRecentlyControlledFlag(TRUE);
-                                    setRecentlyControlledFlag(TRUE);
-                                    setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
-                                    if (currentNumClosed + 1 < targetNumClose)
-                                    {
-                                        setSendMoreTimeControlledCommandsFlag(TRUE);
-                                        currentNumClosed = targetNumClose;
-                                    }
-                                }
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-
-                            try
-                            {
-
-                                pilMessages.push_back(request);
-                                setLastOperationTime(currentDateTime);
-                                setLastFeederControlled(currentFeeder->getPaoId());
-                                currentFeeder->setLastOperationTime(currentDateTime);
-                                setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        setBusUpdatedFlag(TRUE);
-
-                        currentNumClosed += 1;
-                    }
-                    else
-                    {
-                        if (loopCount > _ccfeeders.size() - 1)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " No more banks available to close on subBus: "<<getPaoName()<< endl;
-
-                            break;
-                        }
-                        else
-                            loopCount += 1;
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-            }
-            else
-            {
-                if (targetNumOpen >= currentNumOpen)
+                if (capBank != NULL)
                 {
+                    string text = "";
 
-                    setSendMoreTimeControlledCommandsFlag(FALSE);
-                    LONG currentPosition = getLastFeederControlledPosition();
-                    while (currentNumOpen < targetNumOpen)
+                    try
                     {
-                        if( currentPosition >= _ccfeeders.size()-1 )
-                            currentPosition = 0;
-                        else
-                            currentPosition++;
-
-                        currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
-                        if( !currentFeeder->getDisableFlag() &&
-                            !currentFeeder->getWaiveControlFlag() &&
-                            currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
-                        {
-
-                            try
-                            {
-                                capBank = currentFeeder->findCapBankToChangeVars(1, pointChanges);  //open
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        if (capBank != NULL)
-                        {
-                            string text = "";
-                            try
-                            {
-
-                                if (!_TIME_OF_DAY_VAR_CONF)
-                                    request = currentFeeder->createForcedVarRequest(capBank, pointChanges, ccEvents, CtiCCCapBank::Open, "TimeOfDay Control");
-                                else
-                                {
-                                    text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, getCurrentVarLoadPointValue(),  getCurrentVarLoadPointValue());
-                                    if ( (currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() )  ||
-                                         (currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0
-                                          && currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
-                                    {
-                                        request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  currentFeeder->getCurrentVarLoadPointValue(),
-                                                                                          currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
-                                    }
-                                    else
-                                    {
-                                        request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
-                                                                                          getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                                    }
-                                }
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-
-
-                            if( request != NULL )
-                            {
-                                try
-                                {
-                                    if (!_TIME_OF_DAY_VAR_CONF)
-                                        currentFeeder->createForcedVarConfirmation(capBank, pointChanges, ccEvents, "TimeOfDay Control");
-                                    else
-                                    {
-                                        currentFeeder->setRecentlyControlledFlag(TRUE);
-                                        setRecentlyControlledFlag(TRUE);
-                                        setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
-                                        if (currentNumOpen + 1 < targetNumOpen)
-                                        {
-                                            setSendMoreTimeControlledCommandsFlag(TRUE);
-                                            currentNumOpen = targetNumOpen;
-                                        }
-                                    }
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                                try
-                                {
-                                    pilMessages.push_back(request);
-                                    setLastOperationTime(currentDateTime);
-                                    setLastFeederControlled(currentFeeder->getPaoId());
-                                    currentFeeder->setLastOperationTime(currentDateTime);
-                                    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                            }
-                            setBusUpdatedFlag(TRUE);
-
-                            currentNumOpen += 1;
-                        }
+                        if (getStrategy()->getMaxConfirmTime() == 0)
+                            request = currentFeeder->createForcedVarRequest(capBank, pointChanges, ccEvents, targetState, "TimeOfDay Control");
                         else
                         {
-                            if (loopCount > _ccfeeders.size() -1 )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " No more banks available to open on subBus: "<<getPaoName()<< endl;
+                            text = currentFeeder->createTextString(getStrategy()->getControlMethod(), targetState, getCurrentVarLoadPointValue(),  getCurrentVarLoadPointValue());
 
-                                break;
+                            DOUBLE varValue = getCurrentVarLoadPointValue();
+                            DOUBLE phaseAValue = getPhaseAValue();
+                            DOUBLE phaseBValue = getPhaseBValue();
+                            DOUBLE phaseCValue = getPhaseCValue();
+                            if ( (currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() )  ||
+                                 (currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0
+                                  && currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
+                            {
+                                varValue = currentFeeder->getCurrentVarLoadPointValue();
+                                phaseAValue = currentFeeder->getPhaseAValue();
+                                phaseBValue = currentFeeder->getPhaseBValue();
+                                phaseCValue = currentFeeder->getPhaseCValue();
+                                
+                            }
+                            if (targetState == CtiCCCapBank::Close)
+                            {
+                                request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  varValue,
+                                                                                  phaseAValue, phaseBValue, phaseCValue);
                             }
                             else
-                                loopCount += 1;
+                            {
+                                request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, varValue,
+                                                                                  phaseAValue, phaseBValue, phaseCValue);
+                            }
                         }
                     }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+
+                    if( request != NULL )
+                    {
+                        try
+                        {
+                            if (getStrategy()->getMaxConfirmTime() == 0)
+                                currentFeeder->createForcedVarConfirmation(capBank, pointChanges, ccEvents, "TimeOfDay Control");
+                            else
+                            {
+                                currentFeeder->setRecentlyControlledFlag(TRUE);
+                                setRecentlyControlledFlag(TRUE);
+                                setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
+                                if (currentNumInState + 1 < targetNumInState)
+                                {
+                                    setSendMoreTimeControlledCommandsFlag(TRUE);
+                                    currentNumInState = targetNumInState;
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+
+                        try
+                        {
+                            pilMessages.push_back(request);
+                            setLastOperationTime(currentDateTime);
+                            setLastFeederControlled(currentFeeder->getPaoId());
+                            currentFeeder->setLastOperationTime(currentDateTime);
+                            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                    setBusUpdatedFlag(TRUE);
+
+                    currentNumInState += 1;
+                }
+                else
+                {
+                    if (loopCount > _ccfeeders.size() - 1)
+                    {
+                        string actionString = (targetState == CtiCCCapBank::Close ? " close " : " open ");
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " No more banks available to" << actionString << "on subBus: "<<getPaoName()<< endl;
+                        break;
+                    }
+                    else
+                        loopCount += 1;
                 }
             }
         }
@@ -9992,7 +9895,7 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
     _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
     _primaryBusFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
 
-    if (!_TIME_OF_DAY_VAR_CONF)
+    if (getStrategy()->getMaxConfirmTime() == 0)
     {
         setSendMoreTimeControlledCommandsFlag(FALSE);
     }

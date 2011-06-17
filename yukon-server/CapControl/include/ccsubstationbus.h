@@ -271,6 +271,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL maxOperationsHitDisableBus();
     void checkForMaxDailyOpsHit();
 
+
+	int getNumOfBanksInState(std::set<int> s);
+    std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( ); 
+    std::vector<CtiCCCapBankPtr> getAllCapBanks( bool onlySwitched=false ); 
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
