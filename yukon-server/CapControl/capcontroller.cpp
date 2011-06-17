@@ -2040,15 +2040,14 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
 {
     bool CbcDbChange;
-    CbcDbChange = (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
-                   (resolveDeviceType(dbChange->getObjectType()) == TYPEVERSACOMCBC ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC8020 ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPECBCDNP ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
-                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) );
+    INT category = resolvePAOCategory(dbChange->getCategory());
+
+    CbcDbChange = (category == PAO_CATEGORY_DEVICE && 
+                   (category == TYPEVERSACOMCBC || category == TYPEEXPRESSCOMCBC || 
+                    category == TYPECBC7010 || category == TYPECBC7020 || 
+                    category == TYPECBC8020 || category == TYPECBCDNP || 
+                    category == TYPEFISHERPCBC || category == TYPECBC6510 ) );
+
     return CbcDbChange;
 }
 
