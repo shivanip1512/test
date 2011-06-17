@@ -21,22 +21,10 @@
     
     // CANCEL FUNCTION
     function cancelLoadProfile(requestId){
-    
+   
         // stop - send request to refreshPending() with a stopRequestId parameter
-        var stopUrl = '/spring/widget/pendingProfilesWidget/refreshPending';
-        var stopParams = $H({
-            'deviceId': ${deviceId},
-            'stopRequestId': requestId
-        });
-        
-        new Ajax.Updater('${divId}',stopUrl, {
-          'parameters': stopParams,
-          'evalScripts': true,
-          'onSuccess': function(response) {
-                       },
-          'onException': function(response) {
-                       }
-        });
+        ${widgetParameters.jsWidget}.setParameter('stopRequestId', requestId);
+        ${widgetParameters.jsWidget}.doDirectActionRefresh('refreshPending');
     }   
 </script>
 
