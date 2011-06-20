@@ -94,13 +94,12 @@ public class AdaResultsHelper {
     
     private static List<ReadSequence> compressPixelData(List<PixelData> pixels) {
         long start = pixels.get(0).getStart();
-        Iterator<PixelData> iter = pixels.iterator();
         int colorWidth = 1; //px width of div
         List<ReadSequence> readData = Lists.newArrayList();
         
-        while(iter.hasNext()) {
-            PixelData current = iter.next();
-            PixelData next = iter.hasNext() ? iter.next() : null;
+        for (int i = 0; i < pixels.size(); i++) {
+            PixelData current = pixels.get(i);
+            PixelData next = i + 1 < pixels.size() ? pixels.get(i + 1) : null;
             
             if (next == null || next.getReadType() != current.getReadType()) {
                 ReadSequence sequence = new ReadSequence(colorWidth, current.getReadType().name(), new Interval(start, current.getEnd()));
