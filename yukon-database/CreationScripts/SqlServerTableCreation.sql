@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/20/2011 10:52:07 AM                        */
+/* Created on:     6/20/2011 11:22:31 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9018,7 +9018,7 @@ INSERT INTO YukonRole VALUES(-213,'Device Actions','Operator','Operator access t
 INSERT INTO YukonRole VALUES(-400,'Residential Customer','Consumer','Access to residential customer information');
 
 /* Capacitor Control roles */
-INSERT INTO YukonRole VALUES(-700,'Administrator','Capacitor Control','Allows a user to change overall settings of the Cap Control system .');
+INSERT INTO YukonRole VALUES(-700,'Cap Control Settings','Capacitor Control','Allows a user to change overall settings of the Cap Control system .'); 
 
 /* IVR roles */
 INSERT INTO YukonRole VALUES(-800,'IVR','Notifications','Settings for Interactive Voice Response module');

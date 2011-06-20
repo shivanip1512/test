@@ -327,6 +327,12 @@ SET Description = 'Authentication method. Possible values are leaving the field 
 WHERE RolePropertyId = -1304;
 /* End YUK-9924 */
 
+/* Start YUK-9928 */
+UPDATE YukonRole
+SET RoleName = 'Cap Control Settings'
+WHERE RoleId = -700;
+/* End YUK-9928 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
