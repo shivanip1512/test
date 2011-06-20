@@ -25,6 +25,5 @@
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
-	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="/third-party/linked-sources/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
