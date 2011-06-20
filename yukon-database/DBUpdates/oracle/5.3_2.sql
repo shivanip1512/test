@@ -341,6 +341,18 @@ INSERT INTO YukonRoleProperty VALUES(-20892,-201,'Thermostat Schedule 7 Day','fa
 INSERT INTO YukonRoleProperty VALUES(-40205,-400,'Thermostat Schedule 7 Day','false','Allows a user to select a different schedule for each day of the week when editing a thermostat schedule.'); 
 /* End YUK-9955 */
 
+/* Start YUK-9950 */
+UPDATE Point
+SET PointName = 'Average Line Voltage'
+WHERE PointId IN (SELECT P.PointId
+                  FROM Point P
+                  JOIN YukonPaobject PAO ON P.PaobjectId = PAO.PaobjectId 
+                  WHERE (PAO.Type LIKE 'CBC 802%' AND 
+                         P.PointName = 'Line Voltage') 
+                    OR  (PAO.Type LIKE 'CBC 702%' AND 
+                         P.PointName = 'Voltage'));
+/* End YUK-9950 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
