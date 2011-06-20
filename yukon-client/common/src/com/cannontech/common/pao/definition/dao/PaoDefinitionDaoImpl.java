@@ -876,7 +876,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             if (initialStateStr != null) {
                 List<LiteState> states = stateGroup.getStatesList();
                 for (LiteState state : states) {
-                    if (initialStateStr.equals(state.getStateText())) {
+                    if (initialStateStr.equalsIgnoreCase(state.getStateText())) {
                         initialState = state.getStateRawState();
                         break;
                     }
