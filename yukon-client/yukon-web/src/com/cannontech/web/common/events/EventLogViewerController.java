@@ -86,7 +86,7 @@ import com.google.common.collect.SetMultimap;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_EVENT_LOGS)
 public class EventLogViewerController {
 
-    private final int maxCsvRows = 65535;
+    private final int maxCsvRows = 65535; // The total number of rows possible in excel minus one row for the header row.
     private final String eventLogResolvablePrefix ="yukon.common.events.";
     
     private DatePropertyEditorFactory datePropertyEditorFactory;
