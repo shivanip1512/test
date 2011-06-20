@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/20/2011 12:30:22 PM                        */
+/* Created on:     6/20/2011 2:34:43 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9817,6 +9817,8 @@ create table ZBEndPoint (
    DeviceId             numeric              not null,
    InstallCode          varchar(255)         not null,
    MacAddress           varchar(255)         not null,
+   NodeId               numeric              not null,
+   DestinationEndPointId numeric              not null,
    constraint PK_ZBEndPoint primary key (DeviceId)
 )
 go

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/20/2011 12:26:39 PM                        */
+/* Created on:     6/20/2011 2:36:18 PM                         */
 /*==============================================================*/
 
 
@@ -9320,6 +9320,8 @@ create table ZBEndPoint  (
    DeviceId             NUMBER                          not null,
    InstallCode          VARCHAR2(255)                   not null,
    MacAddress           VARCHAR2(255)                   not null,
+   NodeId               NUMBER                          not null,
+   DestinationEndPointId NUMBER                          not null,
    constraint PK_ZBEndPoint primary key (DeviceId)
 );
 

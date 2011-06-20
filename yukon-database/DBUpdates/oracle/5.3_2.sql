@@ -353,6 +353,23 @@ WHERE PointId IN (SELECT P.PointId
                          P.PointName = 'Voltage'));
 /* End YUK-9950 */
 
+
+/* Start YUK-9946 */
+ALTER TABLE ZBEndPoint 
+ADD NodeId NUMBER NULL;
+UPDATE ZBEndPoint
+SET NodeId = 0;
+ALTER TABLE ZBEndPoint
+MODIFY NodeId NUMBER NOT NULL;
+
+ALTER TABLE ZBEndPoint 
+ADD DestinationEndPointId NUMBER;
+UPDATE ZBEndPoint
+SET DestinationEndPointId = 1;
+ALTER TABLE ZBEndPoint
+MODIFY DestinationEndPointId NUMBER NOT NULL;
+/* End YUK-9946 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
