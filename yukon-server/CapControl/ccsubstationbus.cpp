@@ -8933,7 +8933,7 @@ int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates)
 std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( ) 
 {
     std::vector<CtiCCCapBankPtr> banks;
-    for each (CtiCCFeeder* currentFeeder in _ccfeeders)
+    for each (CtiCCFeederPtr currentFeeder in _ccfeeders)
     {
         std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllCapBanks( );
         banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());
@@ -8943,7 +8943,7 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( )
 std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( ) 
 {
     std::vector<CtiCCCapBankPtr> banks;
-    for each (CtiCCFeeder* currentFeeder in _ccfeeders)
+    for each (CtiCCFeederPtr currentFeeder in _ccfeeders)
     {
         std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllSwitchedCapBanks( );
         banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());    
@@ -8976,8 +8976,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                 targetNumInState = numOfBanks - targetNumClose;
                 currentNumInState = numOfBanks - currentNumClosed;    
             }
-            CtiCCFeeder* currentFeeder = NULL;
-            CtiCCCapBank* capBank =  NULL;
+            CtiCCFeederPtr currentFeeder = NULL;
+            CtiCCCapBankPtr capBank =  NULL;
             int loopCount = 0;
 
             if (_CC_DEBUG & CC_DEBUG_TIMEOFDAY )
