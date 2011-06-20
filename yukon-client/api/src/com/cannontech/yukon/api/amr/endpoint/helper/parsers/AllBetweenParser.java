@@ -13,8 +13,11 @@ public class AllBetweenParser extends ValueParser {
     public PointValueSelector parse(SimpleXPathTemplate template) {
         PointValueSelector selector = super.parse(template);
 
-        Date stopDate = template.evaluateAsDate("@from", new Date());
-        Date startDate = template.evaluateAsDate("@to");
+        Date startDate = template.evaluateAsDate("@from", new Date());
+        Date stopDate = template.evaluateAsDate("@to");
+        if (startDate.after(stopDate)) {
+            throw new RuntimeException("from cannot be after to for allBetween");
+        }
 
         Boolean fromInclusive = template.evaluateAsBoolean("@fromInclusive", false);
         Boolean toInclusive = template.evaluateAsBoolean("@toInclusive", true);
@@ -25,8 +28,8 @@ public class AllBetweenParser extends ValueParser {
         String orderString = template.evaluateAsString("@order");
         Order order = OrderHelper.getOrderByName(orderString, Order.FORWARD);
 
-        selector.setStopDate(stopDate);
         selector.setStartDate(startDate);
+        selector.setStopDate(stopDate);
         selector.setClusivity(clusivity);
         selector.setNumberOfRows(limit);
         selector.setOrder(order);

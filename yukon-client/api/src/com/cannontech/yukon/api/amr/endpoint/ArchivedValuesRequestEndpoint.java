@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.joda.time.DateTime;
@@ -20,6 +21,7 @@ import org.springframework.xml.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -57,6 +59,8 @@ import com.google.common.collect.Maps;
 
 @Endpoint
 public class ArchivedValuesRequestEndpoint {
+    private Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
+
     private UnitMeasureDao unitMeasureDao;
     private RawPointHistoryDao rawPointHistoryDao;
     private PointDao pointDao;
@@ -122,18 +126,22 @@ public class ArchivedValuesRequestEndpoint {
                 buildResponse(response, responseData);
             }
         } catch (XmlValidationException xmle) {
+            log.error("XML validation error", xmle);
             Element error = XMLFailureGenerator.generateFailure(response, xmle, "InvalidResponseType",
                                                                 xmle.getMessage());
             response.addContent(error);
         } catch (XPathException xpe) {
+            log.error("XML validation error", xpe);
             Element error = XMLFailureGenerator.generateFailure(response, xpe, "XmlParseError",
                                                                 xpe.getMessage());
             response.addContent(error);
         } catch (DOMException dome) {
+            log.error("XML validation error", dome);
             Element error = XMLFailureGenerator.generateFailure(response, dome, "XmlParseError",
                                                                 dome.getMessage());
             response.addContent(error);
         } catch (Exception exception) {
+            log.error("other error", exception);
             Element error = XMLFailureGenerator.generateFailure(response, exception, "OtherError",
                                                                 exception.getMessage());
             response.addContent(error);
