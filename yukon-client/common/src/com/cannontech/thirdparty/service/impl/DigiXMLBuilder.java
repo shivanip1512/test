@@ -40,15 +40,8 @@ public class DigiXMLBuilder {
         installCode = installCode.replaceAll(":","");
         
         int crc = zigbeeCRC16(installCode);
-        String hexCrc = Integer.toHexString(crc);
-        
-        //Pad with leading zeros
-        if (hexCrc.length() < 4) {
-            for (int i = 0; i < 4-hexCrc.length();i++) {
-                hexCrc = "0" + hexCrc;
-            }
-        }
-        
+        String hexCrc = String.format("%04x",crc);
+                
         String xml = "<sci_request version=\"1.0\">" +
                         "<send_message>" +
                             "<targets>" +

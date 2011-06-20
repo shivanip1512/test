@@ -6,12 +6,13 @@ public class UtilityProZigbeeFields implements PaoTemplatePart {
     private String installCode;
     private String macAddress;
     private int endPointId;
-    private Integer nodeId;
+    private int nodeId;
     
-    public UtilityProZigbeeFields(String installCode, String macAddress, int endPointId) {
+    public UtilityProZigbeeFields(String installCode, String macAddress, int endPointId, int nodeId) {
         this.installCode = installCode;
         this.macAddress = macAddress;
         this.endPointId = endPointId;
+        this.nodeId = nodeId;
     }
     
     public String getInstallCode() {

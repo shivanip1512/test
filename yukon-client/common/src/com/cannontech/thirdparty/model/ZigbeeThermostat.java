@@ -8,7 +8,7 @@ public class ZigbeeThermostat implements YukonDevice {
     private PaoIdentifier paoIdentifier;
     private String installCode;
     private String macAddress;
-    private Integer nodeId;
+    private int nodeId;
     private int destinationEndPointId;
     private String name;
     private Integer gatewayId;
@@ -53,11 +53,11 @@ public class ZigbeeThermostat implements YukonDevice {
         return gatewayId;
     }
 
-    public Integer getNodeId() {
+    public int getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(Integer nodeId) {
+    public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
 

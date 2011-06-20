@@ -37,7 +37,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
             zigbeeThermostat.setMacAddress(rs.getString("MacAddress"));
             zigbeeThermostat.setName(rs.getString("ManufacturerSerialNumber"));
             zigbeeThermostat.setGatewayId(rs.getNullableInt("GatewayId"));
-            zigbeeThermostat.setNodeId(rs.getNullableInt("NodeId"));
+            zigbeeThermostat.setNodeId(rs.getInt("NodeId"));
             zigbeeThermostat.setDestinationEndPointId(rs.getInt("DestinationEndPointId"));
             
             return zigbeeThermostat;

@@ -89,7 +89,8 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
         
         UtilityProZigbeeFields tStatFields = new UtilityProZigbeeFields(hardwareDto.getInstallCode(),
                                                                         hardwareDto.getMacAddress(),
-                                                                        1/*Constant place holder until Firmware change*/);
+                                                                        1,/*Constant place holder until Firmware change*/
+                                                                        0/*Constant place holder until Firmware change*/);
 
         //Build Template and call Pao Creation Service
         ClassToInstanceMap<PaoTemplatePart> paoFields = paoCreationService.createFieldMap();
