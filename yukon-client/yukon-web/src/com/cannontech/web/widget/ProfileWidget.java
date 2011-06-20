@@ -92,8 +92,6 @@ public class ProfileWidget extends WidgetControllerBase {
      * email clients.
      */
 
-    final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
-    
     private enum ProfileAttributeChannelEnum {
         
         LOAD_PROFILE(BuiltInAttribute.LOAD_PROFILE, 1) {
@@ -268,12 +266,21 @@ public class ProfileWidget extends WidgetControllerBase {
         List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
         mav.addObject("availableChannels", availableChannels);
         
-        // check for daily usage report's previously entered rejected dates 
-        String reportStartDateStr = WidgetParameterHelper.getStringParameter(request, "reportStartDateStr", "");
-        String reportStopDateStr = WidgetParameterHelper.getStringParameter(request, "reportStopDateStr", "");
-        if (!StringUtils.isBlank(reportStartDateStr) && !StringUtils.isBlank(reportStopDateStr)) {
-            mav.addObject("startDateStr", reportStartDateStr);
-            mav.addObject("stopDateStr", reportStopDateStr);
+        // initialize daily usage report dates
+        String dailyUsageReportStartDateStr = WidgetParameterHelper.getStringParameter(request, "dailyUsageStartDateStr", "");
+        String dailyUsageReportStopDateStr = WidgetParameterHelper.getStringParameter(request, "dailyUsageStopDateStr", "");
+        if (StringUtils.isBlank(dailyUsageReportStartDateStr) && StringUtils.isBlank(dailyUsageReportStopDateStr)) {
+            mav.addObject("dailyUsageStartDateStr",
+                          dateFormattingService.format(DateUtils.addDays(new Date(), -5),
+                                                       DateFormattingService.DateFormatEnum.DATE,
+                                                       userContext));
+            mav.addObject("dailyUsageStopDateStr",
+                          dateFormattingService.format(new Date(),
+                                                       DateFormattingService.DateFormatEnum.DATE,
+                                                       userContext));
+        } else {            // check for daily usage report's previously entered but rejected dates 
+            mav.addObject("dailyUsageStartDateStr", dailyUsageReportStartDateStr);
+            mav.addObject("dailyUsageStopDateStr", dailyUsageReportStopDateStr);
         } 
         // initialize past profile dates
         String stopDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
@@ -608,80 +615,94 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     public ModelAndView viewDailyUsageReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        // get date range
-        String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStartDateStr");
-        String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStopDateStr");
         ModelAndView mav = render(request, response);
-        String errorMsg = null;
+        List<String> errorMessages = new ArrayList<String>();
+        String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStartDate");
+        String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStopDate");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
         LitePoint point = null;
         try {
             point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
-        } catch (IllegalUseOfAttribute e) {
+        } catch(IllegalUseOfAttribute e) {
             Meter meter = meterDao.getForId(device.getDeviceId());
             PaoType paoType = meter.getPaoType();
-            errorMsg = "Device Name: " + meter.getName() + " of Type: "+ paoType.getPaoTypeName() + " does not support this operation.";
-        }
-        if (point != null) {
-            Integer pointId = point.getLiteID();            // get pointId          
-            // validate dates
-            if (reportStartDateStr == null || reportStartDateStr.trim().equals("")) {
-                errorMsg = "Start Date Required.";
-            } else if (reportStopDateStr == null || reportStopDateStr.trim().equals("")) {
-                errorMsg = "Stop Date Required.";
-            } else {
-                LocalDate startDate = null, stopDate = null;
-                try {
-                    startDate = dateFormattingService.parseLocalDate(reportStartDateStr, userContext);
-                } catch(ParseException e) {
-                    errorMsg = "Start date: " + reportStartDateStr + " is invalid.";
-                }
-                try {
-                    stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
-                } catch(ParseException e) {
-                    errorMsg = "Stop date: " + reportStopDateStr + " is invalid.";
-                }
-                if (startDate != null && stopDate != null) {
-                    LocalDate today = new LocalDate(userContext.getJodaTimeZone());
-                    if (stopDate.isBefore(startDate)) {
-                        errorMsg = "Start date: " + reportStartDateStr + " must be on or before stop date.";
-                    } else if (stopDate.isAfter(today)) {
-                        errorMsg = "Stop date: " + reportStopDateStr + " must be on or before today.";
-                    } else {
-                        // build report query
-                        stopDate = stopDate.plusDays(1); //end date should be inclusive
-                        reportStopDateStr = dateFormattingService.format(stopDate,
-                                                                         DateFormattingService.DateFormatEnum.DATE,
-                                                                         userContext);
-                        Map<String, String> propertiesMap = new HashMap<String, String>();
-                        propertiesMap.put("def", "dailyUsageDefinition");
-                        propertiesMap.put("viewJsp", "MENU");
-                        propertiesMap.put("module", "amr");
-                        propertiesMap.put("menuSelection", "meters");
-                        propertiesMap.put("showMenu", "true");
-                        propertiesMap.put("pointId", pointId.toString());
-                        propertiesMap.put("startDate", reportStartDateStr);
-                        propertiesMap.put("stopDate", reportStopDateStr);
-                        
-                        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
-                        String url = "/spring/reports/simple/extView?" + queryString;
-                        url = ServletUtil.createSafeUrl(request, url);
-                        mav.addObject("reportQueryString", url);
-                    }
-                }
-            }
-        }
-        if (errorMsg != null) {
-            mav.addObject("errorMsgDailyUsage", errorMsg);
-            mav.addObject("reportStartDateStr", reportStartDateStr);
-            mav.addObject("reportStopDateStr", reportStopDateStr);
+            errorMessages.add("Device type: "+ paoType.getPaoTypeName() 
+                              + " does not support this operation.");
+        } 
+        // validate dates
+        errorMessages = validateDateRange(reportStartDateStr, reportStopDateStr, userContext);
+
+        if (errorMessages.isEmpty()) {
+            // end date should be inclusive
+            LocalDate stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
+            stopDate = stopDate.plusDays(1);                         
+            reportStopDateStr = dateFormattingService.format(stopDate,
+                                                             DateFormattingService.DateFormatEnum.DATE,
+                                                             userContext);
+            // build report query
+            Map<String, String> propertiesMap = new HashMap<String, String>();
+            propertiesMap.put("def", "dailyUsageDefinition");
+            propertiesMap.put("viewJsp", "MENU");
+            propertiesMap.put("module", "amr");
+            propertiesMap.put("menuSelection", "meters");
+            propertiesMap.put("showMenu", "true");
+            propertiesMap.put("pointId", String.valueOf(point.getLiteID()));
+            propertiesMap.put("startDate", reportStartDateStr);
+            propertiesMap.put("stopDate", reportStopDateStr);
+
+            String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
+            String url = "/spring/reports/simple/extView?" + queryString;
+            url = ServletUtil.createSafeUrl(request, url);
+            mav.addObject("reportQueryString", url);
+        } else { 
+            mav.addObject("errorMsgDailyUsage", errorMessages);
+            mav.addObject("dailyUsageStartDateStr", reportStartDateStr);
+            mav.addObject("dailyUsageStopDateStr", reportStopDateStr);
         }
         return mav;
     }
     
+    private List<String> validateDateRange(String reportStartDateStr, String reportStopDateStr, YukonUserContext userContext)
+            throws Exception {
+        List<String> errorMessages = new ArrayList<String>();
+
+        if (StringUtils.isBlank(reportStartDateStr)) {
+            errorMessages.add("Start Date Required.");
+        } 
+        if (StringUtils.isBlank(reportStopDateStr)) {
+            errorMessages.add("Stop Date Required.");
+        } 
+        if (!StringUtils.isBlank(reportStartDateStr) && !StringUtils.isBlank(reportStopDateStr)) {
+            LocalDate startDate = null;
+            LocalDate stopDate = null;
+            try {
+                startDate = dateFormattingService.parseLocalDate(reportStartDateStr, userContext);
+            } catch (ParseException e) {
+                errorMessages.add("Start date: " + reportStartDateStr + " is invalid.");
+            }
+            try {
+                stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
+            } catch (ParseException e) {
+                errorMessages.add("Stop date: " + reportStopDateStr + " is invalid.");
+            }
+            if (startDate != null && stopDate != null) {
+                LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+                if (stopDate.isBefore(startDate)) {
+                    errorMessages.add("Start date: " + reportStartDateStr
+                                      + " must be on or before stop date.");
+                } 
+                if (stopDate.isAfter(today)) {
+                    errorMessages.add("Stop date: " + reportStopDateStr
+                                      + " must be on or before today.");
+                }
+            }
+        }
+        return errorMessages;
+    }
+
     private String getUserEmail(YukonUserContext userContext) {
         
         // user email address

@@ -120,11 +120,11 @@
         <tr>
             <td class="label">Start Date:</td>
             <td>
-                <tags:dateInputCalendar fieldName="reportStartDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>
+                <tags:dateInputCalendar fieldName="dailyUsageStartDate" fieldValue="${dailyUsageStartDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="label">Stop Date:</td>
             <td>
-                    <tags:dateInputCalendar fieldName="reportStopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
+                    <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="last" align="right">
                 <tags:widgetActionRefresh method="viewDailyUsageReport" label="View Report" labelBusy="View Report"/>
@@ -133,8 +133,11 @@
         <tr>
             <td colspan="5">
                 <c:if test="${not empty errorMsgDailyUsage}">
-                    <div class="errorMessage" style="none">Error Retrieving Daily Usage Report:</div>
-                    <tags:hideReveal title="${errorMsgDailyUsage}" escapeTitle="true" showInitially="false"/>
+                    <tags:hideReveal title="Error Retrieving Daily Usage Report:" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+                        <c:forEach items="${errorMsgDailyUsage}" var="errorMsg" varStatus="msgNum">
+                            <div class="errorMessage">${errorMsg}</div>
+                        </c:forEach>
+                    </tags:hideReveal>
                 </c:if>
             </td>
         </tr>
