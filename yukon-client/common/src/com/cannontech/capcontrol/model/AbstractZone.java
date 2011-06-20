@@ -44,6 +44,21 @@ public abstract class AbstractZone {
         return zoneDto;
     }
     
+    public static AbstractZone create(Zone zone) {
+        AbstractZone zoneDto = null;
+        ZoneType zoneType = zone.getZoneType();
+        if (zoneType == ZoneType.GANG_OPERATED) {
+            zoneDto = new ZoneGang(zone);
+        } else if (zoneType == ZoneType.SINGLE_PHASE) {
+            zoneDto = new ZoneSinglePhase(zone);
+        } else if (zoneType == ZoneType.THREE_PHASE) {
+            zoneDto = new ZoneThreePhase(zone);
+        } else {
+            throw new RuntimeException("ZoneType unknown.");
+        }
+        return zoneDto;
+    }
+    
     public Integer getZoneId() {
         return zoneId;
     }

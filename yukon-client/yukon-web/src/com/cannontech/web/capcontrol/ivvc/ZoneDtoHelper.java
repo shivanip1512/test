@@ -38,7 +38,7 @@ public class ZoneDtoHelper {
     
     public AbstractZone getAbstractZoneFromZone(Zone zone, LiteYukonUser user) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-        AbstractZone zoneDto = AbstractZone.create(zone.getZoneType());
+        AbstractZone zoneDto = AbstractZone.create(zone);
         
         //Add Bank Assignments
         if (zone.getId() != null) {

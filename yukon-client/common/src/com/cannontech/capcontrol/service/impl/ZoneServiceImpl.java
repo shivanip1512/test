@@ -111,7 +111,7 @@ public class ZoneServiceImpl implements ZoneService {
     private List<AbstractZone> getAbstractZoneListFromZones(List<Zone> zones) {
         List<AbstractZone> abstractZoneList = Lists.newArrayList();
         for (Zone zone: zones) {
-            AbstractZone abstractZone = AbstractZone.create(zone.getZoneType());
+            AbstractZone abstractZone = AbstractZone.create(zone);
             abstractZoneList.add(abstractZone);
         }
         return abstractZoneList;

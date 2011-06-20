@@ -31,6 +31,7 @@ public abstract class AbstractZoneThreePhase extends AbstractZone {
         this.regulators = regulators;
     }
     
+    @Override
     public List<RegulatorToZoneMapping> getRegulatorsList() {
         return Lists.newArrayList(regulators.values());
     }
