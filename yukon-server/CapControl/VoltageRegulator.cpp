@@ -338,7 +338,7 @@ bool VoltageRegulator::isTimeToSendKeepAlive()
 }
 
 
-void VoltageRegulator::setPhase( const Phase & phase )
+void VoltageRegulator::setPhase( const Phase phase )
 {
     _phase = phase;
 }

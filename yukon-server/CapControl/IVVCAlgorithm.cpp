@@ -1013,6 +1013,13 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                 if ( regulator->isTimeToSendKeepAlive() )
                 {
                     regulator->executeEnableKeepAlive();
+
+                    if( _CC_DEBUG & CC_DEBUG_IVVC )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                          << subbus->getPaoName() << std::endl;
+                    }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -1031,13 +1038,6 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                 }
             }
         }
-    }
-
-    if( _CC_DEBUG & CC_DEBUG_IVVC )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                          << subbus->getPaoName() << std::endl;
     }
 }
 

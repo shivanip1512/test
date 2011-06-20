@@ -196,7 +196,7 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
 void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
 
-    static const std::string sql =   "SELECT RegulatorId, ZoneId, Phase FROM ZoneRegulator";
+    static const std::string sql =   "SELECT RegulatorId, ZoneId, Phase FROM RegulatorToZoneMapping";
     static const std::string where = " WHERE ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;

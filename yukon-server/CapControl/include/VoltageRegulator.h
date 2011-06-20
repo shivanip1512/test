@@ -101,7 +101,7 @@ public:
     void setKeepAliveConfig(const long value);
     bool isTimeToSendKeepAlive();
 
-    void        setPhase( const Phase & phase );
+    void        setPhase( const Phase phase );
     Phase       getPhase() const;
     std::string getPhaseString() const;
 
