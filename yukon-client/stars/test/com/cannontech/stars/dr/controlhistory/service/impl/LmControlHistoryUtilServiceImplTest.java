@@ -200,7 +200,8 @@ public class LmControlHistoryUtilServiceImplTest {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
-    // This control duration is for control that has more than one start in a row.  
+    // This control duration is for control that has more than one start in a row.
+    // This could be caused by the event not being stopped correctly or an error in the servers.
     LiteLMControlHistory doubleStartContHistOne;
     LiteLMControlHistory doubleStartContHistTwo;
     LiteLMControlHistory doubleStartContHistThree;
