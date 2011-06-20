@@ -154,6 +154,15 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_minor_extra)
     delete_container(points);
 }
 
+/**
+ * This unit test is used to define the expected behavior of the 
+ * CBC 8000's <code>combineFirmwarePoints()</code> function in 
+ * the unexpected case that we receive multiple major or minor 
+ * revision points in a message. In this case, we would expect 
+ * to keep the value of the major and minor revision points 
+ * whose positions were closest to the end of the vector passed 
+ * into the function.
+ */
 BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg(), 
