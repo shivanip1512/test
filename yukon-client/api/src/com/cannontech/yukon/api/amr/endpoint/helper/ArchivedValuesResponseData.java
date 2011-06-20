@@ -10,6 +10,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -75,6 +76,7 @@ public class ArchivedValuesResponseData {
     private Multimap<PaoIdentifier, PointData> pointDataByPaoId = HashMultimap.create();
     private Map<PointSelector, Map<PaoIdentifier, PointData>> pointDataBySelectorAndPaoId =
         Maps.newHashMap();
+    private Map<Integer, Map<Integer, LiteState>> statesByGroupIdAndRawState = Maps.newHashMap();
 
     public Set<PaoIdentifier> getPaoIds() {
         return paoDataByPaoId.keySet();
@@ -139,5 +141,9 @@ public class ArchivedValuesResponseData {
                 pointData.litePoint = litePoint;
             }
         }
+    }
+
+    public Map<Integer, Map<Integer, LiteState>> getStatesByGroupIdAndRawState() {
+        return statesByGroupIdAndRawState;
     }
 }

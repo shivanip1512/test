@@ -253,25 +253,31 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
             }
         });
     }
-    
+
     /**
-     * Parse an element for an Instant. If the the element doesn't exist or doesn't 
-     * represent a valid date, it returns null. Otherwise it creates a Date object
-     * from the string and uses the Date to generate an Instant. 
-     * @param expression
-     * @return
+     * Parse an element for an Instant. If the the element doesn't exist or doesn't represent a
+     * valid date, it returns null. Otherwise it creates a Date object from the string and uses the
+     * Date to generate an Instant.
      * @throws XPathException
      */
     public Instant evaluateAsInstant(String expression) throws XPathException {
-        
+        return evaluateAsInstant(expression, null);
+    }
+
+    /**
+     * Parse an element for an Instant. If the the element doesn't exist or doesn't represent a
+     * valid date, it returns the supplied defaultValue. Otherwise it creates a Date object from the
+     * string and uses the Date to generate an Instant.
+     * @throws XPathException
+     */
+    public Instant evaluateAsInstant(String expression, Instant defaultValue) throws XPathException {
         Date date = evaluateAsDate(expression);
         if (date == null) {
-            return null;
+            return defaultValue;
         }
-        
+
         return new Instant(date);
     }
-    
     /**
      * Parse an element for a date. If the element does not exists or is empty, return null.
      * Otherwise return a Date object for the date string in the element.
@@ -297,7 +303,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public Date evaluateAsDate(String expression) throws XPathException {
         return evaluateAsDate(expression, null);
     }
-    
+
     public Object evaluateAsObject(String expression, NodeMapper nodeMapper) throws XPathException {
         Node node = evaluateAsNode(expression);
         if (node != null) {

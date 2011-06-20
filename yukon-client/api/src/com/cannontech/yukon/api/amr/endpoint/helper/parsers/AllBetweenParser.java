@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.amr.endpoint.helper.parsers;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -10,12 +10,10 @@ import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector.OrderHelp
 
 public class AllBetweenParser extends ValueParser {
     @Override
-    public PointValueSelector parse(SimpleXPathTemplate template) {
-        PointValueSelector selector = super.parse(template);
-
-        Date startDate = template.evaluateAsDate("@from", new Date());
-        Date stopDate = template.evaluateAsDate("@to");
-        if (startDate.after(stopDate)) {
+    public void parseOther(SimpleXPathTemplate template, PointValueSelector selector) {
+        Instant startDate = template.evaluateAsInstant("@from", new Instant());
+        Instant stopDate = template.evaluateAsInstant("@to");
+        if (startDate.isAfter(stopDate)) {
             throw new RuntimeException("from cannot be after to for allBetween");
         }
 
@@ -33,7 +31,5 @@ public class AllBetweenParser extends ValueParser {
         selector.setClusivity(clusivity);
         selector.setNumberOfRows(limit);
         selector.setOrder(order);
-
-        return selector;
     }
 }

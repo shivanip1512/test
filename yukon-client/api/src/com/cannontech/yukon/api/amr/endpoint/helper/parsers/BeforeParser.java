@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.amr.endpoint.helper.parsers;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -9,10 +9,8 @@ import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector;
 
 public class BeforeParser extends ValueParser {
     @Override
-    public PointValueSelector parse(SimpleXPathTemplate template) {
-        PointValueSelector selector = super.parse(template);
-
-        Date stopDate = template.evaluateAsDate("@date", new Date());
+    public void parseOther(SimpleXPathTemplate template, PointValueSelector selector) {
+        Instant stopDate = template.evaluateAsInstant("@date", new Instant());
         int index = template.evaluateAsInt("@index", 1);
 
         Boolean inclusive = template.evaluateAsBoolean("@inclusive", true);
@@ -24,7 +22,5 @@ public class BeforeParser extends ValueParser {
         selector.setNumberOfRows(index);
         selector.setClusivity(clusivity);
         selector.setOrder(order);
-
-        return selector;
     }
 }

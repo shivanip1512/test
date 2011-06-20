@@ -14,11 +14,19 @@ public abstract class ValueParser {
         return template.evaluateAsInt("@limit");
     }
 
-    public PointValueSelector parse(SimpleXPathTemplate template) {
+    public final PointValueSelector parse(SimpleXPathTemplate template) {
         PointValueSelector selector = new PointValueSelector();
+
         String label = template.evaluateAsString("@label");
         selector.setLabel(label);
+        parseOther(template, selector);
 
         return selector;
     }
+
+    /**
+     * Parse things that are specific to a given type of selector.  Base classes should override
+     * this and parse anything not common to all ValueParsers.
+     */
+    protected abstract void parseOther(SimpleXPathTemplate template, PointValueSelector selector);
 }

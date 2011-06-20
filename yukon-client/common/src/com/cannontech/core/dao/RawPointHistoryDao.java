@@ -93,21 +93,6 @@ public interface RawPointHistoryDao {
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
 
     /**
-     * Method to get the point values for a list of points and time period
-     * @param pointIds - List of point ids
-     * @param startDate - Start time of period (this is always the first argument in SQL, either >
-     *            or >=)
-     * @param stopDate - End time of period (this is always the second argument in SQL, either < or
-     *            <=)
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
-     * @param order - controls ordering by timestamp and change id
-     * @return List of values for the points
-     */
-    public List<PointValueHolder> getMultiplePointData(List<Integer> pointIds, Date startDate,
-                                                       Date stopDate, Clusivity clusivity,
-                                                       Order order);
-
-    /**
      * Method to get a list of point values for a given point and time period, 
      * but only returning up to maxRows rows. 
      * To return a list with maxRows closest to startDate, use reverseOrder of false.

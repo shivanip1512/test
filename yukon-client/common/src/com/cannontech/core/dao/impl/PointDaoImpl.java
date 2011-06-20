@@ -447,9 +447,8 @@ public final class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public Map<PaoIdentifier, LitePoint> getLitePointsByTypeAndOffset(Iterable<PaoIdentifier> paos,
-                                                                      final PointType type,
-                                                                      final int offset) {
+    public Map<PaoIdentifier, LitePoint> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
+                                                                        final PointIdentifier pointIdentifier) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<PaoIdentifier> sqlGenerator =
@@ -463,8 +462,8 @@ public final class PointDaoImpl implements PointDao {
                     sql.append(  "LEFT JOIN UnitMeasure UM ON PU.UomId = UM.UomId");
                     Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
                     List<Integer> integerPaoIds = Lists.transform(subList, paoIdFunction);
-                    sql.append("WHERE P.PointType").eq(type);
-                    sql.append(  "AND P.PointOffset").eq(offset);
+                    sql.append("WHERE P.PointType").eq(pointIdentifier.getPointType());
+                    sql.append(  "AND P.PointOffset").eq(pointIdentifier.getOffset());
                     sql.append(  "AND P.PaobjectId").in(integerPaoIds);
                     return sql;
                 }

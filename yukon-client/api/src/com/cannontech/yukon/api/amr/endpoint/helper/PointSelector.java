@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.w3c.dom.Node;
 
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.base.Function;
@@ -44,6 +45,7 @@ public class PointSelector {
     private String name;
     private PointType pointType;
     private int offset;
+    private PointIdentifier pointIdentifier = null;
 
     public PointSelector(SimpleXPathTemplate pointNodeTemplate) {
         Node pointSelectorNode = pointNodeTemplate.evaluateAsNode("*[1]");
@@ -87,6 +89,17 @@ public class PointSelector {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public PointIdentifier getPointIdentifier() {
+        if (type != Type.TYPE_AND_OFFSET) {
+            throw new RuntimeException("can only get PointIdentifer for " +
+                                       Type.TYPE_AND_OFFSET.elementName + " point selections");
+        }
+        if (pointIdentifier == null) {
+            pointIdentifier = new PointIdentifier(pointType, offset);
+        }
+        return pointIdentifier;
     }
 
     @Override

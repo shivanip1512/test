@@ -1,7 +1,6 @@
 package com.cannontech.yukon.api.amr.endpoint.helper;
 
-import java.util.Date;
-
+import org.joda.time.Instant;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -19,8 +18,8 @@ import com.cannontech.yukon.api.amr.endpoint.helper.parsers.ValueParser;
 
 public class PointValueSelector {
     private SelectorType selectorType;
-    private Date startDate;
-    private Date stopDate;
+    private Instant startDate;
+    private Instant stopDate;
     private Clusivity clusivity;
     private Order order;
     private Integer numberOfRows;
@@ -31,19 +30,19 @@ public class PointValueSelector {
         return type.parseValueSelector(pointValueNode);
     }
 
-    public Date getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
 
-    public Date getStopDate() {
+    public Instant getStopDate() {
         return stopDate;
     }
 
-    public void setStopDate(Date stopDate) {
+    public void setStopDate(Instant stopDate) {
         this.stopDate = stopDate;
     }
 
