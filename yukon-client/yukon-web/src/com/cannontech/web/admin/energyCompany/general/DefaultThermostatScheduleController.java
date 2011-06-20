@@ -84,7 +84,7 @@ public class DefaultThermostatScheduleController {
                 }
             });
         
-        Set<SchedulableThermostatType> distinctScheduleThermostatTypes = Sets.newHashSet(schedulableThermostatTypes);
+        Set<SchedulableThermostatType> distinctScheduleThermostatTypes = Sets.newLinkedHashSet(schedulableThermostatTypes);
         modelMap.addAttribute("schedulableThermostatTypes", distinctScheduleThermostatTypes);
         modelMap.addAttribute("availableThermostatTypes", availableThermostatTypes);        
         
