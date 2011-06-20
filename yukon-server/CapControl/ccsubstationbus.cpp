@@ -8936,7 +8936,7 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( )
     for each (CtiCCFeeder* currentFeeder in _ccfeeders)
     {
         std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllCapBanks( );
-        banks.insert(banks.begin(), fdrbanks .begin(), fdrbanks.end());
+        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());
     }
     return banks;
 }
@@ -8946,7 +8946,7 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( )
     for each (CtiCCFeeder* currentFeeder in _ccfeeders)
     {
         std::vector<CtiCCCapBankPtr> fdrbanks = currentFeeder->getAllSwitchedCapBanks( );
-        banks.insert(banks.begin(), fdrbanks .begin(), fdrbanks.end());    
+        banks.insert(banks.begin(), fdrbanks.begin(), fdrbanks.end());    
     }
     return banks;
 }
