@@ -155,6 +155,10 @@
     <entry key="yukon.web.components.button.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     <entry key="yukon.web.components.button.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     
+    <entry key="yukon.web.components.button.help.label">Help</entry>
+    <entry key="yukon.web.components.button.help.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
+    <entry key="yukon.web.components.button.help.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
+    
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     
     <entry key="yukon.web.components.button.save.label">Save</entry>

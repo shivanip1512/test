@@ -66,7 +66,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                Integer scheduleId,
                                YukonUserContext yukonUserContext,
                                FlashScope flashScope,
-                               ModelMap map) throws Exception {
+                               ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
@@ -97,6 +97,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
         }
         
+        map.addAttribute("thermostatIds", thermostatIds.toString());
         return "redirect:view/saved";
     }
     
@@ -108,7 +109,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             YukonUserContext yukonUserContext, 
             ModelMap map,
             FlashScope flashScope,
-            HttpServletRequest request) throws ServletRequestBindingException {
+            HttpServletRequest request) throws NotAuthorizedException, ServletRequestBindingException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         
@@ -145,12 +146,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
 
         // Log schedule name change
-        if (oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
+        if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
             accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
         }
 
         //flash messages
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
+        map.addAttribute("thermostatIds", thermostatIds.toString());
 
         return "redirect:view/saved";
     }
@@ -162,7 +164,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public String viewSaved(@ModelAttribute("customerAccount") CustomerAccount account,
                             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                             YukonUserContext yukonUserContext,
-                            ModelMap map) throws NotAuthorizedException {
+                            ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
 
         accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostatIds);
 
@@ -244,7 +246,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                          Integer scheduleId,
                          LiteYukonUser user,
                          FlashScope flashScope,
-                         ModelMap map) throws Exception {
+                         ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
     	
     	List<Integer> thermostatIdsList = getThermostatIds(request);
     	
@@ -257,6 +259,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	//flash message
     	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.deleteSuccess", oldScheduleName));
     	
+    	map.addAttribute("thermostatIds", thermostatIds.toString());
     	return "redirect:view/saved";
 
     }
@@ -268,7 +271,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                          @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                          LiteYukonUser user,
                          FlashScope flashScope,
-                         ModelMap map) throws Exception {
+                         ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
         
         List<Integer> thermostatIdsList = getThermostatIds(request);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);

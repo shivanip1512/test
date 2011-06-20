@@ -2,6 +2,10 @@
     background-color: #eeeeee;
 }
 
+.vat {
+    vertical-align: top;
+}
+
 .tableCell {
     background-color: white;
 }

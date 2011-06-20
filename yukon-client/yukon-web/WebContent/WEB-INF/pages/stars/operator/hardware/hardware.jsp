@@ -456,17 +456,10 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                         </c:if>
                         
                         <c:if test="${showScheduleActions}">
-                            <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view">
+                            <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
-                            <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
-                                <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="thermostatId" value="${inventoryId}"/>
-                            </cti:url>
-                            <li>
-                                <cti:button key="editSchedule" href="${editScheduleUrl}" renderMode="labeledImage"/>
-                            </li>
                             <li>
                                 <cti:button key="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage"/>
                             </li>

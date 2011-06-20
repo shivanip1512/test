@@ -17,7 +17,7 @@
 
 <c:set var="multipleThermostatsSelected" value="false"></c:set>
 <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
-                <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
+                <tags:pagedBox2 nameKey="${historyTableTitle}" searchResult="${searchResult}"
                     filterDialog="" baseUrl="/spring/stars/consumer/thermostat/schedule/history"
                     isFiltered="false" showAllUrl="/spring/stars/consumer/thermostat/schedule/history">
                     <c:choose>
@@ -107,5 +107,5 @@
                             </table>
                         </c:otherwise>
                     </c:choose>
-                </tags:pagedBox>
+                </tags:pagedBox2>
 </cti:standardPage>

@@ -5,11 +5,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="consumer" page="savedSchedules">
 <cti:standardMenu/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/thermostat.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/yukonUIToolkit/yukon_ui_toolkit.css"/>
 
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
@@ -17,6 +19,9 @@
 <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
 <div id="editingScreen" class="ui-widget-overlay dn"></div>
+
+<cti:msg2 var="heatLabel" key="yukon.dr.consumer.thermostat.mode.HEAT"/>
+<cti:msg2 var="coolLabel" key="yukon.dr.consumer.thermostat.mode.COOL"/>
 
 <cti:flashScopeMessages/>
 
@@ -79,34 +84,37 @@ Event.observe(window, 'load', function(){
 <c:choose>
     <c:when test="${empty schedules}">
         <div class="helper">
-            <cti:msg2 key=".noSchedulesHelper" />
+            <i:inline key=".noSchedulesHelper" />
         </div>
         <br>
         <br>
         <cti:button key="create" styleClass="create"/>
     </c:when>
     <c:otherwise>
-        <div class="tempControls fr">
-            <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.tempUnit"/>
-            <br>
-            <label><input name="units" type="radio" value="celcius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><cti:msg2 key="yukon.web.modules.consumer.savedSchedules.celcius"/></label>
-            <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><cti:msg2 key="yukon.web.modules.consumer.savedSchedules.fahrenheit"/></label>
+        <div class="actions">
+            <div class="tempControls fr">
+                <i:inline key="yukon.web.modules.consumer.savedSchedules.tempUnit"/>
+                <br>
+                <label><input name="units" type="radio" value="celcius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celcius"/></label>
+                <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+            </div>
+            <div class="fl">
+                <cti:button key="create" styleClass="create"/>
+                <cti:button key="help" styleClass="help"/>
+            </div>
         </div>
-        <br>
-        <cti:button key="create" styleClass="create"/>
     </c:otherwise>
 </c:choose>
 
 
 
-<%-- <tags:boxContainer2 nameKey=".schedulesTableTitle" styleClass="" hideEnabled="false" showInitially="true" > --%>
 <div class="schedules">
 <c:forEach var="schedule" items="${schedules}">
     <div class="schedule small <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
     <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">
         <div class="titleBar boxContainer_titleBar">
             <div class="title boxContainer_title">
-                <cti:msg2 key=".lastSent"/>
+                <i:inline key=".lastSent"/>
             </div>
         </div>
     </c:if>
@@ -130,13 +138,13 @@ Event.observe(window, 'load', function(){
                     <label class="label fl"></label>
                     <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
                         <div class="period">
-                            <cti:msg2 key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                            <i:inline key="yukon.dr.consumer.thermostatSchedule.${period}" />
                             <br>
-                            <small class="heat_cool_label"><span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
+                            <small class="heat_cool_label"><span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
                         </div>
                     </c:forEach>
                 </span>
-                
+                <tags:alternateRowReset/>
                 <c:forEach var="day" items="${schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
                         <c:choose>
                           <c:when test="${rowCounter.count % 2 == 0}">
@@ -146,14 +154,14 @@ Event.observe(window, 'load', function(){
                             <c:set var="rowStyle" scope="page" value="even"/>
                           </c:otherwise>
                         </c:choose>
-                        <div class="day active ${rowStyle}">
+                        <div class="day active <tags:alternateRow even="even" odd="odd"/>">
                         <div class="periods">
                             <c:choose>
                                 <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
-                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
                                 </c:when>
                                 <c:otherwise>
-                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
                                 </c:otherwise>
                             </c:choose>
                             <c:forEach var="period" items="${day.value}">
@@ -165,10 +173,10 @@ Event.observe(window, 'load', function(){
                                             <span class="time"></span>
                                             <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
                                         </div>
-                                        <div class="temp heat ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/>">
+                                        <div class="temp heat ${temperatureUnit}" title="${heatLabel}">
                                             <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><span class="hide_when_editing">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span></span>
                                         </div>
-                                        <div class="temp cool ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/>">
+                                        <div class="temp cool ${temperatureUnit}" title="${coolLabel}">
                                             <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><span class="hide_when_editing">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span></span>
                                         </div>
                                     </div>
@@ -200,16 +208,16 @@ Event.observe(window, 'load', function(){
                     <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
                     <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
                     
-                    <label for="scheduleName"><cti:msg2 key=".name"/></label><input type="text" name="scheduleName" value="${schedule.scheduleName}" initialValue="${schedule.scheduleName}" size="40" maxlength="60">
+                    <label for="scheduleName"><i:inline key=".name"/></label><input type="text" name="scheduleName" value="${schedule.scheduleName}" initialValue="${schedule.scheduleName}" size="40" maxlength="60">
     
                     <div class="days fl">
                         <span class="labels">
                             <label class="label fl"></label>
                             <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
                                 <div class="period">
-                                    <cti:msg2 key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                                    <i:inline key="yukon.dr.consumer.thermostatSchedule.${period}" />
                                     <br>
-                                    <small class="heat_cool_label"><span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
+                                    <small class="heat_cool_label"><span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
                                 </div>
                             </c:forEach>
                         </span>
@@ -226,10 +234,10 @@ Event.observe(window, 'load', function(){
                                 <div class="periods">
                                     <c:choose>
                                         <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
-                                            <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                            <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
                                         </c:when>
                                         <c:otherwise>
-                                            <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                            <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
                                         </c:otherwise>
                                     </c:choose>
                                     <c:forEach var="period" items="${day.value}">
@@ -243,11 +251,11 @@ Event.observe(window, 'load', function(){
                                                                 <input type="text" class="time" maxlength="8">
                                                             </div>
                                                             
-                                                            <div class="temp heat ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/>">
+                                                            <div class="temp heat ${temperatureUnit}" title="${heatLabel}">
                                                                 <input type="text" class="heat_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
                                                                 <input type="hidden" value="${period.heatTemp.value}" initialValue="${period.heatTemp.value}" name="heat_F" defaultValue="${period.heatTemp.value}">
                                                             </div>
-                                                            <div class="temp cool ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/>">
+                                                            <div class="temp cool ${temperatureUnit}" title="${coolLabel}">
                                                                 <input type="text" class="cool_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
                                                                 <input type="hidden" value="${period.coolTemp.value}" initialValue="${period.coolTemp.value}" name="cool_F" defaultValue="${period.coolTemp.value}">
                                                             </div>
@@ -272,7 +280,7 @@ Event.observe(window, 'load', function(){
         </div>
         <div class="actions">
             <div class="fr">
-                <tags:slowInput2 key="save" formId="form_${schedule.accountThermostatScheduleId}"/>
+                <cti:button key="save"  styleClass="save f_blocker" type="submit"/>
                 <cti:button key="delete" styleClass="delete" />
                 <cti:button key="cancel" styleClass="cancel" />
             </div>
@@ -284,15 +292,15 @@ Event.observe(window, 'load', function(){
     </div>
 </c:forEach>
 </div>
-<%-- </tags:boxContainer2> --%>
 
 <cti:msg2 var="createTitle" key=".createSchedule.title"/>
+<div class="schedule">
 <tags:simplePopup title="${createTitle}" id="createSchedule" on=".create" >
     <div class="f_wizard">
         <div class="f_page page_0">
             <div class="box">
                 <div class="helper box">
-                    <cti:msg2 key=".modeHint" />
+                    <i:inline key=".modeHint" />
                 </div>
                 <div class="box pad">
                     <c:forEach var="mode" items="${allowedModes}">
@@ -323,16 +331,16 @@ Event.observe(window, 'load', function(){
                             <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
                             <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
                             
-                            <label for="scheduleName"><cti:msg2 key=".name"/></label><input type="text" name="scheduleName" value="${schedule.scheduleName}" initialValue="${schedule.scheduleName}" size="40" maxlength="60">
+                            <label for="scheduleName"><i:inline key=".name"/></label><input type="text" name="scheduleName" value="${schedule.scheduleName}" initialValue="${schedule.scheduleName}" size="40" maxlength="60">
             
                             <div class="days fl">
                                 <span class="labels">
                                     <label class="label fl"></label>
                                     <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
                                         <div class="period">
-                                            <cti:msg2 key="yukon.dr.consumer.thermostatSchedule.${period}" />
+                                            <i:inline key="yukon.dr.consumer.thermostatSchedule.${period}" />
                                             <br>
-                                            <small class="heat_cool_label"><span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
+                                            <small class="heat_cool_label"><span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/></span> <span class="temp"><i:inline key="yukon.dr.consumer.thermostat.mode.COOL"/></span></small>
                                         </div>
                                     </c:forEach>
                                 </span>
@@ -349,10 +357,10 @@ Event.observe(window, 'load', function(){
                                         <div class="periods">
                                             <c:choose>
                                                 <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
-                                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.EVERYDAY_abbr" /></label>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <label class="label fl"><cti:msg2 key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
+                                                    <label class="label fl"><i:inline key="yukon.dr.consumer.thermostat.schedule.${day.key}_abbr" /></label>
                                                 </c:otherwise>
                                             </c:choose>
                                             <c:forEach var="period" items="${day.value}" varStatus="idx">
@@ -366,11 +374,11 @@ Event.observe(window, 'load', function(){
                                                                 <input type="text" class="time" maxlength="8">
                                                             </div>
                                                             
-                                                            <div class="temp heat ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.HEAT"/>">
+                                                            <div class="temp heat ${temperatureUnit}" title="${heatLabel}">
                                                                 <input type="text" class="heat_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
                                                                 <input type="hidden" value="${period.heatTemp.value}" initialValue="${period.heatTemp.value}" name="heat_F" defaultValue="${period.heatTemp.value}">
                                                             </div>
-                                                            <div class="temp cool ${temperatureUnit}" title="<cti:msg2 key="yukon.dr.consumer.thermostat.mode.COOL"/>">
+                                                            <div class="temp cool ${temperatureUnit}" title="${coolLabel}">
                                                                 <input type="text" class="cool_F" maxlength="4">°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
                                                                 <input type="hidden" value="${period.coolTemp.value}" initialValue="${period.coolTemp.value}" name="cool_F" defaultValue="${period.coolTemp.value}">
                                                             </div>
@@ -408,19 +416,28 @@ Event.observe(window, 'load', function(){
         </div>
     </div>
 </tags:simplePopup>
+</div>
+
+<!-- help/hints popup -->
+<cti:msg2 var="helpTitle" key=".help.title"/>
+<tags:simplePopup title="${helpTitle}" id="help" on=".help">
+<div class="help pad">
+        <cti:msg2 key=".hint" htmlEscape="false"/>
+    </div>
+</tags:simplePopup>
 
 <!-- shared action forms -->
 <form name="deleteSchedule" method="POST" action="/spring/stars/consumer/thermostat/schedule/delete">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-    <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup" submitName="delete" on=".delete"/>
+    <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
 </form>
 
 <form name="sendSchedule" method="POST" action="/spring/stars/consumer/thermostat/schedule/send">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
-    <tags:confirmDialog nameKey=".sendConfirm" styleClass="smallSimplePopup" submitName="send" on=".send"/>
+    <tags:confirmDialog nameKey=".sendConfirm" styleClass="smallSimplePopup f_blocker" submitName="send" on=".send"/>
 </form>
 <!--  END action forms -->
 

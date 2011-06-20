@@ -169,85 +169,6 @@ public class OperatorThermostatScheduleController {
         return "operator/operatorThermostat/schedule/view.jsp";
     }
 	
-	// CONFIRM OR SAVE 
-	@RequestMapping
-    public String confirmOrSave(String thermostatIds,
-					    		String type, 
-					    		String scheduleMode, 
-					    		String temperatureUnit, 
-					    		Integer scheduleId,
-					    		String scheduleName, 
-					    		String saveAction, 
-					    		String schedules,
-					    		ModelMap model,
-					    		AccountInfoFragment fragment) {
-	    
-		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
-		
-		if(StringUtils.isBlank(scheduleName)){
-            model.addAttribute("canceledAction", "emptyName");
-            return "redirect:view";
-        }
-		
-    	model.addAttribute("saveAction", saveAction);
-    	model.addAttribute("scheduleId", scheduleId);
-    	model.addAttribute("type", type);
-    	model.addAttribute("schedules", schedules);
-    	model.addAttribute("scheduleMode", scheduleMode);
-    	model.addAttribute("temperatureUnit", temperatureUnit);
-    	model.addAttribute("scheduleId", scheduleId);
-    	model.addAttribute("scheduleName", scheduleName);
-    	
-    	return "redirect:confirm";
-    }
-	
-	// CONFIRM
-	@RequestMapping
-    public String confirm(String thermostatIds, 
-                          String type, 
-                          String scheduleMode, 
-                          String temperatureUnit, 
-                          Integer scheduleId, 
-                          String scheduleName, 
-                          String saveAction, 
-                          YukonUserContext context, 
-					      String schedules, ModelMap model, 
-					      AccountInfoFragment fragment) {
-		
-		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
-        
-    	// Create the confirm schedule text
-    	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
-    	ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-    	
-    	// id
-        AccountThermostatSchedule ats = new AccountThermostatSchedule();
-        ats.setAccountThermostatScheduleId(scheduleId);
-        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
-        ats.setThermostatType(schedulableThermostatType);
-        
-        // Create schedule from submitted JSON string
-        List<AccountThermostatScheduleEntry> atsEntries = 
-            operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, schedulableThermostatType, thermostatScheduleMode, isFahrenheit);
-        ats.setScheduleEntries(atsEntries);
-
-        // Build up confirmation display object, containing printable representations of the thermostat schedule entries
-        String i18nKey = (isFahrenheit) ? "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit" : 
-        								  "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius";
-        List<ThermostatScheduleDisplay> scheduleDisplays = operatorThermostatHelper.getScheduleDisplays(context, type, thermostatScheduleMode, ats, isFahrenheit, i18nKey);
-
-    	// Pass all of the parameters through to confirm page
-        model.addAttribute("confirmationDisplays", scheduleDisplays);
-        model.addAttribute("schedules", schedules);
-    	model.addAttribute("type", type);
-    	model.addAttribute("scheduleMode", scheduleMode);
-    	model.addAttribute("temperatureUnit", temperatureUnit);
-    	model.addAttribute("scheduleId", scheduleId);
-    	model.addAttribute("scheduleName", scheduleName);
-    	model.addAttribute("saveAction", saveAction);
-    	
-    	return "operator/operatorThermostat/schedule/confirm.jsp";
-    }
 	
 	// SAVE
 	@RequestMapping
@@ -294,7 +215,7 @@ public class OperatorThermostatScheduleController {
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
 
         // Log schedule name change
-        if (oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
+        if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
             accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
         }
 
@@ -354,27 +275,18 @@ public class OperatorThermostatScheduleController {
         return "redirect:savedSchedules";
     }
 	
-	// HINTS
-	@RequestMapping
-    public String hints(String thermostatIds, AccountInfoFragment fragment, ModelMap model) {
-		
-		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-		model.addAttribute("thermostatIds", thermostatIds);
-		
-		return "operator/operatorThermostat/schedule/hints.jsp";
-	}
-	
 	// SAVED SCHEDULES
 	@RequestMapping
-    public String savedSchedules(@RequestParam(value="thermostatIds", required=true) List<Integer> thermostatIds,
+    public String savedSchedules(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
                                  YukonUserContext userContext,
                                  ModelMap model,
                                  AccountInfoFragment fragment) {
 
-        accountCheckerService.checkInventory(userContext.getYukonUser(), thermostatIds);
 		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+		List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+		accountCheckerService.checkInventory(userContext.getYukonUser(), thermostatIdList);
 
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdList.get(0));
         List<SchedulableThermostatType> types = operatorThermostatHelper.getCompatibleSchedulableThermostatTypes(thermostat);
         SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
         List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(fragment.getAccountId(), types, userContext.getYukonUser());
@@ -411,7 +323,7 @@ public class OperatorThermostatScheduleController {
         model.addAttribute("celcius_char", CtiUtilities.CELSIUS_CHARACTER);
         model.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
         model.addAttribute("thermostatIds", thermostatIds);
-        model.addAttribute("thermostatId", thermostatIds.get(0));
+        model.addAttribute("thermostatId", thermostatIdList.get(0));
         
         //default schedule(s)
         AccountThermostatSchedule defaultSchedule  = thermostatService.getAccountThermostatScheduleTemplate(customerAccount.getAccountId(), type);

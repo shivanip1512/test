@@ -41,10 +41,6 @@
     });
     </script>
     
-    <cti:msg var="noScheduleName" key="yukon.web.modules.operator.thermostatSchedule.noScheduleName" />
-    <cti:msg var="saveScheduleText" key="yukon.web.modules.operator.thermostatSchedule.saveScheduleText" />
-    <cti:msg var="modeChangeText" key="yukon.web.modules.operator.thermostatSchedule.modeChangeText" />
-    
 <tags:setFormEditMode mode="${mode}"/>
 
 <!-- Sliders -->
@@ -234,7 +230,7 @@
         </div>
         <div class="actions">
             <div class="fr">
-                <tags:slowInput2 key="save" formId="form_${schedule.accountThermostatScheduleId}"/>
+                <cti:button key="save" styleClass="save f_blocker" />
                 <cti:button key="cancel" styleClass="cancel" />
             </div>
         </div>
@@ -242,6 +238,14 @@
     </div>
     
 
+    </td>
+    <td class="vat">
+        <i:inline key="yukon.web.modules.consumer.savedSchedules.tempUnit"/>
+        <br>
+        <div class="tempControls">
+            <label><input name="units" type="radio" value="celcius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celcius"/></label>
+            <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+        </div>
     </td>
   </tr>
 </table>

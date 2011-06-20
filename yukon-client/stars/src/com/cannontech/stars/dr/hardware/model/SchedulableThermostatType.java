@@ -30,19 +30,19 @@ public enum SchedulableThermostatType {
 	UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
                 50, 99, //yes, you read it right. Cool has higher upper-limit than Heat, and Heat has a lower lower-limit than Cool. Go ask a Honeywell device engineer.
                 40, 90,
-                Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SINGLE),
+                Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SEVEN_DAY),
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
     ),
     UTILITY_PRO_G3(HardwareType.UTILITY_PRO_G3,
                    50, 99, //yes, you read it right. Cool has higher upper-limit than Heat, and Heat has a lower lower-limit than Cool. Go ask a Honeywell device engineer.
                    40, 90,
-                   Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SINGLE),
+                   Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SEVEN_DAY),
                    ThermostatSchedulePeriodStyle.FOUR_TIMES
        ),
 	UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
 	            50, 99,
 	            40, 90,
-	            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SINGLE),
+	            Sets.immutableEnumSet(ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_WEEKEND, ThermostatScheduleMode.SEVEN_DAY),
 	            ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,

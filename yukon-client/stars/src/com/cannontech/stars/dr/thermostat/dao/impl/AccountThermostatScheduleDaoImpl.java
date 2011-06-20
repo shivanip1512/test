@@ -279,8 +279,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	}
 	
 	// ALL SCHEDULES FOR ACCOUNT BY TYPE
-    @Override
-    public List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types) {
+    private List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ATS.*");
@@ -320,7 +319,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         }
         
         for(AccountThermostatSchedule schedule : schedules){
-            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.SINGLE && !schedule7Enabled){
+            if(schedule.getThermostatScheduleMode() == ThermostatScheduleMode.SEVEN_DAY && !schedule7Enabled){
                 disallowedSchedules.add(schedule);
             }
             

@@ -13,7 +13,7 @@ public enum ThermostatScheduleMode {
     ALL(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY)),
     WEEKDAY_SAT_SUN(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY)),
     WEEKDAY_WEEKEND(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.WEEKEND)),
-    SINGLE(Sets.immutableEnumSet(TimeOfWeek.MONDAY, TimeOfWeek.TUESDAY, TimeOfWeek.WEDNESDAY, TimeOfWeek.THURSDAY, TimeOfWeek.FRIDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY));
+    SEVEN_DAY(Sets.immutableEnumSet(TimeOfWeek.MONDAY, TimeOfWeek.TUESDAY, TimeOfWeek.WEDNESDAY, TimeOfWeek.THURSDAY, TimeOfWeek.FRIDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY));
 
     private Set<TimeOfWeek> associatedTimeOfWeeks;
     

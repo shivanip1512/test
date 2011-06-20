@@ -94,7 +94,7 @@
     <entry key="yukon.web.modules.operator.thermostatManual.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.ALL">All</entry>
-    <entry key="yukon.web.modules.operator.thermostatManual.SINGLE">7 Day</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.SEVEN_DAY">7 Day</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.deletedSchedule">(Deleted schedule)</entry>
     
     <entry key="yukon.web.modules.operator.thermostatManual.sendConfirm.title">Confirm New Thermostat Settings</entry>
@@ -177,42 +177,50 @@
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancel.label">Cancel</entry>
     
     <!--  operatorThermostat/schedule/hints.jsp -->
-    <entry key="yukon.web.modules.operator.thermostatScheduleHints.pageName">Thermostat Schedule Hints and Details</entry>
-	<entry key="yukon.web.modules.operator.thermostatScheduleHints.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleHints.back.label">Back to Schedule</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleHints.hint"><![CDATA[
+    <entry key="yukon.web.modules.consumer.savedSchedules.hint"><![CDATA[
         The schedule page allows you to set your ongoing temperature schedule.
         There are different time frames available depending on the schedule mode selected. 
         Within each of these time frames, you may select your cooling and heating temperatures. 
         Simply use the following procedures.<br><br>
-           
-        <b>1)</b> Select the schedule mode: Click <b>Same schedule all days of week</b>, 
-        <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.<br><br>
         
-        <b>2)</b> Click <b>Weekday</b>, <b>Saturday</b>, <b>Sunday</b> or <b>Weekend</b> for
-        the day(s) you would like to set.<br><br>
+        <ol>
+        <li>
+            Select the schedule mode: Click <b>Same schedule all days of week</b>, 
+            <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.
+        </li>
+        
+        <li>
+            Each available day to edit is show as rows in each schedules.
+        </li>
            
-        <b>3)</b> The utility recommended settings are displayed the first
-        time the page is accessed. If at any time you would like to redisplay
-        these settings, click the <b>Recommended Settings</b> button.<br><br>
+        <li>
+            The utility recommended settings are displayed the first
+            time the page is accessed. If at any time you would like to redisplay
+            these settings, click the <b>Recommended Settings</b> button.
+        </li>
            
-        <b>4)</b> Slide the thermostats across the timeline to change time
-        intervals for<b> Wake (W)</b>, <b>Leave (L)</b>, <b>Return (R)</b>,
-        and<b> Sleep (S)</b>. Each of the time frames should be set to 1/2
-        hour before you would like the temperature to reach the selected
-        level. Times may be entered directly in the text boxes.<br><br>
+        <li>
+            Each of the time frames should be set to 1/2
+            hour before you would like the temperature to reach the selected
+            level. Times may be entered directly in the text boxes, increased or decreased by pressing the
+            up/down key respectively or moving the slider left/right.
+        </li>
            
-        <b>5)</b> Slide the enabled (red or blue) arrows to the temperature
-        you would like. The temperature is displayed in the input fields below the graphic for each 
-        time frame. Temperatures may be set differently for Cooling and Heating.<br><br>
+        <li>
+            Heating and Cooling temperatures may be set at each individual time interval.  
+            Temperatures may be entered directly in the text boxes, increased or decreased by pressing the
+            up/down key respectively or moving the slider left/right.
+        </li>
            
-        <b>6)</b> If you would like to temporarily change your thermostat,
-       click on the<b> Manual</b> link at left or at the link provided at
-       the top of the page. This page is also a convenient location for
-       holding a temperature for a short amount of time that is different
-       from your regular schedule. You may use this feature, for example,
-       while away on vacation or while you have visiting guests.<br>
-       
+       <li>
+           If you would like to temporarily change your thermostat,
+           click on the<b> Manual</b> link at left or at the link provided at
+           the top of the page. This page is also a convenient location for
+           holding a temperature for a short amount of time that is different
+           from your regular schedule. You may use this feature, for example,
+           while away on vacation or while you have visiting guests.
+       </li>
+       </ol>
     ]]></entry>
     
     <!-- operatorThermostat/schedule/savedSchedules.jsp -->
@@ -230,6 +238,7 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/saved (savedSchedules.jsp - ThermostatScheduleController.java:viewSaved()) -->
     <entry key="yukon.web.modules.consumer.savedSchedules.pageTitle">Saved Schedules</entry>
@@ -241,6 +250,7 @@
     <entry key="yukon.web.modules.consumer.savedSchedules.editSchedule.title">Edit Schedule - {0}</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.editSchedule.message">Edit Schedule</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.createSchedule.title">Create Schedule</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.sendConfirm.title">Send Schedule</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.sendConfirm.message">Are you sure you want to send this schedule?</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.noSchedulesHelper">There are no saved schedules.  You may create a schedule by clicking the 'Create' button below.</entry>
@@ -266,8 +276,6 @@
     
     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (savedSchedules.jsp - OperatorThermostatScheduleController.java:saveSchedules()) -->
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.tempUnit">Temperature Units</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.celcius">°C</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.fahrenheit">°F</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title">Edit Schedule - {0}</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.message">Edit Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title">Create Schedule</entry>
@@ -278,11 +286,12 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent">This is the last Schedule sent to the Thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent.title">FOOOOOO</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/history (history.jsp - ThermostatScheduleController.java:history()) -->
     <entry key="yukon.web.modules.consumer.history.pageTitle">Thermostat History</entry>
+    <entry key="yukon.web.modules.consumer.history.title">Command History</entry>
     <entry key="yukon.web.modules.consumer.history.historyTableTitle">Command History</entry>
-    
     
     <!-- Time of week -->
     <entry key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY">Everyday</entry>
@@ -295,7 +304,7 @@
     <entry key="yukon.web.modules.operator.thermostatMode.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatMode.WEEKDAY_WEEKEND">Weekday, Weekend schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatMode.ALL">Same schedule every day of the week</entry>
-    <entry key="yukon.web.modules.operator.thermostatMode.SINGLE">Different schedule each day of the week</entry>
+    <entry key="yukon.web.modules.operator.thermostatMode.SEVEN_DAY">Different schedule each day of the week</entry>
     
     <!-- Components -->
     <entry key="yukon.web.components.button.sendNow.imageUrl">/WebConfig/yukon/Icons/lightning_go.gif</entry>

@@ -213,15 +213,6 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
             if(isModeAllowed(mode, yukonUserContext.getYukonUser())){
                 modesJson.put(mode.toString(), messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat."+mode.toString()));
                 
-//                Set<TimeOfWeek>days = mode.getAssociatedTimeOfWeeks();
-//                for(TimeOfWeek day : days) {
-//                    if(!dayLabelJson.containsKey(day.toString())){
-//                        JSONObject label = new JSONObject();
-//                        label.put("name", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()));
-//                        label.put("abbr", messageSourceAccessor.getMessage("yukon.dr.consumer.thermostat.schedule."+day.toString()+"_abbr"));
-//                        dayLabelJson.put(day.toString(), label);
-//                    }
-//                }
             }
         }
         
@@ -464,7 +455,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         }
         boolean schedule7Enabled = rolePropertyDao.checkAnyProperties(user, YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_7, YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_7);
         if(!schedule7Enabled) {
-            modes.remove(ThermostatScheduleMode.SINGLE);
+            modes.remove(ThermostatScheduleMode.SEVEN_DAY);
         }
         
         return modes;

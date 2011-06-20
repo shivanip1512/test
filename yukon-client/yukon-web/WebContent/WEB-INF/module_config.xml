@@ -1683,18 +1683,6 @@
                                         <menu>account|accounts</menu>
                                         <labelArgument>${accountNumber}</labelArgument>
                                     </page>
-                                    <page name="thermostatSchedule" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${accountNumber}</labelArgument>
-                                    </page>
-                                    <page name="thermostatScheduleConfirm" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${accountNumber}</labelArgument>
-                                    </page>
-                                    <page name="thermostatScheduleHints" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${accountNumber}</labelArgument>
-                                    </page>
                                     <page name="thermostatSavedSchedules" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${accountNumber}</labelArgument>

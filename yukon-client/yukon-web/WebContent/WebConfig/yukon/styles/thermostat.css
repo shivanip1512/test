@@ -1,11 +1,6 @@
 .dn {display:none;}
 .fl {float:left;}
 .fr {float:right;}
-.schedule_editor {
-    max-width: 785px;
-}
-
-
 .labels {
 	display:none;
 }
@@ -74,7 +69,7 @@
 
 .small .days{
     margin: 10px 0;
-    min-width: 545px;
+    width: 545px;
     overflow: hidden;
 }
 
@@ -87,11 +82,12 @@
 .actions {
 	overflow: hidden;
 	clear: both;
-	margin: 10px 0 10px 38px;
+	margin: 10px 0;
+	max-width: 560px;
 }
 
-.editing .actions {
-	border: none;
+.schedule .actions {
+	margin: 10px 0 10px 38px;
 }
 
 .period {
@@ -223,7 +219,7 @@ ul.schedules > li {
 	font-size: 16px;
 	font-style:italic;
 	margin: 0 0 5px 38px;
-	border-bottom: solid 1px #666; 
+	border-bottom: solid 1px #DDD; 
 }
 
 li.current {
@@ -252,7 +248,7 @@ li.current .helper {
 }
 
 .schedules {
-	margin-top: 45px;
+	margin-bottom: 45px;
 	overflow:hidden;
 }
 
@@ -262,6 +258,10 @@ li.current .helper {
     clear: both;
     padding-bottom: 20px;
     margin-bottom: 20px;
+}
+
+.schedule div.simplePopup {
+    width: 560px;
 }
 
 .title.current small {
@@ -355,4 +355,16 @@ a.default {
 
 .pad {
     padding: 15px;
+}
+
+.help {
+    font-size: 12px;
+}
+
+.help ol {
+    list-style: decimal;
+    padding-left: 20px;
+}
+.help ol li {
+    margin: 0 0 15px;
 }

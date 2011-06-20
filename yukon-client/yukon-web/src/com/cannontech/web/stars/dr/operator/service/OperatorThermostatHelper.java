@@ -72,12 +72,41 @@ public interface OperatorThermostatHelper {
      */
     public ThermostatScheduleMode getAdjustedScheduleMode(AccountThermostatSchedule schedule, LiteYukonUser user);
 
-    JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule);
+    /**
+     * Take an AccountThermostatSchedule Object and turn it into a sensible JSON object
+     * @param schedule - schedule to convert
+     * @return JSOnObject
+     */
+    public JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule);
+    
+    /**
+     * Convert a JSON representation to a AccountThermostatSchedule object
+     * @param obj - JSONObject to convert
+     * @return AccountThermostatSchedule
+     */
     public AccountThermostatSchedule JSONtoAccountThermostatSchedule(JSONObject obj);
 
-    List<ThermostatScheduleMode> getAllowedModesForUserAndType(LiteYukonUser user, SchedulableThermostatType type);
+    /**
+     * Consider the User and type of thermostat given and return all of the modes allowed for this combination.
+     * Even though a thermostat may use a certain mode, the user may not have rights to use it in Yukon.
+     * @param user - Usually the current user
+     * @param type - the type of the current thermostat
+     * @return List of ThermostatScheduleModes
+     */
+    public List<ThermostatScheduleMode> getAllowedModesForUserAndType(LiteYukonUser user, SchedulableThermostatType type);
 
-    JSONObject ThermostatToJSON(Thermostat thermostat, YukonUserContext user);
+    /**
+     * Convert a Thermostat object into a JSON object
+     * @param thermostat - the current thermostat
+     * @param user - usually the current user
+     * @return JSONObject
+     */
+    public JSONObject ThermostatToJSON(Thermostat thermostat, YukonUserContext user);
 
+    /**
+     * Get all of the SchedulableThermostatTypes compatible with a given Thermostat
+     * @param thermostat - the current thermostat
+     * @return List of SchedulableThermostatTypes
+     */
     public List<SchedulableThermostatType> getCompatibleSchedulableThermostatTypes(Thermostat thermostat);
 }

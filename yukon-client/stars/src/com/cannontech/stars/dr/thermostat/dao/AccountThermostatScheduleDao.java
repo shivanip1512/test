@@ -88,8 +88,10 @@ public interface AccountThermostatScheduleDao {
 	 */
 	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
 
-    public List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByType(int accountId, List<SchedulableThermostatType> types);
-
+	/**
+	 * Get the AccountThermostatSchedules for an Account based on the user.  Specifically, it will remove 5/2 and 7day schedules if
+	 * the user is not allowed access to them
+	 */
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId,
                                                                                             List<SchedulableThermostatType> types,
                                                                                             LiteYukonUser yukonUser);

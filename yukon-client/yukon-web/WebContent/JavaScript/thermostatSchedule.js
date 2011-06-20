@@ -149,7 +149,7 @@ layer.style.left = left + 'px';
 
 function timeValToStr(val)
 {
-  var timeStr = timeFormatter.formatTime(val);
+  var timeStr = timeFormatter.formatTime(val, true);
   return timeStr;
 }
 

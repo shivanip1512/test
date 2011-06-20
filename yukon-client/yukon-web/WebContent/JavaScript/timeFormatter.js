@@ -6,11 +6,13 @@ TimeFormatter.prototype = {
 
 	// Generates a time in the format hh:mm AM (12:30 PM) for the input which is 
     // the number of minutes from midnight
-	formatTime: function(minutes) {
+	formatTime: function(minutes, roundToTen) {
 
         if(isNaN(minutes) || minutes == null){
             return '12:00 AM';
         }
+        
+        minutes = parseInt(minutes);    //ensure integer values
         
         // Make sure time is not negative and less than the number of minutes in a day
         if (minutes < 0) {
@@ -20,8 +22,10 @@ TimeFormatter.prototype = {
             minutes = 24 * 60 - 1;
         }
         
-        // Make sure the value is a multiple of 10
-        minutes = Math.floor(minutes / 10) * 10;
+        if(roundToTen){
+            // Make sure the value is a multiple of 10
+            minutes = Math.floor(minutes / 10) * 10;
+        }
         
         var hour = Math.floor(minutes / 60);
         var minute = minutes % 60;

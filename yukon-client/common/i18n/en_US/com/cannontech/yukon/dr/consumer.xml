@@ -143,7 +143,7 @@
         <b>or</b><br><br>
         Click <b>RUN PROGRAM</b> to revert to your thermostat program.
     ]]></entry>
-    <entry key="yukon.dr.consumer.thermostat.historyTableTitle">Command History</entry>
+    
     <entry key="yukon.dr.consumer.thermostat.noItems">No command history available.</entry>
     <entry key="yukon.dr.consumer.thermostat.thermostatHeader">Thermostat</entry>
     <entry key="yukon.dr.consumer.thermostat.typeHeader">Type</entry>
@@ -159,7 +159,7 @@
     <entry key="yukon.dr.consumer.thermostat.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday</entry>
     <entry key="yukon.dr.consumer.thermostat.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
     <entry key="yukon.dr.consumer.thermostat.ALL">All</entry>
-    <entry key="yukon.dr.consumer.thermostat.SINGLE">Each Day</entry>
+    <entry key="yukon.dr.consumer.thermostat.SEVEN_DAY">Each Day</entry>
     <entry key="yukon.dr.consumer.thermostat.deletedSchedule">(Deleted schedule)</entry>
     <entry key="yukon.dr.consumer.thermostat.sendConfirm.title">Confirm New Thermostat Settings</entry>
     <entry key="yukon.dr.consumer.thermostat.sendConfirm.message">Proceed with the following thermostat settings?</entry>
