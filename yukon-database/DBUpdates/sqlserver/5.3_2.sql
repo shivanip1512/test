@@ -340,6 +340,14 @@ SET RoleName = 'Cap Control Settings'
 WHERE RoleId = -700;
 /* End YUK-9928 */
 
+/* Start YUK-9955 */
+INSERT INTO YukonListEntry VALUES (1069,1005,0,'UtilityPRO G2',1318); 
+INSERT INTO YukonListEntry VALUES (1070,1005,0,'UtilityPRO G3',1319); 
+
+INSERT INTO YukonRoleProperty VALUES(-20892,-201,'Thermostat Schedule 7 Day','false','Allows a user to select a different schedule for each day of the week when editing a thermostat schedule.'); 
+INSERT INTO YukonRoleProperty VALUES(-40205,-400,'Thermostat Schedule 7 Day','false','Allows a user to select a different schedule for each day of the week when editing a thermostat schedule.'); 
+/* End YUK-9955 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

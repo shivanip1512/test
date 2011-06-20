@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/20/2011 11:22:31 AM                        */
+/* Created on:     6/20/2011 12:30:22 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8537,6 +8537,8 @@ INSERT INTO YukonListEntry VALUES (1065,1005,0,'UtilityPRO',1314);
 INSERT INTO YukonListEntry VALUES (1066,1005,0,'LCR-3102',1315);
 INSERT INTO YukonListEntry VALUES (1067,1005,0,'UtilityPRO ZigBee',1316);
 INSERT INTO YukonListEntry VALUES (1068,1005,0,'Digi Gateway',1317);
+INSERT INTO YukonListEntry VALUES (1069,1005,0,'UtilityPRO G2',1318); 
+INSERT INTO YukonListEntry VALUES (1070,1005,0,'UtilityPRO G3',1319); 
 
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
@@ -9321,6 +9323,7 @@ INSERT INTO YukonRoleProperty VALUES(-20700,-207,'Odds For Control Label','Odds 
 INSERT INTO YukonRoleProperty VALUES(-20800,-201,'Link FAQ',' ','The customized FAQ link');
 INSERT INTO YukonRoleProperty VALUES(-20801,-201,'Link Thermostat Instructions',' ','The customized thermostat instructions link');
 
+INSERT INTO YukonRoleProperty VALUES(-20892,-201,'Thermostat Schedule 7 Day','false','Allows a user to select a different schedule for each day of the week when editing a thermostat schedule.'); 
 INSERT INTO YukonRoleProperty VALUES(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
 INSERT INTO YukonRoleProperty VALUES(-20894,-201,'Opt Out Today Only','false','Prevents operator side opt outs from being available for scheduling beyond the current day.');
 INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','Determines whether an operator can see current opt out status on the Opt Out Admin page.');
@@ -9392,6 +9395,7 @@ INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Device Selection','fal
 INSERT INTO YukonRoleProperty VALUES(-40202,-400,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.'); 
 INSERT INTO YukonRoleProperty VALUES(-40203,-400,'Enrollment per Device','false','Displays a second web page that allows for enrollment by individual device per program.');
 INSERT INTO YukonRoleProperty VALUES(-40204,-400,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
+INSERT INTO YukonRoleProperty VALUES(-40205,-400,'Thermostat Schedule 7 Day','false','Allows a user to select a different schedule for each day of the week when editing a thermostat schedule.'); 
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
