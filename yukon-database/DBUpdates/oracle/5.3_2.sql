@@ -15,32 +15,32 @@ CREATE TABLE ArchiveDataAnalysis  (
    CONSTRAINT PK_ArcDataAnal PRIMARY KEY (AnalysisId)
 );
 
-CREATE TABLE ArchiveDataAnalysisSlotValues  (
+CREATE TABLE ArchiveDataAnalysisSlotValue  (
    SlotValueId          NUMBER                          NOT NULL,
    DeviceId             NUMBER                          NOT NULL,
    SlotId               NUMBER                          NOT NULL,
    ChangeId             NUMBER                          NULL,
-   CONSTRAINT PK_ArcDataAnalSlotValues PRIMARY KEY (SlotValueId)
+   CONSTRAINT PK_ArcDataAnalSlotValue PRIMARY KEY (SlotValueId)
 );
 
-CREATE TABLE ArchiveDataAnalysisSlots  (
+CREATE TABLE ArchiveDataAnalysisSlot  (
    SlotId               NUMBER                          NOT NULL,
    AnalysisId           NUMBER                          NOT NULL,
    StartTime            DATE                            NOT NULL,
-   CONSTRAINT PK_ArcDataAnalSlots PRIMARY KEY (SlotId)
+   CONSTRAINT PK_ArcDataAnalSlot PRIMARY KEY (SlotId)
 );
 
-ALTER TABLE ArchiveDataAnalysisSlotValues
+ALTER TABLE ArchiveDataAnalysisSlotValue
     ADD CONSTRAINT FK_ArcDataAnalSlotVal_ArcData FOREIGN KEY (SlotId)
-        REFERENCES ArchiveDataAnalysisSlots (SlotId)
+        REFERENCES ArchiveDataAnalysisSlot (SlotId)
             ON DELETE CASCADE;
 
-ALTER TABLE ArchiveDataAnalysisSlotValues
+ALTER TABLE ArchiveDataAnalysisSlotValue
     ADD CONSTRAINT FK_ArchDataAnalSlotVal_Device FOREIGN KEY (DeviceId)
         REFERENCES DEVICE (DeviceId)
             ON DELETE CASCADE;
 
-ALTER TABLE ArchiveDataAnalysisSlots
+ALTER TABLE ArchiveDataAnalysisSlot
     ADD CONSTRAINT FK_ArcDataAnalSlots_ArcDataAna FOREIGN KEY (AnalysisId)
         REFERENCES ArchiveDataAnalysis (AnalysisId)
             ON DELETE CASCADE;
@@ -310,6 +310,22 @@ SET KeyName = 'Demand Response',
     Description = 'Allows access to the Demand Response control web application'
 WHERE RolePropertyId = -90002;
 /* End YUK-9900 */
+
+/* Start YUK-9924 */
+UPDATE YukonRoleProperty 
+SET DefaultValue = ' ' 
+WHERE DefaultValue = '(none)'; 
+UPDATE YukonGroupRole 
+SET Value = ' ' 
+WHERE Value = '(none)'; 
+UPDATE YukonUserRole 
+SET Value = ' ' 
+WHERE Value = '(none)';
+
+UPDATE YukonRoleProperty
+SET Description = 'Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]');
+WHERE RolePropertyId = -1304;
+/* End YUK-9924 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
