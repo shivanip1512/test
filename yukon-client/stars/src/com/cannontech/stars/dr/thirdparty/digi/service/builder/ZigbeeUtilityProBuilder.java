@@ -10,6 +10,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PaoCreationService;
@@ -124,30 +125,30 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     @Transactional
-    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
-        decommissionDevice(inventoryId.getInventoryId(),pao.getPaoId());        
+    public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
+        decommissionDevice(inventoryId.getInventoryId(),pao);        
     }
     
     @Override
     @Transactional
-    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier id) {
-        zigbeeDeviceDao.deleteZigbeeUtilPro(pao.getPaoId());
+    public void deleteDevice(YukonPao pao, InventoryIdentifier id) {
+        zigbeeDeviceDao.deleteZigbeeUtilPro(pao.getPaoIdentifier().getPaoId());
         deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
     @Override
-    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
-        decommissionDevice(inventoryId.getInventoryId(),pao.getPaoId());
+    public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
+        decommissionDevice(inventoryId.getInventoryId(),pao);
     };
     
-    private void decommissionDevice(int inventoryId, int deviceId) {
+    private void decommissionDevice(int inventoryId, YukonPao device) {
         Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);        
         if (gatewayId != null) {
             //Send Decommission command.
-            zigbeeWebService.uninstallStat(gatewayId, deviceId);
+            zigbeeWebService.uninstallStat(gatewayId, device.getPaoIdentifier().getPaoId());
             
             //Remove from gateway
-            gatewayDeviceDao.unassignDeviceFromGateway(deviceId);
+            gatewayDeviceDao.unassignDeviceFromGateway(device.getPaoIdentifier().getPaoId());
         }
     }
     

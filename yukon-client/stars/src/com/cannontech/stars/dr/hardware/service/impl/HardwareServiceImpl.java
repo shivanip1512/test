@@ -107,14 +107,14 @@ public class HardwareServiceImpl implements HardwareService {
             YukonPao pao = paoDao.getYukonPao(liteInventoryBase.getDeviceID());
             
             // Warn the ExtensionService we are about to delete.
-            hardwareTypeExtensionService.preDeleteCleanup(pao.getPaoIdentifier(), id);
+            hardwareTypeExtensionService.preDeleteCleanup(pao, id);
             
             /* Delete this hardware from the database */
             /*TODO handle this with new code, not with this util. */
             InventoryManagerUtil.deleteInventory( liteInventoryBase, yukonEnergyCompany, deleteMCT);
 
             // Give the Extension service a chance to clean up its tables
-            hardwareTypeExtensionService.deleteDevice(pao.getPaoIdentifier(), id);
+            hardwareTypeExtensionService.deleteDevice(pao, id);
             
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
@@ -149,7 +149,7 @@ public class HardwareServiceImpl implements HardwareService {
             
             InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
             YukonPao pao = paoDao.getYukonPao(liteInventoryBase.getDeviceID());
-            hardwareTypeExtensionService.moveDeviceToInventory(pao.getPaoIdentifier(), id);
+            hardwareTypeExtensionService.moveDeviceToInventory(pao, id);
             
             // Log hardware deletion
             hardwareEventLogService.hardwareRemoved(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel(), customerAccount.getAccountNumber());

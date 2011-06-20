@@ -14,20 +14,66 @@ import com.cannontech.thirdparty.model.ZigbeeDevice;
 
 public interface ZigbeeWebService {
 
+    /**
+     * Updates the connection status point on every gateway in the system.
+     * 
+     */
     public void refreshAllGateways();
     
+    /**
+     * Updates the connection and commission status point for the passed in gateway.
+     * 
+     * @param gateway
+     */
 	public void refreshGateway(ZigbeeDevice gateway);
 	
+	/**
+	 * Pings the device specified and updates the connection status point based on the results.
+	 * If just the device does not respond, only it will be marked disconnected. If the gateway is not 
+	 * responding BOTH the device and gateway will be marked disconnected.
+	 * 
+	 * Does not affect the commission
+	 *  
+	 * @param device
+	 */
 	public void refreshDeviceStatuses(ZigbeeDevice device);
 
+	/**
+	 * Sends the install commands for the gateway to the third party.
+	 * 
+	 * @param gatewayId
+	 * @throws GatewayCommissionException
+	 */
 	public void installGateway(int gatewayId) throws GatewayCommissionException;
 	
+	/**
+	 * Sends the uninstall commands for the gateway to the third party.
+	 * 
+	 * @param gatewayId
+	 */
 	public void removeGateway(int gatewayId);
 	
+	/**
+	 * Sends the install device commands to the third party.
+	 * 
+	 * @param gatewayId
+	 * @param deviceId
+	 */
 	public void installStat(int gatewayId, int deviceId);
 	
+	/**
+	 * Sends the uninstall device commands to the third party.
+	 * 
+	 * @param gatewayId
+	 * @param deviceId
+	 */
 	public void uninstallStat(int gatewayId, int deviceId);
 
+	/**
+	 * Sends the device level addressing configuration attributes to the device specified.
+	 * @param deviceId
+	 * @param attributes
+	 */
 	public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes);
 	
 	/**

@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.google.common.collect.ImmutableMap;
@@ -37,7 +38,7 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
-    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
         
         if (hardwareBuilder == null) return;
@@ -46,7 +47,7 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
-    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
         HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
         
         if (hardwareBuilder == null) return;
@@ -55,7 +56,7 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
     }
     
     @Override
-    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
         HardwareTypeExtensionProvider hardwareBuilder = builderMap.get(inventoryId.getHardwareType());
         
         if (hardwareBuilder == null) return;

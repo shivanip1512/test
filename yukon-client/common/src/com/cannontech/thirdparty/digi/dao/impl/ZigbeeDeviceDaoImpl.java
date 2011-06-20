@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -77,8 +78,9 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     
     @Override
     public ZigbeeThermostat getZigbeeUtilProByInventoryId(int inventoryId) {
-        SqlStatementBuilder sql = buildZigbeeUtilProStatement();
-
+        SqlStatementBuilder sql = new SqlStatementBuilder();        
+        
+        sql.appendFragment(buildZigbeeUtilProStatement());
         sql.append("WHERE IB.InventoryID").eq(inventoryId);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
@@ -88,8 +90,9 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     
     @Override
     public ZigbeeThermostat getZigbeeUtilPro(int deviceId) {
-        SqlStatementBuilder sql = buildZigbeeUtilProStatement();
+        SqlStatementBuilder sql = new SqlStatementBuilder();        
         
+        sql.appendFragment(buildZigbeeUtilProStatement());
         sql.append("WHERE ZE.DeviceId").eq(deviceId);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
@@ -98,8 +101,9 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     }
     
     public ZigbeeThermostat getZigbeeUtilProByMACAddress(String macAddress) {
-        SqlStatementBuilder sql = buildZigbeeUtilProStatement();        
+        SqlStatementBuilder sql = new SqlStatementBuilder();        
         
+        sql.appendFragment(buildZigbeeUtilProStatement());
         sql.append("WHERE ZE.MacAddress").eq(macAddress);
         
         ZigbeeThermostat tstat = yukonJdbcTemplate.queryForObject(sql, zigbeeThermostatRowMapper);
@@ -107,7 +111,7 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
         return tstat; 
     }
     
-    private SqlStatementBuilder buildZigbeeUtilProStatement() {
+    private SqlFragmentSource buildZigbeeUtilProStatement() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT ZE.DeviceId,ZE.InstallCode,ZE.MacAddress,ZE.NodeId,ZE.DestinationEndPointId,");

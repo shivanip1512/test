@@ -12,6 +12,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PaoCreationService;
@@ -93,25 +94,25 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     @Transactional
-    public void preDeleteCleanup(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGateway(pao.getPaoId());
+        decommissionGateway(pao.getPaoIdentifier().getPaoId());
     }
     
     @Override
     @Transactional
-    public void deleteDevice(PaoIdentifier pao, InventoryIdentifier inventoryId) {       
-        gatewayDeviceDao.deleteDigiGateway(pao.getPaoId());
+    public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {       
+        gatewayDeviceDao.deleteDigiGateway(pao.getPaoIdentifier().getPaoId());
         deviceDao.removeDevice(new SimpleDevice(pao));
     }
 
     @Override
-    public void moveDeviceToInventory(PaoIdentifier pao, InventoryIdentifier inventoryId) {
+    public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGateway(pao.getPaoId());
+        decommissionGateway(pao.getPaoIdentifier().getPaoId());
         
         //Remove devices from gateway
-        gatewayDeviceDao.removeDevicesFromGateway(pao.getPaoId());
+        gatewayDeviceDao.removeDevicesFromGateway(pao.getPaoIdentifier().getPaoId());
     };
 
     private void decommissionGateway(int gatewayId) {
