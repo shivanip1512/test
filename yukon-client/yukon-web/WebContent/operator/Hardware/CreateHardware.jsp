@@ -62,6 +62,12 @@
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
+<% 
+String savedYukonDeviceCreationStyleRadio = "NEW";
+if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
+    savedYukonDeviceCreationStyleRadio = savedReq.getProperty("yukonDeviceCreationStyleRadio");
+%>
+
 <script language="JavaScript">
 
 function changeMember(form) {
@@ -76,7 +82,11 @@ function changeDeviceType(form) {
 
 function validate(form) {
 	if (form.SerialNo.value == "") {
-		alert("Serial # cannot be empty");
+	    if ($('twoWayLcr_TR').visible && $F('existingYukDevRadio')) {
+            alert("You must link to Yukon device.");
+	    } else {
+            alert("Serial # cannot be empty");
+	    }
 		return false;
 	}
 	return true;
@@ -103,13 +113,8 @@ function twoWayLCRCheck(el) {
 	}
 	%>
 
-	if(twoWayLcrTypes.indexOf(parseInt(el[el.selectedIndex].value)) >= 0) {
+	if (twoWayLcrTypes.indexOf(parseInt(el[el.selectedIndex].value)) >= 0) {
 		$('twoWayLcr_TR').show();
-
-		if($('choosenYukonDeviceId').value.strip() == '' && $('yukonDeviceName').value.strip() == '') {
-			alert('A Yukon device MUST be setup for this Two Way LCR.\n\nUse the "Yukon Two Way LCR Device Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
-		}
-		
 	} else {
 		$('twoWayLcr_TR').hide();
 	}
@@ -132,7 +137,20 @@ var setChoosenYukonDevice = function() {
 	return true;
 }
 
+function linkExisting(usingExisting, isInit) {
+    $('SerialNo').readOnly = usingExisting;
+    $('yukonDeviceName').readOnly = usingExisting;
+    if (!isInit) {
+        $('SerialNo').value = "";
+        $('yukonDeviceName').value = "";
+        $('choosenYukonDeviceId').value = "";
+        $('choosenYukonDeviceNameField').value = "";
+    }
+}
+
 function init() {
+    var usingExisting = <%= savedYukonDeviceCreationStyleRadio.equals("EXISTING") %>;
+    linkExisting(usingExisting, true);
 }
 </script>
 
@@ -358,11 +376,6 @@ function init() {
                   </tr>
                   
                   <%-- MCT for Two Way LCR--%>
-<% 
-String savedYukonDeviceCreationStyleRadio = "NEW";
-if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
-	savedYukonDeviceCreationStyleRadio = savedReq.getProperty("yukonDeviceCreationStyleRadio");
-%>
                   <tr id="twoWayLcr_TR" style="display: none">
                   	<td colspan="2">
                   		<table border="0" cellspacing="0" cellpadding="0">
@@ -372,7 +385,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr>
                               	<td colspan="2">
-                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW" onclick="$('SerialNo').readOnly = false;" <%if(savedYukonDeviceCreationStyleRadio.equals("NEW")){%>checked<%}%>> Create new Yukon device
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW" onclick="linkExisting(false);" <%if(savedYukonDeviceCreationStyleRadio.equals("NEW")){%>checked<%}%>> Create new Yukon device
                               	</td>
                               </tr>
                               <tr> 
@@ -380,7 +393,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
                                   <div align="right">Device Name: </div>
                                 </td>
                                 <td width="500"> 
-                                  <input type="text" id="yukonDeviceName" name="yukonDeviceName" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("yukonDeviceName")) %>" onchange="setContentChanged(true);" onclick="$('newYukDevRadio').checked=true;">
+                                  <input type="text" id="yukonDeviceName" name="yukonDeviceName" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("yukonDeviceName")) %>" onchange="setContentChanged(true);">
                                 </td>
                               </tr>
                               <tr> 
@@ -413,7 +426,7 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                               </tr>
                               <tr>
                               	<td colspan="2">
-                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" onclick="$('SerialNo').readOnly = true;"  <%if(savedYukonDeviceCreationStyleRadio.equals("EXISTING")){%>checked<%}%>> Link to existing Yukon device
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" onclick="linkExisting(true)" <%if(savedYukonDeviceCreationStyleRadio.equals("EXISTING")){%>checked<%}%>> Link to existing Yukon device
                               	</td>
                               </tr>
                               <tr> 
