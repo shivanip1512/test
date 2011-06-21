@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/20/2011 2:36:18 PM                         */
+/* Created on:     6/21/2011 9:41:23 AM                         */
 /*==============================================================*/
 
 
@@ -400,18 +400,17 @@ create table ArchiveDataAnalysisSlot  (
    SlotId               NUMBER                          not null,
    AnalysisId           NUMBER                          not null,
    StartTime            DATE                            not null,
-   constraint PK_ArcDataAnalSlots primary key (SlotId)
+   constraint PK_ArcDataAnalSlot primary key (SlotId)
 );
 
 /*==============================================================*/
 /* Table: ArchiveDataAnalysisSlotValue                          */
 /*==============================================================*/
 create table ArchiveDataAnalysisSlotValue  (
-   SlotValueId          NUMBER                          not null,
    DeviceId             NUMBER                          not null,
    SlotId               NUMBER                          not null,
    ChangeId             NUMBER,
-   constraint PK_ArcDataAnalSlotValues primary key (SlotValueId)
+   constraint PK_ArcDataAnalSlotValue primary key (DeviceId)
 );
 
 /*==============================================================*/

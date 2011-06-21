@@ -16,11 +16,10 @@ CREATE TABLE ArchiveDataAnalysis  (
 );
 
 CREATE TABLE ArchiveDataAnalysisSlotValue  (
-   SlotValueId          NUMBER                          NOT NULL,
    DeviceId             NUMBER                          NOT NULL,
    SlotId               NUMBER                          NOT NULL,
    ChangeId             NUMBER                          NULL,
-   CONSTRAINT PK_ArcDataAnalSlotValue PRIMARY KEY (SlotValueId)
+   CONSTRAINT PK_ArcDataAnalSlotValue PRIMARY KEY (DeviceId)
 );
 
 CREATE TABLE ArchiveDataAnalysisSlot  (
@@ -323,7 +322,7 @@ SET Value = ' '
 WHERE Value = '(none)';
 
 UPDATE YukonRoleProperty
-SET Description = 'Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]');
+SET Description = 'Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]')
 WHERE RolePropertyId = -1304;
 /* End YUK-9924 */
 
@@ -352,7 +351,6 @@ WHERE PointId IN (SELECT P.PointId
                     OR  (PAO.Type LIKE 'CBC 702%' AND 
                          P.PointName = 'Voltage'));
 /* End YUK-9950 */
-
 
 /* Start YUK-9946 */
 ALTER TABLE ZBEndPoint 
