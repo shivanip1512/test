@@ -1,6 +1,5 @@
 package com.cannontech.common.bulk.model;
 
-import org.joda.time.Instant;
 import org.joda.time.Interval;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -45,9 +44,5 @@ public class ArchiveData {
     
     public PaoIdentifier getPaoId() {
         return paoId;
-    }
-    
-    public Instant getIntervalStart() {
-        return archiveRange.getStart().toInstant();
     }
 }

@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
-import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.google.common.collect.Sets;
@@ -83,10 +83,12 @@ public class ArchiveDataAnalysisController {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
         
-        alignDateRangeToIntervals(backingBean);
+        //alignDateRangeToIntervals(backingBean);
         
-        Interval dateTimeRangeForDisplay = archiveDataAnalysisService.getDateTimeRangeForDisplay(backingBean.getDateRange(), backingBean.getSelectedIntervalDuration());
-        model.addAttribute("dateTimeRangeForDisplay", dateTimeRangeForDisplay);
+        //Interval dateTimeRangeForDisplay = archiveDataAnalysisService.getDateTimeRangeForDisplay(backingBean.getDateRange(), backingBean.getSelectedIntervalDuration());
+        
+        //model.addAttribute("dateTimeRangeForDisplay", dateTimeRangeForDisplay);
+        model.addAttribute("dateTimeRangeForDisplay", backingBean.getDateRange());
         
         int analysisId = archiveDataAnalysisService.createAnalysis(backingBean);
         String resultsId = archiveDataAnalysisService.startAnalysis(backingBean, analysisId);
@@ -106,39 +108,6 @@ public class ArchiveDataAnalysisController {
         long prevIntervalMillis = baseMillis - millisPastPrevInterval;
         
         return new Instant(prevIntervalMillis);
-    }
-    
-    private void alignDateRangeToIntervals(ArchiveDataAnalysisBackingBean backingBean) {
-        //If start or end times aren't aligned to interval, align them.
-        //If they are aligned, adjust forward one interval to match expectations
-        //(exclusive start time and inclusive end time)
-        Interval dateRange = backingBean.getDateRange();
-        long start = dateRange.getStartMillis();
-        long end = dateRange.getEndMillis();
-        long selectedInterval = backingBean.getSelectedInterval();
-        
-        long millisPastPrevInterval = start % selectedInterval;
-        long millisAwayFromNextInterval = selectedInterval - millisPastPrevInterval;
-        if(millisAwayFromNextInterval != 0) {
-            //adjust start date forward to the nearest interval
-            start = start + millisAwayFromNextInterval;
-        } else {
-            //adjust forward one full interval
-            start = start + selectedInterval;
-        }
-        
-        millisPastPrevInterval = end % selectedInterval;
-        millisAwayFromNextInterval = selectedInterval - millisPastPrevInterval;
-        if(millisAwayFromNextInterval != 0) {
-            //adjust start date forward to the nearest interval
-            end = end + millisAwayFromNextInterval;
-        } else {
-            //adjust forward one full interval
-            end = end + selectedInterval;
-        }
-
-        backingBean.setStartDate(new Date(start));
-        backingBean.setStopDate(new Date(end));
     }
     
     @InitBinder

@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
-<cti:standardPage module="amr" page="analysisList">
+<cti:standardPage module="amr" page="analysis.list">
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -11,8 +11,10 @@
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
         <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisList.pageName"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
+    
+    <cti:includeScript link="/JavaScript/yukon/ui/general.js"/>
     
     <script>
     var deleteConfirmAnalysisId;
@@ -23,6 +25,8 @@
     }
     
     function deleteAnalysis() {
+        $('deleteConfirmationPopup').hide()
+        Yukon.ui.blockPage();
         var url = "delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
@@ -31,13 +35,13 @@
     <tags:boxContainer2 nameKey="listContainer">
         <table class="compactResultsTable">
             <tr>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.runDate"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.attribute"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.numberOfDevices"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.range"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.intervalLength"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.pointQualities"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysisList.actions"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.runDate"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.attribute"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.numberOfDevices"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.range"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.intervalLength"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.pointQualities"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.list.actions"/></th>
             </tr>
             
             <c:forEach items="${analysisMap}" var="analysisEntry">
@@ -52,7 +56,7 @@
                         ${analysisEntry.value}
                     </td>
                     <td>
-                        <cti:formatInterval type="DATEHM" value="${analysisEntry.key.dateTimeRangeForDisplay}"/>
+                        <cti:formatInterval type="DATEHM" value="${analysisEntry.key.dateTimeRange}"/>
                     </td>
                     <td>
                         <cti:formatPeriod value="${analysisEntry.key.intervalLength}" type="DHMS_REDUCED"/>
@@ -60,10 +64,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${analysisEntry.key.excludeBadPointQualities}">
-                                <cti:msg key="yukon.web.modules.amr.analysisList.excludeBad"/>
+                                <cti:msg key="yukon.web.modules.amr.analysis.list.excludeBad"/>
                             </c:when>
                             <c:otherwise>
-                                <cti:msg key="yukon.web.modules.amr.analysisList.includeBad"/>
+                                <cti:msg key="yukon.web.modules.amr.analysis.list.includeBad"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -84,11 +88,11 @@
         </table>
     </tags:boxContainer2>
     
-    <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.amr.analysisList.deleteConfirmation.title">
-        <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.amr.analysisList.deleteConfirmation.message"/></h3>
+    <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.amr.analysis.list.deleteConfirmation.title">
+        <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.amr.analysis.list.deleteConfirmation.message"/></h3>
         <div class="actionArea">
             <cti:button key="ok" onclick="deleteAnalysis()"/>
-            <cti:button key="cancel" onclick="$('deleteConfirmationPopup').hide()" />
+            <cti:button key="cancel" onclick="$('deleteConfirmationPopup').hide();" />
         </div>
     </i:simplePopup>
     

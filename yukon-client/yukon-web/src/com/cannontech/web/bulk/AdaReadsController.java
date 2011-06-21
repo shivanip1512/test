@@ -9,11 +9,11 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
-import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 
 @Controller
 public class AdaReadsController {

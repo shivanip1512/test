@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -43,7 +43,7 @@ public class AdaTabularController {
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisService.getDevicePointValuesList(data);
         model.addAttribute("devicePointValuesList", devicePointValuesList);
         
-        List<Instant> dateTimeList = analysis.getIntervalStartTimes();
+        List<Instant> dateTimeList = analysis.getIntervalEndTimes();
         model.addAttribute("dateTimeList", dateTimeList);
         
         return "archiveDataAnalysis/tabular.jsp";
@@ -54,7 +54,7 @@ public class AdaTabularController {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId);
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisService.getDevicePointValuesList(data);
-        List<Instant> dateTimeList = analysis.getIntervalStartTimes();
+        List<Instant> dateTimeList = analysis.getIntervalEndTimes();
         
         //convert date/times into String array for header
         String[] headerRow = new String[dateTimeList.size()+1];

@@ -4,9 +4,9 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class AdaProfileReadBackingService extends RecentResultUpdateBackingService {

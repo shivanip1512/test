@@ -3,7 +3,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -14,7 +13,6 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.ReadType;
-import com.cannontech.common.bulk.model.Slot;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -22,16 +20,13 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     private RawPointHistoryDao rawPointHistoryDao;
@@ -65,16 +60,6 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             return archiveData;
         }
     }
-    
-    private final YukonRowMapper<Slot> slotRowMapper = new YukonRowMapper<Slot>() {
-        @Override
-        public Slot mapRow(YukonResultSet rs) throws SQLException {
-            Instant dateTime = rs.getInstant("startTime");
-            int slotId = rs.getInt("slotId");
-            Slot slot = new Slot(dateTime, slotId);
-            return slot;
-        }
-    };
     
     private final YukonRowMapper<Analysis> analysisRowMapper = new YukonRowMapper<Analysis>() {
         @Override
@@ -114,7 +99,6 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     //TODO bookmark
-    // public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, DeviceArchiveData data) {
     @Override
     public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, int pointId, boolean excludeBadPointQualities) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -136,68 +120,19 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public Map<Instant, Integer> getDeviceSlotValues(int analysisId, int pointId, boolean excludeBadPointQualities) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT StartTime, ChangeId");
-        sql.append("FROM ArchiveDataAnalysisSlot");
-        sql.append("  JOIN (");
-        sql.append("    SELECT Timestamp, ChangeId");
-        sql.append("    FROM RawPointHistory");
-        sql.append("    WHERE PointId").eq(pointId);
-        if(excludeBadPointQualities) {
-            sql.append("AND Quality").eq(PointQuality.Normal.getQuality());
-        }
-        sql.append("  ) rph");
-        sql.append("    ON StartTime = Timestamp");
-        sql.append("WHERE AnalysisId").eq(analysisId);
-        
-        final Map<Instant, Integer> datedChangeIdMap = Maps.newHashMap();
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                Instant date = rs.getInstant("startTime");
-                Integer changeId = rs.getNullableInt("changeId");
-                datedChangeIdMap.put(date, changeId);
-            }
-        });
-        
-        return datedChangeIdMap;
-    }
-    
-    @Override
-    public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, DeviceArchiveData data) {
-        Analysis analysis = getAnalysisById(analysisId);
-        Duration intervalLength = analysis.getIntervalLength();
-        
-        List<Slot> slots = getSlots(analysisId);
-        
-        //For each slot date, search for a value in the data object.
-        //If it exists, insert it. Otherwise insert "missing data" value.
-        for(Slot slot : slots) {
-            ArchiveData read = data.getReadForDate(slot.getInstant());
-            if(read == null) {
-                Instant start = slot.getInstant();
-                Interval intervalRange = new Interval(start, intervalLength);
-                read = new ArchiveData(intervalRange, ReadType.DATA_MISSING, null, paoIdentifier);
-            }
-            insertSlotValue(data.getId().getPaoId(), read, slot);
-        }
-    }
-    
-    @Override
     public List<DeviceArchiveData> getSlotValues(int analysisId) {
-        List<Integer> deviceList = getRelevantDeviceIds(analysisId);
+        List<PaoIdentifier> deviceList = getRelevantDeviceIds(analysisId);
         return getSlotValues(analysisId, deviceList);
     }
     
     @Override
-    public List<DeviceArchiveData> getSlotValues(int analysisId, List<Integer> deviceIds) {
+    public List<DeviceArchiveData> getSlotValues(int analysisId, List<PaoIdentifier> deviceIds) {
         Analysis analysis = getAnalysisById(analysisId);
         
         List<DeviceArchiveData> dataList = Lists.newArrayList();
-        for(Integer deviceId : deviceIds) {
+        for(PaoIdentifier paoIdentifier : deviceIds) {
             //get device + slot values for relevant slots - each set becomes a DeviceArchiveData
-            DeviceArchiveData data = getDeviceSlotValues(analysis, deviceId);
+            DeviceArchiveData data = getDeviceSlotValues(analysis, paoIdentifier);
             dataList.add(data);
         }
         
@@ -248,37 +183,27 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return numberOfDevices;
     }
     
-    private List<Slot> getSlots(int analysisId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT SlotId, StartTime");
-        sql.append("FROM ArchiveDataAnalysisSlot");
-        sql.append("WHERE AnalysisId").eq(analysisId);
-        
-        List<Slot> slotList = yukonJdbcTemplate.query(sql, slotRowMapper);
-        return slotList;
-    }
-    
     @Override
-    public List<Integer> getRelevantDeviceIds(int analysisId) {
+    public List<PaoIdentifier> getRelevantDeviceIds(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT DeviceId");
-        sql.append("FROM ArchiveDataAnalysisSlotValue");
-        sql.append("  JOIN ArchiveDataAnalysisSlot");
-        sql.append("    ON ArchiveDataAnalysisSlotValue.slotId = ArchiveDataAnalysisSlot.slotId");
+        sql.append("SELECT DISTINCT PAObjectID, Type");
+        sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
+        sql.append("  JOIN ArchiveDataAnalysisSlot slot ON slotValue.slotId = slot.slotId");
+        sql.append("  JOIN YukonPAObject ypo ON ypo.paobjectId = slotValue.deviceId");
         sql.append("WHERE AnalysisId").eq(analysisId);
         
-        List<Integer> deviceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<PaoIdentifier> deviceIds = yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
         return deviceIds;
     }
     
-    private DeviceArchiveData getDeviceSlotValues(Analysis analysis, int deviceId) {
+    private DeviceArchiveData getDeviceSlotValues(Analysis analysis, PaoIdentifier paoIdentifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Type, DeviceId, StartTime, ChangeId, AnalysisId");
-        sql.append("FROM ArchiveDataAnalysisSlotValue slotValues");
-        sql.append("  JOIN ArchiveDataAnalysisSlot slots ON slotValues.slotId = slots.slotId");
-        sql.append("  JOIN YukonPAObject ypo ON ypo.paobjectId = slotValues.deviceId");
+        sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
+        sql.append("  JOIN ArchiveDataAnalysisSlot slot ON slotValue.slotId = slot.slotId");
+        sql.append("  JOIN YukonPAObject ypo ON ypo.paobjectId = slotValue.deviceId");
         sql.append("WHERE AnalysisId").eq(analysis.getAnalysisId());
-        sql.append("AND DeviceId").eq(deviceId);
+        sql.append("AND DeviceId").eq(paoIdentifier.getPaoId());
         
         ArchiveDataRowMapper archiveDataRowMapper = new ArchiveDataRowMapper(analysis.getIntervalLength());
         List<ArchiveData> arsList = yukonJdbcTemplate.query(sql, archiveDataRowMapper);
@@ -287,23 +212,9 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         data.setAttribute(analysis.getAttribute());
         data.setArchiveRange(analysis.getDateTimeRange());
         data.setArchiveData(arsList);
-        data.setId(arsList.get(0).getPaoId());
+        data.setId(paoIdentifier);
         
         return data;
-    }
-    
-    //TODO bookmark
-    private void insertSlotValue(int deviceId, ArchiveData read, Slot slot) {
-        int slotValueId = nextValueHelper.getNextValue("ArchiveDataAnalysisSlotValue");
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink sink = sql.insertInto("ArchiveDataAnalysisSlotValue");
-        sink.addValue("SlotValueId", slotValueId);
-        sink.addValue("DeviceId", deviceId);
-        sink.addValue("SlotId", slot.getSlotId());
-        sink.addValue("ChangeId", read.getChangeId());
-        
-        yukonJdbcTemplate.update(sql);
     }
     
     private int insertIntoArchiveDataAnalysis(BuiltInAttribute attribute, Duration intervalLength, boolean excludeBadPointQualities, Interval dateTimeRange) {
@@ -345,8 +256,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         Instant start = dateTimeRange.getStart().toInstant();
         Instant stop = dateTimeRange.getEnd().toInstant();
         List<Instant> relevantDateTimes = Lists.newArrayList();
-        Instant tempInstant = start;
-        while(tempInstant.isBefore(stop)) {
+        Instant tempInstant = start.plus(interval); //first point of interest is one interval into the range
+        while(tempInstant.isBefore(stop) || tempInstant.isEqual(stop)) {
             relevantDateTimes.add(tempInstant);
             tempInstant = tempInstant.plus(interval);
         }

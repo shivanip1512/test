@@ -1,7 +1,7 @@
 package com.cannontech.web.updater.archiveDataAnalysis;
 
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.web.updater.ResultAccessor;
 
 public enum AdaProfileReadTypeEnum {
@@ -40,11 +40,11 @@ public enum AdaProfileReadTypeEnum {
             ResolvableTemplate resolvableTemplate = null;
             
             if(adaProfileReadResult.isComplete()) {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysisReadResults.isCompleteText");
+                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.isCompleteText");
             } else if(adaProfileReadResult.isErrorOccurred()) {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysisReadResults.isErrorOccurredText");
+                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.isErrorOccurredText");
             } else {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysisReadResults.inProgressText");
+                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.inProgressText");
             }
             //cancelled?
             

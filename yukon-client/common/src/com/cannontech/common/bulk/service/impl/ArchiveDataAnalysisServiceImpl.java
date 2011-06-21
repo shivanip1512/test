@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service.impl;
+package com.cannontech.common.bulk.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -50,9 +50,9 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
-import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
-import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
+import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
@@ -288,14 +288,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor) {
         //Set up callback
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
-        ArchiveDataAnalysisCallbackResult callbackResult = new ArchiveDataAnalysisCallbackResult(resultsId,
-                                                                                                 deviceCollection,
-                                                                                                 successGroup,
-                                                                                                 processingExceptionGroup,
-                                                                                                 deviceGroupMemberEditorDao,
-                                                                                                 deviceGroupCollectionHelper);
+        ArchiveDataAnalysisCallbackResult callbackResult = new ArchiveDataAnalysisCallbackResult(resultsId, deviceCollection);
         
         //Set up cache
         bpRecentResultsCache.addResult(resultsId, callbackResult);

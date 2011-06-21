@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
-import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 
 @Controller
 public class AdaResultsController {
@@ -41,7 +42,7 @@ public class AdaResultsController {
         model.addAllAttributes(collection.getCollectionParameters());
         
         // Page the result
-        List<Integer> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
+        List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;

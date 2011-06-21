@@ -62,7 +62,7 @@ public class AdaResultsHelper {
                 } else {
                     // Interval ended after pixel end
                     if (pixelIndex + 1 == pixels.size()) {
-                        // We are in the last the last pixel, just include it here
+                        // We are in the last pixel, just include it here
                         ReadType currentPixelReadType = currentPixel.getReadType();
                         if (currentPixelReadType != null && currentPixelReadType != intervalReadType) {
                             currentPixel.setHasTransition(true);

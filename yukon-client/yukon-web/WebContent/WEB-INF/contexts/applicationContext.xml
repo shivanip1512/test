@@ -1429,7 +1429,7 @@
     </bean>
     <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
     
-    <bean id="archiveDataAnalysisService" class="com.cannontech.web.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
+    <bean id="archiveDataAnalysisService" class="com.cannontech.common.bulk.service.impl.ArchiveDataAnalysisServiceImpl"/>
     <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
     
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>

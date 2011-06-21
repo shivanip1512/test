@@ -2,7 +2,6 @@ package com.cannontech.common.bulk.model;
 
 import java.util.List;
 
-import org.joda.time.Instant;
 import org.joda.time.Interval;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -65,15 +64,6 @@ public class DeviceArchiveData {
 
     public PaoIdentifier getId() {
         return paoIdentifier;
-    }
-    
-    public ArchiveData getReadForDate(Instant date) {
-        for(ArchiveData read : archiveData) {
-            if(read.getIntervalStart().isEqual(date)) {
-                return read;
-            }
-        }
-        return null;
     }
     
     public int getHoleCount() {

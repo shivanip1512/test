@@ -16,6 +16,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -51,11 +52,11 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             
             @Override
             public List<SimpleDevice> getDeviceList() {
-                List<Integer> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
+                List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
                 
-                for (int id : deviceIds) {
-                    SimpleDevice device = deviceDao.getYukonDevice(id);
+                for (PaoIdentifier paoIdentifier : deviceIds) {
+                    SimpleDevice device = deviceDao.getYukonDevice(paoIdentifier.getPaoId());
                     deviceList.add(device);
                 }
                 

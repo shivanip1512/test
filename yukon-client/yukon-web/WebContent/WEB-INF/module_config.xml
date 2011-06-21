@@ -431,23 +431,27 @@
                 
             </pages>
         </page>
-        <page name="analysisHome" type="BASIC">
+        <page name="analysis.home" type="BASIC">
             <menu>meters</menu>
-        </page>
-        <page name="analysisProgress" type="DETAIL">
-            <menu>meters</menu>
-        </page>
-        <page name="analysisResults" type="BASIC">
-            <menu>meters</menu>
-        </page>
-        <page name="analysisTabular" type="DETAIL">
-            <menu>meters</menu>
-        </page>
-        <page name="analysisList" type="BASIC">
-            <menu>meters</menu>
-        </page>
-        <page name="analysisReadResults" type="DETAIL">
-            <menu>meters</menu>
+            <pages>
+                <page name="analysis.progress" type="DETAIL">
+                    <menu>meters</menu>
+                </page>
+                <page name="analysis.list" type="BASIC">
+                    <menu>meters</menu>
+                </page>
+                <page name="analysis.results" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="analysis.tabular" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                        <page name="analysis.readResults" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>   
+            </pages>
         </page>
     </pages>
   </module>

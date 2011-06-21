@@ -8,7 +8,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="amr" page="analysisTabular">
+<cti:standardPage module="amr" page="analysis.tabular">
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -21,10 +21,10 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         <%-- archive data analysis results--%>
-        <cti:msg var="analysisResultsPageTitle" key="yukon.web.modules.amr.analysisResults.pageName" />
+        <cti:msg var="analysisResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName" />
         <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results?analysisId=${analysis.analysisId}" title="${analysisResultsPageTitle}"/>
         <%-- archive data analysis tabular --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisTabular.pageName"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.tabular.pageName"/></cti:crumbLink>
 
     </cti:breadCrumbs>
     

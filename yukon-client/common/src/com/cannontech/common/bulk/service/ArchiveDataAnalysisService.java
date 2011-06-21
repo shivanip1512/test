@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service;
+package com.cannontech.common.bulk.service;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.joda.time.Interval;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
-import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
+import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 
 public interface ArchiveDataAnalysisService {
     

@@ -5,7 +5,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="analysisResults">
+<cti:standardPage module="amr" page="analysis.results">
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -13,10 +13,10 @@
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
         <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
-        <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysisList.pageName" />
+        <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
         <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisResults.pageName"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <div class="smallBoldLabel notesSection">
@@ -36,7 +36,7 @@
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".dateRange">
-                        <cti:formatInterval type="DATEHM" value="${result.analysis.dateTimeRangeForDisplay}"/>
+                        <cti:formatInterval type="DATEHM" value="${result.analysis.dateTimeRange}"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".intervalLength">
@@ -91,7 +91,7 @@
     </cti:dataGrid>
     
     <%-- Results Data --%>
-    <tags:pagedBox2 nameKey="analysisResults" searchResult="${result.searchResult}" baseUrl="results" >
+    <tags:pagedBox2 nameKey="analysis.results" searchResult="${result.searchResult}" baseUrl="results" >
         
         <table class="compactResultsTable">
         

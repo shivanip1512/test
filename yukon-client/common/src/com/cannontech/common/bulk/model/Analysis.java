@@ -2,7 +2,6 @@ package com.cannontech.common.bulk.model;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
@@ -76,30 +75,23 @@ public class Analysis {
         return runDate;
     }
     
-    public List<Instant> getIntervalStartTimes() {
+    public List<Instant> getIntervalEndTimes() {
         List<Instant> dateTimeList = Lists.newArrayList();
         
-        Instant nextIntervalStartTime = dateTimeRange.getStart().toInstant();
+        Instant nextIntervalEndTime = dateTimeRange.getStart().plus(intervalLength).toInstant();
         Instant endTime = dateTimeRange.getEnd().toInstant();
-        dateTimeList.add(nextIntervalStartTime);
+        dateTimeList.add(nextIntervalEndTime);
         boolean loop = true;
         
         while(loop) {
-            nextIntervalStartTime = nextIntervalStartTime.plus(intervalLength);
-            if(nextIntervalStartTime.isBefore(endTime)) {
-                dateTimeList.add(nextIntervalStartTime);
+            nextIntervalEndTime = nextIntervalEndTime.plus(intervalLength);
+            if(nextIntervalEndTime.isBefore(endTime) || nextIntervalEndTime.isEqual(endTime)) {
+                dateTimeList.add(nextIntervalEndTime);
             } else {
                 loop = false;
             }
         }
         
         return dateTimeList;
-    }
-    
-    public Interval getDateTimeRangeForDisplay() {
-        DateTime newStart = dateTimeRange.getStart().minus(intervalLength);
-        DateTime newEnd = dateTimeRange.getEnd().minus(intervalLength);
-
-        return new Interval(newStart, newEnd);
     }
 }

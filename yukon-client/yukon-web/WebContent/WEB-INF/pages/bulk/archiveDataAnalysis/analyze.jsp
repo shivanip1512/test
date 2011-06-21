@@ -4,7 +4,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage module="amr" page="analysisProgress">
+<cti:standardPage module="amr" page="analysis.progress">
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -17,10 +17,10 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />      
         <%-- ADA Progress --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisProgress.pageName"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.progress.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysisProgress">
+    <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysis.progress">
         
         <div class="smallBoldLabel notesSection">
             <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
@@ -38,10 +38,10 @@
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>
                         <c:when test="${backingBean.excludeBadQualities}">
-                            <cti:msg key="yukon.web.modules.amr.analysisProgress.excludeBadQualities" />
+                            <cti:msg key="yukon.web.modules.amr.analysis.progress.excludeBadQualities" />
                         </c:when>
                         <c:otherwise>
-                            <cti:msg key="yukon.web.modules.amr.analysisProgress.acceptBadQualities" />
+                            <cti:msg key="yukon.web.modules.amr.analysis.progress.acceptBadQualities" />
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>
@@ -55,13 +55,13 @@
         <div class="bottomPadded">
             <tags:resultProgressBar totalCount="${callbackResult.totalItems}" 
                 countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
-                progressLabelTextKey="yukon.web.modules.amr.analysisProgress.progressLabel"
+                progressLabelTextKey="yukon.web.modules.amr.analysis.progress.progressLabel"
                 statusTextKey="BACKGROUNDPROCESS/${resultsId}/STATUS_TEXT" />
         </div>
 
         <%-- SUCCESS --%>
         <div class="normalBoldLabel bottomPadded">
-            <cti:msg key="yukon.web.modules.amr.analysisProgress.successLabel" />
+            <cti:msg key="yukon.web.modules.amr.analysis.progress.successLabel" />
             <span class="okGreen">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
             </span>
@@ -69,7 +69,7 @@
 
         <%-- FAIL --%>
         <div class="normalBoldLabel bottomPadded">
-            <cti:msg key="yukon.web.modules.amr.analysisProgress.failLabel" />
+            <cti:msg key="yukon.web.modules.amr.analysis.progress.failLabel" />
             <span class="errorRed">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
             </span>

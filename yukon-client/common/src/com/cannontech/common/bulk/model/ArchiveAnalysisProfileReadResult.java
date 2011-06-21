@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.model;
+package com.cannontech.common.bulk.model;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,6 @@ import com.google.common.collect.Sets;
 public class ArchiveAnalysisProfileReadResult implements Completable {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    //private List<CommandRequestDevice> commandRequestDeviceList;
     private Multimap<SimpleDevice, String> deviceCommandMap = ArrayListMultimap.create();
     private Set<SimpleDevice> devicesWithFailure = Sets.newHashSet();
     private boolean complete = false;
@@ -39,7 +38,6 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         this.successGroup = successGroup;
         this.failureGroup = failureGroup;
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;;
-        //this.commandRequestDeviceList = commandRequestDeviceList;
         
         for(CommandRequestDevice request : commandRequestDeviceList) {
             deviceCommandMap.put(request.getDevice(), request.getCommand());
@@ -52,7 +50,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         //remove from list of pending requests
         deviceCommandMap.remove(device, request.getCommand());
         
-        //see if we've finished all commands for that device TODO: reverse logic for cleaner code?
+        //see if we've finished all commands for that device
         if(deviceCommandMap.containsKey(device)) {
             //do nothing. more commands need to complete for this device
         } else {

@@ -4,7 +4,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage module="amr" page="analysisHome">
+<cti:standardPage module="amr" page="analysis.home">
     
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -17,7 +17,7 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         <%-- archive data analysis --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisHome.pageName"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.home.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <cti:includeScript link="/JavaScript/CalendarTagFuncs.js"/>
@@ -29,25 +29,24 @@
         }
     </script>
 
-    <tags:bulkActionContainer key="yukon.web.modules.amr.analysisHome" deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer key="yukon.web.modules.amr.analysis.home" deviceCollection="${deviceCollection}">
         <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/spring/bulk/archiveDataAnalysis/analyze" onsubmit="prepareDateTimeFields();">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
-            <c:set var="selectInputWidth" value="200px" />
             
-            <div style="padding: 0px 0px 15px 0px">
+            <div class="bottomPadded">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".startDateLabel">
                         <tags:dateTimeInput path="startDate" inline="true" fieldValue="${startDateInitialValue}"/>
-                        <cti:msg2 key="yukon.web.modules.amr.analysisHome.exclusive"/>
+                        <cti:msg2 key="yukon.web.modules.amr.analysis.home.exclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".stopDateLabel">
                         <tags:dateTimeInput path="stopDate" inline="true" fieldValue="${stopDateInitialValue}"/>
-                        <cti:msg2 key="yukon.web.modules.amr.analysisHome.inclusive"/>
+                        <cti:msg2 key="yukon.web.modules.amr.analysis.home.inclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".intervalLabel">
-                        <form:select path="selectedInterval" style="width:${selectInputWidth};">
+                        <form:select path="selectedInterval" class="dateTimeInputWidth">
                             <c:forEach var="intervalDuration" items="${intervalDurations}">
                                 <form:option value="${intervalDuration.millis}">
                                     <cti:formatPeriod value="${intervalDuration}" type="DHMS_REDUCED"/>
@@ -57,7 +56,7 @@
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".attributeLabel">
-                        <form:select path="selectedAttribute" style="width:${selectInputWidth};">
+                        <form:select path="selectedAttribute" class="dateTimeInputWidth">
                             <c:forEach var="attribute" items="${attributes}">
                                  <form:option value="${attribute}" title="${attribute.description}">
                                     ${attribute.description}
@@ -66,10 +65,7 @@
                         </form:select>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".empty" excludeColon="true">
-                        <cti:msg var="excludeBadQualitiesOption" key="yukon.web.modules.amr.analysisHome.excludeBadQualitiesLabel"/>
-                        <form:checkbox path="excludeBadQualities" checked="true" /> ${excludeBadQualitiesOption}
-                    </tags:nameValue2>
+                    <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".excludeBadQualitiesLabel"/>
                 </tags:nameValueContainer2>
             </div>
             
