@@ -374,8 +374,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             ServerUtils.handleDBChange( energyCompany.getUser(), DbChangeType.DELETE );
         }
         
-        // Delete the privilege group of the default operator login
-        if (liteGroup != null) {
+        // Delete the privilege group of the default operator login as long as it's not a system groupr and ends with with 'Admin Grp' 
+        if (liteGroup != null && liteGroup.getGroupName().endsWith(" Admin Grp") && liteGroup.getGroupID() > -1) {
             com.cannontech.database.data.user.YukonGroup dftGroup = new com.cannontech.database.data.user.YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
