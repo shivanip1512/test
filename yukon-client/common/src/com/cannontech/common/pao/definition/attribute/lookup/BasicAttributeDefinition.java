@@ -36,6 +36,7 @@ public class BasicAttributeDefinition extends AttributeDefinition {
     public PaoPointIdentifier findActualPointIdentifier(YukonPao pao) {
         try {
             PaoPointIdentifier paoPointIdentifier = getPointIdentifier(pao);
+            pointDao.getPointId(paoPointIdentifier);
             return paoPointIdentifier;
         } catch (NotFoundException nfe) {
             return null;

@@ -59,11 +59,11 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     @Override
     public int getPointId(YukonPao pao, Attribute attribute) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select point.pointId");
-        sql.append("from Point point");
-        sql.append("join ExtraPaoPointAssignment eppa on point.PointId = eppa.PointId");
-        sql.append("where eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
-        sql.append("and eppa.Attribute = ").appendArgument(attribute);
+        sql.append("SELECT point.PointId");
+        sql.append("FROM Point point");
+        sql.append("JOIN ExtraPaoPointAssignment eppa ON point.PointId = eppa.PointId");
+        sql.append("WHERE eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
+        sql.append("AND eppa.Attribute = ").appendArgument(attribute);
         try {
             return yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
