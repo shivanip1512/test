@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/21/2011 9:44:29 AM                         */
+/* Created on:     6/21/2011 1:37:32 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -430,7 +430,7 @@ create table ArchiveDataAnalysisSlotValue (
    DeviceId             numeric              not null,
    SlotId               numeric              not null,
    ChangeId             numeric              null,
-   constraint PK_ArcDataAnalSlotValue primary key (DeviceId)
+   constraint PK_ArcDataAnalSlotValue primary key (DeviceId, SlotId)
 )
 go
 

@@ -19,7 +19,7 @@ CREATE TABLE ArchiveDataAnalysisSlotValue  (
    DeviceId             NUMBER                          NOT NULL,
    SlotId               NUMBER                          NOT NULL,
    ChangeId             NUMBER                          NULL,
-   CONSTRAINT PK_ArcDataAnalSlotValue PRIMARY KEY (DeviceId)
+   CONSTRAINT PK_ArcDataAnalSlotValue PRIMARY KEY (DeviceId, SlotId)
 );
 
 CREATE TABLE ArchiveDataAnalysisSlot  (
