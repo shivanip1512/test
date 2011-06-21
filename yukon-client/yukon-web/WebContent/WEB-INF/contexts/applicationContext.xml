@@ -1003,6 +1003,7 @@
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
         <property name="deviceDao" ref="deviceDao"/>
+        <property name="paoLoadingService" ref="paoLoadingService"/>
     </bean>
     
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
