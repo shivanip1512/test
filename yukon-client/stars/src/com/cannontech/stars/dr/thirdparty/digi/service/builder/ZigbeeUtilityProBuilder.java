@@ -126,7 +126,7 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
     @Override
     @Transactional
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
-        decommissionDevice(inventoryId.getInventoryId(),pao);        
+        decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);        
     }
     
     @Override
@@ -138,10 +138,16 @@ public class ZigbeeUtilityProBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-        decommissionDevice(inventoryId.getInventoryId(),pao);
+        decommissionAndUnassignDevice(inventoryId.getInventoryId(),pao);
     };
     
-    private void decommissionDevice(int inventoryId, YukonPao device) {
+    /**
+     * Sends the Decommission commands and follows up with an unassigning from the gateway in yukon.
+     * 
+     * @param inventoryId
+     * @param device
+     */
+    private void decommissionAndUnassignDevice(int inventoryId, YukonPao device) {
         Integer gatewayId = zigbeeDeviceDao.findGatewayIdForInventory(inventoryId);        
         if (gatewayId != null) {
             //Send Decommission command.

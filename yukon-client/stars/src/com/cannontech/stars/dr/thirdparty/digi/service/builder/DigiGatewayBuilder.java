@@ -96,7 +96,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Transactional
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGateway(pao.getPaoIdentifier().getPaoId());
+        decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
     }
     
     @Override
@@ -109,13 +109,13 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
         //Send Decommission command for devices
-        decommissionGateway(pao.getPaoIdentifier().getPaoId());
+        decommissionGatewayAndUnassignDevices(pao.getPaoIdentifier().getPaoId());
         
         //Remove devices from gateway
         gatewayDeviceDao.removeDevicesFromGateway(pao.getPaoIdentifier().getPaoId());
     };
 
-    private void decommissionGateway(int gatewayId) {
+    private void decommissionGatewayAndUnassignDevices(int gatewayId) {
         List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gatewayId);
         for (ZigbeeDevice device : devices) {
             zigbeeWebService.uninstallStat(gatewayId, device.getZigbeeDeviceId());

@@ -25,8 +25,8 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
-import com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.exception.DigiEmptyDeviceCoreResultException;
 import com.cannontech.thirdparty.exception.DigiEndPointDisconnectedException;
@@ -44,7 +44,7 @@ public class DigiResponseHandler {
     
     private ZigbeeDeviceDao zigbeeDeviceDao;
     private GatewayDeviceDao gatewayDeviceDao;
-    private ZigbeeControlEventDao digiControlEventDao;
+    private ZigbeeControlEventDao zigbeeControlEventDao;
     private ZigbeeServiceHelper zigbeeServiceHelper;
     
     private static final Namespace existNamespace = Namespace.getNamespace("exist", "http://exist.sourceforge.net/NS/exist");
@@ -274,23 +274,23 @@ public class DigiResponseHandler {
         
         switch (action) {
             case THERMOSTAT_ACK: {
-                digiControlEventDao.updateDeviceAck(true, eventId, deviceId);
+                zigbeeControlEventDao.updateDeviceAck(true, eventId, deviceId);
                 break;
             }
             case EVENT_START: {
-                digiControlEventDao.updateDeviceStartTime(statusTime, eventId, deviceId);
+                zigbeeControlEventDao.updateDeviceStartTime(statusTime, eventId, deviceId);
                 break;
             }
             case EVENT_COMPLETE: {
-                digiControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, false);
+                zigbeeControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, false);
                 break;
             }
             case THERMOSTAT_EVENT_CANCELED: {
-                digiControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, true);
+                zigbeeControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, true);
                 break;
             }
             case THERMOSTAT_EVENT_SUPERSEDED: {
-                digiControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, true);
+                zigbeeControlEventDao.updateDeviceStopTime(statusTime, eventId, deviceId, true);
             }
             case INVALID_CANCEL_COMMAND_BAD_EVENT: {
                 logger.info("Invalid event cancel command was sent to device: "+ deviceId + " Bad event Id: " + eventId);
@@ -356,8 +356,8 @@ public class DigiResponseHandler {
     }
     
     @Autowired
-    public void setDigiControlEventDao(ZigbeeControlEventDao digiControlEventDao) {
-        this.digiControlEventDao = digiControlEventDao;
+    public void setZigbeeControlEventDao(ZigbeeControlEventDao zigbeeControlEventDao) {
+        this.zigbeeControlEventDao = zigbeeControlEventDao;
     }
     
     @Autowired

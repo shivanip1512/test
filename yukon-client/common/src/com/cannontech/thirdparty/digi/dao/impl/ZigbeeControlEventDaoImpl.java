@@ -9,11 +9,13 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.thirdparty.IntegrationType;
+import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 
-public class ZigbeeControlEventDao {
+public class ZigbeeControlEventDaoImpl implements ZigbeeControlEventDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     
+    @Override
     public void createNewEventMapping(int eventId, int groupId, Instant startTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -29,6 +31,7 @@ public class ZigbeeControlEventDao {
         yukonJdbcTemplate.update(sql);
     }
     
+    @Override
     public void associateControlHistory(int eventId, int controlHistoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -39,6 +42,7 @@ public class ZigbeeControlEventDao {
         yukonJdbcTemplate.update(sql);
     }
     
+    @Override
     public int findCurrentEventId(int groupId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -57,6 +61,7 @@ public class ZigbeeControlEventDao {
         }
     }
     
+    @Override
     public void insertDeviceControlEvent(int eventId, int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -68,6 +73,7 @@ public class ZigbeeControlEventDao {
         yukonJdbcTemplate.update(sql);
     }
     
+    @Override
     public void updateDeviceAck(boolean ack, int eventId, int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -79,6 +85,7 @@ public class ZigbeeControlEventDao {
         yukonJdbcTemplate.update(sql);
     }
     
+    @Override
     public void updateDeviceStartTime(Instant startTime, int eventId, int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -90,6 +97,7 @@ public class ZigbeeControlEventDao {
         yukonJdbcTemplate.update(sql);
     }
     
+    @Override
     public void updateDeviceStopTime(Instant stopTime, int eventId, int deviceId, boolean canceled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         

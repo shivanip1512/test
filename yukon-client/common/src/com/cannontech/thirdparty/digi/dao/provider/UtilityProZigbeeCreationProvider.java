@@ -35,6 +35,7 @@ public class UtilityProZigbeeCreationProvider extends BaseCreationProvider<Utili
         thermostat.setPaoIdentifier(paoIdentifier);
         thermostat.setMacAddress(fields.getMacAddress());
         thermostat.setInstallCode(fields.getInstallCode());
+        thermostat.setDestinationEndPointId(fields.getEndPointId());
         thermostat.setNodeId(fields.getNodeId());
         
         zigbeeDeviceDao.createZigbeeUtilPro(thermostat);
