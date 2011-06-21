@@ -1,5 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import java.util.List;
+
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.StringUtils;
 import com.google.common.collect.ImmutableList;
@@ -8,7 +10,7 @@ public abstract class AttributeGroupProviderBase extends CompleteBinningDeviceGr
     private ImmutableList<BuiltInAttribute> allBins = ImmutableList.of(BuiltInAttribute.values());
     
     @Override
-    protected ImmutableList<BuiltInAttribute> getAllBins() {
+    protected List<BuiltInAttribute> getAllBins() {
         return allBins;
     }
 

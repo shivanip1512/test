@@ -61,9 +61,9 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT point.PointId");
         sql.append("FROM Point point");
-        sql.append("JOIN ExtraPaoPointAssignment eppa ON point.PointId = eppa.PointId");
-        sql.append("WHERE eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
-        sql.append("AND eppa.Attribute = ").appendArgument(attribute);
+        sql.append(    "JOIN ExtraPaoPointAssignment eppa ON point.PointId = eppa.PointId");
+        sql.append("WHERE eppa.PAObjectId").eq(pao.getPaoIdentifier().getPaoId());
+        sql.append(    "AND eppa.Attribute").eq(attribute);
         try {
             return yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
