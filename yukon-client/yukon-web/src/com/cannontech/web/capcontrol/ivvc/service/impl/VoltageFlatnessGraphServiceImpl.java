@@ -698,9 +698,22 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         double min = Collections.min(xValues);
         double max = Collections.max(xValues);
         BigDecimal bucketSize = getGraphBucketSize(max);
+        double bucketEndValue = min + max;
+        List<Double> bucketXValues = getBucketValues(bucketSize, bucketEndValue);
+        graph.setSeriesValues(bucketXValues);
+
+        List<VfPoint> seriesPoints = getBaseSeriesPoints(bucketXValues);
+        for (VfLine line : lines) {
+            for (VfPoint point : line.getPoints()) {
+                Integer seriesId = getSeriesIdForPoint(seriesPoints, point, bucketSize.doubleValue());
+                point.setSeriesId(seriesId);
+            }
+        }
+    }
+
+    public static List<Double> getBucketValues(BigDecimal bucketSize, double bucketEndValue) {
+        List<Double> bucketValues = Lists.newArrayList();
         double bucketSizeAsDouble = bucketSize.doubleValue();
-        List<Double> bucketXValues = Lists.newArrayList();
-        
         if (bucketSizeAsDouble > 0) {
             Integer iterationNum = 0;
             Double currentVal = 0.0;
@@ -711,23 +724,15 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
             //this "while" conditional statement below makes the graph have the same amount of
             //leading space between the last point and the right y-axis as exists between the left y-axis and the first point
-            while(currentVal <= (max + min)) {
-                bucketXValues.add(currentVal);
+            while(currentVal <= bucketEndValue) {
+                bucketValues.add(currentVal);
                 iterationNum++;
                 currentVal = Double.valueOf(f.format(iterationNum * bucketSizeAsDouble));
             }
         } else {
-            bucketXValues.add(0.0);
+            bucketValues.add(0.0);
         }
-        graph.setSeriesValues(bucketXValues);
-
-        List<VfPoint> seriesPoints = getBaseSeriesPoints(bucketXValues);
-        for (VfLine line : lines) {
-            for (VfPoint point : line.getPoints()) {
-                Integer seriesId = getSeriesIdForPoint(seriesPoints, point, bucketSizeAsDouble);
-                point.setSeriesId(seriesId);
-            }
-        }
+        return bucketValues;
     }
     
     private Integer getSeriesIdForPoint(List<VfPoint> seriesPoints, VfPoint pointToPlace, double bucketSize) {

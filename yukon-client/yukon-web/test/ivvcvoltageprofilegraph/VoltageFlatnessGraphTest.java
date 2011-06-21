@@ -2,19 +2,17 @@ package ivvcvoltageprofilegraph;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.common.util.GraphIntervalRounding;
+import com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl;
 import com.google.common.collect.Lists;
 
 
 public class VoltageFlatnessGraphTest {
-    
-    private final int numBuckets = 10;
     
     @Test
     public void test_calculateBigDecimalScale_1() {
@@ -101,10 +99,18 @@ public class VoltageFlatnessGraphTest {
     }
 
     @Test
+    public void test_calculateAllBuckets_0() {
+        Double num = 0.0;
+        BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2);
+        List<Double> bucketValues = getBucketList(bucketSize, 1.8);
+        List<Double> expectedList = Lists.newArrayList(0.0);
+        Assert.assertEquals(expectedList, bucketValues);
+    }
+    @Test
     public void test_calculateAllBuckets_1() {
         Double num = .12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 1.8);
         List<Double> expectedList = Lists.newArrayList(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8);
         Assert.assertEquals(expectedList, bucketValues);
     }
@@ -112,7 +118,7 @@ public class VoltageFlatnessGraphTest {
     public void test_calculateAllBuckets_2() {
         Double num = 5.12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 54.0);
         List<Double> expectedList = Lists.newArrayList(0.0, 6.0, 12.0, 18.0, 24.0, 30.0, 36.0, 42.0, 48.0, 54.0);
         Assert.assertEquals(expectedList, bucketValues);
     }
@@ -120,7 +126,7 @@ public class VoltageFlatnessGraphTest {
     public void test_calculateAllBuckets_3() {
         Double num = .12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2.5);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 2.25);
         List<Double> expectedList = Lists.newArrayList(0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25);
         Assert.assertEquals(expectedList, bucketValues);
     }
@@ -128,7 +134,7 @@ public class VoltageFlatnessGraphTest {
     public void test_calculateAllBuckets_4() {
         Double num = 5.12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2.5);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 67.5);
         List<Double> expectedList = Lists.newArrayList(0.0, 7.5, 15.0, 22.5, 30.0, 37.5, 45.0, 52.5, 60.0, 67.5);
         Assert.assertEquals(expectedList, bucketValues);
     }
@@ -136,7 +142,7 @@ public class VoltageFlatnessGraphTest {
     public void test_calculateAllBuckets_5() {
         Double num = .12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 5);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 4.5);
         List<Double> expectedList = Lists.newArrayList(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5);
         Assert.assertEquals(expectedList, bucketValues);
     }
@@ -144,32 +150,14 @@ public class VoltageFlatnessGraphTest {
     public void test_calculateAllBuckets_6() {
         Double num = 5.12345678901234;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 5);
-        List<Double> bucketValues = getBucketList(bucketSize);
+        List<Double> bucketValues = getBucketList(bucketSize, 90.0);
         List<Double> expectedList = Lists.newArrayList(0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0);
         Assert.assertEquals(expectedList, bucketValues);
     }
     
-    private List<Double> getBucketList(BigDecimal bucketSize) {
-        List<Double> result = getBucketListViaDecimalFormat(bucketSize);
+    private List<Double> getBucketList(BigDecimal bucketSize, double bucketEndValue) {
+        List<Double> result = VoltageFlatnessGraphServiceImpl.getBucketValues(bucketSize, bucketEndValue);
         return result;
-    }
-    
-    private List<Double> getBucketListViaDecimalFormat(BigDecimal bucketSize) {
-        List<Double> bucketValues = Lists.newArrayList();
-        double bucketSizeAsDouble = bucketSize.doubleValue();
-        Integer iterationNum = 0;
-        Double currentVal = 0.0;
-        int precision = bucketSize.scale();
-        DecimalFormat f = new DecimalFormat();
-        f.setMaximumFractionDigits(precision);
-        f.setGroupingUsed(false);
-
-        for (int i = 0; i < numBuckets; i++) {
-            bucketValues.add(currentVal);
-            iterationNum++;
-            currentVal = Double.valueOf(f.format(iterationNum * bucketSizeAsDouble));
-        }
-        return bucketValues;
     }
     
     /**
@@ -178,14 +166,14 @@ public class VoltageFlatnessGraphTest {
      * @param bucketSize
      * @return
      */
-    private List<Double> getBucketListViaBigDecimalScaling(BigDecimal bucketSize) {
+    private List<Double> getBucketListViaBigDecimalScaling(BigDecimal bucketSize, double bucketEndValue) {
         List<Double> bucketValues = Lists.newArrayList();
         double bucketSizeAsDouble = bucketSize.doubleValue();
         Integer iterationNum = 0;
         Double currentVal = 0.0;
         int precision = bucketSize.scale();
         
-        for (int i = 0; i < numBuckets; i++) {
+        while(currentVal <= bucketEndValue) {
             bucketValues.add(currentVal);
             iterationNum++;
             currentVal = iterationNum * bucketSizeAsDouble;
