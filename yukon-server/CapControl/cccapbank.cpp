@@ -24,6 +24,7 @@
 #include "utility.h"
 #include "PointResponseDao.h"
 #include "DatabaseDaoFactory.h"
+#include "PointResponseManager.h"
 
 using namespace Cti::CapControl;
 using namespace std;

@@ -14,12 +14,33 @@
 #include "yukon.h"
 #include "ccutil.h"
 #include "pointdefs.h"
+#include "cccapbank.h"
  
 using std::string;
 
 extern ULONG _MSG_PRIORITY;
 namespace Cti           {
 namespace CapControl    {
+
+std::set<int> initClosedStates() 
+{
+    std::set<int> s;
+    s.insert(CtiCCCapBank::Close);
+    s.insert(CtiCCCapBank::ClosePending);
+    s.insert(CtiCCCapBank::CloseQuestionable);
+    s.insert(CtiCCCapBank::CloseFail);
+    return s;
+}
+
+std::set<int> initOpenStates() 
+{
+    std::set<int> s;
+    s.insert(CtiCCCapBank::Open);
+    s.insert(CtiCCCapBank::OpenPending);
+    s.insert(CtiCCCapBank::OpenQuestionable);
+    s.insert(CtiCCCapBank::OpenFail);
+    return s;
+}
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString) 
 {
@@ -114,7 +135,6 @@ std::string desolvePhase( const Phase & p )
 
     return "?";
 }
-
 
 }
 }

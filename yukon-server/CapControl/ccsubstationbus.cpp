@@ -22,9 +22,11 @@
 #include "database_writer.h"
 #include "Exceptions.h"
 #include "PointResponse.h"
+#include "ccutil.h"
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointIdList;
+
 using std::endl;
 using std::set;
 
@@ -8962,18 +8964,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
         try
         {
             int numOfBanks = getAllCapBanks().size();
-            int closeStates[] = {CtiCCCapBank::Close,CtiCCCapBank::CloseFail,CtiCCCapBank::ClosePending,CtiCCCapBank::CloseQuestionable};
-            set<int> closedStates = set<int>(closeStates, closeStates + 4);
-            int currentNumClosed = getNumOfBanksInState( closedStates );
+            int currentNumClosed = getNumOfBanksInState(Cti::CapControl::ClosedStates);
             
             int targetNumClose = numOfBanks * (_percentToClose * 0.01);
             int targetState = CtiCCCapBank::Close; //close
-            int targetNumInState = targetNumClose;
+            int targetNumInState = targetNumClose; 
             int currentNumInState = currentNumClosed;
             if (targetNumClose < currentNumClosed)
             {
                 targetState = CtiCCCapBank::Open; //open
-                targetNumInState = numOfBanks - targetNumClose;
+                targetNumInState = numOfBanks  - targetNumClose;
                 currentNumInState = numOfBanks - currentNumClosed;    
             }
             CtiCCFeederPtr currentFeeder = NULL;
