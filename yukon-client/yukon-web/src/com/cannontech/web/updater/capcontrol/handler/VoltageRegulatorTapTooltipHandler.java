@@ -38,44 +38,20 @@ public class VoltageRegulatorTapTooltipHandler implements VoltageRegulatorUpdate
             VoltageRegulatorFlags regulatorFlags = capControlCache.getVoltageRegulatorFlags(id);
             Date opTime = regulatorFlags.getLastOperationTime();
             TapOperation tapOp = regulatorFlags.getLastOperation();
-            String text = null;
-            
+
             if (tapOp == TapOperation.NONE) {
-                text = messageSourceAccessor.getMessage("yukon.web.defaults.na");
-            } else if (tapOp == TapOperation.LOWER_TAP) {
-                if (regulatorFlags.isRecentOperation()) {
-                    if (isWarning(regulatorFlags)) {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.flashingOrangeDownArrow.tooltip");
-                    } else {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.flashingGreenDownArrow.tooltip");
-                    }
-                } else {
-                    if (isWarning(regulatorFlags)) {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.orangeDownArrow.tooltip");
-                    } else {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.greenDownArrow.tooltip");
-                    }
-                }
-            } else if (tapOp == TapOperation.RAISE_TAP) {
-                if (regulatorFlags.isRecentOperation()) {
-                    if (isWarning(regulatorFlags)) {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.flashingOrangeUpArrow.tooltip");
-                    } else {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.flashingGreenUpArrow.tooltip");
-                    }
-                } else {
-                    if (isWarning(regulatorFlags)) {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.orangeUpArrow.tooltip");
-                    } else {
-                        text = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.greenUpArrow.tooltip");
-                    }
-                }
+                String na = messageSourceAccessor.getMessage("yukon.web.defaults.na");
+                return na;
             }
             
-            if (tapOp != TapOperation.NONE) {
-                String opTimeString = dateFormattingService.format(opTime, DateFormatEnum.BOTH, userContext);
-                text += ": " + opTimeString;
-            }
+            String tapOpString = (tapOp == TapOperation.LOWER_TAP) ? "lowerTap." : "raiseTap.";
+            String recentString = regulatorFlags.isRecentOperation() ? "recent." : "notRecent.";
+            String warningString = isWarning(regulatorFlags) ? "warning" : "notWarning";
+            String key = "yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip." + 
+                            tapOpString + recentString + warningString;
+            String text = messageSourceAccessor.getMessage(key);
+            String opTimeString = dateFormattingService.format(opTime, DateFormatEnum.BOTH, userContext);
+            text += ": " + opTimeString;
             return text;
         } catch (NotFoundException nfe) {
             log.info("Voltage Regulator with Id " + id + " not found in cache.");

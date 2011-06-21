@@ -238,14 +238,14 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.dataLabelsTextSize"></entry>
     
     <!-- Last Operation Widget Tooltips -->
-    <entry key="yukon.web.modules.capcontrol.ivvc.flashingGreenUpArrow.tooltip">Recent Tap Up</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.flashingGreenDownArrow.tooltip">Recent Tap Down</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.flashingOrangeUpArrow.tooltip">Recent Tap Up (Warning)</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.flashingOrangeDownArrow.tooltip">Recent Tap Down (Warning)</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.greenUpArrow.tooltip">Tap Up</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.greenDownArrow.tooltip">Tap Down</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.orangeUpArrow.tooltip">Tap Up (Warning)</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.orangeDownArrow.tooltip">Tap Down (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.notRecent.notWarning">Tap Up</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.notRecent.warning">Tap Up (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.recent.notWarning">Recent Tap Up</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.recent.warning">Recent Tap Up (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.lowerTap.notRecent.notWarning">Tap Down</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.lowerTap.notRecent.warning">Tap Down (Warning)</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.lowerTap.recent.notWarning">Recent Tap Down</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.lowerTap.recent.warning">Recent Tap Down (Warning)</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.mode.local">L</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.mode.localWarning">L</entry>
