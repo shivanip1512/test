@@ -26,7 +26,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Widget used to display basic device information
@@ -58,7 +58,7 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
         
-        List<ConfigurationBase> existingConfigs = Lists.newArrayList();
+        List<ConfigurationBase> existingConfigs = ImmutableList.of();
         for (ConfigurationType type : ConfigurationType.values()) {
         	if (paoDefinitionDao.isTagSupported(meter.getPaoType(), type.getSupportedDeviceTag())) {
                 existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
