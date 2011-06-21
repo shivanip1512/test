@@ -90,7 +90,7 @@ public class YukonListEntry extends DBPersistent implements CTIDbChange {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
-	public synchronized static Integer getNextEntryID() {
+	public static Integer getNextEntryID() {
         NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
         return nextValueHelper.getNextValue("YukonListEntry");
 	}
