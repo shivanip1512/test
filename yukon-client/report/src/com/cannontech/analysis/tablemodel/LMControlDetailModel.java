@@ -29,8 +29,8 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
     private int energyCompanyId;
@@ -131,7 +131,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                     groupPrograms = ReportFuncs.filterProgramsByPermission(groupPrograms, restrictedPrograms);
                     
                     /*lots of for loops, but this one will not normally be more than one iteration*/
-                    for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
+                    for(final ProgramLoadGroup currentGroupProgram : groupPrograms) {
                         //Check filter: program
                         if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) {
                             continue;
@@ -148,14 +148,16 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                             List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
                             List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                             
-                            List<Integer> enrollmentProgramIds = 
-                                Lists.transform(enrollments, new Function<LMHardwareControlGroup, Integer>() {
+                            // Check to see if the currentGroupProgram is enrolled.  If not skip it.
+                            boolean isCurrentProgramEnrolled = 
+                                Iterables.any(enrollments, new Predicate<LMHardwareControlGroup>() {
                                     @Override
-                                    public Integer apply(LMHardwareControlGroup lmHardwareControlGroup) {
-                                        return lmHardwareControlGroup.getProgramId();
-                                    }});
-
-                            if (!enrollmentProgramIds.contains(currentGroupProgram.getProgramId())) {
+                                    public boolean apply(LMHardwareControlGroup lmHardwareControlGroup) {
+                                        return lmHardwareControlGroup.getProgramId() == currentGroupProgram.getProgramId();
+                                    }
+                                    
+                                });
+                            if (!isCurrentProgramEnrolled) {
                                 continue;
                             }
                             
@@ -167,7 +169,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                               enrollments,
                                                                               optOuts);
 
-                            
                             ModelRow row = new ModelRow();
                             row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
                             row.program = currentGroupProgram.getProgramName();
