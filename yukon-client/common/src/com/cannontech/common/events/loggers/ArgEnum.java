@@ -13,6 +13,7 @@ public enum ArgEnum {
     deviceName, 
     energyCompanyName,
     fileName, 
+    gatewayName,
     gearName, 
     loadGroupName,
     meterName,

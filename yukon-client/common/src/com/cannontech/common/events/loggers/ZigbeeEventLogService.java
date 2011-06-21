@@ -38,20 +38,20 @@ public interface ZigbeeEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="zigbee.config")
     public void zigbeeDeviceAssignAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                           @Arg(ArgEnum.deviceName) String deviceName,
-                                                          @Arg(ArgEnum.deviceName) String gatewayName);
+                                                          @Arg(ArgEnum.gatewayName) String gatewayName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="zigbee.config")
     public void zigbeeDeviceAssigned(@Arg(ArgEnum.deviceName) String deviceName,
-                                                   @Arg(ArgEnum.deviceName) String gatewayName);
+                                                   @Arg(ArgEnum.gatewayName) String gatewayName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="zigbee.config")
     public void zigbeeDeviceUnassignAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                           @Arg(ArgEnum.deviceName) String deviceName,
-                                                          @Arg(ArgEnum.deviceName) String gatewayName);
+                                                          @Arg(ArgEnum.gatewayName) String gatewayName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="zigbee.config")
     public void zigbeeDeviceUnassigned(@Arg(ArgEnum.deviceName) String deviceName,
-                                                      @Arg(ArgEnum.deviceName) String gatewayName);
+                                                      @Arg(ArgEnum.gatewayName) String gatewayName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="zigbee.system")
     public void zigbeeRefreshAllGatewaysAttempted();
@@ -63,7 +63,7 @@ public interface ZigbeeEventLogService {
     public void zigbeePollAllGatewaysAttempted();
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="zigbee.system")
-    public void zigbeePolledGateway(@Arg(ArgEnum.deviceName) String gatewayName);
+    public void zigbeePolledGateway(@Arg(ArgEnum.gatewayName) String gatewayName);
         
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="zigbee.system")
     public void zigbeeSendSEPControlAttempted(@Arg(ArgEnum.loadGroupName) String loadGroupName);

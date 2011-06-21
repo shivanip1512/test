@@ -15,6 +15,7 @@
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
     <entry key="yukon.common.events.fileName">File Name</entry>
+    <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.meterName">Meter Name</entry>
