@@ -33,9 +33,12 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
 
     <!-- meterHome.jsp -->
-    <entry key="yukon.web.modules.amr.meterDetail.pageName">Meter Detail</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.pageTitle">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.electric.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.electric.pageTitle">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.water.pageName">Meter Detail</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.water.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.water.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.amr.meterDetail.moveIn">Move In</entry>
     <entry key="yukon.web.modules.amr.meterDetail.moveOut">Move Out</entry>
     <entry key="yukon.web.modules.amr.meterDetail.highBill">High Bill Complaint</entry>
