@@ -446,6 +446,9 @@
         <page name="analysisList" type="BASIC">
             <menu>meters</menu>
         </page>
+        <page name="analysisReadResults" type="DETAIL">
+            <menu>meters</menu>
+        </page>
     </pages>
   </module>
 

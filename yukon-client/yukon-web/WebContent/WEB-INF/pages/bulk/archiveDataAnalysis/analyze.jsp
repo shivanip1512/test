@@ -20,10 +20,14 @@
         <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysisProgress.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <tags:bulkActionContainer key="yukon.web.modules.amr.analysisProgress" deviceCollection="${deviceCollection}">
-
+    <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysisProgress">
+        
+        <div class="smallBoldLabel notesSection">
+            <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
+        </div>
+        
         <%-- ANALYSIS PARAMETERS --%>
-        <div style="padding: 0px 0px 20px 0px">
+        <div class="bottomPadded">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".dateRange">
                     <cti:formatInterval type="DATEHM" value="${dateTimeRangeForDisplay}"/>
@@ -48,7 +52,7 @@
         </div>
 
         <%-- PROGRESS --%>
-        <div style="padding: 0px 0px 20px 0px">
+        <div class="bottomPadded">
             <tags:resultProgressBar totalCount="${callbackResult.totalItems}" 
                 countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
                 progressLabelTextKey="yukon.web.modules.amr.analysisProgress.progressLabel"
@@ -56,7 +60,7 @@
         </div>
 
         <%-- SUCCESS --%>
-        <div class="normalBoldLabel" style="padding: 0px 0px 20px 0px">
+        <div class="normalBoldLabel bottomPadded">
             <cti:msg key="yukon.web.modules.amr.analysisProgress.successLabel" />
             <span class="okGreen">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
@@ -64,7 +68,7 @@
         </div>
 
         <%-- FAIL --%>
-        <div class="normalBoldLabel" style="padding: 0px 0px 20px 0px">
+        <div class="normalBoldLabel bottomPadded">
             <cti:msg key="yukon.web.modules.amr.analysisProgress.failLabel" />
             <span class="errorRed">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
@@ -76,5 +80,5 @@
         <div id="viewResultsDiv" style="display:none;">
             <cti:button key="viewResultsButton" href="results?analysisId=${analysisId}"/>
         </div>
-    </tags:bulkActionContainer>
+    </tags:boxContainer2>
 </cti:standardPage>

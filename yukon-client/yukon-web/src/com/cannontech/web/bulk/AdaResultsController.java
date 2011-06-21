@@ -18,7 +18,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
-import com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer;
+import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
 import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
 
@@ -27,7 +27,7 @@ public class AdaResultsController {
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private DeviceIdListCollectionProducer deviceIdListCollectionProducer;
+    private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     ArchiveDataAnalysisService archiveDataAnalysisService;
     
     @RequestMapping("archiveDataAnalysis/results")
@@ -36,12 +36,12 @@ public class AdaResultsController {
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
         // Build device collection
-        List<Integer> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
-        DeviceCollection collection = deviceIdListCollectionProducer.createDeviceCollection(deviceIds);
+        DeviceCollection collection = adaCollectionProducer.createDeviceCollection(request);
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
-
+        
         // Page the result
+        List<Integer> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
@@ -86,12 +86,12 @@ public class AdaResultsController {
     }
     
     @Autowired
-    public void setDeviceIdListCollectionProducer(DeviceIdListCollectionProducer deviceIdListCollectionProducer) {
-        this.deviceIdListCollectionProducer = deviceIdListCollectionProducer;
+    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
+        this.archiveDataAnalysisService = archiveDataAnalysisService;
     }
     
     @Autowired
-    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
-        this.archiveDataAnalysisService = archiveDataAnalysisService;
+    public void setArchiveDataAnalysisCollectionProducer(ArchiveDataAnalysisCollectionProducer adaCollectionProducer) {
+        this.adaCollectionProducer = adaCollectionProducer;
     }
 }

@@ -10,7 +10,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.google.common.collect.Lists;
 
 public class DeviceArchiveData {
-    private PaoIdentifier paoId;
+    private PaoIdentifier paoIdentifier;
     private Attribute attribute;
     private Interval archiveRange;
     private List<ArchiveData> archiveData = Lists.newArrayList();
@@ -18,14 +18,14 @@ public class DeviceArchiveData {
     
     public DeviceArchiveData() {}
     
-    public DeviceArchiveData(PaoIdentifier paoId, Attribute attribute, Interval archiveRange) {
-        this.paoId = paoId;
+    public DeviceArchiveData(PaoIdentifier paoIdentifier, Attribute attribute, Interval archiveRange) {
+        this.paoIdentifier = paoIdentifier;
         this.attribute = attribute;
         this.archiveRange = archiveRange;
     }
     
-    public DeviceArchiveData(PaoIdentifier paoId, Attribute attribute, List<ArchiveData> archiveData, Interval archiveRange) {
-        this.paoId = paoId;
+    public DeviceArchiveData(PaoIdentifier paoIdentifier, Attribute attribute, List<ArchiveData> archiveData, Interval archiveRange) {
+        this.paoIdentifier = paoIdentifier;
         this.attribute = attribute;
         this.archiveData = archiveData;
         this.archiveRange = archiveRange;
@@ -59,12 +59,12 @@ public class DeviceArchiveData {
         archiveData.addAll(archiveDataList);
     }
     
-    public void setId(PaoIdentifier paoId) {
-        this.paoId = paoId;
+    public void setId(PaoIdentifier paoIdentifier) {
+        this.paoIdentifier = paoIdentifier;
     }
 
     public PaoIdentifier getId() {
-        return paoId;
+        return paoIdentifier;
     }
     
     public ArchiveData getReadForDate(Instant date) {

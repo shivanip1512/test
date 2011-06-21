@@ -63,6 +63,7 @@ public class CommandRequestExecutionDefaults {
         b.put(PHASE_DETECT_COMMAND,                               new CommandRequestExecutionInfo(false, 14, false));
         b.put(PHASE_DETECT_READ,                                  new CommandRequestExecutionInfo(false, 7, false));
         b.put(VEE_RE_READ,                                        new CommandRequestExecutionInfo(false, 7, false));
+        b.put(ARCHIVE_DATA_ANALYSIS_LP_READ,                      new CommandRequestExecutionInfo(false, 7, false));
         infoLookup = b.build();
     }
 	

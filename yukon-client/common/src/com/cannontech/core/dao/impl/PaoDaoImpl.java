@@ -547,12 +547,6 @@ public final class PaoDaoImpl implements PaoDao {
     	return template.query(sqlGenerator, paoIds, new YukonPaoRowMapper());
     }
     
-    @Override
-    public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId) {
-        List<PaoIdentifier> listOfOne = getPaoIdentifiersForPaoIds(Lists.newArrayList(paoId));
-        return listOfOne.get(0);
-    }
-    
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
         String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";
         List<LiteYukonPAObject> paoList = this.jdbcOps.query(

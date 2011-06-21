@@ -430,6 +430,8 @@
     
     <bean id="recentResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     
+    <bean id="adaProfileReadRecentResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    
     <bean id="baseBulkService" class="com.cannontech.common.bulk.service.impl.BaseBulkService" abstract="true">
     
         <property name="bulkProcessor" ref="resubmittingBulkProcessor" />

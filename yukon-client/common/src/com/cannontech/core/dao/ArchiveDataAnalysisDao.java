@@ -7,6 +7,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
@@ -32,7 +33,12 @@ public interface ArchiveDataAnalysisDao {
     /**
      * Inserts slot values for one device in a given Analysis.
      */
-    public void insertSlotValues(int deviceId, int analysisId, DeviceArchiveData data);
+    public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, DeviceArchiveData data);
+    
+    /**
+     * TODO
+     */
+    public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, int pointId, boolean excludeBadPointQualities);
     
     /**
      * Retrieves slot values for the specified subset of devices in a given analysis. 

@@ -1,11 +1,13 @@
 package com.cannontech.common.bulk.model;
 
+import org.joda.time.Instant;
+
 
 public class PixelData {
     private boolean hasTransition = false;
     private ReadType readType;
-    private long start;
-    private long end;
+    private Instant start;
+    private Instant end;
 
     public void setReadType(ReadType readType) {
         this.readType = readType;
@@ -23,20 +25,19 @@ public class PixelData {
         return hasTransition;
     }
 
-    public long getStart() {
+    public Instant getStart() {
         return start;
     }
 
-    public void setStart(long start) {
+    public void setStart(Instant start) {
         this.start = start;
     }
 
-    public long getEnd() {
+    public Instant getEnd() {
         return end;
     }
 
-    public void setEnd(long end) {
+    public void setEnd(Instant end) {
         this.end = end;
     }
-    
 }

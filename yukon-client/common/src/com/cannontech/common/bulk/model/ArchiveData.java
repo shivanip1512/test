@@ -3,17 +3,20 @@ package com.cannontech.common.bulk.model;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 
+import com.cannontech.common.pao.PaoIdentifier;
+
 
 public class ArchiveData {
     private Interval archiveRange;
     private ReadType readType;
     private Integer changeId;
-    private int paoId;
+    private PaoIdentifier paoId;
     
-    public ArchiveData(Interval archiveRange, ReadType readType, Integer changeId){
+    public ArchiveData(Interval archiveRange, ReadType readType, Integer changeId, PaoIdentifier paoId){
         this.archiveRange = archiveRange;
         this.readType = readType;
         this.changeId = changeId;
+        this.paoId = paoId;
     }
     
     public boolean isDataPresent() {
@@ -40,11 +43,7 @@ public class ArchiveData {
         return changeId;
     }
     
-    public void setPaoId(int paoId) {
-        this.paoId = paoId;
-    }
-    
-    public int getPaoId() {
+    public PaoIdentifier getPaoId() {
         return paoId;
     }
     

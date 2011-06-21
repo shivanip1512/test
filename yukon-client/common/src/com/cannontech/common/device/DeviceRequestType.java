@@ -37,6 +37,7 @@ public enum DeviceRequestType {
     PHASE_DETECT_READ("Phase Detection Read", "Command sent to MCT's to read phase data.", false),
     VEE_RE_READ("Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
     
+    ARCHIVE_DATA_ANALYSIS_LP_READ("Archive Data Analysis Load Profile Read", "Command sent to MCT to read load profile data that was previously missed", false),
     ;
     
     private String shortName;

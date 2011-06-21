@@ -7,6 +7,8 @@ import org.joda.time.Interval;
 
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
 
 public interface ArchiveDataAnalysisService {
@@ -27,6 +29,24 @@ public interface ArchiveDataAnalysisService {
      * was no value present for that specific device and interval.
      */
     public List<DevicePointValuesHolder> getDevicePointValuesList(List<DeviceArchiveData> dataList);
+    
+    /**
+     * Builds load profile command strings for all missing intervals on a list of devices in a
+     * given analysis.
+     */
+    //public List<CommandRequestDevice> getProfileRequests(Analysis analysis, List<DeviceArchiveData> dataList);
+    
+    /**
+     * Builds load profile command strings for all missing intervals on all devices in a given
+     * analysis, then sends those commands through command request executor.
+     * Returns the id used to obtain results information from RecentResultsCache
+     */
+    public String runProfileReads(int analysisId, LiteYukonUser user);
+    
+    /**
+     * Gets the results object for an ADA load profile read from its id.
+     */
+    public ArchiveAnalysisProfileReadResult getProfileReadResultById(String resultId);
     
     /**
      * Returns a date/time range whose start and end points are exactly one interval earlier than

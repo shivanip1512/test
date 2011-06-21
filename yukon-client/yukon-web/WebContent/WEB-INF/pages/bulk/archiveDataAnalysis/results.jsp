@@ -66,7 +66,7 @@
                 <ul class="buttonStack">
                 
                     <c:if test="${showReadOption}">
-                        <li><cti:button key="read" renderMode="labeledImage"/></li>
+                        <li><cti:button key="read" renderMode="labeledImage" href="readNow?analysisId=${result.analysis.analysisId}"/></li>
                         <%-- not enabled in 5.3.2 <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> --%>
                     </c:if>
                     <li><cti:button key="csv" renderMode="labeledImage" href="csv?analysisId=${result.analysis.analysisId}"/></li>

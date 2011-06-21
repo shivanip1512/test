@@ -17,7 +17,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -41,12 +40,6 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
-    }
-    
-    public DeviceCollection createDeviceCollection(final List<Integer> idList) {
-        final String ids = StringUtils.intListToCommaDelimitedString(idList);
-        
-        return createDeviceCollection(idList, ids);
     }
     
     public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {

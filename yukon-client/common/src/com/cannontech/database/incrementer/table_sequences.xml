@@ -266,8 +266,9 @@
       </sequence>
       <sequence name="archiveDataAnalysis">
         <table name="ArchiveDataAnalysis" identitycolumn="ArchiveId"/>
-        <table name="ArchiveDataAnalysisSlots" identitycolumn="SlotId"/>
-        <table name="ArchiveDataAnalysisSlotValues" identitycolumn="SlotValueId"/>
+      </sequence>
+      <sequence name="archiveDataAnalysisSlot">
+        <table name="ArchiveDataAnalysisSlot" identitycolumn="SlotId"/>
       </sequence>
   </sequencetable>
 </sequencetables>

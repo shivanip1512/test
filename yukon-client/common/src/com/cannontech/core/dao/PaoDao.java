@@ -144,8 +144,6 @@ public interface PaoDao {
     
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds);
     
-    public PaoIdentifier getPaoIdentifierForPaoId(Integer paoId);
-    
     /**
      * Returns true if the name is available for the PAO type's PAO class and PAO category
      */

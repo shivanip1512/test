@@ -49,8 +49,9 @@
                     <tags:nameValue2 nameKey=".intervalLabel">
                         <form:select path="selectedInterval" style="width:${selectInputWidth};">
                             <c:forEach var="intervalDuration" items="${intervalDurations}">
-                                <cti:formatPeriod value="${intervalDuration}" type="DHMS_REDUCED" var="formattedDuration"/>
-                                <form:option value="${intervalDuration.millis}">${formattedDuration}</form:option>
+                                <form:option value="${intervalDuration.millis}">
+                                    <cti:formatPeriod value="${intervalDuration}" type="DHMS_REDUCED"/>
+                                </form:option>
                             </c:forEach>
                         </form:select>
                     </tags:nameValue2>
@@ -72,7 +73,7 @@
                 </tags:nameValueContainer2>
             </div>
             
-            <cti:button type="submit" key="submitButton"/>
+            <cti:button type="submit" key="submit"/>
         </form:form>
     </tags:bulkActionContainer>
 </cti:standardPage>

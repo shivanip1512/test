@@ -37,7 +37,6 @@ import com.google.common.collect.Sets;
 
 @Controller
 public class ArchiveDataAnalysisController {
-    private final int MILLIS_IN_DAY = 86400000;
     private Set<Attribute> attributes;
     private Set<Duration> intervalDurations;
     private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -50,19 +49,13 @@ public class ArchiveDataAnalysisController {
         for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
             attributes.add(attribute);
         }
-               
+        
         intervalDurations = new LinkedHashSet<Duration>();
         intervalDurations.add(Duration.standardMinutes(5));
         intervalDurations.add(Duration.standardMinutes(10));
         intervalDurations.add(Duration.standardMinutes(15));
         intervalDurations.add(Duration.standardMinutes(30));
         intervalDurations.add(Duration.standardHours(1));
-        intervalDurations.add(Duration.standardHours(2));
-        intervalDurations.add(Duration.standardHours(6));
-        intervalDurations.add(Duration.standardHours(12));
-        intervalDurations.add(Duration.standardDays(1));
-        intervalDurations.add(Duration.standardDays(7));
-        intervalDurations.add(Duration.standardDays(30));
     }
     
     @RequestMapping("archiveDataAnalysis/home")
@@ -77,7 +70,7 @@ public class ArchiveDataAnalysisController {
         long intervalMillis = intervalDurations.iterator().next().getMillis();
         
         Instant stopDateInitialValue = getNearestPreviousIntervalTime(currentMillis, intervalMillis);
-        Instant startDateInitialValue = stopDateInitialValue.minus(MILLIS_IN_DAY);
+        Instant startDateInitialValue = stopDateInitialValue.minus(Duration.standardDays(1));
         
         model.addAttribute("startDateInitialValue", startDateInitialValue);
         model.addAttribute("stopDateInitialValue", stopDateInitialValue);

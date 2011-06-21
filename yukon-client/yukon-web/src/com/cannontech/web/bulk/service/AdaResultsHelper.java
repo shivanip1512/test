@@ -1,8 +1,8 @@
 package com.cannontech.web.bulk.service;
 
-import java.util.Iterator;
 import java.util.List;
 
+import org.joda.time.Instant;
 import org.joda.time.Interval;
 
 import com.cannontech.common.bulk.model.Analysis;
@@ -42,8 +42,8 @@ public class AdaResultsHelper {
                 long pixelStart = analysisStartLong + (pixelIndex * pxRange);
                 long pixelEnd = analysisStartLong + ((pixelIndex + 1) * pxRange);
                 PixelData currentPixel = pixels.get(pixelIndex);
-                currentPixel.setStart(pixelStart);
-                currentPixel.setEnd(pixelEnd);
+                currentPixel.setStart(new Instant(pixelStart));
+                currentPixel.setEnd(new Instant(pixelEnd));
                 
                 if (intervalEnd <= pixelEnd) {
                     // Interval ends inside or on this pixel's end
@@ -93,7 +93,7 @@ public class AdaResultsHelper {
     }
     
     private static List<ReadSequence> compressPixelData(List<PixelData> pixels) {
-        long start = pixels.get(0).getStart();
+        Instant start = pixels.get(0).getStart();
         int colorWidth = 1; //px width of div
         List<ReadSequence> readData = Lists.newArrayList();
         

@@ -32,5 +32,6 @@ public enum DataType {
     ACCOUNT_IMPORT,
     CAPCONTROL,
     DEVICE_RECONFIG,
+    ARCHIVE_DATA_ANALYSIS_LP_READ,
     ;
 }

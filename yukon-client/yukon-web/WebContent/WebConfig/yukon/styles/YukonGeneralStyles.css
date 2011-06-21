@@ -1567,3 +1567,11 @@ div.f_toggle {
 table.tabular {
     table-layout:fixed;    
 }
+
+table.tabular th {
+    width: 120px;
+}
+
+.bottomPadded {
+    padding: 0px 0px 20px 0px;
+}

@@ -3,17 +3,18 @@ package com.cannontech.web.bulk.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -24,14 +25,18 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
-import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -44,10 +49,13 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.web.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.web.bulk.service.ArchiveDataAnalysisService;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisService {
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
@@ -59,14 +67,17 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private RawPointHistoryDao rawPointHistoryDao;
     private PaoDao paoDao;
-    private static Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
+    private static final Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
+    private CommandRequestDeviceExecutor commandRequestExecutor;
+    private RecentResultsCache<ArchiveAnalysisProfileReadResult> crdRecentResultsCache;
     
-    {
-        lpAttributeChannelMap = Maps.newLinkedHashMap();
-        lpAttributeChannelMap.put(BuiltInAttribute.LOAD_PROFILE, 1);
-        lpAttributeChannelMap.put(BuiltInAttribute.PROFILE_CHANNEL_2, 2);
-        lpAttributeChannelMap.put(BuiltInAttribute.PROFILE_CHANNEL_3, 3);
-        lpAttributeChannelMap.put(BuiltInAttribute.VOLTAGE_PROFILE, 4);
+    static {
+        Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
+        builder.put(BuiltInAttribute.LOAD_PROFILE, 1);
+        builder.put(BuiltInAttribute.PROFILE_CHANNEL_2, 2);
+        builder.put(BuiltInAttribute.PROFILE_CHANNEL_3, 3);
+        builder.put(BuiltInAttribute.VOLTAGE_PROFILE, 4);
+        lpAttributeChannelMap = builder.build();
     }
     
     @Override
@@ -119,11 +130,159 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     }
     
     @Override
-    public Interval getDateTimeRangeForDisplay(Interval dateRange, Duration intervalLength) {
-        DateTime newStart = dateRange.getStart().minus(intervalLength);
-        DateTime newEnd = dateRange.getEnd().minus(intervalLength);
+    public String runProfileReads(int analysisId, LiteYukonUser user) {
+        Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
+        List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId);
+        
+        List<CommandRequestDevice> requests = getProfileRequests(analysis, data);
+        
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        final ArchiveAnalysisProfileReadResult result = new ArchiveAnalysisProfileReadResult(deviceGroupMemberEditorDao, deviceGroupCollectionHelper, successGroup, failureGroup, requests);
+       
+        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+            @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                result.commandSucceeded(command);
+            }
+            
+            @Override
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                result.commandFailed(command);
+            }
+            
+            @Override
+            public void complete() {
+                result.setComplete();
+            }
+            
+            @Override
+            public void processingExceptionOccured(String reason) {
+                result.processingExceptionOccurred(reason);
+            }
+        };
+        
+        String resultId = crdRecentResultsCache.addResult(result);
+        
+        CommandRequestExecutionTemplate<CommandRequestDevice> creTemplate = commandRequestExecutor.getExecutionTemplate(DeviceRequestType.ARCHIVE_DATA_ANALYSIS_LP_READ, user);
+        creTemplate.execute(requests, callback);
+        
+        return resultId;
+    }
+    
+    @Override
+    public ArchiveAnalysisProfileReadResult getProfileReadResultById(String resultId) {
+        return crdRecentResultsCache.getResult(resultId);
+    }
+    
+    private List<CommandRequestDevice> getProfileRequests(Analysis analysis, List<DeviceArchiveData> dataList) {
+        List<CommandRequestDevice> commands = Lists.newArrayList();
+       
+        for(DeviceArchiveData data : dataList) {
+            BuiltInAttribute attribute = (BuiltInAttribute)data.getAttribute();
+            if(!attribute.isProfile()) {
+                throw new IllegalArgumentException("Cannot create a pofile request for non-profile attribute \"" 
+                                                       + attribute.getDescription() + "\"");
+            }
+            
+            int channel = lpAttributeChannelMap.get(attribute);
+            
+            List<Interval> dateRangesNeedingReads = getDateRangesToRead(data);
+            
+            for(Interval dateRange : dateRangesNeedingReads) {
+                analysis.getIntervalLength();
+                String datesString = getDatesString(dateRange);
+                String commandString = "getvalue lp channel " + channel + " " + datesString;
+                
+                CommandRequestDevice command = new CommandRequestDevice();
+                command.setDevice(new SimpleDevice(data.getId()));
+                command.setCommand(commandString);
+                commands.add(command);
+            }
+        }
+        return commands;
+    }
 
+    @Override
+    public Interval getDateTimeRangeForDisplay(Interval interval, Duration intervalLength) {
+        Instant newStart = interval.getStart().minus(intervalLength).toInstant();
+        Instant newEnd = interval.getEnd().minus(intervalLength).toInstant();
         return new Interval(newStart, newEnd);
+    }
+    
+    private String getDatesString(Interval dateRange) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
+        String startString = formatter.print(dateRange.getStartMillis());
+        String endString = formatter.print(dateRange.getEndMillis());
+        return startString + " " + endString;
+    }
+    
+    private boolean lessThanTwelveIntervalsApart(Interval firstInterval, Interval secondInterval, Duration intervalLength, int extraIntervals) {
+        Interval intervalBetween = firstInterval.gap(secondInterval);
+        if(intervalBetween==null) {
+            //intervals overlap or abut
+            return true;
+        }
+        Duration timeBetween = intervalBetween.toDuration();
+        
+        Duration twelveIntervalLength = new Duration(intervalLength.getMillis()*12);
+        Duration maxDurationBetween = twelveIntervalLength;
+        
+        while(extraIntervals > 0) {
+            maxDurationBetween = maxDurationBetween.plus(intervalLength);
+            extraIntervals--;
+        }
+        
+        return timeBetween.isShorterThan(maxDurationBetween);
+    }
+    
+    private List<Interval> getDateRangesToRead(DeviceArchiveData data) {
+        //get date ranges that need reads
+        List<Interval> intervals = Lists.newArrayList();
+        for(ArchiveData archiveData : data.getArchiveData()) {
+            //look only for intervals with no value in DB
+            if(!archiveData.isDataPresent()) {
+                Interval thisInterval = archiveData.getArchiveRange();
+                if(intervals.size()==0) {
+                    intervals.add(thisInterval); //stop - stop
+                } else {
+                    //Combine intervals if the space between is less than 2*6 full intervals, because
+                    //it's more efficient to do 2 unnecessary reads (of 6 intervals) than to reset the 
+                    //lp pointer in the meter.
+                    //If lastInterval is less than 6 interval-durations long, treat it as though it is 6 long,
+                    //since a read always returns 6 interval chunks.
+                    Interval lastInterval = intervals.get(intervals.size()-1);
+                    Duration intervalLength = thisInterval.toDuration();
+                    int additionalIntervals = getIntervalsLessThanSix(lastInterval, intervalLength);
+                    if(lessThanTwelveIntervalsApart(lastInterval, thisInterval, intervalLength, additionalIntervals)) {
+                        Interval combinedInterval = new Interval(lastInterval.getStart(), thisInterval.getEnd());
+                        intervals.remove(lastInterval);
+                        intervals.add(combinedInterval);
+                    } else {
+                        intervals.add(thisInterval);
+                    }
+                }
+            }
+        }
+        return intervals;
+    }
+    
+    private int getIntervalsLessThanSix(Interval interval, Duration intervalLength) {
+        long intervalLengthInMillis = intervalLength.getMillis();
+        Duration sixIntervalsDuration = new Duration(intervalLengthInMillis * 6);
+        
+        Duration intervalDuration = interval.toDuration();
+        if(intervalDuration.isLongerThan(sixIntervalsDuration) || intervalDuration.isEqual(sixIntervalsDuration)) {
+            return 0;
+        }
+        
+        Duration timeLessThanSix = sixIntervalsDuration.minus(intervalDuration);
+        int intervalsLessThanSix = 0;
+        while(timeLessThanSix.isLongerThan(intervalLength) || timeLessThanSix.isEqual(intervalLength)) {
+            timeLessThanSix = timeLessThanSix.minus(intervalLength);
+            intervalsLessThanSix++;
+        }
+        return intervalsLessThanSix;
     }
     
     private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor) {
@@ -151,25 +310,13 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private SingleProcessor<YukonDevice> getAnalysisProcessor(ArchiveDataAnalysisBackingBean backingBean, final Analysis analysis) {
         final boolean excludeBadPointQualities = backingBean.getExcludeBadQualities();
         final BuiltInAttribute attribute = backingBean.getSelectedAttribute();
-        final Interval dateRange = backingBean.getDateRange();
         
         SingleProcessor<YukonDevice> analysisProcessor = new SingleProcessor<YukonDevice>() {
             @Override
             public void process(YukonDevice device) throws ProcessingException {
-                int deviceId = device.getPaoIdentifier().getPaoId();
-                
                 try {
                     LitePoint point = attributeService.getPointForAttribute(device, attribute);
-                    Map<Instant, Integer> map = archiveDataAnalysisDao.getDeviceSlotValues(analysis.getAnalysisId(), point.getPointID(), excludeBadPointQualities);
-                    DeviceArchiveData data = new DeviceArchiveData(device.getPaoIdentifier(), attribute, dateRange);
-                    for(Entry<Instant, Integer> entry : map.entrySet()) {
-                        Instant date = entry.getKey();
-                        Interval intervalRange = new Interval(date, analysis.getIntervalLength());
-                        Integer changeId = entry.getValue();
-                        ArchiveData readData = new ArchiveData(intervalRange, ReadType.DATA_PRESENT, changeId);
-                        data.addArchiveData(readData);
-                    }
-                    archiveDataAnalysisDao.insertSlotValues(deviceId, analysis.getAnalysisId(), data);
+                    archiveDataAnalysisDao.insertSlotValues(device.getPaoIdentifier(), analysis.getAnalysisId(), point.getPointID(), excludeBadPointQualities);
                 } catch(IllegalUseOfAttribute illegal) {
                     String error = "Invalid attribute " + attribute + " for device with id " + device.getPaoIdentifier().getPaoId();
                     throw new ProcessingException(error);
@@ -223,5 +370,15 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
+        this.commandRequestExecutor = commandRequestExecutor;
+    }
+    
+    @Resource(name="adaProfileReadRecentResultsCache")
+    public void setAdaProfileReadRecentResultsCache(RecentResultsCache<ArchiveAnalysisProfileReadResult> recentResultsCache) {
+        crdRecentResultsCache = recentResultsCache;
     }
 }

@@ -776,6 +776,9 @@
                 <entry key="DEVICE_RECONFIG">
                     <ref local="deviceReconfigMonitorBackingService"/>
                 </entry>
+                <entry key="ARCHIVE_DATA_ANALYSIS_LP_READ">
+                    <ref local="adaProfileReadBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -862,6 +865,10 @@
     
     <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService">
         <property name="objectFormattingService" ref="objectFormattingService" />
+    </bean>
+    
+    <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService">
+        <property name="objectFormattingService" ref="objectFormattingService"/>
     </bean>
     
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
@@ -1438,9 +1445,12 @@
                 <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
                 <ref bean="deviceFileUploadCollectionProducer"/>
                 <ref bean="deviceFilterCollectionProducer"/>
+                <ref bean="archiveDataAnalysisCollectionProducer"/>
             </list>
         </property>
     </bean>
+    
+    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer" />
     
     <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
     

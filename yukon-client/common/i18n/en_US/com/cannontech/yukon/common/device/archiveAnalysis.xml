@@ -21,9 +21,7 @@
     <!-- ANALYSIS PROGRESS -->
     <entry key="yukon.web.modules.amr.analysisProgress.pageName">Archive Data Analysis Progress</entry>
     <entry key="yukon.web.modules.amr.analysisProgress.pageDescription">Analysis Progress</entry>
-    <entry key="yukon.web.modules.amr.analysisProgress.header">Progress</entry>
-    <entry key="yukon.web.modules.amr.analysisProgress.noteLabel"></entry>
-    <entry key="yukon.web.modules.amr.analysisProgress.noteText"></entry>
+    <entry key="yukon.web.modules.amr.analysisProgress.title">Progress</entry>
     <entry key="yukon.web.modules.amr.analysisProgress.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.amr.analysisProgress.interval">Interval</entry>
     <entry key="yukon.web.modules.amr.analysisProgress.pointQuality">Point Quality</entry>
@@ -97,12 +95,20 @@
     <entry key="yukon.web.modules.amr.analysisList.deleteButton.hoverText">Delete analysis</entry>
     <entry key="yukon.web.modules.amr.analysisList.deleteConfirmation.message">Are you sure you want to delete this analysis?</entry>
     <entry key="yukon.web.modules.amr.analysisList.deleteConfirmation.title">Delete Analysis</entry>
-    
-    
     <entry key="yukon.web.modules.amr.analysisList.viewButton.imageUrl">/WebConfig/yukon/Icons/application_view_columns.png</entry>
     <entry key="yukon.web.modules.amr.analysisList.viewButton.hoverText">View analysis results</entry>
     <entry key="yukon.web.modules.amr.analysisList.viewButtonNoDevices.imageUrl">/WebConfig/yukon/Icons/application_view_columns_disabled.png</entry>
     <entry key="yukon.web.modules.amr.analysisList.viewButtonNoDevices.hoverText">No results to view</entry>
     
-    
+    <!-- LP READ RESULTS -->
+    <entry key="yukon.web.modules.amr.analysisReadResults.pageName">Archive Data Analysis Read Results</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.pageDescription">Archive Data Analysis Read Results</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.isCompleteText">Complete</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.isErrorOccurredText">Error Occurred</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.inProgressText">In Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.title">Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.progressLabel">Progress</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.successLabel">Successfully Read:</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.failureLabel">Failed to Read:</entry>
+    <entry key="yukon.web.modules.amr.analysisReadResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
 </properties>
