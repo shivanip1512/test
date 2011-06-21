@@ -75,7 +75,7 @@
     <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
     </form>
     
-    <div class="schedule small dn <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
+    <div class="schedule small vh <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
         <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">
             <div class="titleBar boxContainer_titleBar">
                 <div class="title boxContainer_title">
@@ -157,24 +157,53 @@
                 
             </div>
                 <div class="actions">
-                        <cti:button key="edit" renderMode="labeledImage" styleClass="edit edit_${schedule.accountThermostatScheduleId}" />
+                        <cti:button key="edit" renderMode="labeledImage" styleClass="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
                 </div>
             </form>
         </div>
-        <i:simplePopup titleKey=".editSchedule.title" id="editSchedule_${schedule.accountThermostatScheduleId}" on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
-            <div class="container">
-                <tags:thermostatScheduleEditor  schedule="${schedule}" 
-                                                thermostatId="${thermostatId}"
-                                                thermostatIds="${thermostatIds}"
-                                                accountId="${accountId}"
-                                                temperatureUnit="${temperatureUnit}"
-                                                actionPath="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule"
-                                                thermostatType="${thermostatType}" />
-            </div>
-            <div class="actions">
-                <div class="fr">
-                    <cti:button key="save" styleClass="save f_blocker" />
-                    <cti:button key="cancel" styleClass="cancel" />
+        
+        <i:simplePopup titleKey=".editSchedule.title" id="createSchedule" on=".edit_${schedule.accountThermostatScheduleId}" >
+            <div class="f_wizard">
+                <div class="f_page page_0">
+                    <div class="box">
+                        <div class="helper box">
+                            <i:inline key=".modeHint" />
+                        </div>
+                        <div class="box pad">
+                            <c:forEach var="mode" items="${allowedModes}">
+                                <label><input type="radio" name="defaultScheduleMode" value="${mode}"> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
+                                <br>
+                            </c:forEach>
+                        </div>
+                    </div>
+                
+                    <div class="actionArea">
+                        <div class="fr">
+                            <cti:button key="next" styleClass="f_next"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="f_page page_1">
+                    <div class="createSchedule box small">
+                        <c:forEach var="schedule" items="${defaultSchedules}">
+                            <tags:thermostatScheduleEditor schedule="${schedule}"
+                                            thermostatId="${thermostatId}"
+                                            thermostatIds="${thermostatIds}"
+                                            accountId="${accountId}"
+                                            temperatureUnit="${temperatureUnit}"
+                                            actionPath="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule?ecId=${ecId}"
+                                            thermostatType="${thermostatType}"/>
+                        </c:forEach>
+                    </div>
+                
+                    <div class="actions">
+                        <div class="fr">
+                            <cti:button key="chooseMode" styleClass="f_prev"/>
+                            <cti:button key="save" styleClass="save f_blocker" />
+                            <cti:button key="cancel" styleClass="cancel" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </i:simplePopup>

@@ -48,6 +48,7 @@
 
 .loading .message {
     padding: 0 0 0 20px;
+    border: none;
 }
 
 div.toggle {

@@ -1,6 +1,7 @@
 .dn {display:none;}
 .fl {float:left;}
 .fr {float:right;}
+.vh {visibility: hidden;}
 .labels {
 	display:none;
 }
@@ -23,14 +24,6 @@
 }
 
 /*LARGE FORMAT*/
-.temp {
-	float: right;
-	padding: 2px 5px;
-	border: solid 1px #CCC;
-	color: #fff;
-	text-align: center;
-	width: 30px;
-}
 
 .F span.C, .C span.F {
     display: none;
@@ -138,7 +131,7 @@
 }
 
 /*SMALL FORMAT*/
-.small .temp {
+.temp {
 	float: left;
 	padding: 2px 2px;
 	border: solid 1px #CCC;
@@ -398,3 +391,9 @@ a.default {
     padding: 5px;
 }
 
+.tempLabel {
+    border: none;
+    color: #333;
+    font-size: 12px;
+    float: right;
+}

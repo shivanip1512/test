@@ -1,3 +1,7 @@
+a img {
+    border: none; /* for IE's sake */
+}
+
 .altTableCell {
     background-color: #eeeeee;
 }

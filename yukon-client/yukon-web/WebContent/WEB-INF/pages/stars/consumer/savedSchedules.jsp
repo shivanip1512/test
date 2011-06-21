@@ -127,7 +127,7 @@ Event.observe(window, 'load', function(){
                                             temperatureUnit="${temperatureUnit}"
                                             actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
                                             thermostatType="${thermostatType}"
-                                            styleClass="dn"/>
+                                            styleClass="vh"/>
                                     </tags:sectionContainer2>
                                 </c:forEach>
                                 <br>
@@ -140,7 +140,7 @@ Event.observe(window, 'load', function(){
                                                 temperatureUnit="${temperatureUnit}"
                                                 actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
                                                 thermostatType="${thermostatType}"
-                                                styleClass="dn"/>
+                                                styleClass="vh"/>
                                         </c:forEach>    
                                     </tags:sectionContainer2>
                             </c:when>
@@ -161,7 +161,7 @@ Event.observe(window, 'load', function(){
                                             temperatureUnit="${temperatureUnit}"
                                             actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
                                             thermostatType="${thermostatType}"
-                                            styleClass="dn"/>
+                                            styleClass="vh"/>
                                     </c:forEach>
                                 </tags:sectionContainer2>
                             </c:otherwise>

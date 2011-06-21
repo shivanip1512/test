@@ -218,6 +218,9 @@ dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
 .vam {vertical-align:middle;}
 .vab {vertical-align:bottom;}
 
+.vh {visibility:hidden;} /* when you want to hide, but still flow */
+.vv {visibility:visible;}
+
 .scroll_y {
     overflow-y: auto;
 }

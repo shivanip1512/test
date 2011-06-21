@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany.general;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -32,6 +33,7 @@ import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
@@ -58,6 +60,7 @@ public class DefaultThermostatScheduleController {
     private OperatorThermostatHelper operatorThermostatHelper;
     private RolePropertyDao rolePropertyDao;   
     private StarsDatabaseCache starsDatabaseCache;
+    private ThermostatService thermostatService;
     
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
@@ -125,6 +128,25 @@ public class DefaultThermostatScheduleController {
             new YukonMessageSourceResolvable(schedulableThermostatType.getHardwareType().getDisplayKey());
         String typeStr = getMessage(request).getMessage(messageSourceResolvable);
         modelMap.addAttribute("typeStr", typeStr);
+        
+        List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
+        for(ThermostatScheduleMode mode : modes){
+            if(schedule.getThermostatScheduleMode() == mode){
+                defaultSchedules.add(schedule);
+            }else{
+                //create a schedule that looks similar to the default
+                AccountThermostatSchedule defaultAts = new AccountThermostatSchedule();
+                defaultAts.setAccountId(schedule.getAccountId());
+                defaultAts.setAccountThermostatScheduleId(schedule.getAccountThermostatScheduleId());
+                defaultAts.setScheduleName(schedule.getScheduleName());
+                defaultAts.setThermostatScheduleMode(mode);
+                defaultAts.setThermostatType(schedulableThermostatType);
+                thermostatService.addMissingScheduleEntries(defaultAts);
+                
+                defaultSchedules.add(defaultAts);
+            }
+        }        
+        modelMap.addAttribute("defaultSchedules", defaultSchedules);
         
         return "energyCompany/defaultThermostatScheduleEdit.jsp";
     }
@@ -201,5 +223,9 @@ public class DefaultThermostatScheduleController {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
         this.accountThermostatScheduleDao = accountThermostatScheduleDao;
     }
-
+    
+    @Autowired
+    public void setThermostatService(ThermostatService thermostatService) {
+        this.thermostatService = thermostatService;
+    }
 }

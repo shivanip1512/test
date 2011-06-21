@@ -172,6 +172,7 @@
     <entry key="yukon.web.components.button.back.label">Back</entry>
     
     <entry key="yukon.web.components.button.next.label">Next</entry>
+    <entry key="yukon.web.components.button.chooseMode.label">Choose Mode</entry>
     
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
     

@@ -30,7 +30,14 @@ Yukon.ui = {
     
     autoWire: function() {
         // register listeners
-        $$(".f_blocker").each(function(elem) {
+        $$("a.f_blocker").each(function(elem) {
+            elem.observe('click', function(event) {
+                Yukon.ui.blockPage({color:'#000', alpha: 0.25});
+                return true;
+            });
+        });
+        
+        $$("button.f_blocker").each(function(elem) {
             elem.observe('click', function(event) {
                 Yukon.ui.blockPage({color:'#000', alpha: 0.25});
                 return true;

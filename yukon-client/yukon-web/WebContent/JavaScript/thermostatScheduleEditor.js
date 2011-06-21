@@ -48,6 +48,7 @@ Yukon.ThermostatScheduleEditor = {
             },
             onChange: function(value, e) {
                 Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value), CURRENT_TIME_INPUT);
+                CURRENT_TIME_INPUT.select();    //Good ol' IE needs this.
             }
             
         });
@@ -64,6 +65,7 @@ Yukon.ThermostatScheduleEditor = {
             },
             onChange: function(value, e) {
                 Yukon.ThermostatScheduleEditor.commitTempValue(value, CURRENT_TEMP_INPUT);
+                CURRENT_TEMP_INPUT.select();    //Good ol' IE needs this.
             }
         });
 
@@ -91,12 +93,12 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         YEvent.observeSelectorClick(".cancel", function(e){
+            e.target.up(".popUpDiv").hide();
             e.target.up(".popUpDiv").down('form').select("input[initialValue]").each(function(input){
                 input.value = input.readAttribute('initialValue');
             });
             Yukon.ThermostatScheduleEditor.renderTime();
             Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
-            e.target.up(".popUpDiv").hide();
         });
         
         YEvent.observeSelectorClick(".copy", function(e){
@@ -112,7 +114,36 @@ Yukon.ThermostatScheduleEditor = {
             var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
             form.down("input[name=scheduleId]").value = id;
             form.down("input[name=scheduleName]").value = name;
-            form.down("button.delete").show();
+            if(form.down("button.delete")){
+                form.down("button.delete").show();
+            }
+        });
+        
+        //This is a very specific editing mode for default schedules on energy companies.
+        //There is only ever 1 schedule per page, but we need to provide capacity for changing modes
+        //since you cannot delete one of these schedules.
+        YEvent.observeSelectorClick(".editDefaultSchedule", function(e){
+            //show the second page of the wizard, select the 'current' mode
+            var mode = e.target.up("form").down("input[name=thermostatScheduleMode]").value;
+            var page = $$(".page_0")[0]; 
+            page.down("input[value="+ mode +"]").checked = true;
+            page.down("button.f_next").enable();
+            
+            //select the second page page.
+            page.up(1).select(".schedule_editor").invoke('hide');
+            page.up(1).down("."+ mode).show();
+            Yukon.ui.wizard.nextPage(page);
+            
+            
+            var id = e.target.up("form").down("input[name=scheduleId]").value;
+            var name = e.target.up("form").down("input[name=scheduleName]").value;
+            var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
+            form.down("input[name=scheduleId]").value = id;
+            form.down("input[name=scheduleName]").value = name;
+            
+            if(form.down("button.delete")){
+                form.down("button.delete").hide();
+            }
         });
         
         YEvent.observeSelectorClick(".save", function(e){
@@ -128,14 +159,15 @@ Yukon.ThermostatScheduleEditor = {
             return true;
         });
         
+        $$(".page_0 input:radio").each(function(input){
+            input.checked = false;
+            input.observe('click', function(e){
+                e.target.up('.f_page').down('.f_next').enable();
+            });
+        });
+        
         YEvent.observeSelectorClick(".create", function(e){
             //show type picker
-            $$(".page_0 input:radio").each(function(input){
-                input.checked = false;
-                input.observe('click', function(e){
-                    e.target.up('.f_page').down('.f_next').enable();
-                });
-            });
             Yukon.ui.wizard.reset($("createSchedule_body"));
             return false;
         });
@@ -160,22 +192,25 @@ Yukon.ThermostatScheduleEditor = {
             if(recForm != null){
                 var days = ourForm.select(".day");
                 for(var i=0; i<days.length; i++){
-                    var timeOfWeek = days[i].down("input[name=timeOfWeek]").value;
+                    var timeOfWeek = recForm.down("." + days[i].down("input[name=timeOfWeek]").value);
                     
                     //copy values over
                     var times = days[i].select("input[name=secondsFromMidnight]");
+                    var defaultTimes = timeOfWeek.select("input[name=secondsFromMidnight]");
                     for(var j=0; j<times.length; j++){
-                        times[j].value = recForm.down("."+timeOfWeek).down('input[name=secondsFromMidnight]', j).readAttribute("defaultValue");
+                        times[j].value = defaultTimes[j].getAttribute("defaultValue");
                     }
                     
                     var heatTemps = days[i].select("input[name=heat_F]");
+                    var defaultHeatTemps = timeOfWeek.select("input[name=heat_F]");
                     for(var j=0; j<heatTemps.length; j++){
-                        heatTemps[j].value = recForm.down("."+timeOfWeek).down('input[name=heat_F]', j).readAttribute("defaultValue");
+                        heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
                     }
                     
                     var coolTemps = days[i].select("input[name=cool_F]");
+                    var defaultCoolTemps = timeOfWeek.select("input[name=cool_F]");
                     for(var j=0; j<coolTemps.length; j++){
-                        coolTemps[j].value = recForm.down("."+timeOfWeek).down('input[name=cool_F]', j).readAttribute("defaultValue");
+                        coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
                     }
                 }
                 
@@ -195,8 +230,8 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         //show the schedules
-        $$(".schedule").invoke('removeClassName', "dn");
-        $$(".schedule_editor").invoke('removeClassName', "dn");
+        $$(".schedule").invoke('removeClassName', "vh");
+        $$(".schedule_editor").invoke('removeClassName', "vh");
     },
     
     prepForm: function(form) {
@@ -446,12 +481,21 @@ Yukon.ThermostatScheduleEditor = {
         var parent = this.up('.period');
         var start = 0;
         var end = 24*60*60;  //11:50pm is the default 
-                
-        if(parent.previous('.period')) {
-            start = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
+        
+        var previous = parent.previous('.period');
+        if(previous) {
+            var prevInput = previous.down('.time input[name=secondsFromMidnight]');
+            if(prevInput){
+                start = parseInt(prevInput.value);
+            }
         }
-        if(parent.next('.period')){
-            end = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
+        
+        var next = parent.next('.period');
+        if(next){
+            var nextInput = next.down('.time input[name=secondsFromMidnight]');
+            if(nextInput){
+                end = parseInt(nextInput.value);
+            }
         }
         
         if(start != 0){
@@ -491,17 +535,26 @@ Yukon.ThermostatScheduleEditor = {
         if(curr != -1){
             //check bounds
             var parent = input.up('.period');
-            var prev = 0;
-            var next = ((24*60)-1)*60;  //11:59pm is the default 
+            var start = 0;
+            var end = ((24*60)-1)*60;  //11:59pm is the default 
                     
-            if(parent.previous('.period')) {
-                prev = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
+            var previous = parent.previous('.period');
+            if(previous) {
+                var previousInput = previous.down('.time input[name=secondsFromMidnight]');
+                if(previousInput){
+                    start = parseInt(previousInput.value);
+                }
             }
-            if(parent.next('.period')){
-                next = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
+            
+            var next = parent.next('.period');
+            if(next){
+                var nextInput = next.down('.time input[name=secondsFromMidnight]');
+                if(nextInput){
+                    end = parseInt(nextInput.value);
+                }
             }
 
-            if((prev < curr) && (curr < next)){
+            if((start < curr) && (curr < end)){
                 //set seconds from midnight value
                 input.adjacent('input[name=secondsFromMidnight]')[0].value = timeFormatter.parseTime(input.value)*60;
                 
@@ -532,7 +585,7 @@ Yukon.ThermostatScheduleEditor = {
             var rounded = Math.round(c*2) / 2;
             elem.value = rounded.toFixed(1);
         });
-        $$(".temp").each(function(elem){
+        $$(".temp, .tempLabel").each(function(elem){
             elem.removeClassName('F');
             elem.addClassName('C');
         });

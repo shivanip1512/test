@@ -28,6 +28,10 @@
         <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
         <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
         
+        <div class="temp tempLabel ${temperatureUnit}">
+            <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
+            <span class="C"><i:inline key="yukon.web.defaults.celcius"/></span>
+        </div>
         <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.name"/></label>
         <input type="text" name="scheduleName" value="${pageScope.schedule.scheduleName}" initialValue="${pageScope.schedule.scheduleName}" size="40" maxlength="60">
 
