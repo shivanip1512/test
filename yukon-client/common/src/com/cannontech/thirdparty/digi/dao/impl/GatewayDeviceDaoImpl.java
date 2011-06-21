@@ -213,7 +213,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public List<ZigbeeDevice> getAssignedZigbeeDevices(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT ZEP.DeviceId,ZEP.MacAddress,YPO.Type");
+        sql.append("SELECT ZEP.DeviceId,ZEP.MacAddress,YPO.Type,YPO.PaoName");
         sql.append("FROM ZBEndPoint ZEP");
         sql.append(  "JOIN YukonPAObject YPO on ZEP.DeviceId = YPO.PaObjectId");
         sql.append(  "JOIN ZBGatewayToDeviceMapping ZBDM on ZBDM.DeviceId = ZEP.DeviceId");
