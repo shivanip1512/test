@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +26,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.FieldMapper;
+import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -66,14 +66,14 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
     
     private SimpleTableAccessTemplate<CustomerAccount> customerAccountTemplate;
     
-    private FieldMapper<CustomerAccount> customerAccountFieldMapper = new FieldMapper<CustomerAccount>() {
+    private AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper = new AdvancedFieldMapper<CustomerAccount>() {
         @Override
-        public void extractValues(MapSqlParameterSource p, CustomerAccount account) {
+        public void extractValues(SqlParameterChildSink p, CustomerAccount account) {
             p.addValue("AccountSiteId", account.getAccountSiteId());
             p.addValue("AccountNumber", account.getAccountNumber());
             p.addValue("CustomerId", account.getCustomerId());
             p.addValue("BillingAddressId", account.getBillingAddressId());
-            p.addValue("AccountNotes", account.getAccountNotes());
+            p.addValueSafe("AccountNotes", account.getAccountNotes());
         }
         
         @Override
@@ -92,7 +92,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(yukonJdbcTemplate, nextValueHelper);
         customerAccountTemplate.setTableName("CustomerAccount");
         customerAccountTemplate.setPrimaryKeyField("AccountId");
-        customerAccountTemplate.setFieldMapper(customerAccountFieldMapper);
+        customerAccountTemplate.setAdvancedFieldMapper(customerAccountFieldMapper);
         customerAccountTemplate.setPrimaryKeyValidOver(0);
     }
 
