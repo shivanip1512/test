@@ -241,7 +241,7 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/saved (savedSchedules.jsp - ThermostatScheduleController.java:viewSaved()) -->
-    <entry key="yukon.web.modules.consumer.savedSchedules.pageTitle">Saved Schedules</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.pageTitle">Thermostat - Schedules</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.currentScheduleInfo">This is the most recent schedule that has been sent to the thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.savedScheduleListInfo">Below is a list of schedules compatible with your thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.tempUnit">Temperature Units</entry>
@@ -258,6 +258,9 @@
     <entry key="yukon.web.modules.consumer.savedSchedules.modeHint">Select the which days of the week you want specific control over your Thermostat.</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.lastSent">This is the last Schedule sent to your Thermostat.</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.lastSent.title">Last Schedule Sent</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.otherSchedules.title">Other Schedules</entry>
+    <entry key="yukon.web.modules.consumer.savedSchedules.otherSchedules.helpText">All of the schedules listed below are compatible with this Thermostat.</entry>
     
     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (defaultThermostatSchedule.jsp - DefaultThermostatScheduleController.java:()) -->
     <entry key="yukon.web.modules.adminSetup.schedules.EDIT.tempUnit">Temperature Units</entry>
@@ -286,7 +289,9 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.modeHint">Select the which days of the week you want specific control over the customer's Thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent">This is the last Schedule sent to the Thermostat.</entry>
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent.title">FOOOOOO</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.lastSent.title">Last Schedule Sent</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.otherSchedules.title">Other Schedules</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.otherSchedules.helpText">All of the schedules listed below are compatible with this Thermostat.</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/history (history.jsp - ThermostatScheduleController.java:history()) -->
     <entry key="yukon.web.modules.consumer.history.pageTitle">Thermostat History</entry>

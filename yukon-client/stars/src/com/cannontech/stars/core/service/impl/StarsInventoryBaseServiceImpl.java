@@ -173,7 +173,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             schedule.setAccountId(lmHw.getAccountID());
             schedule.setScheduleName(lmHw.getDeviceLabel());
             accountThermostatScheduleDao.save(schedule);
-            accountThermostatScheduleDao.mapThermostatsToSchedule(Collections.singletonList(lmHw.getInventoryID()), schedule.getAccountThermostatScheduleId());
         } else {
             log.warn("HardwareType \"" + hwType.toString() + "\"is not a ScheduleableThermostatType." + 
                      "Unable to initialize schedule.");

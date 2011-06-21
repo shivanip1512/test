@@ -18,9 +18,6 @@
     <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
     
     <!-- Action Images -->
-    <entry key="yukon.web.modules.operator.hardware.editSchedule.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.editSchedule.label">Edit Schedule</entry>
-    
     <entry key="yukon.web.modules.operator.hardware.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.manual.label">Manual Adjustment</entry>
     <entry key="yukon.web.modules.operator.hardware.manual.hoverText">Manual Adjustment</entry>
@@ -30,8 +27,8 @@
     <entry key="yukon.web.modules.operator.hardware.editConfig.hoverText">Edit device configuration</entry>
 
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.savedSchedules.label">Saved Schedules</entry>
-    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">View Saved Schedules</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.label">Schedules</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">View Schedules</entry>
 
     <entry key="yukon.web.modules.operator.hardware.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>

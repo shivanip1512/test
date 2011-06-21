@@ -24,4 +24,7 @@
 <entry key="yukon.web.defaults.celcius">°C</entry>
 <entry key="yukon.web.defaults.fahrenheit">°F</entry>
 
+<entry key="yukon.web.defaults.copy.prefix">Copy of</entry>
+<entry key="yukon.web.defaults.copy.suffix"> - Copy</entry>
+
 </properties>

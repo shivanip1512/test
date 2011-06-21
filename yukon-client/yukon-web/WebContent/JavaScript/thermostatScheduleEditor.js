@@ -8,6 +8,7 @@ Yukon.ThermostatScheduleEditor = {
     upperCoolF: 99,
     lowerCoolF: 40,
     currentUnit: 'fahrenheit',
+    copyPrefix: "",
     
     heatColor: {
         r: {start: 242, end: 242},
@@ -101,7 +102,7 @@ Yukon.ThermostatScheduleEditor = {
         YEvent.observeSelectorClick(".copy", function(e){
             var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
              form.down("input[name=scheduleId]").value = -1;
-             form.down("input[name=scheduleName]").value += "*";
+             form.down("input[name=scheduleName]").value = Yukon.ThermostatScheduleEditor.copyPrefix + " " + form.down("input[name=scheduleName]").value;
              form.down("button.delete").hide();
         });
         
@@ -193,7 +194,9 @@ Yukon.ThermostatScheduleEditor = {
             }
         });
         
-        
+        //show the schedules
+        $$(".schedule").invoke('removeClassName', "dn");
+        $$(".schedule_editor").invoke('removeClassName', "dn");
     },
     
     prepForm: function(form) {
