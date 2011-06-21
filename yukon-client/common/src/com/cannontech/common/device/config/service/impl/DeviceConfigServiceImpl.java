@@ -25,6 +25,7 @@ import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -32,6 +33,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -58,13 +60,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
         for(SimpleDevice device : deviceCollection.getDeviceList()){
-            if(!paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)
-                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)
-                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_420)) {
-                unsupportedDevices.add(device);
-            }else{
-                supportedDevices.add(device);
-            }
+        	ConfigurationBase configurationBase = deviceConfigurationDao.findConfigurationForDevice(device);
+        	if (configurationBase != null &&
+        			paoDefinitionDao.isTagSupported(device.getDeviceType(), configurationBase.getType().getSupportedDeviceTag())) {
+        		supportedDevices.add(device);
+        	} else {
+        		unsupportedDevices.add(device);
+        	}
         }
         
         StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
@@ -113,11 +115,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
-            if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)
-                    || paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)
-                    || paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_420)) {
+            ConfigurationBase configurationBase = deviceConfigurationDao.findConfigurationForDevice(device);
+            if (configurationBase != null && 
+            		paoDefinitionDao.isTagSupported(meter.getPaoType(), configurationBase.getType().getSupportedDeviceTag())) {
                 VerifyResult verifyResult = new VerifyResult(meter);
-                verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
+                verifyResult.setConfig(configurationBase);
                 result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
             }else {
                 deviceList.remove(device);
@@ -199,6 +201,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         String commandString = "putconfig emetcon install all force";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         return resultHolder;
+    }
+
+    @Override
+    public boolean isDeviceConfigAvailable(PaoType paoType) {
+    	List<ConfigurationBase> configurations = deviceConfigurationDao.getAllConfigurations();
+    	for (ConfigurationBase configurationBase : configurations) {
+        	PaoTag paoTag = configurationBase.getType().getSupportedDeviceTag();
+        	if (paoDefinitionDao.isTagSupported(paoType, paoTag)) {
+        		return true;
+        	}
+		}
+        return false;
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {

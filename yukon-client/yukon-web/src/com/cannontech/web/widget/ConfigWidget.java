@@ -21,12 +21,12 @@ import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.Lists;
 
 /**
  * Widget used to display basic device information
@@ -57,16 +57,16 @@ public class ConfigWidget extends WidgetControllerBase {
     private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
-        ConfigurationType type = ConfigurationType.MCT410;
-        if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)) {
-            type = ConfigurationType.MCT470;
-        } else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)) {
-            type = ConfigurationType.MCT430;
-        } else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_420)) {
-            type = ConfigurationType.MCT420;
+        
+        List<ConfigurationBase> existingConfigs = Lists.newArrayList();
+        for (ConfigurationType type : ConfigurationType.values()) {
+        	if (paoDefinitionDao.isTagSupported(meter.getPaoType(), type.getSupportedDeviceTag())) {
+                existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
+                break;
+        	}
         }
-        List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
         mav.addObject("existingConfigs", existingConfigs);
+        
         ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(meter);
         mav.addObject("currentConfigId", config != null ? config.getId() : -1);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);

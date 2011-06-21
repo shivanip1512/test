@@ -29,19 +29,21 @@
         <%-- ASSIGN BUTTON --%>
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
-                <div style="text-align: right">
-                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                    <cti:msg2 var="send" key=".send"/>
-                    <cti:msg2 var="sending" key=".sending"/>
-                    <cti:msg2 var="read" key=".read"/>
-                    <cti:msg2 var="reading" key=".reading"/>
-                        <ct:widgetActionUpdate method="sendConfig" label="${send}" labelBusy="${sending}" container="${widgetParameters.widgetId}_config_results"/>
-                        <ct:widgetActionUpdate method="readConfig" label="${read}" labelBusy="${reading}" container="${widgetParameters.widgetId}_config_results"/>
-                    </cti:checkRolesAndProperties>
-                    <cti:msg2 var="verify" key=".verify"/>
-                    <cti:msg2 var="verifying" key=".verifying"/>
-                    <ct:widgetActionUpdate method="verifyConfig" label="${verify}" labelBusy="${verifying}" container="${widgetParameters.widgetId}_config_results"/>
-				</div>
+				<c:if test="${currentConfigId >= 0}">
+	                <div style="text-align: right">
+	                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+	                    <cti:msg2 var="send" key=".send"/>
+	                    <cti:msg2 var="sending" key=".sending"/>
+	                    <cti:msg2 var="read" key=".read"/>
+	                    <cti:msg2 var="reading" key=".reading"/>
+	                        <ct:widgetActionUpdate method="sendConfig" label="${send}" labelBusy="${sending}" container="${widgetParameters.widgetId}_config_results"/>
+	                        <ct:widgetActionUpdate method="readConfig" label="${read}" labelBusy="${reading}" container="${widgetParameters.widgetId}_config_results"/>
+	                    </cti:checkRolesAndProperties>
+	                    <cti:msg2 var="verify" key=".verify"/>
+	                    <cti:msg2 var="verifying" key=".verifying"/>
+	                    <ct:widgetActionUpdate method="verifyConfig" label="${verify}" labelBusy="${verifying}" container="${widgetParameters.widgetId}_config_results"/>
+					</div>
+				</c:if>
             </c:when>
             <c:otherwise>
                 <i:inline key=".noConfigurations"/><br><br>

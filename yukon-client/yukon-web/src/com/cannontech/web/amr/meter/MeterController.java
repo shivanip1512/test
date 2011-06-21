@@ -20,6 +20,7 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoClass;
@@ -71,6 +72,7 @@ public class MeterController extends MultiActionController {
     private RolePropertyDao rolePropertyDao = null;
     private PaoDefinitionDao paoDefinitionDao = null;
     private MspMeterSearchService mspMeterSearchService;
+    private DeviceConfigService deviceConfigService;
 
     public MeterController() {
         super();
@@ -211,9 +213,7 @@ public class MeterController extends MultiActionController {
         boolean voltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         mav.addObject("voltageSupported", voltageSupported);
         
-        boolean configSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430) ||
-                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470) ||
-                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_420);
+        boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);
         
         if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
@@ -318,4 +318,8 @@ public class MeterController extends MultiActionController {
         this.mspMeterSearchService = mspMeterSearchService;
     }
 
+    @Autowired
+    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
+		this.deviceConfigService = deviceConfigService;
+	}
 }
