@@ -39,14 +39,19 @@ table.zoneListTable td.zoneName {
 }
 
 table.zoneListTable td.zoneType {
-    width: 85px;
+    width: 95px;
 }
 
 table.zoneListTable .tapContainer {
     width: 97px;
 }
 table.zoneListTable .tapContainer > span {
-    width: 30px;
+    width: 33px;
+    text-align: left;
+    display: inline-block;
+}
+table.zoneListTable .tapContainer > span .lastOpLeft {
+    width: 16px;
     text-align: center;
     display: inline-block;
 }
@@ -56,7 +61,7 @@ table.zoneListTable .tapContainer .phaseLetter {
 }
 
 table.zoneListTable th.lastOperation {
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
 table th.rightActionColumn {

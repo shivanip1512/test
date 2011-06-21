@@ -9,7 +9,7 @@ public enum Phase implements DisplayableEnum {
     A,
     B,
     C,
-    SPECIAL; // i.e. Gang Operated Regulator
+    ALL; // i.e. Gang Operated Regulator
 
     private final static String baseKey = "yukon.common.phase.phase"; 
     

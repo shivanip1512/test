@@ -24,7 +24,7 @@ public class ZoneGang extends AbstractZoneNotThreePhase {
     @Override
     public Map<Phase, RegulatorToZoneMapping> getRegulators() {
         Map<Phase, RegulatorToZoneMapping> regulatorMap = Maps.newHashMapWithExpectedSize(1);
-        regulatorMap.put(Phase.SPECIAL, regulator);
+        regulatorMap.put(Phase.ALL, regulator);
         return regulatorMap;
     }
 }

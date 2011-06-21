@@ -427,6 +427,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function setMode(mode, div) {
+        div = div.down('.lastOpRight');
         if (mode == 'NormalLocal'){
             setModeNormalLocal(div);
         } else if (mode == 'WarningLocal'){
@@ -437,6 +438,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
     
     function setTapIcon(tapIcon, mode, div, tapTooltip) {
+        div = div.down('.lastOpLeft');
         if (tapIcon == 'RAISE_TAP') {
             if (mode == 'WarningLocal') {
                 showTapRaiseWarning(div, tapTooltip);
@@ -523,13 +525,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function hideAll() {
-        var phaseContainers = tapContainer.childElements();
-        phaseContainers.each(function(phaseContainer) {
-            var phaseElements = phaseContainer.childElements();
-            phaseElements.each(function(phaseElement) {
-                phaseElement.hide();
-            });
-        });
+        tapContainer.select(".lastOpLeft span, .lastOpRight span").invoke('hide');
     }
 }
 
