@@ -34,9 +34,9 @@
     <type>clustered</type>                                    <!-- [clustered] (clustered, stacked, 100% stacked, 3d column) -->
     <width>80</width>                                         <!-- [80] (0 - 100) width of column (in percents)  -->
     <spacing>5</spacing>                                      <!-- [5] (Number) space between columns of one category axis value, in pixels. Negative values can be used. -->
-    <grow_time>1.5</grow_time>                                  <!-- [0] (Number) grow time in seconds. Leave 0 to appear instantly -->
-    <grow_effect>elastic</grow_effect>                        <!-- [elastic] (elastic, regular, strong) -->    
-    <sequenced_grow>true</sequenced_grow>                     <!-- [false] (true / false) whether columns should grow at the same time or one after another -->    
+    <grow_time></grow_time>                                  <!-- [0] (Number) grow time in seconds. Leave 0 to appear instantly -->
+    <grow_effect></grow_effect>                        <!-- [elastic] (elastic, regular, strong) -->    
+    <sequenced_grow></sequenced_grow>                     <!-- [false] (true / false) whether columns should grow at the same time or one after another -->    
     <alpha>100</alpha>                                        <!-- [100] (Number) alpha of all columns -->
     <border_color>#000000</border_color>                      <!-- [#FFFFFF] (hex color code) -->
     <border_alpha>40</border_alpha>                             <!-- [0] (Number) -->
