@@ -329,7 +329,7 @@ SET Value = ' '
 WHERE Value = '(none)';
 
 UPDATE YukonRoleProperty
-SET Description = 'Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]')
+SET Description = 'Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]'
 WHERE RolePropertyId = -1304;
 /* End YUK-9924 */
 
