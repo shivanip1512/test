@@ -35,12 +35,10 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.yukon.api.amr.endpoint.helper.ArchivedValuesResponseData;
 import com.cannontech.yukon.api.amr.endpoint.helper.ArchivedValuesResponseData.PointData;
@@ -61,7 +59,6 @@ import com.google.common.collect.Maps;
 public class ArchivedValuesRequestEndpoint {
     private Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
 
-    private UnitMeasureDao unitMeasureDao;
     private RawPointHistoryDao rawPointHistoryDao;
     private PointDao pointDao;
     private AttributeService attributeService;
@@ -117,7 +114,7 @@ public class ArchivedValuesRequestEndpoint {
                     || responseFields.contains(ResponseDescriptor.POINT_TYPE)
                     || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)
                     || responseFields.contains(ResponseDescriptor.STATUS_TEXT)) {
-                populateLitePoints(responseData);
+                populatePointInfo(responseData);
             }
 
             if (flatten) {
@@ -228,13 +225,13 @@ public class ArchivedValuesRequestEndpoint {
         return new PointElement(pointSelector, pointValueSelectors);
     }
 
-    private void populateLitePoints(ArchivedValuesResponseData responseData) {
+    private void populatePointInfo(ArchivedValuesResponseData responseData) {
         Set<PaoIdentifier> paoIds = responseData.getPaoIds();
         for (PointSelector pointSelector : responseData.getPointSelectors()) {
             HistorySelector historySelector = historySelectorMap.get(pointSelector.getType());
-            Map<PaoIdentifier, LitePoint> litePointsById =
-                historySelector.getLitePoints(pointSelector, paoIds);
-            responseData.updateLitePoints(pointSelector, litePointsById);
+            Map<PaoIdentifier, PointInfo> pointInfoById =
+                historySelector.getPointInfo(pointSelector, paoIds);
+            responseData.updateLitePoints(pointSelector, pointInfoById);
         }
     }
 
@@ -247,7 +244,7 @@ public class ArchivedValuesRequestEndpoint {
 
             for (PointData pointData : responseData.getPointDataByPaoId(paoId)) {
                 Map<Integer, LiteState> statesForStateGroupId =
-                    getStatesForGroupId(pointData.getLitePoint().getStateGroupID(), responseData);
+                    getStatesForGroupId(pointData.getPointInfo().getStateGroupId(), responseData);
                 PointSelector pointSelector = pointData.getPointSelector();
 
                 // For each point element, there is a list of lists of values.
@@ -327,7 +324,7 @@ public class ArchivedValuesRequestEndpoint {
 
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
         addPointData(pointElement, pointData, responseFields);
-        Integer stateGroupId = pointData.getLitePoint().getStateGroupID();
+        Integer stateGroupId = pointData.getPointInfo().getStateGroupId();
         Map<Integer, LiteState> statesForStateGroupId =
             getStatesForGroupId(stateGroupId, responseData);
         PointSelector pointSelector = pointData.getPointSelector();
@@ -364,25 +361,24 @@ public class ArchivedValuesRequestEndpoint {
         if (responseFields.contains(ResponseDescriptor.POINT_NAME)
                 || responseFields.contains(ResponseDescriptor.POINT_TYPE)
                 || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)) {
-            LitePoint litePoint = pointData.getLitePoint();
-            if (litePoint == null) {
-                throw new NullPointerException("could not find LitePoint for point "
+            PointInfo pointInfo = pointData.getPointInfo();
+            if (pointInfo == null) {
+                throw new NullPointerException("could not find pointInfo for point "
                                                + pointData.getPointSelector() + " and pao "
                                                + pointData.getPaoId());
             }
 
             if (responseFields.contains(ResponseDescriptor.POINT_NAME)) {
-                element.setAttribute("pointName", litePoint.getPointName());
+                element.setAttribute("pointName", pointInfo.getName());
             }
 
             if (responseFields.contains(ResponseDescriptor.POINT_TYPE)) {
-                element.setAttribute("pointType", litePoint.getPointTypeEnum()
+                element.setAttribute("pointType", pointInfo.getType()
                     .getPointTypeString());
             }
 
             if (responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)) {
-                LiteUnitMeasure uofm = unitMeasureDao.getLiteUnitMeasure(litePoint.getUofmID());
-                element.setAttribute("uofm", uofm.getUnitMeasureName());
+                element.setAttribute("uofm", pointInfo.getUnitOfMeasure());
             }
         }
     }
@@ -455,7 +451,7 @@ public class ArchivedValuesRequestEndpoint {
                                                                                         PointSelector pointSelector,
                                                                                         PointValueSelector selector);
 
-        public Map<PaoIdentifier, LitePoint> getLitePoints(PointSelector pointSelector, Set<PaoIdentifier> paos);
+        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector, Set<PaoIdentifier> paos);
     }
 
     private class AttributeHistorySelector implements HistorySelector {
@@ -508,17 +504,17 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         @Override
-        public Map<PaoIdentifier, LitePoint> getLitePoints(PointSelector pointSelector,
-                                                           Set<PaoIdentifier> paos) {
+        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
+                                                          Set<PaoIdentifier> paos) {
             Attribute attribute = attributeService.resolveAttributeName(pointSelector.getName());
             List<PaoPointIdentifier> paoPointIdentifiers = Lists.newArrayList();
             for (PaoIdentifier pao : paos) {
                 paoPointIdentifiers.add(attributeService.getPaoPointIdentifierForAttribute(pao, attribute));
             }
-            Map<PaoIdentifier, LitePoint> retVal = Maps.newHashMap();
-            Map<PaoPointIdentifier, LitePoint> litePointsById =
+            Map<PaoIdentifier, PointInfo> retVal = Maps.newHashMap();
+            Map<PaoPointIdentifier, PointInfo> litePointsById =
                 pointDao.getLitePointsById(paoPointIdentifiers);
-            for (Entry<PaoPointIdentifier, LitePoint> entry : litePointsById.entrySet()) {
+            for (Entry<PaoPointIdentifier, PointInfo> entry : litePointsById.entrySet()) {
                 retVal.put(entry.getKey().getPaoIdentifier(), entry.getValue());
             }
             return retVal;
@@ -560,8 +556,8 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         @Override
-        public Map<PaoIdentifier, LitePoint> getLitePoints(PointSelector pointSelector,
-                                                           Set<PaoIdentifier> paos) {
+        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
+                                                          Set<PaoIdentifier> paos) {
             return pointDao.getLitePointsByPointName(paos, pointSelector.getName());
         }
     }
@@ -602,8 +598,8 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         @Override
-        public Map<PaoIdentifier, LitePoint> getLitePoints(PointSelector pointSelector,
-                                                           Set<PaoIdentifier> paos) {
+        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
+                                                          Set<PaoIdentifier> paos) {
             return pointDao.getLitePointsByPointIdentifier(paos, pointSelector.getPointIdentifier());
         }
     }
@@ -645,15 +641,10 @@ public class ArchivedValuesRequestEndpoint {
         }
 
         @Override
-        public Map<PaoIdentifier, LitePoint> getLitePoints(PointSelector pointSelector,
-                                                           Set<PaoIdentifier> paos) {
+        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
+                                                          Set<PaoIdentifier> paos) {
             return pointDao.getLitePointsByDefaultName(paos, pointSelector.getName());
         }
-    }
-
-    @Autowired
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
     }
 
     @Autowired

@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointInfo;
 
 public interface PointDao {
     public LitePoint getLitePoint(int pointId);
@@ -84,16 +85,20 @@ public interface PointDao {
      */
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier);
 
-    public Map<PaoPointIdentifier, LitePoint>
+    /**
+     * Look up point information for the given PaoPointIdentifiers.  This method attempts to
+     * return as few instances of PointInfo as possible.
+     */
+    public Map<PaoPointIdentifier, PointInfo>
         getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers);
 
-    public Map<PaoIdentifier, LitePoint> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
                                                                   String pointName);
 
-    public Map<PaoIdentifier, LitePoint> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
                                                                     String defaultName);
 
-    public Map<PaoIdentifier, LitePoint> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
                                                                         PointIdentifier pointIdentifier);
 
     /**

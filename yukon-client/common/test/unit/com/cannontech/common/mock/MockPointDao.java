@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -170,24 +171,24 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public Map<PaoPointIdentifier, LitePoint> getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+    public Map<PaoPointIdentifier, PointInfo> getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, LitePoint> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
                                                                   String pointName) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, LitePoint> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
                                                                     String defaultName) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, LitePoint> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
+    public Map<PaoIdentifier, PointInfo> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
                                                                       PointIdentifier pointIdentifier) {
         return null;
     }

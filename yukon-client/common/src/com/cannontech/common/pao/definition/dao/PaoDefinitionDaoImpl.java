@@ -441,7 +441,19 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             return "Error rendering point legends: " + e.toString();
         }
     }
-    
+
+    @Override
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) {
+        Set<PointTemplate> templates = getAllPointTemplates(type);
+        for (PointTemplate template : templates) {
+            if (template.getName().equals(defaultPointName)) {
+                return template.getPointIdentifier();
+            }
+        }
+
+        throw new NotFoundException("could not find " + type + "/" + defaultPointName);
+    }
+
     // INITALIZATION
     //============================================
     public void initialize() throws Exception {
@@ -575,8 +587,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	
     	return paoStores;
     }
-    
-    public void validateXmlSchema(Resource currentDefinitionResource) throws IOException, SAXException, ParserConfigurationException {
+
+    private void validateXmlSchema(Resource currentDefinitionResource) throws IOException,
+            SAXException, ParserConfigurationException {
         InputStream is = currentDefinitionResource.getInputStream();
         URL schemaUrl = schemaFile.getURL();
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -897,17 +910,5 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     @Autowired
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
-    }
-    
-    @Override
-    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) {
-        Set<PointTemplate> templates = getAllPointTemplates(type);
-        for (PointTemplate template : templates) {
-            if (template.getName().equals(defaultPointName)) {
-                return template.getPointIdentifier();
-            }
-        }
-
-        return null;
     }
 }

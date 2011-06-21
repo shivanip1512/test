@@ -207,8 +207,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
-                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
@@ -239,8 +239,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
-                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
@@ -339,8 +339,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
-                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         appendOrderByClause(sql, order);
@@ -383,8 +383,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
-                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         sql.append(") numberedRows");
@@ -430,8 +430,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
-                        sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         sql.append(") numberedRows");

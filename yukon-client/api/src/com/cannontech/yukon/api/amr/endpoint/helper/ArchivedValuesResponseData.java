@@ -9,8 +9,8 @@ import java.util.Set;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointInfo;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -41,7 +41,7 @@ public class ArchivedValuesResponseData {
     public static class PointData {
         private PaoIdentifier paoId;
         private PointSelector pointSelector;
-        private LitePoint litePoint;
+        private PointInfo pointInfo;
         private List<ValueSet> valueSets = Lists.newArrayList();
 
         public PointData(PaoIdentifier paoId, PointSelector pointSelector) {
@@ -57,8 +57,8 @@ public class ArchivedValuesResponseData {
             return pointSelector;
         }
 
-        public LitePoint getLitePoint() {
-            return litePoint;
+        public PointInfo getPointInfo() {
+            return pointInfo;
         }
 
         public List<ValueSet> getValueSets() {
@@ -124,7 +124,7 @@ public class ArchivedValuesResponseData {
     }
 
     public void updateLitePoints(PointSelector pointSelector,
-                                 Map<PaoIdentifier, LitePoint> litePoints) {
+                                 Map<PaoIdentifier, PointInfo> litePoints) {
         Map<PaoIdentifier, PointData> pointDataByPaoId =
             pointDataBySelectorAndPaoId.get(pointSelector);
         if (pointDataByPaoId == null) {
@@ -132,13 +132,13 @@ public class ArchivedValuesResponseData {
             return;
         }
 
-        for (Entry<PaoIdentifier, LitePoint> entry : litePoints.entrySet()) {
+        for (Entry<PaoIdentifier, PointInfo> entry : litePoints.entrySet()) {
             PaoIdentifier paoId = entry.getKey();
-            LitePoint litePoint = entry.getValue();
+            PointInfo pointInfo = entry.getValue();
             PointData pointData = pointDataByPaoId.get(paoId);
             // null just means there is no point for this paoId/pointSelector combination
             if (pointData != null) {
-                pointData.litePoint = litePoint;
+                pointData.pointInfo = pointInfo;
             }
         }
     }
