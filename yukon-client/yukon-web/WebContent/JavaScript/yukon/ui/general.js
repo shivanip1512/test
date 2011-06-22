@@ -132,8 +132,7 @@ Yukon.ui = {
                     break;
                 }
             }
-        }
-        else {
+        } else {
             input.value = "";
             input.removeClassName('error');
         }
