@@ -684,7 +684,7 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-		    groupRole.setValue( CtiUtilities.STRING_NONE );
+		    groupRole.setValue(" ");	// default value is a single space
 			
 			adminGrp.getYukonGroupRoles().add( groupRole );
 		}
@@ -699,7 +699,7 @@ public class StarsAdminUtil {
             if (topLevelEc && roleProperty == YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY) {
                 groupRole.setValue(CtiUtilities.TRUE_STRING);
             } else {
-				groupRole.setValue( CtiUtilities.STRING_NONE );
+				groupRole.setValue(" ");	// default value is a single space
             }
 			
 			adminGrp.getYukonGroupRoles().add( groupRole );
