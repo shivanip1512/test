@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -83,11 +82,6 @@ public class ArchiveDataAnalysisController {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
         
-        //alignDateRangeToIntervals(backingBean);
-        
-        //Interval dateTimeRangeForDisplay = archiveDataAnalysisService.getDateTimeRangeForDisplay(backingBean.getDateRange(), backingBean.getSelectedIntervalDuration());
-        
-        //model.addAttribute("dateTimeRangeForDisplay", dateTimeRangeForDisplay);
         model.addAttribute("dateTimeRangeForDisplay", backingBean.getDateRange());
         
         int analysisId = archiveDataAnalysisService.createAnalysis(backingBean);

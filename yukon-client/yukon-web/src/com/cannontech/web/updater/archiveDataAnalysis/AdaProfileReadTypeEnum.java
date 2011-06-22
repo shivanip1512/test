@@ -46,7 +46,6 @@ public enum AdaProfileReadTypeEnum {
             } else {
                 resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.inProgressText");
             }
-            //cancelled?
             
             return resolvableTemplate;
         }
@@ -63,7 +62,6 @@ public enum AdaProfileReadTypeEnum {
     }),
     ;
     
-    //TODO: WTF does this do?
     private ResultAccessor<ArchiveAnalysisProfileReadResult> adaProfileReadValueAccessor;
     
     AdaProfileReadTypeEnum(ResultAccessor<ArchiveAnalysisProfileReadResult> adaProfileReadValueAccessor) {

@@ -24,7 +24,7 @@
         </div>
         
         <%-- PROGRESS --%>
-        <div style="padding: 0px 0px 20px 0px">
+        <div class="bottomPadded">
             <tags:resultProgressBar totalCount="${deviceCount}"
                                     countKey="ARCHIVE_DATA_ANALYSIS_LP_READ/${resultId}/COMPLETED_COUNT"
                                     progressLabelTextKey="yukon.web.modules.amr.analysis.readResults.progressLabel"

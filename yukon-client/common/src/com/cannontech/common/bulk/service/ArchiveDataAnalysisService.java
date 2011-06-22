@@ -31,12 +31,6 @@ public interface ArchiveDataAnalysisService {
     public List<DevicePointValuesHolder> getDevicePointValuesList(List<DeviceArchiveData> dataList);
     
     /**
-     * Builds load profile command strings for all missing intervals on a list of devices in a
-     * given analysis.
-     */
-    //public List<CommandRequestDevice> getProfileRequests(Analysis analysis, List<DeviceArchiveData> dataList);
-    
-    /**
      * Builds load profile command strings for all missing intervals on all devices in a given
      * analysis, then sends those commands through command request executor.
      * Returns the id used to obtain results information from RecentResultsCache

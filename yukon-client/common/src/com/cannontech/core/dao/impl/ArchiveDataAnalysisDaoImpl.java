@@ -88,17 +88,13 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     };
     
     @Override
-    public int createNewAnalysis(BuiltInAttribute attribute, Duration intervalLength,
-                                 boolean excludeBadPointQualities, Interval dateTimeRange) {
-        
+    public int createNewAnalysis(BuiltInAttribute attribute, Duration intervalLength, boolean excludeBadPointQualities, Interval dateTimeRange) {
         int analysisId = insertIntoArchiveDataAnalysis(attribute, intervalLength, excludeBadPointQualities, dateTimeRange);
-        
         insertSlots(analysisId, dateTimeRange, intervalLength);
         
         return analysisId;
     }
     
-    //TODO bookmark
     @Override
     public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, int pointId, boolean excludeBadPointQualities) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -110,7 +106,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         sql.append("      FROM RawPointHistory rph");
         sql.append("      WHERE PointId").eq(pointId);
         if(excludeBadPointQualities) {
-            sql.append("        AND Quality").eq(PointQuality.Normal);
+            sql.append("    AND Quality").eq(PointQuality.Normal);
         }
         sql.append("      GROUP BY Timestamp");
         sql.append("    ) rph2 ON slot.StartTime = rph2.Timestamp");

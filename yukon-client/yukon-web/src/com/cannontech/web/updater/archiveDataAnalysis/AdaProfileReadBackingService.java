@@ -2,8 +2,6 @@ package com.cannontech.web.updater.archiveDataAnalysis;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;

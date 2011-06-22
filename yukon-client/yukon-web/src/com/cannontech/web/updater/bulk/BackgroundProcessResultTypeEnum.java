@@ -69,13 +69,11 @@ public enum BackgroundProcessResultTypeEnum {
             return resolvableTemplate;
         }
     }),
-    
     ;
     
     private ResultAccessor<BackgroundProcessResultHolder> bulkResultValueAccessor;
     
     BackgroundProcessResultTypeEnum(ResultAccessor<BackgroundProcessResultHolder> bulkResultValueAccessor) {
-
         this.bulkResultValueAccessor = bulkResultValueAccessor;
     }
     

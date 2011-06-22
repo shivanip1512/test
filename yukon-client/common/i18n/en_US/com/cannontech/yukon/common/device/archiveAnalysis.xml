@@ -86,8 +86,8 @@
     <entry key="yukon.web.modules.amr.analysis.list.pointQualities">Point Quality</entry>
     <entry key="yukon.web.modules.amr.analysis.list.numberOfDevices">Devices</entry>
     <entry key="yukon.web.modules.amr.analysis.list.actions">Actions</entry>
-    <entry key="yukon.web.modules.amr.analysis.list.excludeBad">Exclude Bad</entry>
-    <entry key="yukon.web.modules.amr.analysis.list.includeBad">Include Bad</entry>
+    <entry key="yukon.web.modules.amr.analysis.list.excludeBad">Normal Only</entry>
+    <entry key="yukon.web.modules.amr.analysis.list.includeBad">All Qualities</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteButton.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteButton.hoverText">Delete analysis</entry>
     <entry key="yukon.web.modules.amr.analysis.list.deleteConfirmation.message">Are you sure you want to delete this analysis?</entry>
