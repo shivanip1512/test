@@ -80,10 +80,10 @@
                                             <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
                                         </div>
                                         <div class="temp heat ${pageScope.temperatureUnit}" title="${heatLabel}">
-                                            <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F">°
+                                            <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><i:inline key="yukon.web.defaults.degree"/>
                                         </div>
                                         <div class="temp cool ${pageScope.temperatureUnit}" title="${coolLabel}">
-                                            <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F">°
+                                            <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><i:inline key="yukon.web.defaults.degree"/>
                                         </div>
                                     </div>
                                 </c:if>

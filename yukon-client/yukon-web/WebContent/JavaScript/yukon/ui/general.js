@@ -257,8 +257,6 @@ pad: function(number, length) {
                     nextButton.observe('click', function(event){
                         Yukon.ui.wizard.nextPage(event.element().up(".f_page"))
                     });
-                    //by default disable the next buttons
-                    nextButton.disabled = 'disabled';
                 });
                 
                 elem.select(".f_prev").each(function(prevButton){
@@ -316,9 +314,6 @@ pad: function(number, length) {
                         elem.show();
                     }
                 });
-                wizard.select("button.f_next").each(function(button){
-                    button.disabled = 'disabled';
-                });
             }else{
                 wizard.select(".f_wizard").each(function(elem){
                     elem.select(".f_page").each(function(elem, idx){
@@ -327,9 +322,6 @@ pad: function(number, length) {
                         }else{
                             elem.show();
                         }
-                    });
-                    elem.select("button.f_next").each(function(button){
-                        button.disabled = 'disabled';
                     });
                 });
             }

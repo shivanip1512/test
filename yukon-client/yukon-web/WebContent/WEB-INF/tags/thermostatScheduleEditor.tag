@@ -94,7 +94,7 @@
                                             class="temp heat ${pageScope.temperatureUnit}"
                                             title="${heatLabel}">
                                             <input type="text" class="heat_F"
-                                                maxlength="4">° <input
+                                                maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
                                                 type="hidden"
                                                 value="${period.heatTemp.value}"
                                                 initialValue="${period.heatTemp.value}"
@@ -105,7 +105,7 @@
                                             class="temp cool ${pageScope.temperatureUnit}"
                                             title="${coolLabel}">
                                             <input type="text" class="cool_F"
-                                                maxlength="4">° <input
+                                                maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
                                                 type="hidden"
                                                 value="${period.coolTemp.value}"
                                                 initialValue="${period.coolTemp.value}"
