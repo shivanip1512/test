@@ -47,6 +47,11 @@ public class DigiResponseHandler {
     private ZigbeeControlEventDao zigbeeControlEventDao;
     private ZigbeeServiceHelper zigbeeServiceHelper;
     
+    private static String regexForMac = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
+    private static Pattern macPattern = Pattern.compile(regexForMac);
+    private static String regexNodeId = "NWK: ([\\da-fA-F]{4})";
+    private static Pattern nodeAddrPattern = Pattern.compile(regexNodeId);
+    
     private static final Namespace existNamespace = Namespace.getNamespace("exist", "http://exist.sourceforge.net/NS/exist");
     private static Properties existProperties = new Properties();
     static {
@@ -187,16 +192,13 @@ public class DigiResponseHandler {
      */
     private void parseMessageForAction(String message) {
         //Try to determine what this message is
-        String regexForMac = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
         String commissionStr = " registered with XBee";
         String decommissionStr = " unregistered from XBee";
         String connectStr = "Received device announce message from known device";
         String connectStr2 = "detected and marked as active";
         String disconnectStr = "marked as inactive";
         
-        String in = message;
-        Pattern p = Pattern.compile(regexForMac);
-        Matcher m = p.matcher(in);
+        Matcher m = macPattern.matcher(message);
        
         if (m.find()) {
             String macAddress = m.group();
@@ -224,13 +226,10 @@ public class DigiResponseHandler {
                 
                 if (message.contains(connectStr)) {
                     //"Received device announce message from known device 00:0C:C1:00:27:19:C4:D1 (NWK: E0BB)"
-                    String regexNodeId = "NWK: ([\\da-fA-F]{4})";
-                    p = Pattern.compile(regexNodeId);
-                    m = p.matcher(in);
+                    m = nodeAddrPattern.matcher(message);
                     
                     if (m.find()) {
-                        String nodeIdStr = "0x" + m.group(1);
-                        int nodeId = Integer.decode(nodeIdStr);
+                        int nodeId = Integer.parseInt(m.group(1), 16);
                         
                         utilPro.setNodeId(nodeId);
                         zigbeeDeviceDao.updateZigbeeUtilPro(utilPro);

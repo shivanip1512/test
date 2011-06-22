@@ -12,6 +12,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -130,13 +131,12 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     public void createZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("INSERT INTO ZBEndPoint (DeviceId,InstallCode,MacAddress,NodeId,DestinationEndPointId)");
-        sql.values(zigbeeThermostat.getPaoIdentifier().getPaoId(),
-                      zigbeeThermostat.getInstallCode().toUpperCase(),
-                      zigbeeThermostat.getMacAddress().toUpperCase(),
-                      zigbeeThermostat.getNodeId(),
-                      zigbeeThermostat.getDestinationEndPointId()
-                      );
+        SqlParameterSink params = sql.insertInto("ZBEndPoint");
+        params.addValue("DeviceId", zigbeeThermostat.getPaoIdentifier().getPaoId());
+        params.addValue("InstallCode", zigbeeThermostat.getInstallCode().toUpperCase());
+        params.addValue("MacAddress", zigbeeThermostat.getMacAddress().toUpperCase());
+        params.addValue("NodeId", zigbeeThermostat.getNodeId());
+        params.addValue("DestinationEndPointId", zigbeeThermostat.getDestinationEndPointId());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -145,11 +145,12 @@ public class ZigbeeDeviceDaoImpl implements ZigbeeDeviceDao {
     public void updateZigbeeUtilPro(ZigbeeThermostat zigbeeThermostat) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE ZBEndPoint");
-        sql.append("SET InstallCode").eq(zigbeeThermostat.getInstallCode().toUpperCase()).append(",");
-        sql.append("MacAddress").eq(zigbeeThermostat.getMacAddress().toUpperCase()).append(",");
-        sql.append("NodeId").eq(zigbeeThermostat.getNodeId()).append(",");
-        sql.append("DestinationEndPointId").eq(zigbeeThermostat.getDestinationEndPointId());
+        SqlParameterSink params = sql.update("ZBEndPoint");
+        params.addValue("InstallCode", zigbeeThermostat.getInstallCode().toUpperCase());
+        params.addValue("MacAddress", zigbeeThermostat.getMacAddress().toUpperCase());
+        params.addValue("NodeId", zigbeeThermostat.getNodeId());
+        params.addValue("DestinationEndPointId", zigbeeThermostat.getDestinationEndPointId());
+
         sql.append("WHERE DeviceId").eq(zigbeeThermostat.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);

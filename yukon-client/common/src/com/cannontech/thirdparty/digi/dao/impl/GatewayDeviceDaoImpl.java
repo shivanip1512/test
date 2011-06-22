@@ -11,6 +11,7 @@ import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -113,12 +114,13 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     
     @Override
     public void createDigiGateway(DigiGateway digiGateway) {
-
         addZBGateway(digiGateway);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO DigiGateway");
-        sql.values(digiGateway.getPaoIdentifier().getPaoId(), digiGateway.getDigiId());
+        
+        SqlParameterSink params = sql.insertInto("DigiGateway");
+        params.addValue("DeviceId", digiGateway.getPaoIdentifier().getPaoId());
+        params.addValue("DigiId", digiGateway.getDigiId());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -127,10 +129,10 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         PaoIdentifier paoIdentifier = digiGateway.getPaoIdentifier();
         
-        sql.append("INSERT INTO ZBGateway ");
-        sql.values(paoIdentifier.getPaoId(),
-                   digiGateway.getFirmwareVersion(),
-                   digiGateway.getMacAddress().toUpperCase());
+        SqlParameterSink params = sql.insertInto("ZBGateway");
+        params.addValue("DeviceId", paoIdentifier.getPaoId());
+        params.addValue("FirmwareVersion", digiGateway.getFirmwareVersion());
+        params.addValue("MacAddress", digiGateway.getMacAddress().toUpperCase());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -149,11 +151,12 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public void updateDigiGateway(DigiGateway digiGateway) {
         
     	updateZBGateway(digiGateway);
-    	//TODO this and create should use SimpleTableAccessTemplate
+    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE DigiGateway");
-        sql.append("SET DigiId").eq(digiGateway.getDigiId());
+        SqlParameterSink param = sql.update("DigiGateway");
+        param.addValue("DigiId", digiGateway.getDigiId());
+
         sql.append("WHERE DeviceId").eq(digiGateway.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);
@@ -162,9 +165,10 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     private void updateZBGateway(DigiGateway digiGateway) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
-    	sql.append("UPDATE ZBGateway");
-    	sql.append("SET FirmwareVersion").eq(digiGateway.getFirmwareVersion()).append(",");
-        sql.append("    MacAddress").eq(digiGateway.getMacAddress().toUpperCase());
+    	SqlParameterSink params = sql.update("ZBGateway");
+    	params.addValue("FirmwareVersion",digiGateway.getFirmwareVersion());
+    	params.addValue("MacAddress",digiGateway.getMacAddress().toUpperCase());
+
         sql.append("WHERE DeviceId").eq(digiGateway.getPaoIdentifier().getPaoId());
         
         yukonJdbcTemplate.update(sql);

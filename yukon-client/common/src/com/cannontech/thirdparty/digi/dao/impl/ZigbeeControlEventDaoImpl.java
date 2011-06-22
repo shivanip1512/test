@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.thirdparty.IntegrationType;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
@@ -77,8 +78,9 @@ public class ZigbeeControlEventDaoImpl implements ZigbeeControlEventDao {
     public void updateDeviceAck(boolean ack, int eventId, int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE ZBControlEventDevice");
-        sql.append("SET DeviceAck").eq(ack);
+        SqlParameterSink params = sql.update("ZBControlEventDevice");
+        params.addValue("DeviceAck", YNBoolean.valueOf(ack));
+        
         sql.append("WHERE ZBControlEventId").eq(eventId);
         sql.append(  "AND DeviceId").eq(deviceId);
         
@@ -89,8 +91,9 @@ public class ZigbeeControlEventDaoImpl implements ZigbeeControlEventDao {
     public void updateDeviceStartTime(Instant startTime, int eventId, int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE ZBControlEventDevice");
-        sql.append("SET StartTime").eq(startTime);
+        SqlParameterSink params = sql.update("ZBControlEventDevice");
+        params.addValue("StartTime", startTime);
+
         sql.append("WHERE ZBControlEventId").eq(eventId);
         sql.append(  "AND DeviceId").eq(deviceId);
         
@@ -101,9 +104,10 @@ public class ZigbeeControlEventDaoImpl implements ZigbeeControlEventDao {
     public void updateDeviceStopTime(Instant stopTime, int eventId, int deviceId, boolean canceled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPDATE ZBControlEventDevice");
-        sql.append("SET StopTime").eq(stopTime);
-        sql.append(", canceled").eq( canceled ? "Y":"N" );
+        SqlParameterSink params = sql.update("ZBControlEventDevice");
+        params.addValue("StopTime", stopTime);
+        params.addValue("Canceled", YNBoolean.valueOf(canceled));
+
         sql.append("WHERE ZBControlEventId").eq(eventId);
         sql.append(  "AND DeviceId").eq(deviceId);
         
