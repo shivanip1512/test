@@ -191,6 +191,10 @@ Yukon.ui.unblockElement({element:elem});
         </pre>
         </td>
     </tr>
+    
+    
+    
+    
     <tr>
         <th>Phone Number Formatting</th>
         <th>Relevant Markup</th>
@@ -204,7 +208,7 @@ Yukon.ui.unblockElement({element:elem});
         <br/>
         <br/>
             <pre>
-&lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
+                &lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
             </pre>
         </td>
     </tr>

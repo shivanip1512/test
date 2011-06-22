@@ -74,14 +74,6 @@ Yukon.ui = {
             
             Yukon.ui.formatPhone(elem);
         });
-        
-        $$("input.f_formatPhone").each(function(elem){
-            elem.observe('focus', function(event){
-                Yukon.ui.removeFormatPhone(event.element());
-            });
-            
-            Yukon.ui.formatPhone(elem);
-        });
 
         $$("input.f_toggle:checkbox").each(function(elem){
             elem.observe('change', function(event){
@@ -137,22 +129,11 @@ Yukon.ui = {
                 var format = YG.PHONE.FORMATS[i].format;
                 if(regex.test(stripped)){
                     input.value = stripped.replace(regex, format);
-                    input.removeClassName('error');
                     break;
                 }
             }
-        } else {
-            input.value = "";
-            input.removeClassName('error');
         }
-    },
-    
-    removeFormatPhone: function(input){
-        //strip the input down to just numbers
-        var stripped = input.value.replace(/[^\d]/g, "");
-        if(stripped.length > 0) {
-                input.value = stripped;
-        } else {
+        else {
             input.value = "";
             input.removeClassName('error');
         }
