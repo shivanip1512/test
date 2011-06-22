@@ -888,11 +888,17 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             String initialStateStr = point.getPointChoice().getStategroup().getInitialState();
             if (initialStateStr != null) {
                 List<LiteState> states = stateGroup.getStatesList();
+                boolean notFound = true;
                 for (LiteState state : states) {
                     if (initialStateStr.equalsIgnoreCase(state.getStateText())) {
                         initialState = state.getStateRawState();
+                        notFound = false;
                         break;
                     }
+                }
+                
+                if (notFound) {
+                    throw new IllegalArgumentException("Initial State was not found in the State Group: " + initialStateStr);
                 }
             }
         }
