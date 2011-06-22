@@ -16,6 +16,7 @@ public enum ArgEnum {
     gatewayName,
     gearName, 
     loadGroupName,
+    message,
     meterName,
     paoId, 
     paoName, 

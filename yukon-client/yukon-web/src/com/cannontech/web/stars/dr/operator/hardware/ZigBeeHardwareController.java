@@ -277,7 +277,7 @@ public class ZigBeeHardwareController {
         int accountId = fragment.getAccountId();
 
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(gatewayId);
-        zigbeeEventLogService.zigbeeSendTextAttemptedByOperator(context.getYukonUser(), pao.getPaoName());
+        zigbeeEventLogService.zigbeeSendTextAttemptedByOperator(context.getYukonUser(), pao.getPaoName(),textMessage.getMessage());
         
         YukonValidationUtils.checkExceedsMaxLength(result, "message", textMessage.getMessage(), 21);
         if (result.hasErrors()) {

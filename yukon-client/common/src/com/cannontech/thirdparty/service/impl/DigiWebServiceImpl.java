@@ -369,9 +369,28 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
     }
     
     @Override
+    public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        logger.debug("Sending adjusment message to Gateway with Id: " + message.getGatewayId() 
+                     +" message: \"" + message.getMessage() +"\"");
+
+        ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
+        
+        //Hijacking the text message for smuggling. This will change to Private Extensions in future revisions.
+        sendTextMessage(gateway,message);
+
+        zigbeeEventLogService.zigbeeSentManualAdjustment(gateway.getName());
+    }
+    
+    @Override
     public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(message.getGatewayId());
         
+        sendTextMessage(gateway,message);
+        
+        zigbeeEventLogService.zigbeeSentText(gateway.getName(),message.getMessage());
+    }
+    
+    private void sendTextMessage(ZigbeeDevice gateway, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         String xml = digiXMLBuilder.buildTextMessage(gateway, message);
         StreamSource source;
         
@@ -403,8 +422,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
                 throw new ZigbeeClusterLibraryException(zclStatus);
             }
         }
-        
-        zigbeeEventLogService.zigbeeSentText(gateway.getName());
     }
 
     @Override
@@ -425,7 +442,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         }
         
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(controlMessage.getGroupId());
-        zigbeeEventLogService.zigbeeSentSEPControl(pao.getPaoName());
+        zigbeeEventLogService.zigbeeSentSepControl(pao.getPaoName());
         
         logger.debug("XML Response to SEP Control \n " + response);
         
@@ -445,7 +462,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService {
         }
         
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(restoreMessage.getGroupId());
-        zigbeeEventLogService.zigbeeSentSEPRestore(pao.getPaoName());
+        zigbeeEventLogService.zigbeeSentSepRestore(pao.getPaoName());
         
         logger.debug("XML Response to SEP Restore \n " + response);
         

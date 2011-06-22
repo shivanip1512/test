@@ -57,7 +57,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Override
     public void handleControlMessage(SepControlMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        zigbeeEventLogService.zigbeeSendSEPControlAttempted(pao.getPaoName());
+        zigbeeEventLogService.zigbeeSendSepControlAttempted(pao.getPaoName());
         
         int eventId = nextValueHelper.getNextValue("ZBControlEvent");
         Instant now = new Instant();
@@ -90,7 +90,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     @Override
     public void handleRestoreMessage(SepRestoreMessage message) {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
-        zigbeeEventLogService.zigbeeSendSEPRestoreAttempted(pao.getPaoName());
+        zigbeeEventLogService.zigbeeSendSepRestoreAttempted(pao.getPaoName());
         
         int eventId = zigbeeControlEventDao.findCurrentEventId(message.getGroupId());
         

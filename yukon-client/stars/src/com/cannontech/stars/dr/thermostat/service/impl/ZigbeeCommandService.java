@@ -76,7 +76,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             message.setInventoryId(stat.getId());
             message.setMessage(command);
             message.setStartTime(new Instant());
-            zigbeeWebService.sendTextMessage(message);
+            zigbeeWebService.sendManualAdjustment(message);
         } catch (ZigbeeClusterLibraryException e) {
             throw new CommandCompletionException(e.getMessage(), e);
         } catch (DigiWebServiceException e) {
@@ -108,7 +108,7 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                     message.setInventoryId(stat.getId());
                     message.setMessage(command);
                     message.setStartTime(new Instant());
-                    zigbeeWebService.sendTextMessage(message);
+                    zigbeeWebService.sendManualAdjustment(message);
                 }
                 
                 saveAndLogUpdateEvent(account, ats, timeOfWeek, stat, user);

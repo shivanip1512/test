@@ -86,6 +86,15 @@ public interface ZigbeeWebService {
 	public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
 	
 	/**
+	 * Sends a manual adjustment to the gateway.
+	 * 
+	 * @param message
+	 * @throws ZigbeeClusterLibraryException
+	 * @throws DigiWebServiceException
+	 */
+	public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
+	
+	/**
 	 * Sends Control Message.
 	 * 
 	 * @param eventId
