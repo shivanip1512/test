@@ -1,6 +1,5 @@
 package com.cannontech.yukon.api.amr.endpoint;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -41,8 +40,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.yukon.api.amr.endpoint.helper.ArchivedValuesResponseData;
-import com.cannontech.yukon.api.amr.endpoint.helper.ArchivedValuesResponseData.PointData;
-import com.cannontech.yukon.api.amr.endpoint.helper.ArchivedValuesResponseData.ValueSet;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointElement;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointSelector;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector;
@@ -103,24 +100,12 @@ public class ArchivedValuesRequestEndpoint {
             responseData.setPaoDataByPaoId(paoDataByPaoId);
             boolean flatten =
                 requestTemplate.evaluateAsBoolean("/y:archivedValuesRequest/y:response/@flatten", false);
+            responseData.setFlatten(flatten);
+
+            buildPaoElements(responseData, response);
 
             for (Node pointNode : pointNodes) {
-                SimpleXPathTemplate pointNodeTemplate = YukonXml.getXPathTemplateForNode(pointNode);
-                gatherPointData(pointNodeTemplate, paoDataByPaoId.keySet(), responseFields,
-                                responseData);
-            }
-
-            if (responseFields.contains(ResponseDescriptor.POINT_NAME)
-                    || responseFields.contains(ResponseDescriptor.POINT_TYPE)
-                    || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)
-                    || responseFields.contains(ResponseDescriptor.STATUS_TEXT)) {
-                populatePointInfo(responseData);
-            }
-
-            if (flatten) {
-                buildFlattenedResponse(response, responseData);
-            } else {
-                buildResponse(response, responseData);
+                buildResponseForPoint(pointNode, responseData, response);
             }
         } catch (XmlValidationException xmle) {
             log.error("XML validation error", xmle);
@@ -174,18 +159,46 @@ public class ArchivedValuesRequestEndpoint {
         return builder.build();
     }
 
-    /**
-     * This method handles creating point elements for a single &lt;point&gt; tag.
-     */
-    private void gatherPointData(SimpleXPathTemplate pointNodeTemplate, Set<PaoIdentifier> paoIds,
-                                 Set<ResponseDescriptor> responseFields,
-                                 ArchivedValuesResponseData responseData) {
-        PointElement inputPointElement = parsePointElement(pointNodeTemplate);
-        PointSelector pointSelector = inputPointElement.getPointSelector();
-        responseData.addPointSelector(pointSelector);
+    private void buildPaoElements(ArchivedValuesResponseData responseData, Element response) {
+        if (responseData.isFlatten()) {
+            // No PAO elements to build--we'll only have value elements.
+            return;
+        }
+
+        for (PaoData paoData : responseData.getAllPaoData()) {
+            Element paoElement = createPaoElement(paoData, responseData);
+            responseData.addPaoElement(paoData.getPaoId(), paoElement);
+            response.addContent(paoElement);
+        }
+    }
+
+    // TODO:  break this method up some
+    private void buildResponseForPoint(Node pointNode, ArchivedValuesResponseData responseData,
+                                       Element response) {
+        SimpleXPathTemplate pointNodeTemplate = YukonXml.getXPathTemplateForNode(pointNode);
+        Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
+        Set<PaoIdentifier> paoIds = responseData.getPaoIds();
+
+        PointSelector pointSelector = new PointSelector(pointNodeTemplate);
+
+        // handle timeframe selectors
+        List<Node> pointValueNodes = pointNodeTemplate.evaluateAsNodeList("*[position()>1]");
+        List<PointValueSelector> pointValueSelectors = Lists.newArrayList();
+        for (Node pointValueNode : pointValueNodes) {
+            pointValueSelectors.add(PointValueSelector.fromNode(pointValueNode));
+        }
+
+        PointElement inputPointElement = new PointElement(pointSelector, pointValueSelectors);
 
         HistorySelector historySelector = historySelectorMap.get(pointSelector.getType());
-        Map<PaoIdentifier, PointData> pointDataByPaoId = Maps.newHashMap();
+        Map<PaoIdentifier, PointInfo> pointInfoById = null;
+        if (responseFields.contains(ResponseDescriptor.POINT_NAME)
+                || responseFields.contains(ResponseDescriptor.POINT_TYPE)
+                || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)
+                || responseFields.contains(ResponseDescriptor.STATUS_TEXT)) {
+            pointInfoById = historySelector.getPointInfo(pointSelector, paoIds);
+        }
+
         for (PointValueSelector valueSelector : inputPointElement.getPointValueSelectors()) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> valueMap = null;
             if (valueSelector.getValueSelectorType() == SelectorType.SNAPSHOT) {
@@ -197,81 +210,76 @@ public class ArchivedValuesRequestEndpoint {
                     historySelector.getPointValueMap(paoIds, pointSelector, valueSelector);
             }
 
+            String valueLabel = valueSelector.getLabel();
             for (PaoIdentifier paoId : valueMap.keySet()) {
-                PointData pointData = pointDataByPaoId.get(paoId);
-                if (pointData == null) {
-                    pointData = new PointData(paoId, pointSelector);
-                    pointDataByPaoId.put(paoId, pointData);
+                PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoId);
+                Element paoElement = responseData.getPaoElement(paoId);
+                Element pointElement = null;
+                if (!responseData.isFlatten()) {
+                    pointElement = createPointElement(pointInfo, pointSelector, paoId, responseData);
+                    paoElement.addContent(pointElement);
+                }
+
+                PaoData paoData = responseData.getPaoData(paoId);
+                Map<Integer, LiteState> statesForStateGroupId = null;
+                if (pointInfo != null) {
+                    statesForStateGroupId =
+                        getStatesForGroupId(pointInfo.getStateGroupId(), responseData);
                 }
                 List<PointValueQualityHolder> values = valueMap.get(paoId);
-                ValueSet valueSet = new ValueSet(valueSelector, values);
-                pointData.addValueSet(valueSet);
-            }
-        }
-
-        responseData.addPointData(pointDataByPaoId.values());
-    }
-
-    private PointElement parsePointElement(SimpleXPathTemplate pointNodeTemplate) {
-        PointSelector pointSelector = new PointSelector(pointNodeTemplate);
-
-        // handle timeframe selectors
-        List<Node> pointValueNodes = pointNodeTemplate.evaluateAsNodeList("*[position()>1]");
-        List<PointValueSelector> pointValueSelectors = Lists.newArrayList();
-        for (Node pointValueNode : pointValueNodes) {
-            pointValueSelectors.add(PointValueSelector.fromNode(pointValueNode));
-        }
-
-        return new PointElement(pointSelector, pointValueSelectors);
-    }
-
-    private void populatePointInfo(ArchivedValuesResponseData responseData) {
-        Set<PaoIdentifier> paoIds = responseData.getPaoIds();
-        for (PointSelector pointSelector : responseData.getPointSelectors()) {
-            HistorySelector historySelector = historySelectorMap.get(pointSelector.getType());
-            Map<PaoIdentifier, PointInfo> pointInfoById =
-                historySelector.getPointInfo(pointSelector, paoIds);
-            responseData.updateLitePoints(pointSelector, pointInfoById);
-        }
-    }
-
-    private void buildFlattenedResponse(Element response, ArchivedValuesResponseData responseData) {
-        Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
-
-        for (Entry<PaoIdentifier, PaoData> entry : responseData.getPaoDataByPaoId().entrySet()) {
-            PaoIdentifier paoId = entry.getKey();
-            PaoData paoData = entry.getValue();
-
-            for (PointData pointData : responseData.getPointDataByPaoId(paoId)) {
-                Map<Integer, LiteState> statesForStateGroupId =
-                    getStatesForGroupId(pointData.getPointInfo().getStateGroupId(), responseData);
-                PointSelector pointSelector = pointData.getPointSelector();
-
-                // For each point element, there is a list of lists of values.
-                for (ValueSet valueSet : pointData.getValueSets()) {
-                    for (PointValueQualityHolder value : valueSet.getValues()) {
-                        Element valueElement = createValueElement(value, responseFields,
-                                                                  pointSelector,
-                                                                  statesForStateGroupId);
-
-                        addPaoAttributes(valueElement, paoData, responseFields);
-                        addPointData(valueElement, pointData, responseFields);
-
-                        if (valueSet.getSelector().getLabel() != null) {
-                            valueElement.setAttribute("label", valueSet.getSelector().getLabel());
-                        }
+                List<Element> valueElementList = Lists.newArrayList();
+                for (PointValueQualityHolder value : values) {
+                    if (responseData.isFlatten()) {
+                        Element valueElement =
+                            buildFlatValue(value, responseFields, valueLabel, paoData, pointInfo,
+                                           statesForStateGroupId, pointSelector);
                         response.addContent(valueElement);
+                    } else {
+                        Element valueElement = createValueElement(value, responseFields, pointSelector,
+                                                                  statesForStateGroupId);
+                        valueElementList.add(valueElement);
                     }
+                }
+                if (!responseData.isFlatten()) {
+                    Element elementToAdd = null;
+                    if (valueElementList.isEmpty()) {
+                        elementToAdd = new Element("nullValue", ns);
+                    } else if (valueElementList.size() == 1) {
+                        elementToAdd = valueElementList.get(0);
+                    } else {
+                        elementToAdd = new Element("list", ns);
+                        for (Element valueElement : valueElementList) {
+                            elementToAdd.addContent(valueElement);
+                        }
+                    }
+
+                    if (valueLabel != null) {
+                        elementToAdd.setAttribute("label", valueLabel);
+                    }
+
+                    pointElement.addContent(elementToAdd);
                 }
             }
         }
     }
 
-    private void buildResponse(Element response, ArchivedValuesResponseData responseData) {
-        for (PaoData paoData : responseData.getPaoDataByPaoId().values()) {
-            Element paoElement = createPaoElement(paoData, responseData);
-            response.addContent(paoElement);
+    private Element buildFlatValue(PointValueQualityHolder value,
+                                   Set<ResponseDescriptor> responseFields, String label,
+                                   PaoData paoData, PointInfo pointInfo,
+                                   Map<Integer, LiteState> statesForStateGroupId,
+                                   PointSelector pointSelector) {
+        Element valueElement = createValueElement(value, responseFields,
+                                                  pointSelector,
+                                                  statesForStateGroupId);
+
+        addPaoAttributes(valueElement, paoData, responseFields);
+        addPointData(valueElement, pointInfo, pointSelector, paoData.getPaoId(), responseFields);
+
+        if (label != null) {
+            valueElement.setAttribute("label", label);
         }
+
+        return valueElement;
     }
 
     private Element createPaoElement(PaoData paoData, ArchivedValuesResponseData responseData) {
@@ -279,11 +287,6 @@ public class ArchivedValuesRequestEndpoint {
 
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
         addPaoAttributes(paoElement, paoData, responseFields);
-
-        for (PointData pointData : responseData.getPointDataByPaoId(paoData.getPaoId())) {
-            Element pointElement = createPointElement(pointData, responseData);
-            paoElement.addContent(pointElement);
-        }
 
         return paoElement;
     }
@@ -319,22 +322,13 @@ public class ArchivedValuesRequestEndpoint {
         }
     }
 
-    private Element createPointElement(PointData pointData, ArchivedValuesResponseData responseData) {
+    private Element createPointElement(PointInfo pointInfo, PointSelector pointSelector,
+                                       PaoIdentifier paoId,
+                                       ArchivedValuesResponseData responseData) {
         Element pointElement = new Element("point", ns);
 
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
-        addPointData(pointElement, pointData, responseFields);
-        Integer stateGroupId = pointData.getPointInfo().getStateGroupId();
-        Map<Integer, LiteState> statesForStateGroupId =
-            getStatesForGroupId(stateGroupId, responseData);
-        PointSelector pointSelector = pointData.getPointSelector();
-
-        // For each point element, there is a list of lists of values.
-        for (ValueSet valueSet : pointData.getValueSets()) {
-            Element valueElement = createValueElements(valueSet, responseData, pointSelector,
-                                                       statesForStateGroupId);
-            pointElement.addContent(valueElement);
-        }
+        addPointData(pointElement, pointInfo, pointSelector, paoId, responseFields);
 
         return pointElement;
     }
@@ -356,16 +350,15 @@ public class ArchivedValuesRequestEndpoint {
         }
     }
 
-    private void addPointData(Element element, PointData pointData,
-                              Set<ResponseDescriptor> responseFields) {
+    private void addPointData(Element element, PointInfo pointInfo, PointSelector pointSelector,
+                              PaoIdentifier paoId, Set<ResponseDescriptor> responseFields) {
         if (responseFields.contains(ResponseDescriptor.POINT_NAME)
                 || responseFields.contains(ResponseDescriptor.POINT_TYPE)
                 || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)) {
-            PointInfo pointInfo = pointData.getPointInfo();
             if (pointInfo == null) {
                 throw new NullPointerException("could not find pointInfo for point "
-                                               + pointData.getPointSelector() + " and pao "
-                                               + pointData.getPaoId());
+                                               + pointSelector + " and pao "
+                                               + paoId);
             }
 
             if (responseFields.contains(ResponseDescriptor.POINT_NAME)) {
@@ -381,38 +374,6 @@ public class ArchivedValuesRequestEndpoint {
                 element.setAttribute("uofm", pointInfo.getUnitOfMeasure());
             }
         }
-    }
-
-    private Element createValueElements(ValueSet valueSet, ArchivedValuesResponseData responseData,
-                                        PointSelector pointSelector,
-                                        Map<Integer, LiteState> statesForStateGroupId) {
-        List<Element> valueElementList = new ArrayList<Element>(valueSet.getValues().size());
-
-        Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
-
-        for (PointValueQualityHolder value : valueSet.getValues()) {
-            Element valueElement = createValueElement(value, responseFields, pointSelector,
-                                                      statesForStateGroupId);
-            valueElementList.add(valueElement);
-        }
-
-        Element returnElement = null;
-        if (valueElementList.isEmpty()) {
-            returnElement = new Element("nullValue", ns);
-        } else if (valueElementList.size() == 1) {
-            returnElement = valueElementList.get(0);
-        } else {
-            returnElement = new Element("list", ns);
-            for (Element valueElement : valueElementList) {
-                returnElement.addContent(valueElement);
-            }
-        }
-
-        if (valueSet.getSelector().getLabel() != null) {
-            returnElement.setAttribute("label", valueSet.getSelector().getLabel());
-        }
-
-        return returnElement;
     }
 
     private Element createValueElement(PointValueQualityHolder value,
