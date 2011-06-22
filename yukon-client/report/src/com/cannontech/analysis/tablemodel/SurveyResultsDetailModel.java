@@ -101,9 +101,10 @@ public class SurveyResultsDetailModel extends
                 accountIds.add(result.getAccountId());
             }
             
-            // Just in case there is already bad data in the database
+            // This should not be null except in the case of some data that was created before
+            // YUK-9705.
             OptOutEvent event = optOutsBySurveyResult.get(result);
-            if(event != null) {
+            if (event != null) {
                 inventoryIds.add(event.getInventoryId());
             }
         }
@@ -140,11 +141,13 @@ public class SurveyResultsDetailModel extends
             OptOutEvent event = optOutsBySurveyResult.get(result);
             ModelRow row = new ModelRow();
             row.accountNumber = result.getAccountNumber();
-            HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
-            if (hardwareSummary == null) {
-                row.serialNumber = hardwareNotFound;
-            } else {
-                row.serialNumber = YukonMessageSourceResolvable.createDefaultWithoutCode(hardwareSummary.getSerialNumber());
+            if (event != null) {
+                HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
+                if (hardwareSummary == null) {
+                    row.serialNumber = hardwareNotFound;
+                } else {
+                    row.serialNumber = YukonMessageSourceResolvable.createDefaultWithoutCode(hardwareSummary.getSerialNumber());
+                }
             }
             row.altTrackingNumber = "";
             CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
@@ -152,9 +155,11 @@ public class SurveyResultsDetailModel extends
                 row.altTrackingNumber = account.getAlternateTrackingNumber();
             }
             row.reason = getReason(result, baseKey);
-            row.scheduledDate = event.getScheduledDate().toDate();
-            row.startDate = event.getStartDate().toDate();
-            row.endDate = event.getStopDate().toDate();
+            if (event != null) {
+                row.scheduledDate = event.getScheduledDate().toDate();
+                row.startDate = event.getStartDate().toDate();
+                row.endDate = event.getStopDate().toDate();
+            }
 
             if (programsControlledDuringOptOut.isEmpty()) {
                 row.loadProgram = noControlDuringOptOut;
