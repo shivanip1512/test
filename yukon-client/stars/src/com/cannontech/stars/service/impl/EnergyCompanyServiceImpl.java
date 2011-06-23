@@ -78,6 +78,7 @@ import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
+    private final String ecAdminLoginGroupExtension = " Admin Grp";
     private Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
 
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
@@ -119,7 +120,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         /* Create a privilege group with EnergyCompany and Administrator role */
         LiteYukonGroup primaryOperatorGroup = yukonGroupDao.getLiteYukonGroup(energyCompanyDto.getPrimaryOperatorGroupId());
-        String adminGroupName = energyCompanyDto.getName() + " Admin Grp";
+        String adminGroupName = energyCompanyDto.getName() + ecAdminLoginGroupExtension;
         LiteYukonGroup adminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, topLevelEc );
         
         /* Create the primary operator login */
@@ -375,7 +376,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
         
         // Delete the privilege group of the default operator login as long as it's not a system groupr and ends with with 'Admin Grp' 
-        if (liteGroup != null && liteGroup.getGroupName().endsWith(" Admin Grp") && liteGroup.getGroupID() > -1) {
+        if (liteGroup != null && liteGroup.getGroupName().endsWith(ecAdminLoginGroupExtension) && liteGroup.getGroupID() > -1) {
             com.cannontech.database.data.user.YukonGroup dftGroup = new com.cannontech.database.data.user.YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
