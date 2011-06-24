@@ -235,7 +235,7 @@ BEGIN
     FROM YukonPAObject PAO 
     WHERE PAO.Type  = 'INTEGRATION GROUP' 
       OR PAO.Type = 'INTEGRATION' 
-      OR PAO.Category = 'Integration Route';
+      OR PAO.Type = 'Integration Route';
     IF 0 < errorFlagCount THEN
         RAISE_APPLICATION_ERROR(-20001,'The database update requires manual interaction to continue. Please refer to YUK-9620 for more information on removing existing, non-support Integration Groups, Integration Routes, and/or Integration Transmitters.');
     END IF;
