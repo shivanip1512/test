@@ -11,12 +11,14 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
-PlcInfrastructure::PlcInfrastructure()
+PlcInfrastructure::PlcInfrastructure() :
+    _plcTagIn("PLC-IN"), 
+    _plcTagOut("PLC-OUT")
 {
 }
 
 
-bool PlcInfrastructure::oneWayCommand(const bytes &request)
+bool PlcInfrastructure::oneWayCommand(const bytes &request, Logger &logger)
 {
 //  TODO-P4: True broadcast/listen capability.
 //             Eventually, I'd like to see:
@@ -27,6 +29,8 @@ bool PlcInfrastructure::oneWayCommand(const bytes &request)
 //               B words and sends them to the appropriate end device.
 //             Also, to be completely accurate, this should know about the CPSK preambles, but passing mangled byte (bit?)
 //               buffers should be sufficient to indicate crosstalk.
+
+    ScopedLogger scope = logger.getNewScope(_plcTagOut);
 
     words_t request_words;
 
@@ -45,8 +49,10 @@ bool PlcInfrastructure::oneWayCommand(const bytes &request)
 }
 
 
-bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply)
+bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply, Logger &logger)
 {
+    ScopedLogger scope = logger.getNewScope(_plcTagOut);
+
     words_t request_words;
 
     EmetconWord::restoreWords(request, request_words);
@@ -61,14 +67,17 @@ bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply)
     words_t result_words;
 
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
-    mct->read(request_words, result_words);
+    mct->read(request_words, result_words, scope);
 
     copy(result_words.begin(),
          result_words.end(),
          EmetconWord::serializer(byte_appender(reply)));
 
-    // Apply behaviors!
-    processMessage(reply);
+    {
+        ScopedLogger plcInScope = scope.getNewScope(_plcTagIn);
+        // Apply behaviors!
+        processMessage(reply, plcInScope);
+    }
 
     return true;
 }
@@ -78,9 +87,9 @@ void PlcInfrastructure::setBehavior(std::auto_ptr<PlcBehavior> behavior)
     _behaviorCollection.push_back(behavior);
 }
 
-bool PlcInfrastructure::processMessage(bytes &buf)
+bool PlcInfrastructure::processMessage(bytes &buf, Logger &logger)
 {
-    return _behaviorCollection.processMessage(buf);
+    return _behaviorCollection.processMessage(buf, logger);
 }
 
 bool PlcInfrastructure::getMct(const words_t &request_words, mct_map_t::ptr_type &mct)

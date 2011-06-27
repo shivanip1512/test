@@ -26,7 +26,7 @@ public:
 
     Ccu721(unsigned char address, int strategy);
 
-    virtual bool handleRequest(Comms &comms, PortLogger &logger);
+    virtual bool handleRequest(Comms &comms, Logger &logger);
     static bool validateCommand(SocketComms &socket_interface);
 
 private:
@@ -36,6 +36,9 @@ private:
     int _expected_sequence;
     unsigned _next_seq;
     bool _bufferFrozen;
+
+    std::string _ccu721InTag;
+    std::string _ccu721OutTag;
 
     CtiTime _timesynced_at, _timesynced_to;
 
@@ -417,7 +420,7 @@ private:
 
     } _status;
 
-    void processQueue(PortLogger &logger);
+    void processQueue(Logger &logger);
 
     error_t extractData(const words_t &reply_words, byte_appender &output);
 
@@ -446,15 +449,15 @@ private:
     std::string describeRequest       (const idlc_request &request) const;
     std::string describeGeneralRequest(const request_info &info)    const;
 
-    error_t processRequest        (const idlc_request &request, idlc_reply &reply);
-    error_t processGeneralRequest (const idlc_request &request, idlc_reply &reply);
-    error_t processDtranRequest   (const idlc_request &request, idlc_reply &reply);
+    error_t processRequest        (const idlc_request &request, idlc_reply &reply, Logger &logger);
+    error_t processGeneralRequest (const idlc_request &request, idlc_reply &reply, Logger &logger);
+    error_t processDtranRequest   (const idlc_request &request, idlc_reply &reply, Logger &logger);
 
     std::string describeReply         (const idlc_reply   &reply)      const;
     std::string describeGeneralReply  (const reply_info   &reply_info) const;
     std::string describeStatuses      (const unsigned short &status)   const;
 
-    error_t sendReply(Comms &comms, const idlc_reply &reply) const;
+    error_t sendReply(Comms &comms, const idlc_reply &reply, Logger &logger) const;
 
     error_t writeIdlcHeader   (const idlc_header &header,  byte_appender &out_itr)          const;
     error_t writeReplyInfo    (const reply_info  &info,    byte_appender &out_itr)          const;

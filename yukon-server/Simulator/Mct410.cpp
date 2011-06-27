@@ -1,6 +1,7 @@
 #include "yukon.h"
 #include "Mct410.h"
 #include "logger.h"
+#include "ScopedLogger.h"
 #include "dev_mct410.h"
 #include "EmetconWords.h"
 #include "cparms.h"
@@ -28,19 +29,19 @@ const Mct410Sim::commands_t        Mct410Sim::_commands        = Mct410Sim::init
 
 const double Mct410Sim::Pi = 4.0 * atan(1.0);
 
-Mct410Sim::Mct410Sim(int address)
+Mct410Sim::Mct410Sim(int address) :
+    _address(address),
+    _mct410tag("MCT410(" + CtiNumStr(address) + ")")
 {
     //  _llp_interest should eventually be persisted and restored.
     //  We could access the DynamicPaoInfo table for this... ?
     // _llp_interest.time = CtiTime::now();
-
-    _address = address;
     _memory_map = bytes(20, 0x00);  // Initialize the memory map to have 20 bytes of 0s for data.
 
     // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
     // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
     // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
-    _memory_map[MM_EventFlags1AlarmMask]= EF1_TamperFlag;
+    _memory_map[MM_EventFlags1AlarmMask] = EF1_TamperFlag;
 }
 
 
@@ -107,7 +108,6 @@ Mct410Sim::function_writes_t Mct410Sim::initFunctionWrites()
     return writes;
 }
 
-
 Mct410Sim::commands_t Mct410Sim::initCommands()
 {
     commands_t commands;
@@ -119,8 +119,10 @@ Mct410Sim::commands_t Mct410Sim::initCommands()
 
 
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
-bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
+bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logger &logger)
 {
+    ScopedLogger scope = logger.getNewScope(_mct410tag);
+
     if( request_words.empty() || !request_words[0] )
     {
         return false;
@@ -152,10 +154,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
             if ( (_memory_map[MM_EventFlags2] & EF2_ZeroUsage) == 0 )
             {
                 _memory_map[MM_EventFlags2] |= EF2_ZeroUsage;
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << "******** Zero-Usage flag set! ********" << endl;
-                }
+                scope.breadcrumbLog("******** Zero-Usage flag set! ********");
             }
         }
         else // If value >= 0.50
@@ -164,10 +163,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
             if( (_memory_map[MM_MeterAlarms1] & MA1_ReversePower) == 0 )
             {
                 _memory_map[MM_MeterAlarms1] |= MA1_ReversePower;
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << "******** Reverse-power flag set! ********" << endl;
-                }
+                scope.breadcrumbLog("******** Reverse-power flag set!********");
             }
         }
     }
@@ -179,10 +175,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         if ( (_memory_map[MM_EventFlags1] & EF1_TamperFlag) == 0 )
         {
             _memory_map[MM_EventFlags1] |= EF1_TamperFlag;
-            {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << "******** Tamper flag set! ********" << endl;
-            }
+            scope.breadcrumbLog("******** Tamper flag set! ********");
         }
     }
 
@@ -332,7 +325,6 @@ bool Mct410Sim::write(const words_t &request_words)
     return processWrite(b_word.function, b_word.function_code, data);
 }
 
-
 bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
 {
     if( function_write )
@@ -365,7 +357,6 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
 
     return true;
 }
-
 
 bytes Mct410Sim::getZeroes()
 {
@@ -656,7 +647,6 @@ void Mct410Sim::fill_loadProfile(const unsigned address, const CtiTime &blockSta
         *out_itr++ = dynamicDemand >> 0;
     }
 }
-
 
 void Mct410Sim::putPointOfInterest(const bytes &payload)
 {

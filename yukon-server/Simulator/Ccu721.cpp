@@ -16,46 +16,56 @@ Ccu721::Ccu721(unsigned char address, int strategy) :
     _strategy(strategy),
     _expected_sequence(0),
     _next_seq(1),
-    _bufferFrozen(false)
+    _bufferFrozen(false),
+    _ccu721InTag("CCU721(" + CtiNumStr(address) + ")-IN"),
+    _ccu721OutTag("CCU721(" + CtiNumStr(address) + ")-OUT")
 {
 }
 
-bool Ccu721::handleRequest(Comms &comms, PortLogger &logger)
+bool Ccu721::handleRequest(Comms &comms, Logger &logger)
 {
     idlc_request request;
     idlc_reply   reply;
 
     error_t error;
 
-    if( error = readRequest(comms, request) )
     {
-        logger.log("Error reading request / " + error, request.message);
-        return false;
+        ScopedLogger scope = logger.getNewScope(_ccu721InTag);
+    
+        if( error = readRequest(comms, request) )
+        {
+            scope.log("Error reading request / " + error, request.message);
+            return false;
+        }
+    
+        scope.log(request.description, request.message);
+    
+        //  get us up to date before we try to process anything new
+        processQueue(scope);
+    
+        if( error = processRequest(request, reply, scope) )
+        {
+            scope.log("Error processing request / " + error);
+            return false;
+        }
+    
+        if( reply.message.empty() )
+        {
+            scope.log("No reply generated");
+            return true;
+        }
     }
 
-    logger.log(request.description, request.message);
-
-    //  get us up to date before we try to process anything new
-    processQueue(logger);
-
-    if( error = processRequest(request, reply) )
     {
-        logger.log("Error processing request / " + error);
-        return false;
-    }
+        ScopedLogger scope = logger.getNewScope(_ccu721OutTag);
 
-    if( reply.message.empty() )
-    {
-        logger.log("No reply generated");
-        return true;
-    }
-
-    logger.log(describeReply(reply), reply.message);
-
-    if( error = sendReply(comms, reply) )
-    {
-        logger.log("Error sending reply / " + error);
-        return false;
+        scope.log(describeReply(reply), reply.message);
+    
+        if( error = sendReply(comms, reply, scope) )
+        {
+            scope.log("Error sending reply / " + error);
+            return false;
+        }
     }
 
     return true;
@@ -740,7 +750,7 @@ error_t Ccu721::extractIdlcHeader(const bytes &message, idlc_header &header) con
     return error_t::success;
 }
 
-error_t Ccu721::processRequest(const idlc_request &request, idlc_reply &reply)
+error_t Ccu721::processRequest(const idlc_request &request, idlc_reply &reply, Logger &logger)
 {
     error_t error;
 
@@ -796,7 +806,7 @@ error_t Ccu721::processRequest(const idlc_request &request, idlc_reply &reply)
             reply.header.control_sequence = request.header.control_sequence_expected;
             reply.header.control_sequence_expected = _expected_sequence;
 
-            if( error = processGeneralRequest(request, reply) )
+            if( error = processGeneralRequest(request, reply, logger) )
             {
                 return "Error processing general request / " + error;
             }
@@ -872,7 +882,7 @@ error_t Ccu721::processRequest(const idlc_request &request, idlc_reply &reply)
     reply.description = describeGeneralReply(reply.info);
 }
 
-error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &reply)
+error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &reply, Logger &logger)
 {
     reply.info.command = request.info.command;
 
@@ -885,7 +895,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
         case Klondike_Dtran:
         {
             _next_seq++;
-            return processDtranRequest(request, reply);
+            return processDtranRequest(request, reply, logger);
         }
         case Klondike_SpyBuffer:
         case Klondike_CheckStatus:
@@ -1049,7 +1059,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
     }
 }
 
-error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &reply)
+error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &reply, Logger &logger)
 {
     error_t error;
 
@@ -1068,14 +1078,14 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
 
     if( !request.info.dtran.bookkeeperEntry.request.b_word.words_to_follow )
     {
-        Grid.oneWayCommand(request_buf);
+        Grid.oneWayCommand(request_buf, logger);
     }
     else
     {
         bytes reply_buf;
         byte_appender reply_oitr(reply_buf);
 
-        Grid.twoWayCommand(request_buf, reply_buf);
+        Grid.twoWayCommand(request_buf, reply_buf, logger);
 
         Sleep(dlc_time(reply_buf.size() * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
 
@@ -1103,7 +1113,7 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
     return error_t::success;
 }
 
-void Ccu721::processQueue(PortLogger &logger)
+void Ccu721::processQueue(Logger &logger)
 {
     CtiTime now;
 
@@ -1128,7 +1138,7 @@ void Ccu721::processQueue(PortLogger &logger)
                  entry.request.c_words.end(),
                  EmetconWord::serializer(byte_appender(request_buf)));
             
-            Grid.oneWayCommand(request_buf);
+            Grid.oneWayCommand(request_buf, logger);
 
             entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
         }
@@ -1136,7 +1146,7 @@ void Ccu721::processQueue(PortLogger &logger)
         {
             bytes reply_buf;
 
-            Grid.twoWayCommand(request_buf, reply_buf);
+            Grid.twoWayCommand(request_buf, reply_buf, logger);
 
             words_t reply_words;
 
@@ -1625,9 +1635,9 @@ string Ccu721::describeStatuses(const unsigned short &status) const
     return info_description.str();
 }
 
-error_t Ccu721::sendReply(Comms &comms, const idlc_reply &reply) const
+error_t Ccu721::sendReply(Comms &comms, const idlc_reply &reply, Logger &logger) const
 {
-    if( !comms.write(reply.message) )
+    if( !comms.write(reply.message, logger) )
     {
         return "Error writing reply to comms";
     }

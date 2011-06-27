@@ -13,7 +13,7 @@ DelayBehavior::DelayBehavior()
 {
 }
 
-void DelayBehavior::apply(bytes &message)
+void DelayBehavior::apply(bytes &message, Logger &logger)
 {
     if (_delayed.empty())
     {
@@ -21,10 +21,7 @@ void DelayBehavior::apply(bytes &message)
         double chance = dist * 100;
         if (chance < _chance)
         {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << "**********    Stalled Message    **********" << endl;
-            }
+            logger.breadcrumbLog("***** MESSAGE STALLED *****");
             _delayed = message;
             message.clear();
         }

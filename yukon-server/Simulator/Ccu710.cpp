@@ -13,7 +13,9 @@ namespace Simulator {
 
 Ccu710::Ccu710(int address, int strategy) :
     _address(address),
-    _strategy(strategy)
+    _strategy(strategy),
+    _ccu710InTag("CCU710(" + CtiNumStr(address) + ")-IN"),
+    _ccu710OutTag("CCU710(" + CtiNumStr(address) + ")-OUT")
 {
 }
 
@@ -110,42 +112,48 @@ error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
     return error_t::success;
 }
 
-
-bool Ccu710::handleRequest(Comms &comms, PortLogger &logger)
+bool Ccu710::handleRequest(Comms &comms, Logger &logger)
 {
     request_t ccu_request;
     reply_t   ccu_reply;
 
     error_t error;
 
-    if( error = readRequest(comms, ccu_request) )
     {
-        logger.log("Error reading request / " + error, ccu_request.message);
-        return false;
+        ScopedLogger scope = logger.getNewScope(_ccu710InTag);
+    
+        if( error = readRequest(comms, ccu_request) )
+        {
+            scope.log("Error reading request / " + error, ccu_request.message);
+            return false;
+        }
+    
+        scope.log(ccu_request.description, ccu_request.message);
+    
+        if( error = processRequest(ccu_request, ccu_reply, scope) )
+        {
+            scope.log("Error processing request / " + error);
+            return false;
+        }
+
+        if( ccu_reply.message.empty() )
+        {
+            scope.log("No reply");
+            return true;
+        }
     }
 
-    logger.log(ccu_request.description, ccu_request.message);
-
-
-    if( error = processRequest(ccu_request, ccu_reply) )
     {
-        logger.log("Error processing request / " + error);
-        return false;
-    }
+        ScopedLogger scope = logger.getNewScope(_ccu710OutTag);
 
-    if( ccu_reply.message.empty() )
-    {
-        logger.log("No reply");
-        return true;
+        if( error = sendReply(comms, ccu_reply, scope) )
+        {
+            scope.log("Error sending reply / " + error + "\n" + ccu_reply.description, ccu_reply.message);
+            return false;
+        }
+    
+        scope.log(ccu_reply.description, ccu_reply.message);
     }
-
-    if( error = sendReply(comms, ccu_reply) )
-    {
-        logger.log("Error sending reply / " + error + "\n" + ccu_reply.description, ccu_reply.message);
-        return false;
-    }
-
-    logger.log(ccu_reply.description, ccu_reply.message);
 
     return true;
 }
@@ -393,11 +401,11 @@ string Ccu710::describeRequest(const request_t &request) const
 }
 
 
-error_t Ccu710::processRequest(const request_holder &external_request_holder, reply_holder &external_reply_holder)
+error_t Ccu710::processRequest(const request_holder &external_request_holder, reply_holder &external_reply_holder, Logger &logger)
 {
     reply_t new_reply;
 
-    error_t error = processRequest(*external_request_holder, new_reply);
+    error_t error = processRequest(*external_request_holder, new_reply, logger);
 
     external_reply_holder = reply_holder(new_reply);
 
@@ -405,7 +413,7 @@ error_t Ccu710::processRequest(const request_holder &external_request_holder, re
 }
 
 
-error_t Ccu710::processRequest(const request_t &request, reply_t &reply)
+error_t Ccu710::processRequest(const request_t &request, reply_t &reply, Logger &logger)
 {
     byte_appender reply_oitr(reply.message);
 
@@ -450,14 +458,14 @@ error_t Ccu710::processRequest(const request_t &request, reply_t &reply)
             if( !words_expected )
             {
                 //  eventually pass bus and feeder information here as well - Grid needs to know!
-                Grid.oneWayCommand(request_buf);
+                Grid.oneWayCommand(request_buf, logger);
             }
             else
             {
                 bytes reply_buf;
 
                 //  eventually pass bus and feeder information here as well - Grid needs to know!
-                Grid.twoWayCommand(request_buf, reply_buf);
+                Grid.twoWayCommand(request_buf, reply_buf, logger);
 
 //  TODO-P4: We will actually be able to use a common transmit portion, and this "listen" portion will be optional
 
@@ -620,20 +628,9 @@ string Ccu710::describeReply(const reply_t &reply) const
 }
 
 
-error_t Ccu710::sendReply(CommsOut &comms_out, const reply_holder &external_reply_holder) const
+error_t Ccu710::sendReply(CommsOut &comms_out, const reply_t &reply, Logger &logger) const
 {
-    /*if( !external_reply_holder )
-    {
-        return "(no reply)";
-    }*/
-
-    return sendReply(comms_out, *external_reply_holder);
-}
-
-
-error_t Ccu710::sendReply(CommsOut &comms_out, const reply_t &reply) const
-{
-    if( !comms_out.write(reply.message) )
+    if( !comms_out.write(reply.message, logger) )
     {
         return error_t("Error writing reply to comms");
     }

@@ -3,6 +3,7 @@
 #include "Mct410.h"
 
 #include "EmetconWords.h"
+#include "ScopedLogger.h"
 
 #include "Types.h"
 
@@ -29,16 +30,19 @@ private:
 
     bool getMct(const words_t &request_words, mct_map_t::ptr_type &mct);
 
+    std::string  _plcTagIn;
+    std::string _plcTagOut;
+
 public:
 
     PlcInfrastructure();
 
     void setBehavior(std::auto_ptr<PlcBehavior> behavior);
 
-    bool processMessage(bytes &buf);
+    bool processMessage(bytes &buf, Logger &logger);
 
-    bool oneWayCommand(const bytes &request);
-    bool twoWayCommand(const bytes &request, bytes &reply_buf);
+    bool oneWayCommand(const bytes &request, Logger &logger);
+    bool twoWayCommand(const bytes &request, bytes &reply_buf, Logger &logger);
 };
 
 }

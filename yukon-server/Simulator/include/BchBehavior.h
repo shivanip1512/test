@@ -10,7 +10,7 @@ class BchBehavior : public PlcBehavior
 {
 public:
     BchBehavior();
-    virtual void apply(bytes &message);
+    virtual void apply(bytes &message, Logger &logger);
     void setChance(double chance);
 
 private:

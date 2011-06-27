@@ -13,7 +13,7 @@
 #include "Ccu710.h"
 #include "Ccu711.h"
 #include "Ccu721.h"
-#include "PortLogger.h"
+#include "ScopedLogger.h"
 #include "CommInterface.h"
 #include "BehaviorCollection.h"
 #include "DelayBehavior.h"
@@ -55,8 +55,8 @@ int SimulatorMainFunction(int argc, char **argv);
 bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
-void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortLogger &logger);
-void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, PortLogger &logger);
+void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger);
+void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, Logger &logger);
 template<class CcuType>
 bool validRequest(SocketComms &socket_interface);
 
@@ -259,7 +259,7 @@ void CcuPort(int portNumber, int strategy)
 }
 
 
-void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortLogger &logger)
+void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger)
 {
     CtiTime now;
 
@@ -274,10 +274,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortL
     // Check for behaviors that may be used during the simulator runtime.
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
     {   
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << "*****  Delay Behavior Enabled With Probability " << chance << "%  **********" << endl;
-        }
+        logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());
         d->setChance(chance);
         socket_interface.setBehavior(d);
@@ -305,7 +302,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortL
     }
 }
 
-void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, PortLogger &logger)
+void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, Logger &logger)
 {
     std::map<int, PlcTransmitter *> ccu_list;
     bytes peek_buf;
@@ -314,6 +311,9 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
 
     while( !gQuit )
     {
+        // What do we do here?
+        ScopedLogger scope = logger.getNewScope("");
+
         peek_buf.clear();
         socket_interface.peek(byte_appender(peek_buf), 2);
 
@@ -330,7 +330,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
     
                 if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
                 {
-                    logger.log("Invalid message received, clearing socket / " + error);
+                    scope.log("Invalid message received, clearing socket / " + error);
         
                     socket_interface.clear();
                 }
@@ -416,22 +416,22 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
     
                 if( error = Ccu710::peekAddress(socket_interface, ccu_address) )
                 {
-                    logger.log("Invalid message received, clearing socket / " + error);
+                    scope.log("Invalid message received, clearing socket / " + error);
         
                     socket_interface.clear();
                 }
     
                 if( ccu_list.find(ccu_address) == ccu_list.end() )
                 {
-                    logger.log("New CCU address received", ccu_address);
+                    scope.log("New CCU address received", ccu_address);
     
                     ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
                 }
             }
     
-            if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
+            if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
             {
-                logger.log("Error while processing message, clearing socket");
+                scope.log("Error while processing message, clearing socket");
     
                 socket_interface.clear();
             }

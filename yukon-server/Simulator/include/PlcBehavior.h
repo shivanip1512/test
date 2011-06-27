@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "SimulatorLogger.h"
 
 namespace Cti {
 namespace Simulator{
@@ -18,7 +19,7 @@ class PlcBehavior
 public:
     typedef bytes target_type;
 
-    virtual void apply(target_type &message)=0;
+    virtual void apply(target_type &message, Logger &logger)=0;
     virtual void setChance(double chance)=0;
 };
 

@@ -17,6 +17,9 @@ private:
     struct request_t;
     struct reply_t;
 
+    std::string _ccu710InTag;
+    std::string _ccu710OutTag;
+
 public:
 
     Ccu710(int address, int strategy);
@@ -24,7 +27,7 @@ public:
     static bool    addressAvailable(Comms &comms);
     static error_t peekAddress     (Comms &comms, unsigned &address);
 
-    bool handleRequest(Comms &comms, PortLogger &logger);
+    bool handleRequest(Comms &comms, Logger &logger);
 
     template<class T>
     class holder
@@ -43,8 +46,7 @@ public:
     typedef holder<reply_t>   reply_holder;
 
     error_t readRequest(CommsIn &comms, request_holder &external_request_holder) const;
-    error_t processRequest(const request_holder &request, reply_holder &external_reply_holder);
-    error_t sendReply(CommsOut &comms, const reply_holder &external_reply_holder) const;
+    error_t processRequest(const request_holder &request, reply_holder &external_reply_holder, Logger &logger);
 
 private:
 
@@ -173,12 +175,12 @@ private:
 
     std::string describeRequest(const request_t &request) const;
 
-    error_t processRequest(const request_t &request, reply_t &reply);
+    error_t processRequest(const request_t &request, reply_t &reply, Logger &logger);
     error_t validateFeederOperation(const feeder_operation_t &feeder_operation, unsigned &words_expected) const;
 
     std::string describeReply(const reply_t &reply) const;
 
-    error_t sendReply(CommsOut &comms, const reply_t &reply) const;
+    error_t sendReply(CommsOut &comms, const reply_t &reply, Logger &logger) const;
 };
 
 }

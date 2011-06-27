@@ -25,46 +25,56 @@ Ccu711::Ccu711(unsigned char address, int strategy) :
     _address(address),
     _ccu710(address, strategy),
     _strategy(strategy),
-    _expected_sequence(0)
+    _expected_sequence(0),
+    _ccu711InTag("CCU711(" + CtiNumStr(address) + ")-IN"),
+    _ccu711OutTag("CCU711(" + CtiNumStr(address) + ")-OUT")
 {
 }
 
-bool Ccu711::handleRequest(Comms &comms, PortLogger &logger)
+bool Ccu711::handleRequest(Comms &comms, Logger &logger)
 {
     idlc_request request;
     idlc_reply   reply;
 
     error_t error;
 
-    if( error = readRequest(comms, request) )
     {
-        logger.log("Error reading request / " + error, request.message);
-        return false;
+        ScopedLogger scope = logger.getNewScope(_ccu711InTag);
+    
+        if( error = readRequest(comms, request) )
+        {
+            scope.log("Error reading request / " + error, request.message);
+            return false;
+        }
+    
+        scope.log(request.description, request.message);
+    
+        //  get us up to date before we try to process anything new
+        processQueue(scope);
+    
+        if( error = processRequest(request, reply, scope) )
+        {
+            scope.log("Error processing request / " + error);
+            return false;
+        }
+    
+        if( reply.message.empty() )
+        {
+            scope.log("No reply generated");
+            return true;
+        }
     }
 
-    logger.log(request.description, request.message);
-
-    //  get us up to date before we try to process anything new
-    processQueue(logger);
-
-    if( error = processRequest(request, reply) )
     {
-        logger.log("Error processing request / " + error);
-        return false;
-    }
-
-    if( reply.message.empty() )
-    {
-        logger.log("No reply generated");
-        return true;
-    }
-
-    logger.log(describeReply(reply), reply.message);
-
-    if( error = sendReply(comms, reply) )
-    {
-        logger.log("Error sending reply / " + error);
-        return false;
+        ScopedLogger scope = logger.getNewScope(_ccu711OutTag);
+            
+        if( error = sendReply(comms, reply, scope) )
+        {
+            scope.log("Error sending reply / " + error);
+            return false;
+        }
+    
+        scope.log(describeReply(reply), reply.message);
     }
 
     return true;
@@ -624,7 +634,7 @@ string Ccu711::describeGeneralRequest(const request_info &info) const
 }
 
 
-void Ccu711::processQueue(PortLogger &logger)
+void Ccu711::processQueue(Logger &logger)
 {
     CtiTime now;
 
@@ -649,7 +659,7 @@ void Ccu711::processQueue(PortLogger &logger)
                  entry.request.c_words.end(),
                  EmetconWord::serializer(byte_appender(request_buf)));
 
-            Grid.oneWayCommand(request_buf);
+            Grid.oneWayCommand(request_buf, logger);
 
             entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
         }
@@ -657,7 +667,7 @@ void Ccu711::processQueue(PortLogger &logger)
         {
             bytes reply_buf;
 
-            Grid.twoWayCommand(request_buf, reply_buf);
+            Grid.twoWayCommand(request_buf, reply_buf, logger);
 
             words_t reply_words;
 
@@ -828,7 +838,7 @@ error_t Ccu711::extractData(const words_t &reply_words, byte_appender &output)
 }
 
 
-error_t Ccu711::processRequest(const idlc_request &request, idlc_reply &reply)
+error_t Ccu711::processRequest(const idlc_request &request, idlc_reply &reply, Logger &logger)
 {
     error_t error;
 
@@ -886,7 +896,7 @@ error_t Ccu711::processRequest(const idlc_request &request, idlc_reply &reply)
             reply.header.control_sequence = request.header.control_sequence_expected;
             reply.header.control_sequence_expected = _expected_sequence;
 
-            if( error = processGeneralRequest(request, reply) )
+            if( error = processGeneralRequest(request, reply, logger) )
             {
                 return "Error processing general request / " + error;
             }
@@ -958,7 +968,7 @@ error_t Ccu711::processRequest(const idlc_request &request, idlc_reply &reply)
 }
 
 
-error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &reply)
+error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &reply, Logger &logger)
 {
     reply.info.command      = request.info.command;
     reply.info.reply_length = request.info.reply_length;
@@ -988,7 +998,7 @@ error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &r
 //  TODO-P3: if we're currently executing a queued entry, delay DTRAN until it's done
 
             //  Ccu710::processRequest() will add the DLC delays
-            _ccu710.processRequest(request.info.dtran.request, reply.info.dtran.reply);
+            _ccu710.processRequest(request.info.dtran.request, reply.info.dtran.reply, logger);
 
             reply.info.dtran.message = reply.info.dtran.reply->message;
 
@@ -1173,9 +1183,9 @@ string Ccu711::describeStatuses(const status_info &statuses) const
 }
 
 
-error_t Ccu711::sendReply(Comms &comms, const idlc_reply &reply) const
+error_t Ccu711::sendReply(Comms &comms, const idlc_reply &reply, Logger &logger) const
 {
-    if( !comms.write(reply.message) )
+    if( !comms.write(reply.message, logger) )
     {
         return "Error writing reply to comms";
     }

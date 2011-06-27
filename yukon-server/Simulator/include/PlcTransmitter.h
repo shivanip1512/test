@@ -22,7 +22,7 @@ protected:
     static unsigned dlc_time(unsigned bits);
     static unsigned dlc_time(unsigned bits_out, unsigned bits_in);
 public:
-    virtual bool handleRequest   (Comms & comms, PortLogger &logger) = 0;
+    virtual bool handleRequest   (Comms & comms, Logger &logger) = 0;
 };
 
 }

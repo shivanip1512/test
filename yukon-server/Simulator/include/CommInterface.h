@@ -4,6 +4,7 @@
 #include "ctinexus.h"
 #include "BehaviorCollection.h"
 #include "CommsBehavior.h"
+#include "SimulatorLogger.h"
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
@@ -23,7 +24,7 @@ public:
 class CommsOut : boost::noncopyable
 {
 public:
-    virtual bool write(const bytes &buf) = 0;
+    virtual bool write(const bytes &buf, Logger &logger) = 0;
 };
 
 class Comms : public CommsIn, virtual public CommsOut
@@ -33,10 +34,10 @@ protected:
 public:
     CommsIn  &asInput()  { return *(static_cast<CommsIn *> (this)); };
     CommsOut &asOutput() { return *(static_cast<CommsOut *>(this)); };
-    virtual bool write(const bytes &buf);
+    virtual bool write(const bytes &buf, Logger &logger);
 private:
     virtual bool writeMessage(const bytes &buf)=0;
-    bool ProcessMessage(bytes &buf);
+    bool ProcessMessage(bytes &buf, Logger &logger);
 };
 
 

@@ -3,6 +3,7 @@
 #include "EmetconWords.h"
 
 #include "ctitime.h"
+#include "SimulatorLogger.h"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -37,6 +38,7 @@ private:
     static       commands_t        initCommands();
 
     int _address;
+    std::string _mct410tag;
 
     struct llp_interest_t
     {
@@ -155,7 +157,7 @@ private:
     };
 
     bytes processRead (bool function, unsigned function_code);
-    bool    processWrite(bool function, unsigned function_code, bytes data);
+    bool  processWrite(bool function, unsigned function_code, bytes data);
 
     static unsigned int mctGetValue(int mctAddress, CtiTime time);
     unsigned char *getLongLoadProfileData(int function, int bytesToReturn);
@@ -165,7 +167,7 @@ public:
     Mct410Sim(int address);
 
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
-    bool read (const words_t &request_words, words_t &response_words);
+    bool read (const words_t &request_words, words_t &response_words, Logger &logger);
     bool write(const words_t &request_words);
 
 protected:

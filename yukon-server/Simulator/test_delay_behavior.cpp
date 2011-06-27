@@ -5,6 +5,7 @@
 #include "BehaviorCollection.h"
 #include "DelayBehavior.h"
 #include "types.h"
+#include "SimulatorLogger.h"
 
 #include <time.h>
 #include <boost/test/unit_test.hpp>
@@ -19,6 +20,8 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     // the random number will be some linear function as 
     // opposed to being truly (or rather pseudo-) random.
     rand();
+
+    SimulatorLogger logger(dout);
 
     BehaviorCollection<CommsBehavior> behaviorCollection;
     std::auto_ptr<CommsBehavior> d(new DelayBehavior());
@@ -41,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     // Ensure that the message size is indeed 3 after the 3 bytes were pushed on. 
     BOOST_CHECK_EQUAL(message.size(), 3);
 
-    behaviorCollection.processMessage(message);
+    behaviorCollection.processMessage(message, logger);
 
     // The delayBehavior should have emptied the message vector and held onto its contents.
     // After the message has been delayed, this vector should be of size 0.
@@ -55,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     reference.push_back(0x17);
     reference.push_back(0x2A);
 
-    behaviorCollection.processMessage(message);
+    behaviorCollection.processMessage(message, logger);
 
     // After message has been processed the second time it should return with the 
     // data that was initially delayed as well as all its current data.
@@ -66,14 +69,5 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     // Both message and reference should be of size 6 after the last process.
     BOOST_CHECK_EQUAL(message.size(), reference.size());
 
-    if (message.size() == reference.size())
-    {
-        for (int i = 0; i < message.size(); i++)
-        {
-            // Check to see that the delayBehavior correctly 
-            // processed the message and put the information back
-            // in the intended order to match the reference vector.
-            BOOST_CHECK_EQUAL(message.at(i), reference.at(i));
-        }
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(message.begin(), message.end(), reference.begin(), reference.end());
 }

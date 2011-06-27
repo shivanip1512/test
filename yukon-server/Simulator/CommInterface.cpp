@@ -9,22 +9,18 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
-bool Comms::write(const bytes &buf)
+bool Comms::write(const bytes &buf, Logger &logger)
 {
     bytes temp_buf = buf;
-    ProcessMessage(temp_buf);
+    ProcessMessage(temp_buf, logger);
     writeMessage(temp_buf);
     
     return true;
 }
 
-bool Comms::ProcessMessage(bytes &buf)
+bool Comms::ProcessMessage(bytes &buf, Logger &logger)
 {
-    if( _behaviorCollection.processMessage(buf) )
-    {
-        return true;
-    }
-    return false;
+    return _behaviorCollection.processMessage(buf, logger);
 }
 
 SocketComms::SocketComms(CTINEXUS &nexus, unsigned baud) :

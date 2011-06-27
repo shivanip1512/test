@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Types.h"
+#include "SimulatorLogger.h"
 
 namespace Cti {
 namespace Simulator{
@@ -21,12 +22,12 @@ public:
     typedef typename T::target_type Type;
 
     BehaviorCollection() {};
-    error_t processMessage(Type &value)
+    error_t processMessage(Type &value, Logger &logger)
     {
         boost::ptr_vector<T>::iterator itr = _behaviors.begin();
         for (;itr != _behaviors.end(); itr++)
         {
-            (itr)->apply(value);
+            (itr)->apply(value, logger);
         }
 
         return error_t::success;

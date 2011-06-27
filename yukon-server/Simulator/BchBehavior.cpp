@@ -22,14 +22,13 @@ BchBehavior::BchBehavior()
  *  
  * @param message The message received from PLC transmission.
  */
-void BchBehavior::apply(bytes &message)
+void BchBehavior::apply(bytes &message, Logger &logger)
 {
     double dist = rand() / double(RAND_MAX+1);
     double chance = dist * 100;
     if(chance < _chance)
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << "*********  Mutilating Message BCH  **********" << endl;
+        logger.breadcrumbLog("***** MESSAGE BCH MUTILATED *****");
         message.back() ^= 0x10;
     }
 }
@@ -41,7 +40,7 @@ void BchBehavior::apply(bytes &message)
  * @param chance The percent chance for the BchBehavior to be 
  * applied to a message as defined in the master.cfg file under 
  * the CPARM value 
- * SIMULATOR_FAILED_READING_ERROR_100_CHANCE_PERCENT 
+ * SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY 
  */
 void BchBehavior::setChance(double chance)
 {
