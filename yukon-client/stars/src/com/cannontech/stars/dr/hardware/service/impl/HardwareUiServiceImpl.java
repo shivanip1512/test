@@ -457,7 +457,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 starsInventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, device.getDeviceId());
             }
             
-            if (hardwareType.isThermostat()) {
+            if (hardwareType.isThermostat() && lmHardware.getAccountID() > 0) {
                 starsInventoryBaseService.initThermostatSchedule(lmHardware, energyCompany);
             }
             
@@ -608,6 +608,18 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 && ((hardwareDto.getInventoryId() == null) || (hardwareDto.getInventoryId() != possibleDuplicate.getInventoryID()))) {
             throw new StarsDeviceSerialNumberAlreadyExistsException();
         }
+    }
+    
+    @Override
+    public boolean isSerialNumberInEC(HardwareDto hardwareDto) {
+        try {
+            checkSerialNumber(hardwareDto);
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            return true;
+        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
+            return true;
+        }
+        return false;
     }
     
     private LiteStarsLMHardware getLmHardware(HardwareDto hardwareDto, int accountId, LiteStarsEnergyCompany energyCompany) {

@@ -1148,6 +1148,13 @@ table.rowHighlighting tr:hover td {
     padding: 5px 0;
 }
 
+.indentedSmall {
+    margin-left: 3px;   
+}
+.indentedMedium {
+    margin-left: 8px;   
+}
+
 div.padded {
 	padding: 5px;
 }

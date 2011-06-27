@@ -8,6 +8,7 @@ import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.HardwareDto;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
@@ -81,4 +82,12 @@ public interface HardwareUiService {
      */
     public void changeOutInventory(int oldInventoryId, int changeOutId, LiteYukonUser user, boolean isMeter);
 
+    /**
+     * Serial numbers can only be used once among all energy companies that are relatives.
+     * Returns true if the given hardwareDto.serialNumber is in use by one of these energy companies.
+     * False otherwise.
+     * @throws StarsDeviceSerialNumberAlreadyExistsException
+     * @throws ObjectInOtherEnergyCompanyException
+     */
+    public boolean isSerialNumberInEC(HardwareDto hardwareDto);
 }

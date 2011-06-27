@@ -779,6 +779,9 @@
                 <entry key="ARCHIVE_DATA_ANALYSIS_LP_READ">
                     <ref local="adaProfileReadBackingService"/>
                 </entry>
+                <entry key="DEVELOPMENT">
+                    <ref local="devBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -1862,4 +1865,17 @@
     <bean id="serviceCompanyService" class="com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl"/>
     <bean id="serviceCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator"/>
     <bean id="designationCodeDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.DesignationCodeDtoValidator"/>
+
+    <bean id="devDatabasePopulationService" class="com.cannontech.web.support.development.database.service.impl.DevDatabasePopulationServiceImpl"/>
+
+    <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
+    <bean id="totalCountDevAMRUpdaterHandler" class="com.cannontech.web.updater.development.handler.TotalCountDevAMRUpdaterHandler"/>
+    <bean id="totalCountDevCapControlUpdaterHandler" class="com.cannontech.web.updater.development.handler.TotalCountDevCapControlUpdaterHandler"/>
+    <bean id="totalCountDevStarsUpdaterHandler" class="com.cannontech.web.updater.development.handler.TotalCountDevStarsUpdaterHandler"/>
+    <bean id="successCountDevAMRUpdaterHandler" class="com.cannontech.web.updater.development.handler.SuccessCountDevAMRUpdaterHandler"/>
+    <bean id="successCountDevCapControlUpdaterHandler" class="com.cannontech.web.updater.development.handler.SuccessCountDevCapControlUpdaterHandler"/>
+    <bean id="successCountDevStarsUpdaterHandler" class="com.cannontech.web.updater.development.handler.SuccessCountDevStarsUpdaterHandler"/>
+    <bean id="failureCountDevAMRUpdaterHandler" class="com.cannontech.web.updater.development.handler.FailureCountDevAMRUpdaterHandler"/>
+    <bean id="failureCountDevCapControlUpdaterHandler" class="com.cannontech.web.updater.development.handler.FailureCountDevCapControlUpdaterHandler"/>
+    <bean id="failureCountDevStarsUpdaterHandler" class="com.cannontech.web.updater.development.handler.FailureCountDevStarsUpdaterHandler"/>
 </beans>

@@ -48,38 +48,62 @@ function setupProgressBar(pbarId, completedCount, totalCount, completionCallback
     }
 }
 
-function updateSuccessFailureProgressBar(pbarId, completionCallback) {
+function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback) {
     // assumes data is of type Hash
+    return function(data) {
+        var successCompletedCount = data.get('successCompletedCount');
+        var failureCompletedCount = data.get('failureCompletedCount');
+        setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
+    };
+}
+
+function updateSuccessFailureProgressBarWithDynamicTotal(pbarId, completionCallback) {
+    // assumes data is of type Hash
+    return function(data) {
+        var successCompletedCount = data.get('successCompletedCount');
+        var failureCompletedCount = data.get('failureCompletedCount');
+        var totalCount = data.get('totalCount');
+        setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
+    };
+}
+
+function setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback) {
+    var progressContainer = $('progressContainer_' + pbarId);
+    if (progressContainer == null) {
+        return;
+    }
+    var totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
+
+    var percentDone = 100;
+    if (totalCount > 0) {
+        percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
+    }
+
+    try {
+        var successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
+        var failureWidth = getBarWidth(pbarId, totalCompletedCount, totalCount);
+        
+        progressContainer.down('.progressBarInnerSuccess').style.width = successWidth + 'px';
+        progressContainer.down('.progressBarInnerFailure').style.width = failureWidth + 'px';
+        progressContainer.down('.progressBarCompletedCount span').innerHTML = totalCompletedCount;
+        progressContainer.down('.progressBarPercentComplete').innerHTML = percentDone + '%';
+    } catch (e) {}
+
+    // completionCallback
+    if (completionCallback != null && percentDone == 100) {
+        completionCallback();
+    }
+}
+
+function updateTotalCount(pbarId) {
     return function(data) {
         var progressContainer = $('progressContainer_' + pbarId);
         if (progressContainer == null) {
             return;
         }
 
-        var successCompletedCount = data.get('successCompletedCount');
-        var failureCompletedCount = data.get('failureCompletedCount');
-        var totalCount = data.get('totalCount');
-        var totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
-
-        var percentDone = 100;
-        if (totalCount > 0) {
-            percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
-        }
-
-        try {
-            var successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
-            var failureWidth = getBarWidth(pbarId, totalCompletedCount, totalCount);
-            
-            progressContainer.down('.progressBarInnerSuccess').style.width = successWidth + 'px';
-            progressContainer.down('.progressBarInnerFailure').style.width = failureWidth + 'px';
-            progressContainer.down('.progressBarCompletedCount span').innerHTML = totalCompletedCount;
-            progressContainer.down('.progressBarPercentComplete').innerHTML = percentDone + '%';
-        } catch (e) {}
-
-        // completionCallback
-        if (completionCallback != null && percentDone == 100) {
-            completionCallback();
-        }
+        var totalCount = data.get('total');
+        progressContainer.down('.progressBarTotal').innerHTML = totalCount;
     };
 }
 
