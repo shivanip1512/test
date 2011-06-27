@@ -39,14 +39,14 @@
                         <cti:formatInterval type="DATEHM" value="${result.analysis.dateTimeRange}"/>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".intervalLength">
+                    <tags:nameValue2 nameKey=".interval">
                         <cti:formatPeriod type="DHMS_REDUCED" value="${result.analysis.intervalLength}"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".pointQuality">
                         <c:choose>
                             <c:when test="${result.analysis.excludeBadPointQualities}">
-                                <i:inline key=".normalQualities"/>
+                                <i:inline key=".normalQualitiesOnly"/>
                             </c:when>
                             <c:otherwise>
                                 <i:inline key=".allQualities"/>

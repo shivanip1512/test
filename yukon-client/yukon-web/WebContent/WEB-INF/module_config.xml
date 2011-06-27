@@ -432,22 +432,22 @@
             </pages>
         </page>
         <page name="analysis.home" type="BASIC">
-            <menu>meters</menu>
+            <menu></menu>
             <pages>
                 <page name="analysis.progress" type="DETAIL">
-                    <menu>meters</menu>
+                    <menu></menu>
                 </page>
                 <page name="analysis.list" type="BASIC">
-                    <menu>meters</menu>
+                    <menu></menu>
                 </page>
                 <page name="analysis.results" type="BASIC">
-                    <menu>meters</menu>
+                    <menu></menu>
                     <pages>
                         <page name="analysis.tabular" type="DETAIL">
-                            <menu>meters</menu>
+                            <menu></menu>
                         </page>
                         <page name="analysis.readResults" type="DETAIL">
-                            <menu>meters</menu>
+                            <menu></menu>
                         </page>
                     </pages>
                 </page>   

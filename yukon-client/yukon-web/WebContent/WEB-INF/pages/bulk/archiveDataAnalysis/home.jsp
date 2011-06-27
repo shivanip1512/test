@@ -45,7 +45,7 @@
                         <cti:msg2 key="yukon.web.modules.amr.analysis.home.inclusive"/>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".intervalLabel">
+                    <tags:nameValue2 nameKey=".interval">
                         <form:select path="selectedInterval" class="dateTimeInputWidth">
                             <c:forEach var="intervalDuration" items="${intervalDurations}">
                                 <form:option value="${intervalDuration.millis}">
@@ -55,7 +55,7 @@
                         </form:select>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".attributeLabel">
+                    <tags:nameValue2 nameKey=".attribute">
                         <form:select path="selectedAttribute" class="dateTimeInputWidth">
                             <c:forEach var="attribute" items="${attributes}">
                                  <form:option value="${attribute}" title="${attribute.description}">
@@ -65,11 +65,11 @@
                         </form:select>
                     </tags:nameValue2>
                     
-                    <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".excludeBadQualitiesLabel"/>
+                    <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".normalQualitiesOnly"/>
                 </tags:nameValueContainer2>
             </div>
             
-            <cti:button type="submit" key="submit"/>
+            <cti:button type="submit" key="submitButton"/>
         </form:form>
     </tags:bulkActionContainer>
 </cti:standardPage>

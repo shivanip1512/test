@@ -2,9 +2,6 @@ package com.cannontech.common.bulk.service;
 
 import java.util.List;
 
-import org.joda.time.Duration;
-import org.joda.time.Interval;
-
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -41,10 +38,4 @@ public interface ArchiveDataAnalysisService {
      * Gets the results object for an ADA load profile read from its id.
      */
     public ArchiveAnalysisProfileReadResult getProfileReadResultById(String resultId);
-    
-    /**
-     * Returns a date/time range whose start and end points are exactly one interval earlier than
-     * those of the supplied range.
-     */
-    public Interval getDateTimeRangeForDisplay(Interval dateRange, Duration intervalLength);
 }

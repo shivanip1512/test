@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
-import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
 
 @Controller
 public class AdaReadsController {
-    ArchiveDataAnalysisService archiveDataAnalysisService;
-    ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
+    private ArchiveDataAnalysisService archiveDataAnalysisService;
+    private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     
     @RequestMapping("archiveDataAnalysis/readNow")
     public String readNow(ModelMap model, HttpServletRequest request, LiteYukonUser user, int analysisId) throws ServletRequestBindingException {
@@ -29,7 +27,7 @@ public class AdaReadsController {
         model.addAttribute("resultId", resultId);
         model.addAttribute("result", result);
         
-        DeviceCollection collection = adaCollectionProducer.createDeviceCollection(request);
+        DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
         
@@ -42,11 +40,6 @@ public class AdaReadsController {
     @Autowired
     public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
         this.archiveDataAnalysisService = archiveDataAnalysisService;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
-        this.archiveDataAnalysisDao = archiveDataAnalysisDao;
     }
     
     @Autowired

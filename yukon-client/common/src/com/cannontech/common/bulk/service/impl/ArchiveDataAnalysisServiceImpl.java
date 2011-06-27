@@ -67,9 +67,10 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private RawPointHistoryDao rawPointHistoryDao;
     private PaoDao paoDao;
-    private static final Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private RecentResultsCache<ArchiveAnalysisProfileReadResult> crdRecentResultsCache;
+    private static final Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
+    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
     
     static {
         Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
@@ -206,16 +207,8 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         }
         return commands;
     }
-
-    @Override
-    public Interval getDateTimeRangeForDisplay(Interval interval, Duration intervalLength) {
-        Instant newStart = interval.getStart().minus(intervalLength).toInstant();
-        Instant newEnd = interval.getEnd().minus(intervalLength).toInstant();
-        return new Interval(newStart, newEnd);
-    }
     
     private String getDatesString(Interval dateRange) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
         String startString = formatter.print(dateRange.getStartMillis());
         String endString = formatter.print(dateRange.getEndMillis());
         return startString + " " + endString;

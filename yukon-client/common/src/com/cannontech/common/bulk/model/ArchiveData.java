@@ -9,13 +9,13 @@ public class ArchiveData {
     private Interval archiveRange;
     private ReadType readType;
     private Integer changeId;
-    private PaoIdentifier paoId;
+    private PaoIdentifier paoIdentifier;
     
-    public ArchiveData(Interval archiveRange, ReadType readType, Integer changeId, PaoIdentifier paoId){
+    public ArchiveData(Interval archiveRange, ReadType readType, Integer changeId, PaoIdentifier paoIdentifier){
         this.archiveRange = archiveRange;
         this.readType = readType;
         this.changeId = changeId;
-        this.paoId = paoId;
+        this.paoIdentifier = paoIdentifier;
     }
     
     public boolean isDataPresent() {
@@ -43,6 +43,6 @@ public class ArchiveData {
     }
     
     public PaoIdentifier getPaoId() {
-        return paoId;
+        return paoIdentifier;
     }
 }

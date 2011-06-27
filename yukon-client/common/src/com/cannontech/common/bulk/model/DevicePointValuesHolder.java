@@ -5,8 +5,8 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 public class DevicePointValuesHolder {
-    String deviceName;
-    List<Double> pointValues = Lists.newArrayList();
+    private String deviceName;
+    private List<Double> pointValues = Lists.newArrayList();
     
     public DevicePointValuesHolder(String deviceName) {
         this.deviceName = deviceName;

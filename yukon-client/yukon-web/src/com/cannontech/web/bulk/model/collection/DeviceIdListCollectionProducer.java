@@ -46,10 +46,6 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
         
-        return createDeviceCollection(idList, ids);
-    }
-    
-    private DeviceCollection createDeviceCollection(final List<Integer> idList, final String ids) {
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
 

@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,10 +66,7 @@ public class ArchiveDataAnalysisController {
         model.addAttribute("attributes", attributes);
         model.addAttribute("intervalDurations", intervalDurations);
         
-        long currentMillis = new Instant().getMillis();
-        long intervalMillis = intervalDurations.iterator().next().getMillis();
-        
-        Instant stopDateInitialValue = getNearestPreviousIntervalTime(currentMillis, intervalMillis);
+        Instant stopDateInitialValue = new DateMidnight().toInstant();
         Instant startDateInitialValue = stopDateInitialValue.minus(Duration.standardDays(1));
         
         model.addAttribute("startDateInitialValue", startDateInitialValue);
@@ -95,13 +93,6 @@ public class ArchiveDataAnalysisController {
         model.addAttribute("callbackResult", callbackResult);
         
         return "archiveDataAnalysis/analyze.jsp";
-    }
-    
-    private Instant getNearestPreviousIntervalTime(long baseMillis, long intervalMillis) {
-        long millisPastPrevInterval = baseMillis % intervalMillis;
-        long prevIntervalMillis = baseMillis - millisPastPrevInterval;
-        
-        return new Instant(prevIntervalMillis);
     }
     
     @InitBinder

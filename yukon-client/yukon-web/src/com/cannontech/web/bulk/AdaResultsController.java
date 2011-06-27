@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
-import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
@@ -29,7 +28,6 @@ public class AdaResultsController {
     private final static int BAR_WIDTH = 400;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
-    ArchiveDataAnalysisService archiveDataAnalysisService;
     
     @RequestMapping("archiveDataAnalysis/results")
     public String view(ModelMap model, int analysisId, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
@@ -37,7 +35,7 @@ public class AdaResultsController {
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
         // Build device collection
-        DeviceCollection collection = adaCollectionProducer.createDeviceCollection(request);
+        DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
         
@@ -84,11 +82,6 @@ public class AdaResultsController {
     @Autowired
     public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
         this.archiveDataAnalysisDao = archiveDataAnalysisDao;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
-        this.archiveDataAnalysisService = archiveDataAnalysisService;
     }
     
     @Autowired

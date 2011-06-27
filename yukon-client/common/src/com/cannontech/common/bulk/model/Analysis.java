@@ -6,8 +6,8 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.google.common.collect.Lists;
 
 public class Analysis {
     private BuiltInAttribute attribute;
@@ -76,22 +76,6 @@ public class Analysis {
     }
     
     public List<Instant> getIntervalEndTimes() {
-        List<Instant> dateTimeList = Lists.newArrayList();
-        
-        Instant nextIntervalEndTime = dateTimeRange.getStart().plus(intervalLength).toInstant();
-        Instant endTime = dateTimeRange.getEnd().toInstant();
-        dateTimeList.add(nextIntervalEndTime);
-        boolean loop = true;
-        
-        while(loop) {
-            nextIntervalEndTime = nextIntervalEndTime.plus(intervalLength);
-            if(nextIntervalEndTime.isBefore(endTime) || nextIntervalEndTime.isEqual(endTime)) {
-                dateTimeList.add(nextIntervalEndTime);
-            } else {
-                loop = false;
-            }
-        }
-        
-        return dateTimeList;
+        return ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalLength);
     }
 }

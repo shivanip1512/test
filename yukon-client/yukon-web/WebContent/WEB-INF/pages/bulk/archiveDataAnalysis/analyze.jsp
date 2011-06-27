@@ -38,10 +38,10 @@
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>
                         <c:when test="${backingBean.excludeBadQualities}">
-                            <cti:msg key="yukon.web.modules.amr.analysis.progress.excludeBadQualities" />
+                            <cti:msg key="yukon.web.modules.amr.analysis.normalQualitiesOnly" />
                         </c:when>
                         <c:otherwise>
-                            <cti:msg key="yukon.web.modules.amr.analysis.progress.acceptBadQualities" />
+                            <cti:msg key="yukon.web.modules.amr.analysis.allQualities" />
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>

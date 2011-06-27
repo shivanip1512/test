@@ -32,15 +32,15 @@
     }
     </script>
     
-    <tags:boxContainer2 nameKey="listContainer">
+    <tags:boxContainer2 nameKey="title">
         <table class="compactResultsTable">
             <tr>
                 <th><cti:msg key="yukon.web.modules.amr.analysis.list.runDate"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.attribute"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.attribute"/></th>
                 <th><cti:msg key="yukon.web.modules.amr.analysis.list.numberOfDevices"/></th>
                 <th><cti:msg key="yukon.web.modules.amr.analysis.list.range"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.intervalLength"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.pointQualities"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.interval"/></th>
+                <th><cti:msg key="yukon.web.modules.amr.analysis.pointQuality"/></th>
                 <th><cti:msg key="yukon.web.modules.amr.analysis.list.actions"/></th>
             </tr>
             
@@ -64,10 +64,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${analysisEntry.key.excludeBadPointQualities}">
-                                <cti:msg key="yukon.web.modules.amr.analysis.list.excludeBad"/>
+                                <cti:msg key="yukon.web.modules.amr.analysis.list.normalOnly"/>
                             </c:when>
                             <c:otherwise>
-                                <cti:msg key="yukon.web.modules.amr.analysis.list.includeBad"/>
+                                <cti:msg key="yukon.web.modules.amr.analysis.list.allQualities"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

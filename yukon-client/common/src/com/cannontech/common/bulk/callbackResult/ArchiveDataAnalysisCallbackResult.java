@@ -24,7 +24,7 @@ public class ArchiveDataAnalysisCallbackResult extends BackgroundProcessBulkProc
     
     @Override
     public boolean isSuccessDevicesSupported() {
-        return true;
+        return false;
     }
     
     @Override
@@ -34,7 +34,7 @@ public class ArchiveDataAnalysisCallbackResult extends BackgroundProcessBulkProc
     
     @Override
     public boolean isFailureDevicesSupported() {
-        return true;
+        return false;
     }
     
     @Override

@@ -13,6 +13,7 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.ReadType;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -170,9 +171,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     public int getNumberOfDevicesInAnalysis(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(DISTINCT DeviceId)");
-        sql.append("FROM ArchiveDataAnalysisSlotValue");
-        sql.append("  LEFT JOIN ArchiveDataAnalysisSlot");
-        sql.append("    ON ArchiveDataAnalysisSlotValue.SlotId = ArchiveDataAnalysisSlot.SlotId");
+        sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
+        sql.append("  JOIN ArchiveDataAnalysisSlot slot ON slotValue.SlotId = slot.SlotId");
         sql.append("WHERE AnalysisId").eq(analysisId);
         
         int numberOfDevices = yukonJdbcTemplate.queryForInt(sql);
@@ -234,7 +234,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     private void insertSlots(int analysisId, Interval dateTimeRange, Duration intervalLength) {
-        List<Instant> relevantTimes = getListOfRelevantDateTimes(dateTimeRange, intervalLength);
+        List<Instant> relevantTimes = ArchiveDataAnalysisHelper.getListOfRelevantDateTimes(dateTimeRange, intervalLength);
         
         for(Instant dateTime : relevantTimes) {
             int slotId = nextValueHelper.getNextValue("ArchiveDataAnalysisSlot");
@@ -246,18 +246,6 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             
             yukonJdbcTemplate.update(sql);
         }
-    }
-    
-    private List<Instant> getListOfRelevantDateTimes(Interval dateTimeRange, Duration interval) {
-        Instant start = dateTimeRange.getStart().toInstant();
-        Instant stop = dateTimeRange.getEnd().toInstant();
-        List<Instant> relevantDateTimes = Lists.newArrayList();
-        Instant tempInstant = start.plus(interval); //first point of interest is one interval into the range
-        while(tempInstant.isBefore(stop) || tempInstant.isEqual(stop)) {
-            relevantDateTimes.add(tempInstant);
-            tempInstant = tempInstant.plus(interval);
-        }
-        return relevantDateTimes;
     }
     
     @Autowired

@@ -1,6 +1,5 @@
 package com.cannontech.web.bulk.model.collection;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,8 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.DeviceCollectionProducer;
@@ -27,7 +26,6 @@ import com.cannontech.web.bulk.model.DeviceCollectionProducer;
  * Implementation of DeviceCollectionProducer for devices in an Archive Data Analysis
  */
 public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionProducer {
-    private DeviceDao deviceDao;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     
     @Override
@@ -39,8 +37,12 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
 
-        final int analysisId = ServletRequestUtils.getIntParameter(request, "analysisId");
+        final int analysisId = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName("analysisId"));
         
+        return buildDeviceCollection(analysisId);
+    }
+    
+    public DeviceCollection buildDeviceCollection(final int analysisId) {
         return new ListBasedDeviceCollection() {
             @Override
             public Map<String, String> getCollectionParameters() {
@@ -52,13 +54,8 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             
             @Override
             public List<SimpleDevice> getDeviceList() {
-                List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
-                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
-                
-                for (PaoIdentifier paoIdentifier : deviceIds) {
-                    SimpleDevice device = deviceDao.getYukonDevice(paoIdentifier.getPaoId());
-                    deviceList.add(device);
-                }
+                List<PaoIdentifier> paoIdentifiers = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId); 
+                List<SimpleDevice> deviceList = PaoUtils.asSimpleDeviceList(paoIdentifiers);
                 
                 return deviceList;
             }
@@ -68,11 +65,6 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
                 return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis", analysisId);
             }
         };
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
     }
     
     @Autowired

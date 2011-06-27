@@ -1,7 +1,10 @@
 package com.cannontech.web.updater.archiveDataAnalysis;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.updater.ResultAccessor;
 
 public enum AdaProfileReadTypeEnum {
@@ -37,17 +40,17 @@ public enum AdaProfileReadTypeEnum {
     
     STATUS_TEXT(new ResultAccessor<ArchiveAnalysisProfileReadResult>() {
         public Object getValue(ArchiveAnalysisProfileReadResult adaProfileReadResult) {
-            ResolvableTemplate resolvableTemplate = null;
+            MessageSourceResolvable resolvable;
             
             if(adaProfileReadResult.isComplete()) {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.isCompleteText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.isCompleteText");
             } else if(adaProfileReadResult.isErrorOccurred()) {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.isErrorOccurredText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.isErrorOccurredText");
             } else {
-                resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.analysis.readResults.inProgressText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.inProgressText");
             }
             
-            return resolvableTemplate;
+            return resolvable;
         }
     }),
     
