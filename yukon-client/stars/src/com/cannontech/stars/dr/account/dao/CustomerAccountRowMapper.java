@@ -30,7 +30,7 @@ public class CustomerAccountRowMapper extends AbstractRowMapperWithBaseQuery<Cus
     @Override
     public SqlFragmentSource getOrderBy() {
         SqlStatementBuilder retVal = new SqlStatementBuilder();
-        retVal.append("ORDER BY LOWER(CA.AccountNumber)");
+        retVal.append("ORDER BY UPPER(CA.AccountNumber)");
         return retVal;
     }
 

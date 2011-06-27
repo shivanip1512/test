@@ -87,7 +87,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
                 SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
                 for (String searchColumnName : searchColumnNames) {
                     SqlStatementBuilder fragment = new SqlStatementBuilder();
-                    fragment.append("LOWER(" + searchColumnName + ") LIKE LOWER(").appendArgument('%' + ss + '%').append(")");
+                    fragment.append("UPPER(" + searchColumnName + ") LIKE UPPER(").appendArgument('%' + ss + '%').append(")");
                     retVal.add(fragment);
                 }
                 return retVal;
