@@ -30,7 +30,6 @@ public class VfGraphSettings {
                            Map<Phase, String> phaseBulletTypeMap, boolean showZoneTransitionTextBusGraph,
                            boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel, 
                            String balloonDistanceText) {
-        super();
         this.yLowerBound = yLowerBound;
         this.yUpperBound = yUpperBound;
         this.yAxisLabel = yAxisLabel;
