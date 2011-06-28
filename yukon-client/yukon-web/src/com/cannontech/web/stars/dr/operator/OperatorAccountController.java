@@ -648,6 +648,7 @@ public class OperatorAccountController {
 				
 				List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
 				flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+		        modelMap.addAttribute("mode", PageEditMode.EDIT);
 				
 				return "operator/account/account.jsp";
 			} 
