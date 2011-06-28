@@ -35,8 +35,8 @@ import com.google.common.collect.Lists;
 @Controller
 @RequestMapping("/development/setupDatabase/*")
 @CheckDevelopmentMode
-public class MiscellaneousSetupDevDbMethodController {
-    private static final Logger log = YukonLogManager.getLogger(MiscellaneousSetupDevDbMethodController.class);
+public class SetupDevDbMethodController {
+    private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);
     private DevDatabasePopulationService devDatabasePopulationService;
     private ECMappingDao ecMappingDao;
     private StarsDatabaseCache starsDatabaseCache;
