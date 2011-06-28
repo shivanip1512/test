@@ -11,7 +11,7 @@
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
         <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <cti:includeScript link="/JavaScript/yukon/ui/general.js"/>
@@ -35,13 +35,13 @@
     <tags:boxContainer2 nameKey="title">
         <table class="compactResultsTable">
             <tr>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.runDate"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.attribute"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.numberOfDevices"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.range"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.interval"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.pointQuality"/></th>
-                <th><cti:msg key="yukon.web.modules.amr.analysis.list.actions"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.list.runDate"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.attribute"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.list.numberOfDevices"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.list.range"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.interval"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.pointQuality"/></th>
+                <th><i:inline key="yukon.web.modules.amr.analysis.list.actions"/></th>
             </tr>
             
             <c:forEach items="${analysisMap}" var="analysisEntry">
@@ -50,7 +50,7 @@
                         <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
                     </td>
                     <td>
-                        <cti:formatObject value="${analysisEntry.key.attribute}"/>
+                        <cti:formatObject value="${analysisEntry.key.attribute.description}"/>
                     </td>
                     <td>
                         ${analysisEntry.value}
@@ -64,10 +64,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${analysisEntry.key.excludeBadPointQualities}">
-                                <cti:msg key="yukon.web.modules.amr.analysis.list.normalOnly"/>
+                                <i:inline key="yukon.web.modules.amr.analysis.list.normalOnly"/>
                             </c:when>
                             <c:otherwise>
-                                <cti:msg key="yukon.web.modules.amr.analysis.list.allQualities"/>
+                                <i:inline key="yukon.web.modules.amr.analysis.list.allQualities"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

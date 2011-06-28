@@ -3,11 +3,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
 <cti:standardPage module="amr" page="analysis.tabular">
 
     <cti:breadCrumbs>
@@ -24,7 +19,7 @@
         <cti:msg var="analysisResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName" />
         <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results?analysisId=${analysis.analysisId}" title="${analysisResultsPageTitle}"/>
         <%-- archive data analysis tabular --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.tabular.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.tabular.pageName"/></cti:crumbLink>
 
     </cti:breadCrumbs>
     
@@ -44,7 +39,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${empty pointValue}">
-                                --
+                                <i:inline key="yukon.web.defaults.dashesTwo"/>
                             </c:when>
                             <c:otherwise>
                                 ${pointValue}

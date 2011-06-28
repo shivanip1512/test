@@ -1,5 +1,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:standardPage module="amr" page="analysis.readResults">
     <cti:breadCrumbs>
@@ -14,7 +15,7 @@
         <cti:msg var="adaResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName"/>
         <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results?analysisId=${analysisId}" title="${adaResultsPageTitle}"/>
         <%-- ADA Read Results --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.readResults.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.readResults.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysis.readResults">
@@ -34,7 +35,7 @@
         
         <%-- SUCCESS --%>
         <div class="normalBoldLabel">
-            <cti:msg key="yukon.web.modules.amr.analysis.readResults.successLabel" />
+            <i:inline key="yukon.web.modules.amr.analysis.readResults.successLabel" />
             <span class="okGreen">
                 <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS_LP_READ" identifier="${resultId}/SUCCESS_COUNT"/>
             </span>
@@ -48,7 +49,7 @@
         
         <%-- FAILURE --%>
         <div class="normalBoldLabel">
-            <cti:msg key="yukon.web.modules.amr.analysis.readResults.failureLabel" />
+            <i:inline key="yukon.web.modules.amr.analysis.readResults.failureLabel" />
             <span class="errorRed">
                 <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS_LP_READ" identifier="${resultId}/FAILED_COUNT"/>
             </span>

@@ -38,7 +38,7 @@
     <entry key="yukon.web.modules.amr.analysis.results.pageDescription">Results</entry>
     <entry key="yukon.web.modules.amr.analysis.results.analysisInfo.title">Analysis Parameters</entry>
     <entry key="yukon.web.modules.amr.analysis.results.actions.title">Actions</entry>
-    <entry key="yukon.web.modules.amr.analysis.results.title">Analysis Results</entry>
+    <entry key="yukon.web.modules.amr.analysis.results.resultsTable.title">Analysis Results</entry>
     <entry key="yukon.web.modules.amr.analysis.results.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.amr.analysis.results.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.analysis.results.holes">Intervals Missing</entry>
@@ -61,6 +61,7 @@
     <!-- TABULAR DISPLAY -->
     <entry key="yukon.web.modules.amr.analysis.tabular.pageName">Tabular Results</entry>
     <entry key="yukon.web.modules.amr.analysis.tabular.pageDescription">Archive Data Analysis Tabular Results</entry>
+    <entry key="yukon.web.modules.amr.analysis.tabular.deviceName">Device Name</entry>
     
     <!-- ANALYSIS LIST -->
     <entry key="yukon.web.modules.amr.analysis.list.pageName">Archive Data Analyses</entry>

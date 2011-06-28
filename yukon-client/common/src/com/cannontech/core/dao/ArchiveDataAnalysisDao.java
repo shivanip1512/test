@@ -24,7 +24,7 @@ public interface ArchiveDataAnalysisDao {
     /**
      * Inserts slot values for one device in a given Analysis.
      */
-    public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, int pointId, boolean excludeBadPointQualities);
+    public void insertSlotValues(PaoIdentifier paoIdentifier, Analysis analysis, int pointId, boolean excludeBadPointQualities);
     
     /**
      * Retrieves slot values for the specified subset of devices in a given analysis. 

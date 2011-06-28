@@ -306,7 +306,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
             public void process(YukonDevice device) throws ProcessingException {
                 try {
                     LitePoint point = attributeService.getPointForAttribute(device, attribute);
-                    archiveDataAnalysisDao.insertSlotValues(device.getPaoIdentifier(), analysis.getAnalysisId(), point.getPointID(), excludeBadPointQualities);
+                    archiveDataAnalysisDao.insertSlotValues(device.getPaoIdentifier(), analysis, point.getPointID(), excludeBadPointQualities);
                 } catch(IllegalUseOfAttribute illegal) {
                     String error = "Invalid attribute " + attribute + " for device with id " + device.getPaoIdentifier().getPaoId();
                     throw new ProcessingException(error);

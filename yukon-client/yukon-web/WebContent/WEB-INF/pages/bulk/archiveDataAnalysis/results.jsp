@@ -16,7 +16,7 @@
         <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
         <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <div class="smallBoldLabel notesSection">
@@ -66,24 +66,36 @@
                 <ul class="buttonStack">
                 
                     <c:if test="${showReadOption}">
-                        <li><cti:button key="read" renderMode="labeledImage" href="readNow?analysisId=${result.analysis.analysisId}"/></li>
-                        <%-- not enabled in 5.3.2 <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> --%>
+                        <c:url var="readUrl" value="readNow">
+                            <c:param name="analysisId" value="${result.analysis.analysisId}"/>
+                        </c:url>
+                        <li><cti:button key="read" renderMode="labeledImage" href="${readUrl}"/></li>
+                        <%-- 
+                        not enabled in 5.3.2 
+                        <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> 
+                        --%>
                     </c:if>
-                    <li><cti:button key="csv" renderMode="labeledImage" href="csv?analysisId=${result.analysis.analysisId}"/></li>
+                    <c:url var="csvUrl" value="csv">
+                        <c:param name="analysisId" value="${result.analysis.analysisId}"/>
+                    </c:url>
+                    <li><cti:button key="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
                     <c:choose>
                         <c:when test="${underTabularSizeLimit}">
-                            <li><cti:button key="viewTabular" renderMode="labeledImage" href="tabular?analysisId=${result.analysis.analysisId}"/></li>
+                            <c:url var="tabularUrl" value="tabular">
+                                <c:param name="analysisId" value="${result.analysis.analysisId}"/>
+                            </c:url>
+                            <li><cti:button key="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>
                         </c:when>
                         <c:otherwise>
                             <li><cti:button key="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
                         </c:otherwise>
                     </c:choose>
-                    <c:url var="linkUrl" value="/spring/bulk/collectionActions">
+                    <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
                         <c:forEach var="p" items="${deviceCollection.collectionParameters}">
                             <c:param name="${p.key}" value="${p.value}"/>
                         </c:forEach>
                     </c:url>
-                    <li><cti:button key="collectionActions" renderMode="labeledImage" href="${linkUrl}"/></li>
+                    <li><cti:button key="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}"/></li>
                 </ul>
             </tags:formElementContainer>
         </cti:dataGridCell>
@@ -91,7 +103,7 @@
     </cti:dataGrid>
     
     <%-- Results Data --%>
-    <tags:pagedBox2 nameKey="analysis.results" searchResult="${result.searchResult}" baseUrl="results" >
+    <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="results" >
         
         <table class="compactResultsTable">
         

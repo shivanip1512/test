@@ -3,6 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="analysis.progress">
 
@@ -17,7 +18,7 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />      
         <%-- ADA Progress --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.progress.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.progress.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
 
     <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysis.progress">
@@ -38,10 +39,10 @@
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>
                         <c:when test="${backingBean.excludeBadQualities}">
-                            <cti:msg key="yukon.web.modules.amr.analysis.normalQualitiesOnly" />
+                            <i:inline key="yukon.web.modules.amr.analysis.normalQualitiesOnly" />
                         </c:when>
                         <c:otherwise>
-                            <cti:msg key="yukon.web.modules.amr.analysis.allQualities" />
+                            <i:inline key="yukon.web.modules.amr.analysis.allQualities" />
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>
@@ -61,7 +62,7 @@
 
         <%-- SUCCESS --%>
         <div class="normalBoldLabel bottomPadded">
-            <cti:msg key="yukon.web.modules.amr.analysis.progress.successLabel" />
+            <i:inline key="yukon.web.modules.amr.analysis.progress.successLabel" />
             <span class="okGreen">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
             </span>
@@ -69,7 +70,7 @@
 
         <%-- FAIL --%>
         <div class="normalBoldLabel bottomPadded">
-            <cti:msg key="yukon.web.modules.amr.analysis.progress.failLabel" />
+            <i:inline key="yukon.web.modules.amr.analysis.progress.failLabel" />
             <span class="errorRed">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
             </span>

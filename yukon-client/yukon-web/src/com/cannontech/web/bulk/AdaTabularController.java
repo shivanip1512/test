@@ -19,9 +19,11 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -32,6 +34,7 @@ public class AdaTabularController {
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private ArchiveDataAnalysisService archiveDataAnalysisService;
     private DateFormattingService dateFormattingService;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping("archiveDataAnalysis/tabular")
     public String tabular(ModelMap model, int analysisId) {
@@ -51,6 +54,7 @@ public class AdaTabularController {
     
     @RequestMapping("archiveDataAnalysis/csv")
     public String csv(ModelMap model, HttpServletResponse response, YukonUserContext userContext, int analysisId) throws IOException {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId);
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisService.getDevicePointValuesList(data);
@@ -58,7 +62,7 @@ public class AdaTabularController {
         
         //convert date/times into String array for header
         String[] headerRow = new String[dateTimeList.size()+1];
-        headerRow[0] = "Device Name";
+        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.analysis.tabular.deviceName");
         for(int i = 0; i < dateTimeList.size(); i++) {
             headerRow[i+1] = dateFormattingService.format(dateTimeList.get(i), DateFormatEnum.DATEHM, userContext);
         }
@@ -116,5 +120,10 @@ public class AdaTabularController {
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }

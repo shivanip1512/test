@@ -15,7 +15,6 @@ import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -53,10 +52,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
                 readType = ReadType.DATA_PRESENT;
             }
             
-            PaoIdentifier paoIdentifier = new PaoIdentifier(rs.getInt("deviceId"), rs.getEnum("Type", PaoType.class));
-            
             Interval interval = new Interval(startTime, intervalDuration);
-            ArchiveData archiveData = new ArchiveData(interval, readType, changeId, paoIdentifier);
+            ArchiveData archiveData = new ArchiveData(interval, readType, changeId);
             
             return archiveData;
         }
@@ -97,7 +94,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public void insertSlotValues(PaoIdentifier paoIdentifier, int analysisId, int pointId, boolean excludeBadPointQualities) {
+    public void insertSlotValues(PaoIdentifier paoIdentifier, Analysis analysis, int pointId, boolean excludeBadPointQualities) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ArchiveDataAnalysisSlotValue");
         sql.append("  SELECT").append(paoIdentifier.getPaoId()).append("AS DeviceId,").append("slot.SlotId, rph2.MaxChangeId");
@@ -109,9 +106,11 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         if(excludeBadPointQualities) {
             sql.append("    AND Quality").eq(PointQuality.Normal);
         }
+        sql.append("        AND Timestamp").gt(analysis.getDateTimeRange().getStart());
+        sql.append("        AND Timestamp").lte(analysis.getDateTimeRange().getEnd());
         sql.append("      GROUP BY Timestamp");
         sql.append("    ) rph2 ON slot.StartTime = rph2.Timestamp");
-        sql.append("  WHERE slot.AnalysisId").eq(analysisId);
+        sql.append("  WHERE slot.AnalysisId").eq(analysis.getAnalysisId());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -194,10 +193,9 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     
     private DeviceArchiveData getDeviceSlotValues(Analysis analysis, PaoIdentifier paoIdentifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Type, DeviceId, StartTime, ChangeId, AnalysisId");
+        sql.append("SELECT StartTime, ChangeId, AnalysisId");
         sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
         sql.append("  JOIN ArchiveDataAnalysisSlot slot ON slotValue.slotId = slot.slotId");
-        sql.append("  JOIN YukonPAObject ypo ON ypo.paobjectId = slotValue.deviceId");
         sql.append("WHERE AnalysisId").eq(analysis.getAnalysisId());
         sql.append("AND DeviceId").eq(paoIdentifier.getPaoId());
         

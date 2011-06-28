@@ -17,7 +17,7 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         <%-- archive data analysis --%>
-        <cti:crumbLink><cti:msg2 key="yukon.web.modules.amr.analysis.home.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.home.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <cti:includeScript link="/JavaScript/CalendarTagFuncs.js"/>
@@ -37,12 +37,12 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".startDateLabel">
                         <tags:dateTimeInput path="startDate" inline="true" fieldValue="${startDateInitialValue}"/>
-                        <cti:msg2 key="yukon.web.modules.amr.analysis.home.exclusive"/>
+                        <i:inline key="yukon.web.modules.amr.analysis.home.exclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".stopDateLabel">
                         <tags:dateTimeInput path="stopDate" inline="true" fieldValue="${stopDateInitialValue}"/>
-                        <cti:msg2 key="yukon.web.modules.amr.analysis.home.inclusive"/>
+                        <i:inline key="yukon.web.modules.amr.analysis.home.inclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".interval">

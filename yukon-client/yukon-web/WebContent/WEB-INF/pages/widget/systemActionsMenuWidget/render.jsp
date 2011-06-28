@@ -1,11 +1,11 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:url var="phaseDetectUrl" value="/spring/amr/phaseDetect/home"/>
 <cti:url var="archiveDataAnalysesUrl" value="/spring/bulk/archiveDataAnalysis/list"/>
 <div>
-    <a href="${archiveDataAnalysesUrl}">Archive Data Analyses</a><br>
+    <a href="${archiveDataAnalysesUrl}"><i:inline key="yukon.web.widgets.systemActionsMenuWidget.archiveDataAnalysis"/></a><br>
     <cti:checkRolesAndProperties value="PHASE_DETECT">
-        <a href="${phaseDetectUrl}">Phase Detection</a><br/>
+        <a href="${phaseDetectUrl}"><i:inline key="yukon.web.widgets.systemActionsMenuWidget.phaseDetect"/></a><br/>
     </cti:checkRolesAndProperties>
-    
 </div>
