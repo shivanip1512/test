@@ -31,6 +31,8 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/groupEditor/*")
@@ -165,6 +167,15 @@ public class GroupEditorController {
         model.addAttribute("searchResult", searchResult);
         List<LiteYukonUser> users = searchResult.getResultList();
         model.addAttribute("users", users);
+        
+        List<Integer> alreadyAssignedUserIds = 
+            Lists.transform(users, new Function<LiteYukonUser, Integer>() {
+                @Override
+                public Integer apply(LiteYukonUser user) {
+                    return user.getUserID();
+                }
+            });
+        model.addAttribute("alreadyAssignedUserIds", alreadyAssignedUserIds);
         
         setupModelMap(model, group);
         

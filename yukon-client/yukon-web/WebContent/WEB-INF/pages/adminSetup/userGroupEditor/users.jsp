@@ -9,6 +9,7 @@
 <cti:standardPage module="adminSetup" page="users">
 
 <script type="text/javascript">
+var alreadyAssignedUserIds = ${cti:jsonString(alreadyAssignedUserIds)};
 
 function addUsers() {
     $('addUsersForm').submit();
@@ -69,6 +70,9 @@ function addUsers() {
                 <input type="hidden" name="groupId" value="${groupId}">
                 <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" linkType="button" 
                         nameKey="addUsers" multiSelectMode="true" endAction="addUsers"/>
+                <script type="text/javascript">
+                    userPicker.excludeIds = alreadyAssignedUserIds;
+                </script>
             </form>
         </div>
     </tags:pagedBox>
