@@ -790,14 +790,14 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
             if(!(::strcmp (argv[i], "/?")))
             {
-                cout << "/C       Reset (Cold Start) all 711's in system" << endl;
-                cout << "/D       Emetcon Double - CCU's Double feild transmissions" << endl;
-                cout << "/E       Trace Communication for failed communications (errors) only" << endl;
-                cout << "/N       No queueing to CCU 711's" << endl;
-                cout << "/R       Download emetcon routes" << endl;
-                cout << "/T       Trace Communication for all ports / remotes" << endl;
-                cout << "/W       VCU Wait - VCU transmissions on same port must wait for completion" << endl;
-                cout << endl;
+                cout << "/C       Reset (Cold Start) all 711's in system" << Cti::endl;
+                cout << "/D       Emetcon Double - CCU's Double feild transmissions" << Cti::endl;
+                cout << "/E       Trace Communication for failed communications (errors) only" << Cti::endl;
+                cout << "/N       No queueing to CCU 711's" << Cti::endl;
+                cout << "/R       Download emetcon routes" << Cti::endl;
+                cout << "/T       Trace Communication for all ports / remotes" << Cti::endl;
+                cout << "/W       VCU Wait - VCU transmissions on same port must wait for completion" << Cti::endl;
+                cout << Cti::endl;
                 exit(-1);
             }
         }

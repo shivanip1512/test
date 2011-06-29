@@ -14,7 +14,6 @@
 #include "applist.h"
 #include "con_mgr.h"
 
-using std::endl;
 
 CtiApplList::CtiApplList() :
    mHash(T::hash)

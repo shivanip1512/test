@@ -142,7 +142,7 @@ int CtiFDRDnpSlave::readConfig()
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Added server mapping: " << serverAddress
-                        << " -> " << serverName << endl;
+                        << " -> " << serverName << Cti::endl;
                 }
             }
         }

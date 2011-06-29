@@ -83,7 +83,7 @@ void CtiCalcLogicService::RunInConsole( DWORD argc, LPTSTR *argv )
     //We need to catch ctrl-c so we can stop
     if( !SetConsoleCtrlHandler( (PHANDLER_ROUTINE)MyCtrlHandler,  TRUE ) )
     {
-        cerr << "Could not install control handler" << endl;
+        cerr << "Could not install control handler" << Cti::endl;
         _ok = FALSE;
     }
 
@@ -1756,14 +1756,14 @@ void CtiCalcLogicService::loadConfigParameters()
     else
     {
         _shutdownOnThreadTimeout = false;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : " << _shutdownOnThreadTimeout << endl;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : " << _shutdownOnThreadTimeout << Cti::endl;
     }
 
     strcpy(var, "CALC_LOGIC_RUN_HISTORICAL");
     if( ciStringEqual(gConfigParms.getValueAsString(var),"true") )
     {
         _runCalcHistorical = true;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : " << _shutdownOnThreadTimeout << endl;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : " << _shutdownOnThreadTimeout << Cti::endl;
     }
     else
     {
@@ -1774,7 +1774,7 @@ void CtiCalcLogicService::loadConfigParameters()
     if( ciStringEqual(gConfigParms.getValueAsString(var),"true") )
     {
         _runCalcBaseline = true;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : " << _shutdownOnThreadTimeout << endl;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : " << _shutdownOnThreadTimeout << Cti::endl;
     }
     else
     {
@@ -1788,7 +1788,7 @@ void CtiCalcLogicService::loadConfigParameters()
     }
     else
     {
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_IGNORE_TIME_VALID_TAG default : " << _ignoreTimeValidTag << endl;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_IGNORE_TIME_VALID_TAG default : " << _ignoreTimeValidTag << Cti::endl;
         _ignoreTimeValidTag = false;
     }
 

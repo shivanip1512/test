@@ -43,7 +43,6 @@
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 using std::string;
-using std::endl;
 using std::list;
 
 CtiDeviceION::CtiDeviceION() :
@@ -148,7 +147,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
 
                     break;
@@ -268,8 +267,8 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command. Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << "Unsupported command. Command = " << parse.getCommand() << std::endl;
             }
 
             break;
@@ -312,8 +311,8 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
+            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << std::endl;
+            dout << CtiTime() << "   Command: " << pReq->CommandString() << std::endl;
         }
 
         resultString = "NoMethod or invalid command.";
@@ -358,7 +357,7 @@ void CtiDeviceION::initEventLogPosition( void )
                 if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "**** Checkpoint: Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
             }
         }
@@ -373,7 +372,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     pReq->setCommandString("scan general");
@@ -399,7 +398,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     pReq->setCommandString("scan integrity");
@@ -424,7 +423,7 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     pReq->setCommandString("scan accumulator");
@@ -465,7 +464,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
 
                 expectMore = true;
@@ -572,7 +571,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
 
                     expectMore = true;
@@ -820,7 +819,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << std::endl;
     }
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -926,7 +925,7 @@ void CtiDeviceION::DecodeDatabaseReader(Cti::RowReader &rdr)
    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
    }
 
    _ion.setAddresses(_address.getMasterAddress(), _address.getSlaveAddress());

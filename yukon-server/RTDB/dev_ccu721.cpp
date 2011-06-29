@@ -208,11 +208,11 @@ string Ccu721Device::queueReport() const
 
     _klondike.getRequestStatus(waiting, pending, queued, completed);
 
-    report << "Waiting requests (INUSE) : " << setw(5) << waiting.size() << " : in Yukon's queue" << endl;
+    report << "Waiting requests (INUSE) : " << setw(5) << waiting.size() << " : in Yukon's queue" << Cti::endl;
 
     report << setw(8) << "PaoId" << "|"
            << setw(3) << "Pri"   << "|"
-                      << "Command" << endl;
+                      << "Command" << Cti::endl;
 
     for each(KlondikeProtocol::request_status request in waiting)
     {
@@ -224,29 +224,29 @@ string Ccu721Device::queueReport() const
 
             report << setw(8) << om->DeviceID << "|"
                    << setw(3) << om->Priority << "|"
-                              << om->Request.CommandStr << endl;
+                              << om->Request.CommandStr << Cti::endl;
         }
         else if( request.requester == this )
         {
             //  so far, we only send MCT timesyncs to the CCU without an OutMessage
             report << setw(8) << "(none)"         << "|"
                    << setw(3) << request.priority << "|"
-                              << "(MCT-400 broadcast timesync)" << endl;
+                              << "(MCT-400 broadcast timesync)" << Cti::endl;
         }
         else if( request.requester )
         {
             report << setw(8) << request.requester << "|"
                    << setw(3) << request.priority       << "|"
-                              << "(unknown request handle)" << endl;
+                              << "(unknown request handle)" << Cti::endl;
         }
     }
 
-    report << "Pending requests (INUSE) : " << setw(5) << pending.size() << " : waiting for ACK from CCU" << endl;
+    report << "Pending requests (INUSE) : " << setw(5) << pending.size() << " : waiting for ACK from CCU" << Cti::endl;
 
     report << setw(8) << "Queue ID" << "|"
            << setw(8) << "MCT ID"   << "|"
            << setw(3) << "Pri"      << "|"
-                      << "Command" << endl;
+                      << "Command" << Cti::endl;
 
     for each(KlondikeProtocol::request_status request in pending)
     {
@@ -259,7 +259,7 @@ string Ccu721Device::queueReport() const
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << om->DeviceID << "|"
                    << setw(3) << om->Priority << "|"
-                              << om->Request.CommandStr << endl;
+                              << om->Request.CommandStr << Cti::endl;
         }
         else if( request.requester == this )
         {
@@ -267,18 +267,18 @@ string Ccu721Device::queueReport() const
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << "(none)"         << "|"
                    << setw(3) << request.priority << "|"
-                              << "(MCT-400 broadcast timesync)" << endl;
+                              << "(MCT-400 broadcast timesync)" << Cti::endl;
         }
         else if( request.requester )
         {
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << request.requester << "|"
                    << setw(3) << request.priority       << "|"
-                              << "(unknown request handle)" << endl;
+                              << "(unknown request handle)" << Cti::endl;
         }
     }
 
-    report << "Remote requests (INCCU)  : " << setw(5) << queued.size() << " : in the CCU's queue" << endl;
+    report << "Remote requests (INCCU)  : " << setw(5) << queued.size() << " : in the CCU's queue" << Cti::endl;
 
     report << setw(8) << "Queue ID" << "|"
            << setw(8) << "MCT ID"   << "|"
@@ -296,7 +296,7 @@ string Ccu721Device::queueReport() const
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << om->DeviceID << "|"
                    << setw(3) << om->Priority << "|"
-                              << om->Request.CommandStr << endl;
+                              << om->Request.CommandStr << Cti::endl;
         }
         else if( request.requester == this )
         {
@@ -304,21 +304,21 @@ string Ccu721Device::queueReport() const
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << "(none)"         << "|"
                    << setw(3) << request.priority << "|"
-                              << "(MCT-400 broadcast timesync)" << endl;
+                              << "(MCT-400 broadcast timesync)" << Cti::endl;
         }
         else if( request.requester )
         {
             report << setw(8) << request.queue_id << "|"
                    << setw(8) << request.requester << "|"
                    << setw(3) << request.priority       << "|"
-                              << "(unknown request handle)" << endl;
+                              << "(unknown request handle)" << Cti::endl;
         }
     }
 
-    report << "Completed requests       : " << setw(5) << completed.size() << " : in the CCU's queue" << endl;
+    report << "Completed requests       : " << setw(5) << completed.size() << " : in the CCU's queue" << Cti::endl;
 
     report << setw(8) << "MCT ID"   << "|"
-                      << "Command" << endl;
+                      << "Command" << Cti::endl;
 
     for each(KlondikeProtocol::request_status request in completed)
     {
@@ -329,18 +329,18 @@ string Ccu721Device::queueReport() const
             OUTMESS *om = *itr;
 
             report << setw(8) << om->DeviceID << "|"
-                              << om->Request.CommandStr << endl;
+                              << om->Request.CommandStr << Cti::endl;
         }
         else if( request.requester == this )
         {
             //  so far, we only send MCT timesyncs to the CCU without an OutMessage
             report << setw(8) << "(none)" << "|"
-                              << "(MCT-400 broadcast timesync)" << endl;
+                              << "(MCT-400 broadcast timesync)" << Cti::endl;
         }
         else if( request.requester )
         {
             report << setw(8) << request.requester << "|"
-                              << "(unknown request handle)" << endl;
+                              << "(unknown request handle)" << Cti::endl;
         }
     }
 

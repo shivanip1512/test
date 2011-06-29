@@ -2,7 +2,7 @@
 #include "wpsc.h"
 
 using std::string;
-using std::endl;
+using Cti::endl;
 
 /*-----------------------------------------------------------------------------*
 *

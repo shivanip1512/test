@@ -120,7 +120,7 @@ void CtiLMClientListener::stop()
     }
     catch(RWxmsg& msg)
     {
-        std::cerr << msg.why() << endl;
+        std::cerr << msg.why() << Cti::endl;
     }
 }
 

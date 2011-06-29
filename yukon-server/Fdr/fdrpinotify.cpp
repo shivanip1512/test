@@ -69,7 +69,7 @@ void CtiFDRPiNotify::handleNewPoints()
 		  logNow() << "Unable to register for "
 			<< (initial_count - count) << " of " << initial_count
 			<< " point notications from Pi, pisn_evmestablish returned "
-			<< getPiErrorDescription(err, "pisn_evmestablish") << endl;
+			<< getPiErrorDescription(err, "pisn_evmestablish") << Cti::endl;
 	  }
 
 	  forceUpdateAllPoints();
@@ -79,7 +79,7 @@ void CtiFDRPiNotify::handleNewPoints()
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
     logNow() << "Registered for " << count
-      << " points with Pi " << endl;
+      << " points with Pi " << Cti::endl;
   }
 }
 
@@ -100,7 +100,7 @@ void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Unable to find PI tag '" << tagName <<
         "' for point " << ctiPoint->getPointID() <<
-        ", pipt_findpoint returned " << piError << endl;
+        ", pipt_findpoint returned " << piError << Cti::endl;
     }
     return;
   }
@@ -118,7 +118,7 @@ void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
       logNow() << "Unable to register for point id "
         << pid
         << "with Pi, pisn_evmestablish returned "
-        << getPiErrorDescription(err, "pisn_evmestablish") << endl;
+        << getPiErrorDescription(err, "pisn_evmestablish") << Cti::endl;
   }
 
   //excessive since its only one point?
@@ -127,7 +127,7 @@ void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Registered for " << count << " points with Pi " << endl;
+    logNow() << "Registered for " << count << " points with Pi " << Cti::endl;
   }
 }
 
@@ -152,7 +152,7 @@ void CtiFDRPiNotify::unregisterAllPoints()
           logNow() << "Unable to unregistered for "
             << (initial_count - count) << " of " << initial_count
             << " point notications from Pi, pisn_evmdisestablish returned "
-            << getPiErrorDescription(err, "pisn_evmdisestablish") << endl;
+            << getPiErrorDescription(err, "pisn_evmdisestablish") << Cti::endl;
         }
       }
     }
@@ -162,7 +162,7 @@ void CtiFDRPiNotify::unregisterAllPoints()
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to unregistered for point notifications from Pi (not connected)" << endl;
+      logNow() << "Unable to unregistered for point notifications from Pi (not connected)" << Cti::endl;
     }
   }
   _registerList.clear();
@@ -189,7 +189,7 @@ void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
                  << pid
                  << ", pisn_evmdisestablish returned "
                  << getPiErrorDescription(err, "pisn_evmdisestablish")
-                 << endl;
+                 << Cti::endl;
       }
     }
   }
@@ -198,7 +198,7 @@ void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to unregister for point notification from Pi (not connected)" << endl;
+      logNow() << "Unable to unregister for point notification from Pi (not connected)" << Cti::endl;
     }
   }
   //Removing from register list
@@ -234,7 +234,7 @@ void CtiFDRPiNotify::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Unable to find PI tag '" << tagName <<
         "' for point " << translationPoint->getPointID() <<
-        ", pipt_findpoint returned " << piError << endl;
+        ", pipt_findpoint returned " << piError << Cti::endl;
     }
     return;
   }
@@ -276,7 +276,7 @@ void CtiFDRPiNotify::doUpdates()
         {
           CtiLockGuard<CtiLogger> doubt_guard( dout );
           logNow() << "Unable to update values from Pi, pisn_evmexceptions returned "
-            << getPiErrorDescription(err, "pisn_evmexceptions") << endl;
+            << getPiErrorDescription(err, "pisn_evmexceptions") << Cti::endl;
         }
         setConnected(false);
         throw PiException(err);
@@ -285,7 +285,7 @@ void CtiFDRPiNotify::doUpdates()
           || (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL))
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Received " << pointCount << " exceptions from Pi" << endl;
+        logNow() << "Received " << pointCount << " exceptions from Pi" << Cti::endl;
       }
       for (int i = 0; i < pointCount; ++i)
       {
@@ -318,7 +318,7 @@ void CtiFDRPiNotify::doUpdates()
     if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "No check made, no points registered." << endl;
+      logNow() << "No check made, no points registered." << Cti::endl;
     }
   }
 }
@@ -336,7 +336,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Forcing update of " << pointCount
-        << " points." << endl;
+        << " points." << Cti::endl;
     }
 
     vector<float> rvalList;
@@ -362,7 +362,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
         logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
-          << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
+          << getPiErrorDescription(err, "pisn_getsnapshots") << Cti::endl;
       }
     }
 

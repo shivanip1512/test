@@ -106,15 +106,15 @@ int CtiConfigParameters::RefreshConfigParameters()
                                 mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
                                 if( !p.second )
                                 {
-                                    cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
-                                    cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
+                                    cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << Cti::endl;
+                                    cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << Cti::endl;
                                     //delete Key;
                                     delete Val;
                                 }
 #ifdef DEBUGLEVEL100
                                 else
                                 {
-                                    cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
+                                    cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << Cti::endl;
                                 }
 #endif
                             }
@@ -159,18 +159,18 @@ CtiConfigParameters::Dump()
 
     if(mHash.size() > 0)
     {
-        cout << endl << "Configuration Parameters:" << endl;
+        cout << Cti::endl << "Configuration Parameters:" << Cti::endl;
         for( mHash_itr2 iter = mHash.begin(); iter != mHash.end(); iter++ )
         {
             Key = (*iter).first;
             Value = (CtiConfigValue*)(*iter).second;
 
-            cout << setiosflags(ios::left) << setw(30) << Key << " : " << setw(40) << Value->getValue() << endl;
+            cout << setiosflags(ios::left) << setw(30) << Key << " : " << setw(40) << Value->getValue() << Cti::endl;
         }
     }
     else
     {
-        cout << "No configuration exists." << endl;
+        cout << "No configuration exists." << Cti::endl;
     }
 }
 
@@ -336,7 +336,7 @@ double CtiConfigParameters::getValueAsDouble(const string& key, double defaultva
 
 void Usage(void)
 {
-    cout << "You must be daft" << endl;
+    cout << "You must be daft" << Cti::endl;
 }
 
 int main(int argc, char **argv)
@@ -354,10 +354,10 @@ int main(int argc, char **argv)
             exit(0);
         }
 
-        cout << "d is set to " << Opts.ReturnIntOpt('d') << endl;
-        if(Opts.isError()) cout << "Error " << Opts.isError() << endl;
-        cout << "e is set to " << Opts.ReturnDoubleOpt('e') << endl;
-        if(Opts.isError()) cout << "Error " << Opts.isError() << endl;
+        cout << "d is set to " << Opts.ReturnIntOpt('d') << Cti::endl;
+        if(Opts.isError()) cout << "Error " << Opts.isError() << Cti::endl;
+        cout << "e is set to " << Opts.ReturnDoubleOpt('e') << Cti::endl;
+        if(Opts.isError()) cout << "Error " << Opts.isError() << Cti::endl;
     }
     else
     {

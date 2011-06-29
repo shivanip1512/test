@@ -25,6 +25,7 @@
 #include <rw/zone.h>
 #include <iostream>
 
+#include "yukon.h"
 #include "ctidate.h"
 #include "ctitime.h"
 
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_ctidate_methods)
     BOOST_CHECK_EQUAL( 0, CtiDate::daysInMonthYear( 0, 1990) );
 
     // check the special time values
-    std::cout << "neg_infin date as string: " << CtiDate(CtiDate::neg_infin).asString() << std::endl;
+    std::cout << "neg_infin date as string: " << CtiDate(CtiDate::neg_infin).asString() << Cti::endl;
 
     /*---------- can not call year() day(), etc. on neg_infin
     std::cout << "neg_infin date year: " << CtiDate(CtiDate::neg_infin).year() << std::endl;
@@ -94,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_ctidate_methods)
 
     CtiDate ct1 = CtiDate(CtiDate::not_a_date);
 
-    std::cout << "not a date as string: " << ct1.asString() << std::endl;
+    std::cout << "not a date as string: " << ct1.asString() << Cti::endl;
 
     /*---------- can not call year() day(), etc. on not_a_date
     std::cout << "not a date year: " << ct1.year() << std::endl;

@@ -76,7 +76,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
                 // Oh no, porter is running on this machine already.
                 CloseHandle(hPorterEvents[ P_QUIT_EVENT ]);
 
-                std::cout << "Porter is already running!" << endl;
+                std::cout << "Porter is already running!" << Cti::endl;
 
                 exit(-1);
             }
@@ -87,7 +87,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 
                 if(hPorterEvents[ i ] == (HANDLE)NULL)
                 {
-                    std::cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
+                    std::cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << Cti::endl;
                     exit(-1);
                 }
             }

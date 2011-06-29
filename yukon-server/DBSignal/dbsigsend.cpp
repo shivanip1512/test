@@ -25,7 +25,7 @@ void main(int argc, char** argv)
    }
    else
    {
-      std::cout << argv[0] << " parameters: PointId, Description, Action, Priority" << std::endl;
+      std::cout << argv[0] << " parameters: PointId, Description, Action, Priority" << Cti::endl;
 
    }
 

@@ -88,14 +88,14 @@ VOID PortThread(void *pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
     }
     else
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+            dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << std::endl;
         }
 
         string thread_name = "Port " + CtiNumStr(Port->getPortID()).zpad(4);
@@ -124,7 +124,7 @@ VOID PortThread(void *pid)
                 if( entries > 0 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port "  << Port->getName() << " purged " << CtiNumStr(entries) << " expired OM's " << endl;
+                    dout << CtiTime() << " Port "  << Port->getName() << " purged " << CtiNumStr(entries) << " expired OM's " << std::endl;
                 }
             }
 
@@ -171,7 +171,7 @@ VOID PortThread(void *pid)
                     if( ticks > 1000 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -188,7 +188,7 @@ VOID PortThread(void *pid)
                     if( ticks > 1000 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
 
@@ -200,9 +200,9 @@ VOID PortThread(void *pid)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
-                        dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                        if(strlen(OutMessage->Request.CommandStr) > 0) dout << CtiTime() << " Command : " << OutMessage->Request.CommandStr << endl;
-                        if(QueEntries > 50) dout << CtiTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                        dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << std::endl;
+                        if(strlen(OutMessage->Request.CommandStr) > 0) dout << CtiTime() << " Command : " << OutMessage->Request.CommandStr << std::endl;
+                        if(QueEntries > 50) dout << CtiTime() << " Port has " << QueEntries << " pending OUTMESS requests " << std::endl;
                     }
                 }
             }
@@ -235,7 +235,7 @@ VOID PortThread(void *pid)
             if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
+                dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << std::endl;
             }
 
             if((status = CheckInhibitedState(Port, OutMessage, Device)) != NORMAL)
@@ -287,7 +287,7 @@ VOID PortThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
             }
 
@@ -299,7 +299,7 @@ VOID PortThread(void *pid)
                 if( ticks > 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
             }
 
@@ -352,7 +352,7 @@ VOID PortThread(void *pid)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+        dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << std::endl;
     }
 }
 
@@ -402,7 +402,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, const CtiPortSPtr &Port)
                             /* flush the queue's */
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
+                                dout << CtiTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << std::endl;
                             }
                             IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
 
@@ -466,7 +466,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
             if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Additional queue entry found for " << Device->getName() << endl;
+                dout << CtiTime() << " Additional queue entry found for " << Device->getName() << std::endl;
             }
         }
         else
@@ -526,7 +526,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
             if(gConfigParms.isTrue("DEBUG_TAP") && Device)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << std::endl;
             }
 
             Port->disconnect(Device, TraceFlag);
@@ -568,7 +568,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
                 if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
+                    dout << CtiTime() << " " << Port->getName() << ": IP ports open on usage." << std::endl;
                 }
             }
             /*
@@ -606,7 +606,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     return status;
@@ -758,7 +758,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                 }
 
                 delete OutMessage;
@@ -789,7 +789,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                 }
 
                 delete OutMessage;
@@ -807,7 +807,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Pausing to combine DO bits for Landis and Gyr LCR1000 Groups.  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_INITIAL_PAUSE", 10) << " seconds." << endl;
+            dout << CtiTime() << " Pausing to combine DO bits for Landis and Gyr LCR1000 Groups.  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_INITIAL_PAUSE", 10) << " seconds." << std::endl;
         }
 
         Sleep(1000 * gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_INITIAL_PAUSE", 10));
@@ -840,7 +840,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Pausing again to make certain no more groups are on the way...  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0) << " seconds." << endl;
+                    dout << CtiTime() << " Pausing again to make certain no more groups are on the way...  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0) << " seconds." << std::endl;
                 }
                 Sleep(1000 * gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0));
             }
@@ -875,7 +875,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         if( gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << CtiTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;
+            slog << CtiTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << Cti::endl;
         }
     }
 
@@ -896,7 +896,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
+                dout << CtiTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << std::endl;
 
                 status = BADPARAM;
             }
@@ -1030,7 +1030,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Error Replacing entry onto Queue\n" << endl;
+                                        dout << CtiTime() << " Error Replacing entry onto Queue\n" << std::endl;
                                     }
                                 }
                                 else
@@ -1129,10 +1129,10 @@ void processPreloads(CtiPortSPtr Port)
             if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadBytes() = " << dev->getPreloadBytes() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadBytes() = " << dev->getPreloadBytes() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
 
             if( dev->getCycleTime() )
@@ -1150,7 +1150,7 @@ void processPreloads(CtiPortSPtr Port)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\" - should only see this once per port per cycle **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\" - should only see this once per port per cycle **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
             }
@@ -1158,7 +1158,7 @@ void processPreloads(CtiPortSPtr Port)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - zero-length cycle time for device \"" << dev->getName() << "\" - unable to insert preloads **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - zero-length cycle time for device \"" << dev->getName() << "\" - unable to insert preloads **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
             }
         }
@@ -1248,12 +1248,12 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         if( !Device->isSingle() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         else if( status = ds->recvCommRequest(OutMessage) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         else
                         {
@@ -1364,7 +1364,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop entered **********************************************" << endl;
+                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop entered **********************************************" << std::endl;
                             }
 
                             while( !ansi.isTransactionComplete() )
@@ -1376,7 +1376,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< ansiDev->getName()<<" loop is A-B-N-O-R-M-A-L " << endl;
+                                    dout << CtiTime() << " "<< ansiDev->getName()<<" loop is A-B-N-O-R-M-A-L " << std::endl;
                                 }
                                 ansi.decode( trx, status );
 
@@ -1413,13 +1413,13 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                 Sleep(1000);
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< ansiDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
+                                    dout << CtiTime() << " "<< ansiDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << std::endl;
                                 }
                                 InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop exited  **********************************************" << endl;
+                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop exited  **********************************************" << std::endl;
                             }
                         }
                         status = ansiDev->sendCommResult( InMessage );
@@ -1464,7 +1464,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             if( status != NORMAL )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< markv->getName() << " loop is A-B-N-O-R-M-A-L " << endl;
+                                dout << CtiTime() << " "<< markv->getName() << " loop is A-B-N-O-R-M-A-L " << std::endl;
                             }
 
                             error = transdata.decode( trx, status );
@@ -1483,8 +1483,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << markv->getName() << " has timed out on its operations." << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                dout << markv->getName() << " has timed out on its operations." << std::endl;
                             }
                         }
 
@@ -1494,7 +1494,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             if( isDebugLudicrous() )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " ! comm error !" << endl;
+                                dout << CtiTime() << " ! comm error !" << std::endl;
                             }
                         }
 
@@ -1579,7 +1579,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** EXCEPTION on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
 
                         break;
@@ -1659,7 +1659,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         if( Port->isSimulated() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " " <<  IED->getName() << ": " << OutMessage->Request.CommandStr << endl;
+                            slog << CtiTime() << " " <<  IED->getName() << ": " << OutMessage->Request.CommandStr << Cti::endl;
                         }
 
                         IED->freeDataBins();
@@ -1746,7 +1746,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                             }
                         }
 
@@ -1835,7 +1835,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
 
                         status = BADPORT;
@@ -1874,8 +1874,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << std::endl;
                         }
 
                         status = BADID;
@@ -1992,7 +1992,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << Device->getName() << " results pending." << endl;
+                                    dout << CtiTime() << " " << Device->getName() << " results pending." << std::endl;
                                 }
 
                                 trx.setInBuffer(InMessage->Buffer.InMessage);
@@ -2100,8 +2100,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << std::endl;
                             }
                         }
                     }
@@ -2150,8 +2150,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "**** FIX FIX FIX FIX FIX THIS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                dout << "**** FIX FIX FIX FIX FIX THIS **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                             }
                             // PreVTU (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength - 3), (USHORT)Device->getAddress(), (USHORT)(VTURouteRecord->getBus()), (USHORT)OutMessage->InLength, (USHORT)(OutMessage->TimeOut));
                             break;
@@ -2177,8 +2177,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << std::endl;
                             }
                         }
                     }
@@ -2246,8 +2246,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << std::endl;
                         }
                     }
                 }
@@ -2463,7 +2463,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                                 {
                                                     {
                                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                        dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                        dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << std::endl;
                                                     }
 
                                                     if(trx.doTrace(status))
@@ -2569,8 +2569,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                    dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << std::endl;
                                 }
                             }
                         }
@@ -2597,8 +2597,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Unknown Protocol Type" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << " Unknown Protocol Type" << std::endl;
                 }
                 break;
             }
@@ -2610,7 +2610,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION PROCESSING COMMS TO " << Device->getName() << " **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " **** EXCEPTION PROCESSING COMMS TO " << Device->getName() << " **** " << __FILE__ << " (" << __LINE__ << ") " << std::endl;
         }
     }
 
@@ -2678,7 +2678,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Device->getName() << " RETRY SUBMITTED " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " " << Device->getName() << " RETRY SUBMITTED " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                     break; // **** DO NOT FALL THROUGH ****
                 }
@@ -2712,7 +2712,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                         // VioWrtTTY("Error Writing Retry into Queue\n\r", 31, 0);
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Writing Retry into Queue" << endl;
+                            dout << CtiTime() << " Error Writing Retry into Queue" << std::endl;
                         }
 
                         delete OutMessage;
@@ -2771,7 +2771,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << Port->getName() << " has a COMM category error. " << CommResult << endl;
+            dout << CtiTime() << " Port " << Port->getName() << " has a COMM category error. " << CommResult << std::endl;
         }
 
         // This tallies success/fail on the port.  The port decides when he has become questionable.
@@ -2788,15 +2788,15 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
 
         if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && reportablechange)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
-                dout << CtiTime() << " Device " << Device->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Device->isCommFailed() ? "FAILED" : "GOOD") << endl;
+                dout << CtiTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << std::endl;
+                dout << CtiTime() << " Device " << Device->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Device->isCommFailed() ? "FAILED" : "GOOD") << std::endl;
             }
         }
 
@@ -2808,7 +2808,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " EXCEPTION CAUGHT on port " << Port->getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " EXCEPTION CAUGHT on port " << Port->getName() << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     if(status == RETRY_SUBMITTED)
@@ -2821,7 +2821,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
     }
     else if(CommResult != NORMAL)
@@ -2844,7 +2844,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
         }
     }
@@ -2893,7 +2893,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice->getName() << "\" ";
-                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                             }
                         }
                     }
@@ -2951,7 +2951,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
                         blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
@@ -3022,7 +3022,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                     }
                     else if( !status && nack2 )
@@ -3037,7 +3037,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                                                           MessageFlag_AddCcu711CooldownSilence)) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                     }
 
@@ -3060,7 +3060,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice->getName() << "\" ";
-                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                             }
                         }
                     }
@@ -3105,7 +3105,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         /* get how long this command will take */
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         // VCUTime (OutMessage, &pInfo->NextCommandTime);
 
@@ -3124,7 +3124,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     #else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "**** ADD CODE HERE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "**** ADD CODE HERE **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
     #endif
                     }
@@ -3142,7 +3142,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Error Requeing Command" << endl;
+                            dout << "Error Requeing Command" << std::endl;
                         }
                         else
                         {
@@ -3162,7 +3162,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
+                            dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << std::endl;
                         }
 
                         /* we need to reque this one  */
@@ -3172,7 +3172,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Error Requeing Command" << endl;
+                            dout << "Error Requeing Command" << std::endl;
                         }
                         else
                         {
@@ -3213,7 +3213,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     // Statistics processing.
@@ -3322,8 +3322,8 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << endl;
+                            dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                            dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << std::endl;
                         }
                         status = SOCKWRITE;
                     }
@@ -3334,7 +3334,7 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     return status;
@@ -3399,7 +3399,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                         }
                         delete OutMessage;
                     }
@@ -3425,7 +3425,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                     }
                     delete OutMessage;
                 }
@@ -3538,7 +3538,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << aIED->getName() << " status = " << status << " " << FormatError( status ) << endl;
+                    dout << CtiTime() << " " << aIED->getName() << " status = " << status << " " << FormatError( status ) << std::endl;
                 }
             }
 
@@ -3546,9 +3546,9 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Possible infinite loop on device " << aIED->getName() << endl;
-                    dout << "  breaking loop, forcing abort state." << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << "  Possible infinite loop on device " << aIED->getName() << std::endl;
+                    dout << "  breaking loop, forcing abort state." << std::endl;
                 }
 
                 status = !NORMAL;
@@ -3565,9 +3565,9 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << aIED->getName() << " State set to abort" << endl;
-                dout << "  status was returned as " << status << ".  This may be a ied state or an actual error status." << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << "  " << aIED->getName() << " State set to abort" << std::endl;
+                dout << "  status was returned as " << status << ".  This may be a ied state or an actual error status." << std::endl;
             }
 
             status = !NORMAL;
@@ -3580,7 +3580,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION on port " << aPortRecord->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION on port " << aPortRecord->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
         }
     }
 
@@ -3613,7 +3613,7 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error Writing to Return Nexus " << endl;
+                dout << CtiTime() << " Error Writing to Return Nexus " << std::endl;
             }
             aIED->setCurrentState(CtiDeviceIED::StateScanAbort);
 
@@ -3842,7 +3842,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                     }
                 }
                 else
@@ -3851,7 +3851,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Shuffling the Queue.  Message lost " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " Error Shuffling the Queue.  Message lost " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         delete pOutMessage;
                         pOutMessage = NULL;
@@ -3862,7 +3862,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Shuffling the Queue.  CONTROL message lost " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " Error Shuffling the Queue.  CONTROL message lost " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                         }
                         delete OutMessage;
                         OutMessage = NULL;
@@ -3871,7 +3871,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << Port->getName() << " OutMessage Swap!" << endl;
+                            dout << CtiTime() << " " << Port->getName() << " OutMessage Swap!" << std::endl;
                         }
                         //OutMessage = pOutMessage;
                         OutMessage = 0;
@@ -3884,7 +3884,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint port " << shPort->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint port " << shPort->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     return bSubstitutionMade;
@@ -3936,7 +3936,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
         }
         else
@@ -3947,7 +3947,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
 
     return mayExecute;
@@ -4008,7 +4008,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
                 if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Device->getName() << " may not execute this request.  Requeue and scan for another." << endl;
+                    dout << CtiTime() << " " << Device->getName() << " may not execute this request.  Requeue and scan for another." << std::endl;
                 }
 
                 // Decide how to requeue the failed OM.
@@ -4019,7 +4019,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
     }
     // 030503 CGP END Exclusion logic.
 
@@ -4044,11 +4044,11 @@ INT ProcessPortPooling(CtiPortSPtr Port)
 
                 if(Port->getConnectedDevice())
                 {
-                    dout << ". Connected To: " << GetDeviceName(Port->getConnectedDevice()) << endl;
+                    dout << ". Connected To: " << GetDeviceName(Port->getConnectedDevice()) << std::endl;
                 }
                 else
                 {
-                    dout << endl;
+                    dout << std::endl;
                 }
             }
 
@@ -4088,7 +4088,7 @@ INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
             if(PorterDebugLevel & PORTER_DEBUG_COMMFAIL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " comm failing all attached comm status points" << endl;
+                dout << CtiTime() << " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " comm failing all attached comm status points" << std::endl;
             }
 
             vector<CtiDeviceSPtr> devices;
@@ -4100,7 +4100,7 @@ INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
+            dout << CtiTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << std::endl;
         }
 
         if( Device && Device->hasExclusions() )
@@ -4145,7 +4145,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
             if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " looking for new deviceID..." << endl;
+                dout << CtiTime() << " looking for new deviceID..." << std::endl;
             }
 
             Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
@@ -4157,7 +4157,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " assigned new deviceID = " << Device->getID() << endl;
+                    dout << CtiTime() << " assigned new deviceID = " << Device->getID() << std::endl;
                 }
             }
             else
@@ -4165,7 +4165,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " did not assign new deviceID" << endl;
+                    dout << CtiTime() << " did not assign new deviceID" << std::endl;
                 }
 
                 SendError(OutMessage, UnknownError);
@@ -4181,8 +4181,8 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << Port->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
-                    " Porter does not seem to know about him and is throwing away the message!" << endl;
+                    dout << CtiTime() << " Port " << Port->getName() << " just received a message for device id " << OutMessage->DeviceID << std::endl << \
+                    " Porter does not seem to know about him and is throwing away the message!" << std::endl;
                 }
 
                 try
@@ -4197,7 +4197,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
                 }
 
                 status = CONTINUE_LOOP;
@@ -4282,7 +4282,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error Reading Port Queue " << Port->getName() << endl;
+                dout << CtiTime() << " Error Reading Port Queue " << Port->getName() << std::endl;
             }
         }
 
@@ -4322,7 +4322,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
                 if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                    dout << CtiTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << std::endl;
                 }
             }
             else
@@ -4330,14 +4330,14 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
                 if(isDebugLudicrous() && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                    dout << CtiTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << std::endl;
                 }
 
                 if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                     }
 
                     delete OutMessage;
@@ -4358,7 +4358,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
+                dout << CtiTime() << " Re-queuing original (excluded) message at high priority to examine next" << std::endl;
             }
             // FALL THROUGH!
         }
@@ -4369,7 +4369,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << std::endl;
                 }
 
                 delete OutMessage;
@@ -4396,7 +4396,7 @@ CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&Ou
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Additional RIPPLE'd queue entry found for port " << Port->getName() << endl;
+            dout << CtiTime() << " Additional RIPPLE'd queue entry found for port " << Port->getName() << std::endl;
         }
 
         BYTE           ReadPriority;
@@ -4406,7 +4406,7 @@ CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&Ou
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
             match = 0;
         }

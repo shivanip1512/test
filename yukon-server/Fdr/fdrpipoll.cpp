@@ -92,7 +92,7 @@ void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, b
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Unable to find PI tag '" << tagName <<
         "' for point " << translationPoint->getPointID() <<
-        ", pipt_findpoint returned " << piError << endl;
+        ", pipt_findpoint returned " << piError << Cti::endl;
     }
     return;
   }
@@ -171,7 +171,7 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << pollInfo.pointList.size() <<
-        " points will update every " << pollPeriod << " seconds" << endl;
+        " points will update every " << pollPeriod << " seconds" << Cti::endl;
     }
   }
   else
@@ -179,7 +179,7 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Check Point. No points setup for the peroid " << period << ", expected at least 1." << endl;
+      logNow() << "Check Point. No points setup for the peroid " << period << ", expected at least 1." << Cti::endl;
     }
   }
 }
@@ -223,7 +223,7 @@ void CtiFDRPiPoll::handleNewPoints()
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << pollInfo.pointList.size() <<
-        " points will update every " << pollPeriod << " seconds" << endl;
+        " points will update every " << pollPeriod << " seconds" << Cti::endl;
     }
 
   }
@@ -252,7 +252,7 @@ void CtiFDRPiPoll::doUpdates()
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
         logNow() << "Checking " << pollInfo.pointList.size()
-          << " points for period " << pollPeriod << endl;
+          << " points for period " << pollPeriod << Cti::endl;
       }
 
       int pointCount = pollInfo.pointList.size(); //all sizes should be identical
@@ -272,7 +272,7 @@ void CtiFDRPiPoll::doUpdates()
         {
           CtiLockGuard<CtiLogger> doubt_guard( dout );
           logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
-            << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
+            << getPiErrorDescription(err, "pisn_getsnapshots") << Cti::endl;
         }
         setConnected(false);
         throw PiException(err);

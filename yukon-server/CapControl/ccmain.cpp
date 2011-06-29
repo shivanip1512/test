@@ -48,7 +48,7 @@ int main(int argc, char* argv[] )
     {
        // Oh no, porter is running on this machine already.
        CloseHandle(hExclusion);
-       cout << "Cap Control is already running!!!" << endl;
+       cout << "Cap Control is already running!!!" << Cti::endl;
        exit(-1);
     }
 
@@ -56,7 +56,7 @@ int main(int argc, char* argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create CapControl!!!" << endl;
+       cout << "Couldn't create CapControl!!!" << Cti::endl;
        exit(-1);
     }
 
@@ -65,7 +65,7 @@ int main(int argc, char* argv[] )
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
         {
-            cout << CtiTime()  << " - Installing as a service..." << endl;
+            cout << CtiTime()  << " - Installing as a service..." << Cti::endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_DEMAND_START,
@@ -75,7 +75,7 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
         {
-            cout << CtiTime()  << " - Installing as an autostart service..." << endl;
+            cout << CtiTime()  << " - Installing as an autostart service..." << Cti::endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_AUTO_START,
@@ -85,7 +85,7 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
-            cout << CtiTime()  << " - Removing service..." << endl;
+            cout << CtiTime()  << " - Removing service..." << Cti::endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Remove();
         }

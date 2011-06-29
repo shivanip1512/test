@@ -163,8 +163,8 @@ CtiLogger& CtiLogger::acquire()
 
         if(!isacq)
         {
-            cerr << CtiTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
-            cerr << "  Thread TID=" << _log_mux.lastAcquiredByTID() << " was the last to acquire " << endl;
+            cerr << CtiTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << Cti::endl;
+            cerr << "  Thread TID=" << _log_mux.lastAcquiredByTID() << " was the last to acquire " << Cti::endl;
         }
 
     } while (!isacq);
@@ -220,10 +220,10 @@ void CtiLogger::doOutput()
                 {
                     nag = true;
                     RWMutexLock::LockGuard  guard(coutMux);
-                    cout << endl << "*********************" << endl;
-                    cout << "ERROR!  Unable to open output file " << _today_filename << endl;
-                    cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
-                    cout << "*********************" << endl << endl;
+                    cout << Cti::endl << "*********************" << Cti::endl;
+                    cout << "ERROR!  Unable to open output file " << _today_filename << Cti::endl;
+                    cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << Cti::endl;
+                    cout << "*********************" << Cti::endl << Cti::endl;
                 }
             }
 
@@ -235,18 +235,18 @@ void CtiLogger::doOutput()
 
                 if( !_project.empty() && !_version.empty() )
                 {
-                    s << headerTime << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
+                    s << headerTime << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << Cti::endl;
                 }
 
                 if( _first_output )
                 {
                     _first_output = false;
 
-                    s << headerTime << " --------  LOG BEGINS  --------" << endl;
+                    s << headerTime << " --------  LOG BEGINS  --------" << Cti::endl;
                 }
                 else
                 {
-                    s << headerTime << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << endl;
+                    s << headerTime << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << Cti::endl;
                 }
 
                 outfile.write(s.str(), s.pcount());
@@ -284,7 +284,7 @@ void CtiLogger::doOutput()
                         else if( !truncated_output_printed )
                         {
                             truncated_output_printed = true;
-                            cout << " ******** Console Output Truncated ******** " << endl;
+                            cout << " ******** Console Output Truncated ******** " << Cti::endl;
                         }
                     }
                     
@@ -309,9 +309,9 @@ void CtiLogger::doOutput()
         {
             outfile.close();
             {
-                cerr << "*********************" << endl;
-                cerr << "EXCEPTION in LOGGER " << _base_filename << endl;
-                cerr << "*********************" << endl;
+                cerr << "*********************" << Cti::endl;
+                cerr << "EXCEPTION in LOGGER " << _base_filename << Cti::endl;
+                cerr << "*********************" << Cti::endl;
             }
         }
     }

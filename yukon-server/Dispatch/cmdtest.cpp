@@ -70,19 +70,19 @@ void main(int argc, char **argv)
    INT point_type;
 
    {
-      cout << "Commands: " << endl;
-      cout << "  Loopback Server             : " << CtiCommandMsg::LoopClient << endl;
-      cout << "  Clear Alarms                : " << CtiCommandMsg::ClearAlarm << endl;
-      cout << "  Ack   Alarms                : " << CtiCommandMsg::AcknowledgeAlarm << endl;
+      cout << "Commands: " << Cti::endl;
+      cout << "  Loopback Server             : " << CtiCommandMsg::LoopClient << Cti::endl;
+      cout << "  Clear Alarms                : " << CtiCommandMsg::ClearAlarm << Cti::endl;
+      cout << "  Ack   Alarms                : " << CtiCommandMsg::AcknowledgeAlarm << Cti::endl;
       cout << endl;
    }
 
    if(argc < 2)
    {
-      cout << "Arg 1:   dispatch server machine name" << endl;
-      cout << "Arg 2:   Command Integer             " << endl;
-      cout << "Arg 3:   Integer argument 1          " << endl;
-      cout << "Arg 4:   Integer argument 2...       " << endl;
+      cout << "Arg 1:   dispatch server machine name" << Cti::endl;
+      cout << "Arg 2:   Command Integer             " << Cti::endl;
+      cout << "Arg 3:   Integer argument 1          " << Cti::endl;
+      cout << "Arg 4:   Integer argument 2...       " << Cti::endl;
 
       exit(-1);
    }
@@ -93,7 +93,7 @@ void main(int argc, char **argv)
 
       if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
       {
-         cerr << "Could not install control handler" << endl;
+         cerr << "Could not install control handler" << Cti::endl;
          return;
       }
 
@@ -121,7 +121,7 @@ void main(int argc, char **argv)
    }
    catch(RWxmsg &msg)
    {
-      cout << "Tester Exception: " << msg.why() << endl;
+      cout << "Tester Exception: " << msg.why() << Cti::endl;
    }
 
    exit(0);

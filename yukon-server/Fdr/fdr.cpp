@@ -63,7 +63,7 @@ int main( int argc, char *argv[] )
         // Oops, fdr is running on this machine already.
         CloseHandle(hExclusion);
 
-        cout << "FDR is already running on this machine, exiting." << endl;
+        cout << "FDR is already running on this machine, exiting." << Cti::endl;
 
         exit(-1);
     }
@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create fdr" << endl;
+       cout << "Couldn't create fdr" << Cti::endl;
        exit(-1);
     }
 
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << " - " << CompileInfo.project << " Version [" << CompileInfo.version << "]" << endl;
+            cout << " - " << CompileInfo.project << " Version [" << CompileInfo.version << "]" << Cti::endl;
         }
         else
         {

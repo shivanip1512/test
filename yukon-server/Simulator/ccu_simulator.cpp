@@ -81,20 +81,20 @@ int SimulatorMainFunction(int argc, char **argv)
 
             if( port_min && port_max )
             {
-                cout << "Loading ports from master.cfg file: Port range [" << port_min << " - " << port_max << "]" << endl;
+                cout << "Loading ports from master.cfg file: Port range [" << port_min << " - " << port_max << "]" << Cti::endl;
                 break;
             }
             else if (getPorts(portList))
             {
-                cout << "Loaded " << portList.size() << " ports from the database." << endl;
+                cout << "Loaded " << portList.size() << " ports from the database." << Cti::endl;
                 break;
             }
             else
             {
                 cout << "Unable to retrieve port values.\n";
-                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
-                cout << "master.cfg file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << endl;
-                cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
+                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << Cti::endl;
+                cout << "master.cfg file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << Cti::endl;
+                cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << Cti::endl;
                 exit(-1);
             }
         }
@@ -102,7 +102,7 @@ int SimulatorMainFunction(int argc, char **argv)
 
     if( port_max && port_min > port_max )
     {
-        cout << "Invalid port range [" << port_min << " - " << port_max << "]" << endl;
+        cout << "Invalid port range [" << port_min << " - " << port_max << "]" << Cti::endl;
 
         exit(-1);
     }
@@ -110,7 +110,7 @@ int SimulatorMainFunction(int argc, char **argv)
     //  We need to catch ctrl-c so we can stop
     if( !SetConsoleCtrlHandler(CtrlHandler,  TRUE) )
     {
-        cout << "Could not install control handler" << endl;
+        cout << "Could not install control handler" << Cti::endl;
 
         exit(-1);
     }

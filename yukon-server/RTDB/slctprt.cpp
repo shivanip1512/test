@@ -31,7 +31,6 @@
 using namespace Cti;
 using namespace Ports;
 using std::string;
-using std::endl;
 
 DLLEXPORT CtiPort* PortFactory(Cti::RowReader &rdr)
 {
@@ -44,7 +43,7 @@ DLLEXPORT CtiPort* PortFactory(Cti::RowReader &rdr)
 
    rdr["type"]  >> rwsType;
 
-   if(getDebugLevel() & DEBUGLEVEL_FACTORY) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Creating a Port of type " << rwsType << endl; }
+   if(getDebugLevel() & DEBUGLEVEL_FACTORY) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Creating a Port of type " << rwsType << std::endl; }
 
    Type = resolvePortType(rwsType);
 
@@ -97,7 +96,7 @@ DLLEXPORT CtiPort* PortFactory(Cti::RowReader &rdr)
       }
    default:
       {
-         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Port Factory has failed to produce for type " << rwsType << "!" << endl; }
+         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Port Factory has failed to produce for type " << rwsType << "!" << std::endl; }
          break;
       }
    }

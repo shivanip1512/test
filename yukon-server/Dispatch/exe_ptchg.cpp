@@ -63,7 +63,7 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
       default:
          {
             {
-               cout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               cout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
             }
             break;
          }

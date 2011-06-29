@@ -13,12 +13,12 @@ void main(int argc, char **argv)
 {
    if(argc < 2)
    {
-      cout << " Please supply an integer argument " << endl;
+      cout << " Please supply an integer argument " << Cti::endl;
       return;
    }
    #if 1
    string yukon_base = gConfigParms.getYukonBase();
-   cout << "Yukon base: " << yukon_base << endl;
+   cout << "Yukon base: " << yukon_base << Cti::endl;
 
    for(int i = 0; i < atoi(argv[1]); i++)
    {

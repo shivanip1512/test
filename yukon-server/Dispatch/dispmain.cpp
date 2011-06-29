@@ -44,7 +44,7 @@ int main(int argc, char* argv[] )
    {
        // Oh no, dispatch is running on this machine already.
        CloseHandle(hExclusion);
-       cout << "Dispatch is already running!!!" << endl;
+       cout << "Dispatch is already running!!!" << Cti::endl;
        Sleep(15000);
        return(-1);
    }
@@ -53,7 +53,7 @@ int main(int argc, char* argv[] )
 
    if( hExclusion == (HANDLE)NULL )
    {
-       cout << "Couldn't create " << szName << " Event Object" << endl;
+       cout << "Couldn't create " << szName << " Event Object" << Cti::endl;
        return(-1);
    }
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[] )
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )
       {
-         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " service" << endl;
+         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " service" << Cti::endl;
          CServiceConfig si(szName, szDisplay);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_DEMAND_START,
@@ -86,7 +86,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
       {
-         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " Service" << endl;
+         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " Service" << Cti::endl;
          CServiceConfig si(szName, szDisplay);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_AUTO_START,
@@ -99,7 +99,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
       {
-         cout << CtiTime()  << " - Removing Yukon " << CompileInfo.project << " Service" << endl;
+         cout << CtiTime()  << " - Removing Yukon " << CompileInfo.project << " Service" << Cti::endl;
          CServiceConfig si(szName, szDisplay);
          si.Remove();
          return 0;

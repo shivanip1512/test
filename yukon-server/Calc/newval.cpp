@@ -56,11 +56,11 @@ void main(int argc, char **argv)
 
     if( argc < 5 )
     {
-        cout << "Arg 1:   vangogh server machine name" << endl;
-        cout << "Arg 2:   point to change" << endl;
-        cout << "Arg 3:   value to update point to" << endl;
-        cout << "Arg 4:   number of times to change point" << endl;
-        cout << "Arg 5:   sleep duration between loops" << endl;
+        cout << "Arg 1:   vangogh server machine name" << Cti::endl;
+        cout << "Arg 2:   point to change" << Cti::endl;
+        cout << "Arg 3:   value to update point to" << Cti::endl;
+        cout << "Arg 4:   number of times to change point" << Cti::endl;
+        cout << "Arg 5:   sleep duration between loops" << Cti::endl;
 
         exit(-1);
     }
@@ -73,7 +73,7 @@ void main(int argc, char **argv)
 
         if( !SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE) )
         {
-            cerr << "Could not install control handler" << endl;
+            cerr << "Could not install control handler" << Cti::endl;
             return;
         }
 
@@ -106,7 +106,7 @@ void main(int argc, char **argv)
     catch( RWxmsg &msg )
     {
         cout << "Point Changer Exception: ";
-        cout << msg.why( ) << endl;
+        cout << msg.why( ) << Cti::endl;
     }
 
     exit( 0 );

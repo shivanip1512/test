@@ -1213,7 +1213,7 @@ string Ccu721::describeRequest(const idlc_request &request) const
             request_description << "general request";
             request_description << " / sequence " << request.header.control_sequence;
             request_description << " / expected " << request.header.control_sequence_expected;
-            request_description << endl;
+            request_description << Cti::endl;
             request_description << describeGeneralRequest(request.info);
             break;
 
@@ -1294,7 +1294,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
 
             for( ; entry_itr != entry_end; ++entry_itr )
             {
-                info_description << endl;
+                info_description << Cti::endl;
 
                 info_description << "sequence "; //<< setw(10) << setfill('0') 
                 info_description << entry_itr->sequence << ", ";
@@ -1455,7 +1455,7 @@ string Ccu721::describeReply(const idlc_reply &reply) const
             reply_description << " / sequence " << reply.header.control_sequence;
             reply_description << " / expected " << reply.header.control_sequence_expected;
             //reply_description << " / " << describeGeneralReply(reply.info);
-            reply_description << endl << describeGeneralReply(reply.info);
+            reply_description << Cti::endl << describeGeneralReply(reply.info);
             break;
         }
         case IdlcLink_RejectWithRestart:
@@ -1544,7 +1544,7 @@ string Ccu721::describeGeneralReply(const reply_info &info) const
 
                 for( ; buffer_itr != buffer_end; buffer_itr++ )
                 {
-                    info_description << endl;
+                    info_description << Cti::endl;
                     info_description << "sequence " << buffer_itr->sequence << ", ";
                     info_description << "completion time " << buffer_itr->result.completion_time << ", ";
                     info_description << "message length " << buffer_itr->result.data.size();

@@ -29,6 +29,10 @@
 #define RESTORE_DURATION -1
 
 
+namespace Cti {
+    static const std::string endl("\n");
+}
+
 //  used by dev_manager and tbl_dyn_paoinfo
 enum CtiApplication_t
 {

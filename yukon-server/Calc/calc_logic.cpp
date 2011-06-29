@@ -32,7 +32,7 @@ int main( int argc, char *argv[] )
     {
        // Oh no, calc_logic is running on this machine already.
        CloseHandle(hExclusion);
-       cout << CompileInfo.project << " is already running!" << endl;
+       cout << CompileInfo.project << " is already running!" << Cti::endl;
        exit(-1);
     }
 
@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create CalcLogic event!" << endl;
+       cout << "Couldn't create CalcLogic event!" << Cti::endl;
        exit(-1);
     }
 
@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << CompileInfo.project << " [Version " << CompileInfo.version << "]" << endl;
+            cout << CompileInfo.project << " [Version " << CompileInfo.version << "]" << Cti::endl;
         }
         else
         {
@@ -87,7 +87,7 @@ int main( int argc, char *argv[] )
 
 int install( DWORD dwStart )
 {
-    cout << CtiTime( ) << " - Installing as a service..." << endl;
+    cout << CtiTime( ) << " - Installing as a service..." << Cti::endl;
 
     string depends;
 
@@ -98,14 +98,14 @@ int install( DWORD dwStart )
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         depends = str;
-        cout << "Service is dependent on the following services:" << endl
+        cout << "Service is dependent on the following services:" << Cti::endl
              << str << endl;
     }
     else
     {
-        cout << "Unable to obtain '" << var << "' value from cparms." << endl;
-        cout << "Couldn't locate any services that this service is to be dependent upon" << endl
-             << "installing anyway" << endl;
+        cout << "Unable to obtain '" << var << "' value from cparms." << Cti::endl;
+        cout << "Couldn't locate any services that this service is to be dependent upon" << Cti::endl
+             << "installing anyway" << Cti::endl;
     }
 
     /*
@@ -128,7 +128,7 @@ int install( DWORD dwStart )
         }
     }*/
 
-    cout << CtiTime( )  << " - Installing " << szDisplayName << "..." << endl;
+    cout << CtiTime( )  << " - Installing " << szDisplayName << "..." << Cti::endl;
 
     /*char* tmp = str;
 

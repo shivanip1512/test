@@ -2580,9 +2580,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " " << getPaoName() <<" USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
-                                getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
+                                getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< Cti::endl;
                         dout << CtiTime() << " " << getPaoName() <<" USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
-                                getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
+                                getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< Cti::endl;
                     }
                     //resetting integration total...
                     if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit))

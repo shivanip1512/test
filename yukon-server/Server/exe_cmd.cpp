@@ -43,7 +43,7 @@ INT CtiCommandExecutor::ServerExecute(CtiServer *Svr)
     catch(...)
     {
         {
-            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
         }
     }
 

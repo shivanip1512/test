@@ -17,13 +17,13 @@ class CtiRoute;
 
 DLLEXPORT INT CheckUtilID (USHORT a)
 {
-   cout <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
+   cout <<" Progress: " << __FILE__ << " " << __LINE__ << Cti::endl;
    return 0;
 }
 
 DLLEXPORT INT GetUtilID (PUSHORT a)
 {
-   cout <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
+   cout <<" Progress: " << __FILE__ << " " << __LINE__ << Cti::endl;
    return 0;
 }
 

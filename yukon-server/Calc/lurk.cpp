@@ -18,7 +18,7 @@ BOOL bQuit = FALSE;
 
 BOOL MyCtrlHandler(DWORD fdwCtrlType)
 {
-    cout << "CTRL+C detected - setting exit flag" << endl;
+    cout << "CTRL+C detected - setting exit flag" << Cti::endl;
     switch( fdwCtrlType )
     {
 
@@ -48,8 +48,8 @@ void main(int argc, char **argv)
 {
     if( argc != 3 )
     {
-        cout << "Arg 1:   dispatch server machine name" << endl;
-        cout << "Arg 2:   # of messages to receive/seconds to wait" << endl;
+        cout << "Arg 1:   dispatch server machine name" << Cti::endl;
+        cout << "Arg 2:   # of messages to receive/seconds to wait" << Cti::endl;
 
         exit(-1);
     }
@@ -62,7 +62,7 @@ void main(int argc, char **argv)
     {
         if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
         {
-            cerr << "Could not install control handler" << endl;
+            cerr << "Could not install control handler" << Cti::endl;
             return;
         }
 
@@ -89,7 +89,7 @@ void main(int argc, char **argv)
 
             float nowTime = ((float)clock( )/(float)CLOCKS_PER_SEC);
 
-            cout << nowTime << " I just got message #" << ++msg << " on loop #" << (i + 1) << endl;
+            cout << nowTime << " I just got message #" << ++msg << " on loop #" << (i + 1) << Cti::endl;
                 
             msgNum += inspectMessage( incomingMsg );
 
@@ -104,10 +104,10 @@ void main(int argc, char **argv)
     catch( RWxmsg &msg )
     {
         cout << "Exception in Lurker: ";
-        cout << msg.why() << endl;
+        cout << msg.why() << Cti::endl;
     }
 
-    cout << msgNum << " messages in " << CtiTime( ).seconds( ) - startTime.seconds( ) << " seconds" << endl;
+    cout << msgNum << " messages in " << CtiTime( ).seconds( ) - startTime.seconds( ) << " seconds" << Cti::endl;
 
     exit(0);
 }
@@ -123,24 +123,24 @@ int inspectMessage( CtiMessage *message )
     {
         case MSG_POINTDATA:
             pData = (CtiPointDataMsg *)message;
-            cout << "PointData:  point " << pData->getId( ) << ", value: " << pData->getValue( ) << endl;
+            cout << "PointData:  point " << pData->getId( ) << ", value: " << pData->getValue( ) << Cti::endl;
             retval = 1;
             break;
         
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
-            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << endl;
+            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << Cti::endl;
             retval = 0;
             for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
-                cout << "    multimsg submessage " << (x+1) << endl;
+                cout << "    multimsg submessage " << (x+1) << Cti::endl;
                 cout << "        ";
                 retval += inspectMessage( (CtiMessage *)(msgMulti->getData( )[x]) );
             }
             break;
 
         default:
-            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << Cti::endl;
     }
     return retval;
 }

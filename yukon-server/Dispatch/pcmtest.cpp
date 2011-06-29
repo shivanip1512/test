@@ -25,7 +25,7 @@ void main(int argc, char** argv)
    int                     Delay = 500;
    CtiPointClientManager   PointManager;
 
-   cout << "Point Client Tester is starting up now" << endl;
+   cout << "Point Client Tester is starting up now" << Cti::endl;
 
    if(argc > 1)
    {
@@ -42,7 +42,7 @@ void main(int argc, char** argv)
       PointManager.refreshList();
       // PointManager.DumpList();
 
-      cout << i << endl;
+      cout << i << Cti::endl;
       Sleep(Delay);
    }
 

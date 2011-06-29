@@ -574,24 +574,24 @@ BOOL CtiFDRInterface::stop( void )
         disconnect();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attemping to cancel threadFunctionReloadDb" << endl;
+            logNow() << "Attemping to cancel threadFunctionReloadDb" << Cti::endl;
         }
         iThreadDbChange.requestCancellation();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to cancel threadFunctionReceiveFromDispatch" << endl;
+            logNow() << "Attempting to cancel threadFunctionReceiveFromDispatch" << Cti::endl;
         }
         iThreadFromDispatch.requestCancellation();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to cancel threadFunctionSendToDispatch;" << endl;
+            logNow() << "Attempting to cancel threadFunctionSendToDispatch;" << Cti::endl;
         }
         iThreadToDispatch.requestCancellation();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to shutdown connections" << endl;
+            logNow() << "Attempting to shutdown connections" << Cti::endl;
         }
 
         // this is throwing an exception sometimes, I'm cheating since its only shutdown
@@ -602,13 +602,13 @@ BOOL CtiFDRInterface::stop( void )
        iThreadToDispatch.join();
        {
            CtiLockGuard<CtiLogger> doubt_guard(dout);
-           logNow() << "All threads have joined up" << endl;
+           logNow() << "All threads have joined up" << Cti::endl;
        }
     }
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception on shutdown (CtiFDRInterface::stop)" << endl;
+        logNow() << "Unknown exception on shutdown (CtiFDRInterface::stop)" << Cti::endl;
     }
 
     return TRUE;
@@ -1102,7 +1102,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionReceiveFromDispatch shutdown" << endl;
+        logNow() << "threadFunctionReceiveFromDispatch shutdown" << Cti::endl;
         return;
     }
 
@@ -1110,7 +1110,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error:  receiveFromDispatchThread is dead! " << endl;
+        logNow() << "Fatal Error:  receiveFromDispatchThread is dead! " << Cti::endl;
         return;
     }
 }
@@ -1206,7 +1206,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionSendToDispatch shutdown" << endl;
+        logNow() << "threadFunctionSendToDispatch shutdown" << Cti::endl;
         return;
     }
 
@@ -1214,7 +1214,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error:  threadFunctionSendToDispatch is dead! " << endl;
+        logNow() << "Fatal Error:  threadFunctionSendToDispatch is dead! " << Cti::endl;
         return;
     }
 }
@@ -1250,7 +1250,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadDb " << endl;
+            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadDb " << Cti::endl;
         }
 
         for ( ; ; )
@@ -1266,7 +1266,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Reload of DB Forced. Reloading Translations" << endl;
+                        logNow() << "Reload of DB Forced. Reloading Translations" << Cti::endl;
                     }
                 }
                 else
@@ -1275,7 +1275,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     setDbReloadReason(Periodic);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Periodic Timer expired -  Reloading Translations" << endl;
+                        logNow() << "Periodic Timer expired -  Reloading Translations" << Cti::endl;
                     }
                 }
 
@@ -1321,14 +1321,14 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionReloadDb shutdown" << endl;
+        logNow() << "threadFunctionReloadDb shutdown" << Cti::endl;
     }
 
     // try and catch the thread death
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
+        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << Cti::endl;
     }
 }
 

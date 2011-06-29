@@ -240,15 +240,15 @@ void CServiceConfig::GetConfig()
    bRet = QueryServiceConfig(hService, pqscBuf, dwBytesNeeded, &dwBytesNeeded);
    if(bRet)
    {
-      _tcout << _T("Service Configuration for ") << m_service << endl;
-      _tcout << _T("Display Name: ") << pqscBuf->lpDisplayName << endl;
-      _tcout << _T("Type: 0x") << pqscBuf->dwServiceType << endl;
-      _tcout << _T("Start Type: 0x") << pqscBuf->dwStartType << endl;
-      _tcout << _T("Error Level: 0x") << pqscBuf->dwErrorControl << endl;
-      _tcout << _T("Binary path: ") << pqscBuf->lpBinaryPathName << endl;
-      _tcout << _T("Load Order Group: ") << pqscBuf->lpLoadOrderGroup << endl;
-      _tcout << _T("Tag ID: ") << pqscBuf->dwTagId << endl;
-      _tcout << _T("Dependencies: ") << endl;
+      _tcout << _T("Service Configuration for ") << m_service << Cti::endl;
+      _tcout << _T("Display Name: ") << pqscBuf->lpDisplayName << Cti::endl;
+      _tcout << _T("Type: 0x") << pqscBuf->dwServiceType << Cti::endl;
+      _tcout << _T("Start Type: 0x") << pqscBuf->dwStartType << Cti::endl;
+      _tcout << _T("Error Level: 0x") << pqscBuf->dwErrorControl << Cti::endl;
+      _tcout << _T("Binary path: ") << pqscBuf->lpBinaryPathName << Cti::endl;
+      _tcout << _T("Load Order Group: ") << pqscBuf->lpLoadOrderGroup << Cti::endl;
+      _tcout << _T("Tag ID: ") << pqscBuf->dwTagId << Cti::endl;
+      _tcout << _T("Dependencies: ") << Cti::endl;
 
       if(pqscBuf->lpDependencies)
       {
@@ -257,12 +257,12 @@ void CServiceConfig::GetConfig()
          pszDepend = &pqscBuf->lpDependencies[i];
          while(*pszDepend != 0)
          {
-            _tcout << pszDepend << endl;
+            _tcout << pszDepend << Cti::endl;
             i += _tcslen(pszDepend) + 1;
             pszDepend = &pqscBuf->lpDependencies[i];
          }
       }
-      _tcout << _T("Login Under: ") << pqscBuf->lpServiceStartName << endl;
+      _tcout << _T("Login Under: ") << pqscBuf->lpServiceStartName << Cti::endl;
    }
    else
       ErrorPrinter(_T("QueryServiceConfig"));
@@ -299,14 +299,14 @@ void CServiceConfig::Status()
    bRet = QueryServiceStatus(hService, &ss);
    if(bRet)
    {
-      _tcout << _T("Service Status for ") << m_service << endl;
-      _tcout << _T("Type: 0x") << ss.dwServiceType << endl;
-      _tcout << _T("Current State: 0x") << ss.dwCurrentState << endl;
-      _tcout << _T("Controls Accepted: ") << ss.dwControlsAccepted << endl;
-      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << endl;
-      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << endl;
-      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << endl;
-      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << endl;
+      _tcout << _T("Service Status for ") << m_service << Cti::endl;
+      _tcout << _T("Type: 0x") << ss.dwServiceType << Cti::endl;
+      _tcout << _T("Current State: 0x") << ss.dwCurrentState << Cti::endl;
+      _tcout << _T("Controls Accepted: ") << ss.dwControlsAccepted << Cti::endl;
+      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << Cti::endl;
+      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << Cti::endl;
+      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << Cti::endl;
+      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << Cti::endl;
    }
    else
       ErrorPrinter(_T("QueryServiceStatus"));
@@ -372,12 +372,12 @@ void CServiceConfig::Dependencies()
    if(bRet)
    {
       LPENUM_SERVICE_STATUS pess = 0;
-      _tcout << _T("Services Dependent On ") << m_service << endl;
+      _tcout << _T("Services Dependent On ") << m_service << Cti::endl;
       for(int i = 0 ; i < dwServicesReturned ; i++)
       {
          pess = &pessBuf[i];
-         _tcout << pess->lpDisplayName << endl;
-         _tcout << _T("  Current State: 0x") << pess->ServiceStatus.dwCurrentState << endl;
+         _tcout << pess->lpDisplayName << Cti::endl;
+         _tcout << _T("  Current State: 0x") << pess->ServiceStatus.dwCurrentState << Cti::endl;
       }
    }
    else
@@ -445,15 +445,15 @@ void CServiceConfig::Start()
    }
 
    if(SERVICE_RUNNING == ss.dwCurrentState)
-      _tcout << m_service << _T(" started successfully.") << endl;
+      _tcout << m_service << _T(" started successfully.") << Cti::endl;
    else
    {
-      _tcout << m_service << _T(" start unsuccessful: ") << endl;
-      _tcout << _T("Current State: 0x") << ss.dwCurrentState << endl;
-      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << endl;
-      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << endl;
-      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << endl;
-      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << endl;
+      _tcout << m_service << _T(" start unsuccessful: ") << Cti::endl;
+      _tcout << _T("Current State: 0x") << ss.dwCurrentState << Cti::endl;
+      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << Cti::endl;
+      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << Cti::endl;
+      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << Cti::endl;
+      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << Cti::endl;
    }
 
 cleanup:
@@ -487,14 +487,14 @@ void CServiceConfig::Control(DWORD dwControl)
    bRet = ControlService(hService, dwControl, &ss);
    if(bRet)
    {
-      _tcout << _T("Service Status for ") << m_service << endl;
-      _tcout << _T("Type: 0x") << ss.dwServiceType << endl;
-      _tcout << _T("Current State: 0x") << ss.dwCurrentState << endl;
-      _tcout << _T("Controls Accepted: ") << ss.dwControlsAccepted << endl;
-      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << endl;
-      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << endl;
-      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << endl;
-      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << endl;
+      _tcout << _T("Service Status for ") << m_service << Cti::endl;
+      _tcout << _T("Type: 0x") << ss.dwServiceType << Cti::endl;
+      _tcout << _T("Current State: 0x") << ss.dwCurrentState << Cti::endl;
+      _tcout << _T("Controls Accepted: ") << ss.dwControlsAccepted << Cti::endl;
+      _tcout << _T("Win32 Exit: ") << ss.dwWin32ExitCode << Cti::endl;
+      _tcout << _T("Service Exit: ") << ss.dwServiceSpecificExitCode << Cti::endl;
+      _tcout << _T("Checkpoint: 0x") << ss.dwCheckPoint << Cti::endl;
+      _tcout << _T("WaitHint: 0x") << ss.dwWaitHint << Cti::endl;
    }
    else
       ErrorPrinter(_T("ControlService"));

@@ -476,7 +476,7 @@ string Ccu711::describeRequest(const idlc_request &request) const
             request_description << "general request";
             request_description << " / sequence " << request.header.control_sequence;
             request_description << " / expected " << request.header.control_sequence_expected;
-            request_description << endl;
+            request_description << Cti::endl;
             request_description << describeGeneralRequest(request.info);
             break;
 
@@ -522,7 +522,7 @@ string Ccu711::describeGeneralRequest(const request_info &info) const
     {
         case Command_DTran:
         {
-            info_description << " DTran / length " << info.dtran.message.size() << endl;
+            info_description << " DTran / length " << info.dtran.message.size() << Cti::endl;
 
             info_description << info.dtran.request->description;
 
@@ -547,7 +547,7 @@ string Ccu711::describeGeneralRequest(const request_info &info) const
 
             for( ; entry_itr != entry_end; ++entry_itr )
             {
-                info_description << endl;
+                info_description << Cti::endl;
 
                 info_description << "qenid "    << setw(10) << setfill('0') << entry_itr->entry_id << ", ";
                 info_description << "priority " << setw(2)                  << entry_itr->priority << ", ";
@@ -1065,7 +1065,7 @@ string Ccu711::describeReply(const idlc_reply &reply) const
             reply_description << " / sequence " << reply.header.control_sequence;
             reply_description << " / expected " << reply.header.control_sequence_expected;
             //reply_description << " / " << describeGeneralReply(reply.info);
-            reply_description << endl << describeGeneralReply(reply.info);
+            reply_description << Cti::endl << describeGeneralReply(reply.info);
             break;
         }
         case IdlcLink_RejectWithRestart:
@@ -1119,7 +1119,7 @@ string Ccu711::describeGeneralReply(const reply_info &info) const
             bytes::const_iterator message_itr = info.dtran.message.begin();
             bytes::const_iterator message_end = info.dtran.message.end();
 
-            info_description << endl << hex;
+            info_description << Cti::endl << hex;
 
             int dFill = info_description.fill('0');
 
@@ -1130,13 +1130,13 @@ string Ccu711::describeGeneralReply(const reply_info &info) const
 
             info_description.fill(dFill);
 
-            info_description << dec << endl << info.dtran.reply->description;
+            info_description << dec << Cti::endl << info.dtran.reply->description;
 
             break;
         }
         case Command_RColQ:
         {
-            info_description << "; " << info.collected_queue_entries.size() << " entries" << endl;
+            info_description << "; " << info.collected_queue_entries.size() << " entries" << Cti::endl;
 
             vector<queue_entry>::const_iterator completed_itr = info.collected_queue_entries.begin(),
                                                   completed_end = info.collected_queue_entries.begin();
