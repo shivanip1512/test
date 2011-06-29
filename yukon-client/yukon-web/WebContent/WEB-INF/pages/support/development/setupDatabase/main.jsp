@@ -6,7 +6,7 @@
 
 <cti:standardPage module="support" page="setupDatabase">
 
-<cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
+<cti:dataGrid cols="2" tableClasses="twoColumnLayout">
     <cti:dataGridCell>
         <tags:sectionContainer title="Options" styleClass="pageActionArea">
         <form:form commandName="devDbSetupTask" action="setupDatabase" method="post" id="setupDbForm">
@@ -203,6 +203,11 @@
                 </td>
             </tr>
         </table>
+        <c:if test="${devDbSetupTask.hasRun}">
+            <div class="pageActionArea">
+                <i:inline key=".setupDevDatabase.log"/>
+            </div>
+        </c:if>
         <div id="cancelDevDatabaseSetupButtonId" style="display: none;">
             <cti:button key="cancel" styleClass="cancelDevDatabaseSetup pageActionArea"/>
         </div>

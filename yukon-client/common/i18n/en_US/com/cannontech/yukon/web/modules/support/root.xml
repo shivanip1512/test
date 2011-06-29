@@ -59,6 +59,7 @@
     
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.log">* See console log for execution details</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.options">Options</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties">Update Role Properties</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr">AMR</entry>

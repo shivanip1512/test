@@ -47,17 +47,11 @@
     <div class="progressBarCompletedCount box fl ${pageScope.countClasses}"
         <c:if test="${hideCount}">style="display:none;"</c:if>>
         <span></span>/
-        <c:choose>
-            <c:when test="${empty totalCountKey}">
+        <span class="progressBarTotal">
+            <c:if test="${empty totalCountKey}">
                 ${totalCount}
-            </c:when>
-            <c:otherwise>
-                <span class="progressBarTotal"><cti:dataUpdaterCallback
-                        function="updateTotalCount('${pbarId}')" initialize="false"
-                        total="${totalCountKey}" />
-                </span>
-            </c:otherwise>
-        </c:choose>
+            </c:if>
+        </span>
     </div>
 </div>
 
