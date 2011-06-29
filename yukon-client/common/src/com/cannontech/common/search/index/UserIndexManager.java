@@ -33,19 +33,12 @@ public class UserIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select *                                                        "
-                + " from                                                                "
-                + "     yukonuser where userid >= " + UserUtils.USER_YUKON_ID + " and   "
-                + " not userid = " + UserUtils.USER_ADMIN_ID;
+        String query = "select * from yukonuser where userid > " + UserUtils.USER_DEFAULT_ID;
         return query;
     }
 
     protected String getDocumentCountQuery() {
-        String query = "select count(*)                                             "
-            + " from                                                                "
-            + "     yukonuser where userid >= " + UserUtils.USER_YUKON_ID + " and   "
-            + " not userid = " + UserUtils.USER_ADMIN_ID + "                        ";
-            
+        String query = "select count(*) from yukonuser where userid > " + UserUtils.USER_DEFAULT_ID + " ";
         return query;
     }
 

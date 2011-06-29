@@ -47,6 +47,9 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
     
     public String getGroupNamesFromUser(int userid) {
         List<LiteYukonGroup> groups = DaoFactory.getYukonGroupDao().getGroupsForUser(userid);
+        if (groups.size() == 0) { 
+            return "";
+        }
         StringBuilder groupNames = new StringBuilder(groups.get(0).getGroupName());
         
         for (int j = 1; j < groups.size(); j++) {
