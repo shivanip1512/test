@@ -9,7 +9,7 @@ import java.util.Date;
 public enum ChartPeriod {
     YEAR("Year") {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
-            return ChartInterval.DAY;
+            return ChartInterval.WEEK;
         }
     },
     THREEMONTH("Three Month") {
