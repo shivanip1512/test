@@ -1,7 +1,5 @@
 package com.cannontech.web.support.development;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.cannontech.web.support.development.database.objects.DevAMR;
 import com.cannontech.web.support.development.database.objects.DevCapControl;
 import com.cannontech.web.support.development.database.objects.DevStars;
@@ -11,6 +9,7 @@ public class DevDbSetupTask {
     private DevAMR devAMR = new DevAMR();
     private DevCapControl devCapControl = new DevCapControl();
     private DevStars devStars = new DevStars();
+    private boolean running = false;
     private boolean hasRun = false;
     
     public boolean isUpdateRoleProperties() {
@@ -43,9 +42,10 @@ public class DevDbSetupTask {
     public void setHasRun(boolean hasRun) {
         this.hasRun = hasRun;
     }
-    public void resetCompletedCounts() {
-        devAMR.setSuccessCount(new AtomicInteger());
-        devCapControl.setSuccessCount(new AtomicInteger());
-        devStars.setSuccessCount(new AtomicInteger());
+    public boolean isRunning() {
+        return running;
+    }
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }

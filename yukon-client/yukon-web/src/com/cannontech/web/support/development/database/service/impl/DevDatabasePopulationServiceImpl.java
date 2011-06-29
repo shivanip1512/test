@@ -96,7 +96,6 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
     
     private class DevDatabaseExecutor {
         private DevDbSetupTask devDbSetupTask;
-        boolean isRunning = false;
         boolean isCancelled = false;
         
         public DevDatabaseExecutor(DevDbSetupTask devDbSetupTask) {
@@ -110,7 +109,7 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
         @Transactional
         public void doPopulate() {
             try {
-                isRunning = true;
+                devDbSetupTask.setRunning(true);
                 if (devDbSetupTask.isUpdateRoleProperties()) {
                     // feel free to make this sys admin group thing below better
                     LiteYukonGroup group = new LiteYukonGroup(-2, "System Administrator Grp");
@@ -129,15 +128,18 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
                 }
 
             } catch (Exception e) {
+                devDbSetupTask.setHasRun(false);
+                devDbSetupTask.setRunning(false);
                 throw new RuntimeException("Error populating dev database. ", e.getCause());
             }
             devDbSetupTask.setHasRun(true);
-            isRunning = false;
+            devDbSetupTask.setRunning(false);
         }
     }
 
     public synchronized void executeFullDatabasePopulation(DevDbSetupTask devDbSetupTask) {
-        if (devDatabaseExecutor != null && devDatabaseExecutor.isRunning) {
+        if (devDatabaseExecutor != null && devDatabaseExecutor.devDbSetupTask != null
+            && devDatabaseExecutor.devDbSetupTask.isRunning()) {
             throw new RuntimeException("Already executing database population...");
         }
         devDatabaseExecutor = new DevDatabaseExecutor(devDbSetupTask);
@@ -589,6 +591,7 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
     private void checkIsCancelled() {
         if (devDatabaseExecutor.isCancelled) {
             devDatabaseExecutor.isCancelled = false;
+            log.info("Development database setup cancelled.");
             throw new RuntimeException("Execution cancelled.");
         }
     }

@@ -26,7 +26,7 @@
                                 <li>
                                     <tags:nameValueContainer2>
                                         <tags:checkbox path="devAMR.createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects"/>
-                                        <tags:inputNameValue path="devAMR.numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="2"/>
+                                        <tags:inputNameValue path="devAMR.numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="4"/>
                                         <tags:selectNameValue path="devAMR.routeId" nameKey=".setupDevDatabase.option.amr.routeId" items="${allRoutes}" itemLabel="paoName" itemValue="liteID"/>
                                         <tags:inputNameValue path="devAMR.addressRangeMin" nameKey=".setupDevDatabase.option.amr.addressRangeMin" size="10"/>
                                         <tags:inputNameValue path="devAMR.addressRangeMax" nameKey=".setupDevDatabase.option.amr.addressRangeMax" size="10"/>
@@ -125,7 +125,7 @@
                                 <li>
                                     <tags:nameValueContainer2>
                                         <tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId"/>
-                                        <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="2"/>
+                                        <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="4"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numPerAccount" nameKey=".setupDevDatabase.option.stars.numHardwarePerAccount" size="2"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numExtra" nameKey=".setupDevDatabase.option.stars.numExtra" size="2"/>
                                         <tags:inputNameValue path="devStars.devStarsAccounts.accountNumMin" nameKey=".setupDevDatabase.option.stars.accountNumMin" size="10"/>
@@ -157,7 +157,13 @@
                     </span>
                 </li>
             </ul>
-            <cti:button id="setupDevDatabaseButtonId" key="setupDevDatabase" type="submit" styleClass="setupDevDatabaseButton pageActionArea"/>
+            <c:set var="setupDbBtnDisabled" value="false"/>
+            <c:set var="cancelBtnStyle" value="display: none;"/>
+            <c:if test="${devDbSetupTask.running}">
+                <c:set var="setupDbBtnDisabled" value="true"/>
+                <c:set var="cancelBtnStyle" value=""/>
+            </c:if>
+            <cti:button id="setupDevDatabaseButtonId" key="setupDevDatabase" type="submit" styleClass="setupDevDatabaseButton pageActionArea" disabled="${setupDbBtnDisabled}"/>
         </form:form>
         </tags:sectionContainer>
     </cti:dataGridCell>
@@ -165,13 +171,13 @@
         <c:set var="pbarAMRStyle" value=""/>
         <c:set var="pbarCCStyle" value=""/>
         <c:set var="pbarStarsStyle" value=""/>
-        <c:if test="${!devDbSetupTask.devAMR.create || !devDbSetupTask.hasRun}">
+        <c:if test="${(!devDbSetupTask.devAMR.create || !devDbSetupTask.hasRun) && !devDbSetupTask.running}">
             <c:set var="pbarAMRStyle" value="display: none;"/>
         </c:if>
-        <c:if test="${!devDbSetupTask.devCapControl.create || !devDbSetupTask.hasRun}">
+        <c:if test="${(!devDbSetupTask.devCapControl.create || !devDbSetupTask.hasRun) && !devDbSetupTask.running}">
             <c:set var="pbarCCStyle" value="display: none;"/>
         </c:if>
-        <c:if test="${!devDbSetupTask.devStars.create || !devDbSetupTask.hasRun}">
+        <c:if test="${(!devDbSetupTask.devStars.create || !devDbSetupTask.hasRun) && !devDbSetupTask.running}">
             <c:set var="pbarStarsStyle" value="display: none;"/>
         </c:if>
         <table class="pageActionArea">
@@ -208,7 +214,7 @@
                 <i:inline key=".setupDevDatabase.log"/>
             </div>
         </c:if>
-        <div id="cancelDevDatabaseSetupButtonId" style="display: none;">
+        <div id="cancelDevDatabaseSetupButtonId" style="${cancelBtnStyle}">
             <cti:button key="cancel" styleClass="cancelDevDatabaseSetup pageActionArea"/>
         </div>
     </cti:dataGridCell>
@@ -217,16 +223,20 @@
 <script type="text/javascript">
     YEvent.observeSelectorClick('.setupDevDatabaseButton', function(event) {
         $('setupDevDatabaseButtonId').disable();
+        var displayCancelBtn = false;
         if ($('createAMR').checked) {
             $('setupDbAMRProgressBar').show();
-            $('cancelDevDatabaseSetupButtonId').show();
+            displayCancelBtn = true;
         }
         if ($('createCapControl').checked) {
             $('setupDbCCProgressBar').show();
-            $('cancelDevDatabaseSetupButtonId').show();
+            displayCancelBtn = true;
         }
         if ($('createStars').checked) {
             $('setupDbStarsProgressBar').show();
+            displayCancelBtn = true;
+        }
+        if (displayCancelBtn) {
             $('cancelDevDatabaseSetupButtonId').show();
         }
     });
