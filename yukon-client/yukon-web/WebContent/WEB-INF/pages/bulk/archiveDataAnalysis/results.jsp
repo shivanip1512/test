@@ -14,7 +14,7 @@
         <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
         <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list" title="${adaListPageTitle}" />
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -66,7 +66,7 @@
                 <ul class="buttonStack">
                 
                     <c:if test="${showReadOption}">
-                        <c:url var="readUrl" value="readNow">
+                        <c:url var="readUrl" value="/spring/bulk/archiveDataAnalysis/read/readNow">
                             <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                         </c:url>
                         <li><cti:button key="read" renderMode="labeledImage" href="${readUrl}"/></li>
@@ -75,13 +75,13 @@
                         <li><cti:button key="scheduleRead" renderMode="labeledImage"/></li> 
                         --%>
                     </c:if>
-                    <c:url var="csvUrl" value="csv">
+                    <c:url var="csvUrl" value="/spring/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
                     <li><cti:button key="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
                     <c:choose>
                         <c:when test="${underTabularSizeLimit}">
-                            <c:url var="tabularUrl" value="tabular">
+                            <c:url var="tabularUrl" value="/spring/bulk/archiveDataAnalysis/tabular/view">
                                 <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                             </c:url>
                             <li><cti:button key="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>

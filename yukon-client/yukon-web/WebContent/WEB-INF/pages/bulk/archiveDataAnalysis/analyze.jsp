@@ -79,7 +79,10 @@
         <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['viewResultsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
         
         <div id="viewResultsDiv" style="display:none;">
-            <cti:button key="viewResultsButton" href="results?analysisId=${analysisId}"/>
+            <cti:url var="resultsUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                <cti:param name="analysisId" value="${analysisId}"/>
+            </cti:url>
+            <cti:button key="viewResultsButton" href="${resultsUrl}"/>
         </div>
     </tags:boxContainer2>
 </cti:standardPage>

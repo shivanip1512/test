@@ -30,7 +30,7 @@
     </script>
 
     <tags:bulkActionContainer key="yukon.web.modules.amr.analysis.home" deviceCollection="${deviceCollection}">
-        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/spring/bulk/archiveDataAnalysis/analyze" onsubmit="prepareDateTimeFields();">
+        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/spring/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
             <div class="bottomPadded">

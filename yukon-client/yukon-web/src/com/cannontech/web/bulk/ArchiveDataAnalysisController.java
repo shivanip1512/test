@@ -36,6 +36,7 @@ import com.cannontech.web.input.EnumPropertyEditor;
 import com.google.common.collect.Sets;
 
 @Controller
+@RequestMapping("archiveDataAnalysis/home/*")
 public class ArchiveDataAnalysisController {
     private Set<Attribute> attributes;
     private Set<Duration> intervalDurations;
@@ -58,8 +59,8 @@ public class ArchiveDataAnalysisController {
         intervalDurations.add(Duration.standardHours(1));
     }
     
-    @RequestMapping("archiveDataAnalysis/home")
-    public String home(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
+    @RequestMapping
+    public String setup(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
@@ -75,7 +76,7 @@ public class ArchiveDataAnalysisController {
         return "archiveDataAnalysis/home.jsp";
     }
     
-    @RequestMapping("archiveDataAnalysis/analyze")
+    @RequestMapping
     public String analyze(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);

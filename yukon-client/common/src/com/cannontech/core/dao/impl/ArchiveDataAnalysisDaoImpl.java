@@ -3,6 +3,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -12,26 +13,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
 public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     private RawPointHistoryDao rawPointHistoryDao;
     private NextValueHelper nextValueHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private PaoLoadingService paoLoadingService;
     
     private class ArchiveDataRowMapper implements YukonRowMapper<ArchiveData> {
         private Duration intervalDuration;
@@ -191,6 +202,53 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return deviceIds;
     }
     
+    @Override
+    public List<DevicePointValuesHolder> getAnalysisPointValues(int analysisId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.Type, ypo.PAObjectId, rph.PointId, rph.Timestamp, rph.Value, point.PointType");
+        sql.append("FROM ArchiveDataAnalysisSlot slot");
+        sql.append("  JOIN ArchiveDataAnalysisSlotValue value ON value.slotId = slot.slotId");
+        sql.append("  JOIN YukonPAObject ypo ON ypo.paobjectId = value.deviceId");
+        sql.append("  LEFT JOIN RawPointHistory rph ON rph.changeId = value.changeId");
+        sql.append("  LEFT JOIN Point ON Point.PointId = rph.PointId");
+        sql.append("WHERE slot.analysisId").eq(analysisId);
+        sql.append("ORDER BY deviceId, startTime");
+        
+        final ArrayListMultimap<PaoIdentifier, PointValueHolder> devicePointValuesMap = ArrayListMultimap.create();
+        
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                PaoIdentifier paoIdentifier = new PaoIdentifier(rs.getInt("PAObjectId"), rs.getEnum("Type", PaoType.class));
+                PointValueHolder pointValue = null;
+                
+                Integer pointId = rs.getNullableInt("PointId");
+                if(pointId != null) {
+                    Date timestamp = rs.getDate("Timestamp");
+                    PointType type = rs.getEnum("PointType", PointType.class);
+                    Double value = rs.getDouble("Value");
+                    pointValue = new SimplePointValue(pointId, timestamp, type.getPointTypeId(), value);
+                }
+                
+                devicePointValuesMap.put(paoIdentifier, pointValue);
+            }
+        });
+        
+        List<PaoIdentifier> paoIdentifiers = getRelevantDeviceIds(analysisId);
+        Map<PaoIdentifier, DisplayablePao> displayableMap = paoLoadingService.getDisplayableDeviceLookup(paoIdentifiers);
+        
+        List<DevicePointValuesHolder> devicePointValuesList = Lists.newArrayList();
+        for(PaoIdentifier paoIdentifier : devicePointValuesMap.keySet()) {
+            DevicePointValuesHolder holder = new DevicePointValuesHolder();
+            holder.setPaoIdentifier(paoIdentifier);
+            holder.setDisplayablePao(displayableMap.get(paoIdentifier));
+            holder.setPointValues(devicePointValuesMap.get(paoIdentifier));
+            devicePointValuesList.add(holder);
+        }
+        
+        return devicePointValuesList;
+    }
+    
     private DeviceArchiveData getDeviceSlotValues(Analysis analysis, PaoIdentifier paoIdentifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT StartTime, ChangeId, AnalysisId");
@@ -259,5 +317,10 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
 }

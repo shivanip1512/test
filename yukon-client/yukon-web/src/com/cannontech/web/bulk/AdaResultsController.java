@@ -23,13 +23,14 @@ import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionPro
 import com.cannontech.web.bulk.service.AdaResultsHelper;
 
 @Controller
+@RequestMapping("archiveDataAnalysis/results/*")
 public class AdaResultsController {
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     
-    @RequestMapping("archiveDataAnalysis/results")
+    @RequestMapping
     public String view(ModelMap model, int analysisId, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);

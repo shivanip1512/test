@@ -13,11 +13,12 @@ import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.google.common.collect.Maps;
 
 @Controller
+@RequestMapping("archiveDataAnalysis/list/*")
 public class AdaListController {
     private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     
-    @RequestMapping("archiveDataAnalysis/list")
-    public String list(ModelMap model) {
+    @RequestMapping
+    public String view(ModelMap model) {
         List<Analysis> analyses = archiveDataAnalysisDao.getAllAnalyses();
         
         Map<Analysis, Integer> analysisMap = Maps.newLinkedHashMap();
@@ -30,11 +31,11 @@ public class AdaListController {
         return "archiveDataAnalysis/list.jsp";
     }
     
-    @RequestMapping("archiveDataAnalysis/delete")
+    @RequestMapping
     public String delete(ModelMap model, int analysisId) {
         archiveDataAnalysisDao.deleteAnalysis(analysisId);
         
-        return "redirect:list";
+        return "redirect:/spring/bulk/archiveDataAnalysis/list/view";
     }
     
     @Autowired

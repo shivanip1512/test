@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
+import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 
 public interface ArchiveDataAnalysisDao {
     
@@ -64,4 +65,10 @@ public interface ArchiveDataAnalysisDao {
      * Retrieves the list of deviceIds associated with a given analysis.
      */
     public List<PaoIdentifier> getRelevantDeviceIds(int analysisId);
+    
+    /**
+     * Retrieves the displayablePao for each device in the analysis and the list of
+     * point values associated with each device, wrapped in DevicePointValuesHolders.
+     */
+    public List<DevicePointValuesHolder> getAnalysisPointValues(int analysisId);
 }

@@ -10,10 +10,10 @@
         <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
         <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list" title="${adaListPageTitle}" />
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
         <cti:msg var="adaResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName"/>
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results?analysisId=${analysisId}" title="${adaResultsPageTitle}"/>
+        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results/view?analysisId=${analysisId}" title="${adaResultsPageTitle}"/>
         <%-- ADA Read Results --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.readResults.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>

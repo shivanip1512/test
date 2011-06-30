@@ -245,11 +245,6 @@ public interface RawPointHistoryDao {
     */
    public int getMaxChangeId();
    
-   /**
-    * Get a PointValueHolder for a particular changeId
-    */
-   public PointValueHolder getPointValue(int changeId);
-   
    public static class AdjacentPointValues {
        private PointValueHolder preceding;
        private PointValueHolder succeeding;

@@ -33,7 +33,7 @@
         <c:forEach var="devicePointValues" items="${devicePointValuesList}">
             <tr>
                 <td class="tabular">
-                ${devicePointValues.deviceName}
+                ${devicePointValues.displayablePao.name}
                 </td>
                 <c:forEach var="pointValue" items="${devicePointValues.pointValues}">
                     <td>
@@ -42,7 +42,7 @@
                                 <i:inline key="yukon.web.defaults.dashesTwo"/>
                             </c:when>
                             <c:otherwise>
-                                ${pointValue}
+                                <cti:pointValueFormatter value="${pointValue}" format="SHORT"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

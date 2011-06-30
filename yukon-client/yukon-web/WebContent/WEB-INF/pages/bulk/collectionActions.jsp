@@ -170,7 +170,7 @@
                             action="/spring/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
                         <%-- DATA ANALYSIS --%>
                         <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
-                            action="/spring/bulk/archiveDataAnalysis/home" deviceCollection="${deviceCollection}"/>
+                            action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>

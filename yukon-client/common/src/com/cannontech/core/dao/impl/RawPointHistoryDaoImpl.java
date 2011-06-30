@@ -720,30 +720,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return result;
     }
     
-    private YukonRowMapper<PointValueHolder> pointValueRowMapper = new YukonRowMapper<PointValueHolder>() {
-        @Override
-        public PointValueHolder mapRow(YukonResultSet rs) throws SQLException {
-            int id = rs.getInt("PointId");
-            Date timestamp = rs.getDate("Timestamp");
-            int type = rs.getEnum("PointType", PointType.class).getPointTypeId();
-            double value = rs.getDouble("Value");
-            
-            SimplePointValue pointValue = new SimplePointValue(id, timestamp, type, value);
-            return pointValue;
-        }
-    };
-    
-    public PointValueHolder getPointValue(int changeId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RawPointHistory.PointId, Timestamp, ROUND(Value, 2) as Value, PointType");
-        sql.append("FROM RawPointHistory");
-        sql.append("JOIN Point ON RawPointHistory.PointId = Point.PointId");
-        sql.append("WHERE ChangeId").eq(changeId);
-        
-        PointValueHolder pointValueHolder = yukonTemplate.queryForObject(sql, pointValueRowMapper);
-        return pointValueHolder;
-    }
-    
     @Override
     public void deleteValue(int changeId) {
     	

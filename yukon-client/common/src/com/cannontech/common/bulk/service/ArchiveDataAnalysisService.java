@@ -1,9 +1,5 @@
 package com.cannontech.common.bulk.service;
 
-import java.util.List;
-
-import com.cannontech.common.bulk.model.DeviceArchiveData;
-import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
@@ -20,12 +16,6 @@ public interface ArchiveDataAnalysisService {
      * Runs an analysis as a background task.
      */
     public String startAnalysis(ArchiveDataAnalysisBackingBean archiveDataAnalysisBackingBean, int analysisId);
-    
-    /**
-     * Retrieves device point values for given analysis. Point values will be null whenever there 
-     * was no value present for that specific device and interval.
-     */
-    public List<DevicePointValuesHolder> getDevicePointValuesList(List<DeviceArchiveData> dataList);
     
     /**
      * Builds load profile command strings for all missing intervals on all devices in a given

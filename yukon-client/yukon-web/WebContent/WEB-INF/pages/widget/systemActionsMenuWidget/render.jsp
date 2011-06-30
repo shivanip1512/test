@@ -2,7 +2,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:url var="phaseDetectUrl" value="/spring/amr/phaseDetect/home"/>
-<cti:url var="archiveDataAnalysesUrl" value="/spring/bulk/archiveDataAnalysis/list"/>
+<cti:url var="archiveDataAnalysesUrl" value="/spring/bulk/archiveDataAnalysis/list/view"/>
 <div>
     <a href="${archiveDataAnalysesUrl}"><i:inline key="yukon.web.widgets.systemActionsMenuWidget.archiveDataAnalysis"/></a><br>
     <cti:checkRolesAndProperties value="PHASE_DETECT">

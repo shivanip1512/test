@@ -27,7 +27,7 @@
     function deleteAnalysis() {
         $('deleteConfirmationPopup').hide()
         Yukon.ui.blockPage();
-        var url = "delete?analysisId=" + deleteConfirmAnalysisId;
+        var url = "/spring/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
     </script>
@@ -78,7 +78,10 @@
                                 <cti:button key="viewButtonNoDevices" renderMode="image" disabled="true"/>
                             </c:when>
                             <c:otherwise>
-                                <cti:button key="viewButton" renderMode="image" href="results?analysisId=${analysisEntry.key.analysisId}"/>
+                                <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                                    <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
+                                </cti:url>
+                                <cti:button key="viewButton" renderMode="image" href="${viewUrl}"/>
                             </c:otherwise>
                         </c:choose>
                         <cti:button id="deleteButton" key="deleteButton" renderMode="image" onclick="confirmDelete(${analysisEntry.key.analysisId})"/>

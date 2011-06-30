@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.service.impl;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,12 +24,14 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.model.Analysis;
+import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
 import com.cannontech.common.bulk.model.ArchiveData;
+import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
-import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -44,15 +48,8 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.common.bulk.model.ArchiveAnalysisProfileReadResult;
-import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
-import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
@@ -65,8 +62,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private RawPointHistoryDao rawPointHistoryDao;
-    private PaoDao paoDao;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private RecentResultsCache<ArchiveAnalysisProfileReadResult> crdRecentResultsCache;
     private static final Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
@@ -100,34 +95,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         SingleProcessor<YukonDevice> analysisProcessor = getAnalysisProcessor(archiveDataAnalysisBackingBean, analysis);
         String resultsId = startProcessor(archiveDataAnalysisBackingBean.getDeviceCollection(), analysisProcessor);
         return resultsId;
-    }
-    
-    @Override
-    public List<DevicePointValuesHolder> getDevicePointValuesList(List<DeviceArchiveData> dataList) {
-        List<DevicePointValuesHolder> devicePointValuesList = Lists.newArrayList();
-        
-        for(DeviceArchiveData data : dataList) {
-            int paoId = data.getId().getPaoId();
-            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
-            DevicePointValuesHolder devicePointValues = new DevicePointValuesHolder(pao.getPaoName());
-            
-            List<Double> pointValues = Lists.newArrayList();
-            
-            for(ArchiveData deviceData : data.getArchiveData()) {
-                Double pointValue = null;
-                Integer changeId = deviceData.getChangeId();
-                
-                if(changeId != null) {
-                    PointValueHolder pointValueHolder = rawPointHistoryDao.getPointValue(changeId);
-                    pointValue = pointValueHolder.getValue();
-                }
-                
-                pointValues.add(pointValue);
-            }
-            devicePointValues.setPointValues(pointValues);
-            devicePointValuesList.add(devicePointValues);
-        }
-        return devicePointValuesList;
     }
     
     @Override
@@ -192,7 +159,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
             
             int channel = lpAttributeChannelMap.get(attribute);
             
-            List<Interval> dateRangesNeedingReads = getDateRangesToRead(data);
+            Deque<Interval> dateRangesNeedingReads = getDateRangesToRead(data);
             
             for(Interval dateRange : dateRangesNeedingReads) {
                 analysis.getIntervalLength();
@@ -214,6 +181,84 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         return startString + " " + endString;
     }
     
+    private Deque<Interval> getDateRangesToRead(DeviceArchiveData data) {
+        //get date ranges that need reads
+        Deque<Interval> intervals = new ArrayDeque<Interval>();
+        for(ArchiveData archiveData : data.getArchiveData()) {
+            //look only for intervals with no value in DB
+            if(!archiveData.isDataPresent()) {
+                Interval thisInterval = archiveData.getArchiveRange();
+                if(intervals.isEmpty()) {
+                    intervals.add(thisInterval); //stop - stop
+                } else {
+                    //Combine intervals if the space between is less than 2*6 full intervals, because
+                    //it's more efficient to do 2 unnecessary reads (of 6 intervals) than to reset the 
+                    //lp pointer in the meter.
+                    //If lastInterval is less than 6 interval-durations long, treat it as though it is 6 long,
+                    //since a read always returns 6 interval chunks.
+                    Interval lastInterval = intervals.getLast();
+                    Duration intervalLength = thisInterval.toDuration();
+                    int additionalIntervals = getIntervalsLessThanSix(lastInterval, intervalLength);
+                    if(lessThanTwelveIntervalsApart(lastInterval, thisInterval, intervalLength, additionalIntervals)) {
+                        Interval combinedInterval = new Interval(lastInterval.getStart(), thisInterval.getEnd());
+                        intervals.removeLast();
+                        intervals.add(combinedInterval);
+                    } else {
+                        intervals.add(thisInterval);
+                    }
+                }
+            }
+        }
+        return intervals;
+    }
+    
+    /**
+     * Takes an Interval representing a period of time and a Duration representing the length of a
+     * load profile interval. Determines if the time period's duration is less than six LP
+     * intervals in length. 
+     * 
+     * Returns the number of LP intervals less than six, if that is the case, or 0 if the time 
+     * period is equal to or greater than six LP intervals long. The time period should be
+     * divisible by the LP interval duration. If it is not, the partial interval will be treated as 
+     * a full interval.
+     */
+    private int getIntervalsLessThanSix(Interval interval, Duration intervalLength) {
+        long intervalLengthInMillis = intervalLength.getMillis();
+        Duration sixIntervalsDuration = new Duration(intervalLengthInMillis * 6);
+        
+        Duration intervalDuration = interval.toDuration();
+        if(intervalDuration.isLongerThan(sixIntervalsDuration) || intervalDuration.isEqual(sixIntervalsDuration)) {
+            return 0;
+        }
+        
+        Duration timeLessThanSix = sixIntervalsDuration.minus(intervalDuration);
+        int intervalsLessThanSix = 0;
+        while(timeLessThanSix.isLongerThan(intervalLength) || timeLessThanSix.isEqual(intervalLength)) {
+            timeLessThanSix = timeLessThanSix.minus(intervalLength);
+            intervalsLessThanSix++;
+        }
+        return intervalsLessThanSix;
+    }
+    
+    /**
+     * Takes two Intervals representing periods of time, a Duration representing the length of a
+     * load profile interval, and an int representing a number of "extra" intervals. The Intervals
+     * should be ordered such that the first Interval spans a period of time before the second
+     * Interval, although the two Intervals may abut or overlap. The extra intervals value should
+     * be the length of first Interval (in LP intervals) minus six, or 0 if the length of the first
+     * Interval is =< six LP intervals. This is obtained through the "getIntervalsLessThanSix"
+     * method.
+     * 
+     * Determines the number of load profile intervals between the end of the first interval and the 
+     * beginning of the second interval. ExtraIntervals > 0 indicate that the firstInterval is less 
+     * than six load profile intervals long. In this case, it is treated as though it were six load 
+     * profile intervals long, as a single load profile read will always read at least six intervals.
+     * 
+     * Returns false if the space between the firstInterval and secondInterval, plus the 
+     * extraIntervals, is greater than twelve load profile intervals (i.e. two LP reads). Returns
+     * true if the space between intervals, plus the extraIntervals, is less than twelve load profile
+     * intervals, or if the two intervals overlap or abut.
+     */
     private boolean lessThanTwelveIntervalsApart(Interval firstInterval, Interval secondInterval, Duration intervalLength, int extraIntervals) {
         Interval intervalBetween = firstInterval.gap(secondInterval);
         if(intervalBetween==null) {
@@ -231,55 +276,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         }
         
         return timeBetween.isShorterThan(maxDurationBetween);
-    }
-    
-    private List<Interval> getDateRangesToRead(DeviceArchiveData data) {
-        //get date ranges that need reads
-        List<Interval> intervals = Lists.newArrayList();
-        for(ArchiveData archiveData : data.getArchiveData()) {
-            //look only for intervals with no value in DB
-            if(!archiveData.isDataPresent()) {
-                Interval thisInterval = archiveData.getArchiveRange();
-                if(intervals.size()==0) {
-                    intervals.add(thisInterval); //stop - stop
-                } else {
-                    //Combine intervals if the space between is less than 2*6 full intervals, because
-                    //it's more efficient to do 2 unnecessary reads (of 6 intervals) than to reset the 
-                    //lp pointer in the meter.
-                    //If lastInterval is less than 6 interval-durations long, treat it as though it is 6 long,
-                    //since a read always returns 6 interval chunks.
-                    Interval lastInterval = intervals.get(intervals.size()-1);
-                    Duration intervalLength = thisInterval.toDuration();
-                    int additionalIntervals = getIntervalsLessThanSix(lastInterval, intervalLength);
-                    if(lessThanTwelveIntervalsApart(lastInterval, thisInterval, intervalLength, additionalIntervals)) {
-                        Interval combinedInterval = new Interval(lastInterval.getStart(), thisInterval.getEnd());
-                        intervals.remove(lastInterval);
-                        intervals.add(combinedInterval);
-                    } else {
-                        intervals.add(thisInterval);
-                    }
-                }
-            }
-        }
-        return intervals;
-    }
-    
-    private int getIntervalsLessThanSix(Interval interval, Duration intervalLength) {
-        long intervalLengthInMillis = intervalLength.getMillis();
-        Duration sixIntervalsDuration = new Duration(intervalLengthInMillis * 6);
-        
-        Duration intervalDuration = interval.toDuration();
-        if(intervalDuration.isLongerThan(sixIntervalsDuration) || intervalDuration.isEqual(sixIntervalsDuration)) {
-            return 0;
-        }
-        
-        Duration timeLessThanSix = sixIntervalsDuration.minus(intervalDuration);
-        int intervalsLessThanSix = 0;
-        while(timeLessThanSix.isLongerThan(intervalLength) || timeLessThanSix.isEqual(intervalLength)) {
-            timeLessThanSix = timeLessThanSix.minus(intervalLength);
-            intervalsLessThanSix++;
-        }
-        return intervalsLessThanSix;
     }
     
     private String startProcessor(DeviceCollection deviceCollection, Processor<YukonDevice> processor) {
@@ -350,16 +346,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Autowired
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
     
     @Autowired

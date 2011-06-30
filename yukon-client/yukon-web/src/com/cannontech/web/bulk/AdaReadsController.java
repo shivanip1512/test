@@ -15,11 +15,12 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.bulk.model.collection.ArchiveDataAnalysisCollectionProducer;
 
 @Controller
+@RequestMapping("archiveDataAnalysis/read/*")
 public class AdaReadsController {
     private ArchiveDataAnalysisService archiveDataAnalysisService;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     
-    @RequestMapping("archiveDataAnalysis/readNow")
+    @RequestMapping
     public String readNow(ModelMap model, HttpServletRequest request, LiteYukonUser user, int analysisId) throws ServletRequestBindingException {
         model.addAttribute("analysisId", analysisId);
         String resultId = archiveDataAnalysisService.runProfileReads(analysisId, user);
