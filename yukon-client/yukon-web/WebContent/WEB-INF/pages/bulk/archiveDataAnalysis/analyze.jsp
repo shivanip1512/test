@@ -31,14 +31,14 @@
         <div class="bottomPadded">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".dateRange">
-                    <cti:formatInterval type="DATEHM" value="${dateTimeRangeForDisplay}"/>
+                    <cti:formatInterval type="DATEHM" value="${analysis.dateTimeRange}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".interval">
-                    <cti:formatPeriod value="${backingBean.selectedIntervalDuration}" type="DHMS_REDUCED" />
+                    <cti:formatPeriod value="${analysis.intervalLength}" type="DHMS_REDUCED" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>
-                        <c:when test="${backingBean.excludeBadQualities}">
+                        <c:when test="${analysis.excludeBadPointQualities}">
                             <i:inline key="yukon.web.modules.amr.analysis.normalQualitiesOnly" />
                         </c:when>
                         <c:otherwise>
@@ -47,7 +47,7 @@
                     </c:choose>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".attribute">
-                    ${backingBean.selectedAttribute.description}
+                    ${analysis.attribute.description}
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
@@ -80,7 +80,7 @@
         
         <div id="viewResultsDiv" style="display:none;">
             <cti:url var="resultsUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
-                <cti:param name="analysisId" value="${analysisId}"/>
+                <cti:param name="analysisId" value="${analysis.analysisId}"/>
             </cti:url>
             <cti:button key="viewResultsButton" href="${resultsUrl}"/>
         </div>

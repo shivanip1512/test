@@ -62,7 +62,7 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             
             @Override
             public MessageSourceResolvable getDescription() {
-                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis", analysisId);
+                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis");
             }
         };
     }

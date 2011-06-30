@@ -23,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
@@ -43,6 +45,7 @@ public class ArchiveDataAnalysisController {
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private DeviceCollectionFactory deviceCollectionFactory;
     private ArchiveDataAnalysisService archiveDataAnalysisService;
+    private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     {
@@ -81,15 +84,26 @@ public class ArchiveDataAnalysisController {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
         
-        model.addAttribute("dateTimeRangeForDisplay", backingBean.getDateRange());
-        
         int analysisId = archiveDataAnalysisService.createAnalysis(backingBean);
         String resultsId = archiveDataAnalysisService.startAnalysis(backingBean, analysisId);
         
-        ArchiveDataAnalysisCallbackResult callbackResult = (ArchiveDataAnalysisCallbackResult) recentResultsCache.getResult(resultsId);
-        
+        model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("analysisId", analysisId);
+        model.addAttribute("resultsId", resultsId);
+        
+        return "redirect:processing";
+    }
+    
+    @RequestMapping
+    public String processing(ModelMap model, HttpServletRequest request, int analysisId, String resultsId) throws ServletException {
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
+        ArchiveDataAnalysisCallbackResult callbackResult = (ArchiveDataAnalysisCallbackResult) recentResultsCache.getResult(resultsId);
+        
+        model.addAllAttributes(deviceCollection.getCollectionParameters());
+        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("analysis", analysis);
         model.addAttribute("resultsId", resultsId);
         model.addAttribute("callbackResult", callbackResult);
         
@@ -123,5 +137,10 @@ public class ArchiveDataAnalysisController {
     @Autowired
     public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
         this.archiveDataAnalysisService = archiveDataAnalysisService;
+    }
+    
+    @Autowired
+    public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
+        this.archiveDataAnalysisDao = archiveDataAnalysisDao;
     }
 }

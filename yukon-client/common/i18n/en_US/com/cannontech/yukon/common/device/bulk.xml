@@ -34,7 +34,7 @@
     <entry key="yukon.common.device.bulk.bulkAction.collection.idList">individually selected devices</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter">{0}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter.all">all Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis">Archive Data Analysis ID {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis">Archive Data Analysis</entry>
 
     <!-- deviceSelection.jsp -->
     <entry key="yukon.common.device.bulk.deviceSelection.pageTitle">Device Selection</entry>
