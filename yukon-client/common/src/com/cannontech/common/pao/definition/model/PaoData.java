@@ -3,7 +3,6 @@ package com.cannontech.common.pao.definition.model;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
@@ -26,30 +25,6 @@ public class PaoData {
             }
         };
 
-    /**
-     * Get a function which will transform a LiteYukonPAObject to a new instance of PaoData.
-     * This method will populate the optional name and enabled fields of the PaoData but it
-     * is up to the caller to populate meterNumber and carrierAddress if required.
-     */
-    public static Function<LiteYukonPAObject, PaoData> getFunctionFromYukonPao(
-            final ImmutableSet<OptionalField> responseFields) {
-        return new Function<LiteYukonPAObject, PaoData>() {
-            @Override
-            public PaoData apply(LiteYukonPAObject from) {
-                PaoData retVal = new PaoData(responseFields, from.getPaoIdentifier());
-                if (responseFields.contains(OptionalField.NAME)) {
-                    retVal.setName(from.getPaoName());
-                }
-                if (responseFields.contains(OptionalField.ENABLED)) {
-                    retVal.setEnabled(!from.getDisableFlag().equals("Y"));
-                }
-                if (responseFields.contains(OptionalField.CARRIER_ADDRESS)) {
-                    retVal.setCarrierAddress(from.getAddress());
-                }
-                return retVal;
-            }
-        };
-    }
     public final static ImmutableSet<OptionalField> optionalFieldsFulfilledFromYukonPao;
     static {
         ImmutableSet.Builder<OptionalField> builder = ImmutableSet.builder();
@@ -65,7 +40,7 @@ public class PaoData {
     private String name;
     private boolean enabled;
     private String meterNumber;
-    private int carrierAddress;
+    private Integer carrierAddress;
 
     /**
      * Create an instance of this class which will have at a minimum the fields specified by
@@ -118,14 +93,14 @@ public class PaoData {
         this.meterNumber = meterNumber;
     }
 
-    public int getCarrierAddress() {
+    public Integer getCarrierAddress() {
         if (responseFields.contains(OptionalField.CARRIER_ADDRESS)) {
             return carrierAddress;
         }
         throw new UnsupportedOperationException("carrierAddress not populated for this object");
     }
 
-    public void setCarrierAddress(int carrierAddress) {
+    public void setCarrierAddress(Integer carrierAddress) {
         this.carrierAddress = carrierAddress;
     }
 }

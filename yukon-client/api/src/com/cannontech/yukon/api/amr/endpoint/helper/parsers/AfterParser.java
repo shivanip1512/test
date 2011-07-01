@@ -11,16 +11,16 @@ public class AfterParser extends ValueParser {
     @Override
     public void parseOther(SimpleXPathTemplate template, PointValueSelector selector) {
         Instant startDate = template.evaluateAsInstant("@date");
-        int index = template.evaluateAsInt("@index", 1);
+        int valueCount = template.evaluateAsInt("@index", 1);
 
-        Boolean inclusive = template.evaluateAsBoolean("@inclusive", true);
-        Clusivity clusivity = Clusivity.getClusivity(inclusive, false);
+        Boolean inclusive = template.evaluateAsBoolean("@inclusive", false);
+        Clusivity clusivity = Clusivity.getClusivity(inclusive, true);
 
-        Order order = Order.REVERSE;
+        Order order = Order.FORWARD;
 
         selector.setStartDate(startDate);
         selector.setStopDate(new Instant());
-        selector.setNumberOfRows(index);
+        selector.setNumberOfRows(valueCount);
         selector.setClusivity(clusivity);
         selector.setOrder(order);
     }

@@ -131,7 +131,11 @@ public interface PaoDao {
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber);
     
     public List<LiteYukonPAObject> searchByName(String name, String paoClass);
-    
+
+    public Map<Integer, PaoIdentifier> findPaoIdsByCarrierAddress(Iterable<Integer> carrierAddresses);
+    public Map<String, PaoIdentifier> findPaoIdsByMeterNumber(Iterable<String> meterNumbers);
+    public Map<String, PaoIdentifier> findPaoIdsByName(Iterable<String> names);
+
     /**
      * Searches known routes for matching name.
      * Returns route's paoId if found, null otherwise.

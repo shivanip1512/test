@@ -29,17 +29,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  * Test class for ObjectMapperFactoryImpl
  */
 public class ObjectMapperFactoryImplTest extends TestCase {
-
-    private ObjectMapperFactoryImpl mapper = null;
     private SimpleDevice testDevice = new SimpleDevice(1, PaoType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
     @Override
     protected void setUp() throws Exception {
-
-        mapper = new ObjectMapperFactoryImpl();
-
         paoDaoAdapter = new PaoDaoAdapter() {
 
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
@@ -272,10 +267,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public int getMaxPAOid() {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
         public int getNextPaoId() {
             throw new UnsupportedOperationException("Method not implemented");
         }
@@ -349,6 +340,21 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Map<Integer, PaoIdentifier> findPaoIdsByCarrierAddress(Iterable<Integer> carrierAddresses) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Map<String, PaoIdentifier> findPaoIdsByMeterNumber(Iterable<String> meterNumbers) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Map<String, PaoIdentifier> findPaoIdsByName(Iterable<String> names) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

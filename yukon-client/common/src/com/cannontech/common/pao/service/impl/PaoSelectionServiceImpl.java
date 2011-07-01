@@ -8,20 +8,17 @@ import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Node;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.dao.PaoSelectionDao;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
@@ -32,7 +29,7 @@ import com.google.common.collect.Sets;
 public class PaoSelectionServiceImpl implements PaoSelectionService {
     private DeviceGroupService deviceGroupService;
     private PaoDao paoDao;
-    private MeterDao meterDao;
+    private PaoSelectionDao paoSelectionDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
     private final ImmutableMap<String, PaoSelector> paoSelectors;
@@ -40,10 +37,10 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
     public PaoSelectionServiceImpl() {
         Builder<String, PaoSelector> builder = ImmutableMap.builder();
 
-        builder.put("address", new ByAddressSelector());
+        builder.put("address", new ByCarrierAddressSelector());
         builder.put("deviceGroup", new ByDeviceGroupNamesSelector());
         builder.put("meterNumber", new ByMeterNumbersSelector());
-        builder.put("carrierAddress", new ByAddressSelector());
+        builder.put("carrierAddress", new ByCarrierAddressSelector());
         builder.put("paoName", new ByPaoNamesSelector());
         builder.put("paoId", new ByPaoIdSelector());
 
@@ -71,46 +68,14 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         return retVal;
     }
 
-    private void addNeededData(Map<PaoIdentifier, PaoData> paosNeedingData,
+    private void addNeededData(List<PaoData> paosNeedingData,
                                ImmutableSet<OptionalField> responseFields,
-                               ImmutableSet<OptionalField> alreadyFulfilled) {
-        Set<OptionalField> neededFields = Sets.difference(responseFields, alreadyFulfilled);
-
-        if (neededFields.contains(OptionalField.NAME)
-                || neededFields.contains(OptionalField.ENABLED)
-                || neededFields.contains(OptionalField.CARRIER_ADDRESS)) {
-            Map<PaoIdentifier, LiteYukonPAObject> yukonPaoMap =
-                paoDao.getLiteYukonPaosById(paosNeedingData.keySet());
-
-            for (Map.Entry<PaoIdentifier, PaoData> entry : paosNeedingData.entrySet()) {
-                PaoIdentifier paoId = entry.getKey();
-                PaoData paoData = entry.getValue();
-                LiteYukonPAObject paoObject = yukonPaoMap.get(paoId);
-                if (neededFields.contains(OptionalField.NAME)) {
-                    paoData.setName(paoObject.getPaoName());
-                }
-
-                if (neededFields.contains(OptionalField.ENABLED)) {
-                    paoData.setEnabled(!paoObject.getDisableFlag().equals("Y"));
-                }
-
-                if (neededFields.contains(OptionalField.CARRIER_ADDRESS)) {
-                    paoData.setCarrierAddress(paoObject.getAddress());
-                }
-            }
+                               OptionalField alreadyFulfilled) {
+        Set<OptionalField> neededFields = Sets.newHashSet(responseFields);
+        if (alreadyFulfilled != null) {
+            neededFields.remove(alreadyFulfilled);
         }
-
-        if (neededFields.contains(OptionalField.METER_NUMBER)) {
-            Map<PaoIdentifier, Meter> meterMap = meterDao.getPaoIdMeterMap(paosNeedingData.keySet());
-            for (Map.Entry<PaoIdentifier, PaoData> entry : paosNeedingData.entrySet()) {
-                PaoIdentifier paoId = entry.getKey();
-                PaoData paoData = entry.getValue();
-                Meter meter = meterMap.get(paoId);
-                if (meter != null) {
-                    paoData.setMeterNumber(meter.getMeterNumber());
-                }
-            }
-        }
+        paoSelectionDao.addNeededData(paosNeedingData, neededFields);
     }
 
     private abstract class PaoSelector {
@@ -119,26 +84,29 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
                                         Map<PaoIdentifier, PaoData> into);
     }
 
-    private class ByAddressSelector extends PaoSelector {
+    private class ByCarrierAddressSelector extends PaoSelector {
         @Override
         public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into) {
-            Function<LiteYukonPAObject, PaoData> dataFromLitePao =
-                PaoData.getFunctionFromYukonPao(responseFields);
-            Map<PaoIdentifier, PaoData> paosNeedingData = Maps.newHashMap();
+            List<Integer> carrierAddresses = Lists.newArrayList();
             for (Node node : nodes) {
-                int carrierAddress = YukonXml.getXPathTemplateForNode(node).evaluateAsInt("@value");
-                List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaobjectsByAddress(carrierAddress);
-                for (LiteYukonPAObject pao : paos) {
-                    PaoIdentifier paoId = pao.getPaoIdentifier();
-                    PaoData paoData = dataFromLitePao.apply(pao);
-                    into.put(paoId, paoData);
-                    paosNeedingData.put(paoId, paoData);
-                }
+                carrierAddresses.add(YukonXml.getXPathTemplateForNode(node).evaluateAsInt("@value"));
             }
 
-            addNeededData(paosNeedingData, responseFields,
-                          PaoData.optionalFieldsFulfilledFromYukonPao);
+            List<PaoData> newPaos = Lists.newArrayList();
+            Map<Integer, PaoIdentifier> paoIdsByCarrierAddress =
+                paoDao.findPaoIdsByCarrierAddress(carrierAddresses);
+            for (Map.Entry<Integer, PaoIdentifier> entry : paoIdsByCarrierAddress.entrySet()) {
+                Integer carrierAddress = entry.getKey();
+                PaoIdentifier paoId = entry.getValue();
+
+                PaoData paoData = new PaoData(responseFields, paoId);
+                paoData.setCarrierAddress(carrierAddress);
+                into.put(paoId, paoData);
+                newPaos.add(paoData);
+            }
+
+            addNeededData(newPaos, responseFields, OptionalField.CARRIER_ADDRESS);
         }
     }
 
@@ -156,79 +124,65 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
             Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupNameList);
             Set<SimpleDevice> devices = deviceGroupService.getDevices(groups);
 
-            Map<PaoIdentifier, PaoData> paosNeedingData = Maps.newHashMap();
+            List<PaoData> newPaos = Lists.newArrayList();
             for (SimpleDevice device : devices) {
                 PaoIdentifier paoId = device.getPaoIdentifier();
                 PaoData paoData = new PaoData(responseFields, paoId);
                 into.put(paoId, paoData);
-                paosNeedingData.put(paoId, paoData);
+                newPaos.add(paoData);
             }
 
-            ImmutableSet<OptionalField> emptyFieldSet = ImmutableSet.of();
-            addNeededData(paosNeedingData, responseFields, emptyFieldSet);
+            addNeededData(newPaos, responseFields, null);
         }
     }
 
     private class ByMeterNumbersSelector extends PaoSelector {
-        public final ImmutableSet<OptionalField> fieldsFulfilled;
-
-        private ByMeterNumbersSelector() {
-            ImmutableSet.Builder<OptionalField> builder = ImmutableSet.builder();
-            builder.addAll(PaoData.optionalFieldsFulfilledFromYukonPao);
-            builder.add(OptionalField.METER_NUMBER);
-            fieldsFulfilled = builder.build();
-        }
-
         @Override
         public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into) {
-            Function<LiteYukonPAObject, PaoData> dataFromLitePao =
-                PaoData.getFunctionFromYukonPao(responseFields);
-            Map<PaoIdentifier, PaoData> paosNeedingData = Maps.newHashMap();
+            List<String> meterNumbers = Lists.newArrayList();
             for (Node node : nodes) {
-                String meterNumber = YukonXml.getXPathTemplateForNode(node).evaluateAsString("@value");
-                List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaobjectsByMeterNumber(meterNumber);
-                for (LiteYukonPAObject pao : paos) {
-                    PaoIdentifier paoId = pao.getPaoIdentifier();
-                    PaoData paoData = dataFromLitePao.apply(pao);
-                    paoData.setMeterNumber(meterNumber);
-                    into.put(paoId, paoData);
-                    paosNeedingData.put(paoId, paoData);
-                }
+                meterNumbers.add(YukonXml.getXPathTemplateForNode(node).evaluateAsString("@value"));
             }
 
-            // In this case, this ends up doing nothing since all current fields are fulfilled by
-            // the loop but it's left in for completeness.  (responseFields - fieldsFulfilled = 0)
-            addNeededData(paosNeedingData, responseFields, fieldsFulfilled);
+            List<PaoData> newPaos = Lists.newArrayList();
+            Map<String, PaoIdentifier> paoIdsByMeterNumber = paoDao.findPaoIdsByMeterNumber(meterNumbers);
+            for (Map.Entry<String, PaoIdentifier> entry : paoIdsByMeterNumber.entrySet()) {
+                String meterNumber = entry.getKey();
+                PaoIdentifier paoId = entry.getValue();
+
+                PaoData paoData = new PaoData(responseFields, paoId);
+                paoData.setMeterNumber(meterNumber);
+                into.put(paoId, paoData);
+                newPaos.add(paoData);
+            }
+
+            addNeededData(newPaos, responseFields, OptionalField.METER_NUMBER);
         }
     }
 
     private class ByPaoNamesSelector extends PaoSelector {
-        public final ImmutableSet<OptionalField> fieldsFulfilled;
-
-        private ByPaoNamesSelector() {
-            ImmutableSet.Builder<OptionalField> builder = ImmutableSet.builder();
-            builder.add(OptionalField.NAME);
-            fieldsFulfilled = builder.build();
-        }
-
         @Override
         public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into) {
-            Map<PaoIdentifier, PaoData> paosNeedingData = Maps.newHashMap();
+            List<String> paoNames = Lists.newArrayList();
             for (Node node : nodes) {
-                String paoName = YukonXml.getXPathTemplateForNode(node).evaluateAsString("@value");
-                List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(paoName, false);
-                for (LiteYukonPAObject pao : paos) {
-                    PaoIdentifier paoId = pao.getPaoIdentifier();
-                    PaoData paoData = new PaoData(responseFields, paoId);
-                    paoData.setName(paoName);
-                    into.put(paoId, paoData);
-                    paosNeedingData.put(paoId, paoData);
-                }
+                paoNames.add(YukonXml.getXPathTemplateForNode(node).evaluateAsString("@value"));
             }
 
-            addNeededData(paosNeedingData, responseFields, fieldsFulfilled);
+            List<PaoData> newPaos = Lists.newArrayList();
+            Map<String, PaoIdentifier> paoIdsByName = paoDao.findPaoIdsByName(paoNames);
+            for (Map.Entry<String, PaoIdentifier> entry : paoIdsByName.entrySet()) {
+                String paoName = entry.getKey();
+                PaoIdentifier paoId = entry.getValue();
+
+                PaoData paoData = new PaoData(responseFields, paoId);
+                paoData.setName(paoName);
+                into.put(paoId, paoData);
+                newPaos.add(paoData);
+            }
+
+            addNeededData(newPaos, responseFields, OptionalField.NAME);
         }
     }
 
@@ -242,16 +196,15 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
                 paoIds.add(paoId);
             }
 
-            Map<PaoIdentifier, PaoData> paosNeedingData = Maps.newHashMap();
+            List<PaoData> newPaos = Lists.newArrayList();
             List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
             for (PaoIdentifier paoId : paoIdentifiers) {
                 PaoData paoData = new PaoData(responseFields, paoId);
                 into.put(paoId, paoData);
-                paosNeedingData.put(paoId, paoData);
+                newPaos.add(paoData);
             }
 
-            ImmutableSet<OptionalField> emptyFieldSet = ImmutableSet.of();
-            addNeededData(paosNeedingData, responseFields, emptyFieldSet);
+            addNeededData(newPaos, responseFields, null);
         }
     }
 
@@ -266,7 +219,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
     }
 
     @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
+    public void setPaoSelectionDao(PaoSelectionDao paoSelectionDao) {
+        this.paoSelectionDao = paoSelectionDao;
     }
 }

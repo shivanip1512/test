@@ -82,6 +82,13 @@ public class PointValueSelector {
         this.label = label;
     }
 
+    @Override
+    public String toString() {
+        return "PointValueSelector [selectorType=" + selectorType + ", startDate=" + startDate
+               + ", stopDate=" + stopDate + ", clusivity=" + clusivity + ", order=" + order
+               + ", numberOfRows=" + numberOfRows + ", label=" + label + "]";
+    }
+
     public enum SelectorType {
         BEFORE("before", new BeforeParser()),
         AFTER("after", new AfterParser()),
@@ -120,8 +127,8 @@ public class PointValueSelector {
     }
 
     public enum OrderHelper {
-        ASCENDING("ascending", Order.REVERSE),
-        DESCENDING("descending", Order.FORWARD);
+        ASCENDING("ascending", Order.FORWARD),
+        DESCENDING("descending", Order.REVERSE);
 
         private String name;
         private Order order;

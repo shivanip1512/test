@@ -14,10 +14,10 @@ public class AllAfterParser extends ValueParser {
         Instant startDate = template.evaluateAsInstant("@date");
         Integer limit = parseLimit(template);
 
-        Boolean inclusive = template.evaluateAsBoolean("@inclusive", true);
-        Clusivity clusivity = Clusivity.getClusivity(inclusive, false);
+        Boolean inclusive = template.evaluateAsBoolean("@inclusive", false);
+        Clusivity clusivity = Clusivity.getClusivity(inclusive, true);
         String orderString = template.evaluateAsString("@order");
-        Order order = OrderHelper.getOrderByName(orderString, Order.REVERSE);
+        Order order = OrderHelper.getOrderByName(orderString, Order.FORWARD);
 
         selector.setStartDate(startDate);
         selector.setStopDate(new Instant());

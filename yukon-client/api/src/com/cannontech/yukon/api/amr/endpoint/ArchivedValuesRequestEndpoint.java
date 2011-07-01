@@ -172,7 +172,6 @@ public class ArchivedValuesRequestEndpoint {
         }
     }
 
-    // TODO:  break this method up some
     private void buildResponseForPoint(Node pointNode, ArchivedValuesResponseData responseData,
                                        Element response) {
         SimpleXPathTemplate pointNodeTemplate = YukonXml.getXPathTemplateForNode(pointNode);
@@ -180,6 +179,7 @@ public class ArchivedValuesRequestEndpoint {
         Set<PaoIdentifier> paoIds = responseData.getPaoIds();
 
         PointSelector pointSelector = new PointSelector(pointNodeTemplate);
+        log.debug("building response for point " + pointSelector);
 
         // handle timeframe selectors
         List<Node> pointValueNodes = pointNodeTemplate.evaluateAsNodeList("*[position()>1]");
@@ -199,7 +199,9 @@ public class ArchivedValuesRequestEndpoint {
             pointInfoById = historySelector.getPointInfo(pointSelector, paoIds);
         }
 
+        Map<PaoIdentifier, Element> pointElementsByPaoId = Maps.newHashMap();
         for (PointValueSelector valueSelector : inputPointElement.getPointValueSelectors()) {
+            log.debug("  working on " + valueSelector);
             ListMultimap<PaoIdentifier, PointValueQualityHolder> valueMap = null;
             if (valueSelector.getValueSelectorType() == SelectorType.SNAPSHOT) {
                 valueMap =
@@ -211,13 +213,18 @@ public class ArchivedValuesRequestEndpoint {
             }
 
             String valueLabel = valueSelector.getLabel();
-            for (PaoIdentifier paoId : valueMap.keySet()) {
+            for (PaoIdentifier paoId : paoIds) {
+                log.debug("    pao " + paoId);
                 PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoId);
                 Element paoElement = responseData.getPaoElement(paoId);
                 Element pointElement = null;
                 if (!responseData.isFlatten()) {
-                    pointElement = createPointElement(pointInfo, pointSelector, paoId, responseData);
-                    paoElement.addContent(pointElement);
+                    pointElement = pointElementsByPaoId.get(paoId);
+                    if (pointElement == null) {
+                        pointElement = createPointElement(pointInfo, pointSelector, paoId, responseData);
+                        paoElement.addContent(pointElement);
+                        pointElementsByPaoId.put(paoId, pointElement);
+                    }
                 }
 
                 PaoData paoData = responseData.getPaoData(paoId);
@@ -229,6 +236,7 @@ public class ArchivedValuesRequestEndpoint {
                 List<PointValueQualityHolder> values = valueMap.get(paoId);
                 List<Element> valueElementList = Lists.newArrayList();
                 for (PointValueQualityHolder value : values) {
+                    log.debug("      " + value.getPointDataTimeStamp() + "/" + value.getValue());
                     if (responseData.isFlatten()) {
                         Element valueElement =
                             buildFlatValue(value, responseFields, valueLabel, paoData, pointInfo,

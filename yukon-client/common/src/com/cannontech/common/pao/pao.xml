@@ -14,5 +14,6 @@
     <bean id="yukonDeviceCreationProvider" class="com.cannontech.common.pao.service.providers.YukonDeviceCreationProvider"/>
     
     <bean id="paoCreationHelper" class="com.cannontech.common.pao.service.impl.PaoCreationHelper"/>
+    <bean id="paoSelectionDao" class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>
     <bean id="paoSelectionService" class="com.cannontech.common.pao.service.impl.PaoSelectionServiceImpl"/>
 </beans>
