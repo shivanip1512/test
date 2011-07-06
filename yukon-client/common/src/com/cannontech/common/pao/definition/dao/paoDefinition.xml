@@ -5757,6 +5757,70 @@
                 <name>CVR Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
+            <point type="Status" offset="5">
+                <name>Line Voltage High</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="6">
+                <name>Line Voltage Low</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="14">
+                <name>Temperature High</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="15">
+                <name>Temperature Low</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="68">
+                <name>Operation Failed</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="69">
+                <name>Max Operation Count</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="70">
+                <name>Bad Active Close Relay</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="71">
+                <name>Bad Active Trip Relay</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="72">
+                <name>Abnormal Delta Voltage</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="73">
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="74">
+                <name>Power On</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="85">
+                <name>Relay Sense Failed</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="86">
+                <name>Reclose Block</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="88">
+                <name>Manual Control Mode</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="89">
+                <name>Remote Control Mode</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="90">
+                <name>Auto Control Mode</name>
+                <stategroup value="TrueFalse"/>
+            </point>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
                 <init>true</init>
