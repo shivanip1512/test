@@ -55,20 +55,18 @@
     	<br><br>
     ]]></entry>
     
-    
-    
     <!-- ValidationMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.common.vee.widget.noMonitorsSetup">No Validation Monitors Setup</entry>
-    <entry key="yukon.web.modules.common.vee.widget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.modules.common.vee.widget.tableHeader.threshold">Threshold</entry>
-    <entry key="yukon.web.modules.common.vee.widget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.common.vee.widget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.common.vee.widget.createNew">Create</entry>
-    <entry key="yukon.web.modules.common.vee.widget.actionTitle.edit">Edit Validation Monitor</entry>
-    <entry key="yukon.web.modules.common.vee.widget.thresholdUnits">kWh/day</entry>
-    <entry key="yukon.web.modules.common.vee.widget.review">Review Flagged Points</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.noMonitorsSetup">No Validation Monitors Setup</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.tableHeader.threshold">Threshold</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.actionTitle.edit">Edit Validation Monitor</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.thresholdUnits">kWh/day</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.review">Review Flagged Points</entry>
 
     <!-- ValidationMonitorEditorController edit.jsp -->
     <!-- ================================================================== -->

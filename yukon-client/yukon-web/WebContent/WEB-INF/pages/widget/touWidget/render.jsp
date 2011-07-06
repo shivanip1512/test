@@ -1,6 +1,7 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:includeScript link="/JavaScript/touPreviousReadings.js"/>
 
@@ -14,35 +15,37 @@
 		    </cti:url>
 		    <a id="touPopupLink" href="javascript:void(0)"
 		       style="align:right"
-		       onclick="openSimpleDialog('touDialog', '${touSpecificsUrl}', '<cti:msg key="yukon.web.modules.widgets.touWidget.title"/>')">
-		        <cti:msg key="yukon.web.modules.widgets.touWidget.previousReadingsLink" />
+		       onclick="openSimpleDialog('touDialog', '${touSpecificsUrl}', '<cti:msg2 key=".title"/>')">
+		        <cti:msg2 key=".previousReadingsLink" />
 		    </a>
 		</div>
 		<div id="touTable">
-			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateA"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateA"
 			                 usageAttribute="${TOU_RATE_A_USAGE}"
 			                 peakAttribute="${TOU_RATE_A_PEAK_DEMAND}" />
 		
-			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateB"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateB"
 			                 usageAttribute="${TOU_RATE_B_USAGE}"
 			                 peakAttribute="${TOU_RATE_B_PEAK_DEMAND}" />
 			        
-			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateC"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateC"
 			                 usageAttribute="${TOU_RATE_C_USAGE}"
 			                 peakAttribute="${TOU_RATE_C_PEAK_DEMAND}" />
 			        
-			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateD"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateD"
 			                 usageAttribute="${TOU_RATE_D_USAGE}"
 			                 peakAttribute="${TOU_RATE_D_PEAK_DEMAND}" />
 		</div>
 	
 		<div id="${widgetParameters.widgetId}_results"></div>
 		<div style="text-align: right">
-			<tags:widgetActionUpdate hide="${!readable}" method="read" label="Read Now"
-				labelBusy="Reading" container="${widgetParameters.widgetId}_results" />
+            <cti:msg2 var="read" key=".read"/>
+            <cti:msg2 var="reading" key=".reading"/>
+			<tags:widgetActionUpdate hide="${!readable}" method="read" label="${read}"
+				labelBusy="${reading}" container="${widgetParameters.widgetId}_results" />
 		</div>
 	</c:when>
 	<c:otherwise>
-		<cti:msg key="yukon.web.modules.widgets.touWidget.notConfigured" />
+		<i:inline key=".notConfigured" />
 	</c:otherwise>
 </c:choose>

@@ -1,24 +1,14 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
 <c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-
-<cti:msg var="noSchedulesSetupText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.noSchedulesSetup"/>
-<cti:msg var="scheduleNameHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName"/>
-<cti:msg var="scheduleDescriptionHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription"/>
-<cti:msg var="statusHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.status"/>
-<cti:msg var="enabledHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.enabled"/>
-<cti:msg var="editScheduleTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.editSchedule" />
-<cti:msg var="viewScheduleDetailsTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails" />
-<cti:msg var="createButtonText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton" />
-<cti:msg var="enableText" key="yukon.common.enable"/> 
-<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <script type="text/javascript">
 
@@ -85,11 +75,11 @@
 	
 	<tr>
 		<th style="width:20px;">&nbsp;</th>
-		<th>${scheduleNameHeaderText}</th>
-		<th>${scheduleDescriptionHeaderText}</th>
-		<th>${statusHeaderText}</th>
+		<th><i:inline key=".tableHeader.scheduleName"/></th>
+		<th><i:inline key=".tableHeader.scheduleDescription"/></th>
+		<th><i:inline key=".tableHeader.status"/></th>
 		<c:if test="${canManage}">
-			<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
+			<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
 		</c:if>
 	</tr>
 
@@ -103,7 +93,7 @@
 			
 			<%-- actions --%>
 			<td>
-			
+			    <cti:msg2 var="viewScheduleDetailsTitleText" key=".actions.viewScheduleDetails" />
 				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" style="text-decoration:none;" >
 					<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
 				</a>
@@ -138,9 +128,11 @@
 			<c:if test="${canManage}">
                 <td style="text-align:right;">
                     <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+                        <cti:msg2 var="disableText" key="yukon.common.disable"/>
                         <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title="${disableText} (${jobWrapper.name})"/>
                     </span>
                     <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+                        <cti:msg2 var="enableText" key="yukon.common.enable"/>
                         <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
                     </span>
                 </td>
@@ -162,13 +154,14 @@
 </c:when>
 
 <c:otherwise>
-	${noSchedulesSetupText}
+	<i:inline key=".noSchedulesSetup"/>
 </c:otherwise>
 </c:choose>
 
 <c:if test="${canManage}">
 	<div style="text-align:right;padding-top:5px;">
-		<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
+		<cti:msg2 var="createButtonText" key=".createButton" />
+        <tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
 	</div>
 </c:if>
 

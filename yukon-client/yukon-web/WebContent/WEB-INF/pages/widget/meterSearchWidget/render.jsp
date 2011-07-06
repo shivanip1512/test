@@ -1,5 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <script type="text/javascript">
@@ -8,7 +8,6 @@
 	});
 </script>
 
-
     <form id="filterForm" action="/spring/meter/search">
         <tags:nameValueContainer altRowOn="false" tableClass="nonwrapping">
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
@@ -16,5 +15,5 @@
 	        </c:forEach>
         </tags:nameValueContainer>
         
-        <div class="actionArea"><input type="submit" value="Search" class="formSubmit"></div>
+        <div class="actionArea"><cti:button type="submit" styleClass="formSubmit" key="search"/></div>
     </form>

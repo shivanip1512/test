@@ -49,6 +49,7 @@
 	      <tr class="<ct:alternateRow odd="" even="altRow"/>">
 	    	<td><i:inline key=".notApplicable"/></td>
 	    	<td><i:inline key=".notApplicable"/></td>
+	    	<td><i:inline key=".notApplicable"/></td>
 	      </tr>
 	    </c:forEach>
 	  </c:if>

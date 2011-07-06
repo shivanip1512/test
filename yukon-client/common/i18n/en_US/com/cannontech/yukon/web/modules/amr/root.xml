@@ -8,6 +8,7 @@
     <entry key="yukon.web.modules.amr.fileFormatHtml">HTML</entry>
     <entry key="yukon.web.modules.amr.fileFormatCsv">CSV</entry>
     <entry key="yukon.web.modules.amr.fileFormatPdf">PDF</entry>
+    
 
     <!-- start.jsp -->
     <entry key="yukon.web.modules.amr.moduleName">Metering</entry>
@@ -22,7 +23,6 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.address">Address</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.route">Route</entry>
-    
     <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.noResultsForFilter">No results for Filter: {0}</entry>
@@ -31,6 +31,8 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.filter.label">Filter</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
+    <entry key="yukon.web.metering.deviceSelection.performCollectionAction">Perform Collection Action</entry>
+    <entry key="yukon.web.metering.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
 
     <!-- meterHome.jsp -->
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>
@@ -48,81 +50,6 @@
     <entry key="yukon.web.modules.amr.meterDetail.locateRoute">Locate Route</entry>
     <entry key="yukon.web.modules.amr.meterDetail.otherActions">Other Actions...</entry>
     <entry key="yukon.web.modules.amr.meterDetail.actions.title">Actions</entry>
-    
-    <!-- meterInformationWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterInformationWidget.deviceName">Device Name</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.type">Type</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.physicalAddress">Physical Address</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.route">Route</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.model">Model</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.ping">Ping</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.pinging">Pinging</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.notApplicable">n/a</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
-    
-    <!-- meterReadingsWidget/render.jsp -->
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.unsupported">unsupported</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.notConfigured">not configured</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow">Read Now</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading">Reading</entry>
-
-    <!-- trendWidget/render.jsp -->
-    <entry key="yukon.web.widgetClasses.TrendWidget.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hour's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous weeks's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 month's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.oneDay">1D</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.oneWeek">1W</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.oneMonth">1M</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.threeMonths">3M</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.oneYear">1Y</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.column">Column</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.columnGraph">Column Graph</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.noTrendsAvailable">No trends available for device</entry>
-    
-    <!-- meterOutagesWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.readNow">Read Now</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.reading">Reading</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.outagesLastRetrieved">Outages Last Retrieved</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.outageLogPointNotConfigured">Outage Log Analog Point is not configured.</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.log">Log</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.time">Time</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.duration">Duration</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.notApplicable">n/a</entry>
-    
-    <!-- configWidget/render.jsp -->
-    <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
-    <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
-    <entry key="yukon.web.widgets.configWidget.assign">Assign</entry>
-    <entry key="yukon.web.widgets.configWidget.assigning">Assigning</entry>
-    <entry key="yukon.web.widgets.configWidget.send">Send</entry>
-    <entry key="yukon.web.widgets.configWidget.sending">Sending</entry>
-    <entry key="yukon.web.widgets.configWidget.read">Read</entry>
-    <entry key="yukon.web.widgets.configWidget.reading">Reading</entry>
-    <entry key="yukon.web.widgets.configWidget.verify">Verify</entry>
-    <entry key="yukon.web.widgets.configWidget.verifying">Verifying</entry>
-    <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     
     <!-- moveIn.jsp -->
     <entry key="yukon.web.modules.amr.moveIn.pageName">Move In</entry>

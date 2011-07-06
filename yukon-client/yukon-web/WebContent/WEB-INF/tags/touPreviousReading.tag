@@ -5,10 +5,8 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<cti:msg key="${headerKey}" var="headerName" />
-<cti:msg key="yukon.web.modules.widgets.touWidget.previousReadings.currentReading" var="currentReading" argument="${attributeReadings.attribute.description}" />
-<cti:msg key="yukon.web.modules.widgets.touWidget.previousReadings.previousReadings" var="previousReadings" argument="${attributeReadings.attribute.description}" />
-
+<cti:msg2 key="${headerKey}" var="headerName" />
+<cti:msgScope paths="widgets.touWidget">
 <style>
 <!--
 table.compactResultsTable tr.vertical-middle td,
@@ -19,7 +17,6 @@ table.compactResultsTable tr.vertical-middle td.name {
 </style>
 
 <c:if test="${not empty attributeReadings.previous36 || not empty attributeReadings.previous3Months}">
-
 	<table class="compactResultsTable">
 		<tr>
             <th colspan="2">${headerName}</th>
@@ -27,17 +24,20 @@ table.compactResultsTable tr.vertical-middle td.name {
 		<tr class="vertical-middle">
 			<td>
 				<ct:nameValueContainer>
+                <cti:msg2 var="currentReading" key=".currentReading" argument="${attributeReadings.attribute.description}" />
 					<ct:nameValue name="${currentReading}" nameColumnWidth="40%">
 						<span id="${attributeReadings.attribute.key}_latestReading"><cti:pointValueFormatter format="FULL"
 							                                                             value="${attributeReadings.previous36[0]}" /></span>
 					</ct:nameValue>
 			 		<ct:nameValueGap gapHeight="6px" />
-					<ct:nameValue name="${previousReadings}" >
+					<cti:msg2 var="previousReadings" key=".previousReadings" argument="${attributeReadings.attribute.description}" />
+                    <ct:nameValue name="${previousReadings}" >
 					 	<select id="${attributeReadings.attribute.key}_previousReading" 
 					 	        onchange="calculatePreviousReadingDifference('${attributeReadings.attribute.key}',${attributeReadings.previous36[0].value}) ">
 					        <cti:formatDate type="DATE" var="cutOff"
 							    value="${attributeReadings.cutoffDate}" />
-							<optgroup id="firstOptGroup" label="Recent Readings (since ${cutOff})">
+                            <cti:msg2 var="recentReadings" key=".recentReadings" argument="${cutOff}"/>
+							<optgroup id="firstOptGroup" label="${recentReadings}">
 								<c:forEach items="${attributeReadings.previous36}" var="reading">
 							    	<option value="${reading.value}">
 							            <cti:pointValueFormatter format="FULL"
@@ -45,12 +45,11 @@ table.compactResultsTable tr.vertical-middle td.name {
 							        </option>
 							    </c:forEach>
 							</optgroup>
-							
 							<c:if test="${not empty attributeReadings.previous3Months}">
 							    <cti:formatDate type="DATE" var="cutOff"
 							        value="${attributeReadings.cutoffDate}" />
-							    <optgroup label="Daily readings (before ${cutOff})">
-							
+                                <cti:msg2 var="dailyReadings" key=".dailyReadings" argument="${cutOff}"/>
+							    <optgroup label="${dailyReadings}">
 							        <c:forEach items="${attributeReadings.previous3Months}" var="reading">
 										<option value="${reading.value}">
 							                <cti:pointValueFormatter format="FULL"
@@ -62,15 +61,15 @@ table.compactResultsTable tr.vertical-middle td.name {
 					    </select>
 					</ct:nameValue>
 					<ct:nameValueGap gapHeight="6px" />
-					
-					<ct:nameValue name="Total Consumption" >
+                    <cti:msg2 var="totalConsumption" key=".totalConsumption"/>
+					<ct:nameValue name="${totalConsumption}">
 						<span id="${attributeReadings.attribute.key}_total">0.000</span>
 					</ct:nameValue>
 					<ct:nameValueGap gapHeight="6px" />
-					
 				</ct:nameValueContainer>
 			</td>
 		</tr>
 	</table>
 	<br />
 </c:if>
+</cti:msgScope>

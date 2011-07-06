@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.device.commands.CommandResultHolder"%>
 <%@ attribute name="errorMsg" required="false" type="java.lang.String"%>
@@ -12,7 +13,7 @@
             <span class="errorRed">${pageScope.errorMsg}</span>
         </c:when>
         <c:otherwise>
-            <span class="errorRed">There was an error reading the meter:</span>
+            <span class="errorRed"><i:inline key=".errorReading"/></span>
         </c:otherwise>
     </c:choose>
     <br>
@@ -22,7 +23,6 @@
     ${error.troubleshooting}<br>
     </tags:hideReveal><br>
   </c:forEach>
-  
   <c:if test="${not empty result.exceptionReason}">
   	${result.exceptionReason}
   </c:if>
@@ -37,7 +37,7 @@
             ${pageScope.successMsg}
         </c:when>
         <c:otherwise>
-            Successful Read
+            <i:inline key=".successReading"/>
         </c:otherwise>
     </c:choose>
   </span>

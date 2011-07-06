@@ -4,12 +4,25 @@
     <!-- breadcrumb placeholder -->
     <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
 
-	<!-- ScheduledGroupRequestExecutionController home.jsp -->
+    <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.noSchedulesSetup">No Schedules Setup</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.actions.editSchedule">Edit Schedule</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails">View Schedule Details</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
+	
+    <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageName">Scheduled Group Request Processing</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageDescription">Create Schedule</entry>
-    
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
@@ -35,28 +48,10 @@
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton">Disable</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton">Delete</entry>
     
-    <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
-    <!-- ================================================================================================================================================= -->
-    <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.noSchedulesSetup">No Schedules Setup</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.editSchedule">Edit Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails">View Schedule Details</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete">Delete Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.infoLink">Scheduled Requests Information</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.title">Scheduled Requests</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
-    
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.pageName">All Schedules</entry>
-    
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle">All Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.section">Filters</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.dateFrom">From</entry>

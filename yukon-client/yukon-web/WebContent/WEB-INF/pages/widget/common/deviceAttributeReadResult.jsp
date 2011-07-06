@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i18n" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <c:if test="${not result.success}">
 <div style="max-height: 240px; overflow: auto; padding: 1px">
   <div class="errorRed"><i18n:inline key="yukon.common.device.attributeRead.general.errorHeading"/></div>

@@ -1,6 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
@@ -11,7 +12,7 @@
         Yukon.ui.blockPage();
         parent.window.location = "${reportQueryString}";
     </script>
-    Retrieving report...
+    <i:inline key=".retrievingReport"/>
 </c:when>
 
 <c:otherwise>
@@ -39,8 +40,10 @@
     </script>
     <%-- CHANNEL SCANNING --%>
     <c:if test="${not empty toggleErrorMsg}">
-        <div style="font-weight:bold;color:#BB0000">${toggleErrorMsg}</div>
-        <br>
+        <cti:msg2 var="errorToggleChannel" key=".errorToggleChannel"/>
+        <tags:hideReveal title="${errorToggleChannel}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+            <div class="errorMessage">${toggleErrorMsg}</div>
+        </tags:hideReveal>
     </c:if>
     
     <c:set var="channelScanDiv" value="${widgetParameters.widgetId}_channelScanning"/>
@@ -60,11 +63,11 @@
         <br/>
     	<table class="compactResultsTable">
     		<tr>
-    			<th colspan="3" align="left">Request Past Profile:</th>
+    			<th colspan="3" align="left"><i:inline key=".requestPastProfile"/></th>
     		</tr>
     	
     		<tr>
-    			<td class="label">Channel:</td>
+    			<td class="label"><i:inline key=".channel"/></td>
     			<td colspan="2">
     				<select name="channel" style="height:20px;">
     					<c:forEach var="channel" items="${availableChannels}">
@@ -75,33 +78,38 @@
     		</tr>
     		
     		<tr>
-    			<td class="label">Start Date:</td>
+    			<td class="label"><i:inline key=".startDate"/></td>
     			<td colspan="2">
     				<tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>
     			</td>
     		</tr>
     		
     		<tr>
-    			<td class="label">Stop Date:</td>
+    			<td class="label"><i:inline key=".stopDate"/></td>
     			<td colspan="2">
     				<tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
     			</td>
     		</tr>
     		
     		<tr>
-    			<td class="label">Email:</td>
+    			<td class="label"><i:inline key=".email"/></td>
     			<td class="last">
     				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
     			</td>
     	  	    <td class="last" align="right">
-    	           <tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>
+                    <cti:msg2 var="start" key=".start"/>
+    	            <tags:widgetActionRefresh method="initiateLoadProfile" label="${start}" labelBusy="${start}"/>
                 </td>
     		</tr>
     	</table>
     
         <c:if test="${not empty errorMsgRequest}">
-        <div class="errorMessage" style="none">Error Retrieving Past Profile:</div>
-            <tags:hideReveal title="${errorMsgRequest}" showInitially="false"/>
+            <cti:msg2 var="errorPastProfile" key=".errorPastProfile"/>
+            <tags:hideReveal title="${errorPastProfile}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+                <c:forEach items="${errorMsgRequest}" var="errorMsg" varStatus="msgNum">
+                    <div class="errorMessage">${errorMsg}</div>
+                </c:forEach>
+            </tags:hideReveal>
         </c:if>
         <br>
     </cti:checkProperty>
@@ -114,35 +122,37 @@
     
     <table class="compactResultsTable">
     	<tr>
-    		<th colspan="5" align="left">Daily Usage Report:</th>
+    		<th colspan="5" align="left"><i:inline key=".dailyUsageReport"/></th>
     	</tr>
     
         <tr>
-            <td class="label">Start Date:</td>
+            <td class="label"><i:inline key=".startDate"/></td>
             <td>
                 <tags:dateInputCalendar fieldName="dailyUsageStartDate" fieldValue="${dailyUsageStartDateStr}"></tags:dateInputCalendar>
             </td>
-            <td class="label">Stop Date:</td>
+            <td class="label"><i:inline key=".stopDate"/></td>
             <td>
                     <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="last" align="right">
-                <tags:widgetActionRefresh method="viewDailyUsageReport" label="View Report" labelBusy="View Report"/>
+                <cti:msg2 var="viewReport" key=".viewReport"/>
+                <tags:widgetActionRefresh method="viewDailyUsageReport" label="${viewReport}" labelBusy="${viewReport}"/>
             </td>
         </tr>
         <tr>
             <td colspan="5">
+            </td>
+        </tr>
+    	
+    </table>
                 <c:if test="${not empty errorMsgDailyUsage}">
-                    <tags:hideReveal title="Error Retrieving Daily Usage Report:" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+                    <cti:msg2 var="errorDailyReport" key=".errorDailyReport"/>
+                    <tags:hideReveal title="${errorDailyReport}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
                         <c:forEach items="${errorMsgDailyUsage}" var="errorMsg" varStatus="msgNum">
                             <div class="errorMessage">${errorMsg}</div>
                         </c:forEach>
                     </tags:hideReveal>
                 </c:if>
-            </td>
-        </tr>
-    	
-    </table>
     </form>
 </c:otherwise>
 </c:choose>

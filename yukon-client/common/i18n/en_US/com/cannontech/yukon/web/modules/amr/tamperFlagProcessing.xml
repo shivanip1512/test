@@ -7,14 +7,14 @@
     <!-- TamperFlagMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup">No Tamper Flag Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations">Violations</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.noMonitorsSetup">No Tamper Flag Monitors Setup</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.violations">Violations</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

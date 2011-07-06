@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- ERROR MSG --%>
@@ -15,23 +16,25 @@
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
 <table class="compactResultsTable">
     <tr align="left">
-      <th align="left">Channel</th>
-      <th>Interval</th>
-      <th>Collection State</th>
+      <th align="left"><i:inline key=".channel"/></th>
+      <th><i:inline key=".interval"/></th>
+      <th><i:inline key=".collectionState"/></th>
       <c:if test="${hasScanningRoleProperty}">
-        <th>Action</th>
+        <th><i:inline key=".action"/></th>
       </c:if>
     </tr>
     
     <c:forEach var="c" items="${availableChannels}">
     
         <c:if test="${c.channelProfilingOn}">
-            <c:set var="actionDesc" value="Stop"/>
-            <c:set var="scanning" value='<div style="font-weight:bold;color:#339900;display:inline;">On</div>'></c:set>
+            <cti:msg2 var="actionDesc" key=".stop"/>
+            <cti:msg2 var="on" key=".on"/>
+            <c:set var="scanning" value='<div style="font-weight:bold;color:#339900;display:inline;">${on}</div>'></c:set>
         </c:if>
         <c:if test="${not c.channelProfilingOn}">
-            <c:set var="actionDesc" value="Start"/>
-            <c:set var="scanning" value='<div style="font-weight:bold;color:#BB0000;display:inline;">Off</div>'></c:set>
+            <cti:msg2 var="actionDesc" key=".start"/>
+            <cti:msg2 var="off" key=".off"/>
+            <c:set var="scanning" value='<div style="font-weight:bold;color:#BB0000;display:inline;">${off}</div>'></c:set>
         </c:if>
     
         <tr align="left" valign="top">
@@ -42,33 +45,43 @@
                     
                     <c:choose>
                     <c:when test="${empty c.jobInfos}">
-                       <tr><td>${scanning}</td><td>(Never ${actionDesc}s)</td></tr>
+                        <tr>
+                            <td>${scanning}</td>
+                            <td><i:inline key=".never" arguments="${actionDesc}"/></td>
+                        </tr>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="jobInfo" items="${c.jobInfos}" varStatus="status">
-                        
                             <c:choose>
                                 <c:when test="${status.count == 1}">
-                                    <tr><td>${scanning}</td>
+                                    <tr>
+                                        <td>${scanning}</td>
                                 </c:when>
                                 <c:otherwise>
                                     <tr><td>&nbsp;</td>
                                 </c:otherwise>
                             </c:choose>
                         
-                        
-                            <cti:formatDate value="${jobInfo.startTime}" type="DATEH" var="formattedScheduleDate" />
                             <c:choose>
                                 <c:when test="${jobInfo.newToggleVal}">
-                                    <td>(Starts ${formattedScheduleDate})</td>
+                                    <td>
+                                        <cti:formatDate value="${jobInfo.startTime}" type="DATE" var="formattedScheduleDate" />
+                                        <i:inline key=".startsDate" arguments="${formattedScheduleDate}"/>
+                                        <cti:formatDate value="${jobInfo.startTime}" type="TIME" var="formattedScheduleDate" />
+                                        <i:inline key=".startsTime" arguments="${formattedScheduleDate}"/>
+                                    
+                                    </td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td>(Stops ${formattedScheduleDate})</td>
+                                    <td>
+                                        <cti:formatDate value="${jobInfo.startTime}" type="DATE" var="formattedScheduleDate" />
+                                        <i:inline key=".stopsDate" arguments="${formattedScheduleDate}"/>
+                                        <cti:formatDate value="${jobInfo.startTime}" type="TIME" var="formattedScheduleDate" />
+                                        <i:inline key=".stopsTime" arguments="${formattedScheduleDate}"/>
+                                    </td>
                                 </c:otherwise>
                             </c:choose>
-                            
                             </tr>
-                            
                         </c:forEach>
                     </c:otherwise>
                     </c:choose>

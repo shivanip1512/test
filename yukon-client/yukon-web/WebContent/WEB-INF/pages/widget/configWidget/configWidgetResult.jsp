@@ -1,34 +1,40 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr"%>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:choose>
     <c:when test="${verifyResult != null}">
-        <ct:nameValueContainer>
-            <ct:nameValue name="Verify Result">
+        <ct:nameValueContainer2>
+            <ct:nameValue2 nameKey=".verifyResult">
                 <c:choose>
                     <c:when test="${verifyResult.synced}">
-                        <span style="font-weight:bold;color:#006633;"><c:out value="In Sync"/></span>
+                        <span style="font-weight:bold;color:#006633;"><i:inline key=".inSync"/></span>
                     </c:when>
                     <c:otherwise>
                         <span style="font-weight:bold;color:#AA0033;"><c:out value="${verifyResult.discrepancies}"/></span>
                     </c:otherwise>
                 </c:choose>
-            </ct:nameValue>
-        </ct:nameValueContainer>
+            </ct:nameValue2>
+        </ct:nameValueContainer2>
     </c:when>
     <c:when test="${sendResult != null}">
-        <ct:nameValueContainer>
-            <ct:nameValue name="Send Result">
-            	<amr:meterReadingsResult result="${sendResult}" errorMsg="Failed" successMsg="Send Config Sent Successfully"/>
-            </ct:nameValue>
-        </ct:nameValueContainer>
+        <ct:nameValueContainer2>
+            <ct:nameValue2 nameKey=".sendResult">
+                <cti:msg2 var="sendConfigFail" key=".fail"/>
+                <cti:msg2 var="sendConfigSuccess" key=".sendConfigSuccess"/>
+            	<amr:meterReadingsResult result="${sendResult}" errorMsg="${sendConfigFail}" successMsg="${sendConfigSuccess}"/>
+            </ct:nameValue2>
+        </ct:nameValueContainer2>
     </c:when>
     <c:when test="${readResult != null}">
-        <ct:nameValueContainer>
-            <ct:nameValue name="Read Result">
-            	<amr:meterReadingsResult result="${readResult}" errorMsg="Failed" successMsg="Read Sent Successfully"/>
-            </ct:nameValue>
-        </ct:nameValueContainer>
+        <ct:nameValueContainer2>
+            <ct:nameValue2 nameKey=".readResult">
+                <cti:msg2 var="readSentFail" key=".fail"/>
+                <cti:msg2 var="readSentSuccess" key=".readSentSuccess"/>
+            	<amr:meterReadingsResult result="${readResult}" errorMsg="${readSentFail}" successMsg="${readSentSuccess}"/>
+            </ct:nameValue2>
+        </ct:nameValueContainer2>
     </c:when>
 </c:choose>

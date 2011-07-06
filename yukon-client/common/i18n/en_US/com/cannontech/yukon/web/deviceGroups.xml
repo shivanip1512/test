@@ -3,12 +3,16 @@
 
 <properties>
 
-
-<entry key="yukon.web.deviceGroups.widget.groupTree.rootName">Groups</entry>
-
-<entry key="yukon.web.deviceGroups.widget.groupTree.title">Add to Groups</entry>
-<entry key="yukon.web.deviceGroups.widget.groupTree.submitButtonText">Add Device To Selected Groups</entry>
-<entry key="yukon.web.deviceGroups.widget.groupTree.closeButtonText">Cancel</entry>
+<!-- deviceGroupWidget/render.jsp -->
+<entry key="yukon.web.deviceGroups.widget.groupTree.rootName">Groups</entry>  <!-- Could not find reference to this key. Safe to remove? -->  
+<entry key="yukon.web.widgets.deviceGroupWidget.groupTree.title">Add to Groups</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.groupTree.submitButtonText">Add Device To Selected Groups</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.groupTree.closeButtonText">Cancel</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.currentGroup">Current Groups</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.remove">Remove</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.removing">Removing</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.cantRemove">Cannot remove device from group</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.noGroups">No Groups</entry>
 
 <!-- EDITOR home.jsp and related jsps -->
 <!-- ================================================================================================================================================= -->

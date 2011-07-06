@@ -1,21 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
-<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.common.vee.widget.noMonitorsSetup"/>
-<cti:msg var="nameHeaderText" key="yukon.web.modules.common.vee.widget.tableHeader.name"/>
-<cti:msg var="thresholdHeaderText" key="yukon.web.modules.common.vee.widget.tableHeader.threshold"/>
-<cti:msg var="monitoringHeaderText" key="yukon.web.modules.common.vee.widget.tableHeader.monitoring"/>
-<cti:msg var="enabledHeaderText" key="yukon.web.modules.common.vee.widget.tableHeader.enabled"/>
-<cti:msg var="createNewText" key="yukon.web.modules.common.vee.widget.createNew"/>
-<cti:msg var="editActionTitleText" key="yukon.web.modules.common.vee.widget.actionTitle.edit"/>
-<cti:msg var="thresholdUnits" key="yukon.web.modules.common.vee.widget.thresholdUnits"/>
-<cti:msg var="review" key="yukon.web.modules.common.vee.widget.review"/>
 <cti:msg var="enableText" key="yukon.common.enable"/> 
 <cti:msg var="disableText" key="yukon.common.disable"/> 
 
@@ -35,10 +27,10 @@
 <table class="compactResultsTable">
     
     <tr>
-        <th>${nameHeaderText}</th>
-        <th style="text-align:right;">${thresholdHeaderText} (${thresholdUnits})</th>
-        <th style="text-align:right;">${monitoringHeaderText}</th>
-        <th style="text-align:right;width:80px;">${enabledHeaderText}</th>
+        <th><i:inline key=".tableHeader.name"/></th>
+        <th style="text-align:right;"><i:inline key=".tableHeader.threshold"/> (<i:inline key=".thresholdUnits"/>)</th>
+        <th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
+        <th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
     </tr>
 
     <c:forEach var="monitor" items="${monitors}">
@@ -59,7 +51,7 @@
                 <cti:url var="viewValidationMonitorEditorUrl" value="/spring/common/vee/monitor/edit">
                     <cti:param name="validationMonitorId" value="${monitorId}"/>
                 </cti:url>
-                
+                <cti:msg2 var="editActionTitleText" key=".actionTitle.edit"/>
                 <a href="${viewValidationMonitorEditorUrl}" title="${editActionTitleText}">
                     ${monitorName}
                 </a>
@@ -96,7 +88,7 @@
 </c:when>
 
 <c:otherwise>
-    ${noMonitorsSetupText}
+    <i:inline key=".noMonitorsSetup"/>
 </c:otherwise>
 </c:choose>
 
@@ -105,10 +97,11 @@
 	<tr>
 		<td align="left">
 			<cti:url var="reviewUrl" value="/spring/common/veeReview/home"/>
-    		<a href="${reviewUrl}">${review}</a>
+    		<a href="${reviewUrl}"><i:inline key=".review"/></a>
 		</td>
 		<td align="right">
-			<tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+			<cti:msg2 var="createNewText" key=".createNew"/>
+            <tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 		</td>
 	</tr>
 </table>

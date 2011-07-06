@@ -1,8 +1,8 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:choose>
 
@@ -13,52 +13,49 @@
 	<c:otherwise>
 
 		<table class="compactResultsTable">
-		
 		    <tr>
-		        <th colspan="2" align="left">Customer Information:</th>
+		        <th colspan="2" align="left"><i:inline key=".custInfo"/></th>
 		    </tr>
-		
 		    <tr>
 		    	<td>
-		    		<ct:nameValueContainer>
-				    	<ct:nameValue name="Account Number" nameColumnWidth="30%">
+		    		<ct:nameValueContainer2>
+				    	<ct:nameValue2 nameKey=".acctNumber">
 				    		${meterInfo.accountNumber}
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 		    		
-				    	<ct:nameValue name="Name">
+				    	<ct:nameValue2 nameKey=".name">
 				    		${meterInfo.name}
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 					    
-					    <ct:nameValue name="Location Number">
+					    <ct:nameValue2 nameKey=".locationNum">
 				    		${meterInfo.locationNumber}
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 					    
-					    <ct:nameValue name="Service Address">
+					    <ct:nameValue2 nameKey=".serviceAddr">
 				    		<tags:address address="${address}" />
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 					    
-					    <ct:nameValue name="Meter Serial Number">
+					    <ct:nameValue2 nameKey=".meterSerial">
 				    		${meterInfo.serialNumber}
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 					    
-					    <ct:nameValue name="Phone Number">
+					    <ct:nameValue2 nameKey=".phoneNum">
 				    		<cti:formatPhoneNumber value="${phoneInfo.phoneNumber}" htmlEscape="true"/>
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
 					    
-					    <ct:nameValue name="Map Number" nameColumnWidth="30%">
+					    <ct:nameValue2 nameKey=".mapNum">
 				    		${locationInfo.mapNumber}
-				    	</ct:nameValue>
-				    	<ct:nameValueGap gapHeight="6px" />
-				    </ct:nameValueContainer>
+				    	</ct:nameValue2>
+				    	<ct:nameValueGap2 gapHeight="6px" />
+				    </ct:nameValueContainer2>
 		        </td>
 		    </tr>
-		    
 		</table>
 		
 	</c:otherwise>

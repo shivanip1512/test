@@ -5,12 +5,12 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorProcessing.pageName">Status Point Processing</entry>
 
 	<!-- StatusPointMonitorsWidget render.jsp -->
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.noMonitorsSetup">No Status Point Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointMonitoring">View Status Point Monitor Details</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.noMonitorsSetup">No Status Point Monitors Setup</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.actionTitle.statusPointMonitoring">View Status Point Monitor Details</entry>
 
     <!-- StatusPointMonitorController create.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageName">Status Point Monitoring</entry>
@@ -23,7 +23,6 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.create.labelBusy">Creating</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel">Cancel</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel.labelBusy">Canceling</entry>
-    
 
     <!-- StatusPointMonitorController edit.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.pageName">Status Point Monitoring</entry>

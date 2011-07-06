@@ -1,22 +1,14 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-
-<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.statusPointMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameHeaderText" key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.name"/>
-<cti:msg var="monitoringHeaderText" key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.monitoring"/>
-<cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.enabled"/>
-<cti:msg var="createNewText" key="yukon.web.modules.amr.statusPointMonitorsWidget.createNew"/>
-<cti:msg var="statusPointMonitoringActionTitleText" key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointMonitoring"/>
-<cti:msg var="enableText" key="yukon.common.enable"/> 
-<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <%-- ERROR --%>
 <c:if test="${not empty statusPointMonitorsWidgetError}">
@@ -30,9 +22,9 @@
         	
         	<tr>
         		<th style="width:20px;">&nbsp;</th>
-        		<th>${nameHeaderText}</th>
-        		<th style="text-align:right;">${monitoringHeaderText}</th>
-        		<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
+        		<th><i:inline key=".tableHeader.name"/></th>
+        		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
+        		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
         	</tr>
         
         	<c:forEach var="monitor" items="${monitors}">
@@ -52,7 +44,8 @@
         				
         			<%-- action icons --%>
         			<td>
-        				<a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${monitorName})" style="text-decoration:none;">
+        				<cti:msg2 var="statusPointMonitoringActionTitleText" key=".actionTitle.statusPointMonitoring"/>
+                        <a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${monitorName})" style="text-decoration:none;">
         					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
         				</a>
         			</td>
@@ -71,10 +64,12 @@
         			<td class="${tdClass}" style="text-align:right;">
         				<c:choose>
         					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-        						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" statusPointMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
+        						<cti:msg2 var="disableText" key="yukon.common.disable"/>
+                                <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" statusPointMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
         					</c:when>
         					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-        						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" statusPointMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
+        						<cti:msg2 var="enableText" key="yukon.common.enable"/>
+                                <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" statusPointMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
         					</c:when>
         				</c:choose>
         			</td>
@@ -84,13 +79,14 @@
         </table>
     </c:when>
     <c:otherwise>
-    	${noMonitorsSetupText}
+    	<i:inline key=".noMonitorsSetup"/>
     </c:otherwise>
 </c:choose>
 
 <div style="text-align:right;padding-top:5px;">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
     <form id="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/statusPointMonitoring/creationPage" method="get">
+        <cti:msg2 var="createNewText" key=".createNew"/>
         <tags:slowInput myFormId="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
         <input type="hidden" value="0" name="statusPointMonitorId">
     </form>

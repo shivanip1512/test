@@ -1,7 +1,8 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
@@ -9,7 +10,7 @@
 </cti:checkProperty>
 </cti:checkRole>
     
-<div class="widgetInternalSectionHeader">Current Groups</div>
+<div class="widgetInternalSectionHeader"><i:inline key=".currentGroup"/></div>
     <c:choose>
         <c:when test="${not empty currentGroups}">
 
@@ -34,12 +35,16 @@
 		                            <td style="border: none; width: 15px; text-align: center;">
 		                                <c:choose>
 		                                    <c:when test="${group.modifiable}">
-		                                    <tags:widgetLink method="remove" title="Remove" labelBusy="Removing" groupId="${group.id}" container="currentGroups">
+                                            <cti:msg2 var="remove" key=".remove"/>
+                                            <cti:msg2 var="removing" key=".removing"/>
+		                                    <tags:widgetLink method="remove" title="${remove}" labelBusy="${removing}" groupId="${group.id}" container="currentGroups">
 		                                        <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
 		                                    </tags:widgetLink>
 		                                    </c:when>
+
 		                                    <c:otherwise>
-		                                        <img class="graycssicon" title="Cannot remove device from group" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
+                                                <cti:msg2 var="cantRemove" key=".cantRemove"/>
+		                                        <img class="graycssicon" title="${cantRemove}" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
 		                                    </c:otherwise>
 		                                </c:choose>
 		                            </td>
@@ -54,6 +59,6 @@
             </div>
         </c:when>
         <c:otherwise>
-            No Groups
+            <i:inline key=".noGroups"/>
         </c:otherwise>
     </c:choose>

@@ -6,7 +6,7 @@
 <tags:nameValueContainer2>
 	<tags:nameValue2 nameKey=".deviceName">${meter.name}</tags:nameValue2>
 	<tags:nameValue2 nameKey=".meterNumber">${meter.meterNumber}</tags:nameValue2>
-	<tags:nameValue2 nameKey=".type"><span class="fl">${deviceType} </span><cti:paoTypeIcon yukonPao="${meter}" /></tags:nameValue2>
+	<tags:nameValue2 nameKey=".type"><span class="fl">${deviceType}</span><cti:paoTypeIcon yukonPao="${meter}" /></tags:nameValue2>
     <c:if test="${showCarrierSettings}">
     	<tags:nameValue2 nameKey=".physicalAddress">
         	<c:if test='${meter.address != null}'>${meter.address}</c:if>

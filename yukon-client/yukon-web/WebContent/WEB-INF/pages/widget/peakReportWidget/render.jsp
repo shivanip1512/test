@@ -1,7 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
@@ -11,7 +12,7 @@
 		<%--REQUEST--%>
 		<table width="95%">
 			<tr>
-				<td>Channel:</td>
+				<td><i:inline key=".channel"/></td>
 				<td>
 					<select name="channel" style="width:145px;">
 						<c:forEach var="channelInfo" items="${availableChannels}">
@@ -20,12 +21,14 @@
 			   		</select>
 			   	</td>
 			   	<td colspan="2" align="right">
-			   		<tags:widgetActionUpdate method="requestReport" label="Get Report" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
+                    <cti:msg2 var="getReport" key=".getReport"/>
+                    <cti:msg2 var="reading" key=".reading"/>
+			   		<tags:widgetActionUpdate method="requestReport" label="${getReport}" labelBusy="${reading}" container="${widgetParameters.widgetId}_results"/>
 			   	</td>
 			</tr>
 			
 			<tr>
-				<td>Report Type:</td>
+				<td><i:inline key=".reportType"/></td>
 				<td colspan="3">
 					<select name="peakType" style="height:20px;width:145px;">
 						<c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
@@ -38,9 +41,9 @@
 		
 		<table>
 			<tr>
-				<td>Start:</td>
+				<td><i:inline key=".start"/></td>
 				<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
-				<td>Stop: </td>
+				<td><i:inline key=".stop"/></td>
 				<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
 			</tr>
 		</table>
@@ -52,6 +55,6 @@
 		</div>
 	</c:when>
 	<c:otherwise>
-		You are not authorized to view this report.
+		<i:inline key=".notAuthorized"/>
 	</c:otherwise>
 </c:choose>

@@ -7,15 +7,13 @@
 	<!-- OutageMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.noMonitorsSetup">No Outage Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.violations">Violations</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.edit">Edit Outage Monitor</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.noMonitorsSetup">No Outage Monitors Setup</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.violations">Violations</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.widgets.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
     
     <!-- OutageMonitorEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

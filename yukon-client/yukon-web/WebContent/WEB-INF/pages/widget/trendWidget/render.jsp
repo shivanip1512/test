@@ -100,7 +100,7 @@
             				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
             				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
             				<cti:msg2 var="reloadGraph" key=".reloadUsingCustomDates"/>
-                            <tags:widgetActionRefreshImage method="render" title="${reloadGraph}" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.gif" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.png" />
+                            <tags:widgetActionRefreshImage method="render" title="${reloadGraph}" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.png" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.png" />
         				</td>
         			</tr>
         		</c:when>

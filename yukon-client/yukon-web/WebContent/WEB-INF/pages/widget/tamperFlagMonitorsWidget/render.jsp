@@ -1,24 +1,14 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-
-<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name"/>
-<cti:msg var="violationsHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations"/>
-<cti:msg var="monitoringHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring"/>
-<cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.enabled"/>
-<cti:msg var="createNewText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew"/>
-<cti:msg var="editActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit"/>
-<cti:msg var="tamperFlagProcessingActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing"/>
-<cti:msg var="enableText" key="yukon.common.enable"/> 
-<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
 <form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
@@ -34,13 +24,12 @@
 <c:when test="${fn:length(monitors) > 0}">
 
 <table class="compactResultsTable">
-	
 	<tr>
 		<th style="width:20px;">&nbsp;</th>
-		<th>${nameHeaderText}</th>
-		<th style="text-align:right;">${violationsHeaderText}</th>
-		<th style="text-align:right;">${monitoringHeaderText}</th>
-		<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
+		<th><i:inline key=".tableHeader.name"/></th>
+		<th style="text-align:right;"><i:inline key=".tableHeader.violations"/></th>
+		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
+		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
 	</tr>
 
 	<c:forEach var="monitor" items="${monitors}">
@@ -61,7 +50,7 @@
 				
 			<%-- action icons --%>
 			<td>
-			
+			    <cti:msg2 var="tamperFlagProcessingActionTitleText" key=".actionTitle.tamperFlagProcessing"/>
 				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
 					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
 				</a>
@@ -87,9 +76,11 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+                        <cti:msg2 var="disableText" key="yukon.common.disable"/>
 						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" tamperFlagMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+                        <cti:msg2 var="enableText" key="yukon.common.enable"/> 
 						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" tamperFlagMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
 					</c:when>
 				</c:choose>
@@ -103,12 +94,13 @@
 </c:when>
 
 <c:otherwise>
-	${noMonitorsSetupText}
+	<i:inline key=".noMonitorsSetup"/>
 </c:otherwise>
 </c:choose>
 
 <div style="text-align:right;padding-top:5px;">
-	<tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+	<cti:msg2 var="createNewText" key=".createNew"/>
+    <tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>
 
 

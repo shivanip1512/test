@@ -187,6 +187,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/operatorLogin</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/profile</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/demandResponse</value>
                <value>classpath:com/cannontech/yukon/web/modules/capcontrol/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/capcontrol/ivvc</value>               

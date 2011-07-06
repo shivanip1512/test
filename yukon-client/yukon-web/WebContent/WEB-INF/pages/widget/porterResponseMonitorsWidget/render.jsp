@@ -10,8 +10,8 @@
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
-<cti:msg var="enableText" key="yukon.common.enable"/> 
-<cti:msg var="disableText" key="yukon.common.disable"/>
+<cti:msg2 var="enableText" key="yukon.common.enable"/> 
+<cti:msg2 var="disableText" key="yukon.common.disable"/>
 
 <%-- ERROR --%>
 <c:if test="${not empty porterResponseMonitorError}">
@@ -42,7 +42,8 @@
 
 					<%-- action icons --%>
 					<td>
-						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> (${monitor.name})" 
+                        <cti:msg2 var="viewResponseMonitor" key=".porterResponseMonitoring"/>
+						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${monitor.name})" 
 							style="text-decoration: none;">
 							<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" 
 								onmouseout="javascript:this.src='${cog}'">
@@ -51,7 +52,8 @@
 
 					<%-- monitor name --%>
 					<td class="${tdClass}">
-						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> (${monitor.name})">${monitor.name}</a>
+                        
+						<a href="${viewMonitorUrl}" title="${viewResponseMonitor} (${monitor.name})">${monitor.name}</a>
 					</td>
 
 					<%-- enable/disable --%>

@@ -147,7 +147,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             
             @Override
             public void processingExceptionOccured(String message) {
-                log.error("Processing exception occured during meter disconnet command: " + message);
+                log.error("Processing exception occurred during meter disconnect command: " + message);
             }
             
             @Override
