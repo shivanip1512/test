@@ -46,6 +46,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
+import com.cannontech.web.common.pao.PaoDetailUrlHelper;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 import com.google.common.base.Function;
@@ -63,6 +64,7 @@ public class MeterController extends MultiActionController {
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
     private MultispeakFuncs multispeakFuncs;
+    private PaoDetailUrlHelper paoDetailUrlHelper;
     private PointDao pointDao = null;
     private PointService pointService = null;
     private PaoLoadingService paoLoadingService = null;
@@ -126,9 +128,12 @@ public class MeterController extends MultiActionController {
         ModelAndView mav;
         // Redirect to device home page if only one result is found
         if (meterSearchResults.getHitCount() == 1) {
-            mav = new ModelAndView("redirect:/spring/meter/home");
 
             Meter meter = meterSearchResults.getResultList().get(0);
+            
+            String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
+            mav = new ModelAndView("redirect:"+urlForPaoDetailPage);
+
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
@@ -271,6 +276,11 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
+    }
+    
+    @Autowired
+    public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
+        this.paoDetailUrlHelper = paoDetailUrlHelper;
     }
     
     @Autowired
