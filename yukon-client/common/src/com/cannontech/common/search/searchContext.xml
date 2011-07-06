@@ -22,7 +22,19 @@
 
     <alias name="userSearcherLucene" alias="userSearcher" />
     
-        <bean id="userIndexManager" class="com.cannontech.common.search.index.UserIndexManager" 
+    <bean id="userIndexManager" class="com.cannontech.common.search.index.UserIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="customerAccountSearcherLucene" class="com.cannontech.common.search.CustomerAccountLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexManager" ref="customerAccountIndexManager" />
+    </bean>
+
+    <alias name="customerAccountSearcherLucene" alias="customerAccountSearcher" />
+    
+    <bean id="customerAccountIndexManager" class="com.cannontech.common.search.index.CustomerAccountIndexManager" 
           singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
@@ -34,7 +46,7 @@
 
     <alias name="loginGroupSearcherLucene" alias="loginGroupSearcher" />
     
-        <bean id="loginGroupIndexManager" class="com.cannontech.common.search.index.LoginGroupIndexManager" 
+    <bean id="loginGroupIndexManager" class="com.cannontech.common.search.index.LoginGroupIndexManager" 
           singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
@@ -57,6 +69,7 @@
             <list>
                 <ref bean="pointDeviceIndexManager" />
                 <ref bean="userIndexManager" />
+                <ref bean="customerAccountIndexManager" />
                 <ref bean="loginGroupIndexManager" />
                 <ref bean="paoTypeIndexManager" />
             </list>

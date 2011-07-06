@@ -1675,6 +1675,11 @@
     <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>
+    
+    <bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker">
+        <property name="searcher" ref="customerAccountSearcherLucene"/>
+    </bean>
+    
     <bean name="loginGroupPicker" class="com.cannontech.web.picker.v2.LoginGroupPicker">
         <property name="searcher" ref="loginGroupSearcherLucene"/>
     </bean>
@@ -1829,7 +1834,6 @@
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
 
-	<bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker"/>
 	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
