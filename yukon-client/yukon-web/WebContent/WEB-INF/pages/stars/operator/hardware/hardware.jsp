@@ -191,7 +191,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:button key="delete" type="submit" name="delete"/>
+                            <cti:button key="delete" type="submit" name="delete" styleClass="f_blocker" />
                         </cti:checkRolesAndProperties>
                         <cti:button key="cancel" onclick="hideDeletePopup()"/>
                     </td>
