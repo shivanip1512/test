@@ -3,27 +3,28 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+
 <cti:msgScope paths="capcontrol">
     <cti:url var="commentsURL" value="/spring/capcontrol/comments/"/>
     
     <script type="text/javascript">
     
-        addComment = function () {
+        addComment = function() {
             var newComment = $('newCommentInput').value;
             if(newComment.strip().length != 0) {
                 $('commentForm').action = '${commentsURL}' + 'add';
                 $('comment').value = newComment.escapeHTML();
-                submitFormViaAjax('tierContentPopup', 'commentForm', null, $('tierContentPopup').getElementsByClassName('boxContainer_title')[0].innerHTML);
+                submitForm();
                 $('newCommentInput').disable();
             }
-        }
+        };
 
-        hideNewRow = function () {
+        hideNewRow = function() {
         	$('newCommentInput').value = '';
         	$('newRow').hide();
-        }
+        };
 
-        showNewRow = function () {
+        showNewRow = function() {
         	var editInputs = $$("input[name='editCommentInput']");
             editInputs.each(function (elem) {
                     var elemsCommentId = elem.id.split('_')[1];
@@ -34,9 +35,9 @@
         	$('newCommentInput').enable();
             $('newCommentInput').focus();
             flashYellow($('newRow'));
-        }
+        };
 
-        addOrCancel = function (event) {
+        addOrCancel = function(event) {
             var key = event.keyCode;
             if(key == 27) {
                 /* Escape Key */
@@ -46,9 +47,9 @@
                 addComment();
             }
             return (key != 13);
-        }
+        };
 
-        updateOrCancel = function (event, commentId) {
+        updateOrCancel = function(event, commentId) {
             var key = event.keyCode;
             if(key == 27) {
                 /* Escape Key */
@@ -58,23 +59,23 @@
                 updateComment(commentId);
             }
             return (key != 13);
-        }
+        };
 
-        cancelUpdate = function (commentId) {
+        cancelUpdate = function(commentId) {
         	$('comment_' + commentId).show();
             $('editCommentSpan_' + commentId).hide();
             $('editComment_' + commentId).value = $('comment_' + commentId).innerHTML;
-        }
+        };
         
-        updateComment = function (commentId) {
+        updateComment = function(commentId) {
             var newComment = $('editComment_' + commentId).value;
             if(newComment.strip().length != 0) {
                 $('comment').value = newComment.escapeHTML();
                 $('commentForm').action = '${commentsURL}' + 'update';
                 $('commentId').value = commentId;
-                submitFormViaAjax('tierContentPopup', 'commentForm', null, $('tierContentPopup').getElementsByClassName('boxContainer_title')[0].innerHTML);
+                submitForm();
             }
-        }
+        };
 
         editComment = function(commentId) {
         	hideNewRow();
@@ -89,13 +90,21 @@
             $('comment_' + commentId).hide();
             $('editCommentSpan_' + commentId).show();
             $('editComment_' + commentId).focus();
-        }
+        };
         
-        deleteComment = function (commentId) {
+        deleteComment = function(commentId) {
             $('commentId').value = commentId;
             $('commentForm').action = '${commentsURL}' + 'remove';
-            submitFormViaAjax('tierContentPopup', 'commentForm', null, $('tierContentPopup').getElementsByClassName('boxContainer_title')[0].innerHTML);
-        }
+            submitForm();
+        };
+        
+        submitForm = function() {
+            if (${submitNormal}) {
+                $('commentForm').submit();
+            } else {
+                submitFormViaAjax('tierContentPopup', 'commentForm', null, $('tierContentPopup').getElementsByClassName('boxContainer_title')[0].innerHTML);
+            }
+        };
         
     </script>
     
@@ -105,10 +114,12 @@
     <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
     
     <div style="max-height:400px;overflow-x:hidden;overflow-y:auto;">
-        <form id="commentForm" action="/spring/capcontrol/comments/">
+        <form id="commentForm" action="/spring/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">
+            <input type="hidden" name="submitNormal" value="${submitNormal}">
+            <input type="hidden" name="redirectValue" value="${redirectValue}">
             <table id="commentsTable" class="compactResultsTable">
                 <thead>
                     <tr>

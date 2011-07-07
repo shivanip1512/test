@@ -34,7 +34,7 @@ public class CapControlCommentController {
     private FilterCacheFactory filterCacheFactory;
     
     @RequestMapping(method=RequestMethod.POST)
-    public String add(int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
+    public String add(int paoId, String comment, boolean submitNormal, String redirectValue, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADD_COMMENTS, user);
         
         final CapControlComment capControlcomment = new CapControlComment();
@@ -47,13 +47,12 @@ public class CapControlCommentController {
         capControlcomment.setDate(date);
         capControlcomment.setAction(CommentAction.USER_COMMENT.toString());
         commentDao.add(capControlcomment);
-        
-        model.addAttribute("paoId", paoId);
-        return "redirect:paoComments";
+        setupCommonAttributes(model, paoId, submitNormal, redirectValue);
+        return redirectValue;
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String update(int commentId, int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
+    public String update(int commentId, int paoId, String comment, boolean submitNormal, String redirectValue, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
         CapControlComment capControlComment = commentDao.getById(commentId);
@@ -61,24 +60,37 @@ public class CapControlCommentController {
         capControlComment.setAltered(true);
         commentDao.update(capControlComment);
         
-        model.addAttribute("paoId", paoId);
-        return "redirect:paoComments";
+        setupCommonAttributes(model, paoId, submitNormal, redirectValue);
+        return redirectValue;
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String remove(int commentId, int paoId, LiteYukonUser user, ModelMap model) throws Exception {
+    public String remove(int commentId, int paoId, boolean submitNormal, String redirectValue, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
-        
         CapControlComment comment = new CapControlComment();
         comment.setId(commentId);
         commentDao.remove(comment);
-        
-        model.addAttribute("paoId", paoId);
-        return "redirect:paoComments";
+        setupCommonAttributes(model, paoId, submitNormal, redirectValue);
+        return redirectValue;
     }
     
     @RequestMapping
     public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
+        setupPaoComments(request, paoId, user, model);
+        model.addAttribute("submitNormal", false);
+        model.addAttribute("redirectValue", "redirect:paoComments");
+        return "comments/commentsPage.jsp";
+    }
+    
+    @RequestMapping
+    public String paoCommentsForOneline(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
+        setupPaoComments(request, paoId, user, model);
+        model.addAttribute("submitNormal", true);
+        model.addAttribute("redirectValue", "redirect:paoCommentsForOneline");
+        return "comments/commentsPageOneline.jsp";
+    }
+    
+    private void setupPaoComments(HttpServletRequest request, int paoId, LiteYukonUser user, ModelMap model) {
         CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);
@@ -97,9 +109,14 @@ public class CapControlCommentController {
         model.addAttribute("comments", comments);
         model.addAttribute("modifyPermission", modifyPermission);
         model.addAttribute("addPermission", addPermission);
-        return "comments/commentsPage.jsp";
     }
-    
+
+    private void setupCommonAttributes(ModelMap model, int paoId, boolean submitNormal, String redirectValue) {
+        model.addAttribute("paoId", paoId);
+        model.addAttribute("submitNormal", submitNormal);
+        model.addAttribute("redirectValue", redirectValue);
+    }
+
     @Autowired
     public void setCommentDao(CapControlCommentDao commentDao) {
         this.commentDao = commentDao;

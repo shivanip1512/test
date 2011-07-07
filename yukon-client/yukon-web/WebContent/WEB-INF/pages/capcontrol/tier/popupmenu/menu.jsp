@@ -1,7 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoComments?paoId="/>
+<cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoComments">
+    <cti:param name="paoId" value="${paoId}"/>
+</cti:url>
 
 <div style="background: white;">
     <input id="menuPaoName" type="hidden" value="${paoName}"/>
@@ -52,7 +54,7 @@
 			    	<a href="javascript:void(0);"
 			         class="optDeselect"
 			         onmouseover="changeOptionStyle(this);"
-			         onclick="closeTierPopup(); showComments('${paoName}','${commentsUrl}${paoId}');">View Comments</a>
+			         onclick="closeTierPopup(); showComments('${paoName}','${commentsUrl}');">View Comments</a>
 			    </td>
 			</tr>
 		</c:if>

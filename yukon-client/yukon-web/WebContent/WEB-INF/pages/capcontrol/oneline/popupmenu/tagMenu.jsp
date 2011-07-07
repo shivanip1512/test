@@ -3,7 +3,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
-<cti:url var="commentsUrl" value="/capcontrol/standardPageWrapper.jsp?title=CapControl Comments&page=/spring/capcontrol/comments/paoComments"/>
+<cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoCommentsForOneline">
+    <cti:param name="paoId" value="${paoId}"/>
+</cti:url>
 <c:set var="maxCommentLength" value="35"/>
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/cconelinepopup.js"></script>
@@ -71,23 +73,24 @@
                     </c:if>
                 </c:if>
                     
-                <a href="${commentsUrl}?paoId=${paoId}&returnURL=${returnUrl}" style="color: white; font-weight: bold;" >Comments</a>
-                    <br>
-                    <div style="color: white;"><c:set var="count" value="1" />
-                        <c:forEach var="comment" items="${comments}">
-                            <c:choose>
-                                <c:when test="${fn:length(comment) > maxCommentLength}">
-                                    <c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
-                                    <c:set var="formattedComment" value="${subString}..."/>   
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="formattedComment" value="${comment}"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <div id="commentField_${count}">${count}) ${formattedComment}</div>
-                            <c:set var="count" value="${count + 1}" />
-                        </c:forEach>
-                    </div>
+                <a href="javascript:void(0);" onclick="GB_show('Comments','${commentsUrl}', 380, 710);" style="color: white; font-weight: bold;" >Comments</a>
+                <br>
+                <div style="color: white;">
+                    <c:set var="count" value="1" />
+                    <c:forEach var="comment" items="${comments}">
+                        <c:choose>
+                            <c:when test="${fn:length(comment) > maxCommentLength}">
+                                <c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}"/>
+                                <c:set var="formattedComment" value="${subString}..."/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="formattedComment" value="${comment}"/>
+                            </c:otherwise>
+                        </c:choose>
+                        <div id="commentField_${count}">${count}) ${formattedComment}</div>
+                        <c:set var="count" value="${count + 1}" />
+                    </c:forEach>
+                </div>
             </td>
         </tr>
         <tr>
