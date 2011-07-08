@@ -33,7 +33,7 @@ public enum ThermostatScheduleCompatibility {
                    Sets.immutableEnumSet(SchedulableThermostatType.UTILITY_PRO,
                                          SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
                                          SchedulableThermostatType.UTILITY_PRO_G2,
-                                         SchedulableThermostatType.UTILITY_PRO_G3)),;
+                                         SchedulableThermostatType.UTILITY_PRO_G3));
     
     private HardwareType hardwareType;
     private Set<SchedulableThermostatType> compatibleScheduleTypes;

@@ -123,6 +123,12 @@ Yukon.ThermostatScheduleEditor = {
             });
         });
         
+        $$(".tempControlsNoUpdate input:radio").each(function(radio){
+            radio.observe('click', function(e){
+                Yukon.ThermostatScheduleEditor[this.value]();
+            });
+        });
+        
         YEvent.observeSelectorClick(".send", function(e){
             //confirmation popup already shown at this point
             $$("form[name=sendSchedule] input[name=scheduleId]")[0].value = e.target.up("form").down("input[name=scheduleId]").value;

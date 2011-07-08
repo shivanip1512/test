@@ -48,13 +48,13 @@
 <div id="tempSlider" class="slider">
     <div class="chevron"></div>
     <div class="box fl tempHolder ${temperatureUnit} label">
-        <div class="startLabel fl"></div>°<span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="startLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
     <div class="track">
         <div class="handle"></div>
     </div>
     <div class="box fr tempHolder ${temperatureUnit} label">
-        <div class="endLabel fl"></div>°<span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="endLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
 </div>
 <!-- END Sliders -->
@@ -204,9 +204,9 @@
 
     </td>
     <td class="vat">
-        <div class="tempControls">
-            <label><input name="units" type="radio" value="celsius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-            <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+        <div class="tempControlsNoUpdate">
+            <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+            <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
         </div>
     </td>
   </tr>
