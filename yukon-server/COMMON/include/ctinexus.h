@@ -1,22 +1,16 @@
-#ifndef  __CTINEXUSS_H__
-#define  __CTINEXUSS_H__
-
-#include <winsock.h>
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
-#include <windows.h>
-#include <limits.h>
-
-#include <rw\thr\mutex.h>
-
+#include "cticonnect.h"
 #include "dlldefs.h"
 #include "netports.h"
-#include "cticonnect.h"
 
+#include <windows.h>
+#include <limits.h>
+#include <rw\thr\mutex.h>
 #include <vector>
 
 class IM_EX_CTIBASE CTINEXUS : public CtiConnect
@@ -62,5 +56,4 @@ public:
 
 };
 
-#endif   // #ifdef  __CTINEXUSS_H__
 

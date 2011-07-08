@@ -7,7 +7,6 @@
  *
  */
 
-
 #include <boost/test/floating_point_comparison.hpp>
 
 #define BOOST_TEST_MAIN "Test mgr_point"
@@ -16,6 +15,7 @@
 #include <iostream>
 
 //  for the winsock.h inclusion by mgr_point.h (?!)
+#include "yukon.h"
 #include "mgr_point.h"
 #include "pt_status.h"
 #include "pt_analog.h"

@@ -11,8 +11,7 @@
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef  __CTICONNECT_H__
-#define  __CTICONNECT_H__
+#pragma once
 #include "yukon.h"
 
 #include "dlldefs.h"
@@ -53,5 +52,4 @@ public:
     virtual bool CTINexusValid() const { return false; }
 };
 
-#endif   // #ifdef  __CTICONNECT_H__
 

@@ -10,19 +10,6 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
-
 #include "yukon.h"
 #include "ctitime.h"
 #include "ccsubstationbus.h"
@@ -39,6 +26,18 @@
 
 #include "StrategyManager.h"
 #include "PFactorKWKVarStrategy.h"
+
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <string>
+#include <rw/rwdate.h>
+#include <rw/rwtime.h>
+#include <rw/zone.h>
+#include <iostream>
+#include <time.h>
+#include <sstream>    // for istringstream
+#include <locale>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

@@ -1,5 +1,7 @@
 #define BOOST_AUTO_TEST_MAIN "Test fdrDnpSlave"
 
+#include "yukon.h"
+
 #include <string>
 
 #include <boost/test/unit_test.hpp>

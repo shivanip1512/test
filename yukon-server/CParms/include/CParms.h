@@ -1,5 +1,4 @@
-#ifndef __CPARMS_H__
-#define __CPARMS_H__
+#pragma once
 
 #include <time.h>
 #include <map>
@@ -154,8 +153,4 @@ public:
    ULONG             getValueAsULong  (const string& key, ULONG defaultval = 0L, int base = 10);
 };
 
-
-
-
-#endif // #ifndef __CPARMS_H__
 

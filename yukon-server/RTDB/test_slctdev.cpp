@@ -1,6 +1,7 @@
 #define BOOST_TEST_MAIN "Testing resolvers.cpp"
 #include <boost/test/unit_test.hpp>
 
+#include "yukon.h"
 #include "boostutil.h"
 
 #include "slctdev.h"

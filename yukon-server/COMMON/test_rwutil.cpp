@@ -1,21 +1,4 @@
-/*
- * file test_cmdparse.cpp
- *  
- * Author: Jian Liu 
- * Date: 07/26/2005 10:10:13 
- * 
- *
- * test rwutil.h
- * 
- */
 #define BOOST_AUTO_TEST_MAIN "Test RW Utils"
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/local_time_adjustor.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
-
-#include <string>
 
 #include "rwutil.h"
 #include "utility.h"
@@ -23,6 +6,13 @@
 #include "ctidate.h"
 #include "boost_time.h"
 #include "dbaccess.h"
+
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time_adjustor.hpp>
+#include <boost/date_time/c_local_time_adjustor.hpp>
+
+#include <string>
 
 using boost::unit_test_framework::test_suite;
 

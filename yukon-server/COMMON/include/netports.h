@@ -1,5 +1,4 @@
-#ifndef __CTINETPORTS_H__
-#define __CTINETPORTS_H__
+#pragma once
 /*
  *  Some define Nexus's and their socket numbers
  */
@@ -21,4 +20,3 @@
 #define  PORTSHARENEXUS                                     (NEXUSBASE + 430)
 //  Next allocation should start at NEXUSBASE+530 to allow for 100 shared ports
 
-#endif

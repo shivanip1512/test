@@ -2,14 +2,6 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test LikeDayControl"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <time.h>
-#include <locale>
-
 #include "yukon.h"
 #include "ctitime.h"
 #include "ccfeeder.h"
@@ -22,6 +14,13 @@
 #include "PFactorKWKVarStrategy.h"
 #include "VoltStrategy.h"
 
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+
+#include <string>
+#include <time.h>
+#include <locale>
 
 extern unsigned long _LIKEDAY_OVERRIDE_TIMEOUT;
 

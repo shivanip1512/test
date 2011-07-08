@@ -8,12 +8,15 @@
  * test CtiDate
  *
  */
-
-
+ 
 #include <boost/test/floating_point_comparison.hpp>
 
 #define BOOST_TEST_MAIN "Test CtiDate"
 #define BOOST_AUTO_TEST_MAIN "Test CtiDate"
+
+#include "yukon.h"
+#include "ctidate.h"
+#include "ctitime.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -24,10 +27,6 @@
 #include <rw/rwtime.h>
 #include <rw/zone.h>
 #include <iostream>
-
-#include "yukon.h"
-#include "ctidate.h"
-#include "ctitime.h"
 
 using std::string;
 using boost::unit_test_framework::test_suite;

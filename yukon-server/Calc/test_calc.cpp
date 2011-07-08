@@ -12,6 +12,9 @@
  */
 #define BOOST_AUTO_TEST_MAIN "Test Calc"
 
+#include "yukon.h"
+#include "calc.h"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -24,9 +27,6 @@
 #include <time.h>
 #include <sstream>    // for istringstream
 #include <locale>
-
-#include "yukon.h"
-#include "calc.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

@@ -1,18 +1,16 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CapControl Voltage Regulators and Manager"
 
+#include "GangOperatedVoltageRegulator.h"
+#include "VoltageRegulatorLoader.h"
+#include "AttributeService.h"
+#include "PointAttribute.h"
+#include "ccsubstationbusstore.h"
+
 #include <boost/test/unit_test.hpp>
 
 #include <map>
 #include <string>
-
-#include "VoltageRegulatorLoader.h"
-
-#include "GangOperatedVoltageRegulator.h"
-#include "AttributeService.h"
-#include "PointAttribute.h"
-
-#include "ccsubstationbusstore.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulator;

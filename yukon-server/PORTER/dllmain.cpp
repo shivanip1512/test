@@ -19,7 +19,6 @@
 #include <process.h>
 
 #include <winbase.h>
-#include <winsock.h>
 #include "os2_2w32.h"
 #include "cticalls.h"
 

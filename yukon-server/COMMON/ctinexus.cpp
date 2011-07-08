@@ -7,7 +7,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <string.h>
 #include <process.h>
 #include <winbase.h>
-#include <winsock.h>
 
 #include <rw/thr/cancel.h>
 

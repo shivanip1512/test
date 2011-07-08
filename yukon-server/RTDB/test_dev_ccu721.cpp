@@ -1,17 +1,12 @@
-/*
- * test Ccu721Device
- *
- */
+#include <iostream>
+
+#include "prot_emetcon.h"
+#include "dev_ccu721.h"
 
 #include <boost/test/floating_point_comparison.hpp>
 
 #define BOOST_TEST_MAIN "Test dev_ccu721"
 #include <boost/test/unit_test.hpp>
-
-
-#include <iostream>
-#include "dev_ccu721.h"
-#include "prot_emetcon.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test CCU-721 Device"
 using boost::unit_test_framework::test_suite;

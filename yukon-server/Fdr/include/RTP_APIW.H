@@ -48,6 +48,8 @@
 #ifndef __RTP_APIW_H__
 #define __RTP_APIW_H__
 
+#include <winsock2.h>
+
 // Macro to tell if error code is fatal.
 #define ERROR_IS_FATAL(lErrorCode) ((lErrorCode >> 15) & 1)
 

@@ -4,18 +4,18 @@
  * This header file exists to precompile large header files that never change.
  * Add any headers here that you want precompiled.
  */
-#pragma once
+#ifndef _TESTTHAIN_
+#define _TESTTHAIN_
 
 #if !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0500  //  Windows XP, Server 2003.  No service packs.
 #endif
 
-#define WIN32_LEAN_AND_MEAN
-
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
+#include <winsock2.h>
 #include <windows.h>
 
 #include <stdlib.h>
@@ -88,3 +88,4 @@
 
 #include "types.h"
 
+#endif

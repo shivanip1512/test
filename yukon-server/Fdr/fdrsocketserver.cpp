@@ -6,8 +6,6 @@
 
 #include "yukon.h"
 
-#include <WinSock2.h>
-
 #include <iostream>
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

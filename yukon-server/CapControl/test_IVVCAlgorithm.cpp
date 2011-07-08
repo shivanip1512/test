@@ -2,16 +2,6 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CapControl IVVC Algorithm"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
-#include <iostream>
-#include <time.h>
-#include <sstream>    // for istringstream
-#include <locale>
-
 #include "yukon.h"
 #include "ctitime.h"
 #include "ccsubstationbus.h"
@@ -30,6 +20,14 @@
 #include "IVVCStrategy.h"
 #include "ZoneManager.h"
 
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <string>
+#include <iostream>
+#include <time.h>
+#include <sstream>    // for istringstream
+#include <locale>
 
 using boost::unit_test_framework::test_suite;
 

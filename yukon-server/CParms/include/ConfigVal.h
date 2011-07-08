@@ -1,5 +1,4 @@
-#ifndef  __CONFIGVAL_H__
-#define  __CONFIGVAL_H__
+#pragma once
 
 #include <rw/collect.h>
 
@@ -25,6 +24,4 @@ public:
 
 };
 
-
-#endif // #ifndef  __CONFIGVAL_H__
 

@@ -1,12 +1,10 @@
 #define BOOST_AUTO_TEST_MAIN "Test Point Data Request"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "yukon.h"
-
 #include "PointDataRequestFactory.h"
 #include "DispatchPointdataRequest.h"
+
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using boost::unit_test_framework::test_suite;
 

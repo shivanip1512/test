@@ -1,5 +1,4 @@
-#ifndef  __CONFIGKEY_H__
-#define  __CONFIGKEY_H__
+#pragma once
 
 #include <rw/collect.h>
 
@@ -26,5 +25,4 @@ public:
    std::string&   getKey()        { return Key; }
 };
 
-#endif //#ifndef  __CONFIGKEY_H__
 

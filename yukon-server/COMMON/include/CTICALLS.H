@@ -1,7 +1,5 @@
 #pragma warning( disable : 4786)
-#ifndef _cticalls_h
-   #define _cticalls_h
-
+#pragma once
 
    #include <stdlib.h>
    #include <stdio.h>
@@ -119,4 +117,3 @@ APIRET   IM_EX_CTIBASE CTIOpen             (
 
 void  IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *Func);
 
-#endif   // #ifndef _cticalls_h

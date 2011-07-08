@@ -10,8 +10,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <winsock2.h>
-
 #include "ctitime.h"
 #include "ctidate.h"
 

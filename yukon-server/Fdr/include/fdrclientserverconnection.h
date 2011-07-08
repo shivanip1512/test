@@ -1,7 +1,6 @@
 #pragma once
 
-#include <WinSock.h>
-
+#include "yukon.h"
 #include <windows.h>
 #include "string.h"
 #include <rw/thr/thrfunc.h>

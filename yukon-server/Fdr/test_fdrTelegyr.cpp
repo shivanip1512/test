@@ -1,11 +1,12 @@
 #define BOOST_AUTO_TEST_MAIN "Test fdrTelegyr"
 
+#include "yukon.h"
+#include "fdrtelegyr.h"
+
 #include <string>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "fdrtelegyr.h"
 
 using boost::unit_test_framework::test_suite;
 

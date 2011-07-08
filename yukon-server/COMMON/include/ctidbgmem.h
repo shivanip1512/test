@@ -13,8 +13,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef __CTIDBGMEM_H__
-#define __CTIDBGMEM_H__
+#pragma once
 #pragma warning( disable : 4786)
 
 #define _CRTDBG_MAP_ALLOC
@@ -65,5 +64,3 @@
 #endif
 #endif
 
-
-#endif // #ifndef __CTIDBGMEM_H__

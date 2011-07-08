@@ -1,24 +1,13 @@
-/*---------------------------------------------------------------------------
-        Filename:  test_LantronixEncryption.cpp
-
-        Programmer:  Thain Spar
-
-        Initial Date:  10/10/2008
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies 2007
----------------------------------------------------------------------------*/
-
 #define BOOST_AUTO_TEST_MAIN "Test Lantronix Encryption"
-
-#include <boost/test/unit_test.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-
-#include <string>
 
 #include "yukon.h"
 #include "encryption_lantronix.h"
 #include "numstr.h"
+
+#include <boost/test/unit_test.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <string>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "ctitime.h"
-
-#include <winsock.h>
-
 #include <vector>
 
 namespace Cti    {

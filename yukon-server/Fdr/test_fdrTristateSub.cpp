@@ -10,6 +10,12 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test FdrSanMiguel"
 
+#include "yukon.h"
+#include "ctitime.h"
+#include "ctidate.h"
+#include "ctistring.h"
+#include "fdrTriStateSub.h"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -18,12 +24,6 @@
 #include <time.h>
 #include <sstream>    // for istringstream
 #include <list>
-
-#include "yukon.h"
-#include "ctitime.h"
-#include "ctidate.h"
-#include "ctistring.h"
-#include "fdrTriStateSub.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

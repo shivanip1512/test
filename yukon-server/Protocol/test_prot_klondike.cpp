@@ -1,5 +1,7 @@
 #define BOOST_TEST_MAIN "Test Klondike protocol"
 
+#include "yukon.h"
+
 #include <boost/test/unit_test.hpp>
 
 using boost::unit_test_framework::test_suite;

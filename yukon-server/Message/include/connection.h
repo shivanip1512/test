@@ -15,13 +15,12 @@
 *-----------------------------------------------------------------------------*/
 
 
-#ifndef __CONNECTION_H__
-#define __CONNECTION_H__
+#pragma once
 
 #include <limits.h>
 
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/winsock.h>
+
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
 #include <rw/toolpro/neterr.h>
@@ -161,4 +160,3 @@ public:
 
 typedef CtiConnection* CtiConnectionPtr;
 
-#endif // #ifndef __CONNECTION_H__

@@ -1,6 +1,16 @@
 
 #define BOOST_AUTO_TEST_MAIN "Test CCFeeder"
 
+#include "yukon.h"
+#include "ctitime.h"
+#include "ccfeeder.h"
+#include "ccsubstationbus.h"
+#include "ccsubstationbusstore.h"
+
+#include "ccUnitTestUtil.h"
+#include "StrategyManager.h"
+#include "PFactorKWKVarStrategy.h"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -13,17 +23,6 @@
 #include <time.h>
 #include <sstream>    // for istringstream
 #include <locale>
-
-#include "yukon.h"
-#include "ctitime.h"
-#include "ccfeeder.h"
-#include "ccsubstationbus.h"
-#include "ccsubstationbusstore.h"
-
-#include "ccUnitTestUtil.h"
-#include "StrategyManager.h"
-#include "PFactorKWKVarStrategy.h"
-
 
 extern BOOL _RETRY_FAILED_BANKS;
 

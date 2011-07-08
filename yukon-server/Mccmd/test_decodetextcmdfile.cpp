@@ -1,9 +1,4 @@
-
-/*
- * test decodetextcmdfile
- *
- */
-
+#include "yukon.h"
 #include "decodetextcmdfile.h"
 
 #define BOOST_TEST_MAIN "Test MCCMD decode text cmd file"

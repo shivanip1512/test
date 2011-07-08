@@ -2,10 +2,10 @@
 
 #include <time.h>
 
+#include "cticonnect.h"
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
-#include "cticonnect.h"
 #include "dsm2err.h"
 #include "words.h"
 

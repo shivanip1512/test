@@ -1,26 +1,14 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_mgr_ptclients.cpp
-*
-* Date:   11/04/2008
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/11/12 22:10:40 $
-*
-* Copyright (c) 2008 Cooper Industries, All rights reserved.
-*-----------------------------------------------------------------------------*/
 #define BOOST_AUTO_TEST_MAIN "Test Mgr PtClients"
+
+#include "yukon.h"
+#include "mgr_ptclients.h"
+#include "pt_status.h"
+#include "pt_analog.h"
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
-#include "yukon.h"
-#include "mgr_ptclients.h"
-#include "pt_status.h"
-#include "pt_analog.h"
 
 using namespace std;
 

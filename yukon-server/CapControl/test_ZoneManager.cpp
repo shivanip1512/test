@@ -5,6 +5,7 @@
 
 #include <string>
 
+#include "yukon.h"
 #include "ZoneManager.h"
 #include "ZoneLoader.h"
 #include "Zone.h"

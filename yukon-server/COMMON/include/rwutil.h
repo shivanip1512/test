@@ -12,8 +12,7 @@
  * please keep the non-rw related methods
  */
 
-#ifndef __RWUTIL_H__
-#define __RWUTIL_H__
+#pragma once
 #include "yukon.h"
 
 #include <set>
@@ -207,6 +206,3 @@ typedef boost::char_separator<char> Separator;
 * end wraper
 */
 
-
-
-#endif

@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   test_signalmanager.cpp
@@ -14,12 +13,13 @@
 *-----------------------------------------------------------------------------*/
 #define BOOST_AUTO_TEST_MAIN "Test SignalManager"
 
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include "yukon.h"
 #include "tbl_pt_alarm.h"
 #include "signalmanager.h"
+
+#include <boost/thread/thread.hpp>
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
 using namespace std;
 

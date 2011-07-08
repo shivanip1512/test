@@ -17,9 +17,7 @@
  * the whole class is based on ctime, except the dst rules and synchronization
  */
 
-
-#ifndef _CTITIME_H_
-#define _CTITIME_H_
+#pragma once
 
 #include <string>
 #include <ostream>
@@ -110,7 +108,4 @@ public:
     friend IM_EX_CTIBASE std::ostream&  operator<<(std::ostream& s, const CtiTime& t);
 
 };
-
-
-#endif _CTITIME_H_
 

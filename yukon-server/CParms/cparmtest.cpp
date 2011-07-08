@@ -1,7 +1,5 @@
 #include "yukon.h"
 
-#include <winsock.h>
-
 #include <iostream>
 using namespace std;
 

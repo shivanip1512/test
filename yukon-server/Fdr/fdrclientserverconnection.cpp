@@ -1,7 +1,5 @@
 #include "yukon.h"
 
-#include <WinSock2.h>
-
 #include <ctime>
 
 #include "logger.h"

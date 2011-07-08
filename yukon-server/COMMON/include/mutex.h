@@ -9,8 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
-#ifndef __CTIMUTEX_H__
-#define __CTIMUTEX_H__
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 
@@ -51,4 +50,4 @@ private:
 /// #endif
 #endif
 };
-#endif
+

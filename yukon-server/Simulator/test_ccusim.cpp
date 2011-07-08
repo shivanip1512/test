@@ -1,5 +1,4 @@
-#include <winsock.h>
-
+#include "yukon.h"
 #define BOOST_AUTO_TEST_MAIN "Test ccuSim"
 
 #include <rw/rwdate.h>
@@ -19,7 +18,6 @@
 #include "ctidate.h"
 #include "CCU711.h"
 #include "Ccu721.h"
-#include "yukon.h"
 #include "numstr.h"
 #include "Mct410.h"
 #include "EmetconWords.h"

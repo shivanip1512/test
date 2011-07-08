@@ -33,21 +33,17 @@
 //
 //---------------------------------------------------------------------------
 
-
 #define _WIN32_WINNT 0x0400
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
-#include <WinSock2.h> 
-
+#include "include\rtp_apiw.h"
+#include "include\rtp.h"
 #include <windows.h>
 #include <process.h>
 #include <stdio.h>
-#include "include\rtp_apiw.h"
-#include "include\rtp.h"
-
 
 // RTP message sizes and offsets.  The values are for the enhanced RTP
 // protocol which includes a message length prefix, as well as 32-bit

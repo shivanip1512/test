@@ -1,16 +1,9 @@
-#include <winsock.h>
-/*
-    File test_fdrTextImport.cpp
-
-    Author: Thain Spar
-    Date:   5/10/2007 15:26 CST
-
-    Test TextImport. Well only my UTC change to foreigntoyukon time function.
-    But someday maybe more.
-
-*/
-
 #define BOOST_AUTO_TEST_MAIN "Test fdrTextImport"
+
+#include "yukon.h"
+#include "fdrtextimport.h"
+#include "ctidate.h"
+#include "ctistring.h" // apparently fdrtextimport doesnt have this file.
 
 #include <string>
 #include <rw/rwdate.h>
@@ -22,12 +15,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "fdrtextimport.h"
-#include "yukon.h"
-#include "ctidate.h"
-#include "ctistring.h" // apparently fdrtextimport doesnt have this file.
-
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

@@ -1,28 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_queue.cpp
-*
-* Date:   10/2/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.7.2.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #define BOOST_AUTO_TEST_MAIN "Test CtiQueue"
+
+#include "queue.h"
+#include "dbaccess.h"
+#include "boostutil.h"
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
-
 #include <set>
-#include "queue.h"
-#include "dbaccess.h"
-#include "boostutil.h"
 #include <SQLAPI.h>
 
 using namespace std;
