@@ -27,6 +27,7 @@ public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInp
 	private JCSpinField decimalPlaceSpinner = null;
 	private JLabel decimalPositionsLabel = null;
 	private JPanel archivePanel = null;
+	private JPanel holderPanel = null;
     private JLabel stateGroupLabel = null;
     private JComboBox stateGroupComboBox = null;
     private JLabel meterDialsLabel = null;
@@ -186,6 +187,7 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 			decimalPlaceSpinner.setName("DecimalPlacesSpinner");
 			decimalPlaceSpinner.setBackground(java.awt.Color.white);
 			decimalPlaceSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			decimalPlaceSpinner.setMinimumSize(new java.awt.Dimension(50, 20)); 
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -203,7 +205,7 @@ private javax.swing.JLabel getDecimalPositionsLabel() {
 			decimalPositionsLabel = new javax.swing.JLabel();
 			decimalPositionsLabel.setName("JLabelDecimalPositons");
 			decimalPositionsLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			decimalPositionsLabel.setText("Decimal Positions:");
+			decimalPositionsLabel.setText("Decimal Places:");
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -391,70 +393,23 @@ private void initialize() {
 		setName("AccumulatorBasePanel");
 		setLayout(new java.awt.GridBagLayout());
 
-        java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
-        constraintsJLabelDecimalPositons.gridx = 2; constraintsJLabelDecimalPositons.gridy = 1;
-        constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJLabelDecimalPositons.insets = new java.awt.Insets(5,5,5,5);
-        add(getDecimalPositionsLabel(), constraintsJLabelDecimalPositons);
-
-        java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
-        constraintsDecimalPlacesSpinner.gridx = 3; constraintsDecimalPlacesSpinner.gridy = 1;
-        constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsDecimalPlacesSpinner.weightx = 1.0;
-        constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(5,5,5,5);
-        add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
-
-        java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
-        constraintsUnitOfMeasureLabel.gridx = 0; constraintsUnitOfMeasureLabel.gridy = 0;
-        constraintsUnitOfMeasureLabel.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(5,5,5,5);
-        add(getUnitOfMeasureLabel(), constraintsUnitOfMeasureLabel);
-
-        java.awt.GridBagConstraints constraintsUnitOfMeasureComboBox = new java.awt.GridBagConstraints();
-        constraintsUnitOfMeasureComboBox.gridx = 1; constraintsUnitOfMeasureComboBox.gridy = 0;
-        constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsUnitOfMeasureComboBox.weightx = 1.0;
-        constraintsUnitOfMeasureComboBox.gridwidth = 3;
-        constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(5,5,5,5);
-        add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
-        
-        java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
-        constraintsStateGroupLabel.gridx = 0; constraintsStateGroupLabel.gridy = 2;
-        constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsStateGroupLabel.insets = new java.awt.Insets(5,5,5,5);
-        add(getStateGroupLabel(), constraintsStateGroupLabel);
-        
-        java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
-        constraintsStateGroupComboBox.gridx =1; constraintsStateGroupComboBox.gridy = 2;
-        constraintsStateGroupComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsStateGroupComboBox.weightx = 1.0;
-        constraintsStateGroupComboBox.gridwidth = 3;
-        constraintsStateGroupComboBox.insets = new java.awt.Insets(5,5,5,5);
-        add(getStateGroupComboBox(), constraintsStateGroupComboBox);
-        
-        java.awt.GridBagConstraints constraintsJLabelMeterDials = new java.awt.GridBagConstraints();
-        constraintsJLabelMeterDials.gridx = 0; constraintsJLabelMeterDials.gridy = 1;
-        constraintsJLabelMeterDials.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJLabelMeterDials.insets = new java.awt.Insets(5,5,5,5);
-        add(getMeterDialsLabel(), constraintsJLabelMeterDials);
-
-        java.awt.GridBagConstraints constraintsMeterDialsSpinner = new java.awt.GridBagConstraints();
-        constraintsMeterDialsSpinner.gridx = 1; constraintsMeterDialsSpinner.gridy = 1;
-        constraintsMeterDialsSpinner.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsMeterDialsSpinner.weightx = 1.0;
-        constraintsMeterDialsSpinner.insets = new java.awt.Insets(5,5,5,5);
-        add(getMeterDialsSpinner(), constraintsMeterDialsSpinner);
-
+        java.awt.GridBagConstraints constraintsJPanelHolder = new java.awt.GridBagConstraints();
+        constraintsJPanelHolder.gridx = 0; constraintsJPanelHolder.gridy = 0;
+        constraintsJPanelHolder.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsJPanelHolder.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsJPanelHolder.weighty = 1.0;
+        constraintsJPanelHolder.weightx = 1.0;
+        constraintsJPanelHolder.insets = new java.awt.Insets(2,2,2,2);
+        add(getJPanelHolder(), constraintsJPanelHolder);
+ 
         java.awt.GridBagConstraints constraintsJPanelArchive = new java.awt.GridBagConstraints();
-        constraintsJPanelArchive.gridx = 0; constraintsJPanelArchive.gridy = 3;
-        constraintsJPanelArchive.gridwidth = 4;
+        constraintsJPanelArchive.gridx = 0; constraintsJPanelArchive.gridy = 1;
+//        constraintsJPanelArchive.gridwidth = 2;
         constraintsJPanelArchive.fill = java.awt.GridBagConstraints.BOTH;
         constraintsJPanelArchive.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJPanelArchive.weightx = 1.0;
-        constraintsJPanelArchive.weighty = 1.0;
-        constraintsJPanelArchive.insets = new java.awt.Insets(5,5,5,5);
+//        constraintsJPanelArchive.weightx = 1.0;
+//        constraintsJPanelArchive.weighty = 1.0;
+        constraintsJPanelArchive.insets = new java.awt.Insets(2,2,2,2);
         add(getJPanelArchive(), constraintsJPanelArchive);
 
 		initConnections();
@@ -505,6 +460,77 @@ private void initialize() {
 	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 }
 
+/**
+ * Return the JPanelHolder property value.
+ * @return javax.swing.JPanel
+ */
+private javax.swing.JPanel getJPanelHolder() {
+    if (holderPanel == null) {
+        try {
+            holderPanel = new javax.swing.JPanel();
+            holderPanel.setName("JPanelHolder");
+            holderPanel.setLayout(new java.awt.GridBagLayout());
+
+            java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
+            constraintsUnitOfMeasureLabel.gridx = 0; constraintsUnitOfMeasureLabel.gridy = 0;
+            constraintsUnitOfMeasureLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getUnitOfMeasureLabel(), constraintsUnitOfMeasureLabel);
+
+            java.awt.GridBagConstraints constraintsUnitOfMeasureComboBox = new java.awt.GridBagConstraints();
+            constraintsUnitOfMeasureComboBox.gridx = 1; constraintsUnitOfMeasureComboBox.gridy = 0;
+            constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsUnitOfMeasureComboBox.weightx = 1.0;
+            constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
+            
+            java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
+            constraintsStateGroupLabel.gridx = 0; constraintsStateGroupLabel.gridy = 1;
+            constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsStateGroupLabel.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getStateGroupLabel(), constraintsStateGroupLabel);
+            
+            java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
+            constraintsStateGroupComboBox.gridx = 1; constraintsStateGroupComboBox.gridy = 1;
+            constraintsStateGroupComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsStateGroupComboBox.weightx = 1.0;
+            constraintsStateGroupComboBox.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getStateGroupComboBox(), constraintsStateGroupComboBox);
+
+            java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
+            constraintsJLabelDecimalPositons.gridx = 0; constraintsJLabelDecimalPositons.gridy = 2;
+            constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelDecimalPositons.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getDecimalPositionsLabel(), constraintsJLabelDecimalPositons);
+
+            java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
+            constraintsDecimalPlacesSpinner.gridx = 1; constraintsDecimalPlacesSpinner.gridy = 2;
+            constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
+//            constraintsDecimalPlacesSpinner.weightx = 1.0;
+            constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
+
+            java.awt.GridBagConstraints constraintsJLabelMeterDials = new java.awt.GridBagConstraints();
+            constraintsJLabelMeterDials.gridx = 0; constraintsJLabelMeterDials.gridy = 3;
+            constraintsJLabelMeterDials.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelMeterDials.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getMeterDialsLabel(), constraintsJLabelMeterDials);
+
+            java.awt.GridBagConstraints constraintsMeterDialsSpinner = new java.awt.GridBagConstraints();
+            constraintsMeterDialsSpinner.gridx = 1; constraintsMeterDialsSpinner.gridy = 3;
+            constraintsMeterDialsSpinner.anchor = java.awt.GridBagConstraints.WEST;
+//            constraintsMeterDialsSpinner.weightx = 1.0;
+            constraintsMeterDialsSpinner.insets = new java.awt.Insets(2,2,2,2);
+            holderPanel.add(getMeterDialsSpinner(), constraintsMeterDialsSpinner);
+            
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return holderPanel;
+}
 /**
  * Insert the method's description here.
  * Creation date: (5/1/2001 9:11:36 AM)
@@ -596,6 +622,7 @@ private com.klg.jclass.field.JCSpinField getMeterDialsSpinner() {
             meterDialsSpinner.setName("MeterDialsSpinner");
             meterDialsSpinner.setBackground(java.awt.Color.white);
             meterDialsSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+            meterDialsSpinner.setMinimumSize(new java.awt.Dimension(50, 20)); 
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }

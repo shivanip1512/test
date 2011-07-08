@@ -247,7 +247,7 @@ private javax.swing.JLabel getJLabelDecimalPositons() {
 			ivjJLabelDecimalPositons = new javax.swing.JLabel();
 			ivjJLabelDecimalPositons.setName("JLabelDecimalPositons");
 			ivjJLabelDecimalPositons.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelDecimalPositons.setText("Decimal Digits:");
+			ivjJLabelDecimalPositons.setText("Decimal Places:");
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -315,13 +315,13 @@ private javax.swing.JPanel getJPanelHolder() {
 			ivjJPanelHolder.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
-			constraintsUnitOfMeasureLabel.gridx = 1; constraintsUnitOfMeasureLabel.gridy = 1;
+			constraintsUnitOfMeasureLabel.gridx = 0; constraintsUnitOfMeasureLabel.gridy = 0;
 			constraintsUnitOfMeasureLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(2,2,2,2);
 			getJPanelHolder().add(getUnitOfMeasureLabel(), constraintsUnitOfMeasureLabel);
 
 			java.awt.GridBagConstraints constraintsUnitOfMeasureComboBox = new java.awt.GridBagConstraints();
-			constraintsUnitOfMeasureComboBox.gridx = 2; constraintsUnitOfMeasureComboBox.gridy = 1;
+			constraintsUnitOfMeasureComboBox.gridx = 1; constraintsUnitOfMeasureComboBox.gridy = 0;
 			constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsUnitOfMeasureComboBox.weightx = 1.0;
@@ -329,30 +329,29 @@ private javax.swing.JPanel getJPanelHolder() {
             constraintsUnitOfMeasureComboBox.gridwidth = 4;
 			getJPanelHolder().add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
 
-			java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
-			constraintsJLabelDecimalPositons.gridx = 1; constraintsJLabelDecimalPositons.gridy = 2;
-			constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelDecimalPositons.insets = new java.awt.Insets(2, 0, 7, 12);
-			getJPanelHolder().add(getJLabelDecimalPositons(), constraintsJLabelDecimalPositons);
-
-			java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
-			constraintsDecimalPlacesSpinner.gridx = 2; constraintsDecimalPlacesSpinner.gridy = 2;
-			constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2,2,2,2);
-			getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
-            
             java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
-            constraintsStateGroupLabel.gridx = 3; constraintsStateGroupLabel.gridy = 2;
+            constraintsStateGroupLabel.gridx = 0; constraintsStateGroupLabel.gridy = 1;
             constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
             constraintsStateGroupLabel.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getStateGroupLabel(), constraintsStateGroupLabel);
             
             java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
-            constraintsStateGroupComboBox.gridx = 4; constraintsStateGroupComboBox.gridy = 2;
+            constraintsStateGroupComboBox.gridx = 1; constraintsStateGroupComboBox.gridy = 1;
             constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsStateGroupComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getStateGroupComboBox(), constraintsStateGroupComboBox);
-            
+
+            java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
+			constraintsJLabelDecimalPositons.gridx = 0; constraintsJLabelDecimalPositons.gridy = 2;
+			constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelDecimalPositons.insets = new java.awt.Insets(2, 0, 7, 12);
+			getJPanelHolder().add(getJLabelDecimalPositons(), constraintsJLabelDecimalPositons);
+
+			java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
+			constraintsDecimalPlacesSpinner.gridx = 1; constraintsDecimalPlacesSpinner.gridy = 2;
+			constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2,2,2,2);
+			getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -486,7 +485,7 @@ private javax.swing.JComboBox getStateGroupComboBox() {
         try {
             stateGroupComboBox = new javax.swing.JComboBox();
             stateGroupComboBox.setName("stateGroupComboBox");
-            stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 12));
+            stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -815,7 +814,7 @@ public void setValue(Object val) {
         //Load the state table combo box
         for(int i=0;i<allStateGroups.length;i++)
         {
-            LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+            LiteStateGroup grp = allStateGroups[i];
 
            getStateGroupComboBox().addItem( grp );
             if( grp.getStateGroupID() == stateGroupID )

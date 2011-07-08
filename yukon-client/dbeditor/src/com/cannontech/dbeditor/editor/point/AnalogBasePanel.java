@@ -310,7 +310,7 @@ private javax.swing.JPanel getJPanelHolder() {
             constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsUnitOfMeasureComboBox.weightx = 1.0;
-            constraintsUnitOfMeasureComboBox.gridwidth = 3;
+//            constraintsUnitOfMeasureComboBox.gridwidth = 2;
             constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
 
@@ -323,6 +323,8 @@ private javax.swing.JPanel getJPanelHolder() {
             java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
             constraintsStateGroupComboBox.gridx = 1; constraintsStateGroupComboBox.gridy = 1;
             constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsStateGroupComboBox.fill =java.awt.GridBagConstraints.HORIZONTAL; 
+//            constraintsStateGroupComboBox.gridwidth = 2;
             constraintsStateGroupComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getStateGroupComboBox(), constraintsStateGroupComboBox);
 
@@ -419,6 +421,7 @@ private javax.swing.JComboBox getStateGroupComboBox() {
         try {
             stateGroupComboBox = new javax.swing.JComboBox();
             stateGroupComboBox.setName("StateGroupComboBox");
+            stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -631,7 +634,7 @@ public void setValue(Object val) {
         //Load the state table combo box
         for(int i=0;i<allStateGroups.length;i++)
         {
-            LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+            LiteStateGroup grp = allStateGroups[i];
 
            getStateGroupComboBox().addItem( grp );
             if( grp.getStateGroupID() == stateGroupID )
