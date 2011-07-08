@@ -17,6 +17,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -107,9 +108,11 @@ public class PointServiceImpl implements PointService {
 
             if (!beforeDate.before(ninetyThreeDaysAgo)) {
                 previous3Months = rphDao.getIntervalPointData(lp.getPointID(),
-                        beforeDate, ninetyThreeDaysAgo,
+                        ninetyThreeDaysAgo, beforeDate,
                         ChartInterval.DAY_MIDNIGHT,
                         RawPointHistoryDao.Mode.HIGHEST);
+                
+                previous3Months = new ReverseList<PointValueHolder>(previous3Months);
             }
         } else {
             previousReadings.setCutoffDate(sixMonthsAgo);
