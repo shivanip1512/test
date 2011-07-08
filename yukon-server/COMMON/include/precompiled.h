@@ -4,8 +4,7 @@
  * This header file exists to precompile large header files that never change.
  * Add any headers here that you want precompiled.
  */
-#ifndef _TESTTHAIN_
-#define _TESTTHAIN_
+#pragma once
 
 #if !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0500  //  Windows XP, Server 2003.  No service packs.
@@ -88,4 +87,3 @@
 
 #include "types.h"
 
-#endif

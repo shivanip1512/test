@@ -1,5 +1,6 @@
-#include "yukon.h"
 #define BOOST_AUTO_TEST_MAIN "Test ccuSim"
+
+#include "yukon.h"
 
 #include <rw/rwdate.h>
 #include <rw/rwtime.h>
