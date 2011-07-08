@@ -1,55 +1,26 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 
 /**
  * Model object which represents a manual thermostat event
  */
 public class ThermostatManualEvent extends CustomerThermostatEventBase {
 
-    public static final int DEFAULT_TEMPERATURE = 72;
+    public static final FahrenheitTemperature DEFAULT_TEMPERATURE = new FahrenheitTemperature(72);
 
     // Default temp to 72F
-    private Integer previousTemperature = DEFAULT_TEMPERATURE;
+    private FahrenheitTemperature previousTemperature = DEFAULT_TEMPERATURE;
     private boolean holdTemperature = false;
     private ThermostatMode mode = ThermostatMode.OFF;
     private ThermostatFanState fanState = ThermostatFanState.AUTO;
     private boolean runProgram = false;
 
-    // Fahrenheit by default
-    private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
-
-    /**
-     * Method to get the temperature based on the current temperature unit
-     * @return Temperature in correct units
-     */
-    public Integer getPreviousTemperatureForUnit() {
-
-        if ("c".equalsIgnoreCase(temperatureUnit)) {
-            return getPreviousTemperatureCelsius();
-        } else {
-            return getPreviousTemperature();
-        }
-
-    }
-
-    /**
-     * Method to get the temperature in celsius
-     * @return Temperature in celsius
-     */
-    public Integer getPreviousTemperatureCelsius() {
-
-        long celsiusTemp = CtiUtilities.convertTemperature(previousTemperature,
-                                                           CtiUtilities.FAHRENHEIT_CHARACTER,
-                                                           CtiUtilities.CELSIUS_CHARACTER);
-        return (int) celsiusTemp;
-    }
-
-    public Integer getPreviousTemperature() {
+    public FahrenheitTemperature getPreviousTemperature() {
         return previousTemperature;
     }
 
-    public void setPreviousTemperature(Integer previousTemperature) {
+    public void setPreviousTemperature(FahrenheitTemperature previousTemperature) {
         this.previousTemperature = previousTemperature;
     }
 
@@ -91,14 +62,6 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
         }
 
         return fanState.getValue();
-    }
-
-    public String getTemperatureUnit() {
-        return temperatureUnit;
-    }
-
-    public void setTemperatureUnit(String temperatureUnit) {
-        this.temperatureUnit = temperatureUnit;
     }
 
     public boolean isRunProgram() {

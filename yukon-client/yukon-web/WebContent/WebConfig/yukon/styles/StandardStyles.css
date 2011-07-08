@@ -5,6 +5,20 @@ body {
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
+.box {
+    position: relative;
+    overflow: hidden;
+}
+
+.clear {
+    clear: both;
+}
+
+.consumer_module div.userMessage.CONFIRM, .consumer_module div.userMessage.ERROR {
+    outline: none;
+    background-color: transparent;
+}
+
 #TopRightLogo {
     
 }

@@ -42,6 +42,4 @@ public interface ResidentialCustomerRole {
     public static final int OPT_OUT_DEVICE_SELECTION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 201;
     public static final int ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 202;
     public static final int ENROLLMENT_PER_DEVICE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 203;
-    public static final int THERMOSTAT_SCHEDULE_5_2 = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 204;
-    public static final int THERMOSTAT_SCHEDULE_7 = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 205;
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -137,7 +138,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                 retVal = event;
             } else if(eventType == ThermostatEventType.MANUAL) {
                 ManualThermostatEvent event = new ManualThermostatEvent();
-                event.setManualTemp(rs.getInt("manualTemp"));
+                event.setManualTemp(new FahrenheitTemperature(rs.getInt("manualTemp")));
                 event.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
                 event.setManualFan(rs.getEnum("manualFan", ThermostatFanState.class));
                 event.setManualHold(rs.getEnum("manualHold", YNBoolean.class).getBoolean());

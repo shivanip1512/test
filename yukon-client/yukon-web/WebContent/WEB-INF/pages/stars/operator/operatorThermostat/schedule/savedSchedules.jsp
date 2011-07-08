@@ -17,28 +17,13 @@
 <script>
 var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
-    Yukon.ThermostatScheduleEditor.upperHeatF = ${type.upperLimitHeatInFahrenheit};
-    Yukon.ThermostatScheduleEditor.lowerHeatF = ${type.lowerLimitHeatInFahrenheit};
-    Yukon.ThermostatScheduleEditor.upperCoolF = ${type.upperLimitCoolInFahrenheit};
-    Yukon.ThermostatScheduleEditor.lowerCoolF = ${type.lowerLimitCoolInFahrenheit};
-    Yukon.ThermostatScheduleEditor.copyPrefix = "<cti:msg2 key="defaults.copy.prefix"/>";
-    
-    <c:choose>
-        <c:when test="${temperatureUnit eq 'C'}" >
-        Yukon.ThermostatScheduleEditor.currentUnit = 'celcius';
-        </c:when>
-        <c:otherwise>
-        Yukon.ThermostatScheduleEditor.currentUnit = 'fahrenheit';
-        </c:otherwise>
-    </c:choose>
-    
-    Yukon.ThermostatScheduleEditor.initPrototype();
-    
-    //scroll the schedule into view
-    var scheduleId = Yukon.ui.getParameterByName('scheduleId');
-    if(scheduleId != null){
-        window.location.hash = "scheduleId_" + scheduleId;
-    }
+    Yukon.ThermostatScheduleEditor.init({
+        currentUnit: '${temperatureUnit}',
+        upperHeatF: parseFloat(${type.upperLimitHeatInFahrenheit.value}),
+        lowerHeatF: parseFloat(${type.lowerLimitHeatInFahrenheit.value}),
+        upperCoolF: parseFloat(${type.upperLimitCoolInFahrenheit.value}),
+        lowerCoolF: parseFloat(${type.lowerLimitCoolInFahrenheit.value})
+    });
 });
 </script>
 
@@ -54,13 +39,13 @@ Event.observe(window, 'load', function(){
 <div id="tempSlider" class="slider">
     <div class="chevron"></div>
     <div class="box fl tempHolder ${temperatureUnit}">
-        <div class="startLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="startLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
     <div class="track">
         <div class="handle"></div>
     </div>
     <div class="box fr tempHolder ${temperatureUnit}">
-        <div class="endLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="endLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
 </div>
 
@@ -79,77 +64,49 @@ Event.observe(window, 'load', function(){
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
-                        <c:choose>
-                            <c:when test="${ currentScheduleId gt -1 }">
-                                <c:forEach var="schedule" items="${schedules}" varStatus="status" begin="0" end="0" >
-                                    <tags:sectionContainer2 nameKey="lastSent">
-                                        <tags:thermostatScheduleWidget schedule="${schedule}"
-                                            thermostatId="${thermostatId}"
-                                            thermostatIds="${thermostatIds}"
-                                            accountId="${accountId}"
-                                            temperatureUnit="${temperatureUnit}"
-                                            actionPath="/spring/stars/operator/thermostatSchedule/save"
-                                            thermostatType="${thermostatType}"
-                                            styleClass="vh"/>
-                                    </tags:sectionContainer2>
-                                </c:forEach>
-                                <br>
-                                    <tags:sectionContainer2 nameKey="otherSchedules">
-                                        <c:forEach var="schedule" items="${schedules}" begin="1" >
-                                            <tags:thermostatScheduleWidget schedule="${schedule}"
-                                                thermostatId="${thermostatId}"
-                                                thermostatIds="${thermostatIds}"
-                                                accountId="${accountId}"
-                                                temperatureUnit="${temperatureUnit}"
-                                                actionPath="/spring/stars/operator/thermostatSchedule/save"
-                                                thermostatType="${thermostatType}"
-                                                styleClass="vh"/>
-                                        </c:forEach>    
-                                    </tags:sectionContainer2>
-                            </c:when>
-                            <c:otherwise>
-                                <tags:sectionContainer2 nameKey="lastSent">
-                                    <div class="schedule">
-                                        <div class="actions">
-                                            <i:inline key="defaults.none"/>
-                                        </div>
-                                    </div>
-                                </tags:sectionContainer2>
-                                <tags:sectionContainer2 nameKey="otherSchedules">
-                                    <c:forEach var="schedule" items="${schedules}" >
-                                        <tags:thermostatScheduleWidget schedule="${schedule}"
-                                            thermostatId="${thermostatId}"
-                                            thermostatIds="${thermostatIds}"
-                                            accountId="${accountId}"
-                                            temperatureUnit="${temperatureUnit}"
-                                            actionPath="/spring/stars/operator/thermostatSchedule/save"
-                                            thermostatType="${thermostatType}"
-                                            styleClass="vh"/>
-                                    </c:forEach>
-                                </tags:sectionContainer2>
-                            </c:otherwise>
-                        </c:choose>
+                        <c:if test="${not empty currentSchedule}">
+                            <div class="paddedContainer">
+                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+                                    thermostatId="${thermostatId}"
+                                    thermostatIds="${thermostatIds}"
+                                    accountId="${accountId}"
+                                    temperatureUnit="${temperatureUnit}"
+                                    actionPath="/spring/stars/operator/thermostatSchedule/save"
+                                    thermostatType="${thermostatType}"
+                                    styleClass="vh"/>
+                            </div>
+                        </c:if>
+                        <div class="box clear">
+                            <div class="fr">
+                                <cti:button key="create" styleClass="create fl"/>
+                                <cti:button key="help" styleClass="help fl"/>
+                            </div>
+                            <div class="tempControls fl">
+                                <form method="post" action="/spring/stars/operator/thermostatSchedule/updateTemperaturePreference">
+                                    <input type="hidden" name="accountId" value="${accountId}"/>
+                                    <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+                                    <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                                </form>
+                            </div>
+                        </div>
+                        <br>
+                        <c:if test="${not empty schedules}">
+                            <tags:sectionContainer2 nameKey="otherSchedules">
+                                <c:forEach var="schedule" items="${schedules}" >
+                                    <tags:thermostatScheduleWidget schedule="${schedule}"
+                                        thermostatId="${thermostatId}"
+                                        thermostatIds="${thermostatIds}"
+                                        accountId="${accountId}"
+                                        temperatureUnit="${temperatureUnit}"
+                                        actionPath="/spring/stars/operator/thermostatSchedule/save"
+                                        thermostatType="${thermostatType}"
+                                        styleClass="vh"/>
+                                </c:forEach>    
+                            </tags:sectionContainer2>
+                        </c:if>
                     </div>
                 </c:otherwise>
             </c:choose>
-        </td>
-        <td>
-            <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
-            <p>
-                <i:inline key="yukon.web.modules.consumer.savedSchedules.tempUnit"/>
-                <br>
-                <div class="tempControls">
-                    <label><input name="units" type="radio" value="celcius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celcius"/></label>
-                    <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
-                </div>
-            </p>
-            <p>
-                <br>
-                <br>
-                <cti:button key="create" styleClass="create"/>
-                <br>
-                <cti:button key="help" styleClass="help"/>
-            </p>
         </td>
     </tr>
 </table>
@@ -164,8 +121,8 @@ Event.observe(window, 'load', function(){
                         <i:inline key=".modeHint" />
                     </div>
                     <div class="box pad">
-                        <c:forEach var="mode" items="${allowedModes}">
-                            <label><input type="radio" name="defaultScheduleMode" value="${mode}"> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
+                        <c:forEach var="mode" items="${allowedModes}" varStatus="status">
+                            <label><input type="radio" name="defaultScheduleMode" value="${mode}" <c:if test="${status.first}">checked</c:if>> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
                             <br>
                         </c:forEach>
                     </div>

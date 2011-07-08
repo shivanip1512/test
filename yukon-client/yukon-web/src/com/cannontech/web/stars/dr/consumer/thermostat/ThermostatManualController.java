@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -43,7 +42,6 @@ public class ThermostatManualController extends AbstractThermostatController {
     private InventoryDao inventoryDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
-    private CustomerDao customerDao;
     private ThermostatEventHistoryDao thermostatEventHistoryDao;
     
     private final int NUMBER_OF_HISTORY_ROWS_TO_DISPLAY = 6;
@@ -76,10 +74,6 @@ public class ThermostatManualController extends AbstractThermostatController {
 
             event = new ThermostatManualEvent();
         }
-        
-        LiteCustomer customer = customerDao.getCustomerForUser(user.getUserID());
-        String temperatureUnit = customer.getTemperatureUnit();
-        event.setTemperatureUnit(temperatureUnit);
 
         map.addAttribute("event", event);
         
@@ -169,7 +163,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
         ThermostatManualEventResult result = null;
-        int temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
+        FahrenheitTemperature temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {
@@ -260,11 +254,6 @@ public class ThermostatManualController extends AbstractThermostatController {
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
     }
-    
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-		this.customerDao = customerDao;
-	}
     
     @Autowired
     public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {

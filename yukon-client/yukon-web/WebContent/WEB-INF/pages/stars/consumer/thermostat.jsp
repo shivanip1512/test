@@ -154,19 +154,11 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                                 <c:set var="tempStyle" value="color: red;" />
                                             </c:if>
                                             
-                                            <input id="temperature" type="text" name="temperature" style="${tempStyle}" maxlength="2" class="temperature" value="${(runProgram)? '' : event.previousTemperatureForUnit}" onblur="validateTemp()" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
-                                            <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${event.temperatureUnit}">
+                                            <input id="temperature" type="text" name="temperature" style="${tempStyle}" maxlength="2" class="temperature" value="${(runProgram)? '' : event.previousTemperature}" onblur="validateTemp()" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
+                                            
                                             <div style="font-size: 11px;">
-                                                <c:choose>
-                                                    <c:when test="${event.temperatureUnit == 'F'}">
-		                                                <a id="celsiusLink" href="javascript:setTempUnits('C');">${degreesCelsius}</a><span id="celsiusSpan" style="display: none;">${degreesCelsius}</span> | 
-		                                                <a id="fahrenheitLink" style="display: none;" href="javascript:setTempUnits('F');">${degreesFahrenheit}</a><span id="fahrenheitSpan">${degreesFahrenheit}</span>
-		                                            </c:when>
-		                                            <c:otherwise>
 		                                                <a id="celsiusLink" style="display: none;" href="javascript:setTempUnits('C');">${degreesCelsius}</a><span id="celsiusSpan">${degreesCelsius}</span> | 
 		                                                <a id="fahrenheitLink" href="javascript:setTempUnits('F');">${degreesFahrenheit}</a><span id="fahrenheitSpan" style="display: none;">${degreesFahrenheit}</span>
-		                                            </c:otherwise>
-		                                        </c:choose>
                                             </div>
                                         </td>
                                         <td style="padding-left: 5px; vertical-align: middle;"> 

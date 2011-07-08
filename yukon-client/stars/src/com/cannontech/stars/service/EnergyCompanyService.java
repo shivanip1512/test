@@ -104,5 +104,4 @@ public interface EnergyCompanyService {
      * @return returns 1 if a substation was deleted.
      */
     public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);
-
 }

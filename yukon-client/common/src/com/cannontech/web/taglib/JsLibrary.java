@@ -26,6 +26,7 @@ public enum JsLibrary {
     EXT_BASE("/JavaScript/extjs/ext-base.js"),
     EXT_ALL("/JavaScript/extjs/ext-all.js"),
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
+    JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     
     // --DEPRECATED VERSIONS --//
     PROTOTYPE_150("/JavaScript/prototype150.js"),

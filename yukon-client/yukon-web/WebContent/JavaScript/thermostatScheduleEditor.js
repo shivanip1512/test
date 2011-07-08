@@ -3,30 +3,58 @@ var CURRENT_TEMP_INPUT = null;
 
 Yukon.ThermostatScheduleEditor = {
         
-    upperHeatF: 99,
-    lowerHeatF: 39,
-    upperCoolF: 99,
-    lowerCoolF: 40,
-    currentUnit: 'fahrenheit',
-    copyPrefix: "",
-    
-    heatColor: {
-        r: {start: 242, end: 242},
-        g: {start: 150, end: 0},
-        b: {start: 29, end: 29},
-        a: {start: 1, end: 1}
+    //These values should be set by the Initialization function
+    _private: {
+        upperHeatF: 0,
+        lowerHeatF: 0,
+        upperCoolF: 0,
+        lowerCoolF: 0,
+        timeAccuracy: 1, //seconds
+        timeBetweenPeriods: 0, //minimum time between periods in seconds
+        currentUnit: 'F',
+        
+        heatColor: {
+            r: {start: 242, end: 242},
+            g: {start: 150, end: 0},
+            b: {start: 29, end: 29},
+            a: {start: 1, end: 1}
+        },
+        
+        coolColor: {
+            r: {start: 64, end: 189},
+            g: {start: 153, end: 220},
+            b: {start: 255, end: 255},
+            a: {start: 1, end: 1}
+        }
     },
     
-    coolColor: {
-        r: {start: 64, end: 189},
-        g: {start: 153, end: 220},
-        b: {start: 255, end: 255},
-        a: {start: 1, end: 1}
+    celsiusToSafeCelsius: function(celsius) {
+        //ensure we have 0.5 accurracy
+        return parseFloat((Math.round(celsius*2) / 2).toFixed(1));
     },
     
-    initPrototype: function() {
+    
+    //Initializes the object
+    //args requires the following values:
+    // upperHeatF           - floating point fahrenheit value
+    // lowerHeatF           - floating point fahrenheit value
+    // upperCoolF           - floating point fahrenheit value
+    // lowerCoolF           - floating point fahrenheit value
+    // timeAccuracy         - integer seconds to snap time values to
+    // timeBetweenPeriods   - integerminimum time between periods in seconds
+    
+    //optional args are:
+    // currentUnit          - string - Current units to display the schedules in
+    // heatColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
+    // coolColor            - object - {r:{start:[0..255], end:[0..255]}, g:{start:[0..255], end:[0..255]}, b:{start:[0..255], end:[0..255]}, a:{start:[0..255], end:[0..255]}}
+    init: function(args) {
+        
+        for(var key in args){
+           this._private[key] = args[key];
+        }
+        
         Yukon.ThermostatScheduleEditor.renderTime();
-        Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
+        Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
        
         $$(".time input:text").each(function(input){
             input.observe('focus', Yukon.ThermostatScheduleEditor.showTimeSlider);
@@ -44,10 +72,10 @@ Yukon.ThermostatScheduleEditor = {
             range: $R(0, 24*60),
             sliderValue: 0,
             onSlide: function(value, e) {
-                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, true);
+                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, 15);
             },
             onChange: function(value, e) {
-                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value), CURRENT_TIME_INPUT);
+                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value, 15), CURRENT_TIME_INPUT);
                 CURRENT_TIME_INPUT.select();    //Good ol' IE needs this.
             }
             
@@ -57,8 +85,8 @@ Yukon.ThermostatScheduleEditor = {
             range: $R(40, 99),
             sliderValue: 72,
             onSlide: function(value) {
-                if(Yukon.ThermostatScheduleEditor.currentUnit == 'celcius'){
-                    CURRENT_TEMP_INPUT.value = (Math.round(value*2) / 2).toFixed(1);
+                if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
+                    CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value).toFixed(1);
                 }else {
                     CURRENT_TEMP_INPUT.value = parseInt(value);
                 }
@@ -72,24 +100,38 @@ Yukon.ThermostatScheduleEditor = {
         $$(".schedules input:text").each(function(input){
             input.observe('focus', function(event){
                 this.writeAttribute("previousValue", this.value);
-                this.select();
             });
         });
         
         $$(".tempControls input:radio").each(function(radio){
             radio.observe('click', function(e){
-                Yukon.ThermostatScheduleEditor[this.value]();
+                //ajax preference
+                var form = e.target.up('form');
+                if(form){
+                    var params = {temperatureUnit: this.value};
+                    var accountIdInput = form.down('input[name=accountId]');
+                    
+                    if(accountIdInput){
+                        params.accountId = accountIdInput.value;
+                    }
+                    
+                    new Ajax.Request(form.readAttribute("action"), {
+                                     method:"POST",
+                                     parameters: params,
+                                     onComplete: Yukon.ThermostatScheduleEditor[this.value]});
+                }
             });
         });
         
         YEvent.observeSelectorClick(".send", function(e){
             //confirmation popup already shown at this point
-             $$("form[name=sendSchedule] input[name=scheduleId]")[0].value = e.target.up("form").down("input[name=scheduleId]").value;
+            $$("form[name=sendSchedule] input[name=scheduleId]")[0].value = e.target.up("form").down("input[name=scheduleId]").value;
         });
         
         YEvent.observeSelectorClick(".delete", function(e){
-            //confirmation popup already shown at this point
-             $$("form[name=deleteSchedule] input[name=scheduleId]")[0].value = e.target.up(".popUpDiv").down("form input[name=scheduleId]").value;
+            //confirmation popup already shown at this point, so hide it
+            e.target.up(".popUpDiv").hide();
+            $$("form[name=deleteSchedule] input[name=scheduleId]")[0].value = e.target.up(".popUpDiv").down("form input[name=scheduleId]").value;
         });
         
         YEvent.observeSelectorClick(".cancel", function(e){
@@ -98,25 +140,29 @@ Yukon.ThermostatScheduleEditor = {
                 input.value = input.readAttribute('initialValue');
             });
             Yukon.ThermostatScheduleEditor.renderTime();
-            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
+            Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
         });
         
         YEvent.observeSelectorClick(".copy", function(e){
             var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
              form.down("input[name=scheduleId]").value = -1;
-             form.down("input[name=scheduleName]").value = Yukon.ThermostatScheduleEditor.copyPrefix + " " + form.down("input[name=scheduleName]").value;
+             form.down("input[name=scheduleName]").value = form.down('input[name=copyName]').value;
              form.down("button.delete").hide();
+             
+             //change title
+             form.down('.titleBar .title').innerHTML = form.down('input[name=copyTitle]').value;
         });
         
         YEvent.observeSelectorClick(".edit", function(e){
-            var id = e.target.up("form").down("input[name=scheduleId]").value;
-            var name = e.target.up("form").down("input[name=scheduleName]").value;
             var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
-            form.down("input[name=scheduleId]").value = id;
-            form.down("input[name=scheduleName]").value = name;
+            form.down("input[name=scheduleId]").value = e.target.up("form").down("input[name=scheduleId]").value;
+            form.down("input[name=scheduleName]").value = e.target.up("form").down("input[name=scheduleName]").value;
             if(form.down("button.delete")){
                 form.down("button.delete").show();
             }
+            
+            //change title
+            form.down('.titleBar .title').innerHTML = form.down('input[name=editTitle]').value;
         });
         
         //This is a very specific editing mode for default schedules on energy companies.
@@ -147,6 +193,7 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         YEvent.observeSelectorClick(".save", function(e){
+            e.stop();
             var form = null;
             if(e.target.up("#createSchedule")){
                 var mode = $("createSchedule_body").down("input[name=defaultScheduleMode]:checked").value;
@@ -160,7 +207,6 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         $$(".page_0 input:radio").each(function(input){
-            input.checked = false;
             input.observe('click', function(e){
                 e.target.up('.f_page').down('.f_next').enable();
             });
@@ -173,9 +219,9 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         YEvent.observeSelectorClick(".page_0 .f_next", function(e){
-            var value = $("createSchedule_body").down("input[name=defaultScheduleMode]:checked").value;
+            var input = $("createSchedule_body").down("input[name=defaultScheduleMode]:checked")
             $("createSchedule_body").select(".schedule_editor").each(function(elem){
-                if(!elem.hasClassName(value)){
+                if(!elem.hasClassName(input.value)){
                     elem.hide();
                 }else{
                     elem.show();
@@ -216,7 +262,7 @@ Yukon.ThermostatScheduleEditor = {
                 
                 //render times and temps
                 Yukon.ThermostatScheduleEditor.renderTime();
-                Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.currentUnit]();
+                Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor._private.currentUnit]();
             }
             
         });
@@ -262,8 +308,6 @@ Yukon.ThermostatScheduleEditor = {
        schedule.scheduleName = form.down("input[name=scheduleName]").value;
        schedule.scheduleId = form.down("input[name=scheduleId]").value;
        form.down("input[name=schedules]").value = JSON.stringify(schedule);
-       
-       form.submit();
     },
     
     tempKeydown: function(event){
@@ -278,14 +322,14 @@ Yukon.ThermostatScheduleEditor = {
         var end = 0;
         
         if(this.hasClassName("heat_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerHeatF;
-            end = Yukon.ThermostatScheduleEditor.upperHeatF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerHeatF;
+            end = Yukon.ThermostatScheduleEditor._private.upperHeatF;
         } else if(this.hasClassName("cool_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerCoolF;
-            end = Yukon.ThermostatScheduleEditor.upperCoolF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerCoolF;
+            end = Yukon.ThermostatScheduleEditor._private.upperCoolF;
         }
         
-        if(Yukon.ThermostatScheduleEditor.currentUnit == 'celcius'){
+        if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
             var c = (((start - 32)*5)/9);
             start = Math.round(c*2) / 2;
             c = (((end - 32)*5)/9);
@@ -294,15 +338,19 @@ Yukon.ThermostatScheduleEditor = {
         
         switch(event.keyCode){
         case 38:
-            if(Yukon.ThermostatScheduleEditor.currentUnit == 'celcius'){
+            if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 value = Math.round((value+0.5)*2) / 2;
             }else {
                 value = value+1;
             }
             break;
         case 40:
-            if(Yukon.ThermostatScheduleEditor.currentUnit == 'celcius'){
+            if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 value = Math.round((value-0.5)*2) / 2;
+                if(value != Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value)){
+                    //take off another half degree
+                    value = Math.round((value-0.5)*2) / 2;
+                }
             }else {
                 value = value-1;
             }
@@ -314,7 +362,7 @@ Yukon.ThermostatScheduleEditor = {
         
         
         if(value >= start && value <= end){
-            if(Yukon.ThermostatScheduleEditor.currentUnit == 'celcius'){
+            if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 CURRENT_TEMP_INPUT.value = value.toFixed(1);
             }else{
                 CURRENT_TEMP_INPUT.value = parseInt(value);
@@ -335,16 +383,16 @@ Yukon.ThermostatScheduleEditor = {
         var end = 0;
         
         if(this.hasClassName("heat_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerHeatF;
-            end = Yukon.ThermostatScheduleEditor.upperHeatF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerHeatF;
+            end = Yukon.ThermostatScheduleEditor._private.upperHeatF;
         } else if(this.hasClassName("cool_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerCoolF;
-            end = Yukon.ThermostatScheduleEditor.upperCoolF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerCoolF;
+            end = Yukon.ThermostatScheduleEditor._private.upperCoolF;
         }
         
         var startLabel = "";
         var endLabel = "";
-        if(_self.currentUnit == 'celcius'){
+        if(_self._private.currentUnit == 'C'){
             var c = (((start - 32)*5)/9);
             start = Math.round(c*2) / 2;
             
@@ -397,20 +445,18 @@ Yukon.ThermostatScheduleEditor = {
         var end = 0;
                 
         if(input.hasClassName("heat_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerHeatF;
-            end = Yukon.ThermostatScheduleEditor.upperHeatF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerHeatF;
+            end = Yukon.ThermostatScheduleEditor._private.upperHeatF;
         } else if(input.hasClassName("cool_F")) {
-            start = Yukon.ThermostatScheduleEditor.lowerCoolF;
-            end = Yukon.ThermostatScheduleEditor.upperCoolF;
+            start = Yukon.ThermostatScheduleEditor._private.lowerCoolF;
+            end = Yukon.ThermostatScheduleEditor._private.upperCoolF;
         }
         
         //convert the value to fahrenheit scale
-        if(_self.currentUnit == 'celcius'){
+        if(_self._private.currentUnit == 'C'){
             //only .5 increments are allowed
-            value = Math.round(value*2)/2;
-            value_C = value;
             value_F = ((value*9)/5)+32;
-            input.value = value_C.toFixed(1);
+            input.value = _self.celsiusToSafeCelsius(value).toFixed(1);
         }else {
             input.value = parseInt(value_F);
         }
@@ -431,7 +477,7 @@ Yukon.ThermostatScheduleEditor = {
     },
     
     timeKeydown: function(event){
-        //don't bother processing
+        //don't bother processing iff not the UP or DOWN key
         if(event.keyCode != 40 && event.keyCode != 38){
             return;
         }
@@ -439,32 +485,40 @@ Yukon.ThermostatScheduleEditor = {
         //determine range
         var parent = this.up('.period');
         var start = 0;
-        var end = ((24*60)-1);  //11:59pm is the default
+        var end = ((24*60)-15);  //11:45pm is the default
         var value = timeFormatter.parseTime(this.value);
                 
         if(parent.previous('.period')) {
             start = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
-            start = Math.ceil((start+600)/60);
+            
+            //round to the closest quarter hour (900 seconds = 15minutes)
+            start = Math.ceil((start+900)/60);
         }
         if(parent.next('.period')){
             end = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
-            end = Math.floor((end-600)/60);
+            
+            //round to the closest quarter hour (900 seconds = 15minutes)
+            end = Math.floor((end-900)/60);
         }
         
         switch(event.keyCode){
+        //Up arrow key
         case 38:
-            value += 1;
+            value += 15;
             break;
+        //Down arrow key
         case 40:
-            value -= 1;
+            value -= 15;
             break;
         default:
             //really this is redundant given the first check in this function
             return;
         }
         
-        if(value > start && value <= end){
-            CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value);
+        if(value >= start && value <= end){
+            CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, 15);
+            
+            //round to nearest 15
             TIME_SLIDER.setValue(value);
         }
         event.stop();
@@ -499,17 +553,17 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         if(start != 0){
-            start = Math.ceil((start+600)/60);    //round to the nearest 10 minutes
+            start = Math.ceil((start+900)/60);    //round to the nearest 10 minutes
         }
-        end = Math.floor((end-600)/60);
+        end = Math.floor((end-900)/60);
 
         CURRENT_TIME_INPUT = this;
         TIME_SLIDER.options.range.start = start;
         TIME_SLIDER.options.range.end = end;
         TIME_SLIDER.setValue(startingValue/60);
         
-        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start, true);
-        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end, true);
+        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start, 15);
+        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end, 15);
         $("timeSlider").show();
         
         var inputDimensions = this.getDimensions();
@@ -531,12 +585,12 @@ Yukon.ThermostatScheduleEditor = {
     
     commitTimeValue: function(value, input){
         var curr = timeFormatter.parseTime(value)*60;
-        
+        debug("commit")
         if(curr != -1){
             //check bounds
             var parent = input.up('.period');
-            var start = 0;
-            var end = ((24*60)-1)*60;  //11:59pm is the default 
+            var start = -1;
+            var end = ((24*60)-14)*60;  //11:45pm is the default 
                     
             var previous = parent.previous('.period');
             if(previous) {
@@ -553,13 +607,15 @@ Yukon.ThermostatScheduleEditor = {
                     end = parseInt(nextInput.value);
                 }
             }
+            
+            //allow the user to set the start time to 12:00am
 
             if((start < curr) && (curr < end)){
                 //set seconds from midnight value
                 input.adjacent('input[name=secondsFromMidnight]')[0].value = timeFormatter.parseTime(input.value)*60;
                 
                 //get a nicely formatted time in case the user inputs some shorthand value such as '4pm'
-                input.value = timeFormatter.formatTime(timeFormatter.parseTime(input.value));
+                input.value = timeFormatter.formatTime(timeFormatter.parseTime(input.value), 15);
                 input.writeAttribute('previousValue', input.value);
                 return true;
             }
@@ -568,9 +624,9 @@ Yukon.ThermostatScheduleEditor = {
         input.value = input.readAttribute('previousValue');
     },
     
-    celcius: function(){
+    celsius: function(){
         var _self = Yukon.ThermostatScheduleEditor;
-        _self.currentUnit = 'celcius';
+        _self._private.currentUnit = 'C';
         $$(".temp .value").each(function(elem){
             var f = parseFloat(elem.next("input:hidden").value);
             f -= 32;
@@ -599,9 +655,13 @@ Yukon.ThermostatScheduleEditor = {
         _self.calcTempColor();
     },
     
+    C: function(){
+        Yukon.ThermostatScheduleEditor.celsius();
+    },
+    
     fahrenheit: function(){
         var _self = Yukon.ThermostatScheduleEditor;
-        _self.currentUnit = 'fahrenheit';
+        _self._private.currentUnit = 'F';
         $$(".temp .value").each(function(elem){
             elem.innerHTML = Math.round(elem.next("input:hidden").value);
         });
@@ -620,6 +680,10 @@ Yukon.ThermostatScheduleEditor = {
             elem.value = "F";
         });
         _self.calcTempColor();
+    },
+    
+    F: function(){
+        Yukon.ThermostatScheduleEditor.fahrenheit();
     },
     
     renderTime: function(){
@@ -649,43 +713,49 @@ Yukon.ThermostatScheduleEditor = {
     
     calcHeatColor: function(temp){
         var _self = Yukon.ThermostatScheduleEditor;
-        var r = _self.heatColor.r.start;
-        var g = Math.round(_self.heatColor.g.start - Math.abs((temp - _self.lowerHeatF) * ((_self.heatColor.g.end - _self.heatColor.g.start)/(_self.upperHeatF - _self.lowerHeatF))));
-        var b = _self.heatColor.b.start; 
+        var r = _self._private.heatColor.r.start;
+        var g = Math.round(_self._private.heatColor.g.start - Math.abs((temp - _self._private.lowerHeatF) * ((_self._private.heatColor.g.end - _self._private.heatColor.g.start)/(_self._private.upperHeatF - _self._private.lowerHeatF))));
+        var b = _self._private.heatColor.b.start; 
         return "rgb("+ r +", "+ g +", "+ b +")";
     },
     
     calcCoolColor: function(temp){
         var _self = Yukon.ThermostatScheduleEditor;
-        var tempRange = _self.upperCoolF - _self.lowerCoolF;
-        var RRange = _self.coolColor.r.end - _self.coolColor.r.start;
-        var GRange = _self.coolColor.g.end - _self.coolColor.g.start;
-        var r = Math.round(_self.coolColor.r.start + ((temp - _self.lowerCoolF) * (RRange/tempRange)));
-        var g = Math.round(_self.coolColor.g.start + ((temp - _self.lowerCoolF) * (GRange/tempRange)));
-        var b = _self.coolColor.b.start;
+        var tempRange = _self._private.upperCoolF - _self._private.lowerCoolF;
+        var RRange = _self._private.coolColor.r.end - _self._private.coolColor.r.start;
+        var GRange = _self._private.coolColor.g.end - _self._private.coolColor.g.start;
+        var r = Math.round(_self._private.coolColor.r.start + ((temp - _self._private.lowerCoolF) * (RRange/tempRange)));
+        var g = Math.round(_self._private.coolColor.g.start + ((temp - _self._private.lowerCoolF) * (GRange/tempRange)));
+        var b = _self._private.coolColor.b.start;
         return "rgb("+ r +","+ g +","+ b +")";
     },
     
-    conversionTest: function(){
-        var fail = [];
-        var c = 0;
-        while(c<40) {
-            //convert to fahrenheit
-            var f = ((c*9)/5)+32;
-            
-            //convert back to celcius and round like we do on display and validate
-            var d = Math.round(((f-32)*5/9)*2)/2;
-            if (d != c) {
-                fail.push(c + " FAIL!!!!!!! " + d + " " + f);
+    _tests: {
+        conversionTest: function(){
+            var fail = [];
+            var c = 0;
+            while(c<50) {
+                //convert to fahrenheit
+                var f = ((c*9)/5)+32;
+                
+                //convert back to celsius and round like we do on display and validate
+                
+                //This is what we will store in the DB
+                var d = Math.round(f);
+                
+                //This is what will come back out from the DB when converted to Celsius
+                var c_prime = (((d-32)*5)/9)
+                var rounded = Math.round(c_prime*2) / 2;
+                c_final = parseFloat(rounded.toFixed(1));
+                
+                if (c_final != c) {
+                    debug("Fail! input["+ c +"] db value["+ d +"] -> back to Celsius -> ["+ c_final +"]     (f actual ["+ f +"] c_prime ["+ c_prime + "] rounded["+ rounded + "]");
+                }else{
+                    debug("pass");
+                }
+                
+                c += 0.5;
             }
-            
-            c += 0.5;
-        }
-        
-        if(fail.length > 0){
-            alert("FAIL\n"+fail.join("\n"));
-        }else{
-            alert("PASS")
         }
     }
 }

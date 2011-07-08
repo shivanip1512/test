@@ -23,12 +23,12 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -61,6 +61,7 @@ public class DefaultThermostatScheduleController {
     private RolePropertyDao rolePropertyDao;   
     private StarsDatabaseCache starsDatabaseCache;
     private ThermostatService thermostatService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
@@ -117,10 +118,7 @@ public class DefaultThermostatScheduleController {
         modelMap.addAttribute("thermostatType", schedulableThermostatType);
         modelMap.addAttribute("type", type);
 
-        modelMap.addAttribute("celcius_char", CtiUtilities.CELSIUS_CHARACTER);
-        modelMap.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
-        
-        List<ThermostatScheduleMode> modes = operatorThermostatHelper.getAllowedModesForUserAndType(userContext.getYukonUser(), schedulableThermostatType);
+        Set<ThermostatScheduleMode> modes = schedulableThermostatType.getAllowedModes(yukonEnergyCompanyService.getAllowedThermostatScheduleModes(energyCompany));
         modelMap.addAttribute("allowedModes", modes);
         
         // Set the displable form of type to the model map
@@ -227,5 +225,10 @@ public class DefaultThermostatScheduleController {
     @Autowired
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
+    }
+
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }

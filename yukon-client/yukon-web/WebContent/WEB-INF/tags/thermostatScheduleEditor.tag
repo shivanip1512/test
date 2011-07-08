@@ -30,7 +30,7 @@
         
         <div class="temp tempLabel ${temperatureUnit}">
             <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
-            <span class="C"><i:inline key="yukon.web.defaults.celcius"/></span>
+            <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
         </div>
         <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.name"/></label>
         <input type="text" name="scheduleName" value="${pageScope.schedule.scheduleName}" initialValue="${pageScope.schedule.scheduleName}" size="40" maxlength="60">
@@ -55,15 +55,7 @@
                 </c:forEach>
             </span>
             <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
-                <c:choose>
-                  <c:when test="${rowCounter.count % 2 == 0}">
-                    <c:set var="rowStyle" scope="page" value="odd"/>
-                  </c:when>
-                  <c:otherwise>
-                    <c:set var="rowStyle" scope="page" value="even"/>
-                  </c:otherwise>
-                </c:choose>
-                <div class="day active ${rowStyle} ${day.key}">
+                <div class="day active">
                     <div class="periods">
                         <c:choose>
                             <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
@@ -86,14 +78,14 @@
                                                 value="${period.startTime}"
                                                 initialValue="${period.startTime}"
                                                 defaultValue="${period.startTime}">
-                                            <input type="text" class="time"
+                                            <input type="text" class="time f_selectAll"
                                                 maxlength="8">
                                         </div>
 
                                         <div
                                             class="temp heat ${pageScope.temperatureUnit}"
                                             title="${heatLabel}">
-                                            <input type="text" class="heat_F"
+                                            <input type="text" class="heat_F f_selectAll"
                                                 maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
                                                 type="hidden"
                                                 value="${period.heatTemp.value}"
@@ -104,7 +96,7 @@
                                         <div
                                             class="temp cool ${pageScope.temperatureUnit}"
                                             title="${coolLabel}">
-                                            <input type="text" class="cool_F"
+                                            <input type="text" class="cool_F f_selectAll"
                                                 maxlength="4"><i:inline key="yukon.web.defaults.degree"/><input
                                                 type="hidden"
                                                 value="${period.coolTemp.value}"

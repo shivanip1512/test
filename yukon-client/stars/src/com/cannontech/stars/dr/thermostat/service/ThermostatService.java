@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.service;
 
 import java.util.List;
 
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -51,7 +52,7 @@ public interface ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                    boolean hold, 
                                                                    boolean runProgram, 
-                                                                   int tempInF, 
+                                                                   FahrenheitTemperature tempInF, 
                                                                    String temperatureUnit, 
                                                                    String mode, 
                                                                    String fan, 
@@ -80,7 +81,7 @@ public interface ThermostatService {
      * If the temperature value is null, returns the default temperature for a manual event in
      * Fahrenheit.  If not, the temperature is returned in Fahrenheit.
      */
-    public int getTempOrDefaultInF(Integer temperature, String temperatureUnit);
+    public FahrenheitTemperature getTempOrDefaultInF(Integer temperature, String temperatureUnit);
     
     /**
      * Parses a thermostat mode string value into a ThermostatMode object.  A blank string
@@ -95,7 +96,7 @@ public interface ThermostatService {
      * will be null.
      */
     public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
-                                                                 int temperatureInF, 
+                                                                 FahrenheitTemperature temperatureInF, 
                                                                  ThermostatMode mode);
     
     /**

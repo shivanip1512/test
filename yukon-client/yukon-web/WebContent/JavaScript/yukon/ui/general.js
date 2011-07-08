@@ -87,6 +87,25 @@ Yukon.ui = {
             Yukon.ui.toggleInputs(elem);
         });
         
+        $$(".f_toggleSwitch").each(function(container){
+            
+            container.select("input:radio").each(function(input, index){
+                debug(index);
+                input.hide();
+                var elem = input.up('.f_toggleSwitch').down('.f_switchInterface');
+                if(!elem){
+                    input.up('.f_toggleSwitch').appendChild('<div class="f_switchInterface"></div>');
+                    elem = input.up('.f_toggleSwitch').down('.f_switchInterface');
+                }
+            });
+        });
+        
+        $$("input.f_selectAll").each(function(input){
+            input.observe('focus', function(elem){
+                elem.target.select();
+            });
+        });
+        
         Yukon.uiUtils.tabs.init();
         
         /*

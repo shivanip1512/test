@@ -1,14 +1,17 @@
 package com.cannontech.web.stars.dr.operator;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +23,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.AccountCheckerService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.model.ThermostatScheduleCompatibility;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
-import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -59,116 +63,7 @@ public class OperatorThermostatScheduleController {
 	private OperatorThermostatHelper operatorThermostatHelper;
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
-	private RolePropertyDao rolePropertyDao;
-	
-	// VIEW
-	@RequestMapping
-    public String view(String thermostatIds,
-					            Integer scheduleId, 
-					            String canceledAction,
-					            Boolean createAsNew,
-					            YukonUserContext context, 
-					            ModelMap model, 
-					            AccountInfoFragment fragment,
-					            FlashScope flash) {
-
-		// thermostatIdsList
-		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
-		CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
-
-		int thermostatId = thermostatIdsList.get(0);
-		Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-		SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(thermostat.getType());
-		
-		// AccountThermostatSchedule and EC default AccountThermostatSchedule
-        AccountThermostatSchedule schedule = null;
-        AccountThermostatSchedule defaultSchedule = null;
-        int accountId = customerAccount.getAccountId();
-        
-        // first try to get specific schedule asked for
-        if (scheduleId != null) {
-        	
-        	schedule = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, accountId);
-        	if (schedule != null && !schedulableThermostatType.getSupportedScheduleModes().contains(schedule.getThermostatScheduleMode())) {
-        		throw new IllegalStateException("Thermostat type " + schedulableThermostatType + " does not support schedule mode " + schedule.getThermostatScheduleMode());
-        	}
-        }
-
-        // next try to get the schedule the thermostat is currently associated with (or the default if none)
-        // or use the default schedule as a template if "createAsNew"
-        if (schedule == null) {
-        	
-        	if (BooleanUtils.isTrue(createAsNew)) {
-        		
-        		schedule = thermostatService.getAccountThermostatScheduleTemplate(accountId, schedulableThermostatType);
-        		
-        	} else {
-        		
-        		schedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
-        		if (schedule == null) {
-        			schedule = thermostatService.getAccountThermostatScheduleTemplate(accountId, schedulableThermostatType);
-        		}
-        	}
-        	
-        }
-        
-        //make sure the schedule has entries for each time of week associated with its current mode
-        thermostatService.addMissingScheduleEntries(schedule);
-        
-        String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(schedule, thermostatIdsList.size() == 1 ? thermostat.getLabel() : null, context);
-        schedule.setScheduleName(useScheduleName);
-        
-        defaultSchedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByAccountAndType(accountId, schedulableThermostatType);
-        String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, context);
-        defaultSchedule.setScheduleName(useDefaultScheduleName);
-        
-        // numberOfThermostatsUsingSchedule
-        List<Integer> thermostatIdsUsingSchedule = accountThermostatScheduleDao.getThermostatIdsUsingSchedule(schedule.getAccountThermostatScheduleId());
-        model.addAttribute("totalNumberOfThermostatsUsingSchedule", thermostatIdsUsingSchedule.size());
-        int selectedNumberOfThermostatsUsingSchedule = 0;
-        for (int id : thermostatIdsList) {
-        	if (thermostatIdsUsingSchedule.contains(id)) {
-        		selectedNumberOfThermostatsUsingSchedule++;
-        	}
-        }
-        model.addAttribute("selectedNumberOfThermostatsUsingSchedule", selectedNumberOfThermostatsUsingSchedule);
-        
-        // schedule52Enabled
-    	boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, context.getYukonUser());
-    	model.addAttribute("schedule52Enabled", schedule52Enabled);
-    	
-    	// adjusted scheduleMode
-    	ThermostatScheduleMode scheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(schedule, context.getYukonUser());
-    	model.addAttribute("scheduleMode", scheduleMode);
-    	
-        // temperatureUnit
-        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-        String temperatureUnit = customer.getTemperatureUnit();
-        model.addAttribute("temperatureUnit", temperatureUnit);
-
-        // scheduleJSON
-        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
-        JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
-        model.addAttribute("scheduleJSONString", scheduleJSON.toString());
-        model.addAttribute("schedule", schedule);
-
-        JSONObject defaultFahrenheitScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, true);
-        model.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
-        JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
-        model.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
-        
-        ThermostatScheduleMode defaultScheduleMode = operatorThermostatHelper.getAdjustedScheduleMode(defaultSchedule, context.getYukonUser());
-        model.addAttribute("defaultScheduleMode", defaultScheduleMode);
-        
-        // if arriving at the view page due to a canceled send/save operation
-        if (StringUtils.isNotBlank(canceledAction)) {
-        	MessageSourceResolvable cancelMessage = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatScheduleConfirm.cancelText." + canceledAction);
-        	flash.setWarning(cancelMessage);
-        }
-
-        return "operator/operatorThermostat/schedule/view.jsp";
-    }
-	
+	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	
 	// SAVE
 	@RequestMapping
@@ -215,7 +110,7 @@ public class OperatorThermostatScheduleController {
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
 
         // Log schedule name change
-        if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
+        if (!oldScheduleName.equals(ats.getScheduleName())) {
             accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
         }
 
@@ -287,9 +182,9 @@ public class OperatorThermostatScheduleController {
 		accountCheckerService.checkInventory(userContext.getYukonUser(), thermostatIdList);
 
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdList.get(0));
-        List<SchedulableThermostatType> types = operatorThermostatHelper.getCompatibleSchedulableThermostatTypes(thermostat);
+        List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(ThermostatScheduleCompatibility.getByHardwareType(thermostat.getType()).getCompatibleScheduleTypes());
         SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
-        List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(fragment.getAccountId(), types, userContext.getYukonUser());
+        List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesAndEntriesForAccountByTypes(fragment.getAccountId(), compatibleTypes);
         
         CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
@@ -299,19 +194,12 @@ public class OperatorThermostatScheduleController {
         // current schedule is only relevant when operating in the context of 1 Thermostat
         AccountThermostatSchedule thermostatCurrentSchedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
         if (thermostatCurrentSchedule != null) {
-            model.addAttribute("currentScheduleId", thermostatCurrentSchedule.getAccountThermostatScheduleId());
-
-            //put the current schedule first
-            int index = -1;
             for(AccountThermostatSchedule ats : schedules){
                 if (ats.getAccountThermostatScheduleId() == thermostatCurrentSchedule.getAccountThermostatScheduleId()){
-                    index = schedules.indexOf(ats);
+                    //only add the 'currentSchedule' if it is included in the allowed schedule
+                    model.addAttribute("currentSchedule", schedules.remove(schedules.indexOf(ats)));
                     break;
                 }
-            }
-            
-            if(index > -1){
-                schedules.add(0, schedules.remove(index));
             }
         }
 
@@ -320,8 +208,6 @@ public class OperatorThermostatScheduleController {
         model.addAttribute("thermostatType", type);
         model.addAttribute("type", type);
         model.addAttribute("temperatureUnit", temperatureUnit);
-        model.addAttribute("celcius_char", CtiUtilities.CELSIUS_CHARACTER);
-        model.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
         model.addAttribute("thermostatIds", thermostatIds);
         model.addAttribute("thermostatId", thermostatIdList.get(0));
         
@@ -330,7 +216,7 @@ public class OperatorThermostatScheduleController {
         String useDefaultScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(defaultSchedule, null, userContext);
         defaultSchedule.setScheduleName(useDefaultScheduleName);
         
-        List<ThermostatScheduleMode> modes = operatorThermostatHelper.getAllowedModesForUserAndType(userContext.getYukonUser(), type);
+        Set<ThermostatScheduleMode> modes = type.getAllowedModes(yukonEnergyCompanyService.getAllowedThermostatScheduleModesByAccountId(fragment.getAccountId()));
         List<AccountThermostatSchedule> defaultSchedules = new ArrayList<AccountThermostatSchedule>();
         for(ThermostatScheduleMode mode : modes){
             if(defaultSchedule.getThermostatScheduleMode() == mode){
@@ -398,6 +284,34 @@ public class OperatorThermostatScheduleController {
     	
     	return "redirect:savedSchedules";
     }
+	
+	//ajax method to update the temperature preferences of the associated consumer
+    @RequestMapping(value = "updateTemperaturePreference",
+                    method = {RequestMethod.POST, RequestMethod.HEAD},     
+                    headers = "x-requested-with=XMLHttpRequest")
+    public void updateTemperaturePreference(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            @RequestParam("temperatureUnit") String temperatureUnit,
+                                            LiteYukonUser user,
+                                            FlashScope flashScope,
+                                            AccountInfoFragment fragment,
+                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException {
+        
+        JSONObject returnJSON = new JSONObject();
+        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
+        
+        CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        
+        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+            customerDao.setTempForCustomer(customerAccount.getCustomerId(), escapedTempUnit);
+        }
+        
+        returnJSON.put("temperatureUnit", customer.getTemperatureUnit());
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
+        writer.write(returnJSON.toString());
+    }
     
 	@Autowired
 	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
@@ -438,9 +352,10 @@ public class OperatorThermostatScheduleController {
 	public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
-	
+
 	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+	
 }

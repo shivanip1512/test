@@ -11,6 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -27,7 +28,6 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionService;
-import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Multimap;
 
 public class ExpressComCommandService extends AbstractCommandExecutionService {
@@ -36,7 +36,6 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
     private InventoryDao inventoryDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private RolePropertyDao rolePropertyDao;
-    private EnergyCompanyService energyCompanyService;
 
     @Override
     public void doManualAdjustment(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
@@ -102,16 +101,10 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
      * For Utility Pro's: update the mode if the 5-2 schedule role property is true
      */
     private void sendFixForUtilProScheduleMode(Thermostat stat, ThermostatScheduleMode mode, LiteYukonUser user) throws CommandCompletionException{
-        boolean isOperator = energyCompanyService.isOperator(user);
-        
         // We have to update the schedule mode for Utility Pro thermostats every
         // time we update the schedule if 5-2 mode is enabled
         YukonRoleProperty modeProperty;
-        if (isOperator) {
-            modeProperty = YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2;
-        } else {
-            modeProperty = YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2;  // didn't we already decide to make this an EC enum?
-        }
+        modeProperty = YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND;
         
         boolean mode52Enabled = rolePropertyDao.checkProperty(modeProperty, user);
 
@@ -165,10 +158,10 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
             LocalTime startTime = entry.getStartTimeLocalTime();
 
-            int coolTemp = entry.getCoolTemp().getIntValue();
-            int heatTemp = entry.getHeatTemp().getIntValue();
+            FahrenheitTemperature coolTemp = entry.getCoolTemp().toFahrenheit();
+            FahrenheitTemperature heatTemp = entry.getHeatTemp().toFahrenheit();
 
-            if (coolTemp == -1 && heatTemp == -1) {
+            if (coolTemp.getIntValue() == -1 && heatTemp.getIntValue() == -1) {
                 // temp of -1 means ignore this time/temp pair - used when only
                 // sending two time/temp values
                 command.append("HH:MM,");
@@ -179,8 +172,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                 
                 String startTimeString = startTime.toString("HH:mm");
                 command.append(startTimeString + ",");
-                command.append(heatTemp + ",");
-                command.append(coolTemp);
+                command.append(heatTemp.getIntValue() + ",");
+                command.append(coolTemp.getIntValue());
             }
 
             // No trailing comma on the last season entry cool temp
@@ -218,7 +211,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
             command.append(" run");
         } else {
             // Set manual values
-            Integer temperature = event.getPreviousTemperature();
+            FahrenheitTemperature temperature = event.getPreviousTemperature();
             
             if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) 
                     && mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT) {
@@ -269,10 +262,4 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
 }

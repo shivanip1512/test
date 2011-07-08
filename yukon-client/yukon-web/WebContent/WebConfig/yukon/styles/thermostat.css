@@ -235,7 +235,6 @@ ul.schedules > li {
 
 .heading {
 	font-size: 16px;
-	font-style:italic;
 	margin: 0 0 5px 38px;
 	border-bottom: solid 1px #DDD; 
 }
@@ -357,6 +356,10 @@ a.default {
     top: 19px;
 }
 
+.slider .label {
+    margin: 0 5px;
+}
+
 .chevron {
     font-size: 0;
     height: 0;
@@ -397,3 +400,4 @@ a.default {
     font-size: 12px;
     float: right;
 }
+

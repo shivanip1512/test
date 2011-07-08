@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -141,7 +142,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
      */
     private void saveManualEvent(ThermostatManualEvent event, YukonEnergyCompany yukonEnergyCompany) {
 
-        Integer previousTemperature = event.getPreviousTemperature();
+        FahrenheitTemperature previousTemperature = event.getPreviousTemperature();
         boolean holdTemperature = event.isHoldTemperature();
 
         LiteStarsEnergyCompany liteStarsEnergyCompany = 
@@ -187,7 +188,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
             int id = rs.getInt("EventId");
             int inventoryId = rs.getInt("InventoryId");
-            int previousTemp = rs.getInt("PreviousTemperature");
+            FahrenheitTemperature previousTemp = new FahrenheitTemperature(rs.getInt("PreviousTemperature"));
             String holdTemp = rs.getString("HoldTemperature");
             Date date = rs.getTimestamp("EventDateTime");
 
@@ -199,7 +200,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             // A temp of -1 indicates this event was a 'run program' event. This
             // should really be handled with a column in the table or some other
             // more solid way
-            if (previousTemp == -1) {
+            if (previousTemp.getValue() == -1) {
                 event.setRunProgram(true);
             }
 

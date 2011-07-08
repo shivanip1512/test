@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -169,13 +170,13 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             AccountThermostatScheduleEntry entry = iter.next();
             
             LocalTime startTime = entry.getStartTimeLocalTime();
-            int coolTemp = entry.getCoolTemp().getIntValue();
-            int heatTemp = entry.getHeatTemp().getIntValue();
+            FahrenheitTemperature coolTemp = entry.getCoolTemp().toFahrenheit();
+            FahrenheitTemperature heatTemp = entry.getHeatTemp().toFahrenheit();
 
             String startTimeString = startTime.toString("HHmm");
             builder.append(startTimeString + ",");
-            builder.append(coolTemp + ",");
-            builder.append(heatTemp);
+            builder.append(coolTemp.getIntValue() + ",");
+            builder.append(heatTemp.getIntValue());
             
             entryPos++;
         }

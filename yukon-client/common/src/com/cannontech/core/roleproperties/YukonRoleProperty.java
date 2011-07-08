@@ -176,8 +176,6 @@ public enum YukonRoleProperty {
     RESIDENTIAL_OPT_OUT_DEVICE_SELECTION(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.OPT_OUT_DEVICE_SELECTION, booleanType()),
     RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     RESIDENTIAL_ENROLLMENT_PER_DEVICE(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_PER_DEVICE, booleanType()),
-    RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
-    RESIDENTIAL_THERMOSTAT_SCHEDULE_7(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_7, booleanType()),
     
     LM_INDIVIDUAL_SWITCH(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.INDIVIDUAL_SWITCH, booleanType()),
     DEMAND_RESPONSE(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE, booleanType()),
@@ -282,8 +280,6 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS, booleanType()),
-    OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
-    OPERATOR_THERMOSTAT_SCHEDULE_7(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_7, booleanType()),
     OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_SEARCH, booleanType()),
     OPERATOR_SURVEY_EDIT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.SURVEY_EDIT, booleanType()),
@@ -398,6 +394,11 @@ public enum YukonRoleProperty {
     SERIAL_NUMBER_VALIDATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SERIAL_NUMBER_VALIDATION, InputTypeFactory.enumType(SerialNumberValidation.class)),
     AUTOMATIC_CONFIGURATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTOMATIC_CONFIGURATION, booleanType()),
     ADMIN_ALLOW_DESIGNATION_CODES(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_DESIGNATION_CODES, booleanType()),
+    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_ALL, booleanType()),
+    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, booleanType()),
+    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY, booleanType()),
+    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_7_DAY, booleanType()),
+    
     
     MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),
     MSP_PRIMARY_CB_VENDORID(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),

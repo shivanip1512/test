@@ -243,22 +243,20 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, int tempInF, ThermostatMode mode) {
-        int maxTempInF;
-        int minTempInF;
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList, FahrenheitTemperature tempInF, ThermostatMode mode) {
         
         //The UI only allows selection of multiple thermostats of the same type, so the type of the
         //first thermostat should be the same as any others
         int firstThermostatId = thermostatIdsList.get(0);
         HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
         SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
-        minTempInF = schedThermType.getLowerLimitInFahrenheit(mode.getHeatCoolSettingType());
-        maxTempInF = schedThermType.getUpperLimitInFahrenheit(mode.getHeatCoolSettingType());
+        FahrenheitTemperature minTempInF = schedThermType.getLowerLimitInFahrenheit(mode.getHeatCoolSettingType());
+        FahrenheitTemperature maxTempInF = schedThermType.getUpperLimitInFahrenheit(mode.getHeatCoolSettingType());
         
         ThermostatManualEventResult message = null;
-        if (tempInF > maxTempInF) {
+        if (tempInF.compareTo(maxTempInF) > 0) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_HIGH;
-        } else if (tempInF < minTempInF) {
+        } else if (minTempInF.compareTo(tempInF) > 0) {
             message = ThermostatManualEventResult.MANUAL_INVALID_TEMP_LOW;
         }
         
@@ -266,11 +264,11 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public int getTempOrDefaultInF(Integer temperature, String temperatureUnit) {
+    public FahrenheitTemperature getTempOrDefaultInF(Integer temperature, String temperatureUnit) {
         if(temperature == null) {
             return ThermostatManualEvent.DEFAULT_TEMPERATURE;
         } else {
-            return CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER);
+            return new FahrenheitTemperature(CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER));
         }
     }
     
@@ -322,7 +320,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
                                                                   boolean hold, 
                                                                   boolean runProgram, 
-                                                                  int tempInF, 
+                                                                  FahrenheitTemperature tempInF, 
                                                                   String temperatureUnit, 
                                                                   String mode, 
                                                                   String fan, 
@@ -337,7 +335,6 @@ public class ThermostatServiceImpl implements ThermostatService {
            event.setThermostatId(thermostatId);
            event.setHoldTemperature(hold);
            event.setPreviousTemperature(tempInF);
-           event.setTemperatureUnit(temperatureUnit);
            event.setRunProgram(runProgram);
            event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
            event.setAction(CustomerAction.MANUAL_OPTION);
@@ -381,15 +378,13 @@ public class ThermostatServiceImpl implements ThermostatService {
      */
     private void logManualEventActivity(Thermostat thermostat, ThermostatManualEvent event, int userId, int accountId, int customerId) {
 
-        String tempUnit = event.getTemperatureUnit();
-
         StringBuilder logMsg = new StringBuilder("Serial #: " + thermostat.getSerialNumber());
         logMsg.append(", Mode:" + event.getMode());
 
         if (event.isRunProgram()) {
             logMsg.append(", Run Program");
         } else {
-            logMsg.append(", Temp:" + event.getPreviousTemperatureForUnit() + tempUnit);
+            logMsg.append(", Temp:" + event.getPreviousTemperature().getValue() + CtiUtilities.FAHRENHEIT_CHARACTER);
             if (event.isHoldTemperature()) {
                 logMsg.append(" (HOLD)");
             }

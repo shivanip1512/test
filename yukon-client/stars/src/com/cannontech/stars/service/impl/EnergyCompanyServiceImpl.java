@@ -747,7 +747,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             callbackWithSelfAndEachDescendant(liteStarsEnergyCompany, simpleCallback);
         }
     }
-
     
     // DI Setters
     @Autowired

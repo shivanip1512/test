@@ -50,12 +50,10 @@ public interface ConsumerInfoRole {
 
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
-	public static final int THERMOSTAT_SCHEDULE_7 = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 92;
     public static final int INVENTORY_CHECKING_CREATE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 93;
     public static final int OPT_OUT_TODAY_ONLY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 94;
     public static final int OPT_OUT_ADMIN_STATUS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 95;
     public static final int OPT_OUT_ADMIN_CHANGE_ENABLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 96;
     public static final int OPT_OUT_ADMIN_CANCEL_CURRENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 97;
     public static final int OPT_OUT_ADMIN_CHANGE_COUNTS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 98;
-    public static final int THERMOSTAT_SCHEDULE_5_2 = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 99;
 }

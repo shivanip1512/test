@@ -1,3 +1,7 @@
+input, input:active, input:hover {
+    outline: none;  //Thank IE for this rule
+}
+
 a img {
     border: none; /* for IE's sake */
 }
@@ -684,8 +688,11 @@ div.sectionContainer .sectionContainer_titleBar .sectionContainer_blackTitle {
    font-weight:bold;
 }
 
-div.sectionContainer .sectionContainer_content {
+div.sectionContainer .sectionContainer_content, .paddedContainer {
    padding: .5em;
+}
+
+div.sectionContainer .sectionContainer_content {
    border-top:1px #CCCCCC solid;
 }
 

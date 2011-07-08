@@ -7,11 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
-
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>
-
 
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
@@ -27,17 +23,13 @@
     <script>
     var TIME_SLIDER = null;
     Event.observe(window, 'load', function(){
-        Yukon.ThermostatScheduleEditor.upperHeatF = ${schedule.thermostatType.upperLimitHeatInFahrenheit};
-        Yukon.ThermostatScheduleEditor.lowerHeatF = ${schedule.thermostatType.lowerLimitHeatInFahrenheit};
-        Yukon.ThermostatScheduleEditor.upperCoolF = ${schedule.thermostatType.upperLimitCoolInFahrenheit};
-        Yukon.ThermostatScheduleEditor.lowerCoolF = ${schedule.thermostatType.lowerLimitCoolInFahrenheit};
-        Yukon.ThermostatScheduleEditor.initPrototype();
-        
-        //scroll the schedule into view
-        var scheduleId = Yukon.ui.getParameterByName('scheduleId');
-        if(scheduleId != null){
-            window.location.hash = "scheduleId_" + scheduleId;
-        }
+        Yukon.ThermostatScheduleEditor.init({
+            currentUnit: '${temperatureUnit}',
+            upperHeatF: parseFloat(${schedule.thermostatType.upperLimitHeatInFahrenheit.value}),
+            lowerHeatF: parseFloat(${schedule.thermostatType.lowerLimitHeatInFahrenheit.value}),
+            upperCoolF: parseFloat(${schedule.thermostatType.upperLimitCoolInFahrenheit.value}),
+            lowerCoolF: parseFloat(${schedule.thermostatType.lowerLimitCoolInFahrenheit.value})
+        });
     });
     </script>
     
@@ -46,23 +38,23 @@
 <!-- Sliders -->
 <div id="timeSlider" class="slider">
     <div class="chevron"></div>
-    <div class="startLabel fl"></div>
+    <div class="startLabel fl label"></div>
     <div class="track">
         <div class="handle"></div>
     </div>
-    <div class="endLabel fr"></div>
+    <div class="endLabel fr label"></div>
 </div>
 
 <div id="tempSlider" class="slider">
     <div class="chevron"></div>
-    <div class="box fl tempHolder ${temperatureUnit}">
-        <div class="startLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+    <div class="box fl tempHolder ${temperatureUnit} label">
+        <div class="startLabel fl"></div>°<span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
     </div>
     <div class="track">
         <div class="handle"></div>
     </div>
-    <div class="box fr tempHolder ${temperatureUnit}">
-        <div class="endLabel fl"></div>°<span class="C">${celcius_char}</span><span class="F">${fahrenheit_char}</span>
+    <div class="box fr tempHolder ${temperatureUnit} label">
+        <div class="endLabel fl"></div>°<span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
     </div>
 </div>
 <!-- END Sliders -->
@@ -171,7 +163,7 @@
                         </div>
                         <div class="box pad">
                             <c:forEach var="mode" items="${allowedModes}">
-                                <label><input type="radio" name="defaultScheduleMode" value="${mode}"> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
+                                <label><input type="radio" name="defaultScheduleMode" value="${mode}" <c:if test="${status.first}">checked</c:if>> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
                                 <br>
                             </c:forEach>
                         </div>
@@ -213,7 +205,7 @@
     </td>
     <td class="vat">
         <div class="tempControls">
-            <label><input name="units" type="radio" value="celcius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celcius"/></label>
+            <label><input name="units" type="radio" value="celsius" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
             <label><input name="units" type="radio" value="fahrenheit" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
         </div>
     </td>

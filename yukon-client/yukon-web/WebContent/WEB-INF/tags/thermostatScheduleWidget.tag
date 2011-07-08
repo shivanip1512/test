@@ -22,13 +22,9 @@
             <input type="hidden" name="thermostatId" value="${pageScope.thermostatId}">
             <input type="hidden" name="accountId" value="${pageScope.accountId}">
             <input type="hidden" name="thermostatIds" value="${pageScope.thermostatIds}">
-            <input type="hidden" name="thermostatType" value="${pageScope.schedule.thermostatType}">
-            <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
-            <input type="hidden" name="scheduleName" value="${pageScope.schedule.scheduleName}">
-            <input type="hidden" name="scheduleMode" value="">
-            <input type="hidden" name="schedules" value="">
             <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
             <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
+            <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
             
             <div class="heading">
                 <span class="title"><spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody></span>
@@ -38,28 +34,12 @@
                     <label class="label fl"></label>
                     <c:forEach var="period" items="${pageScope.thermostatType.periodStyle.realPeriods}">
                         <div class="period">
-                            <div class="info time">
-                                <i:inline key="yukon.dr.consumer.thermostatSchedule.${period}" />
-                            </div>
-                            <div class="temp heat">
-                                <i:inline key="yukon.dr.consumer.thermostat.mode.HEAT"/>
-                            </div>
-                            <div class="temp cool">
-                                <i:inline key="yukon.dr.consumer.thermostat.mode.COOL"/>
-                            </div>
                         </div>
                     </c:forEach>
                 </span>
                 
+                <tags:alternateRowReset/>
                 <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
-                        <c:choose>
-                          <c:when test="${rowCounter.count % 2 == 0}">
-                            <c:set var="rowStyle" scope="page" value="odd"/>
-                          </c:when>
-                          <c:otherwise>
-                            <c:set var="rowStyle" scope="page" value="even"/>
-                          </c:otherwise>
-                        </c:choose>
                         <div class="day active <tags:alternateRow even="even" odd="odd"/>">
                         <div class="periods">
                             <c:choose>
@@ -104,6 +84,10 @@
                     arguments="${pageScope.schedule.scheduleName}" 
                     id="editSchedule_${pageScope.schedule.accountThermostatScheduleId}" 
                     on=".edit_${pageScope.schedule.accountThermostatScheduleId}, .copy_${pageScope.schedule.accountThermostatScheduleId}">
+                    <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
+                    <input type="hidden" name="copyName" value="${copyPrefix} ${pageScope.schedule.scheduleName}"/>
+                    <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title"/>"/>
+                    <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
         <div class="container">
              <tags:thermostatScheduleEditor schedule="${pageScope.schedule}"
                                     thermostatId="${pageScope.thermostatId}"

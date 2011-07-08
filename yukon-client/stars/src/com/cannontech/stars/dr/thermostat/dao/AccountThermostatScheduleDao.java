@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.thermostat.dao;
 
 import java.util.List;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 
@@ -89,11 +88,8 @@ public interface AccountThermostatScheduleDao {
 	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
 
 	/**
-	 * Get the AccountThermostatSchedules for an Account based on the user.  Specifically, it will remove 5/2 and 7day schedules if
-	 * the user is not allowed access to them
+	 * Get the AccountThermostatSchedules for an Account based on the user.
 	 */
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId,
-                                                                                            List<SchedulableThermostatType> types,
-                                                                                            LiteYukonUser yukonUser);
-
+                                                                                            List<SchedulableThermostatType> types);
 }

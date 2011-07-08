@@ -14,6 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -78,7 +79,7 @@ public class OperatorThermostatManualController {
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         String temperatureUnit = customer.getTemperatureUnit();
-        event.setTemperatureUnit(temperatureUnit);
+        modelMap.addAttribute("temperatureUnit", temperatureUnit);
         modelMap.addAttribute("event", event);
         
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
@@ -159,7 +160,7 @@ public class OperatorThermostatManualController {
         boolean isValid = true;
         ThermostatManualEventResult message = null;
         
-        int temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
+        FahrenheitTemperature temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {

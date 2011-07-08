@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.inventory.HardwareType;
@@ -17,6 +19,7 @@ public class Thermostat {
     private InventoryCategory category;
     private int routeId;
     private HardwareStatus status;
+    private ThermostatScheduleCompatibility schedulableThermostatTypes;
 
     public Integer getId() {
         return id;
@@ -48,6 +51,7 @@ public class Thermostat {
 
     public void setType(HardwareType type) {
         this.type = type;
+        this.schedulableThermostatTypes = ThermostatScheduleCompatibility.getByHardwareType(type);
     }
 
     public InventoryCategory getCategory() {
@@ -96,4 +100,7 @@ public class Thermostat {
         return status != HardwareStatus.UNAVAILABLE;
     }
 
+    public Set<SchedulableThermostatType> getSchedulableThermostatTypes(){
+        return this.schedulableThermostatTypes.getCompatibleScheduleTypes();
+    }
 }

@@ -97,8 +97,8 @@ public class AccountThermostatScheduleEntryDaoImpl implements AccountThermostatS
             p.addValue("AcctThermostatScheduleId", atsEntry.getAccountThermostatScheduleId());
             p.addValue("StartTime", atsEntry.getStartTime());
             p.addValue("TimeOfWeek", atsEntry.getTimeOfWeek());
-            p.addValue("CoolTemp", atsEntry.getCoolTemp().getIntValue());   //@TODO store as floats
-            p.addValue("HeatTemp", atsEntry.getHeatTemp().getIntValue());
+            p.addValue("CoolTemp", atsEntry.getCoolTemp().toFahrenheit().getValue());
+            p.addValue("HeatTemp", atsEntry.getHeatTemp().toFahrenheit().getValue());
         }
 
         @Override

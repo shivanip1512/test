@@ -11,7 +11,7 @@
 <h3>
     <cti:msg key="yukon.web.modules.consumer.history.pageTitle" /><br>
     <c:forEach var="stat" items="${thermostats}">
-        &#160;${stat.label}&#160;
+        &nbsp;${stat.label}&nbsp;
     </c:forEach>
 </h3>
 
@@ -32,7 +32,6 @@
                                             <th><cti:msg key="yukon.web.modules.operator.thermostatManual.thermostatHeader"/></th>
                                         </c:if>
                                         <th><cti:msg key="yukon.web.modules.operator.thermostatManual.typeHeader"/></th>
-                                        <th><cti:msg key="yukon.web.modules.operator.thermostatManual.userHeader"/></th>
                                         <th><cti:msg key="yukon.web.modules.operator.thermostatManual.dateHeader"/></th>
                                         <th><cti:msg key="yukon.web.modules.operator.thermostatManual.detailsHeader"/></th>
                                     </tr>
@@ -50,10 +49,6 @@
                                             <td>
                                                 <cti:msg key="${historyItem.eventType}"/>
                                             </td>
-                                            <!-- User -->
-                                            <td> 
-                                                ${fn:escapeXml(historyItem.userName)}
-                                            </td>
                                             <!-- Date -->
                                             <td>
                                                 <cti:formatDate value="${historyItem.eventTime}" type="DATEHM" />
@@ -65,11 +60,9 @@
                                                     <c:choose>
                                                         <c:when test="${event.temperatureUnit == 'F'}">
                                                             <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="${historyItem.manualTemp}"/> 
-                                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.degreesFahrenheit"/>,
                                                         </c:when>
                                                         <c:otherwise>
                                                             <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp" arguments="${historyItem.manualTempInC}"/>
-                                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.degreesCelsius"/>,
                                                         </c:otherwise>
                                                     </c:choose>
                                                     <!-- Heat/Cool Mode -->

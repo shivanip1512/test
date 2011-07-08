@@ -6,7 +6,7 @@ import net.sf.jsonOLD.JSONObject;
 
 import org.joda.time.LocalTime;
 
-import com.cannontech.common.temperature.FahrenheitTemperature;
+import com.cannontech.common.temperature.Temperature;
 
 
 public class AccountThermostatScheduleEntry {
@@ -15,8 +15,8 @@ public class AccountThermostatScheduleEntry {
 	private int accountThermostatScheduleId;
 	private Integer startTime;            //in seconds
 	private TimeOfWeek timeOfWeek;
-	private FahrenheitTemperature	coolTemp;
-	private FahrenheitTemperature	heatTemp;
+	private Temperature	coolTemp;
+	private Temperature	heatTemp;
 	
 	public AccountThermostatScheduleEntry() {
 	}
@@ -24,18 +24,18 @@ public class AccountThermostatScheduleEntry {
 	public AccountThermostatScheduleEntry(JSONObject obj){
 	    this.startTime = obj.getInt("startTime");
 	    this.timeOfWeek = TimeOfWeek.valueOf(obj.getString("timeOfWeek"));
-        this.coolTemp = new FahrenheitTemperature(obj.getDouble("coolTemp"));
-        this.heatTemp = new FahrenheitTemperature(obj.getDouble("heatTemp"));
+        this.coolTemp = Temperature.fromFahrenheit(obj.getDouble("coolTemp"));
+        this.heatTemp = Temperature.fromFahrenheit(obj.getDouble("heatTemp"));
 	}
 
-	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, FahrenheitTemperature coolTemp, FahrenheitTemperature	heatTemp) {
+	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, Temperature coolTemp, Temperature	heatTemp) {
 		this.startTime = startTime;
 		this.timeOfWeek = timeOfWeek;
 		this.coolTemp = coolTemp;
 		this.heatTemp = heatTemp;
 	}
 	
-	public AccountThermostatScheduleEntry(LocalTime startTime, TimeOfWeek timeOfWeek, FahrenheitTemperature coolTemp, FahrenheitTemperature heatTemp){
+	public AccountThermostatScheduleEntry(LocalTime startTime, TimeOfWeek timeOfWeek, Temperature coolTemp, Temperature heatTemp){
 	    setStartTime(startTime);
 	    this.timeOfWeek = timeOfWeek;
 	    this.coolTemp = coolTemp;
@@ -70,16 +70,16 @@ public class AccountThermostatScheduleEntry {
 	public void setTimeOfWeek(TimeOfWeek timeOfWeek) {
 		this.timeOfWeek = timeOfWeek;
 	}
-	public FahrenheitTemperature getCoolTemp() {
+	public Temperature getCoolTemp() {
 		return coolTemp;
 	}
-	public void setCoolTemp(FahrenheitTemperature fahrenheitTemperature) {
+	public void setCoolTemp(Temperature fahrenheitTemperature) {
 		this.coolTemp = fahrenheitTemperature;
 	}
-	public FahrenheitTemperature getHeatTemp() {
+	public Temperature getHeatTemp() {
 		return heatTemp;
 	}
-	public void setHeatTemp(FahrenheitTemperature fahrenheitTemperature) {
+	public void setHeatTemp(Temperature fahrenheitTemperature) {
 		this.heatTemp = fahrenheitTemperature;
 	}
 	

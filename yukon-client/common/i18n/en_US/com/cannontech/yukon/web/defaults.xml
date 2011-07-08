@@ -21,7 +21,7 @@
 
 <entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
 
-<entry key="yukon.web.defaults.celcius">°C</entry>
+<entry key="yukon.web.defaults.celsius">°C</entry>
 <entry key="yukon.web.defaults.fahrenheit">°F</entry>
 <entry key="yukon.web.defaults.degree">°</entry>
 
