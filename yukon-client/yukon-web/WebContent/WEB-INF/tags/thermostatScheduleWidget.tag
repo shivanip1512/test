@@ -25,6 +25,7 @@
             <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
             <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
             <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
+            <input type="hidden" name="scheduleName" value="${pageScope.schedule.scheduleName}">
             
             <div class="heading">
                 <span class="title"><spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody></span>

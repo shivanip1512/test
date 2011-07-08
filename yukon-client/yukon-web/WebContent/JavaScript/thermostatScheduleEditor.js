@@ -189,7 +189,7 @@ Yukon.ThermostatScheduleEditor = {
             
             var id = e.target.up("form").down("input[name=scheduleId]").value;
             var name = e.target.up("form").down("input[name=scheduleName]").value;
-            var form = $("editSchedule_"+e.target.up("form").down("input[name=scheduleId]").value);
+            var form = $("form_"+e.target.up("form").down("input[name=scheduleId]").value);
             form.down("input[name=scheduleId]").value = id;
             form.down("input[name=scheduleName]").value = name;
             
