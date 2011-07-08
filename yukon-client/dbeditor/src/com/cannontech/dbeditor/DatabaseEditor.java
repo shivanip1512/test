@@ -1146,6 +1146,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         
 	         // sets the size of EVERY editor frame!!!!!!!
 	         frame.setSize( EDITOR_FRAME_SIZE );
+	         frame.setMinimumSize(new Dimension(350, 482));	// ~80% of default frame size
              frame.setMaximum(false);   //don't maximize since we are setting the size of the frame already.
 	         frame.setLocation( getVisibleEditorFrames() * 10, getVisibleEditorFrames() * 20 );
 
