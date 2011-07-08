@@ -113,7 +113,7 @@
     }
     
     backToTypeSelect = function() {
-        submitFormViaAjaxWithSkipShow('zoneWizardPopup', 'zoneDetailsForm', '/spring/capcontrol/ivvc/wizard/wizardParentSelected', null, false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/spring/capcontrol/ivvc/wizard/wizardParentSelected', false);
     }
 
     zoneSubmit = function() {
@@ -150,7 +150,7 @@
             <span class="disabledRow">
                 <c:choose>
                     <c:when test="${zoneDto.zoneType == singlePhase}">
-                        <i:inline key="${zoneDto.zoneType}"/>:&nbsp<i:inline key="${zoneDto.regulator.phase}"/>
+                        <i:inline key="${zoneDto.zoneType}"/>:&nbsp;<i:inline key="${zoneDto.regulator.phase}"/>
                     </c:when>
                     <c:otherwise>
                         <i:inline key="${zoneDto.zoneType}"/>
@@ -284,6 +284,8 @@
             						<tr id="${row.type}_${row.id}" class="bankRowCounter">
             							<td>
             								<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
+            								<form:hidden path="bankAssignments[${status.index}].name"/>
+            								<form:hidden path="bankAssignments[${status.index}].device"/>
             								<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             							</td>
             							<td>
@@ -341,6 +343,8 @@
             					<tr id="${row.type}_${row.id}" class="pointRowCounter">
             						<td>
             							<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
+            							<form:hidden path="pointAssignments[${status.index}].name"/>
+            							<form:hidden path="pointAssignments[${status.index}].device"/>
             							<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
             						</td>
             						<td>

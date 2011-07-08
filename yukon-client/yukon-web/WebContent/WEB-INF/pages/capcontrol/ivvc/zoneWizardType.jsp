@@ -9,33 +9,30 @@
 <tags:standardPageFragment module="capcontrol" pageName="ivvc" fragmentName="selectZoneType">
 
 <script type="text/javascript">
-    GANG_OPERATED_option = function() {
-        $('phaseSelector').addClassName('dn');
-    }
-    THREE_PHASE_option = function() {
-        $('phaseSelector').addClassName('dn');
-    }
-    SINGLE_PHASE_option = function() {
-        $('phaseSelector').removeClassName('dn');
-    }
-
+    zoneTypeChange = function(zoneType) {
+        if (zoneType == 'SINGLE_PHASE') {
+            $('phaseSelector').removeClassName('dn');
+        } else {
+            $('phaseSelector').addClassName('dn');
+        }
+    };
     backToParentSelect = function() {
-        submitFormViaAjaxWithSkipShow('zoneWizardPopup', 'zoneTypeForm', '/spring/capcontrol/ivvc/wizard/wizardSelectParent', null, false);
-    }
+        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/spring/capcontrol/ivvc/wizard/wizardSelectParent', false);
+    };
     submitTypeSelect = function() {
-        submitFormViaAjaxWithSkipShow('zoneWizardPopup', 'zoneTypeForm', null, null, false);
-    }
+        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null, false);
+    };
 </script>
 
-<form:form id="zoneTypeForm" commandName="zone" action="/spring/capcontrol/ivvc/wizard/wizardTypeSelected" >
+<form:form id="zoneTypeForm" commandName="zoneDto" action="/spring/capcontrol/ivvc/wizard/wizardTypeSelected" >
     <form:hidden path="substationBusId"/>
     <form:hidden path="parentId"/>
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".label.zoneType">
-            <form:select path="zoneType">
+            <form:select path="zoneType" onchange="zoneTypeChange(this.options[this.selectedIndex].value)">
                 <c:forEach var="availableZoneType" items="${availableZoneTypes}">
-                    <form:option value="${availableZoneType}" onclick="${availableZoneType}_option()">
+                    <form:option value="${availableZoneType}">
                         <i:inline key="${availableZoneType}" />
                     </form:option>
                 </c:forEach>
@@ -44,16 +41,16 @@
         
         <c:set var="phaseRowStyle" value="dn"/>
         <c:if test="${fn:length(availableZonePhases) == 1 ||
-                    zone.zoneType == singlePhase}">
+                    zoneDto.zoneType == singlePhase}">
             <c:set var="phaseRowStyle" value=""/>
         </c:if>
 
         <tags:nameValue2 rowId="phaseSelector" nameKey=".label.zonePhase" rowClass="${phaseRowStyle}">
-            <form:select path="regulators[0].phase">
+            <form:select path="regulatorsList[0].phase">
                 <c:forEach var="phase" items="${availableZonePhases}">
                     <form:option value="${phase}">
                         <spring:escapeBody htmlEscape="true">
-                        	<i:inline key="${phase}" />
+                            <i:inline key="${phase}" />
                         </spring:escapeBody>
                     </form:option>
                 </c:forEach>

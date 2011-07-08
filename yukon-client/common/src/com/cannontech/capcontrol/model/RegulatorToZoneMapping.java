@@ -7,6 +7,12 @@ public class RegulatorToZoneMapping {
     private int zoneId;
     private double graphStartPosition;
     private Phase phase;
+    
+    public RegulatorToZoneMapping() {}
+    
+    public RegulatorToZoneMapping(Phase phase) {
+        this.phase = phase;
+    }
 
     public int getRegulatorId() {
         return regulatorId;

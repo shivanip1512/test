@@ -7,7 +7,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractZoneNotThreePhase extends AbstractZone {
-    protected RegulatorToZoneMapping regulator;
+    protected RegulatorToZoneMapping regulator = new RegulatorToZoneMapping();
 
     public AbstractZoneNotThreePhase() {
         super();

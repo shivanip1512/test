@@ -3,8 +3,6 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.activation.UnsupportedDataTypeException;
-import javax.jms.IllegalStateException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +21,11 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
 import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
+import com.cannontech.capcontrol.model.ZoneGang;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -58,27 +58,35 @@ public class ZoneWizardController {
     
     @RequestMapping
     public String zoneCreationWizard(ModelMap model, LiteYukonUser user, int subBusId) {
-        Zone zone = new Zone();
-        zone.setSubstationBusId(subBusId);
-        return wizardSelectParent(model, user, zone);
+        AbstractZone zoneDto = new ZoneGang();
+        zoneDto.setSubstationBusId(subBusId);
+        return getAndSetupParentSelectionPage(model, zoneDto);
     }
 
     @RequestMapping
-    public String wizardSelectParent(ModelMap model, LiteYukonUser user, Zone zone) {
-        List<Zone> parentZones = zoneService.getZonesBySubBusId(zone.getSubstationBusId());
+    public String wizardSelectParent(HttpServletRequest request, ModelMap model,
+                                     YukonUserContext userContext, ZoneType zoneType) {
+        AbstractZone zoneDto =
+            getBoundAbstractZoneFromZoneType(request, model, userContext, zoneType);
+        return getAndSetupParentSelectionPage(model, zoneDto);
+    }
+    
+    private String getAndSetupParentSelectionPage(ModelMap model, AbstractZone zoneDto) {
+        List<Zone> parentZones = zoneService.getZonesBySubBusId(zoneDto.getSubstationBusId());
         model.addAttribute("parentZones", parentZones);
-        model.addAttribute("zone", zone);
-        
+        model.addAttribute("zoneDto", zoneDto);
         addZoneEnums(model);
-        
         return "ivvc/zoneWizardParent.jsp";
     }
 
     @RequestMapping
-    public String wizardParentSelected(ModelMap model, YukonUserContext userContext, Zone zone) {
+    public String wizardParentSelected(HttpServletRequest request, ModelMap model,
+                                       YukonUserContext userContext, ZoneType zoneType) {
+        AbstractZone zoneDto =
+            getBoundAbstractZoneFromZoneType(request, model, userContext, zoneType);
         List<ZoneType> availableZoneTypes;
         List<Phase> availableZonePhases = Lists.newArrayListWithCapacity(3);
-        Integer parentId = zone.getParentId();
+        Integer parentId = zoneDto.getParentId();
 
         if (parentId == null) {
             availableZoneTypes = Lists.newArrayList(ZoneType.values());
@@ -94,7 +102,7 @@ public class ZoneWizardController {
             model.addAttribute("parentZoneName", parentZone.getName());
         }
 
-        model.addAttribute("zone", zone);
+        model.addAttribute("zoneDto", zoneDto);
         model.addAttribute("availableZoneTypes", availableZoneTypes);
         model.addAttribute("availableZonePhases", availableZonePhases);
         addZoneEnums(model);
@@ -103,8 +111,15 @@ public class ZoneWizardController {
     }
 
     @RequestMapping
-    public String wizardTypeSelected(ModelMap model, YukonUserContext userContext, Zone zone) throws IllegalStateException, UnsupportedDataTypeException {
-        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZone(zone, userContext.getYukonUser());
+    public String wizardTypeSelected(HttpServletRequest request, ModelMap model,
+                                     YukonUserContext userContext, ZoneType zoneType) {
+        AbstractZone zoneDto =
+            getBoundAbstractZoneFromZoneType(request, model, userContext, zoneType);
+        if (zoneDto.getZoneType() == ZoneType.THREE_PHASE) {
+            for (Phase phase : Phase.getRealPhases()) {
+                zoneDto.getRegulators().put(phase, new RegulatorToZoneMapping(phase));
+            }
+        }
         setupZoneCreation(model, userContext, zoneDto);
         return "ivvc/zoneWizardDetails.jsp";
     }
@@ -305,6 +320,15 @@ public class ZoneWizardController {
         model.addAttribute("zoneDto", target);
         model.putAll(binder.getBindingResult().getModel());
         return bindingResult;
+    }
+
+    private AbstractZone getBoundAbstractZoneFromZoneType(HttpServletRequest request,
+                                                          ModelMap model,
+                                                          YukonUserContext userContext,
+                                                          ZoneType zoneType) {
+        AbstractZone zoneDto = AbstractZone.create(zoneType);
+        bind(model, request, zoneDto, "zoneDto", userContext);
+        return zoneDto;
     }
 
     @InitBinder

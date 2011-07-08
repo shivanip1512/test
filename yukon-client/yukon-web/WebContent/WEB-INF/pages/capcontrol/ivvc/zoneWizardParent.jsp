@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
     submitParentSelect = function() {
-        submitFormViaAjaxWithSkipShow('zoneWizardPopup', 'zoneParentForm', null, null, false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneParentForm', null, false);
     }
     
     cancelZoneWizard = function() {
@@ -19,7 +19,8 @@
     }
 </script>
 
-<form:form id="zoneParentForm" commandName="zone" action="/spring/capcontrol/ivvc/wizard/wizardParentSelected">
+<form:form id="zoneParentForm" commandName="zoneDto" action="/spring/capcontrol/ivvc/wizard/wizardParentSelected">
+    <input type="hidden" name="zoneType" value="${zoneDto.zoneType}"/>
     <form:hidden path="substationBusId"/>
 
     <cti:msg2 var="createAsRootLabel" key=".label.createAsRootZone"/>

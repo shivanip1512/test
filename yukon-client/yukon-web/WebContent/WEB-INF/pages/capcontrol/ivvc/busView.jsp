@@ -146,7 +146,7 @@
                             <td class="zoneType">
                                 <c:choose>
                                     <c:when test="${zone.zoneType == singlePhaseZone}">
-                                        <i:inline key="${zone.zoneType}"/>:&nbsp<i:inline key="${zone.regulator.phase}"/>
+                                        <i:inline key="${zone.zoneType}"/>:&nbsp;<i:inline key="${zone.regulator.phase}"/>
                                     </c:when>
                                     <c:otherwise>
                                         <i:inline key="${zone.zoneType}"/>
