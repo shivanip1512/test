@@ -290,7 +290,7 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.otherSchedules.title">Other Schedules</entry>
     
     <!-- stars/consumer/thermostat/schedule/view/history (history.jsp - ThermostatScheduleController.java:history()) -->
-    <entry key="yukon.web.modules.consumer.history.pageTitle">Thermostat History</entry>
+    <entry key="yukon.web.modules.consumer.history.pageTitle">Thermostat - History</entry>
     <entry key="yukon.web.modules.consumer.history.title">Command History</entry>
     <entry key="yukon.web.modules.consumer.history.historyTableTitle">Command History</entry>
     
