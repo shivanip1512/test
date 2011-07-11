@@ -11,6 +11,7 @@ public class DevDbSetupTask {
     private DevStars devStars = new DevStars();
     private boolean running = false;
     private boolean hasRun = false;
+    private boolean cancelled = false;
     
     public boolean isUpdateRoleProperties() {
         return updateRoleProperties;
@@ -47,5 +48,11 @@ public class DevDbSetupTask {
     }
     public void setRunning(boolean running) {
         this.running = running;
+    }
+    public boolean isCancelled() {
+        return cancelled;
+    }
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }
