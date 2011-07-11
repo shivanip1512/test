@@ -18,7 +18,7 @@
 #include "queue.h"
 
 using std::string;
-using Cti::endl;
+using std::endl;
 
 void main(int argc, char **argv)
 {

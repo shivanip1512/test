@@ -48,7 +48,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connect
     _linkId = _parentInterface->getClientLinkStatusID(_linkName);
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "connection created" << Cti::endl;
+        logNow() << "connection created" << endl;
     }
     _parentInterface->logEvent(_linkName + ": connection created", "", true);
 }
@@ -60,7 +60,7 @@ CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "connection destroyed" << Cti::endl;
+        logNow() << "connection destroyed" << endl;
     }
 
     _parentInterface->logEvent(_linkName + ": connection destroyed", "", true);
@@ -107,7 +107,7 @@ void CtiFDRClientServerConnection::run ()
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Connection running" << Cti::endl;
+        logNow() << "Connection running" << endl;
     }
 
 }
@@ -136,7 +136,7 @@ void CtiFDRClientServerConnection::stop ()
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "exception while shutting down health thread" << Cti::endl;
+        logNow() << "exception while shutting down health thread" << endl;
     }
 
     try
@@ -147,7 +147,7 @@ void CtiFDRClientServerConnection::stop ()
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "exception while shutting down receive thread" << Cti::endl;
+        logNow() << "exception while shutting down receive thread" << endl;
     }
 
     try
@@ -158,7 +158,7 @@ void CtiFDRClientServerConnection::stop ()
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "exception while shutting down send thread" << Cti::endl;
+        logNow() << "exception while shutting down send thread" << endl;
     }
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -196,7 +196,7 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
     {
         // write to queue failed!
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Error queueing data (" << writeResult << "), failing connection" << Cti::endl;
+        logNow() << "Error queueing data (" << writeResult << "), failing connection" << endl;
         success = false;
         failConnection();
     }
@@ -228,7 +228,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() <<"threadFunctionSendDataTo initializing" << Cti::endl;
+            logNow() <<"threadFunctionSendDataTo initializing" << endl;
         }
 
         clock_t intervalStartTime = clock();
@@ -259,7 +259,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "Error reading from out queue ("
-                    << queueReturn << ")" << Cti::endl;
+                    << queueReturn << ")" << endl;
                 break;
             }
             if (queueReturn == NO_ERROR)
@@ -296,11 +296,11 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                         if (millisToSleep < 0)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << " Sleep Time:    " << millisToSleep << Cti::endl
-                                     << " Send Interval: " << sendInterval << Cti::endl
-                                     << " CPS:           " << CLOCKS_PER_SEC << Cti::endl
-                                     << " Start Time:    " << intervalStartTime << Cti::endl
-                                     << " Current Teim:  " << currentTime << Cti::endl
+                            logNow() << " Sleep Time:    " << millisToSleep << endl
+                                     << " Send Interval: " << sendInterval << endl
+                                     << " CPS:           " << CLOCKS_PER_SEC << endl
+                                     << " Start Time:    " << intervalStartTime << endl
+                                     << " Current Teim:  " << currentTime << endl
                                      << " Resetting Sleep Time to 1 second to prevent infinite lock on send thread." << endl;
                             millisToSleep = 1000;//default to 1 second.  prevents an infinite sleep. (negative value)
                         }
@@ -313,7 +313,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                                 << " entries reached, waiting "
                                 << millisToSleep
                                 << " millisecond(s) with " << elementCount
-                                << " items left in queue" << Cti::endl;
+                                << " items left in queue" << endl;
                         }
                         DWORD waitResult = WaitForSingleObject(_shutdownEvent, millisToSleep);
                         if (waitResult == WAIT_OBJECT_0)
@@ -343,14 +343,14 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << " Fatal Error: threadFunctionSendDataTo is dead!" << Cti::endl;
+        logNow() << " Fatal Error: threadFunctionSendDataTo is dead!" << endl;
     }
 
     failConnection();
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionSendDataTo shutdown" << Cti::endl;
+        logNow() << "threadFunctionSendDataTo shutdown" << endl;
     }
 }
 
@@ -365,14 +365,14 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
         if (linkTimeoutSecs < 1)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "No health checks will be performed on this connection" << Cti::endl;
+            logNow() << "No health checks will be performed on this connection" << endl;
             return;
         }
 
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() <<"threadFunctionHealth initializing" << Cti::endl;
+            logNow() <<"threadFunctionHealth initializing" << endl;
         }
 
         int linkTimeoutMSecs = linkTimeoutSecs * 1000;
@@ -394,7 +394,7 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "No data received for " << _parentInterface->getLinkTimeout()
-                    << " seconds, failing connection" << Cti::endl;
+                    << " seconds, failing connection" << endl;
                 break;
             }
         }
@@ -409,14 +409,14 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << " Fatal Error: threadFunctionHealth is dead!" << Cti::endl;
+        logNow() << " Fatal Error: threadFunctionHealth is dead!" << endl;
     }
 
     failConnection();
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionHealth shutdown" << Cti::endl;
+        logNow() << "threadFunctionHealth shutdown" << endl;
     }
 }
 
@@ -433,7 +433,7 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         logNow() << "Socket Error on write, WSAGetLastError() == "
-            << WSAGetLastError() << Cti::endl;
+            << WSAGetLastError() << endl;
 
         retVal = SOCKET_ERROR;
     }
@@ -442,7 +442,7 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
         CtiLockGuard<CtiLogger> dout_guard(dout);
         logNow() << "Socket Error on write, wrote " << bytesSent
             << " bytes, intended to write " << length
-            << ", WSAGetLastError() == " << WSAGetLastError() << Cti::endl;
+            << ", WSAGetLastError() == " << WSAGetLastError() << endl;
 
         retVal = SOCKET_ERROR;
     }
@@ -455,7 +455,7 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
     if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        logNow() << "Wrote " << aBytesWritten << " bytes" << Cti::endl;
+        logNow() << "Wrote " << aBytesWritten << " bytes" << endl;
     }
 
     return retVal;
@@ -478,7 +478,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() <<"threadFunctionGetDataFrom initializing" << Cti::endl;
+            logNow() <<"threadFunctionGetDataFrom initializing" << endl;
         }
 
         for ( ; ; )
@@ -508,7 +508,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "getMessageSize() returned 0, but "
-                        << magicInitialMessageSize << " bytes were already read" << Cti::endl;
+                        << magicInitialMessageSize << " bytes were already read" << endl;
                 }
                 break;
             }
@@ -529,7 +529,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                     {
                         // we'll log it this time because it is less likely to occur
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Read failed while getting remaining message" << Cti::endl;
+                        logNow() << "Read failed while getting remaining message" << endl;
                     }
                     break;
                 }
@@ -546,14 +546,14 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: threadFunctionGetDataFrom for is dead! " << Cti::endl;
+        logNow() << "Fatal Error: threadFunctionGetDataFrom for is dead! " << endl;
     }
 
     failConnection();
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionGetDataFrom shutdown" << Cti::endl;
+        logNow() << "threadFunctionGetDataFrom shutdown" << endl;
     }
 }
 
@@ -579,7 +579,7 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
             logNow() << "Socket Error on read, WSAGetLastError() == "
-                << WSAGetLastError() << Cti::endl;
+                << WSAGetLastError() << endl;
 
             // problem with the receive
             retVal = SOCKET_ERROR;
@@ -595,7 +595,7 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
     if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        logNow() << "Read " << aBytesRead << " bytes" << Cti::endl;
+        logNow() << "Read " << aBytesRead << " bytes" << endl;
     }
 
     return retVal;

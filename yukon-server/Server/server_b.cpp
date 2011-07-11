@@ -304,7 +304,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 catch(...)
                 {
-                    cout << "**** Exception caught **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+                    cout << "**** Exception caught **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 break;

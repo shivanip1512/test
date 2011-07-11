@@ -38,9 +38,9 @@ void main(int argc, char **argv)
 {
    if(argc != 4)
    {
-      cout << "Arg 1:   vangogh server machine name" << Cti::endl;
-      cout << "Arg 2:   this app's registration name" << Cti::endl;
-      cout << "Arg 3:   # of loops to receive data  " << Cti::endl;
+      cout << "Arg 1:   vangogh server machine name" << endl;
+      cout << "Arg 2:   this app's registration name" << endl;
+      cout << "Arg 3:   # of loops to receive data  " << endl;
 
       exit(-1);
    }
@@ -94,7 +94,7 @@ void main(int argc, char **argv)
             else if(c->isA() == MSG_SIGNAL)
             {
                CtiSignalMsg* pSig = (CtiSignalMsg*) c;
-               cout << CtiTime() << " **** SIGNAL RECEIVED **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+               cout << CtiTime() << " **** SIGNAL RECEIVED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                pSig->dump();
             }
@@ -115,7 +115,7 @@ void main(int argc, char **argv)
    catch(RWxmsg &msg)
    {
       cout << "Tester Exception: ";
-      cout << msg.why() << Cti::endl;
+      cout << msg.why() << endl;
    }
 
    exit(0);

@@ -45,7 +45,7 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
     default:
 
         bQuit = TRUE;
-        // cout << __LINE__ << Cti::endl;
+        // cout << __LINE__ << endl;
         return TRUE;
 
     }
@@ -58,10 +58,10 @@ void main(int argc, char **argv)
 {
     if(argc <= 4)
     {
-        cout << "Arg 1:   PIL server machine name" << Cti::endl;
-        cout << "Arg 2:   this app's registration name" << Cti::endl;
-        cout << "Arg 3:   PAO ID to submit command to  " << Cti::endl;
-        cout << "Arg 4:   command string to submit  " << Cti::endl;
+        cout << "Arg 1:   PIL server machine name" << endl;
+        cout << "Arg 2:   this app's registration name" << endl;
+        cout << "Arg 3:   PAO ID to submit command to  " << endl;
+        cout << "Arg 4:   command string to submit  " << endl;
 
         exit(-1);
     }
@@ -95,7 +95,7 @@ void main(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Got a message **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+                    dout << CtiTime() << " **** Got a message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 count++;
             }
@@ -104,8 +104,8 @@ void main(int argc, char **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
-                dout << " Expect More Count = " << count << Cti::endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Expect More Count = " << count << endl;
             }
         }
     }
@@ -151,7 +151,7 @@ void main(int argc, char **argv)
         Sleep(5000);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         request.dump();
@@ -171,7 +171,7 @@ void main(int argc, char **argv)
     catch(RWxmsg &msg)
     {
         cout << "Tester Exception: ";
-        cout << msg.why() << Cti::endl;
+        cout << msg.why() << endl;
     }
 #endif
 

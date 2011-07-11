@@ -56,9 +56,9 @@ void main(int argc, char **argv)
 
     if( argc < 5 )
     {
-        cout << "Arg 1:   vangogh server machine name" << Cti::endl;
-        cout << "Arg 2:   start point to init" << Cti::endl;
-        cout << "Arg 3:   end point to init" << Cti::endl;
+        cout << "Arg 1:   vangogh server machine name" << endl;
+        cout << "Arg 2:   start point to init" << endl;
+        cout << "Arg 3:   end point to init" << endl;
         exit(-1);
     }
 
@@ -70,7 +70,7 @@ void main(int argc, char **argv)
 
         if( !SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE) )
         {
-            cerr << "Could not install control handler" << Cti::endl;
+            cerr << "Could not install control handler" << endl;
             return;
         }
 
@@ -115,7 +115,7 @@ void main(int argc, char **argv)
     catch( RWxmsg &msg )
     {
         cout << "Point Changer Exception: ";
-        cout << msg.why( ) << Cti::endl;
+        cout << msg.why( ) << endl;
     }
 
     exit( 0 );

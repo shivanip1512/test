@@ -36,7 +36,7 @@ CtiExecutor* CtiExecutorFactory::getExecutor(CtiMessage* msg)
       }
    default:
       {
-         cout << "CtiExecutorFactory failed to manufacture an executor for " << msg->isA() << Cti::endl;
+         cout << "CtiExecutorFactory failed to manufacture an executor for " << msg->isA() << endl;
          break;
       }
    }

@@ -28,7 +28,7 @@ CtiFDRScadaHelper<T>::CtiFDRScadaHelper(CtiFDRScadaServer* parent)
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Helper created" << Cti::endl;;
+        _parent->logNow() << "Helper created" << endl;;
     }
 }
 
@@ -38,7 +38,7 @@ CtiFDRScadaHelper<T>::~CtiFDRScadaHelper()
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Helper destroyed" << Cti::endl;;
+        _parent->logNow() << "Helper destroyed" << endl;;
     }
 }
 
@@ -50,7 +50,7 @@ bool CtiFDRScadaHelper<T>::handleValueUpdate(const T& id, double rawValue,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Handling value update message for " << id 
-            << " with value=" << rawValue << Cti::endl;;
+            << " with value=" << rawValue << endl;;
     }
     
     // call generic update function with pointer to the
@@ -66,7 +66,7 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "Invalid status for " << id << Cti::endl;
+            _parent->logNow() << "Invalid status for " << id << endl;
         }
         return false;
     }
@@ -75,7 +75,7 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Handling status update message for " << id 
-            << " with state=" << value << Cti::endl;;
+            << " with state=" << value << endl;;
     }
     
     // call generic update function with pointer to the
@@ -101,7 +101,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                _parent->logNow() << "Point type mismatch for " << dest << " and " << id << Cti::endl; 
+                _parent->logNow() << "Point type mismatch for " << dest << " and " << id << endl; 
             }
             continue;
         }
@@ -120,7 +120,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 _parent->logNow() << "Value received with an invalid timestamp (" 
-                    << timestamp << ")" << Cti::endl;
+                    << timestamp << ")" << endl;
             }
             continue;
         }
@@ -138,7 +138,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
         if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "New value of " << value << " updated for " << point << Cti::endl;;
+            _parent->logNow() << "New value of " << value << " updated for " << point << endl;;
         }
 
         sentAPoint = true;
@@ -149,7 +149,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
         if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "No matching point/destination found for " << id << Cti::endl;;
+            _parent->logNow() << "No matching point/destination found for " << id << endl;;
         }
     }
     return sentAPoint;
@@ -162,14 +162,14 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         _parent->logNow() << "Handling control message for " << id 
-            << " with controlstate=" << controlState << Cti::endl;;
+            << " with controlstate=" << controlState << endl;;
     }
     
     if (controlState == INVALID)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "Invalid control state for " << id << Cti::endl;
+            _parent->logNow() << "Invalid control state for " << id << endl;
         }
 
         std::ostringstream msg;
@@ -194,12 +194,12 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 _parent->logNow() << "Foreign control point " << id
-                    << " was mapped to non-control point " <<  dest << Cti::endl;
+                    << " was mapped to non-control point " <<  dest << endl;
             }
 
             std::ostringstream msg;
             msg << _parent->getInterfaceName() << ": Foreign control point " << id
-                << " was mapped to non-control point " <<  dest << Cti::endl;
+                << " was mapped to non-control point " <<  dest << endl;
             string desc(msg.str().c_str());
             string action("");
             _parent->logEvent (desc, action);
@@ -212,14 +212,14 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 _parent->logNow() << "Foreign control point " << id
                     << " was mapped to " << dest 
-                    << ", which is not configured for control " << Cti::endl;
+                    << ", which is not configured for control " << endl;
             }
 
 
             std::ostringstream msg;
             msg << _parent->getInterfaceName() << ": Control point " << id
                 << " was mapped to " << dest
-                << ", which is not configured for control" << Cti::endl;
+                << ", which is not configured for control" << endl;
             string desc(msg.str().c_str());
             string action("");
             _parent->logEvent (desc, action);
@@ -241,7 +241,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             _parent->logNow() << "Control message of " << (controlState == OPENED ? "OPENED" : "CLOSED") 
-                << " sent to " << dest << " for " << id << Cti::endl;
+                << " sent to " << dest << " for " << id << endl;
         }
         sentAControl = true;
     
@@ -251,7 +251,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
         if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            _parent->logNow() << "No matching point/destination found for " << id << Cti::endl;;
+            _parent->logNow() << "No matching point/destination found for " << id << endl;;
         }
     }
     return sentAControl;
@@ -264,7 +264,7 @@ void CtiFDRScadaHelper<T>::addSendMapping(const T& id, const CtiFDRDestination& 
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << Cti::endl;
+        _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << endl;
     }
 }
 
@@ -275,7 +275,7 @@ void CtiFDRScadaHelper<T>::addReceiveMapping(const T& id, const CtiFDRDestinatio
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Added receive mapping " << id << " to " << pointDestination << Cti::endl;
+        _parent->logNow() << "Added receive mapping " << id << " to " << pointDestination << endl;
     }
 }
 
@@ -287,7 +287,7 @@ void CtiFDRScadaHelper<T>::removeSendMapping(const T& id, const CtiFDRDestinatio
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Removing send mapping " << pointDestination << " to " << id << Cti::endl;
+        _parent->logNow() << "Removing send mapping " << pointDestination << " to " << id << endl;
     }
 }
 
@@ -308,7 +308,7 @@ void CtiFDRScadaHelper<T>::removeReceiveMapping(const T& id, const CtiFDRDestina
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Removing receive mapping " << id << " to " << pointDestination << Cti::endl;
+        _parent->logNow() << "Removing receive mapping " << id << " to " << pointDestination << endl;
     }
 }
 

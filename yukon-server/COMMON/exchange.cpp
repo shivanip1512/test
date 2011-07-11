@@ -52,7 +52,7 @@ CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(por
     }
     catch(RWxmsg& msg )
     {
-        cout << "CtiExchange Creation Failed: " << msg.why() << Cti::endl;
+        cout << "CtiExchange Creation Failed: " << msg.why() << endl;
         msg.raise();
     }
 }
@@ -74,8 +74,8 @@ CtiExchange::~CtiExchange()
         {
             if(msg.errorNumber() != RWNETNOTINITIALISED)
             {
-                cout << "Socket Error :" << msg.errorNumber() << " occurred" << Cti::endl;
-                cout << "  " << msg.why() << Cti::endl;
+                cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+                cout << "  " << msg.why() << endl;
             }
         }
 
@@ -96,7 +96,7 @@ CtiExchange::~CtiExchange()
     catch(RWxmsg& msg )
     {
         cout << endl << "CtiExchange Deletion Failed: " ;
-        cout << msg.why() << Cti::endl;
+        cout << msg.why() << endl;
         throw;
     }
 }
@@ -115,8 +115,8 @@ void CtiExchange::close()
     {
         if(msg.errorNumber() != RWNETNOTINITIALISED)
         {
-            cout << "Socket Error :" << msg.errorNumber() << " occurred" << Cti::endl;
-            cout << "  " << msg.why() << Cti::endl;
+            cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+            cout << "  " << msg.why() << endl;
         }
     }
 }

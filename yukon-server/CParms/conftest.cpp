@@ -22,9 +22,9 @@ void main(int argc, char **argv)
    {
       char temp[80];
 
-      cout << "Doing InitTestGlobals" << Cti::endl;
+      cout << "Doing InitTestGlobals" << endl;
       HINSTANCE hLib = LoadLibrary(".\\cparms.dll");
-      cout << "Got my library " << Cti::endl;
+      cout << "Got my library " << endl;
 
 
       if(hLib)
@@ -35,12 +35,12 @@ void main(int argc, char **argv)
 
          // Dump all parameters
          (*fpDumpConfig)();
-         cout << Cti::endl;
+         cout << endl;
 
          // Selected search
          if((*fpisConfigOpt)("CONFIG_PARAM4"))
          {
-            cout << "Seems to work FINE " << Cti::endl;
+            cout << "Seems to work FINE " << endl;
          }
 
          if((*fpgetAsString)("SLEEP_DELAY", temp, 64))
@@ -54,46 +54,46 @@ void main(int argc, char **argv)
 
          if((*fpgetAsString)("DB_DEBUGLEVEL", temp, 64))
          {
-            cout << "Configuration Parameter DB_DEBULEVEL found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DB_DEBULEVEL found : " << temp << endl;
          }
 
          if((*fpgetAsString)("DISPATCH_MACHINE", temp, 64))
          {
-            cout << "Configuration Parameter DISPATCH_MACHINE   found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DISPATCH_MACHINE   found : " << temp << endl;
          }
          else
          {
-            cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << Cti::endl;
+            cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << endl;
          }
 
          if((*fpgetAsString)("DB_RWDBDLL", temp, 64))
          {
-            cout << "Configuration Parameter DB_RWDBDLL   found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DB_RWDBDLL   found : " << temp << endl;
          }
 
          if((*fpgetAsString)("DB_SQLSERVER", temp, 64))
          {
-            cout << "Configuration Parameter DB_SQLSERVER found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DB_SQLSERVER found : " << temp << endl;
          }
 
          if((*fpgetAsString)("DB_USERNAME", temp, 64))
          {
-            cout << "Configuration Parameter DB_USERNAME  found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DB_USERNAME  found : " << temp << endl;
          }
 
          if((*fpgetAsString)("DB_PASSWORD", temp, 64))
          {
-            cout << "Configuration Parameter DB_PASSWORD  found : " << temp << Cti::endl;
+            cout << "Configuration Parameter DB_PASSWORD  found : " << temp << endl;
          }
 
          if((*fpgetAsString)("VERSACOM_TYPE_FOUR_CONTROL", temp, 64))
          {
-            cout << "Versacom Control Commands are Type 4 : " << temp << Cti::endl;
+            cout << "Versacom Control Commands are Type 4 : " << temp << endl;
          }
 
          if((*fpgetAsString)("MODEM_CONNECTION_TIMEOUT", temp, 64))
          {
-            cout << "Modem Connection Timeout is set to " << temp << " seconds" << Cti::endl;
+            cout << "Modem Connection Timeout is set to " << temp << " seconds" << endl;
          }
 
          Sleep(Delay);

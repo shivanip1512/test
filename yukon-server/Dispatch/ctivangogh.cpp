@@ -233,7 +233,7 @@ int CtiVanGogh::execute()
     }
     catch(const RWxmsg& x)
     {
-        cout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << Cti::endl;
+        cout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
     }
 
     return 0;
@@ -3355,22 +3355,22 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
         if( !(str = gConfigParms.getValueAsString("DISPATCH_CNTLHIST_INTERVAL")).empty() )
         {
             CntlHistInterval = atoi(str.c_str());
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL found : " << str << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL found : " << str << endl;
         }
         else
         {
             CntlHistInterval = 3600;
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL default : " << CntlHistInterval << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL default : " << CntlHistInterval << endl;
         }
 
         if( !(str = gConfigParms.getValueAsString("DISPATCH_CNTLHISTPOINTPOST_INTERVAL")).empty() )
         {
             CntlHistPointPostInterval = atoi(str.c_str());
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHISTPOINTPOST_INTERVAL found : " << str << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHISTPOINTPOST_INTERVAL found : " << str << endl;
         }
         else
         {
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHISTPOINTPOST_INTERVAL default : " << CntlHistPointPostInterval << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHISTPOINTPOST_INTERVAL default : " << CntlHistPointPostInterval << endl;
         }
 
         if( !(str = gConfigParms.getValueAsString("DISPATCH_CNTL_STOP_REPORT_INTERVAL")).empty() )
@@ -3384,12 +3384,12 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
                     dout << CtiTime() << " DISPATCH_CNTL_STOP_REPORT_INTERVAL cannot be greater than 3600" << endl;
                 }
             }
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL found : " << str << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL found : " << str << endl;
         }
         else
         {
             CntlStopInterval = 60;
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL default : " << CntlStopInterval << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL default : " << CntlStopInterval << endl;
         }
 
         if( gConfigParms.isTrue("DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT") )
@@ -3399,7 +3399,7 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
         else
         {
             ShutdownOnThreadTimeout = false;
-            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT default : " << ShutdownOnThreadTimeout << Cti::endl;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT default : " << ShutdownOnThreadTimeout << endl;
         }
     }
     catch(RWxmsg& msg )

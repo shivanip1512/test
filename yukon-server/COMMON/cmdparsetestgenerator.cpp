@@ -26,7 +26,7 @@ int main(int argc, char **argv)
         {
             CtiCommandParser parse(inputString[i]);
 
-            cout << "Processing \"" << inputString[i] << "\"" << Cti::endl;
+            cout << "Processing \"" << inputString[i] << "\"" << endl;
 
             parse_asString += "\"";
             parse_asString += parse.asString();
@@ -38,21 +38,21 @@ int main(int argc, char **argv)
             }
         }
 
-        outputfile << "#pragma once" << Cti::endl;
-        outputfile << Cti::endl;
-        outputfile << "#include \"test_cmdparse_input.h\"" << Cti::endl;
-        outputfile << Cti::endl;
+        outputfile << "#pragma once" << endl;
+        outputfile << endl;
+        outputfile << "#include \"test_cmdparse_input.h\"" << endl;
+        outputfile << endl;
 
-        outputfile << "std::string parse_asString[] = {" << Cti::endl;
-        outputfile << parse_asString << Cti::endl;
-        outputfile << "};" << Cti::endl;
+        outputfile << "std::string parse_asString[] = {" << endl;
+        outputfile << parse_asString << endl;
+        outputfile << "};" << endl;
 
         outputfile.close();
     }
     catch(RWxmsg &msg)
     {
         cout << "Exception: ";
-        cout << msg.why() << Cti::endl;
+        cout << msg.why() << endl;
     }
 
     return 0;

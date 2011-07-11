@@ -87,7 +87,7 @@ void ConnectionHandlerThread(int portNumber)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << Cti::endl;
+        cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
     }
 
     /* Up this threads priority a notch over the other procs */
@@ -111,13 +111,13 @@ void ConnectionHandlerThread(int portNumber)
     }
     catch(const RWxmsg& x)
     {
-        cout << "Exception: " << x.why() << Cti::endl;
+        cout << "Exception: " << x.why() << endl;
         exit(-1);
     }
     catch(...)
     {
         {
-            cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+            cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             exit(-1);
         }
     }
@@ -152,7 +152,7 @@ void ConnectionHandlerThread(int portNumber)
                     connection->ThreadInitiate();     // Kick off the connection's communication threads.
 
                     connections.insert(connection);
-                    cout << CtiTime() << " New connection established" << Cti::endl;
+                    cout << CtiTime() << " New connection established" << endl;
                 }
             }
 
@@ -161,7 +161,7 @@ void ConnectionHandlerThread(int portNumber)
         {
             if(msg.errorNumber() == RWNETENOTSOCK)
             {
-                cout << CtiTime() << " Socket error RWNETENOTSOCK" << Cti::endl;
+                cout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
                 bQuit = TRUE;     // get out of the for loop
             }
             else
@@ -173,15 +173,15 @@ void ConnectionHandlerThread(int portNumber)
         catch(RWxmsg& msg )
         {
             {
-                cout << Cti::endl << "VGConnectionHandler Failed: " ;
-                cout << msg.why() << Cti::endl;
+                cout << endl << "VGConnectionHandler Failed: " ;
+                cout << msg.why() << endl;
                 bQuit = TRUE;
             }
             throw;
         }
         catch(...)
         {
-            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -230,8 +230,8 @@ void runClient(int portNumber, string portName)
 
     for(;!bQuit && !bGCtrlC;)
     {
-        cout << "0: Quit" << Cti::endl;
-        cout << "1: Send Trace Msg" << Cti::endl;
+        cout << "0: Quit" << endl;
+        cout << "1: Send Trace Msg" << endl;
         cout << "Selection Please: ";
         cin >> i;
 
@@ -260,7 +260,7 @@ void main(void)
 
     if( !SetConsoleCtrlHandler(CtrlHandler,  TRUE) )
     {
-        cout << "Could not install control handler" << Cti::endl;
+        cout << "Could not install control handler" << endl;
 
         exit(-1);
     }
@@ -293,7 +293,7 @@ void main(void)
     }
     else
     {
-        cout << "Unknown Operation Mode: "<< operationMode << ", exiting." << Cti::endl;
+        cout << "Unknown Operation Mode: "<< operationMode << ", exiting." << endl;
     }
 }
 

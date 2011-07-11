@@ -12,7 +12,7 @@ void main(int argc, char **argv)
 
    if(argc < 2)
    {
-      cout << "Need a string argument here" << Cti::endl;
+      cout << "Need a string argument here" << endl;
    }
 
    CtiMACSParser  mp(argv[1]);

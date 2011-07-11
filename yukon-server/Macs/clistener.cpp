@@ -39,7 +39,7 @@ using std::endl;
 
 ostream& operator<<( ostream& ostrm, CtiMCClientListener& client_listener )
 {
-    ostrm << "hi!" << Cti::endl;
+    ostrm << "hi!" << endl;
     return ostrm;
 }
 
@@ -359,14 +359,14 @@ void CtiMCClientListener::_check()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " - CtiMCClientListener::check - " << msg.why() << Cti::endl;
+            cout << CtiTime()  << " - CtiMCClientListener::check - " << msg.why() << endl;
         }
     }
 
     if( gMacsDebugLevel & MC_DEBUG_CONN )
     {
         RWMutexLock::LockGuard guard(coutMux);
-        cout << CtiTime()  << " - CtiClientListener::_check - exiting" << Cti::endl;
+        cout << CtiTime()  << " - CtiClientListener::_check - exiting" << endl;
     }
 }
 

@@ -46,7 +46,7 @@ CtiTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << CtiTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -203,7 +203,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
             if( SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << std::endl;
+                dout << CtiTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
             }
 
             if( getScanRate(ScanRateAccum) < 60 )
@@ -296,7 +296,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Integrity Scan aborted due to inhibited device: " << getName() << std::endl;
+                dout << CtiTime() << " Integrity Scan aborted due to inhibited device: " << getName() << endl;
             }
 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
@@ -306,7 +306,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
         {
             //          {
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << std::endl;
+            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
             //          }
             nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
         }
@@ -328,7 +328,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << std::endl;
+                    dout << CtiTime() << " Integrity Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
                 }
 #endif
 
@@ -339,7 +339,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
                 if(nRet)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan error " << nRet << std::endl;
+                    dout << CtiTime() << " Integrity Scan error " << nRet << endl;
                 }
                 else
                 {
@@ -352,7 +352,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
                 if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << std::endl;
+                    dout << CtiTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                 }
 
                 if( getScanRate(ScanRateIntegrity) < 60 )
@@ -478,7 +478,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << Now << " Error " << FormatError(nRet) << " sending general scan to " << getName() << std::endl;
+                            dout << Now << " Error " << FormatError(nRet) << " sending general scan to " << getName() << endl;
                         }
 
                         // Report the comm error and plug any points!
@@ -491,7 +491,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                     if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << std::endl;
+                        dout << CtiTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                     }
 
                     if( getScanRate(ScanRateGeneral) < 60 )
@@ -570,7 +570,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << std::endl;
+                dout << CtiTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << endl;
             }
 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
@@ -602,7 +602,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << std::endl;
+                    dout << CtiTime() << " Load Profile Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
                 }
 #endif
 
@@ -613,14 +613,14 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
                 if(nRet)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan error " << nRet << std::endl;
+                    dout << CtiTime() << " Load Profile Scan error " << nRet << endl;
                 }
             }
             else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan aborted due to scan in progress " << std::endl;
+                    dout << CtiTime() << " Load Profile Scan aborted due to scan in progress " << endl;
                 }
             }
         }
@@ -803,8 +803,8 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    dout << CtiTime() << "   Status = " << status << ": " << FormatError(status) << std::endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "   Status = " << status << ": " << FormatError(status) << endl;
                 }
             }
 
@@ -830,7 +830,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
@@ -844,7 +844,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             if( (InMessage->EventCode & ~DECODED) != ErrPortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << std::endl;
+                dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
@@ -939,7 +939,7 @@ BOOL CtiDeviceSingle::isScanFlagSet(int scantype) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return val;
@@ -966,7 +966,7 @@ BOOL     CtiDeviceSingle::setScanFlag(int scantype, BOOL b)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1043,7 +1043,7 @@ CtiTime  CtiDeviceSingle::getLastLPTime()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Moving Last LP Time (" << getScanData().getLastLPTime() << ") back to " << dispatchTime << std::endl;
+                    dout << CtiTime() << " Moving Last LP Time (" << getScanData().getLastLPTime() << ") back to " << dispatchTime << endl;
                 }
                 setLastLPTime(dispatchTime);
             }
@@ -1055,7 +1055,7 @@ CtiTime  CtiDeviceSingle::getLastLPTime()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return rt;
 }
@@ -1087,7 +1087,7 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const CtiTime &b)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << std::endl;
+            dout << CtiTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << endl;
         }
 
         getScanData().setNextScan(a, When);
@@ -1111,12 +1111,12 @@ CtiTime CtiDeviceSingle::nextRemoteScan() const
             if(nt < CtiTime(YUKONEOT))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << std::endl;
+                dout << CtiTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << std::endl;
+                dout << CtiTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
             }
         }
     }
@@ -1151,7 +1151,7 @@ void CtiDeviceSingle::deleteNonUpdatedScanRates()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " deleting scanrate. Scantype " << i << std::endl;
+                    dout << CtiTime() << " " << getName() << " deleting scanrate. Scantype " << i << endl;
                 }
 
                 delete _scanRateTbl[i];
@@ -1222,7 +1222,7 @@ CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -1258,7 +1258,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
             if( ! _scanData.Insert() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert or update scandata for device " << this->getName() << std::endl;
+                dout << CtiTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
             }
         }
     }
@@ -1320,8 +1320,8 @@ LONG CtiDeviceSingle::getScanRate(int rate) const
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                dout << getName() << " is using an altrate of " << altrate << std::endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << getName() << " is using an altrate of " << altrate << endl;
             }
 #endif
             return altrate;
@@ -1391,7 +1391,7 @@ BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWin
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< std::endl;
+                        dout << CtiTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
                     }
                 }
                 else if((aNow < open) || (aNow > close))
@@ -1406,7 +1406,7 @@ BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWin
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         status = FALSE;
     }
@@ -1505,7 +1505,7 @@ CtiTime CtiDeviceSingle::getNextWindowOpen() const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return windowOpens;
@@ -1566,18 +1566,18 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
         if(aOpen == -1)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << now << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << std::endl;
+            dout << now << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << now << " " << getName() << " changing to alternate scan rate starting " << CtiTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << std::endl;
+            dout << now << " " << getName() << " changing to alternate scan rate starting " << CtiTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << CtiTime(lastMidnight.seconds()+aOpen+aDuration) << std::endl;
+        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << CtiTime(lastMidnight.seconds()+aOpen+aDuration) << endl;
     }
 }
 
@@ -1591,7 +1591,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(Cti::RowReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -1604,7 +1604,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(Cti::RowReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!rdr["scantype"].isNull())
@@ -1631,7 +1631,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!rdr["type"].isNull())
@@ -1649,7 +1649,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << std::endl;
+                dout << CtiTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
             }
         }
         else
@@ -1674,7 +1674,7 @@ void CtiDeviceSingle::DumpData()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Scan Rate Record                            : " << i  << std::endl;
+                dout << "Scan Rate Record                            : " << i  << endl;
             }
             _scanRateTbl[i]->DumpData();
         }
@@ -1731,7 +1731,7 @@ INT CtiDeviceSingle::validateScanData()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -1777,8 +1777,8 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
     if(isDebugLudicrous())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        dout << "   Oldest dispatch write time is " << dispatchTime << std::endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "   Oldest dispatch write time is " << dispatchTime << endl;
     }
 
     return dispatchTime;
@@ -1804,7 +1804,7 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan (" << getScanData().getLastCommunicationTime(scantype) << " + " << getTardyTime(scantype) << " < " << now << ")" << std::endl;
+                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan (" << getScanData().getLastCommunicationTime(scantype) << " + " << getTardyTime(scantype) << " < " << now << ")" << endl;
                 }
                 resetForScan(scantype);
                 getScanData().setLastCommunicationTime(scantype, now);
@@ -2122,7 +2122,7 @@ void CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, Cti
             else if( getDebugLevel() & DEBUGLEVEL_MGR_DEVICE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid time " << timestamp << " for point " << pointname << " in CtiDeviceSingle::insertPointDataReport() **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** Checkpoint - invalid time " << timestamp << " for point " << pointname << " in CtiDeviceSingle::insertPointDataReport() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             pdm->setTags(tags);

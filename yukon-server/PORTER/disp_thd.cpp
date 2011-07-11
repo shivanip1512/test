@@ -92,7 +92,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << std::endl;
+        dout << CtiTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
     }
 
     SetThreadName(-1, "DispMsg  ");
@@ -124,7 +124,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PIL interface is indicating a failure.  Restarting the interface." << std::endl;
+                    dout << CtiTime() << " PIL interface is indicating a failure.  Restarting the interface." << endl;
                 }
                 KickPIL();
             }
@@ -147,7 +147,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << std::endl;
+                            dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << endl;
                         }
 
                         if ( dbchg->getTypeOfChange() == ChangeTypeDelete )
@@ -169,12 +169,12 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                 //PorterQuit = TRUE;
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                                 Cmd->dump();
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Shutdown requests by command messages are ignored." << std::endl;
+                                    dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
                                 }
                                 break;
                             }
@@ -194,7 +194,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                         PorterDebugLevel = Cmd->getOpArgList().at(2);
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  PorterDebugLevel set to 0x" << CtiNumStr(PorterDebugLevel).hex().zpad(8).toString() << std::endl;
+                                            dout << CtiTime() << "  PorterDebugLevel set to 0x" << CtiNumStr(PorterDebugLevel).hex().zpad(8).toString() << endl;
 
                                         }
                                         break;
@@ -204,7 +204,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                         DebugLevel = Cmd->getOpArgList().at(2);
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  DebugLevel set to 0x" << CtiNumStr(DebugLevel).hex().zpad(8).toString() << std::endl;
+                                            dout << CtiTime() << "  DebugLevel set to 0x" << CtiNumStr(DebugLevel).hex().zpad(8).toString() << endl;
 
                                         }
                                         break;
@@ -220,7 +220,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         default:
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << std::endl;
+                                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
                             }
                         }
                         break;
@@ -241,11 +241,11 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                     if(dbchg.get())
                     {
-                        dout << " - DBChange message." << std::endl;
+                        dout << " - DBChange message." << endl;
                     }
                     else
                     {
-                        dout << " - No DBChange message." << std::endl;
+                        dout << " - No DBChange message." << endl;
                     }
                 }
 
@@ -258,7 +258,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " DispatchMsgHandlerThd done reloading" << std::endl;
+                    dout << CtiTime() << " DispatchMsgHandlerThd done reloading" << endl;
                 }
             }
             else if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
@@ -287,7 +287,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     } /* End of for */

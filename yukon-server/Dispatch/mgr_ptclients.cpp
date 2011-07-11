@@ -511,14 +511,14 @@ void CtiPointClientManager::DumpList(void)
 
                 if(p->isValid() && pDyn)
                 {
-                    cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << Cti::endl;
-                    cout << " Point Value         : " << pDyn->getValue() << Cti::endl;
-                    cout << " Point Quality       : 0x" << hex << pDyn->getQuality() << dec << Cti::endl;
-                    cout << " Point Time          : " << pDyn->getTimeStamp() << Cti::endl;
+                    cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << endl;
+                    cout << " Point Value         : " << pDyn->getValue() << endl;
+                    cout << " Point Quality       : 0x" << hex << pDyn->getQuality() << dec << endl;
+                    cout << " Point Time          : " << pDyn->getTimeStamp() << endl;
                 }
                 else
                 {
-                    cout << " Point \"" << p->getID( ) << "\" has been deleted from the database... cleaning up is recommended" << Cti::endl;
+                    cout << " Point \"" << p->getID( ) << "\" has been deleted from the database... cleaning up is recommended" << endl;
                 }
             }
         }
@@ -530,11 +530,11 @@ void CtiPointClientManager::DumpList(void)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        cout << "Attempting to clear point list..." << Cti::endl;
+        cout << "Attempting to clear point list..." << endl;
 
         DeleteList();
 
-        cout << "DumpMemoryPoints:  " << e.why() << Cti::endl;
+        cout << "DumpMemoryPoints:  " << e.why() << endl;
         RWTHROW(e);
 
     }

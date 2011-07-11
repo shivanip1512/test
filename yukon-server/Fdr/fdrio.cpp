@@ -68,7 +68,7 @@ template <class T>
 T *CtiFDRIO<T>::recv( long milliseconds )
 {
     T *tmp = NULL;
-    cout << "trying to receive" << Cti::endl;
+    cout << "trying to receive" << endl;
     if( _inputWaiting.acquire( milliseconds ) != RW_THR_TIMEOUT )
     {
         RWMutexLock::LockGuard inboxGuard(_inboxMux);

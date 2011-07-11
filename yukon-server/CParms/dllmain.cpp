@@ -36,20 +36,20 @@ string getYukonBase()
     {
         if( GetLastError() == ERROR_ENVVAR_NOT_FOUND )
         {
-            cout << "Environment variable YUKON_BASE is missing" << Cti::endl;
+            cout << "Environment variable YUKON_BASE is missing" << endl;
         }
         else
         {
-            cout << "Environment variable YUKON_BASE is empty" << Cti::endl;
+            cout << "Environment variable YUKON_BASE is empty" << endl;
         }
     }
     else if( result >= MAX_PATH )
     {
-        cout << "Environment variable YUKON_BASE is too long (" << result << ")" << Cti::endl;
+        cout << "Environment variable YUKON_BASE is too long (" << result << ")" << endl;
     }
     else if( !PathIsDirectory(yukon_base_env) )
     {
-        cout << "Environment variable YUKON_BASE is not a directory" << Cti::endl;
+        cout << "Environment variable YUKON_BASE is not a directory" << endl;
     }
     else
     {
@@ -58,7 +58,7 @@ string getYukonBase()
 
     const char *yukon_base_default = "c:\\yukon";
 
-    cout << "YUKON_BASE defaulting to " << yukon_base_default << Cti::endl;
+    cout << "YUKON_BASE defaulting to " << yukon_base_default << endl;
 
     return yukon_base_default;
 }

@@ -45,18 +45,18 @@ void main(int argc, char **argv)
             cmd += " ";
         }
         
-        cout << "parsing: " << cmd << Cti::endl;
+        cout << "parsing: " << cmd << endl;
 
         CtiCommandParser  parse(cmd);
         //parse.Dump();
-        cout << parse.asString() << Cti::endl;
+        cout << parse.asString() << endl;
 
 
     }
     catch(RWxmsg &msg)
     {
         cout << "Exception: ";
-        cout << msg.why() << Cti::endl;
+        cout << msg.why() << endl;
     }
 
     exit(0);

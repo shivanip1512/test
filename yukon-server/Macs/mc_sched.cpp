@@ -77,45 +77,45 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    ostrm << " Schedule ID:       " << sched.getScheduleID() << Cti::endl;
-    ostrm << " Schedule Name:     " << sched.getScheduleName() << Cti::endl;
-    ostrm << " Schedule Category: " << sched.getCategoryName() << Cti::endl;
-    ostrm << " Schedule Type:     " << sched.getScheduleType() << Cti::endl;
-    ostrm << " Holiday Sched ID:  " << sched.getHolidayScheduleID() << Cti::endl;
-    ostrm << " Command File:      " << sched.getCommandFile() << Cti::endl;
-    ostrm << " Current State:     " << sched.getCurrentState() << Cti::endl;
-    ostrm << " Start Policy:      " << sched.getStartPolicy() << Cti::endl;
-    ostrm << " Stop Policy:       " << sched.getStopPolicy() << Cti::endl;
+    ostrm << " Schedule ID:       " << sched.getScheduleID() << endl;
+    ostrm << " Schedule Name:     " << sched.getScheduleName() << endl;
+    ostrm << " Schedule Category: " << sched.getCategoryName() << endl;
+    ostrm << " Schedule Type:     " << sched.getScheduleType() << endl;
+    ostrm << " Holiday Sched ID:  " << sched.getHolidayScheduleID() << endl;
+    ostrm << " Command File:      " << sched.getCommandFile() << endl;
+    ostrm << " Current State:     " << sched.getCurrentState() << endl;
+    ostrm << " Start Policy:      " << sched.getStartPolicy() << endl;
+    ostrm << " Stop Policy:       " << sched.getStopPolicy() << endl;
 
     ostrm << " Last Run Time:    ";
     if( sched.getLastRunTime().isValid() )
-        ostrm << sched.getLastRunTime() << Cti::endl;
+        ostrm << sched.getLastRunTime() << endl;
     else
-        ostrm << "Invalid" << Cti::endl;
+        ostrm << "Invalid" << endl;
 
-    ostrm << " Last Run Status:  " << sched.getLastRunStatus() << Cti::endl;
-    ostrm << " Start Day:        " << sched.getStartDay() << Cti::endl;
-    ostrm << " Start Month:      " << sched.getStartMonth() << Cti::endl;
-    ostrm << " Start Year:       " << sched.getStartYear() << Cti::endl;
-    ostrm << " Valid Week Days:  " << sched.getValidWeekDays() << Cti::endl;
+    ostrm << " Last Run Status:  " << sched.getLastRunStatus() << endl;
+    ostrm << " Start Day:        " << sched.getStartDay() << endl;
+    ostrm << " Start Month:      " << sched.getStartMonth() << endl;
+    ostrm << " Start Year:       " << sched.getStartYear() << endl;
+    ostrm << " Valid Week Days:  " << sched.getValidWeekDays() << endl;
     ostrm << " Manual Start Time: ";
     if( sched.getManualStartTime().isValid() )
-        ostrm << sched.getManualStartTime() << Cti::endl;
+        ostrm << sched.getManualStartTime() << endl;
     else
-        ostrm << "Invalid" << Cti::endl;
+        ostrm << "Invalid" << endl;
 
     ostrm << " Manual Stop Time: ";
     if( sched.getManualStopTime().isValid() )
-        ostrm << sched.getManualStopTime() << Cti::endl;
+        ostrm << sched.getManualStopTime() << endl;
     else
-        ostrm << "Invalid" << Cti::endl;
+        ostrm << "Invalid" << endl;
 
     if( sched.isSimpleSchedule() )
     {
-        ostrm << " Target Pao ID:  " << sched.getTargetPaoId() << Cti::endl;
-        ostrm << " Start Command:  " << sched.getStartCommand() << Cti::endl;
-        ostrm << " Stop Command:   " << sched.getStopCommand() << Cti::endl;
-        ostrm << " Repeat Int:     " << sched.getRepeatInterval() << Cti::endl;
+        ostrm << " Target Pao ID:  " << sched.getTargetPaoId() << endl;
+        ostrm << " Start Command:  " << sched.getStartCommand() << endl;
+        ostrm << " Stop Command:   " << sched.getStopCommand() << endl;
+        ostrm << " Repeat Int:     " << sched.getRepeatInterval() << endl;
     }
 
 

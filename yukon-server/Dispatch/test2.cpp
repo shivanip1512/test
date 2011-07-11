@@ -43,17 +43,17 @@ int inspectMessage( CtiMessage *message )
     {
         case MSG_POINTDATA:
             pData = (CtiPointDataMsg *)message;
-            cout << "PointData:  point " << pData->getId( ) << ", value: " << pData->getValue( ) << Cti::endl;
+            cout << "PointData:  point " << pData->getId( ) << ", value: " << pData->getValue( ) << endl;
             retval = 1;
             break;
 
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
-            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << Cti::endl;
+            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << endl;
             retval = 0;
             for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
-                cout << "    multimsg submessage " << (x+1) << Cti::endl;
+                cout << "    multimsg submessage " << (x+1) << endl;
                 cout << "        ";
                 retval += inspectMessage( (CtiMessage *)(msgMulti->getData( )[x]) );
             }
@@ -62,7 +62,7 @@ int inspectMessage( CtiMessage *message )
         default:
           {
              retval = -1;
-            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << Cti::endl;
+            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
     }
     }
     return retval;
@@ -72,11 +72,11 @@ void main(int argc, char **argv)
 {
    if(argc < 5)
    {
-      cout << "Arg 1:   vangogh server machine name" << Cti::endl;
-      cout << "Arg 2:   this app's registration name" << Cti::endl;
-      cout << "Arg 3:   First point to register for" << Cti::endl;
-      cout << "Arg 4:   Last point to register for" << Cti::endl;
-      cout << "Arg 5:   # of messages to receive" << Cti::endl;
+      cout << "Arg 1:   vangogh server machine name" << endl;
+      cout << "Arg 2:   this app's registration name" << endl;
+      cout << "Arg 3:   First point to register for" << endl;
+      cout << "Arg 4:   Last point to register for" << endl;
+      cout << "Arg 5:   # of messages to receive" << endl;
 
       exit(-1);
    }
@@ -117,7 +117,7 @@ void main(int argc, char **argv)
 
 
       c = Connect.ReadConnQue();
-      cout << "Just got the MOAUpload" << Cti::endl;
+      cout << "Just got the MOAUpload" << endl;
       ((CtiMessage*)c)->dump();
       delete c;
 
@@ -135,9 +135,9 @@ void main(int argc, char **argv)
                for(int x = 0; x < pChg->getData().size(); x++)
                {
                   ((CtiPointDataMsg*)(pChg->getData()[x]))->dump();
-                  cout << Cti::endl;
+                  cout << endl;
 
-                  cout << "I just got message #" << i << Cti::endl;
+                  cout << "I just got message #" << i << endl;
 
                   i++; // Make these count one for each
                }
@@ -146,12 +146,12 @@ void main(int argc, char **argv)
             }
             else if(c->isA() == MSG_POINTDATA)
             {
-               cout << "I just got message #" << i << Cti::endl;
+               cout << "I just got message #" << i << endl;
 
                CtiPointDataMsg *pDat = (CtiPointDataMsg *)c;
 
                pDat->dump();
-               cout << Cti::endl;
+               cout << endl;
             }
 
 
@@ -169,7 +169,7 @@ void main(int argc, char **argv)
    catch(RWxmsg &msg)
    {
       cout << "Tester Exception: ";
-      cout << msg.why() << Cti::endl;
+      cout << msg.why() << endl;
    }
 
    exit(0);

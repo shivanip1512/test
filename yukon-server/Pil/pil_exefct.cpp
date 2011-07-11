@@ -24,7 +24,7 @@ CtiExecutor* CtiPILExecutorFactory::getExecutor(CtiMessage* msg)
          Ex = Inherited::getExecutor(msg);
 
          if(!Ex)
-            cout << "PIL Executor failed to manufacture an executor for " << msg->isA() << Cti::endl;
+            cout << "PIL Executor failed to manufacture an executor for " << msg->isA() << endl;
 
          break;
       }

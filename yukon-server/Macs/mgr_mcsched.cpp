@@ -29,7 +29,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
     {
         CtiLockGuard<CtiMutex> guard(mgr.getMux() );
 
-        ostrm << " " << mgr.getMap().size() << " schedules are loaded." << Cti::endl;
+        ostrm << " " << mgr.getMap().size() << " schedules are loaded." << endl;
 
         CtiMCScheduleManager::MapIterator itr = mgr.getMap().begin();
 
@@ -39,7 +39,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
 
             {
                 CtiLockGuard<CtiMutex> sched_guard(sched->getMux());
-                ostrm << CtiTime() << Cti::endl << *sched << Cti::endl;
+                ostrm << CtiTime() << endl << *sched << endl;
             }
         }
     }

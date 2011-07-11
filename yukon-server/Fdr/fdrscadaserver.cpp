@@ -65,7 +65,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Time sync message received"  << Cti::endl;
+                        logNow() << "Time sync message received"  << endl;
                     }
 
                     retVal = processTimeSyncMessage (connection, data, size);
@@ -76,7 +76,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Time sync message received, "
-                            << "PC not configured to update" << Cti::endl;
+                            << "PC not configured to update" << endl;
                     }
                 }
                 break;
@@ -86,7 +86,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Heartbeat message received from " << connection <<  Cti::endl;
+                    logNow() << "Heartbeat message received from " << connection <<  endl;
                 }
                 break;
             }
@@ -94,7 +94,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << "Unknown message type " << function <<  " received" << Cti::endl;
+                logNow() << "Unknown message type " << function <<  " received" << endl;
             }
     }
 

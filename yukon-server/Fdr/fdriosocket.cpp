@@ -20,8 +20,8 @@ CtiFDRIOSocket<T>::~CtiFDRIOSocket( )
     {
         if(msg.errorNumber() != RWNETNOTINITIALISED)
         {
-            cout << "Socket Error :" << msg.errorNumber() << " occurred" << Cti::endl;
-            cout << "  " << msg.why() << Cti::endl;
+            cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+            cout << "  " << msg.why() << endl;
         }
     }
 }

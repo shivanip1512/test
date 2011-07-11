@@ -7,6 +7,7 @@
 #include "database_reader.h"
 
 using std::string;
+using std::endl;
 
 using namespace Cti;
 using namespace Config;
@@ -54,7 +55,7 @@ bool CtiConfigManager::insertValueIntoConfig(DeviceConfigSPtr config, const stri
     if(!config)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     else
     {
@@ -194,8 +195,8 @@ void CtiConfigManager::loadData(long configID)
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -204,7 +205,7 @@ void CtiConfigManager::loadData(long configID)
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << std::endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
     }
 }
 
@@ -262,7 +263,7 @@ void CtiConfigManager::loadConfigs(long configID)
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << std::endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
     }
 }
 
@@ -361,7 +362,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << std::endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
     }
 }
 

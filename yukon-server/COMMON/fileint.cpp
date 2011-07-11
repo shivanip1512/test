@@ -115,7 +115,7 @@ void CtiFileInterface::stop()
 
             {
                 RWMutexLock::LockGuard coutGuard(coutMux);
-                cerr << CtiTime() << " - CtiFileInterface::stop() - Watch thread aborted cancellation and has been terminated" << Cti::endl;
+                cerr << CtiTime() << " - CtiFileInterface::stop() - Watch thread aborted cancellation and has been terminated" << endl;
             }
         }
     }
@@ -148,13 +148,13 @@ void CtiFileInterface::_watch()
 
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime() << " - Setting Current Directory to:  " << _dir << Cti::endl;
+            cout << CtiTime() << " - Setting Current Directory to:  " << _dir << endl;
         }
         if ( !SetCurrentDirectory( _dir.c_str() ) )
         {
             {
                 RWMutexLock::LockGuard guard(coutMux);
-                cerr << CtiTime() << " - CtiFileInterface::_watch() - An error occured changing the current directory" << Cti::endl;
+                cerr << CtiTime() << " - CtiFileInterface::_watch() - An error occured changing the current directory" << endl;
                 //where should this be going FIX FIX - maybe that'll get someones attention
             }
             return;
@@ -193,7 +193,7 @@ void CtiFileInterface::_watch()
                     //Actually handle the file in some child class
                     {
                         RWMutexLock::LockGuard guard(coutMux);
-                        cout << CtiTime()  << " File Interface: handling file " << FileData.cFileName << Cti::endl;
+                        cout << CtiTime()  << " File Interface: handling file " << FileData.cFileName << endl;
                     }
 
                     handleFile( FileData.cFileName );
@@ -202,7 +202,7 @@ void CtiFileInterface::_watch()
                 {
                     {
                         RWMutexLock::LockGuard guard(coutMux);
-                        cout << CtiTime()  << " File Interface: deleting file " << FileData.cFileName << Cti::endl;
+                        cout << CtiTime()  << " File Interface: deleting file " << FileData.cFileName << endl;
                     }
                 }
 
@@ -219,7 +219,7 @@ void CtiFileInterface::_watch()
         _valid = false;
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " file interface exiting" << Cti::endl;
+            cout << CtiTime()  << " file interface exiting" << endl;
         }
         throw;
     }

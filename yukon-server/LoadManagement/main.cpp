@@ -25,14 +25,14 @@ int main(int argc, char* argv[] )
 
     /*{
         RWMutexLock::LockGuard guard(coutMux);
-        cout << CtiTime() << " - Load Management starting up..." << Cti::endl;
+        cout << CtiTime() << " - Load Management starting up..." << endl;
     }*/
 
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "LoadManagement")) != NULL )
     {
        // Oh no, porter is running on this machine already.
        CloseHandle(hExclusion);
-       cout << "Load Management is already running!!!" << Cti::endl;
+       cout << "Load Management is already running!!!" << endl;
        exit(-1);
     }
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create LoadManagement!!!" << Cti::endl;
+       cout << "Couldn't create LoadManagement!!!" << endl;
        exit(-1);
     }
 
@@ -50,7 +50,7 @@ int main(int argc, char* argv[] )
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " - Installing as a service..." << Cti::endl;
+            cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_DEMAND_START,
@@ -61,7 +61,7 @@ int main(int argc, char* argv[] )
         else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " - Installing as a service..." << Cti::endl;
+            cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_AUTO_START,
@@ -72,7 +72,7 @@ int main(int argc, char* argv[] )
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " - Removing service..." << Cti::endl;
+            cout << CtiTime()  << " - Removing service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Remove();
         }

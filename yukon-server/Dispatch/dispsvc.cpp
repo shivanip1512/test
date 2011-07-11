@@ -75,7 +75,7 @@ void CtiDispatchService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     //We need to catch ctrl-c, close, logoff- so we can stop
     if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
-        cerr << "Could not install control handler" << Cti::endl;
+        cerr << "Could not install control handler" << endl;
 
     Init();
     Run();

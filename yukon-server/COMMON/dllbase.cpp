@@ -126,47 +126,47 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         char *eptr;
         DebugLevel = strtoul(str.c_str(), &eptr, 16);
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL found : " << str << endl;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL   failed : " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("DISPATCH_MACHINE")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   found : " << str << endl;
         VanGoghMachine = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << endl;
     }
 
     if((str = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "")) != "")
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE  found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE  found : " << str << endl;
         NotificationMachine = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE   failed : " << endl;
     }
 
     if((int_val = gConfigParms.getValueAsInt("NOTIFICATION_PORT", -1)) != -1)
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   found : " << int_val << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   found : " << int_val << endl;
         NotificationPort = int_val;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
     }
 
     if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() ||
        !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << endl;
 
         dbDll = str;
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
@@ -190,81 +190,81 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   failed : " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_SQLSERVER")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER found : " << str << endl;
         dbName = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER   failed : " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_USERNAME")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME  found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME  found : " << str << endl;
         dbUser = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME   failed : " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_PASSWORD")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD  found : " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD  found : " << str << endl;
         dbPassword = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD   failed : " << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD   failed : " << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("VERSACOM_TYPE_FOUR_CONTROL")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         useVersacomTypeFourControl = TRUE;
     }
-    if(DebugLevel & 0x0001) cout << "Versacom Control Commands are " << ( useVersacomTypeFourControl ? "Type 4 : ": "Extended (NOT Type 4) : ") << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "Versacom Control Commands are " << ( useVersacomTypeFourControl ? "Type 4 : ": "Extended (NOT Type 4) : ") << endl;
 
 
     if( !(str = gConfigParms.getValueAsString("PORTER_COALESCE_RIPPLE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gCoalesceRippleBits = true;
     }
-    if(DebugLevel & 0x0001) cout << "Ripple Control Commands are " << ( gCoalesceRippleBits ? "coalesced ": "NOT coalesced ") << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "Ripple Control Commands are " << ( gCoalesceRippleBits ? "coalesced ": "NOT coalesced ") << endl;
 
 
     if( !(str = gConfigParms.getValueAsString("YUKON_LOG_PORTS")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gLogPorts = true;
     }
-    if(DebugLevel & 0x0001) cout << "Ports will " << ( gLogPorts ? "log to file" : "NOT log to file") << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "Ports will " << ( gLogPorts ? "log to file" : "NOT log to file") << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_VERBOSE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gDNPVerbose = true;
     }
-    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gDNPVerbose ? "verbose" : "quiet") << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gDNPVerbose ? "verbose" : "quiet") << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).empty() )
     {
         gDNPInternalRetries = abs(atoi(str.c_str()));
-        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to " << str << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to " << str << endl;
     }
     else
     {
         gDNPInternalRetries = 2;
-        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
     }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_OFFLINE_IS_NONUPDATED")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gDNPOfflineNonUpdated = true;
     }
-    if(DebugLevel & 0x0001) cout << "DNP points interpret unset online flags as " << ( gDNPOfflineNonUpdated ? "non-updated" : "normal") << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "DNP points interpret unset online flags as " << ( gDNPOfflineNonUpdated ? "non-updated" : "normal") << endl;
 
 
     //  this is the MCT 400 SPID
@@ -276,7 +276,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+                dout << CtiTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             gMCT400SeriesSPID = 0xff;
@@ -286,16 +286,16 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).empty() )
     {
         ModemConnectionTimeout = atoi(str.c_str());
-        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to " << str << " seconds" << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to " << str << " seconds" << endl;
     }
     else
     {
         ModemConnectionTimeout = 60;
-        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << Cti::endl;
+        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << endl;
     }
 
     gLogDirectory = gConfigParms.getValueAsPath("LOG_DIRECTORY", "server\\log");
-    if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << Cti::endl;
+    if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
 
     if(gConfigParms.isOpt("PORTER_ADD_TAP_PREFIX"))
     {
@@ -315,13 +315,13 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         gDefaultCommFailCount = 10;
     }
-    if(DebugLevel & 0x0001) cout << " Default Yukon comm fail count is " << gDefaultCommFailCount << Cti::endl;
+    if(DebugLevel & 0x0001) cout << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_PORT_COMM_FAIL_COUNT")).empty() )
     {
         gDefaultPortCommFailCount = atoi(str.c_str());
     }
-    if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << Cti::endl;
+    if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_SCAN_FORCE")).empty() )
     {
@@ -389,12 +389,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     if(DebugLevel & 0x0001)
     {
-        cout << CtiTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << Cti::endl;
+        cout << CtiTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
 
         if( gSimulatePorts )
         {
-            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPorts.size() << "): " << Cti::endl;
-            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPorts.size() << "): " << Cti::endl;
+            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPorts.size() << "): " << endl;
+            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPorts.size() << "): " << endl;
 
             for( set<long>::const_iterator itr = gSimulatedPorts.begin(); itr != gSimulatedPorts.end(); itr++ )
             {

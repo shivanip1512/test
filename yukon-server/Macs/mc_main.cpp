@@ -62,7 +62,7 @@ int main(int argc, char* argv[] )
     {
        // Oh no, macs is running on this machine already.
        CloseHandle(hExclusion);
-       cout << "Macs is already running, exiting." << Cti::endl;
+       cout << "Macs is already running, exiting." << endl;
        exit(-1);
     }
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create MACS event" << Cti::endl;
+       cout << "Couldn't create MACS event" << endl;
        exit(-1);
     }
 
@@ -83,7 +83,7 @@ int main(int argc, char* argv[] )
             //Process command line
             if (strcmp(argv[1], "-install") == 0)
             {
-                cout << CtiTime()  << " - Installing as a service..." << Cti::endl;
+                cout << CtiTime()  << " - Installing as a service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_DEMAND_START,
@@ -94,7 +94,7 @@ int main(int argc, char* argv[] )
             }
             else if (strcmp(argv[1], "-auto") == 0)
             {
-                cout << CtiTime()  << " - Installing as a service..." << Cti::endl;
+                cout << CtiTime()  << " - Installing as a service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_AUTO_START,
@@ -106,7 +106,7 @@ int main(int argc, char* argv[] )
             else
             if ( strcmp(argv[1], "-remove" ) == 0 )
             {
-                cout << CtiTime()  << " - Removing service..." << Cti::endl;
+                cout << CtiTime()  << " - Removing service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Remove();
                 return 0;

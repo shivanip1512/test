@@ -19,7 +19,7 @@ BOOL bQuit = FALSE;
 
 BOOL MyCtrlHandler(DWORD fdwCtrlType)
 {
-    cout << "CTRL+C detected - setting exit flag" << Cti::endl;
+    cout << "CTRL+C detected - setting exit flag" << endl;
     switch( fdwCtrlType )
     {
 
@@ -51,8 +51,8 @@ void main(int argc, char **argv)
 {
     if( argc != 3 )
     {
-        cout << "Arg 1:   dispatch server machine name" << Cti::endl;
-        cout << "Arg 2:   # of messages to receive/seconds to wait" << Cti::endl;
+        cout << "Arg 1:   dispatch server machine name" << endl;
+        cout << "Arg 2:   # of messages to receive/seconds to wait" << endl;
 
         exit(-1);
     }
@@ -64,7 +64,7 @@ void main(int argc, char **argv)
     {
         if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
         {
-            cerr << "Could not install control handler" << Cti::endl;
+            cerr << "Could not install control handler" << endl;
             return;
         }
 
@@ -104,7 +104,7 @@ void main(int argc, char **argv)
     catch( RWxmsg &msg )
     {
         cout << "Exception in Lurker: ";
-        cout << msg.why() << Cti::endl;
+        cout << msg.why() << endl;
     }
 
     exit(0);
@@ -132,7 +132,7 @@ int inspectMessage( CtiMessage *message )
             retval = 0;
             for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
-//                cout << x << "th time through the loop" << Cti::endl;
+//                cout << x << "th time through the loop" << endl;
                 int minID = 100000, cID, cy;
                 for( int y = 0; y < msgMulti->getData( ).size( ); y++ )
                 {
@@ -142,21 +142,21 @@ int inspectMessage( CtiMessage *message )
                     {
                         minID = cID;
                         cy = y;
-//                        cout << "min" << Cti::endl;
+//                        cout << "min" << endl;
                     }
 //                    else
-//                        cout << "not min" << Cti::endl;
+//                        cout << "not min" << endl;
                 }
                 doneID = minID;
 //                cout << "now we've done ID " << doneID << ", index " << cy << " : ";
                 retval += inspectMessage( (CtiMessage *)(msgMulti->getData( )[cy]) );
-//                cout << Cti::endl;
+//                cout << endl;
             }
-            cout << Cti::endl;
+            cout << endl;
             break;
 
         default:
-            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << Cti::endl;
+            cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
     }
     return retval;
 }

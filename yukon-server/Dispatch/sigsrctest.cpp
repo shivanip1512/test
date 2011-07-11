@@ -75,11 +75,11 @@ void main(int argc, char **argv)
 
    if(argc < 6)
    {
-      cout << "Arg 1:   dispatch server machine name " << Cti::endl;
-      cout << "Arg 2:   Minimum point to error       " << Cti::endl;
-      cout << "Arg 3:   Maximum point to error       " << Cti::endl;
-      cout << "Arg 4:   UnAck'd (1)/ Ack'd (0) Alarm " << Cti::endl;
-      cout << "Arg 5:   Loops " << Cti::endl;
+      cout << "Arg 1:   dispatch server machine name " << endl;
+      cout << "Arg 2:   Minimum point to error       " << endl;
+      cout << "Arg 3:   Maximum point to error       " << endl;
+      cout << "Arg 4:   UnAck'd (1)/ Ack'd (0) Alarm " << endl;
+      cout << "Arg 5:   Loops " << endl;
 
       exit(-1);
    }
@@ -101,7 +101,7 @@ void main(int argc, char **argv)
 
       if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
       {
-         cerr << "Could not install control handler" << Cti::endl;
+         cerr << "Could not install control handler" << endl;
          return;
       }
 
@@ -155,7 +155,7 @@ void main(int argc, char **argv)
    catch(RWxmsg &msg)
    {
       cout << "Tester Exception: ";
-      cout << msg.why() << Cti::endl;
+      cout << msg.why() << endl;
    }
 
    exit(0);
@@ -177,11 +177,11 @@ void ReadTheInboundAndDispose(CtiConnection &Connect)
       }
 
       {
-         cout << "Received a nice little message " << __FILE__ << " (" << __LINE__ << ")" << Cti::endl;
+         cout << "Received a nice little message " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
          if(pMulti)
          {
-            cout << "Contains " << pMulti->getCount() << " messages inside" << Cti::endl;
+            cout << "Contains " << pMulti->getCount() << " messages inside" << endl;
          }
       }
 

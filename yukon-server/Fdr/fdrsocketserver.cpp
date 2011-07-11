@@ -200,7 +200,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         if (!pointList->loadPointList())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Error in loadList()" << Cti::endl;
+            logNow() << "Error in loadList()" << endl;
             delete pointList;
             return false;
         }
@@ -238,7 +238,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << " No (" << aDirection << ") " << "points defined for use by interface" << Cti::endl;
+                    logNow() << " No (" << aDirection << ") " << "points defined for use by interface" << endl;
                 }
             }
         }
@@ -246,7 +246,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << " Error loading (" << aDirection << ") points, empty data set returned"
-                << Cti::endl;
+                << endl;
             successful = false;
         }
     }   // end try block
@@ -254,7 +254,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "RWExternalErr caught in CtiFDRSocketServer::loadList(): " << e.why() << Cti::endl;
+        logNow() << "RWExternalErr caught in CtiFDRSocketServer::loadList(): " << e.why() << endl;
         RWTHROW(e); // is this the right thing to do???
     }
 
@@ -262,7 +262,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception caught in CtiFDRSocketServer::loadList()" << Cti::endl;
+        logNow() << "Unknown exception caught in CtiFDRSocketServer::loadList()" << endl;
         successful = false;
     }
 
@@ -285,7 +285,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() <<"threadFunctionSendHeartbeat initializing" << Cti::endl;
+            logNow() <<"threadFunctionSendHeartbeat initializing" << endl;
         }
 
         for ( ; ; )
@@ -314,7 +314,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Queueing heartbeat message to " << **myIter << Cti::endl;
+                        logNow() << "Queueing heartbeat message to " << **myIter << endl;
                     }
 
                     bool thisResult = (*myIter)->queueMessage(heartbeatMsg, size, (MAXPRIORITY-1));
@@ -337,13 +337,13 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Fatal Error: threadFunctionSendHeartbeat is dead!" << Cti::endl;
+            logNow() << "Fatal Error: threadFunctionSendHeartbeat is dead!" << endl;
         }
     }
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionSendHeartbeat shutdown" << Cti::endl;
+        logNow() << "threadFunctionSendHeartbeat shutdown" << endl;
     }
 }
 
@@ -354,7 +354,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
     try {
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL) {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "threadFunctionConnection initializing" << Cti::endl;
+            logNow() << "threadFunctionConnection initializing" << endl;
         }
         while (true) {
 
@@ -363,13 +363,13 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Failed to open listener socket"
-                       << Cti::endl;
+                       << endl;
                 }
             } else {
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Listening for connection on port " << getPortNumber() << Cti::endl;
+                    logNow() << "Listening for connection on port " << getPortNumber() << endl;
                 }
 
                 while (true) {
@@ -392,7 +392,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                             int errorCode = WSAGetLastError();
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "Accept call failed "
-                            << " (Error: " << errorCode << ")" << Cti::endl;
+                            << " (Error: " << errorCode << ")" << endl;
                         }
                         // go back to outer loop (will create new listener)
                         break;
@@ -407,7 +407,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "Connection accepted from "
                                << inet_ntoa(returnAddr.sin_addr)
-                               << Cti::endl;
+                               << endl;
                         }
 
                         CtiFDRClientServerConnection* newConnection;
@@ -423,7 +423,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "Unable to create CtiFDRClientServerConnection object: "
-                               << e.what() << Cti::endl;
+                               << e.what() << endl;
                         }
                     }
                 } // accept loop
@@ -450,12 +450,12 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
     } catch ( ... ) {
         // try and catch the thread death
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: CtiFDRSocketServer::threadFunctionConnection is dead!" << Cti::endl;
+        logNow() << "Fatal Error: CtiFDRSocketServer::threadFunctionConnection is dead!" << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionConnection shutdown" << Cti::endl;
+        logNow() << "threadFunctionConnection shutdown" << endl;
     }
 }
 
@@ -467,7 +467,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Failed to create listener socket"
-                <<" (Error: " << errorCode << ")" << Cti::endl;
+                <<" (Error: " << errorCode << ")" << endl;
         }
         return NULL;
     }
@@ -503,7 +503,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Failed to bind listener socket "
-                <<" (Error: " << errorCode << ")" << Cti::endl;
+                <<" (Error: " << errorCode << ")" << endl;
         }
 
         shutdown(listener, SD_BOTH);
@@ -517,7 +517,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Failed to listen on listener socket "
-                << " (Error: " << errorCode << ")" << Cti::endl;
+                << " (Error: " << errorCode << ")" << endl;
 
         }
         shutdown(listener, SD_BOTH);
@@ -544,7 +544,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "Control point " << *point
-                    << " was not sent because a database reload triggered the send" << Cti::endl;
+                    << " was not sent because a database reload triggered the send" << endl;
             }
             continue;
         }
@@ -555,7 +555,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << *point
                     << " was not sent to any interfaces because it hasn't been initialized"
-                    << Cti::endl;
+                    << endl;
             }
             continue;
         }
@@ -610,7 +610,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Point registration response tag set, point "
-                << localMsg->getId() << " will not be sent" << Cti::endl;
+                << localMsg->getId() << " will not be sent" << endl;
         }
         return false;
     }
@@ -622,7 +622,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Translation for point " << localMsg->getId()
-                << " cannot be found" << Cti::endl;;
+                << " cannot be found" << endl;;
         }
         return false;
     }
@@ -637,7 +637,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Data for " << point
-                << " was not sent because it hasn't been initialized " << Cti::endl;
+                << " was not sent because it hasn't been initialized " << endl;
         }
         return false;
     }
@@ -679,7 +679,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Unknown exception caught in CtiFDRSocketServer::sendMessageToForeignSys()"
-            << Cti::endl;
+            << endl;
         retVal = false;
     }
 

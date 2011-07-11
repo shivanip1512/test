@@ -156,7 +156,7 @@ void CtiFDRSimple::threadFunctionGetData()
           {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
             logNow() << "Connection down, waiting "
-              << secondsBeforeReconnect << " seconds for reconnect" << Cti::endl;
+              << secondsBeforeReconnect << " seconds for reconnect" << endl;
           }
         }
       }
@@ -167,14 +167,14 @@ void CtiFDRSimple::threadFunctionGetData()
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Cancelling thread threadFunctionGetData" << Cti::endl;
+      logNow() << "Cancelling thread threadFunctionGetData" << endl;
     }
     return;
   }
   catch (...)
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << Cti::endl;
+    logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << endl;
   }
 }
 
@@ -192,7 +192,7 @@ bool CtiFDRSimple::loadTranslationLists()
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Skipping loadTranslationLists(), not connected " << Cti::endl;
+      logNow() << "Skipping loadTranslationLists(), not connected " << endl;
     }
     // Returning false would cause the caller to keep attempting to reload the
     // translation lists. When we get reconnected, they'll be reloaded anyway.
@@ -217,7 +217,7 @@ bool CtiFDRSimple::loadTranslationLists()
           const int oldSize = aList.getPointList()->entries();
           CtiLockGuard<CtiLogger> doubt_guard( dout );
           logNow() << "Got an unexpected empty list from the database (old size="
-            << oldSize << ")" << Cti::endl;
+            << oldSize << ")" << endl;
         }
       }
       else
@@ -251,7 +251,7 @@ bool CtiFDRSimple::loadTranslationLists()
     else
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      logNow() << "error in db read code " << Cti::endl;
+      logNow() << "error in db read code " << endl;
       successful = false;
     }
   }   // end try block
@@ -259,7 +259,7 @@ bool CtiFDRSimple::loadTranslationLists()
   catch (RWExternalErr e )
   {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    logNow() << "loadTranslationList():  " << e.why() << Cti::endl;
+    logNow() << "loadTranslationList():  " << e.why() << endl;
     RWTHROW(e);
   }
   return( successful );
@@ -305,7 +305,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
     if (!pData)
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << Cti::endl;
+      logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << endl;
       return;
     }
 
@@ -321,7 +321,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "new value " << value << " for "
-        << *ctiPoint << " queued" << Cti::endl;
+        << *ctiPoint << " queued" << endl;
     }
   }
 }
@@ -339,7 +339,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
   if (pMsg == NULL)
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << Cti::endl;
+    logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << endl;
     return;
   }
 
@@ -356,7 +356,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
     logNow() << "UpdateFailed command for " <<
-      *ctiPoint << " queued" << Cti::endl;
+      *ctiPoint << " queued" << endl;
   }
 }
 
@@ -410,7 +410,7 @@ void CtiFDRSimple::setConnected( bool conn )
      if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
      {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Setting " << (conn?"":"dis") << "connected" << Cti::endl;
+        logNow() << "Setting " << (conn?"":"dis") << "connected" << endl;
      }
    _connected = conn;
    }

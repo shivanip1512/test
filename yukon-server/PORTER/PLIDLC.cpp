@@ -235,7 +235,7 @@ INT GenReply (PBYTE Reply,            /* reply message */
 
    if(RemoteAddress != (Reply[1] >> 1))
    {
-      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << Cti::endl;
+      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
       return(BADCCU);
    }
 
@@ -306,7 +306,7 @@ INT RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG Re
 
    if(RemoteAddress != (Message[1] >> 1))
    {
-      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << Cti::endl;
+      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
       return(BADCCU);
    }
 
