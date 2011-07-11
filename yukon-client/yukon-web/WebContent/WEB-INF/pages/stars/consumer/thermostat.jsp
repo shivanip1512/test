@@ -1,8 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="consumer" page="thermostat">
     <cti:standardMenu/>
@@ -69,9 +70,8 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
     <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
     
     <h3>
-        <cti:msg key="yukon.dr.consumer.thermostat.header" /><br>
-        <cti:msg var="label" key="${thermostatLabel}" htmlEscape="true"/><br>
-        ${label}
+        <i:inline key="yukon.dr.consumer.thermostat.header" /><br>
+        <cti:msg var="label" key="${thermostatLabel}" htmlEscape="true"/>${label}
     </h3>
     
     <div style="text-align: center;">
