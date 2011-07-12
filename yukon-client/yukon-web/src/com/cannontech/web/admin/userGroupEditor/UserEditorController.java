@@ -235,6 +235,7 @@ public class UserEditorController {
         model.addAttribute("password", new PasswordChange());
         model.addAttribute("userId", user.getUserID());
         model.addAttribute("username", user.getUsername());
+        model.addAttribute("editingUsername", user.getUsername());
         model.addAttribute("authTypes", AuthType.values());
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
         model.addAttribute("showChangePassword", authenticationService.supportsPasswordChange(user.getAuthType()));

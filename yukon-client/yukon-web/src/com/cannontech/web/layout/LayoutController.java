@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.web.taglib.JsLibrary;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -47,7 +47,6 @@ import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
-import com.cannontech.web.taglib.JsLibrary;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.Writable;
@@ -62,7 +61,6 @@ public class LayoutController {
     private PageDetailProducer pageDetailProducer;
     private ConfigurationSource configurationSource;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private YukonUserDao yukonUserDao;
     
     private List<String> layoutScriptFiles;
     
@@ -217,14 +215,6 @@ public class LayoutController {
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
         
-        String editingUsername;
-        try {
-            Integer userId = null;
-            userId = Integer.parseInt(request.getParameter("userId"));
-            editingUsername = yukonUserDao.getLiteYukonUser(userId).toString();
-            map.addAttribute("editingUsername", editingUsername);
-        } catch(NumberFormatException e) {} 
-        
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
         if (showContextualNavigation) {
@@ -310,11 +300,6 @@ public class LayoutController {
     @Autowired
     public void setyukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
         this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
     }
     
 }
