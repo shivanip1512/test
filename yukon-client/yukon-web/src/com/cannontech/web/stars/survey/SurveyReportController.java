@@ -90,9 +90,22 @@ public class SurveyReportController {
         protected void doValidation(ReportConfig reportConfig, Errors errors) {
             Date start = reportConfig.getStartDate();
             Date end = reportConfig.getStopDate();
-            if (start != null && end != null && !start.before(end)) {
-                errors.reject("startTimeNotBeforeStopTime");
+            
+            if (start == null) {
+                errors.rejectValue("startDate", "startDateRequired");
             }
+
+            if (end == null) {
+                errors.rejectValue("stopDate", "stopDateRequired");
+            }
+
+            if (start != null && end != null && start.after(end)) {
+                YukonValidationUtils.rejectValues(errors,
+                                                  "startTimeNotBeforeStopTime",
+                                                  "startDate",
+                                                  "stopDate");
+            }
+            
             if (question.getQuestionType() == QuestionType.DROP_DOWN) {
                 List<Integer> answerIds = reportConfig.getAnswerIds();
                 if ((answerIds == null || answerIds.size() == 0)

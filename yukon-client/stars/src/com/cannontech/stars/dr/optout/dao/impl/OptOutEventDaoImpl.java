@@ -19,6 +19,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -694,39 +696,50 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(
-            Iterable<SurveyResult> surveyResults) {
+    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(final Iterable<SurveyResult> surveyResults) {
+	    
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 2);
+        
+        SqlFragmentGenerator<SurveyResultIdPair> sqlGenerator = new SqlFragmentGenerator<SurveyResultIdPair>() {
             @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
+            public SqlFragmentSource generate(List<SurveyResultIdPair> surveyResultIdPairs) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT sr.surveyResultId, e.optOutEventId, el.optOutEventLogId,");
-                sql.append(    "e.inventoryId, e.customerAccountId, e.scheduledDate,");
-                sql.append(    "e.startDate, e.stopDate, e.eventCounts, e.eventState");
-                sql.append("FROM optOutEvent e");
-                sql.append(    "JOIN optOutEventLog el ON e.optOutEventId = el.optOutEventId");
-                sql.append(    "JOIN optOutSurveyResult sr ON sr.optOutEventLogId = el.optOutEventLogId");
-                sql.append("WHERE sr.surveyResultId").in(subList);
+                sql.append("SELECT OOSR.SurveyResultId, OOE.OptOutEventId, OOEL.OptOutEventLogId,");
+                sql.append(    "OOE.InventoryId, OOE.CustomerAccountId, OOE.ScheduledDate,");
+                sql.append(    "OOE.StartDate, OOE.StopDate, OOE.EventCounts, OOE.EventState");
+                sql.append("FROM OptOutEvent OOE");
+                sql.append(    "JOIN OptOutEventLog OOEL ON OOE.OptOutEventId = OOEL.OptOutEventId");
+                sql.append(    "JOIN OptOutSurveyResult OOSR ON OOSR.OptOutEventLogId = OOEL.OptOutEventLogId");
+
+                SqlFragmentCollection sureveyResultConditions = SqlFragmentCollection.newOrCollection();
+                for (SurveyResultIdPair surveyResultIdPair : surveyResultIdPairs) {
+                    SqlStatementBuilder surveyResultCondition = new SqlStatementBuilder();
+                    surveyResultCondition.append("(OOSR.SurveyResultId").eq(surveyResultIdPair.getSurveyResultId());
+                    surveyResultCondition.append(" AND OOE.InventoryId").eq(surveyResultIdPair.getInventoryId()).append(")");
+                    sureveyResultConditions.add(surveyResultCondition);
+                }
+                sql.append("WHERE").appendFragment(sureveyResultConditions);
                 return sql;
             }
         };
 
-        Function<SurveyResult, Integer> typeMapper = new Function<SurveyResult, Integer>() {
+        Function<SurveyResult, SurveyResultIdPair> typeMapper = new Function<SurveyResult, SurveyResultIdPair>() {
             @Override
-            public Integer apply(SurveyResult from) {
-                return from.getSurveyResultId();
+            public SurveyResultIdPair apply(SurveyResult surveyResult) {
+                return new SurveyResultIdPair(surveyResult.getSurveyResultId(), surveyResult.getInventoryId());
             }};
-
-        YukonRowMapper<Map.Entry<Integer, OptOutEvent>> mappingRowMapper =
-            new YukonRowMapper<Map.Entry<Integer, OptOutEvent>>() {
+        
+        YukonRowMapper<Map.Entry<SurveyResultIdPair, OptOutEvent>> mappingRowMapper =
+            new YukonRowMapper<Map.Entry<SurveyResultIdPair, OptOutEvent>>() {
                 OptOutEventRowMapper rowMapper = new OptOutEventRowMapper();
+                
                 @Override
-                public Entry<Integer, OptOutEvent> mapRow(YukonResultSet rs)
-                        throws SQLException {
+                public Entry<SurveyResultIdPair, OptOutEvent> mapRow(YukonResultSet rs)throws SQLException {
                     OptOutEvent event = rowMapper.mapRow(rs);
-                    return Maps.immutableEntry(rs.getInt("surveyResultId"), event);
+                    SurveyResultIdPair surveyResultIdPair = 
+                        new SurveyResultIdPair(rs.getInt("SurveyResultId"), rs.getInt("InventoryId"));
+                    return Maps.immutableEntry(surveyResultIdPair, event);
                 }
         };
 
@@ -736,6 +749,50 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         return retVal;
     }
 
+	private static class SurveyResultIdPair {
+	    
+	    private int surveyResultId;
+	    private int inventoryId;
+
+	    public SurveyResultIdPair(int surveyResultId, int inventoryId) {
+	        this.surveyResultId = surveyResultId;
+	        this.inventoryId = inventoryId;
+	    }
+	    
+	    public int getSurveyResultId() {
+            return surveyResultId;
+        }
+	    
+	    public int getInventoryId() {
+            return inventoryId;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + inventoryId;
+            result = prime * result + surveyResultId;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SurveyResultIdPair other = (SurveyResultIdPair) obj;
+            if (inventoryId != other.inventoryId)
+                return false;
+            if (surveyResultId != other.surveyResultId)
+                return false;
+            return true;
+        }
+    }
+	
     private int getFirstEventUser(int optOutEventId) {
 
 	    SqlStatementBuilder sql = new SqlStatementBuilder();

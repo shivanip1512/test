@@ -222,6 +222,5 @@ public interface OptOutEventDao {
 	/**
 	 * Get a map of SurveyResult to OptOutEvent mapping. 
 	 */
-    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(
-            Iterable<SurveyResult> surveyResults);
+    public Map<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(Iterable<SurveyResult> surveyResults);
 }

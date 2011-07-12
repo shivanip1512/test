@@ -154,6 +154,8 @@
 <entry key="yukon.web.modules.survey.reportConfig.showReport">Show Report</entry>
 
 <entry key="yukon.web.modules.survey.reportConfig.atLeasteOneAnswerRequired">At least one answer is required.</entry>
+<entry key="yukon.web.modules.survey.reportConfig.startDateRequired">Start time must be supplied.</entry>
+<entry key="yukon.web.modules.survey.reportConfig.stopDateRequired">Stop time must be supplied.</entry>
 <entry key="yukon.web.modules.survey.reportConfig.startTimeNotBeforeStopTime">Start time must be before end time.</entry>
 
 <entry key="yukon.web.modules.survey.report.pageName">Report</entry>

@@ -227,7 +227,8 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         }
         sql.append("WHERE r.surveyId").eq(surveyId);
         sql.append(    "AND ra.surveyQuestionId").eq(questionId);
-        sql.append(    "AND l.eventAction").eq(OptOutAction.START_OPT_OUT);
+        sql.append(    "AND (l.eventAction").eq_k(OptOutAction.START_OPT_OUT);
+        sql.append(         "OR l.eventAction").eq_k(OptOutAction.SCHEDULE).append(")");
         if (!StringUtils.isBlank(accountNumber)) {
             sql.append("AND r.accountNumber").eq(accountNumber);
         }
@@ -255,30 +256,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             sql.append(    "AND r.whenTaken").lte(end);
         }
 
-        YukonRowMapper<SurveyResult> rowMapper = new YukonRowMapper<SurveyResult>() {
-            @Override
-            public SurveyResult mapRow(YukonResultSet rs)
-                    throws SQLException {
-                SurveyResult retVal = new SurveyResult();
-                retVal.setSurveyResultId(rs.getInt("surveyResultId"));
-                retVal.setSurveyId(rs.getInt("surveyId"));
-                retVal.setWhenTaken(rs.getInstant("whenTaken"));
-                retVal.setAccountId(rs.getNullableInt("accountId"));
-                retVal.setAccountNumber(rs.getString("accountNumber"));
-                int surveyQuestionAnswerId = rs.getInt("surveyQuestionAnswerId");
-                if (rs.wasNull()) {
-                    retVal.setSurveyQuestionAnswerId(null);
-                } else {
-                    retVal.setSurveyQuestionAnswerId(surveyQuestionAnswerId);
-                }
-                retVal.setAnswerKey(rs.getString("answerKey"));
-                retVal.setTextAnswer(rs.getString("textAnswer"));
-                retVal.setInventoryId(rs.getInt("inventoryId"));
-                return retVal;
-            }
-        };
-
-        List<SurveyResult> retVal = yukonJdbcTemplate.query(sql, rowMapper);
+        List<SurveyResult> retVal = yukonJdbcTemplate.query(sql, surveyResultRowMapper);
         return retVal;
     }
 
@@ -292,6 +270,30 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         dbTemplate.setPrimaryKeyValidOver(0);
     }
 
+    public static YukonRowMapper<SurveyResult> surveyResultRowMapper = new YukonRowMapper<SurveyResult>() {
+        @Override
+        public SurveyResult mapRow(YukonResultSet rs)
+                throws SQLException {
+            SurveyResult retVal = new SurveyResult();
+            retVal.setSurveyResultId(rs.getInt("surveyResultId"));
+            retVal.setSurveyId(rs.getInt("surveyId"));
+            retVal.setWhenTaken(rs.getInstant("whenTaken"));
+            retVal.setAccountId(rs.getNullableInt("accountId"));
+            retVal.setAccountNumber(rs.getString("accountNumber"));
+            int surveyQuestionAnswerId = rs.getInt("surveyQuestionAnswerId");
+            if (rs.wasNull()) {
+                retVal.setSurveyQuestionAnswerId(null);
+            } else {
+                retVal.setSurveyQuestionAnswerId(surveyQuestionAnswerId);
+            }
+            retVal.setAnswerKey(rs.getString("answerKey"));
+            retVal.setTextAnswer(rs.getString("textAnswer"));
+            retVal.setInventoryId(rs.getInt("inventoryId"));
+            return retVal;
+        }
+    };
+
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
