@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
@@ -56,6 +57,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         // Get the first (or only) thermostat and add to model
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
+        map.addAttribute("scheduleableThermostatType", SchedulableThermostatType.getByHardwareType(thermostat.getType()));
 
         ThermostatManualEvent event;
         if (thermostatIds.size() == 1) {

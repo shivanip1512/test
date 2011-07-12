@@ -224,34 +224,16 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                                         <cti:msg key="yukon.dr.consumer.thermostat.fan" />
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="arrow"><img id="autoArrow" src="${arrow}" <c:if test="${eventFanState != 'AUTO'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setFan('autoArrow', 'AUTO', this)">
-                                                        <cti:msg key="yukon.dr.consumer.thermostat.fan.AUTO" />
-                                                    </td>
-                                                </tr>
-                                                
-                                                <!-- Utility Pro has an extra fan mode setting -->
-                                                <c:choose>
-                                                    <c:when test="${thermostat.type == 'UTILITY_PRO'}">
-                                                        <tr>
-                                                            <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>></td>
-                                                            <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE', this)">
-                                                                <cti:msg key="yukon.dr.consumer.thermostat.fan.CIRCULATE" />
-                                                            </td>
-                                                        </tr>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <tr><td><span id="circulateArrow"></span></td></tr>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                                
-                                                <tr>
-                                                    <td class="arrow"><img id="onArrow" src="${arrow}" <c:if test="${eventFanState != 'ON'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setFan('onArrow', 'ON', this)">
-                                                        <cti:msg key="yukon.dr.consumer.thermostat.fan.ON" />
-                                                    </td>
-                                                </tr>
+                                                <c:forEach var="fanState" items="${scheduleableThermostatType.supportedFanStates}">
+                                                    <tr>
+                                                        <td class="arrow fanArrow">
+                                                            <img id="${fanState}Arrow" src="${arrow}" <c:if test="${eventFanState != fanState}">style="display: none;" </c:if>>
+                                                        </td>
+                                                        <td class="clickable subItem" onClick="setFan('${fanState}', this)">
+                                                            <cti:msg key="yukon.dr.consumer.thermostat.fan.${fanState}" />
+                                                        </td>                                                   
+                                                    </tr>
+                                                </c:forEach>
                                             </table>
                                             <input id="fan" type="hidden" name="fan" value="${eventFanState}">
                                         </td>

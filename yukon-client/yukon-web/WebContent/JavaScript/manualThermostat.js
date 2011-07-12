@@ -147,12 +147,10 @@
         $('modeConfirm').down('td.value').innerHTML = element.innerHTML;
     }
     
-    function setFan(arrow, fan, element){
+    function setFan(fan, element){
         $('fan').value = fan;
-        $('autoArrow').hide();
-        $('circulateArrow').hide();
-        $('onArrow').hide();
-        $(arrow).show();
+        $$("td.fanArrow img").invoke('hide');
+        $(fan+'Arrow').show();
         $('fanConfirm').down('td.value').innerHTML = element.innerHTML;
     }
     
