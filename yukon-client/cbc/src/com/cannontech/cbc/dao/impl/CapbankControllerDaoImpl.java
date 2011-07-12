@@ -144,7 +144,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			CTILogger.error("Update of controller information in DeviceCBC table failed for cbc with name: " + capbankController.getName());
 		}
 		if (addPoints) {
-			List<PointBase> points = paoDefinitionService.createAllPointsForPao(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
+			List<PointBase> points = paoDefinitionService.createDefaultPointsForPao(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
 			MultiDBPersistent pointMulti = new MultiDBPersistent();
 	        pointMulti.getDBPersistentVector().addAll(points);
 	        try {

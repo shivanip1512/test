@@ -5252,6 +5252,7 @@
         <changeGroup>cap1</changeGroup>
         <points>
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>BANK STATUS</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
@@ -5262,6 +5263,7 @@
         <changeGroup>cap1</changeGroup>
         <points>
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>Capacitor Bank State</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
@@ -5296,6 +5298,7 @@
             </point>
             <!-- STATUS POINTS -->
             <point type="Status" offset="1">
+                <init>true</init>
                 <name>Capacitor Bank State</name>
                 <controltype>NORMAL</controltype>
                 <stategroup value="TwoStateStatus"/>
@@ -5601,99 +5604,123 @@
             </point>
             <!-- STATUS POINTS -->
             <point type="Status" offset="2">
+                <init>true</init>
                 <name>Re-Close Blocked</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
+                <init>true</init>
                 <name>Control Mode</name>
                 <stategroup value="RemoteLocal"/>
             </point>
             <point type="Status" offset="4">
+                <init>true</init>
                 <name>Auto Volt Control</name>
                 <controltype>NORMAL</controltype>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
+                <init>true</init>
                 <name>Last Control - Local</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="6">
+                <init>true</init>
                 <name>Last Control - Remote</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="7">
+                <init>true</init>
                 <name>Last Control - OVUV</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="8">
+                <init>true</init>
                 <name>Last Control - Neutral Fault</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="9">
+                <init>true</init>
                 <name>Last Control - Scheduled</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Last Control - VAR</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="11">
+                <init>true</init>
                 <name>Last Control - Analog</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="12">
+                <init>true</init>
                 <name>Last Control - Temperature</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="13">
+                <init>true</init>
                 <name>OV Condition</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="14">
+                <init>true</init>
                 <name>UV Condition</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="15">
+                <init>true</init>
                 <name>Op Failed - Neutral Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="16">
+                <init>true</init>
                 <name>Neutral Current Fault</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="17">
+                <init>true</init>
                 <name>VAR Alarm</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="24">
+                <init>true</init>
                 <name>Bad Relay</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="25">
+                <init>true</init>
                 <name>Daily Max Ops</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="26">
+                <init>true</init>
                 <name>Voltage Delta Abnormal</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="27">
+                <init>true</init>
                 <name>Temp Alarm</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="28">
+                <init>true</init>
                 <name>DST Active</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="29">
+                <init>true</init>
                 <name>Neutral Lockout</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="30">
+                <init>true</init>
                 <name>Power Flow</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="34">
+                <init>true</init>
                 <name>Control Ignored Indicator</name>
                 <stategroup value="TrueFalse"/>
             </point>
@@ -5746,78 +5773,97 @@
             </point>
             <!-- STATUS POINTS -->
             <point type="Status" offset="2">
+                <init>true</init>
                 <name>SCADA Override</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
+                <init>true</init>
                 <name>Neutral Lockout</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="4">
+                <init>true</init>
                 <name>CVR Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
+                <init>true</init>
                 <name>Line Voltage High</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="6">
+                <init>true</init>
                 <name>Line Voltage Low</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="14">
+                <init>true</init>
                 <name>Temperature High</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="15">
+                <init>true</init>
                 <name>Temperature Low</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="68">
+                <init>true</init>
                 <name>Operation Failed</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="69">
+                <init>true</init>
                 <name>Max Operation Count</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="70">
+                <init>true</init>
                 <name>Bad Active Close Relay</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="71">
+                <init>true</init>
                 <name>Bad Active Trip Relay</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="72">
+                <init>true</init>
                 <name>Abnormal Delta Voltage</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="73">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="74">
+                <init>true</init>
                 <name>Power On</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="85">
+                <init>true</init>
                 <name>Relay Sense Failed</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="86">
+                <init>true</init>
                 <name>Reclose Block</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="88">
+                <init>true</init>
                 <name>Manual Control Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="89">
+                <init>true</init>
                 <name>Remote Control Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="90">
+                <init>true</init>
                 <name>Auto Control Mode</name>
                 <stategroup value="TrueFalse"/>
             </point>
