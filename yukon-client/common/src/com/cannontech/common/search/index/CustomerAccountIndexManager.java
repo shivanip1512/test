@@ -89,7 +89,7 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(this.getDocumentQuery());
-        sql.append("AND AccountId").eq(accountId);
+        sql.append("WHERE AccountId").eq(accountId);
         
         docList = this.jdbcTemplate.query(sql.getSql(), sql.getArguments(), new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
