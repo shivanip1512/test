@@ -223,14 +223,27 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            //Check for stale data.
-            if ( checkForStaleData( request, timeNow ) )     // something is stale
+            bool hasStaleData           = checkForStaleData( request, timeNow );
+            bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
+
+            if ( hasStaleData || hasAutoModeRegulator )
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Stale Data." << std::endl;
+
+                    if ( hasStaleData )
+                    {
+                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() 
+                             << "  Analysis Interval: Stale Data." << std::endl;
+                    }
+
+                    if ( hasAutoModeRegulator )
+                    {
+                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                             << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
+                    }
                 }
 
                 state->setCommsRetryCount(state->getCommsRetryCount() + 1);
@@ -239,23 +252,25 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setState(IVVCState::IVVC_WAIT);
                     state->setCommsRetryCount(0);
 
-                    bool showCommsLostMsg = false;
                     if ( ! state->isCommsLost() )
                     {
-                        showCommsLostMsg = true;
                         state->setCommsLost(true);
-                        handleCommsLost( state, subbus );
-                    }
 
-                    if ( showCommsLostMsg )
-                    {
+                        handleCommsLost( state, subbus );
+
+                        if ( hasAutoModeRegulator )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Analysis Suspended for bus: " << subbus->getPaoName()
+                                 << ". One or more Voltage Regulators are in 'Auto' mode." << std::endl;
+                        }
+
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
                         }
                     }
-
                     request->reportStatusToLog();
                 }
                 break;
@@ -296,34 +311,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 "cap control") );
 
                     sendEvents(dispatchConnection, ccEvents);
+
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
+                    }
                 }
             }
         }
         case IVVCState::IVVC_ANALYZE_DATA:
         {
-            // If a voltage regulator is in 'Auto' mode we don't want to run the analysis.
-            if ( ! allRegulatorsInRemoteMode(subbusId) )
-            {
-                if ( state->isShowRegulatorAutoModeMsg() )
-                {
-                    state->setShowRegulatorAutoModeMsg(false);
-
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Analysis Suspended for bus: " << subbus->getPaoName()
-                         << ". One or more Voltage Regulators are in 'Auto' mode." << std::endl;
-                }
-                return;
-            }
-            else
-            {
-                if ( ! state->isShowRegulatorAutoModeMsg() )
-                {
-                    state->setShowRegulatorAutoModeMsg(true);
-        
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
-                }
-            }
             if ( busAnalysisState(state, subbus, strategy, dispatchConnection) )
             {
                 break;

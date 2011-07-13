@@ -70,9 +70,6 @@ class IVVCState
         void setShowBusDisableMsg(const bool flag);
         bool isShowBusDisableMsg() const;
 
-        void setShowRegulatorAutoModeMsg(const bool flag);
-        bool isShowRegulatorAutoModeMsg() const;
-
         void setShowNoRegulatorAttachedMsg(const bool flag);
         bool isShowNoRegulatorAttachedMsg() const;
 
@@ -123,7 +120,6 @@ class IVVCState
 
         bool _showVarCheckFailMsg;
         bool _showSubbusDisableMsg;
-        bool _showRegulatorAutoModeMsg;
         bool _showNoRegulatorAttachedMsg;
 
         bool _commsLost;

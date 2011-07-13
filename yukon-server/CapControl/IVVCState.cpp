@@ -8,7 +8,6 @@ IVVCState::IVVCState() :
     _paoId(0),
     _showVarCheckFailMsg(true),
     _showSubbusDisableMsg(true),
-    _showRegulatorAutoModeMsg(true),
     _showNoRegulatorAttachedMsg(true),
     _commsLost(false),
     _commsRetryCount(0),
@@ -133,18 +132,6 @@ void IVVCState::setShowBusDisableMsg(const bool flag)
 bool IVVCState::isShowBusDisableMsg() const
 {
     return _showSubbusDisableMsg;
-}
-
-
-void IVVCState::setShowRegulatorAutoModeMsg(const bool flag)
-{
-    _showRegulatorAutoModeMsg = flag;
-}
-
-
-bool IVVCState::isShowRegulatorAutoModeMsg() const
-{
-    return _showRegulatorAutoModeMsg;
 }
 
 void IVVCState::setShowNoRegulatorAttachedMsg(const bool flag)
