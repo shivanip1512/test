@@ -1426,8 +1426,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
-        PointValueMap zonePointValues;      // point values for stuff assigned to the current zone ID
-
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
         try
@@ -1436,6 +1434,8 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
             for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
+                PointValueMap zonePointValues;      // point values for stuff assigned to the current zone ID
+
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
