@@ -171,25 +171,25 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public Map<PaoPointIdentifier, PointInfo> getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+    public Map<PaoPointIdentifier, PointInfo> getPointInfoById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
-                                                                  String pointName) {
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                 String pointName) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
-                                                                    String defaultName) {
+    public Map<PaoIdentifier, PointInfo> getPointInfoByDefaultName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                   String defaultName) {
         return null;
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
-                                                                      PointIdentifier pointIdentifier) {
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointIdentifier(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                       PointIdentifier pointIdentifier) {
         return null;
     }
 

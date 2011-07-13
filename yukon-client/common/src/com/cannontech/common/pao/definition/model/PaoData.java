@@ -21,22 +21,13 @@ public class PaoData {
         new Function<PaoData, PaoIdentifier>() {
             @Override
             public PaoIdentifier apply(PaoData from) {
-                return from.getPaoId();
+                return from.getPaoIdentifier();
             }
         };
 
-    public final static ImmutableSet<OptionalField> optionalFieldsFulfilledFromYukonPao;
-    static {
-        ImmutableSet.Builder<OptionalField> builder = ImmutableSet.builder();
-        builder.add(OptionalField.NAME);
-        builder.add(OptionalField.ENABLED);
-        builder.add(OptionalField.CARRIER_ADDRESS);
-        optionalFieldsFulfilledFromYukonPao = builder.build();
-    }
-
     private ImmutableSet<OptionalField> responseFields;
 
-    private PaoIdentifier paoId;
+    private PaoIdentifier paoIdentifier;
     private String name;
     private boolean enabled;
     private String meterNumber;
@@ -47,17 +38,17 @@ public class PaoData {
      * responseFields populated.  This Set is used by this class to help error check--if a caller
      * requests a field not in responseFields, an exception will be thrown.
      */
-    public PaoData(ImmutableSet<OptionalField> responseFields, PaoIdentifier paoId) {
+    public PaoData(ImmutableSet<OptionalField> responseFields, PaoIdentifier paoIdentifier) {
         this.responseFields = responseFields;
-        this.paoId = paoId;
+        this.paoIdentifier = paoIdentifier;
     }
 
     public Set<OptionalField> getRequestedFields() {
         return responseFields;
     }
 
-    public PaoIdentifier getPaoId() {
-        return paoId;
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 
     public String getName() {

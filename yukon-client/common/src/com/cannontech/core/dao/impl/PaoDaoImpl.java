@@ -595,7 +595,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public Map<Integer, PaoIdentifier> findPaoIdsByCarrierAddress(Iterable<Integer> carrierAddresses) {
+    public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses) {
         ChunkingMappedSqlTemplate template =
             new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
@@ -604,7 +604,7 @@ public final class PaoDaoImpl implements PaoDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT YP.PaobjectId, YP.Type, CS.Address");
                 sql.append("FROM YukonPaobject YP");
-                sql.append(  "LEFT JOIN DeviceCarrierSettings CS ON YP.PaobjectId = CS.DeviceId");
+                sql.append(  "JOIN DeviceCarrierSettings CS ON YP.PaobjectId = CS.DeviceId");
                 sql.append("WHERE CS.Address").in(subList);
                 return sql;
             }
@@ -628,7 +628,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public Map<String, PaoIdentifier> findPaoIdsByMeterNumber(Iterable<String> meterNumbers) {
+    public Map<String, PaoIdentifier> findPaoIdentifiersByMeterNumber(Iterable<String> meterNumbers) {
         ChunkingMappedSqlTemplate template =
             new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
@@ -661,7 +661,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public Map<String, PaoIdentifier> findPaoIdsByName(Iterable<String> names) {
+    public Map<String, PaoIdentifier> findPaoIdentifiersByName(Iterable<String> names) {
         ChunkingMappedSqlTemplate template =
             new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 

@@ -71,7 +71,7 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
     private void addNeededData(List<PaoData> paosNeedingData,
                                ImmutableSet<OptionalField> responseFields,
                                OptionalField alreadyFulfilled) {
-        Set<OptionalField> neededFields = Sets.newHashSet(responseFields);
+        Set<OptionalField> neededFields = Sets.newEnumSet(responseFields, OptionalField.class);
         if (alreadyFulfilled != null) {
             neededFields.remove(alreadyFulfilled);
         }
@@ -88,21 +88,21 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         @Override
         public void selectPaos(List<Node> nodes, ImmutableSet<OptionalField> responseFields,
                                Map<PaoIdentifier, PaoData> into) {
-            List<Integer> carrierAddresses = Lists.newArrayList();
+            List<Integer> carrierAddresses = Lists.newArrayListWithCapacity(nodes.size());
             for (Node node : nodes) {
                 carrierAddresses.add(YukonXml.getXPathTemplateForNode(node).evaluateAsInt("@value"));
             }
 
-            List<PaoData> newPaos = Lists.newArrayList();
             Map<Integer, PaoIdentifier> paoIdsByCarrierAddress =
-                paoDao.findPaoIdsByCarrierAddress(carrierAddresses);
+                paoDao.findPaoIdentifiersByCarrierAddress(carrierAddresses);
+            List<PaoData> newPaos = Lists.newArrayListWithCapacity(paoIdsByCarrierAddress.size());
             for (Map.Entry<Integer, PaoIdentifier> entry : paoIdsByCarrierAddress.entrySet()) {
                 Integer carrierAddress = entry.getKey();
-                PaoIdentifier paoId = entry.getValue();
+                PaoIdentifier paoIdentifier = entry.getValue();
 
-                PaoData paoData = new PaoData(responseFields, paoId);
+                PaoData paoData = new PaoData(responseFields, paoIdentifier);
                 paoData.setCarrierAddress(carrierAddress);
-                into.put(paoId, paoData);
+                into.put(paoIdentifier, paoData);
                 newPaos.add(paoData);
             }
 
@@ -126,9 +126,9 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
             List<PaoData> newPaos = Lists.newArrayList();
             for (SimpleDevice device : devices) {
-                PaoIdentifier paoId = device.getPaoIdentifier();
-                PaoData paoData = new PaoData(responseFields, paoId);
-                into.put(paoId, paoData);
+                PaoIdentifier paoIdentifier = device.getPaoIdentifier();
+                PaoData paoData = new PaoData(responseFields, paoIdentifier);
+                into.put(paoIdentifier, paoData);
                 newPaos.add(paoData);
             }
 
@@ -146,14 +146,15 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
             }
 
             List<PaoData> newPaos = Lists.newArrayList();
-            Map<String, PaoIdentifier> paoIdsByMeterNumber = paoDao.findPaoIdsByMeterNumber(meterNumbers);
+            Map<String, PaoIdentifier> paoIdsByMeterNumber =
+                paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
             for (Map.Entry<String, PaoIdentifier> entry : paoIdsByMeterNumber.entrySet()) {
                 String meterNumber = entry.getKey();
-                PaoIdentifier paoId = entry.getValue();
+                PaoIdentifier paoIdentifier = entry.getValue();
 
-                PaoData paoData = new PaoData(responseFields, paoId);
+                PaoData paoData = new PaoData(responseFields, paoIdentifier);
                 paoData.setMeterNumber(meterNumber);
-                into.put(paoId, paoData);
+                into.put(paoIdentifier, paoData);
                 newPaos.add(paoData);
             }
 
@@ -171,14 +172,14 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
             }
 
             List<PaoData> newPaos = Lists.newArrayList();
-            Map<String, PaoIdentifier> paoIdsByName = paoDao.findPaoIdsByName(paoNames);
+            Map<String, PaoIdentifier> paoIdsByName = paoDao.findPaoIdentifiersByName(paoNames);
             for (Map.Entry<String, PaoIdentifier> entry : paoIdsByName.entrySet()) {
                 String paoName = entry.getKey();
-                PaoIdentifier paoId = entry.getValue();
+                PaoIdentifier paoIdentifier = entry.getValue();
 
-                PaoData paoData = new PaoData(responseFields, paoId);
+                PaoData paoData = new PaoData(responseFields, paoIdentifier);
                 paoData.setName(paoName);
-                into.put(paoId, paoData);
+                into.put(paoIdentifier, paoData);
                 newPaos.add(paoData);
             }
 
@@ -198,9 +199,9 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
 
             List<PaoData> newPaos = Lists.newArrayList();
             List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
-            for (PaoIdentifier paoId : paoIdentifiers) {
-                PaoData paoData = new PaoData(responseFields, paoId);
-                into.put(paoId, paoData);
+            for (PaoIdentifier paoIdentifier : paoIdentifiers) {
+                PaoData paoData = new PaoData(responseFields, paoIdentifier);
+                into.put(paoIdentifier, paoData);
                 newPaos.add(paoData);
             }
 

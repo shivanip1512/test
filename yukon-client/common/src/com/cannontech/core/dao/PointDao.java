@@ -90,16 +90,16 @@ public interface PointDao {
      * return as few instances of PointInfo as possible.
      */
     public Map<PaoPointIdentifier, PointInfo>
-        getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers);
+        getPointInfoById(Iterable<PaoPointIdentifier> paoPointIdentifiers);
 
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
-                                                                  String pointName);
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                 String pointName);
 
-    public Map<PaoIdentifier, PointInfo> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
-                                                                    String defaultName);
+    public Map<PaoIdentifier, PointInfo> getPointInfoByDefaultName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                   String defaultName);
 
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
-                                                                        PointIdentifier pointIdentifier);
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointIdentifier(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                       PointIdentifier pointIdentifier);
 
     /**
      * Optimized lookup of just the point id.

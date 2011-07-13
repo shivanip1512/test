@@ -26,9 +26,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -57,7 +55,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.Phase;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 
@@ -321,62 +319,55 @@ public final class PointDaoImpl implements PointDao {
 	        retVal = pointInfo;
 	    }
 	    return retVal;
-	}
+    }
 
 	@Override
-    public Map<PaoPointIdentifier, PointInfo> getLitePointsById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 3);
-        final Map<Integer, PaoIdentifier> paoIdentifiersByPaoId = Maps.newHashMap();
-        for (PaoPointIdentifier paoPointId : paoPointIdentifiers) {
-            PaoIdentifier paoId = paoPointId.getPaoIdentifier();
-            paoIdentifiersByPaoId.put(paoId.getPaoId(), paoId);
-        }
+    public Map<PaoPointIdentifier, PointInfo> getPointInfoById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+	    ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+	    Map<PaoPointIdentifier, PointInfo> retVal = Maps.newHashMap();
 
-        final Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
-        SqlFragmentGenerator<PaoPointIdentifier> sqlGenerator =
-            new SqlFragmentGenerator<PaoPointIdentifier>() {
-                public SqlFragmentSource generate(List<PaoPointIdentifier> subList) {
-                    SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append("SELECT P.PointId, P.PointName, P.PointType, P.PaobjectId,");
-                    sql.append(  "P.PointOffset, P.StateGroupId, UM.UomName");
-                    sql.append("FROM Point P");
-                    sql.append(  "LEFT JOIN PointUnit PU ON P.PointId = PU.PointId");
-                    sql.append(  "LEFT JOIN UnitMeasure UM ON PU.UomId = UM.UomId");
-                    sql.append("WHERE");
-                    SqlFragmentCollection paoPointIdConditions =
-                        SqlFragmentCollection.newOrCollection();
-                    for (PaoPointIdentifier paoPointId : subList) {
-                        SqlStatementBuilder paoPointIdCondition = new SqlStatementBuilder();
-                        paoPointIdCondition.append("P.PaobjectId").eq(paoPointId.getPaoIdentifier().getPaoId());
-                        paoPointIdCondition.append("AND P.PointType").eq_k(paoPointId.getPointIdentifier().getPointType());
-                        paoPointIdCondition.append("AND P.PointOffset").eq_k(paoPointId.getPointIdentifier().getOffset());
-                        paoPointIdConditions.add(paoPointIdCondition);
+	    ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap =
+            PaoUtils.mapPaoPointIdentifiers(paoPointIdentifiers);
+        for (final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()) {
+            ImmutableCollection<PaoIdentifier> paoIdentifiers =
+                paoPointIdentifiersMap.get(pointIdentifier);
+
+            final Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
+            SqlFragmentGenerator<Integer> sqlGenerator =
+                new SqlFragmentGenerator<Integer>() {
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT P.PointId, P.PointName, P.PointType, P.PaobjectId,");
+                        sql.append(  "P.PointOffset, P.StateGroupId, UM.UomName");
+                        sql.append("FROM Point P");
+                        sql.append(  "LEFT JOIN PointUnit PU ON P.PointId = PU.PointId");
+                        sql.append(  "LEFT JOIN UnitMeasure UM ON PU.UomId = UM.UomId");
+                        sql.append("WHERE P.PointType").eq_k(pointIdentifier.getPointType());
+                        sql.append(  "AND P.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND P.PaobjectId").in(subList);
+                        return sql;
                     }
-                    sql.append(paoPointIdConditions);
-                    return sql;
-                }
-            };
+                };
 
-        Function<PaoPointIdentifier, PaoPointIdentifier> typeMapper = Functions.identity();
-        YukonRowMapper<Map.Entry<PaoPointIdentifier, PointInfo>> rowMapper =
-            new YukonRowMapper<Entry<PaoPointIdentifier, PointInfo>>() {
-                @Override
-                public Map.Entry<PaoPointIdentifier, PointInfo> mapRow(YukonResultSet rs)
-                        throws SQLException {
-                    PaoIdentifier paoIdentifier = paoIdentifiersByPaoId.get(rs.getInt("PaobjectId"));
-                    PointType pointType = rs.getEnum("PointType", PointType.class);
-                    int offset = rs.getInt("PointOffset");
-                    PointIdentifier pointIdentifier = new PointIdentifier(pointType, offset);
-                    PaoPointIdentifier paoPointIdentifier =
-                        new PaoPointIdentifier(paoIdentifier, pointIdentifier);
-                    PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
-                    return Maps.immutableEntry(paoPointIdentifier, pointInfo);
-                }
-            };
+            YukonRowMapper<Map.Entry<Integer, PointInfo>> rowMapper =
+                new YukonRowMapper<Entry<Integer, PointInfo>>() {
+                    @Override
+                    public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs)
+                            throws SQLException {
+                        Integer paoId = rs.getInt("PaobjectId");
+                        PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
+                        return Maps.immutableEntry(paoId, pointInfo);
+                    }
+                };
 
-        Map<PaoPointIdentifier, PointInfo> retVal =
-            template.mappedQuery(sqlGenerator, paoPointIdentifiers, rowMapper, typeMapper);
+            final Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
+            Map<PaoIdentifier, PointInfo> pointInfosForPoint =
+                template.mappedQuery(sqlGenerator, paoIdentifiers, rowMapper, paoIdFunction);
+
+            for (Map.Entry<PaoIdentifier, PointInfo> entry : pointInfosForPoint.entrySet()) {
+                retVal.put(new PaoPointIdentifier(entry.getKey(), pointIdentifier), entry.getValue());
+            }
+        }
 
         return retVal;
     }
@@ -394,8 +385,8 @@ public final class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointName(Iterable<PaoIdentifier> paos,
-                                                                  final String pointName) {
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                 final String pointName) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator =
@@ -416,15 +407,15 @@ public final class PointDaoImpl implements PointDao {
         Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
 
         Map<PaoIdentifier, PointInfo> retVal =
-            template.mappedQuery(sqlGenerator, paos, new EntryRowMapper(), paoIdFunction);
+            template.mappedQuery(sqlGenerator, paoIdentifiers, new EntryRowMapper(), paoIdFunction);
 
         return retVal;
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByDefaultName(Iterable<PaoIdentifier> paos,
-                                                                    String defaultPointName) {
-        ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paos);
+    public Map<PaoIdentifier, PointInfo> getPointInfoByDefaultName(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                   String defaultPointName) {
+        ImmutableMultimap<PaoType, PaoIdentifier> paosByType = PaoUtils.mapPaoTypes(paoIdentifiers);
 
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
@@ -451,7 +442,7 @@ public final class PointDaoImpl implements PointDao {
             Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
 
             Map<PaoIdentifier, PointInfo> paoTypeResults =
-                template.mappedQuery(sqlGenerator, paos, new EntryRowMapper(), paoIdFunction);
+                template.mappedQuery(sqlGenerator, paoIdentifiers, new EntryRowMapper(), paoIdFunction);
             retVal.putAll(paoTypeResults);
         }
 
@@ -459,8 +450,8 @@ public final class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public Map<PaoIdentifier, PointInfo> getLitePointsByPointIdentifier(Iterable<PaoIdentifier> paos,
-                                                                        final PointIdentifier pointIdentifier) {
+    public Map<PaoIdentifier, PointInfo> getPointInfoByPointIdentifier(Iterable<PaoIdentifier> paoIdentifiers,
+                                                                       final PointIdentifier pointIdentifier) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator =
@@ -482,7 +473,7 @@ public final class PointDaoImpl implements PointDao {
         Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
 
         Map<PaoIdentifier, PointInfo> retVal =
-            template.mappedQuery(sqlGenerator, paos, new EntryRowMapper(), paoIdFunction);
+            template.mappedQuery(sqlGenerator, paoIdentifiers, new EntryRowMapper(), paoIdFunction);
 
         return retVal;
     }

@@ -21,6 +21,7 @@ import org.springframework.xml.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -95,15 +96,18 @@ public class ArchivedValuesRequestEndpoint {
 
             Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
             ImmutableSet<PaoData.OptionalField> requestedPaoFields = getOptionalPaoFields(responseFields);
-            Map<PaoIdentifier, PaoData> paoDataByPaoId =
+            log.debug("looking up PAOs");
+            Map<PaoIdentifier, PaoData> paoDataByPaoIdentifier =
                 paoSelectionService.selectPaoIdentifiersAndGetData(paosNode, requestedPaoFields);
-            responseData.setPaoDataByPaoId(paoDataByPaoId);
+            responseData.setPaoDataByPaoIdentifier(paoDataByPaoIdentifier);
             boolean flatten =
                 requestTemplate.evaluateAsBoolean("/y:archivedValuesRequest/y:response/@flatten", false);
             responseData.setFlatten(flatten);
 
+            log.debug("building PAO Elements");
             buildPaoElements(responseData, response);
 
+            log.debug("processing points");
             for (Node pointNode : pointNodes) {
                 buildResponseForPoint(pointNode, responseData, response);
             }
@@ -167,7 +171,7 @@ public class ArchivedValuesRequestEndpoint {
 
         for (PaoData paoData : responseData.getAllPaoData()) {
             Element paoElement = createPaoElement(paoData, responseData);
-            responseData.addPaoElement(paoData.getPaoId(), paoElement);
+            responseData.addPaoElement(paoData.getPaoIdentifier(), paoElement);
             response.addContent(paoElement);
         }
     }
@@ -176,10 +180,11 @@ public class ArchivedValuesRequestEndpoint {
                                        Element response) {
         SimpleXPathTemplate pointNodeTemplate = YukonXml.getXPathTemplateForNode(pointNode);
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
-        Set<PaoIdentifier> paoIds = responseData.getPaoIds();
+        Set<PaoIdentifier> paoIdentifiers = responseData.getPaoIdentifiers();
 
         PointSelector pointSelector = new PointSelector(pointNodeTemplate);
-        log.debug("building response for point " + pointSelector);
+        LogHelper.debug(log, "building response for point %1$s for %2$d PAOs",
+                        pointSelector, paoIdentifiers.size());
 
         // handle timeframe selectors
         List<Node> pointValueNodes = pointNodeTemplate.evaluateAsNodeList("*[position()>1]");
@@ -196,47 +201,48 @@ public class ArchivedValuesRequestEndpoint {
                 || responseFields.contains(ResponseDescriptor.POINT_TYPE)
                 || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)
                 || responseFields.contains(ResponseDescriptor.STATUS_TEXT)) {
-            pointInfoById = historySelector.getPointInfo(pointSelector, paoIds);
+            pointInfoById = historySelector.getPointInfo(pointSelector, paoIdentifiers);
         }
 
-        Map<PaoIdentifier, Element> pointElementsByPaoId = Maps.newHashMap();
+        Map<PaoIdentifier, Element> pointElementsByPaoIdentifier = Maps.newHashMap();
         for (PointValueSelector valueSelector : inputPointElement.getPointValueSelectors()) {
-            log.debug("  working on " + valueSelector);
+            LogHelper.debug(log, "  working on %1$s", valueSelector);
             ListMultimap<PaoIdentifier, PointValueQualityHolder> valueMap = null;
             if (valueSelector.getValueSelectorType() == SelectorType.SNAPSHOT) {
                 valueMap =
-                    historySelector.getPointSnapshotMap(paoIds, pointSelector, valueSelector);
+                    historySelector.getPointSnapshotMap(paoIdentifiers, pointSelector, valueSelector);
             }
             else {
                 valueMap =
-                    historySelector.getPointValueMap(paoIds, pointSelector, valueSelector);
+                    historySelector.getPointValueMap(paoIdentifiers, pointSelector, valueSelector);
             }
 
             String valueLabel = valueSelector.getLabel();
-            for (PaoIdentifier paoId : paoIds) {
-                log.debug("    pao " + paoId);
-                PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoId);
-                Element paoElement = responseData.getPaoElement(paoId);
+            for (PaoIdentifier paoIdentifier : paoIdentifiers) {
+                LogHelper.debug(log, "    pao %1$s", paoIdentifier);
+                PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoIdentifier);
+                Element paoElement = responseData.getPaoElement(paoIdentifier);
                 Element pointElement = null;
                 if (!responseData.isFlatten()) {
-                    pointElement = pointElementsByPaoId.get(paoId);
+                    pointElement = pointElementsByPaoIdentifier.get(paoIdentifier);
                     if (pointElement == null) {
-                        pointElement = createPointElement(pointInfo, pointSelector, paoId, responseData);
+                        pointElement = createPointElement(pointInfo, pointSelector, paoIdentifier, responseData);
                         paoElement.addContent(pointElement);
-                        pointElementsByPaoId.put(paoId, pointElement);
+                        pointElementsByPaoIdentifier.put(paoIdentifier, pointElement);
                     }
                 }
 
-                PaoData paoData = responseData.getPaoData(paoId);
+                PaoData paoData = responseData.getPaoData(paoIdentifier);
                 Map<Integer, LiteState> statesForStateGroupId = null;
                 if (pointInfo != null) {
                     statesForStateGroupId =
                         getStatesForGroupId(pointInfo.getStateGroupId(), responseData);
                 }
-                List<PointValueQualityHolder> values = valueMap.get(paoId);
+                List<PointValueQualityHolder> values = valueMap.get(paoIdentifier);
                 List<Element> valueElementList = Lists.newArrayList();
                 for (PointValueQualityHolder value : values) {
-                    log.debug("      " + value.getPointDataTimeStamp() + "/" + value.getValue());
+                    LogHelper.debug(log, "      %1$tc/%2$f", value.getPointDataTimeStamp(),
+                                    value.getValue());
                     if (responseData.isFlatten()) {
                         Element valueElement =
                             buildFlatValue(value, responseFields, valueLabel, paoData, pointInfo,
@@ -281,7 +287,7 @@ public class ArchivedValuesRequestEndpoint {
                                                   statesForStateGroupId);
 
         addPaoAttributes(valueElement, paoData, responseFields);
-        addPointData(valueElement, pointInfo, pointSelector, paoData.getPaoId(), responseFields);
+        addPointData(valueElement, pointInfo, pointSelector, paoData.getPaoIdentifier(), responseFields);
 
         if (label != null) {
             valueElement.setAttribute("label", label);
@@ -301,13 +307,13 @@ public class ArchivedValuesRequestEndpoint {
 
     private void addPaoAttributes(Element element, PaoData paoData,
                                   Set<ResponseDescriptor> responseFields) {
-        PaoIdentifier paoId = paoData.getPaoId();
+        PaoIdentifier paoIdentifier = paoData.getPaoIdentifier();
         if (responseFields.contains(ResponseDescriptor.PAO_TYPE)) {
-            element.setAttribute("paoType", paoId.getPaoType().getDbString());
+            element.setAttribute("paoType", paoIdentifier.getPaoType().getDbString());
         }
 
         if (responseFields.contains(ResponseDescriptor.PAO_ID)) {
-            element.setAttribute("paoId", Integer.toString(paoId.getPaoId()));
+            element.setAttribute("paoId", Integer.toString(paoIdentifier.getPaoId()));
         }
 
         if (responseFields.contains(ResponseDescriptor.NAME)) {
@@ -331,12 +337,12 @@ public class ArchivedValuesRequestEndpoint {
     }
 
     private Element createPointElement(PointInfo pointInfo, PointSelector pointSelector,
-                                       PaoIdentifier paoId,
+                                       PaoIdentifier paoIdentifier,
                                        ArchivedValuesResponseData responseData) {
         Element pointElement = new Element("point", ns);
 
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
-        addPointData(pointElement, pointInfo, pointSelector, paoId, responseFields);
+        addPointData(pointElement, pointInfo, pointSelector, paoIdentifier, responseFields);
 
         return pointElement;
     }
@@ -359,14 +365,13 @@ public class ArchivedValuesRequestEndpoint {
     }
 
     private void addPointData(Element element, PointInfo pointInfo, PointSelector pointSelector,
-                              PaoIdentifier paoId, Set<ResponseDescriptor> responseFields) {
+                              PaoIdentifier paoIdentifier, Set<ResponseDescriptor> responseFields) {
         if (responseFields.contains(ResponseDescriptor.POINT_NAME)
                 || responseFields.contains(ResponseDescriptor.POINT_TYPE)
                 || responseFields.contains(ResponseDescriptor.UNIT_OF_MEASURE)) {
             if (pointInfo == null) {
                 throw new NullPointerException("could not find pointInfo for point "
-                                               + pointSelector + " and pao "
-                                               + paoId);
+                                               + pointSelector + " and pao " + paoIdentifier);
             }
 
             if (responseFields.contains(ResponseDescriptor.POINT_NAME)) {
@@ -481,9 +486,9 @@ public class ArchivedValuesRequestEndpoint {
                 paoPointIdentifiers.add(attributeService.getPaoPointIdentifierForAttribute(pao, attribute));
             }
             Map<PaoIdentifier, PointInfo> retVal = Maps.newHashMap();
-            Map<PaoPointIdentifier, PointInfo> litePointsById =
-                pointDao.getLitePointsById(paoPointIdentifiers);
-            for (Entry<PaoPointIdentifier, PointInfo> entry : litePointsById.entrySet()) {
+            Map<PaoPointIdentifier, PointInfo> pointInfoById =
+                pointDao.getPointInfoById(paoPointIdentifiers);
+            for (Entry<PaoPointIdentifier, PointInfo> entry : pointInfoById.entrySet()) {
                 retVal.put(entry.getKey().getPaoIdentifier(), entry.getValue());
             }
             return retVal;
@@ -527,7 +532,7 @@ public class ArchivedValuesRequestEndpoint {
         @Override
         public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
                                                           Set<PaoIdentifier> paos) {
-            return pointDao.getLitePointsByPointName(paos, pointSelector.getName());
+            return pointDao.getPointInfoByPointName(paos, pointSelector.getName());
         }
     }
 
@@ -569,7 +574,7 @@ public class ArchivedValuesRequestEndpoint {
         @Override
         public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
                                                           Set<PaoIdentifier> paos) {
-            return pointDao.getLitePointsByPointIdentifier(paos, pointSelector.getPointIdentifier());
+            return pointDao.getPointInfoByPointIdentifier(paos, pointSelector.getPointIdentifier());
         }
     }
 
@@ -612,7 +617,7 @@ public class ArchivedValuesRequestEndpoint {
         @Override
         public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector,
                                                           Set<PaoIdentifier> paos) {
-            return pointDao.getLitePointsByDefaultName(paos, pointSelector.getName());
+            return pointDao.getPointInfoByDefaultName(paos, pointSelector.getName());
         }
     }
 

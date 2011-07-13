@@ -14,12 +14,12 @@ public class ArchivedValuesResponseData {
     private Set<ResponseDescriptor> responseFields;
     private boolean flatten;
     private Map<PaoIdentifier, Element> paoElements = Maps.newHashMap();
-    private Map<PaoIdentifier, PaoData> paoDataByPaoId;
+    private Map<PaoIdentifier, PaoData> paoDataByPaoIdentifier;
 
     private Map<Integer, Map<Integer, LiteState>> statesByGroupIdAndRawState = Maps.newHashMap();
 
-    public Set<PaoIdentifier> getPaoIds() {
-        return paoDataByPaoId.keySet();
+    public Set<PaoIdentifier> getPaoIdentifiers() {
+        return paoDataByPaoIdentifier.keySet();
     }
 
     public Set<ResponseDescriptor> getResponseFields() {
@@ -38,25 +38,25 @@ public class ArchivedValuesResponseData {
         this.flatten = flatten;
     }
 
-    public Element getPaoElement(PaoIdentifier paoId) {
-        return paoElements.get(paoId);
+    public Element getPaoElement(PaoIdentifier paoIdentifier) {
+        return paoElements.get(paoIdentifier);
     }
 
-    public void addPaoElement(PaoIdentifier paoId, Element element) {
-        paoElements.put(paoId, element);
+    public void addPaoElement(PaoIdentifier paoIdentifier, Element element) {
+        paoElements.put(paoIdentifier, element);
     }
 
 
-    public PaoData getPaoData(PaoIdentifier paoId) {
-        return paoDataByPaoId.get(paoId);
+    public PaoData getPaoData(PaoIdentifier paoIdentifier) {
+        return paoDataByPaoIdentifier.get(paoIdentifier);
     }
 
     public Iterable<PaoData> getAllPaoData() {
-        return paoDataByPaoId.values();
+        return paoDataByPaoIdentifier.values();
     }
 
-    public void setPaoDataByPaoId(Map<PaoIdentifier, PaoData> paoDataByPaoId) {
-        this.paoDataByPaoId = paoDataByPaoId;
+    public void setPaoDataByPaoIdentifier(Map<PaoIdentifier, PaoData> paoDataByPaoIdentifier) {
+        this.paoDataByPaoIdentifier = paoDataByPaoIdentifier;
     }
 
     public Map<Integer, Map<Integer, LiteState>> getStatesByGroupIdAndRawState() {

@@ -344,17 +344,17 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public Map<Integer, PaoIdentifier> findPaoIdsByCarrierAddress(Iterable<Integer> carrierAddresses) {
+        public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public Map<String, PaoIdentifier> findPaoIdsByMeterNumber(Iterable<String> meterNumbers) {
+        public Map<String, PaoIdentifier> findPaoIdentifiersByMeterNumber(Iterable<String> meterNumbers) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public Map<String, PaoIdentifier> findPaoIdsByName(Iterable<String> names) {
+        public Map<String, PaoIdentifier> findPaoIdentifiersByName(Iterable<String> names) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

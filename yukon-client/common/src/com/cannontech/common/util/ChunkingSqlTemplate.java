@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.database.CollectionRowCallbackHandler;
+import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowCallbackHandlerAdapter;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.google.common.collect.Lists;
@@ -68,10 +70,16 @@ public class ChunkingSqlTemplate {
         
         query(sqlGenerator, input, rch);
     }
-    
+
+    public <I> void query(SqlFragmentGenerator<I> sqlGenerator, Iterable<I> input,
+                          YukonRowCallbackHandler rch) {
+        YukonRowCallbackHandlerAdapter yrch = new YukonRowCallbackHandlerAdapter(rch);
+        query(sqlGenerator, input, yrch);
+    }
+
     public <I> void query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
-                             final RowCallbackHandler rch) {
-        
+                          final RowCallbackHandler rch) {
+
         final List<I> tempInputList = Lists.newArrayList(input);
         final List<SqlFragmentSource> queryList = Lists.newArrayList();
         
