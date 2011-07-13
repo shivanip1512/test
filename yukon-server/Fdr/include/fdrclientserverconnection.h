@@ -1,14 +1,13 @@
 #pragma once
 
 #include "yukon.h"
+#include "dlldefs.h"
+#include "queues.h"
+#include "serverconnection.h"
+
 #include <windows.h>
 #include "string.h"
 #include <rw/thr/thrfunc.h>
-
-#include "dlldefs.h"
-#include "queues.h"
-
-#include "serverconnection.h"
 
 class CtiFDRScadaServer;
 class CtiFDRSocketServer;

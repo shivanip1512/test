@@ -9,9 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2004
 -----------------------------------------------------------------------------*/
-#ifndef __CTICRITICALSECTION_H__
-#define __CTICRITICALSECTION_H__
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#pragma once
 
 #ifdef _WINDOWS
     #include <windows.h>
@@ -44,4 +42,4 @@ private:
 /// #endif
 #endif
 };
-#endif
+

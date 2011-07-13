@@ -1,7 +1,6 @@
 #define BOOST_TEST_MAIN "Test dev_rds"
 #include <boost/test/unit_test.hpp>
 
-#include "yukon.h"
 #include "dev_rds.h"
 #include "test_reader.h"
 

@@ -1,17 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  mutex.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiMutex
-
-    Initial Date:  11/7/00
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
 #pragma once
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 
 #ifdef _WINDOWS
     

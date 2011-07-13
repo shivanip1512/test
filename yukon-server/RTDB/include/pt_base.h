@@ -1,23 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_base
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PT_BASE_H__
-#define __PT_BASE_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-
+#include "yukon.h"
 #include "row_reader.h"
-#include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 #include "boost/weak_ptr.hpp"
 #include "dbmemobject.h"
@@ -29,8 +13,9 @@
 #include "pt_dyn_base.h"
 #include "tbl_pt_base.h"
 #include "tbl_pt_property.h"
-#include "yukon.h"
 #include "tbl_pt_trigger.h"
+
+#include <boost/shared_ptr.hpp>
 
 class CtiTablePointAlarming;
 
@@ -124,5 +109,3 @@ typedef CtiPointBase CtiPoint;
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;
 typedef boost::weak_ptr< CtiPointBase > CtiPointWPtr;
 
-
-#endif // #ifndef __PT_BASE_H__

@@ -1,26 +1,4 @@
-/*************************************************************************
- *
- * smartmap.h      7/10/2002
- *
- *****
- *
- *  A templatized run/real time data base class.  Initially done with a
- *  RogueWave singly linked list solely for the benefits of the apply and
- *  find functionality without the need for Standard C++ library.
- *
- * Originated by:
- *     Corey G. Plender    7/10/2002
- *
- *
- * (c) 2002 Cannon Technologies Inc.
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __SMARTMAP_H__
-#define __SMARTMAP_H__
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -291,4 +269,3 @@ public:
     }
 };
 
-#endif      // #ifndef __SMARTMAP_H__

@@ -1,39 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  logger.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiLogger
-
-                    CtiLogger logs strings to a log file and optionally
-                    standard out.  The stream insertion operators
-                    are mostly all usable, they will not block.
-
-                    Example of usage:
-
-                    CtiLogger myout;
-
-                    myout.start();
-                    myout.setOutputPath("e:\\this\\is\\my\\logfile\\directory");
-                    myout.setOutputFile("mylogfilename");
-                    myout.setToStdOut(true);
-                    myout.setWriteInterval(30000);
-
-                    {
-                        CtiLockGuard<CtiLogger> guard(myout);
-                        myout << "Hi, i'm nice." << endl;
-                    }
-
-                    myout.interrupt(CtiThread::SHUTDOWN);
-                    myout.join();
-
-
-    Initial Date:  11/7/00
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
-#ifndef __CTILOGGER_HPP__
-#define __CTILOGGER_HPP__
+#pragma once
 
 #ifdef _WINDOWS
     
@@ -157,5 +122,4 @@ IM_EX_CTIBASE extern CtiLogger   dout;       // Global instance
 IM_EX_CTIBASE extern CtiLogger   slog;       // Global instance. Simulator log
 IM_EX_CTIBASE extern CtiLogger   blog;       // Global instance. Simulator log
 
-#endif // #ifndef __CTILOGGER_HPP__
 

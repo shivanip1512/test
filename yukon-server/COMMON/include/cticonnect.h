@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   cticonnect.h
-*
-* Date:   1/06/2006
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.4.6.4 $
-* DATE         :  $Date: 2008/11/21 16:14:54 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #pragma once
 #include "yukon.h"
 

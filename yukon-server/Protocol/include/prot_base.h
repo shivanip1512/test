@@ -4,8 +4,8 @@
 #include <string>
 #include <list>
 
-#include "dlldefs.h"
 #include "msg_pdata.h"
+#include "dlldefs.h"
 #include "xfer.h"
 
 namespace Cti {

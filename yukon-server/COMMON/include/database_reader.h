@@ -1,9 +1,7 @@
 #pragma once
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#include "ctitime.h"
 #include "database_connection.h"
+#include "ctitime.h"
 #include "row_reader.h"
 #include "dlldefs.h"
 #include <string>

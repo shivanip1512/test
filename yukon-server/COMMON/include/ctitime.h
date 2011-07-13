@@ -1,22 +1,3 @@
-/*
- * class CtiTime
- *
- * Author: Jian Liu
- * Date: 08/10/2005 15:37:00
- *
- *
- * This class is to replace the RWTime class.
- * It uses seconds from the ctime epoch to store the current time.
- * This class only can handle localtime and UTC time. It can not do other time transform
- *
- * The class is not thread-safe.
- *
- * Static methods localtime_r and gmtime_r are thread-safe, and they use thread-specific
- * storage to handle struct tm*
- *
- * the whole class is based on ctime, except the dst rules and synchronization
- */
-
 #pragma once
 
 #include <string>

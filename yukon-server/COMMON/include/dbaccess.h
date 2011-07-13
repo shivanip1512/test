@@ -1,17 +1,15 @@
 #pragma once
 
+#include "dllbase.h"
+#include "dlldefs.h"
+#include "sema.h"
+
 #include <rw/tvslist.h>
 #include <rw/tvhdict.h>
-
-
 #include <rw/thr/threadid.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/guard.h>
 
-#include "dlldefs.h"
-#include "dllbase.h"
-
-#include "sema.h"
 class SAConnection;
 
 namespace Cti

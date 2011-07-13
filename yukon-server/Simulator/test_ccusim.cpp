@@ -1,6 +1,13 @@
 #define BOOST_AUTO_TEST_MAIN "Test ccuSim"
 
-#include "yukon.h"
+#include "CCU711.h"
+#include "ctitime.h"
+#include "ctidate.h"
+#include "Ccu721.h"
+#include "numstr.h"
+#include "Mct410.h"
+#include "EmetconWords.h"
+#include "types.h"
 
 #include <rw/rwdate.h>
 #include <rw/rwtime.h>
@@ -15,15 +22,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <boost/tokenizer.hpp>
-#include "ctitime.h"
-#include "ctidate.h"
-#include "CCU711.h"
-#include "Ccu721.h"
-#include "numstr.h"
-#include "Mct410.h"
-#include "EmetconWords.h"
-
-#include "types.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;

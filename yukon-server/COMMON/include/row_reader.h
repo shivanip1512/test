@@ -1,7 +1,4 @@
-
 #pragma once
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "ctitime.h"
 #include "dlldefs.h"

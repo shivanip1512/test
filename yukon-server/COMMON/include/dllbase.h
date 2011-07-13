@@ -1,22 +1,20 @@
 #pragma once
-#pragma warning( disable : 4786)
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
+
+#include "dsm2.h"
+#include "os2_2w32.h"
+#include "cticalls.h"
+#include "dlldefs.h"
 
 #include <windows.h>
 #include <lmcons.h>
 #include <iostream>
 #include <set>
 
-
 #include <rw\thr\mutex.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
-#include "dsm2.h"
-#include "dlldefs.h"
 
 // Used with "DB_DEBUGLEVEL"
 #define DEBUGLEVEL_LUDICROUS        0x00000001

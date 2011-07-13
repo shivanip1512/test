@@ -7,20 +7,18 @@
  *
  */
 
-#include <boost/test/floating_point_comparison.hpp>
 
 #define BOOST_TEST_MAIN "Test mgr_point"
-#include <boost/test/unit_test.hpp>
-#include <string>
-#include <iostream>
 
-//  for the winsock.h inclusion by mgr_point.h (?!)
-#include "yukon.h"
 #include "mgr_point.h"
 #include "pt_status.h"
 #include "pt_analog.h"
 #include "pt_accum.h"
 
+#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/unit_test.hpp>
+#include <string>
+#include <iostream>
 
 #define BOOST_AUTO_TEST_MAIN "Test Point Manager"
 using boost::unit_test_framework::test_suite;

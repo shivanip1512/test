@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
 #include "ctinexus.h"
+#include "types.h"
 #include "BehaviorCollection.h"
 #include "CommsBehavior.h"
 #include "SimulatorLogger.h"

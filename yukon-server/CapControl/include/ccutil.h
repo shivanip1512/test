@@ -1,9 +1,8 @@
 #pragma once
-#pragma warning( disable : 4786)
 
+#include "pointattribute.h"
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
-#include "pointattribute.h"
 
 namespace Cti           {
 namespace CapControl    {

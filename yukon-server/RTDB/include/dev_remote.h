@@ -1,34 +1,13 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_remote
-*
-* Class:  CtiDeviceRemote
-* Date:   8/18/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.21.2.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_REMOTE_H__
-#define __DEV_REMOTE_H__
-
-
-#include <ctype.h>
-
-#include <rw\thr\mutex.h>
-#include <rw\db\nullind.h>
-
+#pragma once
 
 #include "dev_single.h"
 #include "tbl_dialup.h"
 #include "tbl_direct.h"
 #include "string_utility.h"
 
+#include <ctype.h>
+#include <rw\thr\mutex.h>
+#include <rw\db\nullind.h>
 
 class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
 {
@@ -309,4 +288,4 @@ public:
     }
 
 };
-#endif // #ifndef __DEV_REMOTE_H__
+

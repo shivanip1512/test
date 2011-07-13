@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include "ccutil.h"
+
 #include <string>
 #include <set>
 
 #include <boost/noncopyable.hpp>
-
-#include "ccutil.h"
 
 namespace Cti           {
 namespace CapControl    {

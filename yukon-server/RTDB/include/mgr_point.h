@@ -1,8 +1,8 @@
 #pragma once
 
+#include "pt_base.h"
 #include "dlldefs.h"
 #include "smartmap.h"
-#include "pt_base.h"
 
 
 class IM_EX_PNTDB CtiPointManager

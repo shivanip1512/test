@@ -14,7 +14,6 @@
 #define BOOST_TEST_MAIN "Test CtiDate"
 #define BOOST_AUTO_TEST_MAIN "Test CtiDate"
 
-#include "yukon.h"
 #include "ctidate.h"
 #include "ctitime.h"
 

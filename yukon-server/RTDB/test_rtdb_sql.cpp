@@ -1,7 +1,5 @@
-#include "yukon.h"
-#include "row_reader.h"
 #include "database_reader.h"
-
+#include "row_reader.h"
 #include "dbaccess.h"
 #include "ctidate.h"
 #include "utility.h"

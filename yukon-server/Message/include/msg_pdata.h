@@ -1,37 +1,17 @@
-  #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pdata
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.9.10.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __MSG_PDATA_H__
-#define __MSG_PDATA_H__
-
+#pragma once
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
-#include <windows.h>
-#include <rw/rwset.h>
-
+#include "yukon.h"
 #include "dlldefs.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "message.h"
 
-#include "yukon.h"
+#include <windows.h>
+#include <rw/rwset.h>
 
 class IM_EX_MSG CtiPointDataMsg : public CtiMessage
 {
@@ -125,4 +105,4 @@ public:
    virtual bool isValid();
    static unsigned int getInstanceCount() { return _instanceCount; }
 };
-#endif
+

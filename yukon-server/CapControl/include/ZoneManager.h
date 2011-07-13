@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <memory>
@@ -7,8 +5,8 @@
 
 #include <boost/make_shared.hpp>
 
-#include "readers_writer_lock.h"
 #include "Zone.h"
+#include "readers_writer_lock.h"
 
 namespace Cti           {
 namespace CapControl    {

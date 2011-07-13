@@ -1,8 +1,8 @@
 #pragma once
 
+#include "PlcTransmitter.h"
 #include "portlogger.h"
 #include "emetconwords.h"
-#include "PlcTransmitter.h"
 
 #include "CommInterface.h"
 #include "types.h"

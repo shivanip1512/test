@@ -1,5 +1,4 @@
-#ifndef __READERS_WRITERS_LOCK_H__
-#define __READERS_WRITERS_LOCK_H__
+#pragma once
 
 #include <rw/thr/rwlock.h>
 //#include <rw/thr/semaphore.h>
@@ -87,5 +86,4 @@ public:
 
 };
 
-#endif
 

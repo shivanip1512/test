@@ -1,6 +1,6 @@
 #define BOOST_TEST_MAIN "Test Klondike protocol"
 
-#include "yukon.h"
+#include "prot_klondike.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -9,7 +9,6 @@ using boost::unit_test_framework::test_suite;
 #include "boost_test_helpers.h"
 
 #include <iostream>
-#include "prot_klondike.h"
 
 using namespace std;
 

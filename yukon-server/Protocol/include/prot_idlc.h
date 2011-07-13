@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_idlc
-*
-* Namespace: Cti::Protocol
-* Class:     IDLC
-* Date:   7/26/2006
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_IDLC_H__
-#define __PROT_IDLC_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dsm2.h"
 #include "xfer.h"
@@ -208,4 +188,3 @@ public:
 }
 }
 
-#endif // #ifndef __PROT_IDLC_H__

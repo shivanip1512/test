@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "prot_emetcon.h"
 #include "dev_ccu721.h"
+#include "prot_emetcon.h"
 
 #include <boost/test/floating_point_comparison.hpp>
 
