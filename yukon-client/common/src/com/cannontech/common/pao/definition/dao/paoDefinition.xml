@@ -126,7 +126,7 @@
         </tags>
     </pao>
 
-    <pao id="REVERSE_POWER" abstract="true">
+    <pao id="REVERSE_POWER_ALARM" abstract="true">
         <points>
             <point type="Status" offset="47">
                <init>true</init>
@@ -134,25 +134,9 @@
                <stategroup value="TrueFalse"/>
             </point>
         </points>     
-        <commands>   
-            <command id="READ_INTERNAL_STATUS">
-                <name>Read General Info</name>
-                <cmd text="getstatus internal"/>
-                <pointRef name="General Alarm"/>
-                <pointRef name="Power Fail"/>
-                <pointRef name="Tamper Flag Set"/>
-                <pointRef name="Zero Usage (24 Hours)"/>
-                <pointRef name="Reverse Power"/>
-            </command>
-        </commands>
-        <attributes>
-            <attribute name="REVERSE_POWER_FLAG">
-                <basicLookup point="Reverse Power"/>
-            </attribute>
-        </attributes>
     </pao>    
 
-    <pao id="REVERSE_POWER_FL" abstract="true">
+    <pao id="REVERSE_POWER_EVENT" abstract="true">
         <points>
             <point type="Status" offset="23">
                <init>true</init>
@@ -160,22 +144,6 @@
                <stategroup value="TrueFalse"/>
             </point>
         </points>     
-        <commands>   
-            <command id="READ_INTERNAL_STATUS">
-                <name>Read General Info</name>
-                <cmd text="getstatus internal"/>
-                <pointRef name="General Alarm"/>
-                <pointRef name="Power Fail"/>
-                <pointRef name="Tamper Flag Set"/>
-                <pointRef name="Zero Usage (24 Hours)"/>
-                <pointRef name="Reverse Power"/>
-            </command>
-        </commands>
-        <attributes>
-            <attribute name="REVERSE_POWER_FLAG">
-                <basicLookup point="Reverse Power"/>
-            </attribute>
-        </attributes>
     </pao>    
 
     <pao id="OUTAGE_STATUS_BASE" abstract="true">
@@ -1341,20 +1309,20 @@
     </pao>
 	
 	<!-- MCT 420 BASE -->
-	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE">
+	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT">
         <tags>
             <tag name="DEVICE_CONFIGURATION_420"/>
         </tags>
 	</pao>
     
 	<!-- MCT 420s -->
-	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
+	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
         <displayName>MCT-420FL</displayName>
     </pao>
-    <pao id="MCT420FLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT, REVERSE_POWER_FL">
+    <pao id="MCT420FLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
         <displayName>MCT-420FLD</displayName>
     </pao>
-    <pao id="MCT420CL" inherits="MCT_420_BASE, REVERSE_POWER"> <!-- This doesn't support a disconnect collar either -->
+    <pao id="MCT420CL" inherits="MCT_420_BASE"> <!-- This doesn't support a disconnect collar either -->
         <displayName>MCT-420CL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1362,7 +1330,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT420CLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT, REVERSE_POWER">
+    <pao id="MCT420CLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
         <displayName>MCT-420CLD</displayName>
     </pao>
 	
@@ -1731,7 +1699,6 @@
 				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
         		<cmd text="getconfig intervals"/>
         	</command>
-        	<!--  This command is overloaded by some 410 meters to handle Reverse Power differently -->
         	<command id="READ_INTERNAL_STATUS">
         		<name>Read General Info</name>
         		<cmd text="getstatus internal"/>
@@ -1739,6 +1706,7 @@
         		<pointRef name="Power Fail"/>
         		<pointRef name="Tamper Flag Set"/>
         		<pointRef name="Zero Usage (24 Hours)"/>
+                <pointRef name="Reverse Power"/>
         	</command>
         </commands>
         
@@ -1818,11 +1786,14 @@
             <attribute name="ZERO_USAGE_FLAG">
             	<basicLookup point="Zero Usage (24 Hours)" />
             </attribute>
+            <attribute name="REVERSE_POWER_FLAG">
+                <basicLookup point="Reverse Power"/>
+            </attribute>
         </attributes>
 	</pao>
         
     <!-- MCT 410s -->
-    <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
+    <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM">
         <displayName>MCT-410IL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1832,7 +1803,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
+    <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM">
         <displayName>MCT-410CL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1847,7 +1818,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
+    <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_EVENT">
         <displayName>MCT-410FL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1855,7 +1826,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER" enabled="false">
+    <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM" enabled="false">
         <displayName>MCT-410GL</displayName>
     </pao>
     
