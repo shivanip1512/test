@@ -17,15 +17,6 @@ class IVVCState
             int  failureCount;
             VerificationHelper(long bankId = -1) : verificationBankId(bankId), successCount(0), failureCount(0) { }
         };
-        struct CommsStatus
-        {
-            bool cbcsLost;
-            bool regulatorsLost;
-            bool voltagesLost;
-
-            CommsStatus() : cbcsLost(false), regulatorsLost(false), voltagesLost(false) {  }
-        };
-
         enum State
         {
             IVVC_WAIT,
@@ -85,24 +76,11 @@ class IVVCState
         void setShowNoRegulatorAttachedMsg(const bool flag);
         bool isShowNoRegulatorAttachedMsg() const;
 
+        bool isCommsLost() const;
+        void setCommsLost(const bool flag);
 
-        bool isCbcCommsLost() const;
-        void setCbcCommsLost(const bool flag);
-
-        bool isRegulatorCommsLost() const;
-        void setRegulatorCommsLost(const bool flag);
-
-        bool isVoltageCommsLost() const;
-        void setVoltageCommsLost(const bool flag);
-
-        void setCbcCommsRetryCount(const unsigned long retryCount);
-        unsigned long getCbcCommsRetryCount() const;
-
-        void setRegulatorCommsRetryCount(const unsigned long retryCount);
-        unsigned long getRegulatorCommsRetryCount() const;
-
-        void setVoltageCommsRetryCount(const unsigned long retryCount);
-        unsigned long getVoltageCommsRetryCount() const;
+        void setCommsRetryCount(const unsigned long retryCount);
+        unsigned long getCommsRetryCount() const;
 
         void setConsecutiveCapBankOps(const unsigned ops);
         const unsigned getConsecutiveCapBankOps() const;
@@ -148,15 +126,11 @@ class IVVCState
         bool _showRegulatorAutoModeMsg;
         bool _showNoRegulatorAttachedMsg;
 
-        bool _cbcCommsLost;
-        bool _regulatorCommsLost;
-        bool _voltageCommsLost;
+        bool _commsLost;
 
         unsigned _consecutiveCapBankOps;
 
-        unsigned long _cbcCommsRetryCount;
-        unsigned long _regulatorCommsRetryCount;
-        unsigned long _voltageCommsRetryCount;
+        unsigned long _commsRetryCount;
 
         std::set<long> _reportedControllers;
 };

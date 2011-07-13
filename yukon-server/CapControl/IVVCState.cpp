@@ -10,12 +10,8 @@ IVVCState::IVVCState() :
     _showSubbusDisableMsg(true),
     _showRegulatorAutoModeMsg(true),
     _showNoRegulatorAttachedMsg(true),
-    _cbcCommsLost(false),
-    _regulatorCommsLost(false),
-    _voltageCommsLost(false),
-    _cbcCommsRetryCount(0),
-    _regulatorCommsRetryCount(0),
-    _voltageCommsRetryCount(0),
+    _commsLost(false),
+    _commsRetryCount(0),
     _firstPass(true)
 {
 }
@@ -183,71 +179,22 @@ const unsigned IVVCState::getConsecutiveCapBankOps() const
     return _consecutiveCapBankOps;
 }
 
-
-
-/*
-    Comms lost flags
-*/
-
-bool IVVCState::isCbcCommsLost() const
+bool IVVCState::isCommsLost() const
 {
-    return _cbcCommsLost;
+    return _commsLost;
 }
 
-void IVVCState::setCbcCommsLost(const bool flag)
+void IVVCState::setCommsLost(const bool flag)
 {
-    _cbcCommsLost = flag;
+    _commsLost = flag;
 }
 
-bool IVVCState::isRegulatorCommsLost() const
+void IVVCState::setCommsRetryCount(const unsigned long retryCount)
 {
-    return _regulatorCommsLost;
+    _commsRetryCount = retryCount;
 }
-
-void IVVCState::setRegulatorCommsLost(const bool flag)
+unsigned long IVVCState::getCommsRetryCount() const
 {
-    _regulatorCommsLost = flag;
-}
-
-bool IVVCState::isVoltageCommsLost() const
-{
-    return _voltageCommsLost;
-}
-
-void IVVCState::setVoltageCommsLost(const bool flag)
-{
-    _voltageCommsLost = flag;
-}
-
-/*
-    Comms Retry counts
-*/
-void IVVCState::setCbcCommsRetryCount(const unsigned long retryCount)
-{
-    _cbcCommsRetryCount = retryCount;
-}
-unsigned long IVVCState::getCbcCommsRetryCount() const
-{
-    return _cbcCommsRetryCount;
-}
-
-void IVVCState::setRegulatorCommsRetryCount(const unsigned long retryCount)
-{
-    _regulatorCommsRetryCount = retryCount;
-}
-
-unsigned long IVVCState::getRegulatorCommsRetryCount() const
-{
-    return _regulatorCommsRetryCount;
-}
-
-void IVVCState::setVoltageCommsRetryCount(const unsigned long retryCount)
-{
-    _voltageCommsRetryCount = retryCount;
-}
-
-unsigned long IVVCState::getVoltageCommsRetryCount() const
-{
-    return _voltageCommsRetryCount;
+    return _commsRetryCount;
 }
 

@@ -26,6 +26,8 @@ extern ULONG _CC_DEBUG;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
 extern double _IVVC_NONWINDOW_MULTIPLIER;
 extern double _IVVC_BANKS_REPORTING_RATIO;
+extern double _IVVC_REGULATOR_REPORTING_RATIO;
+extern double _IVVC_VOLTAGEMONITOR_REPORTING_RATIO;
 extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 extern ULONG _REFUSAL_TIMEOUT;
@@ -132,8 +134,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     state->setShowBusDisableMsg(true);
 
     // subbus is enabled
-    // send regulator heartbeat messages as long as cbcs are communicating
-    if ( ! state->isCbcCommsLost() )
+    // send regulator heartbeat messages as long as we are communicating
+    if ( ! state->isCommsLost() )
     {
         sendKeepAlive(subbus);
     }
@@ -222,95 +224,39 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             PointDataRequestPtr request = state->getGroupRequest();
 
             //Check for stale data.
-            IVVCState::CommsStatus  commsStatuses = checkForStaleData( request, timeNow );
-
-            if ( commsStatuses.cbcsLost || commsStatuses.regulatorsLost || commsStatuses.voltagesLost )     // something is stale
+            if ( checkForStaleData( request, timeNow ) )     // something is stale
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Stale Data." << std::endl;
+                }
+
+                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                {
+                    state->setState(IVVCState::IVVC_WAIT);
+                    state->setCommsRetryCount(0);
+
+                    bool showCommsLostMsg = false;
+                    if ( ! state->isCommsLost() )
+                    {
+                        showCommsLostMsg = true;
+                        state->setCommsLost(true);
+                        handleCommsLost( state, subbus );
+                    }
+
+                    if ( showCommsLostMsg )
+                    {
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
+                        }
+                    }
+
                     request->reportStatusToLog();
-                }
-
-                if ( commsStatuses.voltagesLost )   // don't analyse but also don't go comms lost.
-                {
-                    state->setVoltageCommsRetryCount( state->getVoltageCommsRetryCount() + 1 );
-                    if ( state->getVoltageCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT )
-                    {
-                        state->setState(IVVCState::IVVC_WAIT);
-                        state->setVoltageCommsRetryCount( 0 );
-
-                        if ( ! state->isVoltageCommsLost() )
-                        {
-                            state->setVoltageCommsLost( true );
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more additional voltage points." << std::endl;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    state->setVoltageCommsRetryCount( 0 );
-                    state->setVoltageCommsLost( false );
-                }
-
-                if ( commsStatuses.regulatorsLost ) // don't analyse but also don't go comms lost.
-                {
-                    state->setRegulatorCommsRetryCount( state->getRegulatorCommsRetryCount() + 1 );
-                    if ( state->getRegulatorCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT )
-                    {
-                        state->setState(IVVCState::IVVC_WAIT);
-                        state->setRegulatorCommsRetryCount( 0 );
-
-                        if ( ! state->isRegulatorCommsLost() )
-                        {
-                            state->setRegulatorCommsLost( true );
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Missing one or more Voltage Regulator points." << std::endl;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    state->setRegulatorCommsRetryCount( 0 );
-                    state->setRegulatorCommsLost( false );
-                }
-
-                if ( commsStatuses.cbcsLost )
-                {
-                    state->setCbcCommsRetryCount(state->getCbcCommsRetryCount() + 1);
-                    if (state->getCbcCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
-                    {
-                        state->setState(IVVCState::IVVC_WAIT);
-                        state->setCbcCommsRetryCount(0);
-
-                        bool showCommsLostMsg = false;
-                        if ( ! state->isCbcCommsLost() )
-                        {
-                            showCommsLostMsg = true;
-                            state->setCbcCommsLost(true);
-                            handleCbcCommsLost( state, subbus );
-                        }
-
-                        if ( showCommsLostMsg )
-                        {
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
-                            }
-                        }
-
-                        request->reportStatusToLog();
-                    }
                 }
                 break;
             }
@@ -324,19 +270,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 request->reportStatusToLog();
                 state->setState(IVVCState::IVVC_ANALYZE_DATA);
 
-                // clear various comms lost flags and counters
+                state->setCommsRetryCount(0);
 
-                state->setVoltageCommsRetryCount( 0 );
-                state->setVoltageCommsLost( false );
-
-                state->setRegulatorCommsRetryCount( 0 );
-                state->setRegulatorCommsLost( false );
-
-                state->setCbcCommsRetryCount(0);
-
-                if ( state->isCbcCommsLost() )
+                if ( state->isCommsLost() )
                 {
-                    state->setCbcCommsLost(false);     // Write to the event log...
+                    state->setCommsLost(false);     // Write to the event log...
 
                     LONG stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
@@ -696,19 +634,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 }//execute
 
 
-IVVCState::CommsStatus IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
+bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
 {
-    //These might be cparms later
-    double regulatorRatio = 1.0;
-    double otherRatio = 1.0;
-
-    IVVCState::CommsStatus  commsStatuses;
-
-    commsStatuses.cbcsLost       = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType);
-    commsStatuses.regulatorsLost = checkForStaleData( request, timeNow, regulatorRatio, RegulatorRequestType);
-    commsStatuses.voltagesLost   = checkForStaleData( request, timeNow, otherRatio, OtherRequestType);
-
-    return commsStatuses;
+    return checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO,          CbcRequestType)
+        || checkForStaleData( request, timeNow, _IVVC_REGULATOR_REPORTING_RATIO,      RegulatorRequestType)
+        || checkForStaleData( request, timeNow, _IVVC_VOLTAGEMONITOR_REPORTING_RATIO, OtherRequestType);
 }
 
 
@@ -1818,7 +1748,7 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
 }
 
 
-void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
 
