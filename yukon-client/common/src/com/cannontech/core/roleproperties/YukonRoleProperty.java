@@ -379,8 +379,6 @@ public enum YukonRoleProperty {
     ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),
     OPTOUT_NOTIFICATION_RECIPIENTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, stringType()),
     ENERGY_COMPANY_DEFAULT_TIME_ZONE(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TIME_ZONE, stringType()),
-    CUSTOMER_GROUP_IDS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.CUSTOMER_GROUP_IDS, stringType()),
-    OPERATOR_GROUP_IDS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPERATOR_GROUP_IDS, stringType()),
     TRACK_HARDWARE_ADDRESSING(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, booleanType()),
     SINGLE_ENERGY_COMPANY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SINGLE_ENERGY_COMPANY, booleanType()),
     OPTIONAL_PRODUCT_DEV(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, stringType()),
