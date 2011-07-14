@@ -8,16 +8,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
 public class CustomerAccountLuceneSearcher extends AbstractLuceneSearcher<UltraLightCustomerAccount> implements CustomerAccountSearcher {
-    private static final Sort sort = new Sort(new String[]{"accountNumber", "accountId"});
+    private static final Sort sort = new Sort(new String[]{"accountNumber",  "energyCompanyId"});
     
     @Override
     public UltraLightCustomerAccount buildResults(final Document doc) {
         final UltraLightCustomerAccount ultra = new UltraLightCustomerAccount() {
             public String getAccountNumber() {
-                return doc.get("customerAccount");
-            }
-            public int getAccountId() {
-                return Integer.parseInt(doc.get("accountId"));
+                return doc.get("accountNumber");
             }
         };
         return ultra;

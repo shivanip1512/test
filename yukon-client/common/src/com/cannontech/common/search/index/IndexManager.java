@@ -1,7 +1,5 @@
 package com.cannontech.common.search.index;
 
-import org.apache.lucene.search.IndexSearcher;
-
 import com.cannontech.database.cache.DBChangeListener;
 
 /**

@@ -12,6 +12,7 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -33,19 +34,21 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM CustomerAccount");
+        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+        sql.append("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
         
-        return sql.getSql();
+        return sql.toString();
     }
 
     protected String getDocumentCountQuery() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM CustomerAccount");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
 
-        return sql.getSql();
+        return sql.toString();
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -55,12 +58,13 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
         String accountNumber = rs.getString("AccountNumber");
         int accountIdInt = rs.getInt("AccountId");
         String accountId = Integer.toString(accountIdInt);
+        int energyCompanyIdInt = rs.getInt("EnergyCompanyId");
+        String energyCompanyId = Integer.toString(energyCompanyIdInt);
         
-        String all = accountNumber + " " + accountId;
-        doc.add(new Field("customerAccount", accountNumber, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("all", accountNumber, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("accountNumber", accountNumber, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("accountId", accountId, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.YES, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
@@ -89,7 +93,7 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(this.getDocumentQuery());
-        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("WHERE CA.AccountId").eq(accountId);
         
         docList = this.jdbcTemplate.query(sql.getSql(), sql.getArguments(), new DocumentMapper());
         return new IndexUpdateInfo(docList, term);

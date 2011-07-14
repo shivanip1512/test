@@ -1,5 +1,7 @@
 package com.cannontech.web.picker.v2;
 
+import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -26,6 +28,14 @@ public class LuceneQueryHelper {
 		}
 			
 	}
+	
+	public static void buildQueryByEnergyCompanyIds(BooleanQuery query, Set<Integer> energyCompanyIds) {
+        
+	    for (Integer energyCompanyId : energyCompanyIds) {
+	        query.add(buildQuery("energyCompanyId", Integer.toString(energyCompanyId)), BooleanClause.Occur.SHOULD);
+        }
+	    
+    }
 	
 	private static TermQuery buildQuery(String field, String value) {
 		TermQuery termQuery = new TermQuery(new Term(field, value));
