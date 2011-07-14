@@ -451,10 +451,11 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     public void setTemperatureUnit(int customerId, String temp) throws IllegalArgumentException {
         String escapedTempUnit = StringEscapeUtils.escapeHtml(temp);
         if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ){
-            throw new IllegalArgumentException("Temperature preference invalid.  Supplied: ["+temp+"]. Acceptable (escaped) values: ['F', 'C']");
+            String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";
+            yukonJdbcTemplate.update(sql.toString(), escapedTempUnit ,customerId);
+            return;
         }
-        String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";
-        yukonJdbcTemplate.update(sql.toString(), escapedTempUnit ,customerId);
+        throw new IllegalArgumentException("Temperature preference invalid.  Supplied: ["+temp+"]. Acceptable (escaped) values: ['F', 'C']");
     }
     
     @Override

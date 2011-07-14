@@ -58,8 +58,6 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     @Override
     @Transactional
     public void save(AccountThermostatSchedule ats) {
-    	//safe schedule name
-        ats.setScheduleName(StringEscapeUtils.escapeHtml(ats.getScheduleName()));
         
     	accountThermostatScheduleTemplate.save(ats);
     	
