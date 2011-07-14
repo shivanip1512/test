@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -57,7 +58,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     @Override
     @Transactional
     public void save(AccountThermostatSchedule ats) {
-    	
+    	//safe schedule name
+        ats.setScheduleName(StringEscapeUtils.escapeHtml(ats.getScheduleName()));
+        
     	accountThermostatScheduleTemplate.save(ats);
     	
     	// remove any current entries

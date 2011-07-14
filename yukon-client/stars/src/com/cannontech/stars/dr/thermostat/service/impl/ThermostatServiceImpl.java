@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.thermostat.service.impl;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -284,14 +283,8 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public void updateTempUnitForCustomer(String temperatureUnit, int customerId) {
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if (StringUtils.isNotBlank(escapedTempUnit) 
-                && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(customerId, escapedTempUnit);
-        } else {
-            throw new IllegalArgumentException("Invalid temperature unit set.");
-        }
+    public void updateTempUnitForCustomer(String temperatureUnit, int customerId) throws IllegalArgumentException {
+        customerDao.setTemperatureUnit(customerId, temperatureUnit);
     }
     
     @Override

@@ -2,6 +2,8 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import javax.management.InvalidAttributeValueException;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
@@ -118,8 +120,9 @@ public interface CustomerDao {
      * 
      * @param customerId
      * @param temp
+     * @throws InvalidAttributeValueException 
      */
-    public void setTempForCustomer(int customerId, String temp);
+    public void setTemperatureUnit(int customerId, String temp) throws IllegalArgumentException;
 
     /**
      * Method to add a customer to the database

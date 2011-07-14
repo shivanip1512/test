@@ -7,14 +7,14 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  */
 public enum TimeOfWeek {
     WEEKDAY("weekday", YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY),
-    WEEKEND("weekend", YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND),
-    SUNDAY("sun", YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY),
     MONDAY("mon", YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY),
     TUESDAY("tue", YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY),
     WEDNESDAY("wed", YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY),
     THURSDAY("thu", YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY),
     FRIDAY("fri", YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY),
     SATURDAY("sat", YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY),
+    SUNDAY("sun", YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY),
+    WEEKEND("weekend", YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND),
     EVERYDAY("everyday", -1); //for display only purposes
     
     // this key prefix can be found in the following file:
@@ -62,6 +62,14 @@ public enum TimeOfWeek {
      */
     public String getDisplayKey() {
         return keyPrefix + name();
+    }
+    
+    /**
+     * I18N key for the display text for this action
+     * @return Display key
+     */
+    public String getAbbreviatedDisplayKey() {
+        return keyPrefix + name() + "_abbr";
     }
     
     public String getValue(){

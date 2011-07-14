@@ -29,7 +29,9 @@ Event.observe(window, 'load', function(){
         upperHeatF: parseFloat(${type.upperLimitHeatInFahrenheit.value}),
         lowerHeatF: parseFloat(${type.lowerLimitHeatInFahrenheit.value}),
         upperCoolF: parseFloat(${type.upperLimitCoolInFahrenheit.value}),
-        lowerCoolF: parseFloat(${type.lowerLimitCoolInFahrenheit.value})
+        lowerCoolF: parseFloat(${type.lowerLimitCoolInFahrenheit.value}),
+        secondsResolution: ${type.resolutionInSeconds},
+        secondsBetweenPeriods: ${type.minimumTimeBetweenPeriodsInSeconds}
     });
 });
 </script>

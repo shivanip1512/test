@@ -6,6 +6,8 @@
 <%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
 <%@ attribute name="actionPath" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="customActions" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="omitEditor" required="false" type="java.lang.Boolean"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -25,7 +27,7 @@
             <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
             <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
             <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
-            <input type="hidden" name="scheduleName" value="${pageScope.schedule.scheduleName}">
+            <input type="hidden" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>">
             
             <div class="heading">
                 <span class="title"><spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody></span>
@@ -74,40 +76,49 @@
                 </c:forEach>
                 
             </div>
-            <div class="actions">
-                <cti:button key="edit" renderMode="labeledImage" styleClass="edit edit_${pageScope.schedule.accountThermostatScheduleId}" />
-                <cti:button key="sendNow" renderMode="labeledImage" styleClass="send" />
-                <cti:button key="copy" renderMode="labeledImage" styleClass="copy copy_${pageScope.schedule.accountThermostatScheduleId}" />
-            </div>
+            <c:choose>
+                <c:when test="${pageScope.customActions}">
+                    <jsp:doBody/>
+                </c:when>
+                <c:otherwise>
+                    <div class="actions">
+                        <cti:button key="edit" renderMode="labeledImage" styleClass="edit edit_${pageScope.schedule.accountThermostatScheduleId}" />
+                        <cti:button key="sendNow" renderMode="labeledImage" styleClass="send" />
+                        <cti:button key="copy" renderMode="labeledImage" styleClass="copy copy_${pageScope.schedule.accountThermostatScheduleId}" />
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </form>
     </div>
-    <i:simplePopup  titleKey="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" 
-                    arguments="${pageScope.schedule.scheduleName}" 
-                    id="editSchedule_${pageScope.schedule.accountThermostatScheduleId}" 
-                    on=".edit_${pageScope.schedule.accountThermostatScheduleId}, .copy_${pageScope.schedule.accountThermostatScheduleId}">
-                    <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
-                    <input type="hidden" name="copyName" value="${copyPrefix} ${pageScope.schedule.scheduleName}"/>
-                    <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title"/>"/>
-                    <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
-        <div class="container">
-             <tags:thermostatScheduleEditor schedule="${pageScope.schedule}"
-                                    thermostatId="${pageScope.thermostatId}"
-                                    thermostatIds="${pageScope.thermostatIds}"
-                                    accountId="${pageScope.accountId}"
-                                    temperatureUnit="${pageScope.temperatureUnit}"
-                                    actionPath="${pageScope.actionPath}"
-                                    thermostatType="${pageScope.thermostatType}"
-                                    styleClass="${pageScope.styleClass}"/>
-        </div>
-        <div class="actions">
-            <div class="fr">
-                <cti:button key="save"  styleClass="f_blocker save"/>
-                <cti:button key="delete" styleClass="delete" />
-                <cti:button key="cancel" styleClass="cancel" />
+    <c:if test="${empty pageScope.omitEditor or not pageScope.omitEditor}">
+        <i:simplePopup  titleKey="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" 
+                        arguments="${pageScope.schedule.scheduleName}" 
+                        id="editSchedule_${pageScope.schedule.accountThermostatScheduleId}" 
+                        on=".edit_${pageScope.schedule.accountThermostatScheduleId}, .copy_${pageScope.schedule.accountThermostatScheduleId}">
+                        <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
+                        <input type="hidden" name="copyName" value="${copyPrefix} ${pageScope.schedule.scheduleName}"/>
+                        <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title"/>"/>
+                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
+            <div class="container">
+                 <tags:thermostatScheduleEditor schedule="${pageScope.schedule}"
+                                        thermostatId="${pageScope.thermostatId}"
+                                        thermostatIds="${pageScope.thermostatIds}"
+                                        accountId="${pageScope.accountId}"
+                                        temperatureUnit="${pageScope.temperatureUnit}"
+                                        actionPath="${pageScope.actionPath}"
+                                        thermostatType="${pageScope.thermostatType}"
+                                        styleClass="${pageScope.styleClass}"/>
             </div>
-            <div class="fl">
-                <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
+            <div class="actions">
+                <div class="fr">
+                    <cti:button key="save"  styleClass="f_blocker save"/>
+                    <cti:button key="delete" styleClass="delete" />
+                    <cti:button key="cancel" styleClass="cancel" />
+                </div>
+                <div class="fl">
+                    <cti:button key="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
+                </div>
             </div>
-        </div>
-    </i:simplePopup>
+        </i:simplePopup>
+    </c:if>
 </div>

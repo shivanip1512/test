@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -68,7 +66,6 @@ public class OperatorThermostatScheduleController {
 	// SAVE
 	@RequestMapping
     public String save(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
-                       @RequestParam(value="temperatureUnit", required=true) String temperatureUnit,
                        @RequestParam(value="schedules", required=true) String scheduleString,
                        YukonUserContext yukonUserContext,  
 					   ModelMap model, 
@@ -94,11 +91,6 @@ public class OperatorThermostatScheduleController {
         for (int thermostatId : thermostatIdList) {
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
             accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName);
-        }
-        
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if (StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
         }
 
         //ensure this user can work with this schedule and thermostat
@@ -157,13 +149,6 @@ public class OperatorThermostatScheduleController {
         }else{
             message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
-        }
-        
-        //change the default temperature unit for the user based on what the interface was showing
-        //when they submitted the form.  hmm... seems like an odd thing to do
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
         }
         
         map.addAttribute("thermostatId", thermostatIdList);
@@ -295,17 +280,14 @@ public class OperatorThermostatScheduleController {
                                             LiteYukonUser user,
                                             FlashScope flashScope,
                                             AccountInfoFragment fragment,
-                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException {
+                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException, IllegalArgumentException {
         
         JSONObject returnJSON = new JSONObject();
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
         
         CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(customerAccount.getCustomerId(), escapedTempUnit);
-        }
+        customerDao.setTemperatureUnit(customerAccount.getCustomerId(), temperatureUnit);
         
         returnJSON.put("temperatureUnit", customer.getTemperatureUnit());
         response.setContentType("application/json");

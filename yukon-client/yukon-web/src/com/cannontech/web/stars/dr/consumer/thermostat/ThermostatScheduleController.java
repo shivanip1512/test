@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,7 +76,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                Integer scheduleId,
                                YukonUserContext yukonUserContext,
                                FlashScope flashScope,
-                               ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
+                               ModelMap map) throws NotAuthorizedException, ServletRequestBindingException, IllegalArgumentException {
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
@@ -101,21 +100,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.dr.consumer.scheduleUpdate.result.CONSUMER_" + message, ats.getScheduleName()));
         }
         
-        //change the default temperature unit for the user based on what the interface was showing
-        //when they submitted the form.  hmm... seems like an odd thing to do
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
-        }
-        
-        map.addAttribute("thermostatIds", thermostatIds.toString());
+        map.addAttribute("thermostatIds", StringUtils.join(thermostatIds, ","));
         return "redirect:view/saved";
     }
     
     @RequestMapping(value = "saveJSON", method = RequestMethod.POST)
     public String saveJSON(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            @RequestParam("temperatureUnit") String temperatureUnit,
             @RequestParam(value="schedules", required=true) String scheduleString,
             YukonUserContext yukonUserContext, 
             ModelMap map,
@@ -300,13 +291,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                             @RequestParam("temperatureUnit") String temperatureUnit,
                                             LiteYukonUser user,
                                             FlashScope flashScope,
-                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException {
+                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException, IllegalArgumentException {
         
         JSONObject returnJSON = new JSONObject();
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
-        }
+        customerDao.setTemperatureUnit(account.getCustomerId(), temperatureUnit);
         
         returnJSON.put("temperatureUnit", customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit());
         response.setContentType("application/json");

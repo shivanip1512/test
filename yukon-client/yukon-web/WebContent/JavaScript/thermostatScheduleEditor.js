@@ -1,5 +1,7 @@
 var CURRENT_TIME_INPUT = null;
 var CURRENT_TEMP_INPUT = null;
+var KEYUP = 38;
+var KEYDOWN = 40;
 
 Yukon.ThermostatScheduleEditor = {
         
@@ -9,9 +11,10 @@ Yukon.ThermostatScheduleEditor = {
         lowerHeatF: 0,
         upperCoolF: 0,
         lowerCoolF: 0,
-        timeAccuracy: 1, //seconds
-        timeBetweenPeriods: 0, //minimum time between periods in seconds
+        secondsResolution: 0, //seconds
+        secondsBetweenPeriods: 0, //minimum time between periods in seconds
         currentUnit: 'F',
+        
         
         heatColor: {
             r: {start: 242, end: 242},
@@ -40,8 +43,8 @@ Yukon.ThermostatScheduleEditor = {
     // lowerHeatF           - floating point fahrenheit value
     // upperCoolF           - floating point fahrenheit value
     // lowerCoolF           - floating point fahrenheit value
-    // timeAccuracy         - integer seconds to snap time values to
-    // timeBetweenPeriods   - integerminimum time between periods in seconds
+    // secondsResolution    - integer seconds to snap time values to
+    // secondsBetweenPeriods- integer minimum time between periods in seconds
     
     //optional args are:
     // currentUnit          - string - Current units to display the schedules in
@@ -72,17 +75,17 @@ Yukon.ThermostatScheduleEditor = {
             range: $R(0, 24*60),
             sliderValue: 0,
             onSlide: function(value, e) {
-                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, 15);
+                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60));
             },
             onChange: function(value, e) {
-                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value, 15), CURRENT_TIME_INPUT);
+                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60)), CURRENT_TIME_INPUT);
                 CURRENT_TIME_INPUT.select();    //Good ol' IE needs this.
             }
             
         });
         
         TEMP_SLIDER = new Control.Slider($("tempSlider").down('.handle'), $("tempSlider").down('.track'), {
-            range: $R(40, 99),
+            range: $R(this._private.lowerHeatF, this._private.upperHeatF),
             sliderValue: 72,
             onSlide: function(value) {
                 if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
@@ -243,24 +246,25 @@ Yukon.ThermostatScheduleEditor = {
             
             if(recForm != null){
                 var days = ourForm.select(".day");
+                var defaultDays = recForm.down(".day");
                 for(var i=0; i<days.length; i++){
                     var timeOfWeek = recForm.down("." + days[i].down("input[name=timeOfWeek]").value);
                     
                     //copy values over
                     var times = days[i].select("input[name=secondsFromMidnight]");
-                    var defaultTimes = timeOfWeek.select("input[name=secondsFromMidnight]");
+                    var defaultTimes = defaultDays.select("input[name=secondsFromMidnight]");
                     for(var j=0; j<times.length; j++){
                         times[j].value = defaultTimes[j].getAttribute("defaultValue");
                     }
                     
                     var heatTemps = days[i].select("input[name=heat_F]");
-                    var defaultHeatTemps = timeOfWeek.select("input[name=heat_F]");
+                    var defaultHeatTemps = defaultDays.select("input[name=heat_F]");
                     for(var j=0; j<heatTemps.length; j++){
                         heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
                     }
                     
                     var coolTemps = days[i].select("input[name=cool_F]");
-                    var defaultCoolTemps = timeOfWeek.select("input[name=cool_F]");
+                    var defaultCoolTemps = defaultDays.select("input[name=cool_F]");
                     for(var j=0; j<coolTemps.length; j++){
                         coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
                     }
@@ -318,7 +322,7 @@ Yukon.ThermostatScheduleEditor = {
     
     tempKeydown: function(event){
         //don't bother processing
-        if(event.keyCode != 40 && event.keyCode != 38){
+        if(event.keyCode != KEYDOWN && event.keyCode != KEYUP){
             return;
         }
         
@@ -343,14 +347,14 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         switch(event.keyCode){
-        case 38:
+        case KEYUP:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 value = Math.round((value+0.5)*2) / 2;
             }else {
                 value = value+1;
             }
             break;
-        case 40:
+        case KEYDOWN:
             if(Yukon.ThermostatScheduleEditor._private.currentUnit == 'C'){
                 value = Math.round((value-0.5)*2) / 2;
                 if(value != Yukon.ThermostatScheduleEditor.celsiusToSafeCelsius(value)){
@@ -484,37 +488,37 @@ Yukon.ThermostatScheduleEditor = {
     
     timeKeydown: function(event){
         //don't bother processing iff not the UP or DOWN key
-        if(event.keyCode != 40 && event.keyCode != 38){
+        if(event.keyCode != KEYDOWN && event.keyCode != KEYUP){
             return;
         }
         
         //determine range
         var parent = this.up('.period');
         var start = 0;
-        var end = ((24*60)-15);  //11:45pm is the default
+        var end = ((24*60)-parseInt(Yukon.ThermostatScheduleEditor._private.secondsBetweenPeriods/60));  //11:45pm is the default
         var value = timeFormatter.parseTime(this.value);
                 
         if(parent.previous('.period')) {
             start = parseInt(parent.previous('.period').down('.time input[name=secondsFromMidnight]').value);
             
             //round to the closest quarter hour (900 seconds = 15minutes)
-            start = Math.ceil((start+900)/60);
+            start = Math.ceil((start+Yukon.ThermostatScheduleEditor._private.secondsResolution)/60);
         }
         if(parent.next('.period')){
             end = parseInt(parent.next('.period').down('.time input[name=secondsFromMidnight]').value);
             
             //round to the closest quarter hour (900 seconds = 15minutes)
-            end = Math.floor((end-900)/60);
+            end = Math.floor((end-Yukon.ThermostatScheduleEditor._private.secondsResolution)/60);
         }
         
         switch(event.keyCode){
         //Up arrow key
-        case 38:
-            value += 15;
+        case KEYUP:
+            value += parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60);
             break;
         //Down arrow key
-        case 40:
-            value -= 15;
+        case KEYDOWN:
+            value -= parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60);
             break;
         default:
             //really this is redundant given the first check in this function
@@ -522,7 +526,7 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         if(value >= start && value <= end){
-            CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, 15);
+            CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60));
             
             //round to nearest 15
             TIME_SLIDER.setValue(value);
@@ -534,19 +538,19 @@ Yukon.ThermostatScheduleEditor = {
         var _self = Yukon.ThermostatScheduleEditor;
         _self.hideTempSlider();
         
-        var startingValue = parseInt(this.adjacent('input[name=secondsFromMidnight]')[0].value);
+        var startingValueSeconds = parseInt(this.adjacent('input[name=secondsFromMidnight]')[0].value);
         var input = event.currentTarget;
         
         //determine range
         var parent = this.up('.period');
-        var start = 0;
-        var end = 24*60*60;  //11:50pm is the default 
+        var startSeconds = 0;
+        var endSeconds = 24*60*60;
         
         var previous = parent.previous('.period');
         if(previous) {
             var prevInput = previous.down('.time input[name=secondsFromMidnight]');
             if(prevInput){
-                start = parseInt(prevInput.value);
+                startSeconds = parseInt(prevInput.value);
             }
         }
         
@@ -554,22 +558,26 @@ Yukon.ThermostatScheduleEditor = {
         if(next){
             var nextInput = next.down('.time input[name=secondsFromMidnight]');
             if(nextInput){
-                end = parseInt(nextInput.value);
+                endSeconds = parseInt(nextInput.value);
             }
         }
         
-        if(start != 0){
-            start = Math.ceil((start+900)/60);    //round to the nearest 10 minutes
+        if(startSeconds != 0){
+            startSeconds = Math.ceil((startSeconds+_self._private.secondsBetweenPeriods)/60)*60;    //round to the nearest interval
         }
-        end = Math.floor((end-900)/60);
+        endSeconds = Math.floor((endSeconds+1-_self._private.secondsBetweenPeriods)/60)*60;
 
         CURRENT_TIME_INPUT = this;
-        TIME_SLIDER.options.range.start = start;
-        TIME_SLIDER.options.range.end = end;
-        TIME_SLIDER.setValue(startingValue/60);
+        TIME_SLIDER.options.range.start = startSeconds/60;
+        TIME_SLIDER.options.range.end = endSeconds/60;
         
-        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start, 15);
-        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end, 15);
+        debug("start: "+TIME_SLIDER.options.range.start);
+        debug("end: "+TIME_SLIDER.options.range.end);
+        
+        TIME_SLIDER.setValue(startingValueSeconds/60);
+        
+        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start, parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60));
+        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end, parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60));
         $("timeSlider").show();
         
         var inputDimensions = this.getDimensions();
@@ -591,12 +599,11 @@ Yukon.ThermostatScheduleEditor = {
     
     commitTimeValue: function(value, input){
         var curr = timeFormatter.parseTime(value)*60;
-        debug("commit")
         if(curr != -1){
             //check bounds
             var parent = input.up('.period');
             var start = -1;
-            var end = ((24*60)-14)*60;  //11:45pm is the default 
+            var end = ((24*60)+1-parseInt(Yukon.ThermostatScheduleEditor._private.secondsBetweenPeriods/60))*60;
                     
             var previous = parent.previous('.period');
             if(previous) {
@@ -621,7 +628,7 @@ Yukon.ThermostatScheduleEditor = {
                 input.adjacent('input[name=secondsFromMidnight]')[0].value = timeFormatter.parseTime(input.value)*60;
                 
                 //get a nicely formatted time in case the user inputs some shorthand value such as '4pm'
-                input.value = timeFormatter.formatTime(timeFormatter.parseTime(input.value), 15);
+                input.value = timeFormatter.formatTime(timeFormatter.parseTime(input.value), parseInt(Yukon.ThermostatScheduleEditor._private.secondsResolution/60));
                 input.writeAttribute('previousValue', input.value);
                 return true;
             }

@@ -26,14 +26,13 @@
         <input type="hidden" name="scheduleMode" value="">
         <input type="hidden" name="schedules" value="">
         <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
-        <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
         
         <div class="temp tempLabel ${temperatureUnit}">
             <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
             <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
         </div>
         <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostatSavedSchedules.name"/></label>
-        <input type="text" name="scheduleName" value="${pageScope.schedule.scheduleName}" initialValue="${pageScope.schedule.scheduleName}" size="40" maxlength="60">
+        <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
 
         <div class="days fl">
             <span class="labels">
@@ -54,7 +53,7 @@
                     </div>
                 </c:forEach>
             </span>
-            <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
+            <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}">
                 <div class="day active">
                     <div class="periods">
                         <c:choose>
