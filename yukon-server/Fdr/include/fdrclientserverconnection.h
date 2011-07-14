@@ -1,6 +1,5 @@
 #pragma once
 
-#include "yukon.h"
 #include "dlldefs.h"
 #include "queues.h"
 #include "serverconnection.h"
