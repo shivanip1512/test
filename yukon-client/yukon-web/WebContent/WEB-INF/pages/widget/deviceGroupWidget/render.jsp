@@ -21,30 +21,22 @@
 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
 
-    <cti:msg2 key=".groupTree.title" var="addDeviceTitle"/>
-    <cti:msg2 key=".groupTree.submitButtonText" var="submitText"/>
-    <cti:msg2 key=".groupTree.closeButtonText" var="closeText"/>
-    <cti:msg2 var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+    <br><cti:button key="groupTree" type="button" id="showPopupButton"/>
 
-    <br>
-    <input type="button" id="showPopupButton" value="${addDeviceTitle}" class="formSubmit"/>
-    
-    <ext:multiNodeValueSelectingPopupTree    fieldId="groupIds"
-                                        fieldName="groupIds"
-                                        nodeValueName="groupId"
-                                        submitButtonText="${submitText}"
-                                        cancelButtonText="${closeText}"
-                                        submitCallback="commitGroupIds();"
-                                        
-                                        id="deviceGroupWidgetPopupTree"
-                                        treeAttributes="{}"
-                                        triggerElement="showPopupButton"
-                                        dataJson="${groupDataJson}"
-                                        title="${addDeviceTitle}"
-                                        width="432"
-                                        height="600"
-                                        noSelectionAlertText="${noGroupSelectedAlertText}" />
-                                        
+    <ext:multiNodeValueSelectingPopupTree fieldId="groupIds"
+                                          fieldName="groupIds"
+                                          nodeValueName="groupId"
+                                          submitButton=".groupTree.submitButtonText"
+                                          cancelButton=".groupTree.closeButtonText"
+                                          submitCallback="commitGroupIds();"
+                                          id="deviceGroupWidgetPopupTree"
+                                          treeAttributes="{}"
+                                          triggerElement="showPopupButton"
+                                          dataJson="${groupDataJson}"
+                                          title=".groupTree.label"
+                                          width="432"
+                                          height="600"
+                                          noSelectionAlert="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
 </cti:checkProperty>
 </cti:checkRole>
                                                     

@@ -128,12 +128,10 @@
 			<c:if test="${canManage}">
                 <td style="text-align:right;">
                     <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <cti:msg2 var="disableText" key="yukon.common.disable"/>
-                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title="${disableText} (${jobWrapper.name})"/>
+                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title=".disable" titleArgument="${jobWrapper.name}"/>
                     </span>
                     <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <cti:msg2 var="enableText" key="yukon.common.enable"/>
-                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
+                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title=".enable" titleArgument="${jobWrapper.name}"/>
                     </span>
                 </td>
 			</c:if>

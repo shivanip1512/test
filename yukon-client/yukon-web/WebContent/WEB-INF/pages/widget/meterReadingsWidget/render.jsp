@@ -6,44 +6,38 @@
 
 <cti:url var="previousReadingOptionsUrl" value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
-<ct:nameValueContainer>
+<ct:nameValueContainer2>
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
-	            <ct:nameValue name="${attribute.description}">
+	            <ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
 				    <i:inline key=".unsupported"/>
-        		</ct:nameValue>
+        		</ct:nameValue2>
 			</c:when>
 	        <c:when test="${not existingAttributes[attribute]}">
-    			<ct:nameValue name="${attribute.description}">
+    			<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
 			        <i:inline key=".notConfigured"/>
-	    		</ct:nameValue>
+	    		</ct:nameValue2>
     		</c:when>
             <c:otherwise>
-
-            	<ct:nameValue name="${attribute.description}">
+            	<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
                     <ct:attributeValue device="${device}" attribute="${attribute}" />
-				</ct:nameValue>
-
+				</ct:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
-                    <cti:msg2 var="previousUsage" key=".previousUsage" />
-                    <ct:nameValue name="${previousUsage}">
+                    <ct:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
                            <jsp:include page="${previousReadingOptionsUrl}" />
                         </select>
-                    </ct:nameValue>
-    
-                    <cti:msg2 var="totalConsumption" key=".totalConsumption" />
-                    <ct:nameValue name="${totalConsumption}">
+                    </ct:nameValue2>
+                    <ct:nameValue2 nameKey=".totalConsumption">
                         <div id="${widgetParameters.widgetId}_totalConsumption"></div>
-                    </ct:nameValue>
+                    </ct:nameValue2>
                 </c:if>
-                
             </c:otherwise>
         </c:choose>
     </c:forEach>
-</ct:nameValueContainer>
+</ct:nameValueContainer2>
 
 <%-- The following js and dataUpdaters are for updating the USAGE values, don't write unless USAGE is supported and exists --%>
 <c:if test="${usageAttributeExists}">
@@ -108,8 +102,6 @@ ${widgetParameters.widgetId}_updateDifference();
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-<cti:msg2 var="readNow" key=".readNow"/>
-<cti:msg2 var="reading" key=".reading"/>
-	<ct:widgetActionUpdate hide="${!readable}" method="read" label="${readNow}" labelBusy="${reading}" container="${widgetParameters.widgetId}_results"/>
+	<ct:widgetActionUpdate2 hide="${!readable}" method="read" label=".readNow" labelBusy=".reading" container="${widgetParameters.widgetId}_results"/>
 </div>
 

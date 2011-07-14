@@ -16,7 +16,6 @@
     <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ping">Ping</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.pinging">Pinging</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.notApplicable">n/a</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     <!-- meterReadingsResult.tag -->
@@ -30,6 +29,7 @@
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow">Read Now</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.reading">Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.argumentStub">{0}</entry>
 
     <!-- common/rfnMeterReadingsResult.jsp -->
     <entry key="yukon.web.widgets.rfnMeterInfoWidget.errorSending">There was an error sending the read request:</entry>
@@ -49,24 +49,24 @@
     <entry key="yukon.web.widgets.accountInformationWidget.address">Address</entry>
     
     <!-- cayentaAccountInformationWidget/accountInfo.jsp -->
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.custInfo">Customer Information: ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.acctNumber">Account Number ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.name">Name ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.locationNum">Location Number ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.serviceAddr">Service Address ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.meterSerial">Meter Serial Number ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.phoneNum">Phone Number ZXY</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.mapNum">Map Number ZXY</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.custInfo">Customer Information:</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.acctNumber">Account Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.name">Name</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.locationNum">Location Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.serviceAddr">Service Address</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.meterSerial">Meter Serial Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.phoneNum">Phone Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.mapNum">Map Number</entry>
 
     <!-- trendWidget/render.jsp -->
     <entry key="yukon.web.widgetClasses.TrendWidget.whatsThis">What's this?</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.graphType">Graph Type:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hour's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous weeks's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 month's data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous year's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hours' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous weeks' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous months' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 months' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous years' data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.customDateRange">Custom Date Range</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.oneDay">1D</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.oneWeek">1W</entry>
@@ -81,7 +81,7 @@
     <entry key="yukon.web.widgetClasses.TrendWidget.column">Column</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.columnGraph">Column Graph</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Usage Data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.noTrendsAvailable">No trends available for device</entry>
 
@@ -94,7 +94,6 @@
     <entry key="yukon.web.widgets.meterOutagesWidget.log">Log</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.time">Time</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.duration">Duration</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.notApplicable">n/a</entry>
 
     <!-- configWidget/render.jsp -->
     <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>

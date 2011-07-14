@@ -31,8 +31,8 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.filter.label">Filter</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
-    <entry key="yukon.web.metering.deviceSelection.performCollectionAction">Perform Collection Action</entry>
-    <entry key="yukon.web.metering.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
+    <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction">Perform Collection Action</entry>
+    <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
 
     <!-- meterHome.jsp -->
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>

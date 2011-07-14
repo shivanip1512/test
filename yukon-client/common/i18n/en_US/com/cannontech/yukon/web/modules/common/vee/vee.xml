@@ -67,6 +67,8 @@
     <entry key="yukon.web.widgets.validationMonitorsWidget.thresholdUnits">kWh/day</entry>
     <entry key="yukon.web.widgets.validationMonitorsWidget.createNew">Create</entry>
     <entry key="yukon.web.widgets.validationMonitorsWidget.review">Review Flagged Points</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.enable">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.validationMonitorsWidget.disable">Disable ({0})</entry>
 
     <!-- ValidationMonitorEditorController edit.jsp -->
     <!-- ================================================================== -->

@@ -81,7 +81,7 @@
 
         <c:set var="linkHeaderHtml" >
             <span class="navLink">
-                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
+                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
                     <cti:mapParam value="${deviceGroupCollection.collectionParameters}"/>                        
                 </cti:link>
             </span>

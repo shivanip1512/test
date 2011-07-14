@@ -97,8 +97,7 @@
     				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
     			</td>
     	  	    <td class="last" align="right">
-                    <cti:msg2 var="start" key=".start"/>
-    	            <tags:widgetActionRefresh method="initiateLoadProfile" label="${start}" labelBusy="${start}"/>
+    	            <tags:widgetActionRefresh2 method="initiateLoadProfile" label="yukon.web.defaults.start" labelBusy="yukon.web.defaults.start"/>
                 </td>
     		</tr>
     	</table>
@@ -132,11 +131,10 @@
             </td>
             <td class="label"><i:inline key=".stopDate"/></td>
             <td>
-                    <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
+                <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
             </td>
             <td class="last" align="right">
-                <cti:msg2 var="viewReport" key=".viewReport"/>
-                <tags:widgetActionRefresh method="viewDailyUsageReport" label="${viewReport}" labelBusy="${viewReport}"/>
+                <tags:widgetActionRefresh2 method="viewDailyUsageReport" label=".viewReport" labelBusy=".viewReport"/>
             </td>
         </tr>
         <tr>
@@ -145,14 +143,14 @@
         </tr>
     	
     </table>
-                <c:if test="${not empty errorMsgDailyUsage}">
-                    <cti:msg2 var="errorDailyReport" key=".errorDailyReport"/>
-                    <tags:hideReveal title="${errorDailyReport}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
-                        <c:forEach items="${errorMsgDailyUsage}" var="errorMsg" varStatus="msgNum">
-                            <div class="errorMessage">${errorMsg}</div>
-                        </c:forEach>
-                    </tags:hideReveal>
-                </c:if>
+    <c:if test="${not empty errorMsgDailyUsage}">
+        <cti:msg2 var="errorDailyReport" key=".errorDailyReport"/>
+        <tags:hideReveal title="${errorDailyReport}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
+            <c:forEach items="${errorMsgDailyUsage}" var="errorMsg" varStatus="msgNum">
+                <div class="errorMessage">${errorMsg}</div>
+            </c:forEach>
+        </tags:hideReveal>
+    </c:if>
     </form>
 </c:otherwise>
 </c:choose>

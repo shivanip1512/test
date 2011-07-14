@@ -21,9 +21,7 @@
 			   		</select>
 			   	</td>
 			   	<td colspan="2" align="right">
-                    <cti:msg2 var="getReport" key=".getReport"/>
-                    <cti:msg2 var="reading" key=".reading"/>
-			   		<tags:widgetActionUpdate method="requestReport" label="${getReport}" labelBusy="${reading}" container="${widgetParameters.widgetId}_results"/>
+			   		<tags:widgetActionUpdate2 method="requestReport" label=".getReport" labelBusy=".reading" container="${widgetParameters.widgetId}_results"/>
 			   	</td>
 			</tr>
 			
@@ -41,9 +39,9 @@
 		
 		<table>
 			<tr>
-				<td><i:inline key=".start"/></td>
+				<td><i:inline key="yukon.web.defaults.start"/>:</td>
 				<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
-				<td><i:inline key=".stop"/></td>
+				<td><i:inline key="yukon.web.defaults.stop"/>:</td>
 				<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
 			</tr>
 		</table>

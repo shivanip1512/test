@@ -6,6 +6,7 @@
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>
+<entry key="yukon.common.cancel">Cancel</entry>
 
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>

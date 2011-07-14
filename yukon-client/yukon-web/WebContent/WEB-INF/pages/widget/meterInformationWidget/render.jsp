@@ -32,8 +32,6 @@
     <br>
     <div id="${widgetParameters.widgetId}_results"></div>
     <div style="text-align: right">
-    <cti:msg2 var="pingMsg" key=".ping"/>
-    <cti:msg2 var="pingingMsg" key=".pinging"/>
-    	<tags:widgetActionUpdate method="ping"  label="${pingMsg}" labelBusy="${pingingMsg}" container="${widgetParameters.widgetId}_results" />
+    	<tags:widgetActionUpdate2 method="ping"  label=".ping" labelBusy=".pinging" container="${widgetParameters.widgetId}_results" />
     </div>
 </c:if>

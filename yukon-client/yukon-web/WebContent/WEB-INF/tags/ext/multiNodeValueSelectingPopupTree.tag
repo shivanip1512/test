@@ -1,4 +1,6 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <%-- name of key in the selected node's info attribute --%>
 <%-- also will be the name of the hidden field on which the value is set --%>
@@ -6,8 +8,8 @@
 <%@ attribute name="fieldId" required="true" type="java.lang.String"%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
 <%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
-<%@ attribute name="submitButtonText" required="true" type="java.lang.String"%>
-<%@ attribute name="cancelButtonText" required="true" type="java.lang.String"%>
+<%@ attribute name="submitButton" required="true" type="java.lang.String"%>
+<%@ attribute name="cancelButton" required="true" type="java.lang.String"%>
 <%@ attribute name="submitCallback" required="false" type="java.lang.String"%>
 
 <%-- PASS THROUGH PARAMETERS TO ext:popupTree --%>
@@ -19,7 +21,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
-<%@ attribute name="noSelectionAlertText" required="false" type="java.lang.String"%>
+<%@ attribute name="noSelectionAlert" required="false" type="java.lang.String"%>
 
 <%-- SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -68,9 +70,9 @@
     // then call submit callback that will do whatever application specific function t wants with the values
     function setNodeValues_${id}() {
         
-        if (nodeValues_${id}.length == 0 && '${noSelectionAlertText}' != '') {
+        if (nodeValues_${id}.length == 0 && '${noSelectionAlertMessage}' != '') {
         
-            alert('${noSelectionAlertText}');
+            alert('${noSelectionAlertMessage}');
             return false;
         }
         
@@ -102,6 +104,11 @@
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
 
 <%-- POPUP TREE --%>
+<cti:msg2 var="titleText"  key="${title}"/>
+<cti:msg2 var="submitText" key="${submitButton}"/>
+<cti:msg2 var="cancelText" key="${cancelButton}"/>
+<cti:msg2 var="noSelectionAlertMessage" key="${noSelectionAlert}"/> 
+
 <ext:popupTree  id="${id}"
                 treeCss="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"
                 treeAttributes="{}"
@@ -110,10 +117,10 @@
                 
                 dataJson="${dataJson}"
                 
-                title="${title}"
+                title="${titleText}"
                 width="${width}"
                 height="${height}" 
-                buttonsList="[{text:'${submitButtonText}', handler:setNodeValues_${id}},{text:'${cancelButtonText}', handler:clearAllNodeValues_${id}}]" />
+                buttonsList="[{text:'${submitText}', handler:setNodeValues_${id}},{text:'${cancelText}', handler:clearAllNodeValues_${id}}]" />
                 
                                 
                                 

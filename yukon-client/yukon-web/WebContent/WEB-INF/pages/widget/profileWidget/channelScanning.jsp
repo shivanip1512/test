@@ -11,7 +11,7 @@
 </cti:checkRole>
 
 
-<%--CHANNElS PROFILING--%>
+<%--CHANNELS PROFILING--%>
 <input type="hidden" name="channelNum" id="channelNum" value="">
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
 <table class="compactResultsTable">
@@ -25,18 +25,6 @@
     </tr>
     
     <c:forEach var="c" items="${availableChannels}">
-    
-        <c:if test="${c.channelProfilingOn}">
-            <cti:msg2 var="actionDesc" key=".stop"/>
-            <cti:msg2 var="on" key=".on"/>
-            <c:set var="scanning" value='<div style="font-weight:bold;color:#339900;display:inline;">${on}</div>'></c:set>
-        </c:if>
-        <c:if test="${not c.channelProfilingOn}">
-            <cti:msg2 var="actionDesc" key=".start"/>
-            <cti:msg2 var="off" key=".off"/>
-            <c:set var="scanning" value='<div style="font-weight:bold;color:#BB0000;display:inline;">${off}</div>'></c:set>
-        </c:if>
-    
         <tr align="left" valign="top">
             <td>${c.channelDescription}</td>
             <td>${c.channelProfileRate}</td>
@@ -46,8 +34,14 @@
                     <c:choose>
                     <c:when test="${empty c.jobInfos}">
                         <tr>
-                            <td>${scanning}</td>
-                            <td><i:inline key=".never" arguments="${actionDesc}"/></td>
+                            <c:if test="${c.channelProfilingOn}">
+                                <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/>&nbsp;</div></td>
+                                <td><i:inline key=".neverStops"/></td>
+                            </c:if>
+                            <c:if test="${not c.channelProfilingOn}">
+                                <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/>&nbsp;</div></td>
+                                <td><i:inline key=".neverStarts"/></td>
+                            </c:if>                        
                         </tr>
                     </c:when>
                     <c:otherwise>
@@ -55,7 +49,12 @@
                             <c:choose>
                                 <c:when test="${status.count == 1}">
                                     <tr>
-                                        <td>${scanning}</td>
+                                        <c:if test="${c.channelProfilingOn}">
+                                            <td><div class="channelOn"><i:inline key="yukon.web.defaults.on"/>&nbsp;</div></td>
+                                        </c:if>
+                                        <c:if test="${not c.channelProfilingOn}">
+                                            <td><div class="channelOff"><i:inline key="yukon.web.defaults.off"/>&nbsp;</div></td>
+                                        </c:if>        
                                 </c:when>
                                 <c:otherwise>
                                     <tr><td>&nbsp;</td>
@@ -65,19 +64,14 @@
                             <c:choose>
                                 <c:when test="${jobInfo.newToggleVal}">
                                     <td>
-                                        <cti:formatDate value="${jobInfo.startTime}" type="DATE" var="formattedScheduleDate" />
-                                        <i:inline key=".startsDate" arguments="${formattedScheduleDate}"/>
-                                        <cti:formatDate value="${jobInfo.startTime}" type="TIME" var="formattedScheduleDate" />
-                                        <i:inline key=".startsTime" arguments="${formattedScheduleDate}"/>
-                                    
+                                        <cti:formatDate value="${jobInfo.startTime}" type="FULL" var="formattedScheduleDate" />
+                                        <i:inline key=".starts" arguments="${formattedScheduleDate}"/>
                                     </td>
                                 </c:when>
                                 <c:otherwise>
                                     <td>
-                                        <cti:formatDate value="${jobInfo.startTime}" type="DATE" var="formattedScheduleDate" />
-                                        <i:inline key=".stopsDate" arguments="${formattedScheduleDate}"/>
-                                        <cti:formatDate value="${jobInfo.startTime}" type="TIME" var="formattedScheduleDate" />
-                                        <i:inline key=".stopsTime" arguments="${formattedScheduleDate}"/>
+                                        <cti:formatDate value="${jobInfo.startTime}" type="FULL" var="formattedScheduleDate" />
+                                        <i:inline key=".stops" arguments="${formattedScheduleDate}"/>
                                     </td>
                                 </c:otherwise>
                             </c:choose>

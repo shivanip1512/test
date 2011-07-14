@@ -119,8 +119,9 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     }
     
     private void setupSendCommandModel(HttpServletRequest request, final ModelMap model, final RfnMeterDisconnectStatusType action) throws ServletRequestBindingException, NotFoundException {
-        model.addAttribute("deviceId", WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
-        final RfnMeter meter = rfnMeterDao.getForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
+        final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        final RfnMeter meter = rfnMeterDao.getForId(deviceId);
+        model.addAttribute("deviceId", deviceId);
         
         WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback(new RfnMeterDisconnectCallback() {
 
@@ -147,7 +148,8 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             
             @Override
             public void processingExceptionOccured(String message) {
-                log.error("Processing exception occurred during meter disconnect command: " + message);
+                log.error("Processing exception occurred for meter: " + meter.getName() + " with id: " 
+                          + deviceId + " during meter disconnect command: " + message);
             }
             
             @Override

@@ -10,9 +10,6 @@
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
-<cti:msg2 var="enableText" key="yukon.common.enable"/> 
-<cti:msg2 var="disableText" key="yukon.common.disable"/>
-
 <%-- ERROR --%>
 <c:if test="${not empty porterResponseMonitorError}">
 	<div class="errorRed">${porterResponseMonitorError}</div>
@@ -60,16 +57,16 @@
 					<td class="${tdClass}" style="text-align: right;">
 						<c:choose>
 							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-								<tags:widgetActionRefreshImage method="toggleEnabled"
+								<tags:widgetActionRefreshImage2 method="toggleEnabled"
 									imgSrc="${enabledImg}" imgSrcHover="${enabledImg}"
 									monitorId="${monitor.monitorId}"
-									title="${disableText} (${monitor.name})" />
+									title=".disable" titleArgument="${monitor.name}" />
 							</c:when>
 							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-								<tags:widgetActionRefreshImage method="toggleEnabled"
+								<tags:widgetActionRefreshImage2 method="toggleEnabled"
 									imgSrc="${disabledImg}" imgSrcHover="${disabledImg}"
 									monitorId="${monitor.monitorId}"
-									title="${enableText} (${monitor.name})" checked="false" />
+									title=".enable" titleArgument="${monitor.name}" checked="false" />
 							</c:when>
 						</c:choose>
 					</td>

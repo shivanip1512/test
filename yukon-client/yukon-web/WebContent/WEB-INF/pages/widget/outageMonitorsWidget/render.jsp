@@ -10,9 +10,6 @@
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
- 
- 
-
 <%-- CREATE NEW OUTAGE MONITOR FORM --%>
 <form id="createNewOutageMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
 </form>
@@ -34,7 +31,6 @@
 		<th style="text-align:right;"><i:inline key=".tableHeader.violations"/></th>
 		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
 		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
-		
 	</tr>
 
 	<c:forEach var="monitor" items="${monitors}">
@@ -55,15 +51,12 @@
 				
 			<%-- action icons --%>
 			<td>
-				<cti:msg2 var="outageProcessingActionTitleText" key=".actionTitle.outageProcessing"/>
-				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
-					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
-				</a>
-				
+                <cti:button key="actionTitle.outageProcessing" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}"/>
 			</td>
 			
 			<%-- monitor name --%>
 			<td class="${tdClass}">
+				<cti:msg2 var="outageProcessingActionTitleText" key=".actionTitle.outageProcessing"/>
 				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})">${monitorName}</a>
 			</td>
 			
@@ -81,12 +74,10 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-						<cti:msg2 var="disableText" key="yukon.common.disable"/>
-                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" outageMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
+                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" outageMonitorId="${monitorId}" title=".disable" titleArgument="${monitorName}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-					    <cti:msg2 var="enableText" key="yukon.common.enable"/>
-                        <tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" outageMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
+                        <tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" outageMonitorId="${monitorId}" title=".enable" titleArgument="${monitorName}" checked="false"/>
 					</c:when>
 				</c:choose>
 			</td>

@@ -99,8 +99,7 @@
         				<td>
             				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
             				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
-            				<cti:msg2 var="reloadGraph" key=".reloadUsingCustomDates"/>
-                            <tags:widgetActionRefreshImage method="render" title="${reloadGraph}" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.png" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.png" />
+                            <tags:widgetActionRefreshImage2 method="render" title=".reloadUsingCustomDates" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.png" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.png" />
         				</td>
         			</tr>
         		</c:when>
@@ -129,20 +128,17 @@
     		</tr>
         
             <%-- TABULAR DATA REPROTS --%>
-            <c:choose>
-            	<c:when test="${attributeGraphType.attribute == 'USAGE'}">
-                    <cti:msg2 var="archivedUsageData" key=".archivedUsageData"/>
-            		<c:set var="rawTabularDataLabel" value="${archivedUsageData}" />
-            	</c:when>
-            	<c:otherwise>
-                    <cti:msg2 var="tabularUsageData" key=".tabularUsageData"/>
-            		<c:set var="rawTabularDataLabel" value="${tabularUsageData}" />
-            	</c:otherwise>
-            </c:choose>
-            
     		<tr>
-                <td class="label"><b>${rawTabularDataLabel}:</b></td>
-                
+                <td>
+                    <c:choose>
+                        <c:when test="${attributeGraphType.attribute == 'USAGE'}">
+                            <i:inline key=".archivedUsageData"/>:
+                        </c:when>
+                        <c:otherwise>
+                            <i:inline key=".tabularUsageData"/>:
+                        </c:otherwise>
+                    </c:choose>
+                </td>
                 <td>
                     <a href="<cti:url value="/spring/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                     |

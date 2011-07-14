@@ -35,22 +35,13 @@
         <div style="text-align: right">
             <c:choose>
                 <c:when test="${useArming}">
-                    <cti:msg2 var="connectLabel" key=".armLabel"/>
-                    <cti:msg2 var="connectLabelBusy" key=".armLabelBusy"/>
-                    <cti:msg2 var="confirmConnect" key=".confirmArm"/>
+                    <tags:widgetActionRefresh2 method="connect" label=".armLabel" labelBusy=".armLabelBusy" confirmText=".confirmArm"/>
                 </c:when>
                 <c:otherwise>
-                    <cti:msg2 var="connectLabel" key=".connectLabel"/>
-                    <cti:msg2 var="connectLabelBusy" key=".connectLabelBusy"/>
-                    <cti:msg2 var="confirmConnect" key=".confirmConnect"/>
+                    <tags:widgetActionRefresh2 method="connect" label=".connectLabel" labelBusy=".connectLabelBusy" confirmText=".confirmConnect"/>
                 </c:otherwise>
             </c:choose>
-            <tags:widgetActionRefresh method="connect" label="${connectLabel}" labelBusy="${connectLabelBusy}" confirmText="${confirmConnect}"/>
-
-            <cti:msg2 var="disconnectLabel" key=".disconnectLabel"/>
-            <cti:msg2 var="disconnectLabelBusy" key=".disconnectLabelBusy"/>
-            <cti:msg2 var="confirmDisconnect" key=".confirmDisconnect"/>
-            <tags:widgetActionRefresh method="disconnect" label="${disconnectLabel}" labelBusy="${disconnectLabelBusy}" confirmText="${confirmDisconnect}"/>
+            <tags:widgetActionRefresh2 method="disconnect" label=".disconnectLabel" labelBusy=".disconnectLabelBusy" confirmText=".confirmDisconnect"/>
         </div>
     </c:otherwise>
 </c:choose>

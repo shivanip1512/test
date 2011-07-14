@@ -165,7 +165,7 @@ public class ButtonTag extends YukonTagSupport {
             }
 
             /* Hover Text */
-            MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText");
+            MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText", arguments);
             String hoverText = getLocalMessage(hoverTextResolvable, false);
 
             JspWriter out = getJspContext().getOut();

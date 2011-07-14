@@ -5,7 +5,7 @@
 
 <!-- deviceGroupWidget/render.jsp -->
 <entry key="yukon.web.deviceGroups.widget.groupTree.rootName">Groups</entry>  <!-- Could not find reference to this key. Safe to remove? -->  
-<entry key="yukon.web.widgets.deviceGroupWidget.groupTree.title">Add to Groups</entry>
+<entry key="yukon.web.widgets.deviceGroupWidget.groupTree.label">Add to Groups</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget.groupTree.submitButtonText">Add Device To Selected Groups</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget.groupTree.closeButtonText">Cancel</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget.currentGroup">Current Groups</entry>

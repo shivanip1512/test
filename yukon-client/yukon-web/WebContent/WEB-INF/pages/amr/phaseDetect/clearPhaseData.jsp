@@ -41,7 +41,7 @@
 	                <td style="vertical-align: top;">
 	                    <div id="clearDiv">
 						    <c:if test="${not empty param.errorReason}">
-						        <span class="errorMessage"><b><i:inline key=".errorSendingClear" arguments="${param.errorReason}"/></b></span>
+						        <span class="errorMessage"><b><i:inline key=".errorSending" arguments="${param.errorReason}"/></b></span>
 						    </c:if>
 	                    </div>
 	                </td>

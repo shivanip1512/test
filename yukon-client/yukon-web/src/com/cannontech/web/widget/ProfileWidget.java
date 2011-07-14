@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -64,13 +65,14 @@ import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Widget used to display point data in a trend
  */
 public class ProfileWidget extends WidgetControllerBase {
 
-    // private LoadProfileService.EmailCompletionCallback emailCompletionCallback = null;
     private LoadProfileService loadProfileService = null;
     private EmailService emailService = null;
     private PaoDao paoDao = null;
@@ -133,8 +135,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
                 lookupByChannel = channelBuilder.build();
             } catch (IllegalArgumentException e) {
-                log.warn("Caught exception while building lookup maps, look for a duplicate channel.",
-                         e);
+                log.warn("Caught exception while building lookup maps, look for a duplicate channel.", e);
                 throw e;
             }
         }
@@ -171,8 +172,7 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String iStr = "";
 
         int hrs = 0;
@@ -185,13 +185,13 @@ public class ProfileWidget extends WidgetControllerBase {
 
         if (hrs >= 1) {
             String hourSuffix =
-                messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.hourSuffix");
+                messageSourceAccessor.getMessage("yukon.web.defaults.hourSuffix");
             iStr += hrs + " " + hourSuffix + " ";
         }
 
         if (mins >= 1) {
             String minuteSuffix =
-                messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.minuteSuffix");
+                messageSourceAccessor.getMessage("yukon.web.defaults.minuteSuffix");
             iStr += mins + " " + minuteSuffix + " ";
         }
 
@@ -212,17 +212,11 @@ public class ProfileWidget extends WidgetControllerBase {
             if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
 
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
-                channelInfo.put("channelProfilingOn", toggleProfilingService
-                    .getToggleValueForDevice(deviceId, attrChanEnum.getChannel()));
-                channelInfo
-                    .put("jobInfos",
-                         toggleProfilingService.getToggleJobInfos(deviceId,
-                                                                  attrChanEnum.getChannel()));
+                channelInfo.put("channelProfilingOn", toggleProfilingService.getToggleValueForDevice(deviceId, attrChanEnum.getChannel()));
+                channelInfo.put("jobInfos", toggleProfilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
                 channelInfo.put("channelNumber", attrChanEnum.getChannel().toString());
                 channelInfo.put("channelDescription", attrChanEnum.getAttribute().getDescription());
-                channelInfo.put("channelProfileRate",
-                                calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile),
-                                                userContext));
+                channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
 
                 availableChannels.add(channelInfo);
             }
@@ -233,36 +227,20 @@ public class ProfileWidget extends WidgetControllerBase {
 
     private void addFutureScheduleDateToMav(ModelAndView mav, YukonUserContext userContext) {
 
-        mav.addObject("futureScheduleDate",
-                      dateFormattingService.format(DateUtils.addDays(new Date(),
-                                                                         7),
-                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                       userContext));
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<Map<String, String>> hours = new ArrayList<Map<String, String>>();
+        mav.addObject("futureScheduleDate", dateFormattingService.format(DateUtils.addDays(new Date(), 7),
+                                                       DateFormattingService.DateFormatEnum.DATE, userContext));
+        List<LocalTime> hours = Lists.newArrayList();
+        LocalTime localTime = new LocalTime(0,0,0);
         for (Integer i = 1; i <= 24; i++) {
-            Map<String, String> h = new HashMap<String, String>();
-
-            String dispval = "";
-            if (i <= 12) {
-                dispval = i + messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.amSuffix");
-            } else {
-                dispval = (i - 12) + messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.pmSuffix");
-            }
-
-            h.put("display", StringUtils.leftPad(dispval, 8));
-            h.put("val", i.toString());
-            hours.add(h);
+            hours.add(localTime);
+            localTime = localTime.plusHours(1);
         }
         mav.addObject("hours", hours);
-
     }
 
     private Set<Attribute> getSupportedProfileAttributes(Meter meter) {
 
-        Set<Attribute> supportedProfileAttributes =
-            new HashSet<Attribute>(attributeService.getAllExistingAttributes(meter));
+        Set<Attribute> supportedProfileAttributes = new HashSet<Attribute>(attributeService.getAllExistingAttributes(meter));
         supportedProfileAttributes.retainAll(CtiUtilities.asSet(BuiltInAttribute.LOAD_PROFILE,
                                                                 BuiltInAttribute.PROFILE_CHANNEL_2,
                                                                 BuiltInAttribute.PROFILE_CHANNEL_3,
@@ -306,10 +284,8 @@ public class ProfileWidget extends WidgetControllerBase {
         }
 
         // initialize past profile dates
-        String stopDateStr =
-            WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
-        String startDateStr =
-            WidgetParameterHelper.getStringParameter(request, "pastProfile_start", "");
+        String stopDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
+        String startDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_start", "");
         if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
             mav.addObject("startDateStr",
                           dateFormattingService.format(DateUtils.addDays(new Date(), -5),
@@ -331,8 +307,7 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("email", getUserEmail(userContext));
 
         // pending requests
-        List<Map<String, String>> pendingRequests =
-            loadProfileService.getPendingRequests(device, userContext);
+        List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
         mav.addObject("deviceId", deviceId);
 
@@ -351,7 +326,7 @@ public class ProfileWidget extends WidgetControllerBase {
         // and error requesting will be added to mav also
         ModelAndView mav = render(request, response);
 
-        List<String> errorMsg = new ArrayList<String>();
+        List<String> errorMsg = Lists.newArrayList();
 
         String email = WidgetParameterHelper.getRequiredStringParameter(request, "email");
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -368,22 +343,17 @@ public class ProfileWidget extends WidgetControllerBase {
             LocalDate startDate = dateFormattingService.parseLocalDate(startDateStr, userContext);
             LocalDate stopDate = dateFormattingService.parseLocalDate(stopDateStr, userContext);
             stopDate = stopDate.plusDays(1); // move stop date to end of specified day
-            Instant startInstant =
-                TimeUtil.toMidnightAtBeginningOfDay(startDate, userContext.getJodaTimeZone());
-            Instant stopInstant =
-                TimeUtil.toMidnightAtEndOfDay(stopDate, userContext.getJodaTimeZone());
+            Instant startInstant = TimeUtil.toMidnightAtBeginningOfDay(startDate, userContext.getJodaTimeZone());
+            Instant stopInstant = TimeUtil.toMidnightAtEndOfDay(stopDate, userContext.getJodaTimeZone());
             // map of email elements
-            Map<String, Object> msgData = new HashMap<String, Object>();
+            Map<String, Object> msgData = Maps.newHashMap();
             msgData.put("email", email);
-            msgData.put("formattedDeviceName",
-                        meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
+            msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
-            msgData.put("startDate", startDate
-                .toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate()); // e-mail callback
-                                                                                  // service expects
-                                                                                  // type Date
+            // e-mail callback service expects startDate & stopDate of type Date
+            msgData.put("startDate", startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate()); 
             msgData.put("stopDate", stopDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate());
             long numDays = Days.daysBetween(startDate, stopDate).getDays();
 
@@ -393,13 +363,11 @@ public class ProfileWidget extends WidgetControllerBase {
             Attribute attribute = null;
             String channelName = "";
 
-            ProfileAttributeChannelEnum profileAttributeChannel =
-                ProfileAttributeChannelEnum.getForChannel(channel);
+            ProfileAttributeChannelEnum profileAttributeChannel = ProfileAttributeChannelEnum.getForChannel(channel);
             attribute = profileAttributeChannel.getAttribute();
             channelName = profileAttributeChannel.getAttribute().getDescription();
 
-            LitePoint litePoint =
-                attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
+            LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
             msgData.put("channelName", channelName);
 
             Map<String, Object> inputValues = new HashMap<String, Object>();
@@ -413,49 +381,28 @@ public class ProfileWidget extends WidgetControllerBase {
             optionalAttributeDefaults.put("menuSelection", "meters");
             optionalAttributeDefaults.put("viewJsp", "MENU");
 
-            String reportHtmlUrl =
-                simpleReportService.getReportUrl(request,
-                                                 "rawPointHistoryDefinition",
-                                                 inputValues,
-                                                 optionalAttributeDefaults,
-                                                 "extView",
-                                                 true);
-            String reportCsvUrl =
-                simpleReportService.getReportUrl(request,
-                                                 "rawPointHistoryDefinition",
-                                                 inputValues,
-                                                 optionalAttributeDefaults,
-                                                 "csvView",
-                                                 true);
-            String reportPdfUrl =
-                simpleReportService.getReportUrl(request,
-                                                 "rawPointHistoryDefinition",
-                                                 inputValues,
-                                                 optionalAttributeDefaults,
-                                                 "pdfView",
-                                                 true);
+            String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition",
+                                                 inputValues, optionalAttributeDefaults, "extView", true);
+            String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition",
+                                                 inputValues, optionalAttributeDefaults, "csvView", true);
+            String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition",
+                                                 inputValues, optionalAttributeDefaults, "pdfView", true);
             msgData.put("reportHtmlUrl", reportHtmlUrl);
             msgData.put("reportCsvUrl", reportCsvUrl);
             msgData.put("reportPdfUrl", reportPdfUrl);
 
             // completion callbacks
             LoadProfileServiceEmailCompletionCallbackImpl callback =
-                new LoadProfileServiceEmailCompletionCallbackImpl(emailService,
-                                                                  dateFormattingService,
-                                                                  templateProcessorFactory,
-                                                                  deviceErrorTranslatorDao);
+                new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService,
+                                                                  templateProcessorFactory, deviceErrorTranslatorDao);
 
             callback.setUserContext(userContext);
             callback.setEmail(email);
             callback.setMessageData(msgData);
 
             // will throw InitiateLoadProfileRequestException if connection problem
-            loadProfileService.initiateLoadProfile(device,
-                                                       channel,
-                                                       startInstant.toDate(),
-                                                       stopInstant.toDate(),
-                                                       callback,
-                                                       userContext);
+            loadProfileService.initiateLoadProfile(device, channel, startInstant.toDate(), 
+                                                   stopInstant.toDate(), callback, userContext);
             mav.addObject("channel", channel);
         } else {
             mav.addObject("startDateStr", startDateStr);
@@ -465,8 +412,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
         // RE-GET PENDING
         // -----------------------------------------------------------------------------
-        List<Map<String, String>> pendingRequests =
-            loadProfileService.getPendingRequests(device, userContext);
+        List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
 
         return mav;
@@ -476,32 +422,26 @@ public class ProfileWidget extends WidgetControllerBase {
                                         HttpServletResponse response) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING,
-                                       userContext.getYukonUser());
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, userContext.getYukonUser());
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         String toggleErrorMsg = null;
 
         // get parameters
         int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
-        boolean newToggleVal =
-            WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
+        boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
 
-        String startRadio =
-            WidgetParameterHelper.getStringParameter(request, "startRadio" + channelNum);
-        String stopRadio =
-            WidgetParameterHelper.getRequiredStringParameter(request, "stopRadio" + channelNum);
+        String startRadio = WidgetParameterHelper.getStringParameter(request, "startRadio" + channelNum);
+        String stopRadio = WidgetParameterHelper.getRequiredStringParameter(request, "stopRadio" + channelNum);
 
-        String startDate =
-            WidgetParameterHelper.getStringParameter(request, "startDate" + channelNum);
-        String stopDate =
-            WidgetParameterHelper.getRequiredStringParameter(request, "stopDate" + channelNum);
+        String startDate = WidgetParameterHelper.getStringParameter(request, "startDate" + channelNum);
+        String stopDate = WidgetParameterHelper.getRequiredStringParameter(request, "stopDate" + channelNum);
 
-        Integer startHour =
-            WidgetParameterHelper.getIntParameter(request, "startHour" + channelNum);
-        Integer stopHour =
-            WidgetParameterHelper.getRequiredIntParameter(request, "stopHour" + channelNum);
+        String startHourString = WidgetParameterHelper.getStringParameter(request, "startHour" + channelNum);
+        String stopHourString = WidgetParameterHelper.getStringParameter(request, "stopHour" + channelNum);
+
+        LocalTime startHour =  new LocalTime(Integer.parseInt(startHourString),0,0);
+        LocalTime stopHour = new LocalTime(Integer.parseInt(stopHourString),0,0);
 
         // get device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -516,55 +456,43 @@ public class ProfileWidget extends WidgetControllerBase {
             // validate scheduled start date
             if (startRadio.equalsIgnoreCase("future")) {
                 try {
-                    scheduledStartDate =
-                        dateFormattingService.flexibleDateParser(startDate,
+                    scheduledStartDate = dateFormattingService.flexibleDateParser(startDate,
                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                 userContext);
 
                     if (scheduledStartDate == null) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startRequired");
                     } else if (scheduledStartDate.compareTo(today) <= 0) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startAfterToday",
-                                            startDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startAfterToday", startDate);
                     } else {
-                        scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour);
+                        scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour.getHourOfDay());
                         scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, 0);
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg =
-                        messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid",
-                                                         e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid", e.getMessage());
                 }
             }
             // validate scheduled stop date
             if (stopRadio.equalsIgnoreCase("future")) {
                 try {
-                    scheduledStopDate =
-                        dateFormattingService.flexibleDateParser(stopDate,
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate,
                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                 userContext);
 
                     if (scheduledStopDate == null) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday",
-                                                             stopDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
                     } else {
-                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
+                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour.getHourOfDay());
                         scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg =
-                        messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid",
-                                                         e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());
                 }
             }
             // start now
-            if (startRadio.equalsIgnoreCase("now") && toggleErrorMsg == null) {
+            if (startRadio.equalsIgnoreCase("now")) {
                 // already scheduled to start? cancel it
                 toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
                 toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, true);
@@ -573,21 +501,14 @@ public class ProfileWidget extends WidgetControllerBase {
             else if (startRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
                 // was starting scheduled for later as well? make sure its before this scheduled
                 // stop date
-                if (stopRadio.equalsIgnoreCase("future")
-                    && scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
-                    // toggleErrorMsg = "Stop Date Must Be After Start Date";
-                    toggleErrorMsg =
-                        messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterStart", 
-                                                         stopDate);
+                if (stopRadio.equalsIgnoreCase("future") && scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterStart", stopDate);
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId,
-                                                                            channelNum,
-                                                                            true,
-                                                                            scheduledStartDate,
-                                                                            userContext);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true,
+                                                                            scheduledStartDate, userContext);
                 }
             }
             // stop now?
@@ -600,11 +521,8 @@ public class ProfileWidget extends WidgetControllerBase {
             else if (stopRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
                 // schedule it!, already scheduled? cancel it
                 toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                toggleProfilingService.scheduleToggleProfilingForDevice(deviceId,
-                                                                        channelNum,
-                                                                        false,
-                                                                        scheduledStopDate,
-                                                                        userContext);
+                toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false,
+                                                                        scheduledStopDate, userContext);
             }
         }
         // STOP
@@ -623,35 +541,25 @@ public class ProfileWidget extends WidgetControllerBase {
                 // validate schedule date
                 Date today = DateUtils.round(new Date(), Calendar.MINUTE);
                 try {
-                    scheduledStopDate =
-                        dateFormattingService.flexibleDateParser(stopDate,
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate,
                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                 userContext);
-
                     if (scheduledStopDate == null) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
-                        toggleErrorMsg =
-                            messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday",
-                                                             stopDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
                     } else {
-                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
+                        scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour.getHourOfDay());
                         scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg =
-                        messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid",
-                                                         e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId,
-                                                                            channelNum,
-                                                                            false,
-                                                                            scheduledStopDate,
-                                                                            userContext);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false,
+                                                                            scheduledStopDate, userContext);
                 }
             }
         }
@@ -670,8 +578,7 @@ public class ProfileWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // get info about each channels scanning status
-        List<Map<String, Object>> availableChannels =
-            getAvailableChannelInfo(deviceId, userContext);
+        List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId, userContext);
         mav.addObject("availableChannels", availableChannels);
 
         addFutureScheduleDateToMav(mav, userContext);
@@ -683,13 +590,10 @@ public class ProfileWidget extends WidgetControllerBase {
                                              HttpServletResponse response) throws Exception {
         ModelAndView mav = render(request, response);
         List<String> errorMessages = new ArrayList<String>();
-        String reportStartDateStr =
-            ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStartDate");
-        String reportStopDateStr =
-            ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStopDate");
+        String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStartDate");
+        String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "dailyUsageStopDate");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
@@ -707,12 +611,9 @@ public class ProfileWidget extends WidgetControllerBase {
 
         if (errorMessages.isEmpty()) {
             // end date should be inclusive
-            LocalDate stopDate =
-                dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
+            LocalDate stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
             stopDate = stopDate.plusDays(1);
-            reportStopDateStr =
-                dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE,
-                                             userContext);
+            reportStopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
             // build report query
             Map<String, String> propertiesMap = new HashMap<String, String>();
             propertiesMap.put("def", "dailyUsageDefinition");
@@ -740,8 +641,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                            YukonUserContext userContext)
             throws Exception {
         List<String> errorMessages = new ArrayList<String>();
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         if (StringUtils.isBlank(reportStartDateStr)) {
             errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startRequired"));
@@ -767,14 +667,10 @@ public class ProfileWidget extends WidgetControllerBase {
             if (startDate != null && stopDate != null) {
                 LocalDate today = new LocalDate(userContext.getJodaTimeZone());
                 if (stopDate.isBefore(startDate)) {
-                    errorMessages
-                        .add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startOnOrBeforeStop",
-                                                              reportStartDateStr));
+                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startOnOrBeforeStop", reportStartDateStr));
                 }
                 if (stopDate.isAfter(today)) {
-                    errorMessages
-                        .add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopOnOrBeforeToday",
-                                                              reportStopDateStr));
+                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopOnOrBeforeToday", reportStopDateStr));
                 }
             }
         }

@@ -31,7 +31,7 @@ public class VoltageAndTouController extends MultiActionController {
 		int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
 		SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 		mav.addObject("deviceId", deviceId);
-		mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device));
+		mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
 		
 		// Schedules
 		List<LiteTOUSchedule> schedules = databaseCache.getAllTOUSchedules();

@@ -77,3 +77,15 @@ div.resultBar > div {
 .DATA_MISSING {
     background: white;
 }
+
+.channelOn {
+    font-weight:bold;
+    color:#339900;
+    display:inline;
+}
+
+.channelOff {
+    font-weight:bold;
+    color:#BB0000;
+    display:inline;
+}

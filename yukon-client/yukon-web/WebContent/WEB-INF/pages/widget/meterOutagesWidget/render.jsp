@@ -16,9 +16,7 @@
 </ct:nameValueContainer>
 
 <div style="text-align: right">
-    <cti:msg2 var="readNow" key=".readNow"/>
-    <cti:msg2 var="reading" key=".reading"/>
-  <ct:widgetActionRefresh hide="${!readable}" method="read" label="${readNow}" labelBusy="${reading}"/>
+  <ct:widgetActionRefresh2 hide="${!readable}" method="read" label=".readNow" labelBusy=".reading"/>
 </div>
 <br>
 
@@ -47,9 +45,9 @@
 	  <c:if test="${empty data.outageData}">
 	    <c:forEach items="1">
 	      <tr class="<ct:alternateRow odd="" even="altRow"/>">
-	    	<td><i:inline key=".notApplicable"/></td>
-	    	<td><i:inline key=".notApplicable"/></td>
-	    	<td><i:inline key=".notApplicable"/></td>
+	    	<td><i:inline key="yukon.web.defaults.na"/></td>
+	    	<td><i:inline key="yukon.web.defaults.na"/></td>
+	    	<td><i:inline key="yukon.web.defaults.na"/></td>
 	      </tr>
 	    </c:forEach>
 	  </c:if>

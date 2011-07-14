@@ -72,10 +72,10 @@
 			<td class="${tdClass}" style="text-align:right;">
 				<c:choose>
 					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" validationMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
+						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" validationMonitorId="${monitorId}" title=".disable" titleArgument="${monitorName}"/>
 					</c:when>
 					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" validationMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
+						<tags:widgetActionRefreshImage2 method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" validationMonitorId="${monitorId}" title=".enable" titleArgument="${monitorName}" checked="false"/>
 					</c:when>
 				</c:choose>
 			</td>

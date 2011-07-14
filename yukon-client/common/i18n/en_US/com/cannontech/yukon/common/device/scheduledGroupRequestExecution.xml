@@ -17,7 +17,9 @@
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
-	
+	<entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.enable">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequstExecutionWidget.disable">Disable ({0})</entry>
+    
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->

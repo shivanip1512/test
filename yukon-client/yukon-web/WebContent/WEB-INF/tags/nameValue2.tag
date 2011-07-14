@@ -3,6 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ attribute name="nameKey" required="true" rtexprvalue="true" %>
+<%@ attribute name="argument" required="false" type="java.lang.Object"%>
 <%@ attribute name="label" required="false" type="java.lang.Object"%>
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
@@ -22,10 +23,24 @@
 				
 				<c:choose>
 					<c:when test="${not empty pageScope.labelForId}">
-						<label for="${pageScope.labelForId}"><i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}</label>
+                        <c:choose>
+                            <c:when test="${not empty pageScope.argument}">
+                                <label for="${pageScope.labelForId}"><i:inline key="${label != null ? label : nameKey}" arguments="${argument}"/>${colonSuffix}</label>
+                            </c:when>
+                            <c:otherwise>
+                                <label for="${pageScope.labelForId}"><i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}</label>
+                            </c:otherwise>
+                        </c:choose>
 					</c:when>
 					<c:otherwise>
-						<i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}
+                        <c:choose>
+                            <c:when test="${not empty pageScope.argument}">
+                                <i:inline key="${label != null ? label : nameKey}" arguments="${argument}"/>${colonSuffix}
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key="${label != null ? label : nameKey}"/>${colonSuffix}
+                            </c:otherwise>    
+                        </c:choose>
 					</c:otherwise>
 				</c:choose>
 				

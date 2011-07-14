@@ -2,6 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+    <!-- touWidget/render.jsp -->
 <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>
 <entry key="yukon.web.widgets.touWidget.notConfigured">Tou Widget not configured.</entry>
 <entry key="yukon.web.widgets.touWidget.rateA">A</entry>
@@ -16,4 +17,8 @@
 <entry key="yukon.web.widgets.touWidget.currentReading">{0} Reading</entry>
 <entry key="yukon.web.widgets.touWidget.previousReadings">Previous {0} Readings</entry>
 <entry key="yukon.web.widgets.touWidget.totalConsumption">Total Consumption</entry>
+
+    <!-- touScheduleWidget/render.jsp --> 
+<entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule">Download TOU Schedule</entry>
+<entry key="yukon.web.widgets.touScheduleWidget.downloadingSchedule">Downloading TOU Schedule</entry>
 </properties>

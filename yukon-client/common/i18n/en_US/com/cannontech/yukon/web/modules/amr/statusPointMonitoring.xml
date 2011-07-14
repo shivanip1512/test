@@ -11,7 +11,9 @@
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.createNew">Create</entry>
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.actionTitle.statusPointMonitoring">View Status Point Monitor Details</entry>
-
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.enable">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.statusPointMonitorsWidget.disable">Disable ({0})</entry>
+    
     <!-- StatusPointMonitorController create.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageName">Status Point Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageDescription">New Status Point Monitor</entry>

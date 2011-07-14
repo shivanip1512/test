@@ -11,7 +11,13 @@
 <entry key="yukon.web.defaults.no">No</entry>
 <entry key="yukon.web.defaults.na">N/A</entry>
 <entry key="yukon.web.defaults.default">Default</entry>
+<entry key="yukon.web.defaults.on">On</entry>
+<entry key="yukon.web.defaults.off">Off</entry>
+<entry key="yukon.web.defaults.stop">Stop</entry>
+<entry key="yukon.web.defaults.start">Start</entry>
 
+<entry key="yukon.web.defaults.minuteSuffix">min</entry>
+<entry key="yukon.web.defaults.hourSuffix">hr</entry>
 <entry key="yukon.web.defaults.day">Day</entry>
 <entry key="yukon.web.defaults.month">Month</entry>
 <entry key="yukon.web.defaults.year">Year</entry>

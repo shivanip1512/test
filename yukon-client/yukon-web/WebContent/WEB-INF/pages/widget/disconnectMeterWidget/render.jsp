@@ -2,11 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<cti:msg2 key="yukon.web.modules.widgets.disconnectMeterWidget.title" var="title" />
-<cti:msg2 key="yukon.web.modules.widgets.disconnectMeterWidget.infoLink" var="infoLink" />
-
 <script type="text/javascript">
-
     function toggleConnectButons() {
       //assumes data is of type Hash
         return function(data) {
@@ -24,13 +20,12 @@
            
         };
     }
-
 </script>
 
 <div align="right" id="popupDiv">
-	<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}" deviceId="${device.deviceId}">
-		${infoLink}
-	</ct:widgetActionPopup>
+	<ct:widgetActionPopup2 method="helpInfo" container="helpInfo" labelBusy=".title" label=".title" deviceId="${device.deviceId}">
+        <i:inline key=".infoLink"/>
+	</ct:widgetActionPopup2>
 </div>
 
 <ct:simpleDialog id="disconnectInfo"/>
@@ -47,9 +42,7 @@
 </ct:nameValueContainer>
 <br>
 <div style="text-align: right">
-    <cti:msg2 var="readStatus" key=".readStatus"/>
-    <cti:msg2 var="reading" key=".reading"/>
-	<ct:widgetActionRefresh hide="${!readable}" method="read" label="${readStatus}" labelBusy="${reading}"/>
+	<ct:widgetActionRefresh2 hide="${!readable}" method="read" label=".readStatus" labelBusy=".reading"/>
     
     <%-- INIT VISIBILITY OF BUTTONS --%>
     <c:set var="connectStyle" value="" />
@@ -64,19 +57,12 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-        <cti:msg2 var="connect" key=".connect"/>
-        <cti:msg2 var="connecting" key=".connecting"/>
-        <cti:msg2 var="confirmConnect" key=".confirmConnect"/>
-		<ct:widgetActionRefresh hide="${!controllable}" method="connect" label="${connect}" labelBusy="${connecting}" confirmText="${confirmConnect}"/>
+		<ct:widgetActionRefresh2 hide="${!controllable}" method="connect" label=".connect" labelBusy=".connecting" confirmText=".confirmConnect"/>
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
-        <cti:msg2 var="disconnect" key=".disconnect"/>
-        <cti:msg2 var="disconnecting" key=".disconnecting"/>
-        <cti:msg2 var="confirmDisconnect" key=".confirmDisconnect"/>
-		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" label="${disconnect}" labelBusy="${disconnecting}" confirmText="${confirmDisconnect}"/>
+		<ct:widgetActionRefresh2 hide="${!controllable}" method="disconnect" label=".disconnect" labelBusy=".disconnecting" confirmText=".confirmDisconnect"/>
     </span>
-    
 </div>
 <br>
 <c:if test="${configString != ''}">
