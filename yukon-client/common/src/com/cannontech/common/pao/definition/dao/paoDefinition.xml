@@ -4246,6 +4246,7 @@
             <tag name="DEVICE_ICON_TYPE">
                 <value>electric_meter</value>
             </tag>
+            <tag name="METER_DETAIL_DISPLAYABLE" />
     		<tag name="PORTER_COMMAND_REQUESTS"/>
         </tags>
       	
