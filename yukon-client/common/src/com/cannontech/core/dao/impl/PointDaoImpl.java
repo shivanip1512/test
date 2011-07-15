@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -321,6 +320,18 @@ public final class PointDaoImpl implements PointDao {
 	    return retVal;
     }
 
+    private static class EntryRowMapper implements YukonRowMapper<Map.Entry<Integer, PointInfo>> {
+        private Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
+
+        @Override
+        public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs)
+                throws SQLException {
+            int paoId = rs.getInt("PaobjectId");
+            PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
+            return Maps.immutableEntry(paoId, pointInfo);
+        }
+    }
+
 	@Override
     public Map<PaoPointIdentifier, PointInfo> getPointInfoById(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
 	    ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
@@ -332,7 +343,6 @@ public final class PointDaoImpl implements PointDao {
             ImmutableCollection<PaoIdentifier> paoIdentifiers =
                 paoPointIdentifiersMap.get(pointIdentifier);
 
-            final Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
             SqlFragmentGenerator<Integer> sqlGenerator =
                 new SqlFragmentGenerator<Integer>() {
                     public SqlFragmentSource generate(List<Integer> subList) {
@@ -349,20 +359,9 @@ public final class PointDaoImpl implements PointDao {
                     }
                 };
 
-            YukonRowMapper<Map.Entry<Integer, PointInfo>> rowMapper =
-                new YukonRowMapper<Entry<Integer, PointInfo>>() {
-                    @Override
-                    public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs)
-                            throws SQLException {
-                        Integer paoId = rs.getInt("PaobjectId");
-                        PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
-                        return Maps.immutableEntry(paoId, pointInfo);
-                    }
-                };
-
             final Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
             Map<PaoIdentifier, PointInfo> pointInfosForPoint =
-                template.mappedQuery(sqlGenerator, paoIdentifiers, rowMapper, paoIdFunction);
+                template.mappedQuery(sqlGenerator, paoIdentifiers, new EntryRowMapper(), paoIdFunction);
 
             for (Map.Entry<PaoIdentifier, PointInfo> entry : pointInfosForPoint.entrySet()) {
                 retVal.put(new PaoPointIdentifier(entry.getKey(), pointIdentifier), entry.getValue());
@@ -370,18 +369,6 @@ public final class PointDaoImpl implements PointDao {
         }
 
         return retVal;
-    }
-
-	private static class EntryRowMapper implements YukonRowMapper<Map.Entry<Integer, PointInfo>> {
-	    private Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
-
-	    @Override
-        public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs)
-                throws SQLException {
-            int paoId = rs.getInt("PaobjectId");
-            PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
-            return Maps.immutableEntry(paoId, pointInfo);
-	    }
     }
 
     @Override

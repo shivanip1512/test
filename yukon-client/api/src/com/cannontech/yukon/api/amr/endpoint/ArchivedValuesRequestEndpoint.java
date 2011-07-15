@@ -133,6 +133,7 @@ public class ArchivedValuesRequestEndpoint {
             response.addContent(error);
         }
 
+        log.debug("returning response");
         return response;
     }
 
@@ -183,7 +184,7 @@ public class ArchivedValuesRequestEndpoint {
         Set<PaoIdentifier> paoIdentifiers = responseData.getPaoIdentifiers();
 
         PointSelector pointSelector = new PointSelector(pointNodeTemplate);
-        LogHelper.debug(log, "building response for point %1$s for %2$d PAOs",
+        LogHelper.debug(log, "building response for point %s for %d PAOs",
                         pointSelector, paoIdentifiers.size());
 
         // handle timeframe selectors
@@ -206,7 +207,7 @@ public class ArchivedValuesRequestEndpoint {
 
         Map<PaoIdentifier, Element> pointElementsByPaoIdentifier = Maps.newHashMap();
         for (PointValueSelector valueSelector : inputPointElement.getPointValueSelectors()) {
-            LogHelper.debug(log, "  working on %1$s", valueSelector);
+            LogHelper.debug(log, "  working on %s", valueSelector);
             ListMultimap<PaoIdentifier, PointValueQualityHolder> valueMap = null;
             if (valueSelector.getValueSelectorType() == SelectorType.SNAPSHOT) {
                 valueMap =
@@ -219,7 +220,7 @@ public class ArchivedValuesRequestEndpoint {
 
             String valueLabel = valueSelector.getLabel();
             for (PaoIdentifier paoIdentifier : paoIdentifiers) {
-                LogHelper.debug(log, "    pao %1$s", paoIdentifier);
+                LogHelper.debug(log, "    pao %s", paoIdentifier);
                 PointInfo pointInfo = pointInfoById == null ? null : pointInfoById.get(paoIdentifier);
                 Element paoElement = responseData.getPaoElement(paoIdentifier);
                 Element pointElement = null;
@@ -241,7 +242,7 @@ public class ArchivedValuesRequestEndpoint {
                 List<PointValueQualityHolder> values = valueMap.get(paoIdentifier);
                 List<Element> valueElementList = Lists.newArrayList();
                 for (PointValueQualityHolder value : values) {
-                    LogHelper.debug(log, "      %1$tc/%2$f", value.getPointDataTimeStamp(),
+                    LogHelper.debug(log, "      %tc/%f", value.getPointDataTimeStamp(),
                                     value.getValue());
                     if (responseData.isFlatten()) {
                         Element valueElement =

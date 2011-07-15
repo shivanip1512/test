@@ -37,7 +37,6 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
     public PaoSelectionServiceImpl() {
         Builder<String, PaoSelector> builder = ImmutableMap.builder();
 
-        builder.put("address", new ByCarrierAddressSelector());
         builder.put("deviceGroup", new ByDeviceGroupNamesSelector());
         builder.put("meterNumber", new ByMeterNumbersSelector());
         builder.put("carrierAddress", new ByCarrierAddressSelector());
