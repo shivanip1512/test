@@ -24,10 +24,10 @@ public abstract class DoubleTemperatureBase extends Temperature {
     }
     
     /**
-     * Returns the int value of the temperature.
+     * Returns the int value of the temperature with a HALF_UP RoundingMode.
      * @return int
      */
-    public int getIntValue() {
+    public int toIntValue() {
         return toBigDecimal(0).intValue();
     }
     

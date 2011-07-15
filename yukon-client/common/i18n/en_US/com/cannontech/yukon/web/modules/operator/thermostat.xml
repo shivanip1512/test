@@ -240,8 +240,6 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.help.title">Thermostat Schedule Hints and Details</entry>
     
-    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageHeading">Selected Thermostat {0}</entry>
-    
     <!-- stars/consumer/thermostat/schedule/view/saved (savedSchedules.jsp - ThermostatScheduleController.java:viewSaved()) -->
     <entry key="yukon.web.modules.consumer.savedSchedules.pageTitle">Thermostat - Schedules</entry>
     <entry key="yukon.web.modules.consumer.savedSchedules.currentScheduleInfo">This is the most recent schedule that has been sent to the thermostat.</entry>
@@ -276,6 +274,8 @@
     
     <!-- adminSetup/energyCompany/schedules/editDefaultThermostatSchedule (savedSchedules.jsp - OperatorThermostatScheduleController.java:saveSchedules()) -->
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.tempUnit">Temperature Units</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageName.singular">Selected Thermostat: {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageName.multiple">Selected Thermostats: {0}</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.title">Edit Schedule - {0}</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.editSchedule.message">Edit Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createSchedule.title">Create Schedule</entry>

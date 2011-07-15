@@ -43,7 +43,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
 	
 	@Override
-	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
+	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) throws IllegalArgumentException {
 		
 	    thermostatIds = thermostatIds.replace("[", "");
 	    thermostatIds = thermostatIds.replace("]", "");
@@ -54,11 +54,22 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 		
 		// thermostat names
 		List<String> thermostatNames = Lists.newArrayListWithCapacity(thermostatIdsList.size());
+		SchedulableThermostatType firstType = null;
 		for (int thermostatId : thermostatIdsList) {
 			Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 			thermostatNames.add(thermostat.getLabel());
+			
+			SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+			if(firstType == null){
+			    firstType = type;
+			}
+			
+			if(type != firstType){
+			    throw new IllegalArgumentException("Thermostat types do not match. expected:["+ firstType +"] got:["+ type +"]");
+			}
 		}
 		modelMap.addAttribute("thermostatNames", thermostatNames);
+		modelMap.addAttribute("thermostatNameString", StringUtils.join(thermostatNames, ", "));
 		
 		return thermostatIdsList;
 	}
@@ -86,25 +97,22 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         
         List<AccountThermostatScheduleEntry> entries = schedule.getScheduleEntries();
         schedule.getEntriesByTimeOfWeekMultimap();
-        for(int i=0; i<entries.size(); i++){
-            AccountThermostatScheduleEntry entry = entries.get(i);
-            JSONObject period = new JSONObject();
-            
-            //we keep 'pseudo' periods in the schedule and need to preserve them.  The interface needs
-            //to know how to handle this.  The following chain will only return a period if it is 'real'
-            if (entry.getCoolTemp().toFahrenheit().getIntValue() == -1 && entry.getHeatTemp().toFahrenheit().getIntValue() == -1) {
-                // temp of -1 means ignore this time/temp pair - used when only
-                // sending two time/temp values
-                period.put("pseudo", true);
+        
+        for(ThermostatSchedulePeriod period : schedule.getThermostatType().getPeriodStyle().getAllPeriods()){
+            AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
+            JSONObject periodJSON = new JSONObject();
+
+            if(period.isPsuedo()){
+                periodJSON.put("pseudo", true);
             }else{
-                period.put("pseudo", false);
+                periodJSON.put("pseudo", false);
             }
             
-            period.put("timeOfWeek", entry.getTimeOfWeek().toString());
-            period.put("secondsFromMidnight", entry.getStartTime());
-            period.put("cool_F", entry.getCoolTemp().toFahrenheit().getValue());
-            period.put("heat_F", entry.getHeatTemp().toFahrenheit().getValue());
-            scheduleJSON.accumulate("periods", period);
+            periodJSON.put("timeOfWeek", entry.getTimeOfWeek().toString());
+            periodJSON.put("secondsFromMidnight", entry.getStartTime());
+            periodJSON.put("cool_F", entry.getCoolTemp().toFahrenheit().getValue());
+            periodJSON.put("heat_F", entry.getHeatTemp().toFahrenheit().getValue());
+            scheduleJSON.accumulate("periods", periodJSON);
         }
 
         return scheduleJSON;

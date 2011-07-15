@@ -14,6 +14,21 @@
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
+
+<%-- THERMOSTAT NAMES --%>
+<c:choose>
+    <c:when test="${fn:length(thermostatNames) > 1}">
+        <c:set var="formElementContainerNameKey" value=".pageName.multiple"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="formElementContainerNameKey" value=".pageName.singular"/>
+    </c:otherwise>
+</c:choose>
+
+<h2 class="standardPageHeading">
+    <i:inline key="${formElementContainerNameKey}" arguments="${thermostatNameString}" />
+</h2>
+
 <script>
 var TIME_SLIDER = null;
 Event.observe(window, 'load', function(){
@@ -55,7 +70,7 @@ Event.observe(window, 'load', function(){
     <tr>
         <td>  
             <c:choose>
-                <c:when test="${empty schedules}">
+                <c:when test="${empty schedules and empty currentSchedule}">
                     <div class="helper">
                         <i:inline key=".noSchedulesHelper" />
                     </div>

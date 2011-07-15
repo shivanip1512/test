@@ -66,74 +66,59 @@ Event.observe(window, 'load', function(){
 </div>
 
 <c:choose>
-    <c:when test="${empty schedules}">
+    <c:when test="${empty schedules and empty currentSchedule}">
         <div class="helper">
             <i:inline key=".noSchedulesHelper" />
         </div>
         <br>
         <br>
+        <cti:button key="help" styleClass="help"/>
         <cti:button key="create" styleClass="create"/>
     </c:when>
     <c:otherwise>
-        
+        <div class="schedules fl">
+            <c:if test="${not empty currentSchedule}">
+                <div class="paddedContainer">
+                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+                        thermostatId="${thermostatId}"
+                        thermostatIds="${thermostatIds}"
+                        accountId="${customerAccount.accountId}"
+                        temperatureUnit="${temperatureUnit}"
+                        actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+                        thermostatType="${thermostatType}"
+                        styleClass="vh"/>
+                </div>
+            </c:if>
+            <div class="box clear">
+                <div class="fr">
+                    <cti:button key="create" styleClass="create fl"/>
+                    <cti:button key="help" styleClass="help fl"/>
+                </div>
+                <div class="tempControls fl">
+                    <form method="post" action="/spring/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+                        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                    </form>
+                </div>
+            </div>
+            <br>
+            <c:if test="${not empty schedules}">
+                <tags:sectionContainer2 nameKey="otherSchedules">
+                    <c:forEach var="schedule" items="${schedules}">
+                        <tags:thermostatScheduleWidget schedule="${schedule}"
+                            thermostatId="${thermostatId}"
+                            thermostatIds="${thermostatIds}"
+                            accountId="${customerAccount.accountId}"
+                            temperatureUnit="${temperatureUnit}"
+                            actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+                            thermostatType="${thermostatType}"
+                            styleClass="vh"/>
+                    </c:forEach>    
+                </tags:sectionContainer2>
+            </c:if>
+        </div>
     </c:otherwise>
 </c:choose>
-
-
-        <c:choose>
-                <c:when test="${empty schedules}">
-                    <div class="helper">
-                        <i:inline key=".noSchedulesHelper" />
-                    </div>
-                    <br>
-                    <br>
-                    <cti:button key="help" styleClass="help"/>
-                    <cti:button key="create" styleClass="create"/>
-                </c:when>
-                <c:otherwise>
-                    <div class="schedules fl">
-                        <c:if test="${not empty currentSchedule}">
-                            <div class="paddedContainer">
-                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
-                                    thermostatId="${thermostatId}"
-                                    thermostatIds="${thermostatIds}"
-                                    accountId="${customerAccount.accountId}"
-                                    temperatureUnit="${temperatureUnit}"
-                                    actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
-                                    thermostatType="${thermostatType}"
-                                    styleClass="vh"/>
-                            </div>
-                        </c:if>
-                        <div class="box clear">
-                            <div class="fr">
-                                <cti:button key="create" styleClass="create fl"/>
-                                <cti:button key="help" styleClass="help fl"/>
-                            </div>
-                            <div class="tempControls fl">
-                                <form method="post" action="/spring/stars/consumer/thermostat/schedule/updateTemperaturePreference">
-                                    <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-                                    <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
-                                </form>
-                            </div>
-                        </div>
-                        <br>
-                        <c:if test="${not empty schedules}">
-                            <tags:sectionContainer2 nameKey="otherSchedules">
-                                <c:forEach var="schedule" items="${schedules}">
-                                    <tags:thermostatScheduleWidget schedule="${schedule}"
-                                        thermostatId="${thermostatId}"
-                                        thermostatIds="${thermostatIds}"
-                                        accountId="${customerAccount.accountId}"
-                                        temperatureUnit="${temperatureUnit}"
-                                        actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
-                                        thermostatType="${thermostatType}"
-                                        styleClass="vh"/>
-                                </c:forEach>    
-                            </tags:sectionContainer2>
-                        </c:if>
-                    </div>
-                </c:otherwise>
-            </c:choose>
 
 <div class="schedule">
 <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".create" >

@@ -100,7 +100,7 @@ public class Thermostat {
         return status != HardwareStatus.UNAVAILABLE;
     }
 
-    public Set<SchedulableThermostatType> getSchedulableThermostatTypes(){
+    public Set<SchedulableThermostatType> getCompatibleSchedulableThermostatTypes(){
         return this.schedulableThermostatTypes.getCompatibleScheduleTypes();
     }
 }

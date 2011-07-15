@@ -84,7 +84,7 @@ public class OperatorThermostatSelectController {
         }
         
         if (schedule != null) {
-        	return "redirect:/spring/stars/operator/thermostatSchedule/view";
+        	return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
         } else {
         	return "redirect:/spring/stars/operator/thermostatManual/view";
         }

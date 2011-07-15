@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionService;
@@ -141,7 +142,7 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
         
         Multimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = ats.getEntriesByTimeOfWeekMultimap();
-        Collection<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
+        ArrayList<AccountThermostatScheduleEntry> entries = new ArrayList<AccountThermostatScheduleEntry>(entriesByTimeOfWeekMap.get(timeOfWeek));
 
         StringBuilder command = new StringBuilder();
         command.append("putconfig xcom schedule ");
@@ -152,17 +153,17 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
         } else {
             command.append(timeOfWeekCommand + " ");
         }
-
+        
         int count = 1;
-        for (AccountThermostatScheduleEntry entry : entries) {
-
+        for(ThermostatSchedulePeriod period : ats.getThermostatType().getPeriodStyle().getAllPeriods()){
+            
+            AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
             LocalTime startTime = entry.getStartTimeLocalTime();
 
             FahrenheitTemperature coolTemp = entry.getCoolTemp().toFahrenheit();
             FahrenheitTemperature heatTemp = entry.getHeatTemp().toFahrenheit();
 
-            if (coolTemp.getIntValue() == -1 && heatTemp.getIntValue() == -1) {
-                // temp of -1 means ignore this time/temp pair - used when only
+            if (period.isPsuedo()) {
                 // sending two time/temp values
                 command.append("HH:MM,");
                 command.append("ff,");
@@ -172,17 +173,16 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
                 
                 String startTimeString = startTime.toString("HH:mm");
                 command.append(startTimeString + ",");
-                command.append(heatTemp.getIntValue() + ",");
-                command.append(coolTemp.getIntValue());
+                command.append(heatTemp.toIntValue() + ",");
+                command.append(coolTemp.toIntValue());
             }
-
+            
             // No trailing comma on the last season entry cool temp
             if (count++ != entries.size()) {
                 command.append(", ");
             }
-
         }
-
+        
         command.append(" serial " + thermostat.getSerialNumber());
 
         return command.toString();

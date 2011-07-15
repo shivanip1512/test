@@ -74,7 +74,6 @@ public abstract class AbstractCommandExecutionService implements ThermostatComma
         logMessage.append("Serial #:" + thermostat.getSerialNumber() + ", ");
         logMessage.append("Day:" + timeOfWeek.toString() + ", ");
         
-        String tempUnit = "F";
         DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
         SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(thermostat.getType());
         ThermostatSchedulePeriodStyle periodStyle = schedulableThermostatType.getPeriodStyle();
@@ -92,9 +91,7 @@ public abstract class AbstractCommandExecutionService implements ThermostatComma
             }
             AccountThermostatScheduleEntry atsEntry = entries.get(period.getEntryIndex());
             String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
-            int coolEntryTemp = atsEntry.getCoolTemp().toFahrenheit().getIntValue();
-            int heatEntryTemp = atsEntry.getHeatTemp().toFahrenheit().getIntValue();
-            logMessage.append(period + ": " + entryDate + "," + coolEntryTemp + tempUnit + "," + heatEntryTemp + tempUnit);
+            logMessage.append(period + ": " + entryDate + "," + atsEntry.getCoolTemp().toFahrenheit().toString() + "," + atsEntry.getHeatTemp().toFahrenheit().toString()   );
         }
         
         ActivityLog event = new ActivityLog();

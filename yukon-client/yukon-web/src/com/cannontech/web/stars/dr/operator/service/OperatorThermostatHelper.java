@@ -15,7 +15,9 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 
 public interface OperatorThermostatHelper {
 
-	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap);
+	public List<Integer> setupModelMapForThermostats(String thermostatIds, 
+	                                                 AccountInfoFragment accountInfoFragment, 
+	                                                 ModelMap modelMap) throws IllegalArgumentException;
 	
     public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
                                                                           SchedulableThermostatType thermostatType, ThermostatScheduleMode mode, 

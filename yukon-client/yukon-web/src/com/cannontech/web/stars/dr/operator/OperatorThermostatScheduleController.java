@@ -160,7 +160,7 @@ public class OperatorThermostatScheduleController {
     public String savedSchedules(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
                                  YukonUserContext userContext,
                                  ModelMap model,
-                                 AccountInfoFragment fragment) {
+                                 AccountInfoFragment fragment) throws IllegalArgumentException {
 
 		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 		List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
