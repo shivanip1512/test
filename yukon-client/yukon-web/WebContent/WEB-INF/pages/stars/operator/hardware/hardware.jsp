@@ -97,7 +97,7 @@ YEvent.observeSelectorClick('#chooseButton', function(event) {
 
 YEvent.observeSelectorClick('#sendTextMsg', function(event) {
     var params = {'accountId' : ${accountId}, 
-                        'inventoryId' : ${inventoryId}, 
+                        <c:if test="${not empty inventoryId}">'inventoryId' : ${inventoryId},</c:if> 
                         'gatewayId' : ${hardwareDto.deviceId}};
     openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
 });
